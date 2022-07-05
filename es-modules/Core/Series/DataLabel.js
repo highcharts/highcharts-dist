@@ -292,7 +292,7 @@ var DataLabel;
                         rotation = labelOptions.rotation;
                         if (!chart.styledMode) {
                             // Determine the color
-                            style.color = pick(labelOptions.color, style.color, series.color, "#000000" /* neutralColor100 */);
+                            style.color = pick(labelOptions.color, style.color, series.color, "#000000" /* Palette.neutralColor100 */);
                             // Get automated contrast color
                             if (style.color === 'contrast') {
                                 point.contrastColor = renderer.getContrast((point.color || series.color));
@@ -301,7 +301,7 @@ var DataLabel;
                                     labelDistance < 0 ||
                                     !!seriesOptions.stacking ?
                                     point.contrastColor :
-                                    "#000000" /* neutralColor100 */;
+                                    "#000000" /* Palette.neutralColor100 */;
                             }
                             else {
                                 delete point.contrastColor;

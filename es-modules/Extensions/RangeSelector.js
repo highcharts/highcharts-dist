@@ -479,7 +479,7 @@ extend(defaultOptions, {
          */
         inputStyle: {
             /** @ignore */
-            color: "#335cad" /* highlightColor80 */,
+            color: "#335cad" /* Palette.highlightColor80 */,
             /** @ignore */
             cursor: 'pointer'
         },
@@ -496,7 +496,7 @@ extend(defaultOptions, {
          */
         labelStyle: {
             /** @ignore */
-            color: "#666666" /* neutralColor60 */
+            color: "#666666" /* Palette.neutralColor60 */
         }
     }
 });
@@ -582,7 +582,7 @@ var RangeSelector = /** @class */ (function () {
      */
     RangeSelector.prototype.clickButton = function (i, redraw) {
         var rangeSelector = this, chart = rangeSelector.chart, rangeOptions = rangeSelector.buttonOptions[i], baseAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || baseAxis || {}, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax, newMin, newMax = baseAxis && Math.round(Math.min(baseAxis.max, pick(dataMax, baseAxis.max))), // #1568
-        type = rangeOptions.type, baseXAxisOptions, range = rangeOptions._range, rangeMin, minSetting, rangeSetting, ctx, ytdExtremes, dataGrouping = rangeOptions.dataGrouping;
+        type = rangeOptions.type, baseXAxisOptions, range = rangeOptions._range, rangeMin, minSetting, rangeSetting, ctx, ytdExtremes, dataGrouping = rangeOptions.dataGrouping, addOffsetMin = true;
         // chart has no data, base series is removed
         if (dataMin === null || dataMax === null) {
             return;
@@ -615,12 +615,16 @@ var RangeSelector = /** @class */ (function () {
                 if (isNumber(ctx.newMax)) {
                     newMax = ctx.newMax;
                 }
+                // #15799: offsetMin is added in minFromRange so that it works
+                // with pre-selected buttons as well
+                addOffsetMin = false;
             }
             // Fixed times like minutes, hours, days
         }
         else if (range) {
             newMin = Math.max(newMax - range, dataMin);
             newMax = Math.min(newMin + range, dataMax);
+            addOffsetMin = false;
         }
         else if (type === 'ytd') {
             // On user clicks on the buttons, or a delayed action running from
@@ -631,14 +635,17 @@ var RangeSelector = /** @class */ (function () {
                 // event (below). When the series are initialized, but before
                 // the chart is rendered, we have access to the xData array
                 // (#942).
-                if (typeof dataMax === 'undefined') {
+                if (typeof dataMax === 'undefined' ||
+                    typeof dataMin === 'undefined') {
                     dataMin = Number.MAX_VALUE;
                     dataMax = Number.MIN_VALUE;
                     chart.series.forEach(function (series) {
                         // reassign it to the last item
                         var xData = series.xData;
-                        dataMin = Math.min(xData[0], dataMin);
-                        dataMax = Math.max(xData[xData.length - 1], dataMax);
+                        if (xData) {
+                            dataMin = Math.min(xData[0], dataMin);
+                            dataMax = Math.max(xData[xData.length - 1], dataMax);
+                        }
                     });
                     redraw = false;
                 }
@@ -658,16 +665,15 @@ var RangeSelector = /** @class */ (function () {
             // If the navigator exist and the axis range is declared reset that
             // range and from now on only use the range set by a user, #14742.
             if (chart.navigator && chart.navigator.baseSeries[0]) {
-                chart.navigator.baseSeries[0].xAxis.options
-                    .range = void 0;
+                chart.navigator.baseSeries[0].xAxis.options.range = void 0;
             }
             newMin = dataMin;
             newMax = dataMax;
         }
-        if (defined(newMin)) {
+        if (addOffsetMin && rangeOptions._offsetMin && defined(newMin)) {
             newMin += rangeOptions._offsetMin;
         }
-        if (defined(newMax)) {
+        if (rangeOptions._offsetMax && defined(newMax)) {
             newMax += rangeOptions._offsetMax;
         }
         if (this.dropdown) {
@@ -719,10 +725,10 @@ var RangeSelector = /** @class */ (function () {
         var rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
             var minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
             // #3274 in some case blur is not defined
-            if (minInput && minInput.blur) {
+            if (minInput && (minInput.blur)) {
                 fireEvent(minInput, 'blur');
             }
-            if (maxInput && maxInput.blur) {
+            if (maxInput && (maxInput.blur)) {
                 fireEvent(maxInput, 'blur');
             }
         };
@@ -1010,7 +1016,7 @@ var RangeSelector = /** @class */ (function () {
         }
         else if (H.isSafari && !hasTimezone(input)) {
             var offset = new Date(input).getTimezoneOffset() / 60;
-            input += offset <= 0 ? "+" + pad(-offset) + ":00" : "-" + pad(offset) + ":00";
+            input += offset <= 0 ? "+".concat(pad(-offset), ":00") : "-".concat(pad(offset), ":00");
         }
         var date = Date.parse(input);
         // If the value isn't parsed directly to a value by the
@@ -1116,7 +1122,7 @@ var RangeSelector = /** @class */ (function () {
             // Styles
             label.css(merge(chartStyle, options.labelStyle));
             dateBox.css(merge({
-                color: "#333333" /* neutralColor80 */
+                color: "#333333" /* Palette.neutralColor80 */
             }, chartStyle, options.inputStyle));
             css(input, extend({
                 position: 'absolute',
@@ -1700,7 +1706,7 @@ var RangeSelector = /** @class */ (function () {
         var userButtonTheme = (chart.userOptions.rangeSelector &&
             chart.userOptions.rangeSelector.buttonTheme) || {};
         var getAttribs = function (text) { return ({
-            text: text ? text + " \u25BE" : '▾',
+            text: text ? "".concat(text, " \u25BE") : '▾',
             width: 'auto',
             paddingLeft: pick(options.buttonTheme.paddingLeft, userButtonTheme.padding, 8),
             paddingRight: pick(options.buttonTheme.paddingRight, userButtonTheme.padding, 8)
@@ -1999,8 +2005,8 @@ Axis.prototype.minFromRange = function () {
         min = max - rangeOptions;
         range = rangeOptions;
     }
-    else {
-        min = max + getTrueRange(max, -rangeOptions.count);
+    else if (rangeOptions) {
+        min = max + getTrueRange(max, -(rangeOptions.count || 1));
         // Let the fixedRange reflect initial settings (#5930)
         if (this.chart) {
             this.chart.fixedRange = max - min;
@@ -2015,10 +2021,15 @@ Axis.prototype.minFromRange = function () {
         if (typeof range === 'undefined') { // #4501
             range = getTrueRange(min, rangeOptions.count);
         }
-        this.newMax = Math.min(min + range, this.dataMax);
+        this.newMax = Math.min(min + range, pick(this.dataMax, Number.MAX_VALUE));
     }
     if (!isNumber(max)) {
         min = void 0;
+    }
+    else if (!isNumber(rangeOptions) &&
+        rangeOptions &&
+        rangeOptions._offsetMin) {
+        min += rangeOptions._offsetMin;
     }
     return min;
 };

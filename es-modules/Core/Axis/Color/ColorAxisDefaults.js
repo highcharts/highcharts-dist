@@ -297,7 +297,7 @@ var colorAxisDefaults = {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @product highcharts highstock highmaps
          */
-        color: "#999999" /* neutralColor40 */
+        color: "#999999" /* Palette.neutralColor40 */
     },
     /**
      * The axis labels show the number for each tick.
@@ -339,7 +339,7 @@ var colorAxisDefaults = {
      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @product highcharts highstock highmaps
      */
-    minColor: "#e6ebf5" /* highlightColor10 */,
+    minColor: "#e6ebf5" /* Palette.highlightColor10 */,
     /**
      * The color to represent the maximum of the color axis. Unless
      * [dataClasses](#colorAxis.dataClasses) or
@@ -358,7 +358,7 @@ var colorAxisDefaults = {
      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @product highcharts highstock highmaps
      */
-    maxColor: "#003399" /* highlightColor100 */,
+    maxColor: "#003399" /* Palette.highlightColor100 */,
     /**
      * Color stops for the gradient of a scalar color axis. Use this in
      * cases where a linear gradient between a `minColor` and `maxColor`

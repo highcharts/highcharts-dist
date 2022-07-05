@@ -203,12 +203,12 @@ var Time = /** @class */ (function () {
      *
      */
     Time.prototype.update = function (options) {
-        var useUTC = pick(options && options.useUTC, true), time = this;
+        var useUTC = pick(options && options.useUTC, true);
         this.options = options = merge(true, this.options || {}, options);
         // Allow using a different Date class
         this.Date = options.Date || win.Date || Date;
         this.useUTC = useUTC;
-        this.timezoneOffset = (useUTC && options.timezoneOffset);
+        this.timezoneOffset = (useUTC && options.timezoneOffset) || void 0;
         this.getTimezoneOffset = this.timezoneOffsetFunction();
         /*
          * The time object has options allowing for variable time zones, meaning
@@ -633,7 +633,9 @@ var Time = /** @class */ (function () {
             hour: 6,
             day: 3
         };
-        var format, n, lastN = 'millisecond'; // for sub-millisecond data, #4223
+        var n = 'millisecond', 
+        // for sub-millisecond data, #4223
+        lastN = n;
         for (n in timeUnits) { // eslint-disable-line guard-for-in
             // If the range is exactly one week and we're looking at a
             // Sunday/Monday, go for the week format
@@ -660,10 +662,7 @@ var Time = /** @class */ (function () {
                 lastN = n;
             }
         }
-        if (n) {
-            format = this.resolveDTLFormat(dateTimeLabelFormats[n]).main;
-        }
-        return format;
+        return this.resolveDTLFormat(dateTimeLabelFormats[n]).main;
     };
     return Time;
 }());

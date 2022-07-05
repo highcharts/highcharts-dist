@@ -13,8 +13,6 @@ import F from '../Core/FormatUtilities.js';
 var format = F.format;
 import H from '../Core/Globals.js';
 var win = H.win;
-import MU from '../Maps/MapUtilities.js';
-var pointInPolygon = MU.pointInPolygon;
 import U from '../Core/Utilities.js';
 var error = U.error, extend = U.extend, merge = U.merge, wrap = U.wrap;
 /**

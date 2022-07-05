@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.1.0 (2022-04-29)
+ * @license Highmaps JS v10.2.0 (2022-07-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -636,7 +636,7 @@
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      * @product highcharts highstock highmaps
                      */
-                    color: "#999999" /* neutralColor40 */
+                    color: "#999999" /* Palette.neutralColor40 */
                 },
                 /**
                  * The axis labels show the number for each tick.
@@ -678,7 +678,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                minColor: "#e6ebf5" /* highlightColor10 */,
+                minColor: "#e6ebf5" /* Palette.highlightColor10 */,
                 /**
                  * The color to represent the maximum of the color axis. Unless
                  * [dataClasses](#colorAxis.dataClasses) or
@@ -697,7 +697,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                maxColor: "#003399" /* highlightColor100 */,
+                maxColor: "#003399" /* Palette.highlightColor100 */,
                 /**
                  * Color stops for the gradient of a scalar color axis. Use this in
                  * cases where a linear gradient between a `minColor` and `maxColor`
@@ -1438,7 +1438,7 @@
                             setState: noop,
                             isDataClass: true,
                             setVisible: function () {
-                                vis = axis.visible = !vis;
+                                this.visible = vis = axis.visible = !vis;
                                 axis.series.forEach(function (series) {
                                     series.points.forEach(function (point) {
                                         if (point.dataClass === i) {
@@ -1498,7 +1498,7 @@
 
         return ColorAxis;
     });
-    _registerModule(_modules, 'Series/ColorMapMixin.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1508,66 +1508,92 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        // @todo cleanup & reduction - consider composition
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
-        var defined = U.defined,
-            addEvent = U.addEvent;
-        // Move points to the top of the z-index order when hovered
-        addEvent(Point, 'afterSetState', function (e) {
-            var point = this;
-            if (point.moveToTopOnHover && point.graphic) {
-                point.graphic.attr({
-                    zIndex: e && e.state === 'hover' ? 1 : 0
-                });
-            }
-        });
-        /**
-         * Mixin for maps and heatmaps
+        var columnProto = SeriesRegistry.seriesTypes.column.prototype;
+        var addEvent = U.addEvent,
+            defined = U.defined;
+        /* *
          *
-         * @private
-         * @mixin Highcharts.colorMapPointMixin
-         */
-        var PointMixin = {
+         *  Composition
+         *
+         * */
+        var ColorMapComposition;
+        (function (ColorMapComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Color points have a value option that determines whether or not it is
-                 * a null point
-                 * @private
-                 */
-                isValid: function () {
-                    // undefined is allowed
-                    return (this.value !== null &&
-                        this.value !== Infinity &&
-                        this.value !== -Infinity);
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        /**
-         * @private
-         * @mixin Highcharts.colorMapSeriesMixin
-         */
-        var SeriesMixin = {
-                pointArrayMap: ['value'],
-                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
-                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-                getSymbol: noop,
-                parallelArrays: ['x', 'y', 'value'],
+                isValid: pointIsValid
+            };
+            ColorMapComposition.seriesMembers = {
                 colorKey: 'value',
-                pointAttribs: seriesTypes.column.prototype.pointAttribs,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Get the color attibutes to apply on the graphic
-                 * @private
-                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
-                 * @param {Highcharts.Point} point
-                 * @return {Highcharts.SVGAttributes}
-                 *         The SVG attributes
-                 */
-                colorAttribs: function (point) {
-                    var ret = {};
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                parallelArrays: ['x', 'y', 'value'],
+                pointArrayMap: ['value'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                colorAttribs: seriesColorAttribs,
+                pointAttribs: columnProto.pointAttribs
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function compose(SeriesClass) {
+                var PointClass = SeriesClass.prototype.pointClass;
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    addEvent(PointClass, 'afterSetState', onPointAfterSetState);
+                }
+                return SeriesClass;
+            }
+            ColorMapComposition.compose = compose;
+            /**
+             * Move points to the top of the z-index order when hovered.
+             * @private
+             */
+            function onPointAfterSetState(e) {
+                var point = this;
+                if (point.moveToTopOnHover && point.graphic) {
+                    point.graphic.attr({
+                        zIndex: e && e.state === 'hover' ? 1 : 0
+                    });
+                }
+            }
+            /**
+             * Color points have a value option that determines whether or not it is
+             * a null point
+             * @private
+             */
+            function pointIsValid() {
+                return (this.value !== null &&
+                    this.value !== Infinity &&
+                    this.value !== -Infinity &&
+                    // undefined is allowed, but NaN is not (#17279)
+                    (this.value === void 0 || !isNaN(this.value)));
+            }
+            /**
+             * Get the color attibutes to apply on the graphic
+             * @private
+             * @function Highcharts.colorMapSeriesMixin.colorAttribs
+             * @param {Highcharts.Point} point
+             * @return {Highcharts.SVGAttributes}
+             *         The SVG attributes
+             */
+            function seriesColorAttribs(point) {
+                var ret = {};
                 if (defined(point.color) &&
                     (!point.state || point.state === 'normal') // #15746
                 ) {
@@ -1575,13 +1601,14 @@
                 }
                 return ret;
             }
-        };
-        var ColorMapMixin = {
-                PointMixin: PointMixin,
-                SeriesMixin: SeriesMixin
-            };
+        })(ColorMapComposition || (ColorMapComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return ColorMapMixin;
+        return ColorMapComposition;
     });
     _registerModule(_modules, 'Series/Heatmap/HeatmapPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
@@ -1668,27 +1695,27 @@
                     seriesOptions.pointPadding, 0),
                     cellAttr = {
                         x1: clamp(Math.round(xAxis.len -
-                            (xAxis.translate(point.x - xPad,
+                            xAxis.translate(point.x - xPad,
                     false,
                     true,
                     false,
-                    true, -pointPlacement) || 0)), -xAxis.len, 2 * xAxis.len),
+                    true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
                         x2: clamp(Math.round(xAxis.len -
-                            (xAxis.translate(point.x + xPad,
+                            xAxis.translate(point.x + xPad,
                     false,
                     true,
                     false,
-                    true, -pointPlacement) || 0)), -xAxis.len, 2 * xAxis.len),
-                        y1: clamp(Math.round((yAxis.translate(point.y - yPad,
+                    true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                        y1: clamp(Math.round(yAxis.translate(point.y - yPad,
                     false,
                     true,
                     false,
-                    true) || 0)), -yAxis.len, 2 * yAxis.len),
-                        y2: clamp(Math.round((yAxis.translate(point.y + yPad,
+                    true)), -yAxis.len, 2 * yAxis.len),
+                        y2: clamp(Math.round(yAxis.translate(point.y + yPad,
                     false,
                     true,
                     false,
-                    true) || 0)), -yAxis.len, 2 * yAxis.len)
+                    true)), -yAxis.len, 2 * yAxis.len)
                     };
                 var dimensions = [['width', 'x'], ['height', 'y']];
                 // Handle marker's fixed width, and height values including border
@@ -1766,7 +1793,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapMixin.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2164,7 +2191,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                nullColor: "#f7f7f7" /* neutralColor3 */,
+                nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
                 dataLabels: {
                     formatter: function () {
                         var numberFormatter = this.series.chart.numberFormatter;
@@ -2345,25 +2372,26 @@
             return HeatmapSeries;
         }(ScatterSeries));
         extend(HeatmapSeries.prototype, {
+            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+            colorKey: ColorMapComposition.seriesMembers.colorKey,
+            directTouch: true,
+            getExtremesFromAll: true,
+            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+            pointArrayMap: ['y', 'value'],
+            pointClass: HeatmapPoint,
+            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
             /**
              * @private
              */
             alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-            axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
-            colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
-            colorKey: ColorMapMixin.SeriesMixin.colorKey,
-            directTouch: true,
+            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
             /**
              * @private
              */
             drawLegendSymbol: LegendSymbol.drawRectangle,
-            getExtremesFromAll: true,
-            getSymbol: Series.prototype.getSymbol,
-            parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
-            pointArrayMap: ['y', 'value'],
-            pointClass: HeatmapPoint,
-            trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups
+            getSymbol: Series.prototype.getSymbol
         });
+        ColorMapComposition.compose(HeatmapSeries);
         SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
         /* *
          *

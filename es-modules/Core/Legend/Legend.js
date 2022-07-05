@@ -425,7 +425,7 @@ var Legend = /** @class */ (function () {
     Legend.prototype.renderItem = function (item) {
         var legend = this, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
             item.series :
-            item, seriesOptions = series.options, showCheckbox = legend.createCheckboxForItem &&
+            item, seriesOptions = series.options, showCheckbox = (legend.createCheckboxForItem) &&
             seriesOptions &&
             seriesOptions.showCheckbox, useHTML = options.useHTML, itemClassName = item.options.className;
         var li = item.legendItem, 
@@ -678,7 +678,7 @@ var Legend = /** @class */ (function () {
             }
         }, this);
         distribute(boxes, chart.plotHeight).forEach(function (box) {
-            if (box.item._legendItemPos) {
+            if (box.item._legendItemPos && box.pos) {
                 box.item._legendItemPos[1] =
                     chart.plotTop - chart.spacing[0] + box.pos;
             }
@@ -797,7 +797,7 @@ var Legend = /** @class */ (function () {
             }, box.strokeWidth()));
         }
         // hide the border if no items
-        box[display ? 'show' : 'hide']();
+        legendGroup[display ? 'show' : 'hide']();
         // Open for responsiveness
         if (chart.styledMode && legendGroup.getStyle('display') === 'none') {
             legendWidth = legendHeight = 0;

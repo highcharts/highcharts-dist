@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -387,7 +389,7 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
                 uniqueAxes.push(axis2);
             }
         });
-        transVal = pick(translatedValue, axis.translate(value, null, null, e.old));
+        transVal = pick(translatedValue, axis.translate(value, void 0, void 0, e.old));
         if (isNumber(transVal)) {
             if (axis.horiz) {
                 uniqueAxes.forEach(function (axis2) {
@@ -515,12 +517,12 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
                 .attr({
                 fill: options.backgroundColor ||
                     point && point.series && point.series.color || // #14888
-                    "#666666" /* neutralColor60 */,
+                    "#666666" /* Palette.neutralColor60 */,
                 stroke: options.borderColor || '',
                 'stroke-width': options.borderWidth || 0
             })
                 .css(extend({
-                color: "#ffffff" /* backgroundColor */,
+                color: "#ffffff" /* Palette.backgroundColor */,
                 fontWeight: 'normal',
                 fontSize: '11px',
                 textAlign: 'center'

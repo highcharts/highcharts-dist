@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -54,6 +54,7 @@
         var animObject = A.animObject;
         var getOptions = D.getOptions;
         var addEvent = U.addEvent,
+            defined = U.defined,
             erase = U.erase,
             merge = U.merge,
             pick = U.pick,
@@ -176,6 +177,12 @@
                 if (!bBox.width || !bBox.height) {
                     pattern._width = 'defer';
                     pattern._height = 'defer';
+                    // Mark the pattern to be flipped later if upside down (#16810)
+                    var scaleY = this.series.chart.mapView &&
+                            this.series.chart.mapView.getSVGTransform().scaleY;
+                    if (defined(scaleY) && scaleY < 0) {
+                        pattern._inverted = true;
+                    }
                     return;
                 }
                 // Handle aspect ratio filling
@@ -277,6 +284,12 @@
                     x: options._x || options.x || 0,
                     y: options._y || options.y || 0
                 };
+            if (options._inverted) {
+                attrs.patternTransform = 'scale(1, -1)'; // (#16810)
+                if (options.patternTransform) {
+                    options.patternTransform += ' scale(1, -1)';
+                }
+            }
             if (options.patternTransform) {
                 attrs.patternTransform = options.patternTransform;
             }
@@ -447,7 +460,7 @@
                 // Add it. This function does nothing if an element with this ID
                 // already exists.
                 this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
-                value = "url(" + this.url + "#" + (pattern.id + (this.forExport ? '-export' : '')) + ")";
+                value = "url(".concat(this.url, "#").concat(pattern.id + (this.forExport ? '-export' : ''), ")");
             }
             else {
                 // Not a full pattern definition, just add color

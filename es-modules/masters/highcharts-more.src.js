@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -10,9 +10,8 @@
 'use strict';
 import Highcharts from '../Core/Globals.js';
 var G = Highcharts;
+import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 import '../Extensions/Pane.js';
-import RadialAxis from '../Core/Axis/RadialAxis.js';
-RadialAxis.compose(G.Axis, G.Tick);
 import '../Series/AreaRange/AreaRangeSeries.js';
 import '../Series/AreaSplineRange/AreaSplineRangeSeries.js';
 import '../Series/BoxPlot/BoxPlotSeries.js';
@@ -25,4 +24,5 @@ import '../Series/Gauge/GaugeSeries.js';
 import '../Series/PackedBubble/PackedBubbleSeries.js';
 import '../Series/Polygon/PolygonSeries.js';
 import '../Series/Waterfall/WaterfallSeries.js';
-import '../Extensions/Polar.js';
+import PolarAdditions from '../Series/PolarComposition.js';
+PolarAdditions.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, SeriesRegistry.seriesTypes.areasplinerange, SeriesRegistry.seriesTypes.column, SeriesRegistry.seriesTypes.line, SeriesRegistry.seriesTypes.spline);

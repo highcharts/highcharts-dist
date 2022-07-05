@@ -58,7 +58,11 @@ function createAndAttachRenderer(chart, series) {
                 .addClass('highcharts-boost-canvas')
                 .add(targetGroup);
             target.boostClear = function () {
-                target.renderTarget.attr({ href: '' });
+                target.renderTarget.attr({
+                    // Insert a blank pixel (#17182)
+                    /* eslint-disable-next-line max-len*/
+                    href: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+                });
             };
             target.boostCopy = function () {
                 target.boostResizeTarget();

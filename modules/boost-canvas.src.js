@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Boost module
  *
@@ -64,6 +64,10 @@
             merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
+        // Use a blank pixel for clearing canvas (#17182)
+        var b64BlankPixel = (
+            /* eslint-disable-next-line max-len */
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
         var CHUNK_SIZE = 50000,
             destroyLoadingDiv;
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -181,7 +185,9 @@
                         target.boostClear = function () {
                             ctx.clearRect(0, 0, target.canvas.width, target.canvas.height);
                             if (target === this) {
-                                target.renderTarget.attr({ href: '' });
+                                target.renderTarget.attr({
+                                    href: b64BlankPixel
+                                });
                             }
                         };
                         target.boostClipRect = chart.renderer.clipRect();
@@ -202,7 +208,7 @@
                         width: width,
                         height: height,
                         style: 'pointer-events: none',
-                        href: ''
+                        href: b64BlankPixel
                     });
                     target.boostClipRect.attr(chart.getBoostClipRect(target));
                     return ctx;
@@ -334,7 +340,7 @@
                         }
                     };
                     if (this.renderTarget) {
-                        this.renderTarget.attr({ 'href': '' });
+                        this.renderTarget.attr({ href: b64BlankPixel });
                     }
                     // If we are zooming out from SVG mode, destroy the graphics
                     if (this.points || this.graph) {
@@ -368,7 +374,7 @@
                     if (rawData.length > 99999) {
                         chart.options.loading = merge(loadingOptions, {
                             labelStyle: {
-                                backgroundColor: color("#ffffff" /* backgroundColor */).setOpacity(0.75).get(),
+                                backgroundColor: color("#ffffff" /* Palette.backgroundColor */).setOpacity(0.75).get(),
                                 padding: '1em',
                                 borderRadius: '0.5em'
                             },
@@ -582,7 +588,7 @@
                  */
                 function clear() {
                     if (chart.renderTarget) {
-                        chart.renderTarget.attr({ href: '' });
+                        chart.renderTarget.attr({ href: b64BlankPixel });
                     }
                     if (chart.canvas) {
                         chart.canvas.getContext('2d').clearRect(0, 0, chart.canvas.width, chart.canvas.height);

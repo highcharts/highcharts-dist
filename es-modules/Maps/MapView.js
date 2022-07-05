@@ -12,21 +12,25 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 import defaultOptions from './MapViewOptionsDefault.js';
 import defaultInsetsOptions from './MapViewInsetsOptionsDefault.js';
@@ -98,9 +102,9 @@ var MapView = /** @class */ (function () {
         var recommendedProjection;
         if (!(this instanceof MapViewInset)) {
             // Handle the global map and series-level mapData
-            var geoMaps = __spreadArrays([
+            var geoMaps = __spreadArray([
                 chart.options.chart.map
-            ], (chart.options.series || []).map(function (s) { return s.mapData; })).map(function (mapData) { return _this.getGeoMap(mapData); });
+            ], (chart.options.series || []).map(function (s) { return s.mapData; }), true).map(function (mapData) { return _this.getGeoMap(mapData); });
             var allGeoBounds_1 = [];
             geoMaps.forEach(function (geoMap) {
                 if (geoMap) {
@@ -193,7 +197,7 @@ var MapView = /** @class */ (function () {
         var toObject = function (insets) {
             var ob = {};
             insets.forEach(function (inset, i) {
-                ob[inset && inset.id || "i" + i] = inset;
+                ob[inset && inset.id || "i".concat(i)] = inset;
             });
             return ob;
         };
@@ -459,7 +463,10 @@ var MapView = /** @class */ (function () {
             if (typeof this.options.maxZoom === 'number') {
                 zoom = Math.min(zoom, this.options.maxZoom);
             }
-            this.zoom = zoom;
+            // Use isNumber to prevent Infinity (#17205)
+            if (isNumber(zoom)) {
+                this.zoom = zoom;
+            }
         }
         var bounds = this.getProjectedBounds();
         if (bounds) {
@@ -576,7 +583,7 @@ var MapView = /** @class */ (function () {
             }
             if (typeof mouseDownX === 'number' &&
                 typeof mouseDownY === 'number') {
-                var key = mouseDownX + "," + mouseDownY, _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
+                var key = "".concat(mouseDownX, ",").concat(mouseDownY), _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
                 // Reset starting position
                 if (key !== mouseDownKey) {
                     mouseDownKey = key;
@@ -840,8 +847,8 @@ var MapViewInset = /** @class */ (function (_super) {
                     mapView.getMapBBox() ||
                     merge(chart.plotBox, { x: 0, y: 0 });
                 polygon = polygon.map(function (xy) { return [
-                    relativeLength(xy[0] + "%", relativeTo_1.width, relativeTo_1.x),
-                    relativeLength(xy[1] + "%", relativeTo_1.height, relativeTo_1.y)
+                    relativeLength("".concat(xy[0], "%"), relativeTo_1.width, relativeTo_1.x),
+                    relativeLength("".concat(xy[1], "%"), relativeTo_1.height, relativeTo_1.y)
                 ]; });
             }
             return {
@@ -895,8 +902,8 @@ var MapViewInset = /** @class */ (function (_super) {
                 return lineString.reduce(function (d, point, i) {
                     var x = point[0], y = point[1];
                     if (options.units === 'percent') {
-                        x = chart.plotLeft + relativeLength(x + "%", field_1.width, field_1.x);
-                        y = chart.plotTop + relativeLength(y + "%", field_1.height, field_1.y);
+                        x = chart.plotLeft + relativeLength("".concat(x, "%"), field_1.width, field_1.x);
+                        y = chart.plotTop + relativeLength("".concat(y, "%"), field_1.height, field_1.y);
                     }
                     x = Math.floor(x) + crisp_1;
                     y = Math.floor(y) + crisp_1;

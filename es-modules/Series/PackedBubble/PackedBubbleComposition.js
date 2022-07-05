@@ -164,9 +164,7 @@ H.layouts.packedbubble = extendClass(Reingold, {
 // Remove accumulated data points to redistribute all of them again
 // (i.e after hiding series by legend)
 addEvent(Chart, 'beforeRedraw', function () {
-    // eslint-disable-next-line no-invalid-this
     if (this.allDataPoints) {
-        // eslint-disable-next-line no-invalid-this
         delete this.allDataPoints;
     }
 });

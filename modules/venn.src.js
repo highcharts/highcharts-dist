@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -538,126 +538,98 @@
 
         return CircleUtilities;
     });
-    _registerModule(_modules, 'Series/DrawPointComposition.js', [], function () {
+    _registerModule(_modules, 'Series/DrawPointUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var isNumber = U.isNumber;
         /* *
          *
-         *  Composition
+         *  Functions
          *
          * */
-        var DrawPointComposition;
-        (function (DrawPointComposition) {
-            /* *
-             *
-             *  Declarations
-             *
-             * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(PointClass) {
-                if (composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
-                    var pointProto = PointClass.prototype;
-                    pointProto.draw = draw;
-                    if (!pointProto.shouldDraw) {
-                        pointProto.shouldDraw = shouldDraw;
-                    }
+        /**
+         * Handles the drawing of a component.
+         * Can be used for any type of component that reserves the graphic property,
+         * and provides a shouldDraw on its context.
+         *
+         * @private
+         *
+         * @todo add type checking.
+         * @todo export this function to enable usage
+         */
+        function draw(point, params) {
+            var animatableAttribs = params.animatableAttribs,
+                onComplete = params.onComplete,
+                css = params.css,
+                renderer = params.renderer;
+            var animation = (point.series && point.series.chart.hasRendered) ?
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (point.series &&
+                        point.series.options.animation);
+            var graphic = point.graphic;
+            params.attribs = params.attribs || {};
+            // Assigning class in dot notation does go well in IE8
+            // eslint-disable-next-line dot-notation
+            params.attribs['class'] = point.getClassName();
+            if (shouldDraw(point)) {
+                if (!graphic) {
+                    point.graphic = graphic = params.shapeType === 'text' ?
+                        renderer.text() :
+                        renderer[params.shapeType](params.shapeArgs || {});
+                    graphic.add(params.group);
                 }
-                return PointClass;
+                if (css) {
+                    graphic.css(css);
+                }
+                graphic
+                    .attr(params.attribs)
+                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
-            DrawPointComposition.compose = compose;
-            /**
-             * Handles the drawing of a component.
-             * Can be used for any type of component that reserves the graphic property,
-             * and provides a shouldDraw on its context.
-             *
-             * @private
-             *
-             * @todo add type checking.
-             * @todo export this function to enable usage
-             */
-            function draw(params) {
-                var _this = this;
-                var animatableAttribs = params.animatableAttribs,
-                    onComplete = params.onComplete,
-                    css = params.css,
-                    renderer = params.renderer;
-                var animation = (this.series && this.series.chart.hasRendered) ?
-                        // Chart-level animation on updates
-                        void 0 :
-                        // Series-level animation on new points
-                        (this.series &&
-                            this.series.options.animation);
-                var graphic = this.graphic;
-                params.attribs = params.attribs || {};
-                // Assigning class in dot notation does go well in IE8
-                // eslint-disable-next-line dot-notation
-                params.attribs['class'] = this.getClassName();
-                if (this.shouldDraw()) {
-                    if (!graphic) {
-                        this.graphic = graphic = params.shapeType === 'text' ?
-                            renderer.text() :
-                            renderer[params.shapeType](params.shapeArgs || {});
-                        graphic.add(params.group);
+            else if (graphic) {
+                var destroy_1 = function () {
+                        point.graphic = graphic = (graphic && graphic.destroy());
+                    if (typeof onComplete === 'function') {
+                        onComplete();
                     }
-                    if (css) {
-                        graphic.css(css);
-                    }
-                    graphic
-                        .attr(params.attribs)
-                        .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
+                };
+                // animate only runs complete callback if something was animated.
+                if (Object.keys(animatableAttribs).length) {
+                    graphic.animate(animatableAttribs, void 0, function () { return destroy_1(); });
                 }
-                else if (graphic) {
-                    var destroy_1 = function () {
-                            _this.graphic = graphic = (graphic && graphic.destroy());
-                        if (typeof onComplete === 'function') {
-                            onComplete();
-                        }
-                    };
-                    // animate only runs complete callback if something was animated.
-                    if (Object.keys(animatableAttribs).length) {
-                        graphic.animate(animatableAttribs, void 0, function () {
-                            destroy_1();
-                        });
-                    }
-                    else {
-                        destroy_1();
-                    }
+                else {
+                    destroy_1();
                 }
             }
-            /**
-             * @private
-             */
-            function shouldDraw() {
-                return !this.isNull;
+        }
+        /**
+         * @private
+         */
+        function shouldDraw(point) {
+            switch (point.series && point.series.type) {
+                case 'treemap':
+                    return isNumber(point.plotY) && point.y !== null;
+                default:
+                    return !point.isNull;
             }
-        })(DrawPointComposition || (DrawPointComposition = {}));
+        }
         /* *
          *
          *  Default Export
          *
          * */
+        var DrawPointUtilities = {
+                draw: draw,
+                shouldDraw: shouldDraw
+            };
 
-        return DrawPointComposition;
+        return DrawPointUtilities;
     });
-    _registerModule(_modules, 'Series/Venn/VennPoint.js', [_modules['Series/DrawPointComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DrawPointComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Venn/VennPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
@@ -690,7 +662,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
+        var ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
         var extend = U.extend,
             isNumber = U.isNumber;
         /* *
@@ -727,8 +699,7 @@
                 return !!this.shapeArgs;
             };
             return VennPoint;
-        }(ScatterSeries.prototype.pointClass));
-        DrawPointComposition.compose(VennPoint);
+        }(ScatterPoint));
         /* *
          *
          *  Default Export
@@ -1419,7 +1390,7 @@
 
         return VennUtils;
     });
-    _registerModule(_modules, 'Series/Venn/VennSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Geometry/CircleUtilities.js'], _modules['Core/Geometry/GeometryUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Venn/VennPoint.js'], _modules['Series/Venn/VennUtils.js'], _modules['Core/Utilities.js']], function (A, Color, CU, GU, SeriesRegistry, VennPoint, VennUtils, U) {
+    _registerModule(_modules, 'Series/Venn/VennSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Geometry/CircleUtilities.js'], _modules['Series/DrawPointUtilities.js'], _modules['Core/Geometry/GeometryUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Venn/VennPoint.js'], _modules['Series/Venn/VennUtils.js'], _modules['Core/Utilities.js']], function (A, Color, CU, DPU, GU, SeriesRegistry, VennPoint, VennUtils, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
@@ -1790,7 +1761,7 @@
                         extend(attribs, series.pointAttribs(point, point.state));
                     }
                     // Draw the point graphic.
-                    point.draw({
+                    DPU.draw(point, {
                         isNew: !point.graphic,
                         animatableAttribs: shapeArgs,
                         attribs: attribs,
@@ -1944,7 +1915,7 @@
              * @optionparent plotOptions.venn
              */
             VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-                borderColor: "#cccccc" /* neutralColor20 */,
+                borderColor: "#cccccc" /* Palette.neutralColor20 */,
                 borderDashStyle: 'solid',
                 borderWidth: 1,
                 brighten: 0,
@@ -1971,14 +1942,14 @@
                      */
                     hover: {
                         opacity: 1,
-                        borderColor: "#333333" /* neutralColor80 */
+                        borderColor: "#333333" /* Palette.neutralColor80 */
                     },
                     /**
                      * @excluding halo
                      */
                     select: {
-                        color: "#cccccc" /* neutralColor20 */,
-                        borderColor: "#000000" /* neutralColor100 */,
+                        color: "#cccccc" /* Palette.neutralColor20 */,
+                        borderColor: "#000000" /* Palette.neutralColor100 */,
                         animation: false
                     },
                     inactive: {

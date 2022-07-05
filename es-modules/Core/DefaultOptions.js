@@ -882,7 +882,7 @@ var defaultOptions = {
             /**
              * @ignore-option
              */
-            color: "#333333" /* neutralColor80 */
+            color: "#333333" /* Palette.neutralColor80 */
         }
     },
     /**
@@ -1162,7 +1162,7 @@ var defaultOptions = {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        borderColor: "#999999" /* neutralColor40 */,
+        borderColor: "#999999" /* Palette.neutralColor40 */,
         /**
          * The border corner radius of the legend.
          *
@@ -1256,7 +1256,7 @@ var defaultOptions = {
              * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since 2.2.4
              */
-            activeColor: "#003399" /* highlightColor100 */,
+            activeColor: "#003399" /* Palette.highlightColor100 */,
             /**
              * The color of the inactive up or down arrow in the legend page
              * navigation. .
@@ -1272,7 +1272,7 @@ var defaultOptions = {
              * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since 2.2.4
              */
-            inactiveColor: "#cccccc" /* neutralColor20 */
+            inactiveColor: "#cccccc" /* Palette.neutralColor20 */
         },
         /**
          * The inner padding of the legend box.
@@ -1348,7 +1348,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            color: "#333333" /* neutralColor80 */,
+            color: "#333333" /* Palette.neutralColor80 */,
             /**
              * @ignore
              */
@@ -1386,7 +1386,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            color: "#000000" /* neutralColor100 */
+            color: "#000000" /* Palette.neutralColor100 */
         },
         /**
          * CSS styles for each legend item when the corresponding series or
@@ -1407,7 +1407,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            color: "#cccccc" /* neutralColor20 */
+            color: "#cccccc" /* Palette.neutralColor20 */
         },
         /**
          * Whether to apply a drop shadow to the legend. A `backgroundColor`
@@ -1711,7 +1711,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            backgroundColor: "#ffffff" /* backgroundColor */,
+            backgroundColor: "#ffffff" /* Palette.backgroundColor */,
             /**
              * @ignore
              */
@@ -2306,7 +2306,7 @@ var defaultOptions = {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        backgroundColor: color("#f7f7f7" /* neutralColor3 */)
+        backgroundColor: color("#f7f7f7" /* Palette.neutralColor3 */)
             // @todo: Disallow undefined as input for colors
             .setOpacity(0.85).get(),
         /**
@@ -2369,7 +2369,7 @@ var defaultOptions = {
          */
         style: {
             /** @internal */
-            color: "#333333" /* neutralColor80 */,
+            color: "#333333" /* Palette.neutralColor80 */,
             /** @internal */
             cursor: 'default',
             /** @internal */
@@ -2484,7 +2484,7 @@ var defaultOptions = {
             /** @internal */
             cursor: 'pointer',
             /** @internal */
-            color: "#999999" /* neutralColor40 */,
+            color: "#999999" /* Palette.neutralColor40 */,
             /** @internal */
             fontSize: '9px'
         },

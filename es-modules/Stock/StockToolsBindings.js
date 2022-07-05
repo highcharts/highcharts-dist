@@ -1003,7 +1003,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.elliott3.annotationsOptions);
@@ -1052,7 +1052,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.elliott5.annotationsOptions);
@@ -1096,23 +1096,23 @@ var stockToolsBindings = {
                     point: { x: x, y: y },
                     crosshairX: {
                         strokeWidth: 1,
-                        stroke: "#000000" /* neutralColor100 */
+                        stroke: "#000000" /* Palette.neutralColor100 */
                     },
                     crosshairY: {
                         enabled: false,
                         strokeWidth: 0,
-                        stroke: "#000000" /* neutralColor100 */
+                        stroke: "#000000" /* Palette.neutralColor100 */
                     },
                     background: {
                         width: 0,
                         height: 0,
                         strokeWidth: 0,
-                        stroke: "#ffffff" /* backgroundColor */
+                        stroke: "#ffffff" /* Palette.backgroundColor */
                     }
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.measureX.annotationsOptions);
@@ -1153,22 +1153,22 @@ var stockToolsBindings = {
                     crosshairX: {
                         enabled: false,
                         strokeWidth: 0,
-                        stroke: "#000000" /* neutralColor100 */
+                        stroke: "#000000" /* Palette.neutralColor100 */
                     },
                     crosshairY: {
                         strokeWidth: 1,
-                        stroke: "#000000" /* neutralColor100 */
+                        stroke: "#000000" /* Palette.neutralColor100 */
                     },
                     background: {
                         width: 0,
                         height: 0,
                         strokeWidth: 0,
-                        stroke: "#ffffff" /* backgroundColor */
+                        stroke: "#ffffff" /* Palette.backgroundColor */
                     }
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.measureY.annotationsOptions);
@@ -1213,16 +1213,16 @@ var stockToolsBindings = {
                     },
                     crosshairX: {
                         strokeWidth: 1,
-                        stroke: "#000000" /* neutralColor100 */
+                        stroke: "#000000" /* Palette.neutralColor100 */
                     },
                     crosshairY: {
                         strokeWidth: 1,
-                        stroke: "#000000" /* neutralColor100 */
+                        stroke: "#000000" /* Palette.neutralColor100 */
                     }
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.measureXY.annotationsOptions);
@@ -1269,7 +1269,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.fibonacci.annotationsOptions);
@@ -1351,10 +1351,11 @@ var stockToolsBindings = {
                             y: coordsY.value,
                             controlPoint: {
                                 style: {
-                                    fill: "#f21313" /* negativeColor */
+                                    fill: "#f21313" /* Palette.negativeColor */
                                 }
                             }
-                        }, { x: x, y: y },
+                        },
+                        { x: x, y: y },
                         { x: x, y: y }],
                     innerBackground: {
                         fill: 'rgba(100, 170, 255, 0.8)'
@@ -1411,7 +1412,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */,
+                        color: "#666666" /* Palette.neutralColor60 */,
                         fontSize: '11px'
                     }
                 },
@@ -1495,7 +1496,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: "#666666" /* neutralColor60 */,
+                        color: "#666666" /* Palette.neutralColor60 */,
                         fontSize: '11px'
                     }
                 },
@@ -1547,7 +1548,7 @@ var stockToolsBindings = {
                     connector: {
                         fill: 'none',
                         stroke: closestPoint.below ?
-                            "#f21313" /* negativeColor */ : "#06b535" /* positiveColor */
+                            "#f21313" /* Palette.negativeColor */ : "#06b535" /* Palette.positiveColor */
                     }
                 },
                 shapeOptions: {

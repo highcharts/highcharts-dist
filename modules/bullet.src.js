@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Bullet graph series type for Highcharts
  *
@@ -287,10 +287,7 @@
             BulletSeries.prototype.getExtremes = function (yData) {
                 var dataExtremes = _super.prototype.getExtremes.call(this,
                     yData),
-                    series = this,
-                    targetData = series.targetData;
-                var yMax,
-                    yMin;
+                    targetData = this.targetData;
                 if (targetData && targetData.length) {
                     var targetExtremes = _super.prototype.getExtremes.call(this,
                         targetData);

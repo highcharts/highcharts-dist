@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.1.0 (2022-04-29)
+ * @license Highcharts Gantt JS v10.2.0 (2022-07-05)
  *
  * CurrentDateIndicator
  *
@@ -71,7 +71,7 @@
          * @apioption xAxis.currentDateIndicator
          */
         var defaultOptions = {
-                color: "#ccd6eb" /* highlightColor20 */,
+                color: "#ccd6eb" /* Palette.highlightColor20 */,
                 width: 2,
                 /**
                  * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions

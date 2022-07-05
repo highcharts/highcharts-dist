@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -25,11 +27,14 @@ import ColumnRangePoint from './ColumnRangePoint.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, ColumnSeries = _a.column;
-var columnProto = ColumnSeries.prototype;
-var arearangeProto = AreaRangeSeries.prototype;
+var _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, ColumnSeries = _a.column, columnProto = _a.column.prototype;
 import U from '../../Core/Utilities.js';
-var clamp = U.clamp, merge = U.merge, pick = U.pick, extend = U.extend;
+var clamp = U.clamp, extend = U.extend, merge = U.merge, pick = U.pick;
+/* *
+ *
+ *  Constants
+ *
+ * */
 /**
  * The column range is a cartesian series type with higher and lower
  * Y values along an X axis. To display horizontal bars, set
@@ -85,21 +90,7 @@ var columnRangeOptions = {
 var ColumnRangeSeries = /** @class */ (function (_super) {
     __extends(ColumnRangeSeries, _super);
     function ColumnRangeSeries() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        return _this;
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
@@ -109,7 +100,7 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
     ColumnRangeSeries.prototype.setOptions = function () {
         // #14359 Prevent side-effect from stacking.
         merge(true, arguments[0], { stacking: void 0 });
-        return arearangeProto.setOptions.apply(this, arguments);
+        return AreaRangeSeries.prototype.setOptions.apply(this, arguments);
     };
     // eslint-disable-next-line valid-jsdoc
     /**
@@ -117,7 +108,9 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
      * @private
      */
     ColumnRangeSeries.prototype.translate = function () {
-        var series = this, yAxis = series.yAxis, xAxis = series.xAxis, startAngleRad = xAxis.startAngleRad, start, chart = series.chart, isRadial = series.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999, plotHigh;
+        var _this = this;
+        var yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
+        var height, heightDifference, start, plotHigh, y;
         // eslint-disable-next-line valid-jsdoc
         /**
          * Don't draw too far outside plot area (#6835)
@@ -126,10 +119,10 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
         function safeBounds(pixelPos) {
             return clamp(pixelPos, -safeDistance, safeDistance);
         }
-        columnProto.translate.apply(series);
+        columnProto.translate.apply(this);
         // Set plotLow and plotHigh
-        series.points.forEach(function (point) {
-            var shapeArgs = point.shapeArgs || {}, minPointLength = series.options.minPointLength, heightDifference, height, y;
+        this.points.forEach(function (point) {
+            var shapeArgs = point.shapeArgs || {}, minPointLength = _this.options.minPointLength;
             point.plotHigh = plotHigh = safeBounds(yAxis.translate(point.high, 0, 1, 0, 1));
             point.plotLow = safeBounds(point.plotY);
             // adjust shape
@@ -146,10 +139,10 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
                 height *= -1;
                 y -= height;
             }
-            if (isRadial) {
+            if (isRadial && _this.polar) {
                 start = point.barX + startAngleRad;
                 point.shapeType = 'arc';
-                point.shapeArgs = series.polarArc(y + height, y, start, start + point.pointWidth);
+                point.shapeArgs = _this.polar.arc(y + height, y, start, start + point.pointWidth);
             }
             else {
                 shapeArgs.height = height;
@@ -157,14 +150,11 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
                 var _a = shapeArgs.x, x = _a === void 0 ? 0 : _a, _b = shapeArgs.width, width = _b === void 0 ? 0 : _b;
                 point.tooltipPos = chart.inverted ?
                     [
-                        yAxis.len + yAxis.pos - chart.plotLeft - y -
-                            height / 2,
-                        xAxis.len + xAxis.pos - chart.plotTop -
-                            x - width / 2,
+                        yAxis.len + yAxis.pos - chart.plotLeft - y - height / 2,
+                        xAxis.len + xAxis.pos - chart.plotTop - x - width / 2,
                         height
                     ] : [
-                    xAxis.left - chart.plotLeft + x +
-                        width / 2,
+                    xAxis.left - chart.plotLeft + x + width / 2,
                     yAxis.pos - chart.plotTop + y + height / 2,
                     height
                 ]; // don't inherit from column tooltip position - #3372
@@ -172,56 +162,69 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
         });
     };
     // Overrides from modules that may be loaded after this module
-    ColumnRangeSeries.prototype.crispCol = function () {
-        return columnProto.crispCol.apply(this, arguments);
-    };
-    ColumnRangeSeries.prototype.drawPoints = function () {
-        return columnProto.drawPoints.apply(this, arguments);
-    };
-    ColumnRangeSeries.prototype.drawTracker = function () {
-        return columnProto.drawTracker.apply(this, arguments);
-    };
-    ColumnRangeSeries.prototype.getColumnMetrics = function () {
-        return columnProto.getColumnMetrics.apply(this, arguments);
-    };
+    // @todo move to compositions
+    // public crispCol(): BBoxObject {
+    //     return columnProto.crispCol.apply(this, arguments as any);
+    // }
+    // public drawPoints(): void {
+    //     return columnProto.drawPoints.apply(this, arguments as any);
+    // }
+    // public drawTracker(): void {
+    //     return columnProto.drawTracker.apply(this, arguments as any);
+    // }
+    // public getColumnMetrics(): ColumnMetricsObject {
+    //     return columnProto.getColumnMetrics.apply(this, arguments as any);
+    // }
     ColumnRangeSeries.prototype.pointAttribs = function () {
         return columnProto.pointAttribs.apply(this, arguments);
     };
-    ColumnRangeSeries.prototype.adjustForMissingColumns = function () {
-        return columnProto.adjustForMissingColumns.apply(this, arguments);
-    };
-    ColumnRangeSeries.prototype.animate = function () {
-        return columnProto.animate.apply(this, arguments);
-    };
+    // public adjustForMissingColumns(): number {
+    //     return columnProto.adjustForMissingColumns.apply(this, arguments);
+    // }
+    // public animate(): void {
+    //     return columnProto.animate.apply(this, arguments as any);
+    // }
     ColumnRangeSeries.prototype.translate3dPoints = function () {
         return columnProto.translate3dPoints.apply(this, arguments);
     };
     ColumnRangeSeries.prototype.translate3dShapes = function () {
         return columnProto.translate3dShapes.apply(this, arguments);
     };
+    /* *
+     *
+     *  Static Properties
+     *
+     * */
     ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, columnRangeOptions);
     return ColumnRangeSeries;
 }(AreaRangeSeries));
 extend(ColumnRangeSeries.prototype, {
     directTouch: true,
+    pointClass: ColumnRangePoint,
     trackerGroups: ['group', 'dataLabelsGroup'],
+    adjustForMissingColumns: columnProto.adjustForMissingColumns,
+    animate: columnProto.animate,
+    crispCol: columnProto.crispCol,
     drawGraph: noop,
+    drawPoints: columnProto.drawPoints,
     getSymbol: noop,
-    polarArc: function () {
-        return columnProto.polarArc.apply(this, arguments);
-    },
-    pointClass: ColumnRangePoint
+    drawTracker: columnProto.drawTracker,
+    getColumnMetrics: columnProto.getColumnMetrics
+    // pointAttribs: columnProto.pointAttribs,
+    // polarArc: columnProto.polarArc
+    // translate3dPoints: columnProto.translate3dPoints,
+    // translate3dShapes: columnProto.translate3dShapes
 });
 SeriesRegistry.registerSeriesType('columnrange', ColumnRangeSeries);
 /* *
  *
- *  Default export
+ *  Default Export
  *
  * */
 export default ColumnRangeSeries;
 /* *
  *
- *  API options
+ *  API Options
  *
  * */
 /**

@@ -21,7 +21,7 @@ import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, erase = U.erase, merge = U.merge, pick = U.pick, removeEvent = U.removeEvent, wrap = U.wrap;
+var addEvent = U.addEvent, defined = U.defined, erase = U.erase, merge = U.merge, pick = U.pick, removeEvent = U.removeEvent, wrap = U.wrap;
 // Add the predefined patterns
 var patterns = H.patterns = (function () {
     var patterns = [], colors = getOptions().colors;
@@ -133,6 +133,12 @@ Point.prototype.calculatePatternDimensions = function (pattern) {
         if (!bBox.width || !bBox.height) {
             pattern._width = 'defer';
             pattern._height = 'defer';
+            // Mark the pattern to be flipped later if upside down (#16810)
+            var scaleY = this.series.chart.mapView &&
+                this.series.chart.mapView.getSVGTransform().scaleY;
+            if (defined(scaleY) && scaleY < 0) {
+                pattern._inverted = true;
+            }
             return;
         }
         // Handle aspect ratio filling
@@ -221,6 +227,12 @@ SVGRenderer.prototype.addPattern = function (options, animation) {
         x: options._x || options.x || 0,
         y: options._y || options.y || 0
     };
+    if (options._inverted) {
+        attrs.patternTransform = 'scale(1, -1)'; // (#16810)
+        if (options.patternTransform) {
+            options.patternTransform += ' scale(1, -1)';
+        }
+    }
     if (options.patternTransform) {
         attrs.patternTransform = options.patternTransform;
     }
@@ -386,7 +398,7 @@ addEvent(SVGRenderer, 'complexColor', function (args) {
         // Add it. This function does nothing if an element with this ID
         // already exists.
         this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
-        value = "url(" + this.url + "#" + (pattern.id + (this.forExport ? '-export' : '')) + ")";
+        value = "url(".concat(this.url, "#").concat(pattern.id + (this.forExport ? '-export' : ''), ")");
     }
     else {
         // Not a full pattern definition, just add color

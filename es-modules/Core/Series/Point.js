@@ -115,6 +115,15 @@ var Point = /** @class */ (function () {
          */
         this.series = void 0;
         /**
+         * The attributes of the rendered SVG shape like in `column` or `pie`
+         * series.
+         *
+         * @readonly
+         * @name Highcharts.Point#shapeArgs
+         * @type {Readonly<Highcharts.SVGAttributes>|undefined}
+         */
+        this.shapeArgs = void 0;
+        /**
          * The total of values in either a stack for stacked series, or a pie in a
          * pie series.
          *

@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -443,7 +445,7 @@ var FlagsSeries = /** @class */ (function (_super) {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @product highstock
          */
-        fillColor: "#ffffff" /* backgroundColor */,
+        fillColor: "#ffffff" /* Palette.backgroundColor */,
         /**
          * The color of the line/border of the flag.
          *
@@ -473,14 +475,14 @@ var FlagsSeries = /** @class */ (function (_super) {
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highstock
                  */
-                lineColor: "#000000" /* neutralColor100 */,
+                lineColor: "#000000" /* Palette.neutralColor100 */,
                 /**
                  * The fill or background color of the flag.
                  *
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highstock
                  */
-                fillColor: "#ccd6eb" /* highlightColor20 */
+                fillColor: "#ccd6eb" /* Palette.highlightColor20 */
             }
         },
         /**

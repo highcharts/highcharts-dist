@@ -224,12 +224,13 @@ function init() {
     });
     /* eslint-disable no-invalid-this */
     if (seriesTypes.bubble) {
+        var bubbleProto = seriesTypes.bubble.prototype;
         // By default, the bubble series does not use the KD-tree, so force it
         // to.
-        delete seriesTypes.bubble.prototype.buildKDTree;
+        delete bubbleProto.buildKDTree;
         // seriesTypes.bubble.prototype.directTouch = false;
         // Needed for markers to work correctly
-        wrap(seriesTypes.bubble.prototype, 'markerAttribs', function (proceed) {
+        wrap(bubbleProto, 'markerAttribs', function (proceed) {
             if (this.isSeriesBoosting) {
                 return false;
             }

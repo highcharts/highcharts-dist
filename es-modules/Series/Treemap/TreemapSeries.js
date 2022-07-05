@@ -14,10 +14,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -25,7 +27,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
-import ColorMapMixin from '../ColorMapMixin.js';
+import ColorMapComposition from '../ColorMapComposition.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
@@ -548,8 +550,6 @@ var TreemapSeries = /** @class */ (function (_super) {
     TreemapSeries.prototype.init = function (chart, options) {
         var series = this, breadcrumbsOptions = merge(options.drillUpButton, options.breadcrumbs);
         var setOptionsEvent;
-        // If color series logic is loaded, add some properties
-        this.colorAttribs = ColorMapMixin.SeriesMixin.colorAttribs;
         setOptionsEvent = addEvent(series, 'setOptions', function (event) {
             var options = event.userOptions;
             if (defined(options.allowDrillToNode) &&
@@ -622,7 +622,7 @@ var TreemapSeries = /** @class */ (function (_super) {
     TreemapSeries.prototype.pointAttribs = function (point, state) {
         var series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
-            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, attr, stateOptions = (state && options.states[state]) || {}, className = (point && point.getClassName()) || '', opacity;
+            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, attr, stateOptions = state && options.states && options.states[state] || {}, className = (point && point.getClassName()) || '', opacity;
         // Set attributes by precedence. Point trumps level trumps series.
         // Stroke width uses pick because it can be 0.
         attr = {
@@ -1310,7 +1310,7 @@ var TreemapSeries = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString}
          */
-        borderColor: "#e6e6e6" /* neutralColor10 */,
+        borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
         /**
          * The width of the border surrounding each tree map item.
          */
@@ -1339,7 +1339,7 @@ var TreemapSeries = /** @class */ (function (_super) {
                 /**
                  * The border color for the hovered state.
                  */
-                borderColor: "#999999" /* neutralColor40 */,
+                borderColor: "#999999" /* Palette.neutralColor40 */,
                 /**
                  * Brightness for the hovered point. Defaults to 0 if the
                  * heatmap series is loaded first, otherwise 0.1.
@@ -1370,6 +1370,7 @@ var TreemapSeries = /** @class */ (function (_super) {
 }(ScatterSeries));
 extend(TreemapSeries.prototype, {
     buildKDTree: noop,
+    colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
     colorKey: 'colorValue',
     directTouch: true,
     drawLegendSymbol: LegendSymbol.drawRectangle,
@@ -1384,6 +1385,7 @@ extend(TreemapSeries.prototype, {
         recursive: TreemapUtilities.recursive
     }
 });
+ColorMapComposition.compose(TreemapSeries);
 SeriesRegistry.registerSeriesType('treemap', TreemapSeries);
 /* *
  *

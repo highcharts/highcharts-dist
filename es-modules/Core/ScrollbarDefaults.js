@@ -120,7 +120,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    barBackgroundColor: "#cccccc" /* neutralColor20 */,
+    barBackgroundColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The width of the bar's border.
      *
@@ -133,7 +133,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    barBorderColor: "#cccccc" /* neutralColor20 */,
+    barBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The color of the small arrow inside the scrollbar buttons.
      *
@@ -142,7 +142,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    buttonArrowColor: "#333333" /* neutralColor80 */,
+    buttonArrowColor: "#333333" /* Palette.neutralColor80 */,
     /**
      * The color of scrollbar buttons.
      *
@@ -151,7 +151,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    buttonBackgroundColor: "#e6e6e6" /* neutralColor10 */,
+    buttonBackgroundColor: "#e6e6e6" /* Palette.neutralColor10 */,
     /**
      * The color of the border of the scrollbar buttons.
      *
@@ -160,7 +160,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    buttonBorderColor: "#cccccc" /* neutralColor20 */,
+    buttonBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The border width of the scrollbar buttons.
      *
@@ -173,7 +173,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    rifleColor: "#333333" /* neutralColor80 */,
+    rifleColor: "#333333" /* Palette.neutralColor80 */,
     /**
      * The color of the track background.
      *
@@ -182,7 +182,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    trackBackgroundColor: "#f2f2f2" /* neutralColor5 */,
+    trackBackgroundColor: "#f2f2f2" /* Palette.neutralColor5 */,
     /**
      * The color of the border of the scrollbar track.
      *
@@ -191,7 +191,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    trackBorderColor: "#f2f2f2" /* neutralColor5 */,
+    trackBorderColor: "#f2f2f2" /* Palette.neutralColor5 */,
     /**
      * The corner radius of the border of the scrollbar track.
      *

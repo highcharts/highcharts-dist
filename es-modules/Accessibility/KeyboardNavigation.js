@@ -131,7 +131,7 @@ var KeyboardNavigation = /** @class */ (function () {
      * @private
      */
     KeyboardNavigation.prototype.updateExitAnchor = function () {
-        var endMarkerId = "highcharts-end-of-chart-marker-" + this.chart.index, endMarker = getElement(endMarkerId);
+        var endMarkerId = "highcharts-end-of-chart-marker-".concat(this.chart.index), endMarker = getElement(endMarkerId);
         this.removeExitAnchor();
         if (endMarker) {
             this.makeElementAnExitAnchor(endMarker);
@@ -174,7 +174,7 @@ var KeyboardNavigation = /** @class */ (function () {
         // Set focus to chart or exit anchor depending on direction
         this.exiting = true;
         if (direction > 0) {
-            this.exitAnchor.focus();
+            this.exitAnchor && this.exitAnchor.focus();
         }
         else {
             this.tabindexContainer.focus();

@@ -12,7 +12,7 @@ import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
 var doc = H.doc;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+var addEvent = U.addEvent, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
 import './MapNavigationOptionsDefault.js';
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
@@ -69,7 +69,7 @@ MapNavigation.prototype.init = function (chart) {
  * @return {void}
  */
 MapNavigation.prototype.update = function (options) {
-    var mapNav = this, chart = this.chart, o = chart.options.mapNavigation, attr, states, hoverStates, selectStates, outerHandler = function (e) {
+    var mapNav = this, chart = this.chart, o = chart.options.mapNavigation, attr, outerHandler = function (e) {
         this.handler.call(chart, e);
         stopEvent(e); // Stop default click event (#4444)
     }, navButtons = mapNav.navButtons;

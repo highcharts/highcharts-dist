@@ -12,22 +12,6 @@ import * as _Highcharts from "../highcharts";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts" {
-    /**
-     * Extend generatePoints by adding the nodes, which are Point objects but
-     * pushed to the this.nodes array.
-     */
-    function generatePoints(): void;
-    /**
-     * When hovering node, highlight all connected links. When hovering a link,
-     * highlight all connected nodes.
-     */
-    function setNodeState(): void;
-    /**
-     * When updating a node, don't update `series.options.data`, but
-     * `series.options.nodes`
-     */
-    function updateNode(): void;
-}
+declare module "../highcharts" {}
 export default factory;
 export let Highcharts: typeof _Highcharts;

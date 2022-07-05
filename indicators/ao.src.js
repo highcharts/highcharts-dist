@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.1.0 (2022-04-29)
+ * @license Highstock JS v10.2.0 (2022-07-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -219,7 +219,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 7.0.0
                  */
-                greaterBarColor: "#06b535" /* positiveColor */,
+                greaterBarColor: "#06b535" /* Palette.positiveColor */,
                 /**
                  * Color of the Awesome oscillator series bar that is lower than the
                  * previous one. Note that if a `color` is defined, the `color`
@@ -231,7 +231,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 7.0.0
                  */
-                lowerBarColor: "#f21313" /* negativeColor */,
+                lowerBarColor: "#f21313" /* Palette.negativeColor */,
                 threshold: 0,
                 groupPadding: 0.2,
                 pointPadding: 0.2,

@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -23,7 +25,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import A from '../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
-import ColorMapMixin from '../ColorMapMixin.js';
+import ColorMapComposition from '../ColorMapComposition.js';
 import CU from '../CenteredUtilities.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
@@ -203,8 +205,7 @@ var MapSeries = /** @class */ (function (_super) {
      */
     MapSeries.prototype.drawPoints = function () {
         var _this = this;
-        var _a = this, chart = _a.chart, group = _a.group, _b = _a.transformGroups, transformGroups = _b === void 0 ? [] : _b;
-        var mapView = chart.mapView, renderer = chart.renderer;
+        var series = this, _a = this, chart = _a.chart, group = _a.group, _b = _a.transformGroups, transformGroups = _b === void 0 ? [] : _b, mapView = chart.mapView, renderer = chart.renderer;
         if (!mapView) {
             return;
         }
@@ -242,7 +243,9 @@ var MapSeries = /** @class */ (function (_super) {
             ColumnSeries.prototype.drawPoints.apply(this);
             // Add class names
             this.points.forEach(function (point) {
-                if (point.graphic) {
+                var graphic = point.graphic;
+                if (graphic) {
+                    var animate_1 = graphic.animate;
                     var className = '';
                     if (point.name) {
                         className +=
@@ -255,19 +258,51 @@ var MapSeries = /** @class */ (function (_super) {
                                 point.properties['hc-key'].toString().toLowerCase();
                     }
                     if (className) {
-                        point.graphic.addClass(className);
+                        graphic.addClass(className);
                     }
                     // In styled mode, apply point colors by CSS
                     if (chart.styledMode) {
-                        point.graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
+                        graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
                     }
+                    graphic.animate = function (params, options, complete) {
+                        var switchBack = false;
+                        // When strokeWidth is animating
+                        if (params['stroke-width']) {
+                            var strokeWidth = pick(series.getStrokeWidth(series.options), 1 // Styled mode
+                            ), inheritedStrokeWidth = (strokeWidth /
+                                (chart.mapView &&
+                                    chart.mapView.getScale() ||
+                                    1));
+                            // For animating from inherit,
+                            // .attr() reads the property as the starting point
+                            if (graphic['stroke-width'] === 'inherit') {
+                                graphic['stroke-width'] = inheritedStrokeWidth;
+                            }
+                            // For animating to inherit
+                            if (params['stroke-width'] === 'inherit') {
+                                params['stroke-width'] = inheritedStrokeWidth;
+                                switchBack = true;
+                            }
+                        }
+                        var ret = animate_1.call(graphic, params, options, switchBack ? function () {
+                            // Switch back to "inherit" for zooming
+                            // to work with the existing logic + complete
+                            graphic.attr({
+                                'stroke-width': 'inherit'
+                            });
+                            // Proceed
+                            if (complete) {
+                                complete.apply(this, arguments);
+                            }
+                        } : complete);
+                        return ret;
+                    };
                 }
             });
         }
         // Apply the SVG transform
         transformGroups.forEach(function (transformGroup, i) {
-            var view = i === 0 ? mapView : mapView.insets[i - 1], svgTransform = view.getSVGTransform(), strokeWidth = pick(_this.options[(_this.pointAttrToOptions &&
-                _this.pointAttrToOptions['stroke-width']) || 'borderWidth'], 1 // Styled mode
+            var view = i === 0 ? mapView : mapView.insets[i - 1], svgTransform = view.getSVGTransform(), strokeWidth = pick(_this.getStrokeWidth(_this.options), 1 // Styled mode
             );
             /*
             Animate or move to the new zoom level. In order to prevent
@@ -372,6 +407,18 @@ var MapSeries = /** @class */ (function (_super) {
         return this.bounds;
     };
     /**
+     * Return the stroke-width either from a series options or point options
+     * object. This function is used by both the map series where the
+     * `borderWidth` sets the stroke-width, and the mapline series where the
+     * `lineWidth` sets the stroke-width.
+     * @private
+     */
+    MapSeries.prototype.getStrokeWidth = function (options) {
+        var pointAttrToOptions = this.pointAttrToOptions;
+        return options[pointAttrToOptions &&
+            pointAttrToOptions['stroke-width'] || 'borderWidth'];
+    };
+    /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
      * @private
@@ -391,15 +438,24 @@ var MapSeries = /** @class */ (function (_super) {
             this.colorAttribs(point) :
             ColumnSeries.prototype.pointAttribs.call(this, point, state);
         // Individual stroke width
-        var pointStrokeWidth = point.options[(this.pointAttrToOptions &&
-            this.pointAttrToOptions['stroke-width']) || 'borderWidth'];
+        var pointStrokeWidth = this.getStrokeWidth(point.options);
+        // Handle state specific border or line width
+        if (state) {
+            var stateOptions = merge(this.options.states[state], point.options.states &&
+                point.options.states[state] ||
+                {});
+            pointStrokeWidth = this.getStrokeWidth(stateOptions);
+        }
         if (pointStrokeWidth && mapView) {
             pointStrokeWidth /= mapView.getScale();
         }
         // In order for dash style to avoid being scaled, set the transformed
         // stroke width on the item
-        if (attr.dashstyle && mapView && this.options.borderWidth) {
-            pointStrokeWidth = this.options.borderWidth / mapView.getScale();
+        var seriesStrokeWidth = this.getStrokeWidth(this.options);
+        if (attr.dashstyle &&
+            mapView &&
+            isNumber(seriesStrokeWidth)) {
+            pointStrokeWidth = seriesStrokeWidth / mapView.getScale();
         }
         attr['stroke-width'] = pick(pointStrokeWidth, 
         // By default set the stroke-width on the group element and let all
@@ -422,10 +478,15 @@ var MapSeries = /** @class */ (function (_super) {
      * Extend setData to call processData and generatePoints immediately.
      * @private
      */
-    MapSeries.prototype.setData = function () {
-        _super.prototype.setData.apply(this, arguments);
+    MapSeries.prototype.setData = function (data, redraw, animation, updatePoints) {
+        if (redraw === void 0) { redraw = true; }
+        delete this.bounds;
+        _super.prototype.setData.call(this, data, false, void 0, updatePoints);
         this.processData();
         this.generatePoints();
+        if (redraw) {
+            this.chart.redraw(animation);
+        }
     };
     /**
      * Extend processData to join in mapData. If the allAreas option is true,
@@ -591,7 +652,17 @@ var MapSeries = /** @class */ (function (_super) {
             this.processData();
             this.generatePoints();
             delete this.bounds;
-            this.getProjectedBounds();
+            if (mapView &&
+                !mapView.userOptions.center &&
+                !isNumber(mapView.userOptions.zoom)) {
+                // Not only recalculate bounds but also fit view
+                mapView.fitToBounds(void 0, void 0, false); // #17012
+            }
+            else {
+                // If center and zoom is defined in user options, get bounds but
+                // don't change view
+                this.getProjectedBounds();
+            }
         }
         if (mapView) {
             var mainSvgTransform_1 = mapView.getSVGTransform();
@@ -674,7 +745,7 @@ var MapSeries = /** @class */ (function (_super) {
          *
          * @private
          */
-        nullColor: "#f7f7f7" /* neutralColor3 */,
+        nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
         /**
          * Whether to allow pointer interaction like tooltips and mouse events
          * on null points.
@@ -728,7 +799,7 @@ var MapSeries = /** @class */ (function (_super) {
          *
          * @private
          */
-        borderColor: "#cccccc" /* neutralColor20 */,
+        borderColor: "#cccccc" /* Palette.neutralColor20 */,
         /**
          * The border width of each map area.
          *
@@ -863,7 +934,7 @@ var MapSeries = /** @class */ (function (_super) {
                  * @product   highmaps
                  * @apioption plotOptions.series.states.select.color
                  */
-                color: "#cccccc" /* neutralColor20 */
+                color: "#cccccc" /* Palette.neutralColor20 */
             },
             inactive: {
                 opacity: 1
@@ -874,9 +945,9 @@ var MapSeries = /** @class */ (function (_super) {
 }(ScatterSeries));
 extend(MapSeries.prototype, {
     type: 'map',
-    axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
-    colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
-    colorKey: ColorMapMixin.SeriesMixin.colorKey,
+    axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+    colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
+    colorKey: ColorMapComposition.seriesMembers.colorKey,
     // When tooltip is not shared, this series (and derivatives) requires
     // direct touch/hover. KD-tree does not apply.
     directTouch: true,
@@ -889,18 +960,19 @@ extend(MapSeries.prototype, {
     forceDL: true,
     getCenter: CU.getCenter,
     getExtremesFromAll: true,
-    getSymbol: ColorMapMixin.SeriesMixin.getSymbol,
+    getSymbol: noop,
     isCartesian: false,
-    parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
-    pointArrayMap: ColorMapMixin.SeriesMixin.pointArrayMap,
+    parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+    pointArrayMap: ColorMapComposition.seriesMembers.pointArrayMap,
     pointClass: MapPoint,
     // X axis and Y axis must have same translation slope
     preserveAspectRatio: true,
     searchPoint: noop,
-    trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups,
+    trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
     // Get axis extremes from paths, not values
     useMapGeometry: true
 });
+ColorMapComposition.compose(MapSeries);
 SeriesRegistry.registerSeriesType('map', MapSeries);
 /* *
  *

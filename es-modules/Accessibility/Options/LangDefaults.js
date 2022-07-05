@@ -10,6 +10,11 @@
  *
  * */
 'use strict';
+/* *
+ *
+ *  API Options
+ *
+ * */
 var langOptions = {
     /**
      * Configure the accessibility strings in the chart. Requires the
@@ -341,4 +346,9 @@ var langOptions = {
         }
     }
 };
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default langOptions;

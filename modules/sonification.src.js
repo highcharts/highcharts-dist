@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Sonification module
  *
@@ -1295,7 +1295,7 @@
                     var instrOnEnd,
                         instrumentCopy,
                         copyId = '';
-                    if (instrument && instrument.play) {
+                    if (instrument && (instrument.play)) {
                         if (opts.playOptions) {
                             instrumentOpts.pan = pick(masterPan, instrumentOpts.pan);
                             // Handle onEnd
@@ -3863,11 +3863,7 @@
             return __assign.apply(this, arguments);
         };
         var G = Highcharts;
-        G.sonification = __assign(__assign({}, Sonification), { instruments: Instrument.definitions, Earcon: Earcon,
-            Instrument: Instrument,
-            Timeline: Timeline,
-            TimelineEvent: TimelineEvent,
-            TimelinePath: TimelinePath });
+        G.sonification = __assign(__assign({}, Sonification), { instruments: Instrument.definitions, Earcon: Earcon, Instrument: Instrument, Timeline: Timeline, TimelineEvent: TimelineEvent, TimelinePath: TimelinePath });
         G.Earcon = Earcon;
         G.Instrument = Instrument;
         ChartSonify.compose(G.Chart);

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.1.0 (2022-04-29)
+ * @license Highstock JS v10.2.0 (2022-07-05)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -1004,7 +1004,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 7.0.0
                  */
-                greaterBarColor: "#06b535" /* positiveColor */,
+                greaterBarColor: "#06b535" /* Palette.positiveColor */,
                 /**
                  * Color of the Awesome oscillator series bar that is lower than the
                  * previous one. Note that if a `color` is defined, the `color`
@@ -1016,7 +1016,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 7.0.0
                  */
-                lowerBarColor: "#f21313" /* negativeColor */,
+                lowerBarColor: "#f21313" /* Palette.negativeColor */,
                 threshold: 0,
                 groupPadding: 0.2,
                 pointPadding: 0.2,
@@ -1075,7 +1075,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
         var defined = U.defined,
             error = U.error,
             merge = U.merge;
@@ -1084,16 +1084,6 @@
          *  Composition
          *
          * */
-        /**
-         * Composition useful for all indicators that have more than one line. Compose
-         * it with your implementation where you will provide the `getValues` method
-         * appropriate to your indicator and `pointArrayMap`, `pointValKey`,
-         * `linesApiNames` properties. Notice that `pointArrayMap` should be consistent
-         * with the amount of lines calculated in the `getValues` method.
-         *
-         * @private
-         * @mixin multipleLinesMixin
-         */
         var MultipleLinesComposition;
         (function (MultipleLinesComposition) {
             /* *
@@ -1102,10 +1092,10 @@
              *
              * */
             /* *
-             *
-             *  Constants
-             *
-             * */
+            *
+            *  Constants
+            *
+            * */
             var composedClasses = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
@@ -1114,7 +1104,6 @@
              * relative to pointArrayMap (without pointValKey).
              *
              * @private
-             * @name multipleLinesMixin.linesApiNames
              * @type {Array<string>}
              */
             var linesApiNames = ['bottomLine'];
@@ -1126,7 +1115,6 @@
              * getValues method from your implementation.
              *
              * @private
-             * @name multipleLinesMixin.pointArrayMap
              * @type {Array<string>}
              */
             var pointArrayMap = ['top', 'bottom'];
@@ -1135,8 +1123,8 @@
              * If the drawing of the area should
              * be disabled for some indicators, leave this option as an empty array.
              * Names should be the same as the names in the pointArrayMap.
+             *
              * @private
-             * @name multipleLinesMixin.areaLinesNames
              * @type {Array<string>}
              */
             var areaLinesNames = ['top'];
@@ -1144,17 +1132,22 @@
              * Main line id.
              *
              * @private
-             * @name multipleLinesMixin.pointValKey
              * @type {string}
              */
             var pointValKey = 'top';
             /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
+            *
+            *  Functions
+            *
+            * */
             /**
+             * Composition useful for all indicators that have more than one line.
+             * Compose it with your implementation where you will provide the
+             * `getValues` method appropriate to your indicator and `pointArrayMap`,
+             * `pointValKey`, `linesApiNames` properties. Notice that `pointArrayMap`
+             * should be consistent with the amount of lines calculated in the
+             * `getValues` method.
+             *
              * @private
              */
             function compose(IndicatorClass) {
@@ -1169,52 +1162,49 @@
                         pointValKey);
                     proto.areaLinesNames = (proto.areaLinesNames ||
                         areaLinesNames.slice());
-                    proto.drawGraph = drawGraph;
-                    proto.getGraphPath = getGraphPath;
-                    proto.toYData = toYData;
-                    proto.translate = translate;
-                    proto.getTranslatedLinesNames = getTranslatedLinesNames;
+                    proto.drawGraph = indicatorDrawGraph;
+                    proto.getGraphPath = indicatorGetGraphPath;
+                    proto.toYData = indicatorToYData;
+                    proto.translate = indicatorTranslate;
                 }
                 return IndicatorClass;
             }
             MultipleLinesComposition.compose = compose;
             /**
-             * Create the path based on points provided as argument.
-             * If indicator.nextPoints option is defined, create the areaFill.
+             * Generate the API name of the line
              *
-             * @param points Points on which the path should be created
+             * @private
+             * @param propertyName name of the line
              */
-            function getGraphPath(points) {
-                var indicator = this;
-                var areaPath,
-                    path = [],
-                    higherAreaPath = [];
-                points = points || this.points;
-                // Render Span
-                if (indicator.fillGraph && indicator.nextPoints) {
-                    areaPath = SMAIndicator.prototype.getGraphPath.call(indicator, indicator.nextPoints);
-                    if (areaPath && areaPath.length) {
-                        areaPath[0][0] = 'L';
-                        path = SMAIndicator.prototype.getGraphPath.call(indicator, points);
-                        higherAreaPath = areaPath.slice(0, path.length);
-                        // Reverse points, so that the areaFill will start from the end:
-                        for (var i = higherAreaPath.length - 1; i >= 0; i--) {
-                            path.push(higherAreaPath[i]);
-                        }
+            function getLineName(propertyName) {
+                return ('plot' +
+                    propertyName.charAt(0).toUpperCase() +
+                    propertyName.slice(1));
+            }
+            /**
+             * Create translatedLines Collection based on pointArrayMap.
+             *
+             * @private
+             * @param {string} [excludedValue]
+             *        Main line id
+             * @return {Array<string>}
+             *         Returns translated lines names without excluded value.
+             */
+            function getTranslatedLinesNames(indicator, excludedValue) {
+                var translatedLines = [];
+                (indicator.pointArrayMap || []).forEach(function (propertyName) {
+                    if (propertyName !== excludedValue) {
+                        translatedLines.push(getLineName(propertyName));
                     }
-                }
-                else {
-                    path = SMAIndicator.prototype.getGraphPath.apply(indicator, arguments);
-                }
-                return path;
+                });
+                return translatedLines;
             }
             /**
              * Draw main and additional lines.
              *
              * @private
-             * @function multipleLinesMixin.drawGraph
              */
-            function drawGraph() {
+            function indicatorDrawGraph() {
                 var indicator = this,
                     pointValKey = indicator.pointValKey,
                     linesApiNames = indicator.linesApiNames,
@@ -1229,7 +1219,8 @@
                     }, 
                     // additional lines point place holders:
                     secondaryLines = [],
-                    secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey);
+                    secondaryLinesNames = getTranslatedLinesNames(indicator,
+                    pointValKey);
                 var pointsLength = mainLinePoints.length,
                     point;
                 // Generate points for additional lines:
@@ -1248,7 +1239,7 @@
                     pointsLength = mainLinePoints.length;
                 });
                 // Modify options and generate area fill:
-                if (this.userOptions.fillColor && areaLinesNames.length) {
+                if (indicator.userOptions.fillColor && areaLinesNames.length) {
                     var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
                         secondLinePoints = secondaryLines[index],
                         firstLinePoints = areaLinesNames.length === 1 ?
@@ -1257,11 +1248,11 @@
                         originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
-                    indicator.color = this.userOptions.fillColor;
+                    indicator.color = indicator.userOptions.fillColor;
                     indicator.options = merge(mainLinePoints, gappedExtend);
                     indicator.graph = indicator.area;
                     indicator.fillGraph = true;
-                    SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
+                    smaProto.drawGraph.call(indicator);
                     indicator.area = indicator.graph;
                     // Clean temporary properties:
                     delete indicator.nextPoints;
@@ -1278,11 +1269,10 @@
                         else {
                             error('Error: "There is no ' + lineName +
                                 ' in DOCS options declared. Check if linesApiNames' +
-                                ' are consistent with your DOCS line names."' +
-                                ' at mixin/multiple-line.js:34');
+                                ' are consistent with your DOCS line names."');
                         }
                         indicator.graph = indicator['graph' + lineName];
-                        SMAIndicator.prototype.drawGraph.call(indicator);
+                        smaProto.drawGraph.call(indicator);
                         // Now save lines:
                         indicator['graph' + lineName] = indicator.graph;
                     }
@@ -1296,45 +1286,46 @@
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
                 indicator.graph = mainLinePath;
-                SMAIndicator.prototype.drawGraph.call(indicator);
+                smaProto.drawGraph.call(indicator);
             }
             /**
-             * Create translatedLines Collection based on pointArrayMap.
+             * Create the path based on points provided as argument.
+             * If indicator.nextPoints option is defined, create the areaFill.
              *
              * @private
-             * @function multipleLinesMixin.getTranslatedLinesNames
-             * @param {string} [excludedValue]
-             *        Main line id
-             * @return {Array<string>}
-             *         Returns translated lines names without excluded value.
+             * @param points Points on which the path should be created
              */
-            function getTranslatedLinesNames(excludedValue) {
-                var translatedLines = [];
-                (this.pointArrayMap || []).forEach(function (propertyName) {
-                    if (propertyName !== excludedValue) {
-                        translatedLines.push(getLineName(propertyName));
+            function indicatorGetGraphPath(points) {
+                var areaPath,
+                    path = [],
+                    higherAreaPath = [];
+                points = points || this.points;
+                // Render Span
+                if (this.fillGraph && this.nextPoints) {
+                    areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+                    if (areaPath && areaPath.length) {
+                        areaPath[0][0] = 'L';
+                        path = smaProto.getGraphPath.call(this, points);
+                        higherAreaPath = areaPath.slice(0, path.length);
+                        // Reverse points, so that the areaFill will start from the end:
+                        for (var i = higherAreaPath.length - 1; i >= 0; i--) {
+                            path.push(higherAreaPath[i]);
+                        }
                     }
-                });
-                return translatedLines;
-            }
-            /**
-             * Generate the API name of the line
-             * @param propertyName name of the line
-             */
-            function getLineName(propertyName) {
-                return ('plot' +
-                    propertyName.charAt(0).toUpperCase() +
-                    propertyName.slice(1));
+                }
+                else {
+                    path = smaProto.getGraphPath.apply(this, arguments);
+                }
+                return path;
             }
             /**
              * @private
-             * @function multipleLinesMixin.toYData
              * @param {Highcharts.Point} point
              *        Indicator point
              * @return {Array<number>}
              *         Returns point Y value for all lines
              */
-            function toYData(point) {
+            function indicatorToYData(point) {
                 var pointColl = [];
                 (this.pointArrayMap || []).forEach(function (propertyName) {
                     pointColl.push(point[propertyName]);
@@ -1345,25 +1336,24 @@
              * Add lines plot pixel values.
              *
              * @private
-             * @function multipleLinesMixin.translate
              */
-            function translate() {
-                var indicator = this,
-                    pointArrayMap = indicator.pointArrayMap;
+            function indicatorTranslate() {
+                var _this = this;
+                var pointArrayMap = this.pointArrayMap;
                 var LinesNames = [],
                     value;
-                LinesNames = indicator.getTranslatedLinesNames();
-                SMAIndicator.prototype.translate.apply(indicator, arguments);
-                indicator.points.forEach(function (point) {
+                LinesNames = getTranslatedLinesNames(this);
+                smaProto.translate.apply(this, arguments);
+                this.points.forEach(function (point) {
                     pointArrayMap.forEach(function (propertyName, i) {
                         value = point[propertyName];
                         // If the modifier, like for example compare exists,
                         // modified the original value by that method, #15867.
-                        if (indicator.dataModify) {
-                            value = indicator.dataModify.modifyValue(value);
+                        if (_this.dataModify) {
+                            value = _this.dataModify.modifyValue(value);
                         }
                         if (value !== null) {
-                            point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
+                            point[LinesNames[i]] = _this.yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -2168,10 +2158,10 @@
         }(SMAIndicator));
         extend(BBIndicator.prototype, {
             areaLinesNames: ['top', 'bottom'],
-            pointArrayMap: ['top', 'middle', 'bottom'],
-            pointValKey: 'middle',
+            linesApiNames: ['topLine', 'bottomLine'],
             nameComponents: ['period', 'standardDeviation'],
-            linesApiNames: ['topLine', 'bottomLine']
+            pointArrayMap: ['top', 'middle', 'bottom'],
+            pointValKey: 'middle'
         });
         MultipleLinesComposition.compose(BBIndicator);
         SeriesRegistry.registerSeriesType('bb', BBIndicator);
@@ -2763,11 +2753,15 @@
                     var smoothedPlusDM = void 0,
                         smoothedMinusDM = void 0,
                         smoothedTR = void 0,
-                        plusDM = void 0, // +DM
-                        minusDM = void 0, // -DM
+                        plusDM = // +DM
+                         void 0, // +DM
+                        minusDM = // -DM
+                         void 0, // -DM
                         TR = void 0,
-                        plusDI = void 0, // +DI
-                        minusDI = void 0, // -DI
+                        plusDI = // +DI
+                         void 0, // +DI
+                        minusDI = // -DI
+                         void 0, // -DI
                         DX = void 0;
                     if (i <= period) {
                         plusDM = this.calculateDM(yVal, i, true);
@@ -2871,7 +2865,7 @@
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        lineColor: "#06b535" /* positiveColor */ // green-ish
+                        lineColor: "#06b535" /* Palette.positiveColor */ // green-ish
                     }
                 },
                 /**
@@ -2891,7 +2885,7 @@
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        lineColor: "#f21313" /* negativeColor */ // red-ish
+                        lineColor: "#f21313" /* Palette.negativeColor */ // red-ish
                     }
                 },
                 dataGrouping: {
@@ -5547,22 +5541,31 @@
              */
             MACDIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
+                var originalColor = this.color,
+                    originalColorIndex = this.userOptions._colorIndex;
                 // Check whether series is initialized. It may be not initialized,
                 // when any of required indicators is missing.
                 if (this.options) {
-                    // Set default color for a signal line and the histogram:
-                    this.options = merge({
-                        signalLine: {
-                            styles: {
-                                lineColor: this.color
-                            }
-                        },
-                        macdLine: {
-                            styles: {
-                                color: this.color
-                            }
+                    // If the default colour doesn't set, get the next available from
+                    // the array and apply it #15608.
+                    if (defined(this.userOptions._colorIndex)) {
+                        if (this.options.signalLine &&
+                            this.options.signalLine.styles &&
+                            !this.options.signalLine.styles.lineColor) {
+                            this.userOptions._colorIndex++;
+                            this.getCyclic('color', void 0, this.chart.options.colors);
+                            this.options.signalLine.styles.lineColor =
+                                this.color;
                         }
-                    }, this.options);
+                        if (this.options.macdLine &&
+                            this.options.macdLine.styles &&
+                            !this.options.macdLine.styles.lineColor) {
+                            this.userOptions._colorIndex++;
+                            this.getCyclic('color', void 0, this.chart.options.colors);
+                            this.options.macdLine.styles.lineColor =
+                                this.color;
+                        }
+                    }
                     // Zones have indexes automatically calculated, we need to
                     // translate them to support multiple lines within one indicator
                     this.macdZones = {
@@ -5575,6 +5578,9 @@
                     };
                     this.resetZones = true;
                 }
+                // Reset color and index #15608.
+                this.color = originalColor;
+                this.userOptions._colorIndex = originalColorIndex;
             };
             MACDIndicator.prototype.toYData = function (point) {
                 return [point.y, point.signal, point.MACD];
@@ -9238,7 +9244,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                risingTrendColor: "#06b535" /* positiveColor */,
+                risingTrendColor: "#06b535" /* Palette.positiveColor */,
                 /**
                  * Color of the Supertrend series line that is above the main series.
                  *
@@ -9247,7 +9253,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                fallingTrendColor: "#f21313" /* negativeColor */,
+                fallingTrendColor: "#f21313" /* Palette.negativeColor */,
                 /**
                  * The styles for the Supertrend line that intersect main series.
                  *
@@ -9265,7 +9271,7 @@
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        lineColor: "#333333" /* neutralColor80 */,
+                        lineColor: "#333333" /* Palette.neutralColor80 */,
                         /**
                          * The dash or dot style of the grid lines. For possible
                          * values, see

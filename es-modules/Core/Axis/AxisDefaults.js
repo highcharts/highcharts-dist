@@ -966,7 +966,7 @@ var AxisDefaults;
              */
             style: {
                 /** @internal */
-                color: "#666666" /* neutralColor60 */,
+                color: "#666666" /* Palette.neutralColor60 */,
                 /** @internal */
                 cursor: 'default',
                 /** @internal */
@@ -1801,7 +1801,7 @@ var AxisDefaults;
              */
             style: {
                 /** @internal */
-                color: "#666666" /* neutralColor60 */
+                color: "#666666" /* Palette.neutralColor60 */
             }
         },
         /**
@@ -1918,7 +1918,7 @@ var AxisDefaults;
          * @type    {Highcharts.ColorType}
          * @default #f2f2f2
          */
-        minorGridLineColor: "#f2f2f2" /* neutralColor5 */,
+        minorGridLineColor: "#f2f2f2" /* Palette.neutralColor5 */,
         /**
          * Width of the minor, secondary grid lines.
          *
@@ -1944,7 +1944,7 @@ var AxisDefaults;
          * @type    {Highcharts.ColorType}
          * @default #999999
          */
-        minorTickColor: "#999999" /* neutralColor40 */,
+        minorTickColor: "#999999" /* Palette.neutralColor40 */,
         /**
          * The color of the line marking the axis itself.
          *
@@ -1965,7 +1965,7 @@ var AxisDefaults;
          * @type    {Highcharts.ColorType}
          * @default #ccd6eb
          */
-        lineColor: "#ccd6eb" /* highlightColor20 */,
+        lineColor: "#ccd6eb" /* Palette.highlightColor20 */,
         /**
          * The width of the line marking the axis itself.
          *
@@ -2002,7 +2002,7 @@ var AxisDefaults;
          * @type    {Highcharts.ColorType}
          * @default #e6e6e6
          */
-        gridLineColor: "#e6e6e6" /* neutralColor10 */,
+        gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
         /**
          * The width of the grid lines extending the ticks across the plot area.
          * Defaults to 1 on the Y axis and 0 on the X axis, except for 3d
@@ -2060,7 +2060,7 @@ var AxisDefaults;
          * @type    {Highcharts.ColorType}
          * @default #ccd6eb
          */
-        tickColor: "#ccd6eb" /* highlightColor20 */
+        tickColor: "#ccd6eb" /* Palette.highlightColor20 */
         // tickWidth: 1
     };
     /**
@@ -2850,7 +2850,7 @@ var AxisDefaults;
              */
             style: {
                 /** @internal */
-                color: "#000000" /* neutralColor100 */,
+                color: "#000000" /* Palette.neutralColor100 */,
                 /** @internal */
                 fontSize: '11px',
                 /** @internal */

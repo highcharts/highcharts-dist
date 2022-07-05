@@ -30,7 +30,7 @@ var defined = U.defined, find = U.find, fireEvent = U.fireEvent;
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     var type = eventObject.type;
     var hcEvents = el.hcEvents;
-    if (doc.createEvent &&
+    if ((doc.createEvent) &&
         (el.dispatchEvent || el.fireEvent)) {
         if (el.dispatchEvent) {
             el.dispatchEvent(eventObject);

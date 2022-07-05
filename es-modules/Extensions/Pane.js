@@ -158,7 +158,7 @@ var Pane = /** @class */ (function () {
              * @since   2.3.0
              * @product highcharts
              */
-            borderColor: "#cccccc" /* neutralColor20 */,
+            borderColor: "#cccccc" /* Palette.neutralColor20 */,
             /**
              * The background color or gradient for the pane.
              *
@@ -172,8 +172,8 @@ var Pane = /** @class */ (function () {
                 linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                 /** @ignore-option */
                 stops: [
-                    [0, "#ffffff" /* backgroundColor */],
-                    [1, "#e6e6e6" /* neutralColor10 */]
+                    [0, "#ffffff" /* Palette.backgroundColor */],
+                    [1, "#e6e6e6" /* Palette.neutralColor10 */]
                 ]
             },
             /** @ignore-option */

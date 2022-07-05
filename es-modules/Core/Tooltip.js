@@ -795,7 +795,7 @@ var Tooltip = /** @class */ (function () {
                             stroke: (options.borderColor ||
                                 point.color ||
                                 currentSeries.color ||
-                                "#666666" /* neutralColor60 */)
+                                "#666666" /* Palette.neutralColor60 */)
                         });
                     }
                     tooltip.updatePosition({
@@ -967,7 +967,7 @@ var Tooltip = /** @class */ (function () {
                     stroke: (options.borderColor ||
                         point.color ||
                         series.color ||
-                        "#333333" /* neutralColor80 */)
+                        "#333333" /* Palette.neutralColor80 */)
                 });
             }
             return tt;
@@ -1259,7 +1259,7 @@ var Tooltip = /** @class */ (function () {
             // scale transform/css zoom. #11329.
             if (chartPosition.scaleX !== 1 || chartPosition.scaleY !== 1) {
                 css(this.container, {
-                    transform: "scale(" + chartPosition.scaleX + ", " + chartPosition.scaleY + ")"
+                    transform: "scale(".concat(chartPosition.scaleX, ", ").concat(chartPosition.scaleY, ")")
                 });
                 anchorX *= chartPosition.scaleX;
                 anchorY *= chartPosition.scaleY;

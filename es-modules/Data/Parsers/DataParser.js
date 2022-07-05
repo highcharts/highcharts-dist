@@ -52,7 +52,7 @@ var DataParser = /** @class */ (function () {
         if (headers === void 0) { headers = []; }
         var table = new DataTable();
         for (var i = 0, iEnd = Math.max(headers.length, columns.length); i < iEnd; ++i) {
-            table.setColumn(headers[i] || "" + i, columns[i]);
+            table.setColumn(headers[i] || "".concat(i), columns[i]);
         }
         return table;
     };

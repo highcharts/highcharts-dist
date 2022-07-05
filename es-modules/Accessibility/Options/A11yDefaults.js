@@ -10,6 +10,11 @@
  *
  * */
 'use strict';
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * Formatter callback for the accessibility announcement.
  *
@@ -546,7 +551,7 @@ var Options = {
                  */
                 style: {
                     /** @internal */
-                    color: "#335cad" /* highlightColor80 */,
+                    color: "#335cad" /* Palette.highlightColor80 */,
                     /** @internal */
                     lineWidth: 2,
                     /** @internal */

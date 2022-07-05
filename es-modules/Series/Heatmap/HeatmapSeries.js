@@ -12,17 +12,19 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
 import Color from '../../Core/Color/Color.js';
-import ColorMapMixin from '../ColorMapMixin.js';
+import ColorMapComposition from '../ColorMapComposition.js';
 import HeatmapPoint from './HeatmapPoint.js';
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -368,7 +370,7 @@ var HeatmapSeries = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        nullColor: "#f7f7f7" /* neutralColor3 */,
+        nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
         dataLabels: {
             formatter: function () {
                 var numberFormatter = this.series.chart.numberFormatter;
@@ -549,25 +551,26 @@ var HeatmapSeries = /** @class */ (function (_super) {
     return HeatmapSeries;
 }(ScatterSeries));
 extend(HeatmapSeries.prototype, {
+    axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+    colorKey: ColorMapComposition.seriesMembers.colorKey,
+    directTouch: true,
+    getExtremesFromAll: true,
+    parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+    pointArrayMap: ['y', 'value'],
+    pointClass: HeatmapPoint,
+    trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
     /**
      * @private
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-    axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
-    colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
-    colorKey: ColorMapMixin.SeriesMixin.colorKey,
-    directTouch: true,
+    colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
     /**
      * @private
      */
     drawLegendSymbol: LegendSymbol.drawRectangle,
-    getExtremesFromAll: true,
-    getSymbol: Series.prototype.getSymbol,
-    parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
-    pointArrayMap: ['y', 'value'],
-    pointClass: HeatmapPoint,
-    trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups
+    getSymbol: Series.prototype.getSymbol
 });
+ColorMapComposition.compose(HeatmapSeries);
 SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* *
  *

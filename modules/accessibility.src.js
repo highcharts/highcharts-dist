@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Accessibility module
  *
@@ -685,7 +685,7 @@
         function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
             var type = eventObject.type;
             var hcEvents = el.hcEvents;
-            if (doc.createEvent &&
+            if ((doc.createEvent) &&
                 (el.dispatchEvent || el.fireEvent)) {
                 if (el.dispatchEvent) {
                     el.dispatchEvent(eventObject);
@@ -2055,7 +2055,7 @@
             var labels = getChartAnnotationLabels(chart);
             return labels.map(function (label) {
                 var desc = escapeStringForHTML(stripHTMLTagsFromString(getAnnotationLabelDescription(label)));
-                return desc ? "<li>" + desc + "</li>" : '';
+                return desc ? "<li>".concat(desc, "</li>") : '';
             });
         }
         /**
@@ -2071,7 +2071,7 @@
                 return '';
             }
             var annotationItems = getAnnotationListItems(chart);
-            return "<ul style=\"list-style-type: none\">" + annotationItems.join(' ') + "</ul>";
+            return "<ul style=\"list-style-type: none\">".concat(annotationItems.join(' '), "</ul>");
         }
         /**
          * Return the texts for the annotation(s) connected to a point, or empty array
@@ -2088,7 +2088,7 @@
             if (!pointLabels.length) {
                 return [];
             }
-            return pointLabels.map(function (label) { return "" + getLabelText(label); });
+            return pointLabels.map(function (label) { return "".concat(getLabelText(label)); });
         }
         /* *
          *
@@ -2395,7 +2395,7 @@
                     if (sectionDiv.parentNode) {
                         sectionDiv.parentNode.removeChild(sectionDiv);
                     }
-                    delete region.element;
+                    region.element = null;
                 }
             };
             /**
@@ -2405,11 +2405,8 @@
              * @param {string} regionKey Name/key of the region we are setting attrs for
              */
             InfoRegionsComponent.prototype.setScreenReaderSectionAttribs = function (sectionDiv, regionKey) {
-                var chart = this.chart,
-                    labelText = chart.langFormat('accessibility.screenReaderSection.' + regionKey +
-                        'RegionLabel', { chart: chart,
-                    chartTitle: getChartTitle(chart) }),
-                    sectionId = "highcharts-screen-reader-region-" + regionKey + "-" + chart.index;
+                var chart = this.chart, labelText = chart.langFormat('accessibility.screenReaderSection.' + regionKey +
+                        'RegionLabel', { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = "highcharts-screen-reader-region-".concat(regionKey, "-").concat(chart.index);
                 attr(sectionDiv, {
                     id: sectionId,
                     'aria-label': labelText || void 0
@@ -3278,7 +3275,7 @@
              * @private
              */
             KeyboardNavigation.prototype.updateExitAnchor = function () {
-                var endMarkerId = "highcharts-end-of-chart-marker-" + this.chart.index,
+                var endMarkerId = "highcharts-end-of-chart-marker-".concat(this.chart.index),
                     endMarker = getElement(endMarkerId);
                 this.removeExitAnchor();
                 if (endMarker) {
@@ -3322,7 +3319,7 @@
                 // Set focus to chart or exit anchor depending on direction
                 this.exiting = true;
                 if (direction > 0) {
-                    this.exitAnchor.focus();
+                    this.exitAnchor && this.exitAnchor.focus();
                 }
                 else {
                     this.tabindexContainer.focus();
@@ -3665,7 +3662,6 @@
          *  Functions
          *
          * */
-        /* eslint-disable valid-jsdoc */
         /**
          * @private
          */
@@ -3730,7 +3726,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Init the component
              * @private
@@ -5962,7 +5957,7 @@
                  */
                 inputStyle: {
                     /** @ignore */
-                    color: "#335cad" /* highlightColor80 */,
+                    color: "#335cad" /* Palette.highlightColor80 */,
                     /** @ignore */
                     cursor: 'pointer'
                 },
@@ -5979,7 +5974,7 @@
                  */
                 labelStyle: {
                     /** @ignore */
-                    color: "#666666" /* neutralColor60 */
+                    color: "#666666" /* Palette.neutralColor60 */
                 }
             }
         });
@@ -6083,7 +6078,8 @@
                     rangeSetting,
                     ctx,
                     ytdExtremes,
-                    dataGrouping = rangeOptions.dataGrouping;
+                    dataGrouping = rangeOptions.dataGrouping,
+                    addOffsetMin = true;
                 // chart has no data, base series is removed
                 if (dataMin === null || dataMax === null) {
                     return;
@@ -6116,12 +6112,16 @@
                         if (isNumber(ctx.newMax)) {
                             newMax = ctx.newMax;
                         }
+                        // #15799: offsetMin is added in minFromRange so that it works
+                        // with pre-selected buttons as well
+                        addOffsetMin = false;
                     }
                     // Fixed times like minutes, hours, days
                 }
                 else if (range) {
                     newMin = Math.max(newMax - range, dataMin);
                     newMax = Math.min(newMin + range, dataMax);
+                    addOffsetMin = false;
                 }
                 else if (type === 'ytd') {
                     // On user clicks on the buttons, or a delayed action running from
@@ -6132,14 +6132,17 @@
                         // event (below). When the series are initialized, but before
                         // the chart is rendered, we have access to the xData array
                         // (#942).
-                        if (typeof dataMax === 'undefined') {
+                        if (typeof dataMax === 'undefined' ||
+                            typeof dataMin === 'undefined') {
                             dataMin = Number.MAX_VALUE;
                             dataMax = Number.MIN_VALUE;
                             chart.series.forEach(function (series) {
                                 // reassign it to the last item
                                 var xData = series.xData;
-                                dataMin = Math.min(xData[0], dataMin);
-                                dataMax = Math.max(xData[xData.length - 1], dataMax);
+                                if (xData) {
+                                    dataMin = Math.min(xData[0], dataMin);
+                                    dataMax = Math.max(xData[xData.length - 1], dataMax);
+                                }
                             });
                             redraw = false;
                         }
@@ -6159,16 +6162,15 @@
                     // If the navigator exist and the axis range is declared reset that
                     // range and from now on only use the range set by a user, #14742.
                     if (chart.navigator && chart.navigator.baseSeries[0]) {
-                        chart.navigator.baseSeries[0].xAxis.options
-                            .range = void 0;
+                        chart.navigator.baseSeries[0].xAxis.options.range = void 0;
                     }
                     newMin = dataMin;
                     newMax = dataMax;
                 }
-                if (defined(newMin)) {
+                if (addOffsetMin && rangeOptions._offsetMin && defined(newMin)) {
                     newMin += rangeOptions._offsetMin;
                 }
-                if (defined(newMax)) {
+                if (rangeOptions._offsetMax && defined(newMax)) {
                     newMax += rangeOptions._offsetMax;
                 }
                 if (this.dropdown) {
@@ -6225,10 +6227,10 @@
                         var minInput = rangeSelector.minInput,
                     maxInput = rangeSelector.maxInput;
                     // #3274 in some case blur is not defined
-                    if (minInput && minInput.blur) {
+                    if (minInput && (minInput.blur)) {
                         fireEvent(minInput, 'blur');
                     }
-                    if (maxInput && maxInput.blur) {
+                    if (maxInput && (maxInput.blur)) {
                         fireEvent(maxInput, 'blur');
                     }
                 };
@@ -6547,7 +6549,7 @@
                 }
                 else if (H.isSafari && !hasTimezone(input)) {
                     var offset = new Date(input).getTimezoneOffset() / 60;
-                    input += offset <= 0 ? "+" + pad(-offset) + ":00" : "-" + pad(offset) + ":00";
+                    input += offset <= 0 ? "+".concat(pad(-offset), ":00") : "-".concat(pad(offset), ":00");
                 }
                 var date = Date.parse(input);
                 // If the value isn't parsed directly to a value by the
@@ -6669,7 +6671,7 @@
                     // Styles
                     label.css(merge(chartStyle, options.labelStyle));
                     dateBox.css(merge({
-                        color: "#333333" /* neutralColor80 */
+                        color: "#333333" /* Palette.neutralColor80 */
                     }, chartStyle, options.inputStyle));
                     css(input, extend({
                         position: 'absolute',
@@ -7307,7 +7309,7 @@
                 var userButtonTheme = (chart.userOptions.rangeSelector &&
                         chart.userOptions.rangeSelector.buttonTheme) || {};
                 var getAttribs = function (text) { return ({
-                        text: text ? text + " \u25BE" : '▾',
+                        text: text ? "" + text + " \u25BE" : '▾',
                         width: 'auto',
                         paddingLeft: pick(options.buttonTheme.paddingLeft,
                     userButtonTheme.padding, 8),
@@ -7636,8 +7638,8 @@
                 min = max - rangeOptions;
                 range = rangeOptions;
             }
-            else {
-                min = max + getTrueRange(max, -rangeOptions.count);
+            else if (rangeOptions) {
+                min = max + getTrueRange(max, -(rangeOptions.count || 1));
                 // Let the fixedRange reflect initial settings (#5930)
                 if (this.chart) {
                     this.chart.fixedRange = max - min;
@@ -7652,10 +7654,15 @@
                 if (typeof range === 'undefined') { // #4501
                     range = getTrueRange(min, rangeOptions.count);
                 }
-                this.newMax = Math.min(min + range, this.dataMax);
+                this.newMax = Math.min(min + range, pick(this.dataMax, Number.MAX_VALUE));
             }
             if (!isNumber(max)) {
                 min = void 0;
+            }
+            else if (!isNumber(rangeOptions) &&
+                rangeOptions &&
+                rangeOptions._offsetMin) {
+                min += rangeOptions._offsetMin;
             }
             return min;
         };
@@ -8837,13 +8844,16 @@
                     inverted = chart.inverted;
                 return new KeyboardNavigationHandler(chart, {
                     keyCodeMap: [
-                        [inverted ? [keys.up, keys.down] : [keys.left, keys.right], function (keyCode) {
+                        [inverted ? [keys.up, keys.down] : [keys.left, keys.right],
+                            function (keyCode) {
                                 return keyboardNavigation.onKbdSideways(this, keyCode);
                             }],
-                        [inverted ? [keys.left, keys.right] : [keys.up, keys.down], function (keyCode) {
+                        [inverted ? [keys.left, keys.right] : [keys.up, keys.down],
+                            function (keyCode) {
                                 return keyboardNavigation.onKbdVertical(this, keyCode);
                             }],
-                        [[keys.enter, keys.space], function (keyCode, event) {
+                        [[keys.enter, keys.space],
+                            function (keyCode, event) {
                                 var point = chart.highlightedPoint;
                                 if (point) {
                                     event.point = point;
@@ -8852,15 +8862,18 @@
                                 }
                                 return this.response.success;
                             }],
-                        [[keys.home], function () {
+                        [[keys.home],
+                            function () {
                                 highlightFirstValidPointInChart(chart);
                                 return this.response.success;
                             }],
-                        [[keys.end], function () {
+                        [[keys.end],
+                            function () {
                                 highlightLastValidPointInChart(chart);
                                 return this.response.success;
                             }],
-                        [[keys.pageDown, keys.pageUp], function (keyCode) {
+                        [[keys.pageDown, keys.pageUp],
+                            function (keyCode) {
                                 chart.highlightAdjacentSeries(keyCode === keys.pageDown);
                                 return this.response.success;
                             }]
@@ -9463,7 +9476,7 @@
 
         return SeriesComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, ChartUtilities, H, KeyboardNavigationHandler, U) {
+    _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, CU, KeyboardNavigationHandler, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -9491,22 +9504,41 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
-        var noop = H.noop;
+        var unhideChartElementFromAT = CU.unhideChartElementFromAT;
         var attr = U.attr,
-            extend = U.extend,
             pick = U.pick;
         /* *
          *
          *  Functions
          *
          * */
-        /* eslint-disable valid-jsdoc */
+        /**
+         * Pan along axis in a direction (1 or -1), optionally with a defined
+         * granularity (number of steps it takes to walk across current view)
+         * @private
+         */
+        function axisPanStep(axis, direction, granularity) {
+            var gran = granularity || 3;
+            var extremes = axis.getExtremes();
+            var step = (extremes.max - extremes.min) / gran * direction;
+            var newMax = extremes.max + step;
+            var newMin = extremes.min + step;
+            var size = newMax - newMin;
+            if (direction < 0 && newMin < extremes.dataMin) {
+                newMin = extremes.dataMin;
+                newMax = newMin + size;
+            }
+            else if (direction > 0 && newMax > extremes.dataMax) {
+                newMax = extremes.dataMax;
+                newMin = newMax - size;
+            }
+            axis.setExtremes(newMin, newMax);
+        }
         /**
          * @private
          */
         function chartHasMapZoom(chart) {
-            return !!(chart.mapZoom &&
+            return !!((chart.mapZoom) &&
                 chart.mapNavigation &&
                 chart.mapNavigation.navButtons.length);
         }
@@ -9674,7 +9706,7 @@
                         'yAxis' : 'xAxis',
                     stepDirection = (keyCode === keys.left || keyCode === keys.up) ?
                         -1 : 1;
-                this.chart[panAxis][0].panStep(stepDirection);
+                axisPanStep(this.chart[panAxis][0], stepDirection);
                 return keyboardNavigationHandler.response.success;
             };
             /**
@@ -9790,67 +9822,6 @@
         }(AccessibilityComponent));
         /* *
          *
-         *  Class Namespace
-         *
-         * */
-        (function (ZoomComponent) {
-            /* *
-             *
-             *  Declarations
-             *
-             * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            ZoomComponent.composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * @private
-             */
-            function compose(AxisClass) {
-                if (ZoomComponent.composedClasses.indexOf(AxisClass) === -1) {
-                    ZoomComponent.composedClasses.push(AxisClass);
-                    var axisProto = AxisClass.prototype;
-                    axisProto.panStep = axisPanStep;
-                }
-            }
-            ZoomComponent.compose = compose;
-            /**
-             * Pan along axis in a direction (1 or -1), optionally with a defined
-             * granularity (number of steps it takes to walk across current view)
-             *
-             * @private
-             * @function Highcharts.Axis#panStep
-             *
-             * @param {number} direction
-             * @param {number} [granularity]
-             */
-            function axisPanStep(direction, granularity) {
-                var gran = granularity || 3;
-                var extremes = this.getExtremes();
-                var step = (extremes.max - extremes.min) / gran * direction;
-                var newMax = extremes.max + step;
-                var newMin = extremes.min + step;
-                var size = newMax - newMin;
-                if (direction < 0 && newMin < extremes.dataMin) {
-                    newMin = extremes.dataMin;
-                    newMax = newMin + size;
-                }
-                else if (direction > 0 && newMax > extremes.dataMax) {
-                    newMax = extremes.dataMax;
-                    newMin = newMax - size;
-                }
-                this.setExtremes(newMin, newMax);
-            }
-        })(ZoomComponent || (ZoomComponent = {}));
-        /* *
-         *
          *  Default Export
          *
          * */
@@ -9895,7 +9866,7 @@
                 var testDiv = doc.createElement('div');
                 var imageSrc = 'data:image/gif;base64,' +
                         'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-                testDiv.style.backgroundImage = "url(" + imageSrc + ")"; // #13071
+                testDiv.style.backgroundImage = "url(".concat(imageSrc, ")"); // #13071
                 doc.body.appendChild(testDiv);
                 var bi = (testDiv.currentStyle ||
                         win.getComputedStyle(testDiv)).backgroundImage;
@@ -10179,7 +10150,7 @@
 
         return theme;
     });
-    _registerModule(_modules, 'Accessibility/Options/Options.js', [], function () {
+    _registerModule(_modules, 'Accessibility/Options/A11yDefaults.js', [], function () {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -10189,6 +10160,11 @@
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**
@@ -10727,7 +10703,7 @@
                              */
                             style: {
                                 /** @internal */
-                                color: "#335cad" /* highlightColor80 */,
+                                color: "#335cad" /* Palette.highlightColor80 */,
                                 /** @internal */
                                 lineWidth: 2,
                                 /** @internal */
@@ -11075,7 +11051,7 @@
 
         return Options;
     });
-    _registerModule(_modules, 'Accessibility/Options/LangOptions.js', [], function () {
+    _registerModule(_modules, 'Accessibility/Options/LangDefaults.js', [], function () {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -11085,6 +11061,11 @@
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         var langOptions = {
@@ -11418,6 +11399,11 @@
                     }
                 }
             };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return langOptions;
     });
@@ -11485,6 +11471,11 @@
         /* eslint-enable max-len */
         var error = U.error,
             pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /* eslint-disable valid-jsdoc */
         /**
          * Set a new option on a root prop, where the option is defined as an array of
@@ -11544,7 +11535,7 @@
                 var _a;
                 if (chartOptions[prop]) {
                     a11yOptions[prop] = chartOptions[prop];
-                    error(32, false, chart, (_a = {}, _a["chart." + prop] = "use accessibility." + prop, _a));
+                    error(32, false, chart, (_a = {}, _a["chart.".concat(prop)] = "use accessibility.".concat(prop), _a));
                 }
             });
         }
@@ -11601,7 +11592,7 @@
                         oldOption === 'skipKeyboardNavigation' ?
                             !optionVal : optionVal);
                         error(32, false, chart, (_a = {},
-                            _a["series." + oldOption] = ('series.' +
+                            _a["series.".concat(oldOption)] = ('series.' +
                                 oldToNewSeriesOptions[oldOption].join('.')),
                             _a));
                     }
@@ -11676,10 +11667,15 @@
             copyDeprecatedKeyboardNavigationOptions(chart);
             copyDeprecatedLangOptions(chart);
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return copyDeprecatedOptions;
     });
-    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/FocusBorder.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/ProxyProvider.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (D, H, U, A11yI18n, ContainerComponent, FocusBorder, InfoRegionsComponent, KeyboardNavigation, LegendComponent, MenuComponent, NewDataAnnouncer, ProxyProvider, RangeSelectorComponent, SeriesComponent, ZoomComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
+    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/FocusBorder.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/ProxyProvider.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/A11yDefaults.js'], _modules['Accessibility/Options/LangDefaults.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (D, H, U, A11yI18n, ContainerComponent, FocusBorder, InfoRegionsComponent, KeyboardNavigation, LegendComponent, MenuComponent, NewDataAnnouncer, ProxyProvider, RangeSelectorComponent, SeriesComponent, ZoomComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -11990,7 +11986,6 @@
                 LegendComponent.compose(ChartClass, LegendClass);
                 MenuComponent.compose(ChartClass);
                 SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
-                ZoomComponent.compose(AxisClass);
                 // RangeSelector
                 A11yI18n.compose(ChartClass);
                 FocusBorder.compose(ChartClass, SVGElementClass);

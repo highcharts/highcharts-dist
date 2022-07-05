@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Timeline series
  *
@@ -598,11 +598,11 @@
                      *         Alternate disabled
                      */
                     alternate: true,
-                    backgroundColor: "#ffffff" /* backgroundColor */,
+                    backgroundColor: "#ffffff" /* Palette.backgroundColor */,
                     borderWidth: 1,
-                    borderColor: "#999999" /* neutralColor40 */,
+                    borderColor: "#999999" /* Palette.neutralColor40 */,
                     borderRadius: 3,
-                    color: "#333333" /* neutralColor80 */,
+                    color: "#333333" /* Palette.neutralColor80 */,
                     /**
                      * The color of the line connecting the data label to the point.
                      * The default color is the same as the point's color.

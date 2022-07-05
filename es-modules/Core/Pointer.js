@@ -177,7 +177,7 @@ var Pointer = /** @class */ (function () {
                     if (!chart.styledMode) {
                         selectionMarker.attr({
                             fill: (chartOptions.selectionMarkerFill ||
-                                color("#335cad" /* highlightColor80 */)
+                                color("#335cad" /* Palette.highlightColor80 */)
                                     .setOpacity(0.25).get())
                         });
                     }

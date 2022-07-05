@@ -237,7 +237,7 @@ defaultOptions.drilldown = {
         /** @ignore-option */
         cursor: 'pointer',
         /** @ignore-option */
-        color: "#003399" /* highlightColor100 */,
+        color: "#003399" /* Palette.highlightColor100 */,
         /** @ignore-option */
         fontWeight: 'bold',
         /** @ignore-option */
@@ -261,7 +261,7 @@ defaultOptions.drilldown = {
      */
     activeDataLabelStyle: {
         cursor: 'pointer',
-        color: "#003399" /* highlightColor100 */,
+        color: "#003399" /* Palette.highlightColor100 */,
         fontWeight: 'bold',
         textDecoration: 'underline'
     },

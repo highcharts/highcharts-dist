@@ -239,7 +239,7 @@ var clusterDefaultOptions = {
         /** @internal */
         lineWidth: 0,
         /** @internal */
-        lineColor: "#ffffff" /* backgroundColor */
+        lineColor: "#ffffff" /* Palette.backgroundColor */
     },
     /**
      * Fires when the cluster point is clicked and `drillToCluster` is enabled.
@@ -868,7 +868,7 @@ Scatter.prototype.markerClusterAlgorithms = {
         return group;
     },
     optimizedKmeans: function (processedXData, processedYData, dataIndexes, options) {
-        var series = this, xAxis = series.xAxis, yAxis = series.yAxis, pointMaxDistance = options.processedDistance ||
+        var series = this, pointMaxDistance = options.processedDistance ||
             clusterDefaultOptions.layoutAlgorithm.gridSize, group = {}, extremes = series.getRealExtremes(), clusterMarkerOptions = (series.options.cluster || {}).marker, offset, distance, radius;
         if (!series.markerClusterInfo || (series.initMaxX && series.initMaxX < extremes.maxX ||
             series.initMinX && series.initMinX > extremes.minX ||
@@ -1209,7 +1209,7 @@ Scatter.prototype.hideClusteredData = function () {
 };
 // Override the generatePoints method by adding a reference to grouped data.
 Scatter.prototype.generatePoints = function () {
-    var series = this, chart = series.chart, mapView = chart.mapView, xAxis = series.xAxis, yAxis = series.yAxis, xData = series.xData, yData = series.yData, clusterOptions = series.options.cluster, realExtremes = series.getRealExtremes(), visibleXData = [], visibleYData = [], visibleDataIndexes = [];
+    var series = this, chart = series.chart, mapView = chart.mapView, xData = series.xData, yData = series.yData, clusterOptions = series.options.cluster, realExtremes = series.getRealExtremes(), visibleXData = [], visibleYData = [], visibleDataIndexes = [];
     var oldPointsState, oldDataLen, oldMarkerClusterInfo, kmeansThreshold, cropDataOffsetX, cropDataOffsetY, seriesMinX, seriesMaxX, seriesMinY, seriesMaxY, type, algorithm, clusteredData, groupedData, layoutAlgOptions, point, i;
     // For map point series, we need to resolve lon, lat and geometry options
     // and project them on the plane in order to get x and y. In the regular

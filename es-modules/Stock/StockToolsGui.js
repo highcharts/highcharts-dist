@@ -1697,7 +1697,7 @@ var Toolbar = /** @class */ (function () {
     Toolbar.prototype.getIconsURL = function () {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/10.1.0/gfx/stock-icons/';
+            'https://code.highcharts.com/10.2.0/gfx/stock-icons/';
     };
     return Toolbar;
 }());

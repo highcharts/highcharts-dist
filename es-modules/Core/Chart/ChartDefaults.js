@@ -979,7 +979,7 @@ var ChartDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    borderColor: "#335cad" /* highlightColor80 */,
+    borderColor: "#335cad" /* Palette.highlightColor80 */,
     /**
      * The pixel width of the outer chart border.
      *
@@ -1018,7 +1018,7 @@ var ChartDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    backgroundColor: "#ffffff" /* backgroundColor */,
+    backgroundColor: "#ffffff" /* Palette.backgroundColor */,
     /**
      * The background color or gradient for the plot area.
      *
@@ -1075,7 +1075,7 @@ var ChartDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    plotBorderColor: "#cccccc" /* neutralColor20 */
+    plotBorderColor: "#cccccc" /* Palette.neutralColor20 */
 };
 /* *
  *

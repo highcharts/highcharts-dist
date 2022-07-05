@@ -30,8 +30,8 @@ import SeriesComponent from './Components/SeriesComponent/SeriesComponent.js';
 import ZoomComponent from './Components/ZoomComponent.js';
 import whcm from './HighContrastMode.js';
 import highContrastTheme from './HighContrastTheme.js';
-import defaultOptionsA11Y from './Options/Options.js';
-import defaultLangOptions from './Options/LangOptions.js';
+import defaultOptionsA11Y from './Options/A11yDefaults.js';
+import defaultLangOptions from './Options/LangDefaults.js';
 import copyDeprecatedOptions from './Options/DeprecatedOptions.js';
 /* *
  *
@@ -324,7 +324,6 @@ var Accessibility = /** @class */ (function () {
         LegendComponent.compose(ChartClass, LegendClass);
         MenuComponent.compose(ChartClass);
         SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
-        ZoomComponent.compose(AxisClass);
         // RangeSelector
         A11yI18n.compose(ChartClass);
         FocusBorder.compose(ChartClass, SVGElementClass);

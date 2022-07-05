@@ -101,13 +101,13 @@ var TreeGridTick;
                 .add(params.group);
         }
         // Set the new position, and show or hide
-        icon.attr({ y: shouldRender ? 0 : -9999 }); // #14904, #1338
+        icon[shouldRender ? 'show' : 'hide'](); // #14904, #1338
         // Presentational attributes
         if (!renderer.styledMode) {
             icon
                 .attr({
                 cursor: 'pointer',
-                'fill': pick(params.color, "#666666" /* neutralColor60 */),
+                'fill': pick(params.color, "#666666" /* Palette.neutralColor60 */),
                 'stroke-width': 1,
                 stroke: options.lineColor,
                 strokeWidth: options.lineWidth || 0

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -36,126 +36,98 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/DrawPointComposition.js', [], function () {
+    _registerModule(_modules, 'Series/DrawPointUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var isNumber = U.isNumber;
         /* *
          *
-         *  Composition
+         *  Functions
          *
          * */
-        var DrawPointComposition;
-        (function (DrawPointComposition) {
-            /* *
-             *
-             *  Declarations
-             *
-             * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(PointClass) {
-                if (composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
-                    var pointProto = PointClass.prototype;
-                    pointProto.draw = draw;
-                    if (!pointProto.shouldDraw) {
-                        pointProto.shouldDraw = shouldDraw;
-                    }
+        /**
+         * Handles the drawing of a component.
+         * Can be used for any type of component that reserves the graphic property,
+         * and provides a shouldDraw on its context.
+         *
+         * @private
+         *
+         * @todo add type checking.
+         * @todo export this function to enable usage
+         */
+        function draw(point, params) {
+            var animatableAttribs = params.animatableAttribs,
+                onComplete = params.onComplete,
+                css = params.css,
+                renderer = params.renderer;
+            var animation = (point.series && point.series.chart.hasRendered) ?
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (point.series &&
+                        point.series.options.animation);
+            var graphic = point.graphic;
+            params.attribs = params.attribs || {};
+            // Assigning class in dot notation does go well in IE8
+            // eslint-disable-next-line dot-notation
+            params.attribs['class'] = point.getClassName();
+            if (shouldDraw(point)) {
+                if (!graphic) {
+                    point.graphic = graphic = params.shapeType === 'text' ?
+                        renderer.text() :
+                        renderer[params.shapeType](params.shapeArgs || {});
+                    graphic.add(params.group);
                 }
-                return PointClass;
+                if (css) {
+                    graphic.css(css);
+                }
+                graphic
+                    .attr(params.attribs)
+                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
-            DrawPointComposition.compose = compose;
-            /**
-             * Handles the drawing of a component.
-             * Can be used for any type of component that reserves the graphic property,
-             * and provides a shouldDraw on its context.
-             *
-             * @private
-             *
-             * @todo add type checking.
-             * @todo export this function to enable usage
-             */
-            function draw(params) {
-                var _this = this;
-                var animatableAttribs = params.animatableAttribs,
-                    onComplete = params.onComplete,
-                    css = params.css,
-                    renderer = params.renderer;
-                var animation = (this.series && this.series.chart.hasRendered) ?
-                        // Chart-level animation on updates
-                        void 0 :
-                        // Series-level animation on new points
-                        (this.series &&
-                            this.series.options.animation);
-                var graphic = this.graphic;
-                params.attribs = params.attribs || {};
-                // Assigning class in dot notation does go well in IE8
-                // eslint-disable-next-line dot-notation
-                params.attribs['class'] = this.getClassName();
-                if (this.shouldDraw()) {
-                    if (!graphic) {
-                        this.graphic = graphic = params.shapeType === 'text' ?
-                            renderer.text() :
-                            renderer[params.shapeType](params.shapeArgs || {});
-                        graphic.add(params.group);
+            else if (graphic) {
+                var destroy_1 = function () {
+                        point.graphic = graphic = (graphic && graphic.destroy());
+                    if (typeof onComplete === 'function') {
+                        onComplete();
                     }
-                    if (css) {
-                        graphic.css(css);
-                    }
-                    graphic
-                        .attr(params.attribs)
-                        .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
+                };
+                // animate only runs complete callback if something was animated.
+                if (Object.keys(animatableAttribs).length) {
+                    graphic.animate(animatableAttribs, void 0, function () { return destroy_1(); });
                 }
-                else if (graphic) {
-                    var destroy_1 = function () {
-                            _this.graphic = graphic = (graphic && graphic.destroy());
-                        if (typeof onComplete === 'function') {
-                            onComplete();
-                        }
-                    };
-                    // animate only runs complete callback if something was animated.
-                    if (Object.keys(animatableAttribs).length) {
-                        graphic.animate(animatableAttribs, void 0, function () {
-                            destroy_1();
-                        });
-                    }
-                    else {
-                        destroy_1();
-                    }
+                else {
+                    destroy_1();
                 }
             }
-            /**
-             * @private
-             */
-            function shouldDraw() {
-                return !this.isNull;
+        }
+        /**
+         * @private
+         */
+        function shouldDraw(point) {
+            switch (point.series && point.series.type) {
+                case 'treemap':
+                    return isNumber(point.plotY) && point.y !== null;
+                default:
+                    return !point.isNull;
             }
-        })(DrawPointComposition || (DrawPointComposition = {}));
+        }
         /* *
          *
          *  Default Export
          *
          * */
+        var DrawPointUtilities = {
+                draw: draw,
+                shouldDraw: shouldDraw
+            };
 
-        return DrawPointComposition;
+        return DrawPointUtilities;
     });
-    _registerModule(_modules, 'Series/Wordcloud/WordcloudPoint.js', [_modules['Series/DrawPointComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DrawPointComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Wordcloud/WordcloudPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
@@ -183,18 +155,18 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
         var extend = U.extend;
         var WordcloudPoint = /** @class */ (function (_super) {
                 __extends(WordcloudPoint, _super);
             function WordcloudPoint() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
                 /* *
                  *
                  * Properties
                  *
                  * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.dimensions = void 0;
                 _this.options = void 0;
                 _this.polygon = void 0;
@@ -211,11 +183,10 @@
                 return true;
             };
             return WordcloudPoint;
-        }(ColumnSeries.prototype.pointClass));
+        }(ColumnPoint));
         extend(WordcloudPoint.prototype, {
             weight: 1
         });
-        DrawPointComposition.compose(WordcloudPoint);
         /* *
          *
          *  Default Export
@@ -1025,7 +996,7 @@
 
         return WordcloudUtils;
     });
-    _registerModule(_modules, 'Series/Wordcloud/WordcloudSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Series/Wordcloud/WordcloudPoint.js'], _modules['Series/Wordcloud/WordcloudUtils.js']], function (H, Series, SeriesRegistry, U, WordcloudPoint, WordcloudUtils) {
+    _registerModule(_modules, 'Series/Wordcloud/WordcloudSeries.js', [_modules['Series/DrawPointUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Series/Wordcloud/WordcloudPoint.js'], _modules['Series/Wordcloud/WordcloudUtils.js']], function (DPU, H, Series, SeriesRegistry, U, WordcloudPoint, WordcloudUtils) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
@@ -1312,7 +1283,7 @@
                             delete attr.y;
                         }
                     }
-                    point.draw({
+                    DPU.draw(point, {
                         animatableAttribs: animate,
                         attribs: attr,
                         css: css,
@@ -1574,7 +1545,7 @@
          * @type      {string}
          * @since     6.0.0
          * @product   highcharts
-         * @apioption series.sunburst.data.name
+         * @apioption series.wordcloud.data.name
          */
         /**
          * The weighting of a word. The weight decides the relative size of a word
@@ -1583,7 +1554,7 @@
          * @type      {number}
          * @since     6.0.0
          * @product   highcharts
-         * @apioption series.sunburst.data.weight
+         * @apioption series.wordcloud.data.weight
          */
         ''; // detach doclets above
 

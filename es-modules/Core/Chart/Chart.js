@@ -747,10 +747,10 @@ var Chart = /** @class */ (function () {
         var chart = this;
         // Default style
         var style = name === 'title' ? {
-            color: "#333333" /* neutralColor80 */,
+            color: "#333333" /* Palette.neutralColor80 */,
             fontSize: this.options.isStock ? '16px' : '18px' // #2944
         } : {
-            color: "#666666" /* neutralColor60 */
+            color: "#666666" /* Palette.neutralColor60 */
         };
         // Merge default options with explicit options
         var options = this.options[name] = merge(
@@ -1951,18 +1951,21 @@ var Chart = /** @class */ (function () {
      * Emit console warning if the a11y module is not loaded.
      */
     Chart.prototype.warnIfA11yModuleNotLoaded = function () {
-        var _this = this;
-        setTimeout(function () {
-            var opts = _this && _this.options;
-            if (opts && !_this.accessibility &&
-                !(opts.accessibility && opts.accessibility.enabled === false)) {
+        var _a = this, options = _a.options, title = _a.title;
+        if (options && !this.accessibility) {
+            // Make chart behave as an image with the title as alt text
+            this.renderer.boxWrapper.attr({
+                role: 'img',
+                'aria-label': (title && title.element.textContent) || ''
+            });
+            if (!(options.accessibility && options.accessibility.enabled === false)) {
                 error('Highcharts warning: Consider including the ' +
                     '"accessibility.js" module to make your chart more ' +
                     'usable for people with disabilities. Set the ' +
                     '"accessibility.enabled" option to false to remove this ' +
-                    'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, _this);
+                    'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, this);
             }
-        }, 100);
+        }
     };
     /**
      * Add a series to the chart after render time. Note that this method should
@@ -2616,8 +2619,7 @@ var Chart = /** @class */ (function () {
             {
                 enabled: panning,
                 type: 'x'
-            }), chartOptions = chart.options.chart, hasMapNavigation = chart.options.mapNavigation &&
-            chart.options.mapNavigation.enabled;
+            }), chartOptions = chart.options.chart;
         if (chartOptions && chartOptions.panning) {
             chartOptions.panning = panningOptions;
         }
@@ -2703,7 +2705,6 @@ var Chart = /** @class */ (function () {
                         newMax <= paddedMax) {
                         axis.setExtremes(newMin, newMax, false, false, { trigger: 'pan' });
                         if (!chart.resetZoomButton &&
-                            !hasMapNavigation &&
                             // Show reset zoom button only when both newMin and
                             // newMax values are between padded axis range.
                             newMin !== paddedMin &&

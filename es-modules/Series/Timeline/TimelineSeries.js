@@ -16,10 +16,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -333,11 +335,11 @@ var TimelineSeries = /** @class */ (function (_super) {
              *         Alternate disabled
              */
             alternate: true,
-            backgroundColor: "#ffffff" /* backgroundColor */,
+            backgroundColor: "#ffffff" /* Palette.backgroundColor */,
             borderWidth: 1,
-            borderColor: "#999999" /* neutralColor40 */,
+            borderColor: "#999999" /* Palette.neutralColor40 */,
             borderRadius: 3,
-            color: "#333333" /* neutralColor80 */,
+            color: "#333333" /* Palette.neutralColor80 */,
             /**
              * The color of the line connecting the data label to the point.
              * The default color is the same as the point's color.

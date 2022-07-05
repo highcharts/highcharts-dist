@@ -21,27 +21,27 @@ declare module "../highcharts" {
         /**
          * The payload to send.
          */
-        data: (string|Dictionary<any>);
+        data?: (string|Dictionary<any>);
         /**
          * The data type expected.
          */
-        dataType: ("json"|"octet"|"text"|"xml");
+        dataType?: ("json"|"octet"|"text"|"xml");
         /**
          * Function to call on error.
          */
-        error: Function;
+        error?: Function;
         /**
          * The headers; keyed on header name.
          */
-        headers: Dictionary<string>;
+        headers?: Dictionary<string>;
         /**
          * Function to call on success.
          */
-        success: Function;
+        success?: Function;
         /**
          * The HTTP method to use. For example GET or POST.
          */
-        type: string;
+        type?: string;
         /**
          * The URL to call.
          */
@@ -65,6 +65,10 @@ declare module "../highcharts" {
      * The Data class
      */
     class Data {
+        /**
+         * Reorganize rows into columns.
+         */
+        static rowsToColumns(): void;
         /**
          * The Data class
          */
@@ -139,10 +143,6 @@ declare module "../highcharts" {
          */
         parseTypes(): void;
         /**
-         * Reorganize rows into columns.
-         */
-        rowsToColumns(): void;
-        /**
          * Trim a string from whitespaces.
          *
          * @param str
@@ -162,12 +162,12 @@ declare module "../highcharts" {
     /**
      * Perform an Ajax call.
      *
-     * @param attr
+     * @param settings
      *        The Ajax settings to use.
      *
      * @return Returns false, if error occured.
      */
-    function ajax(attr: Partial<AjaxSettingsObject>): (false|undefined);
+    function ajax(settings: AjaxSettingsObject): (false|undefined);
     /**
      * Creates a data object to parse data for a chart.
      */

@@ -24,7 +24,7 @@ var defaultOptions = {
      *         Inset border options
      * @type {Highcharts.ColorType}
      */
-    borderColor: "#cccccc" /* neutralColor20 */,
+    borderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The pixel border width of the insets.
      *

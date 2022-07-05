@@ -250,13 +250,16 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
         var keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
         return new KeyboardNavigationHandler(chart, {
             keyCodeMap: [
-                [inverted ? [keys.up, keys.down] : [keys.left, keys.right], function (keyCode) {
+                [inverted ? [keys.up, keys.down] : [keys.left, keys.right],
+                    function (keyCode) {
                         return keyboardNavigation.onKbdSideways(this, keyCode);
                     }],
-                [inverted ? [keys.left, keys.right] : [keys.up, keys.down], function (keyCode) {
+                [inverted ? [keys.left, keys.right] : [keys.up, keys.down],
+                    function (keyCode) {
                         return keyboardNavigation.onKbdVertical(this, keyCode);
                     }],
-                [[keys.enter, keys.space], function (keyCode, event) {
+                [[keys.enter, keys.space],
+                    function (keyCode, event) {
                         var point = chart.highlightedPoint;
                         if (point) {
                             event.point = point;
@@ -265,15 +268,18 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                         }
                         return this.response.success;
                     }],
-                [[keys.home], function () {
+                [[keys.home],
+                    function () {
                         highlightFirstValidPointInChart(chart);
                         return this.response.success;
                     }],
-                [[keys.end], function () {
+                [[keys.end],
+                    function () {
                         highlightLastValidPointInChart(chart);
                         return this.response.success;
                     }],
-                [[keys.pageDown, keys.pageUp], function (keyCode) {
+                [[keys.pageDown, keys.pageUp],
+                    function (keyCode) {
                         chart.highlightAdjacentSeries(keyCode === keys.pageDown);
                         return this.response.success;
                     }]

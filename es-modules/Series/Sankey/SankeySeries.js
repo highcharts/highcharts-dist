@@ -14,10 +14,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -196,7 +198,11 @@ var SankeySeries = /** @class */ (function (_super) {
             return {};
         }
         var series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state || '']) || {}, values = [
-            'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
+            'colorByPoint',
+            'borderColor',
+            'borderWidth',
+            'linkOpacity',
+            'opacity'
         ].reduce(function (obj, key) {
             obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
             return obj;
@@ -206,7 +212,8 @@ var SankeySeries = /** @class */ (function (_super) {
             return {
                 fill: color,
                 stroke: values.borderColor,
-                'stroke-width': values.borderWidth
+                'stroke-width': values.borderWidth,
+                opacity: values.opacity
             };
         }
         // Link attributes
@@ -611,6 +618,12 @@ var SankeySeries = /** @class */ (function (_super) {
          */
         linkOpacity: 0.5,
         /**
+         * Opacity for the nodes in the sankey diagram.
+         *
+         * @private
+         */
+        opacity: 1,
+        /**
          * The minimal width for a line of a sankey. By default,
          * 0 values are not shown.
          *
@@ -650,7 +663,11 @@ var SankeySeries = /** @class */ (function (_super) {
                  * Opacity for the links between nodes in the sankey diagram in
                  * hover mode.
                  */
-                linkOpacity: 1
+                linkOpacity: 1,
+                /**
+                 * Opacity for the nodes in the sankey diagram in hover mode.
+                 */
+                opacity: 1
             },
             /**
              * The opposite state of a hover for a single point node/link.
@@ -664,10 +681,7 @@ var SankeySeries = /** @class */ (function (_super) {
                  */
                 linkOpacity: 0.1,
                 /**
-                 * Opacity of inactive markers.
-                 *
-                 * @type      {number}
-                 * @apioption plotOptions.series.states.inactive.opacity
+                 * Opacity of the nodes in the sankey diagram in inactive mode.
                  */
                 opacity: 0.1,
                 /**

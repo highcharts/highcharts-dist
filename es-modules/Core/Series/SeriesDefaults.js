@@ -981,7 +981,7 @@ var seriesDefaults = {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        lineColor: "#ffffff" /* backgroundColor */,
+        lineColor: "#ffffff" /* Palette.backgroundColor */,
         /**
          * The width of the point marker's outline.
          *
@@ -1181,7 +1181,7 @@ var seriesDefaults = {
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                fillColor: "#cccccc" /* neutralColor20 */,
+                fillColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The color of the point marker's outline. When
                  * `undefined`, the series' or point's color is used.
@@ -1191,7 +1191,7 @@ var seriesDefaults = {
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                lineColor: "#000000" /* neutralColor100 */,
+                lineColor: "#000000" /* Palette.neutralColor100 */,
                 /**
                  * The width of the point marker's outline.
                  *

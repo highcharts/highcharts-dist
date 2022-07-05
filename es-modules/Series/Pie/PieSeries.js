@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -133,7 +135,7 @@ var PieSeries = /** @class */ (function (_super) {
                 this.graph.attr({
                     'stroke-width': options.borderWidth,
                     fill: options.fillColor || 'none',
-                    stroke: options.color || "#cccccc" /* neutralColor20 */
+                    stroke: options.color || "#cccccc" /* Palette.neutralColor20 */
                 });
             }
         }
@@ -284,6 +286,7 @@ var PieSeries = /** @class */ (function (_super) {
      * @private
      */
     PieSeries.prototype.translate = function (positions) {
+        fireEvent(this, 'translate');
         this.generatePoints();
         var series = this, precision = 1000, // issue #172
         options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
@@ -431,7 +434,7 @@ var PieSeries = /** @class */ (function (_super) {
      *               pointPlacement, pointStart, softThreshold, stacking, step,
      *               threshold, turboThreshold, zoneAxis, zones, dataSorting,
      *               boostBlending
-     * @product      highcharts
+     * @product      highcharts highmaps
      * @optionparent plotOptions.pie
      */
     PieSeries.defaultOptions = merge(Series.defaultOptions, {
@@ -451,7 +454,7 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @type      {Function}
          * @since     1.2.0
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @context   Highcharts.Point
          * @apioption plotOptions.pie.events.checkboxClick
          */
@@ -467,7 +470,7 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @type      {Highcharts.PointLegendItemClickCallbackFunction}
          * @since     1.2.0
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @apioption plotOptions.pie.point.events.legendItemClick
          */
         /**
@@ -483,7 +486,7 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @type    {Array<(number|string|null),(number|string|null)>}
          * @default [null, null]
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -528,7 +531,7 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
          * @since     3.0
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @apioption plotOptions.pie.colors
          */
         /**
@@ -555,7 +558,7 @@ var PieSeries = /** @class */ (function (_super) {
              *
              * @type      {string}
              * @since     7.0.0
-             * @product   highcharts
+             * @product   highcharts highmaps
              * @apioption plotOptions.pie.dataLabels.alignTo
              */
             allowOverlap: true,
@@ -573,7 +576,7 @@ var PieSeries = /** @class */ (function (_super) {
              *
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since     2.1
-             * @product   highcharts
+             * @product   highcharts highmaps
              * @apioption plotOptions.pie.dataLabels.connectorColor
              */
             /**
@@ -585,7 +588,7 @@ var PieSeries = /** @class */ (function (_super) {
              *         No padding
              *
              * @since   2.1
-             * @product highcharts
+             * @product highcharts highmaps
              */
             connectorPadding: 5,
             /**
@@ -622,7 +625,7 @@ var PieSeries = /** @class */ (function (_super) {
              *
              * @type    {string|Function}
              * @since   7.0.0
-             * @product highcharts
+             * @product highcharts highmaps
              */
             connectorShape: 'fixedOffset',
             /**
@@ -639,7 +642,7 @@ var PieSeries = /** @class */ (function (_super) {
              * @type      {number}
              * @default   1
              * @since     2.1
-             * @product   highcharts
+             * @product   highcharts highmaps
              * @apioption plotOptions.pie.dataLabels.connectorWidth
              */
             /**
@@ -651,7 +654,7 @@ var PieSeries = /** @class */ (function (_super) {
              *         crookDistance set to 90%
              *
              * @since   7.0.0
-             * @product highcharts
+             * @product highcharts highmaps
              */
             crookDistance: '70%',
             /**
@@ -665,7 +668,7 @@ var PieSeries = /** @class */ (function (_super) {
              *
              * @type    {number|string}
              * @since   2.1
-             * @product highcharts
+             * @product highcharts highmaps
              */
             distance: 30,
             enabled: true,
@@ -706,7 +709,7 @@ var PieSeries = /** @class */ (function (_super) {
              *         Non soft
              *
              * @since   2.1.7
-             * @product highcharts
+             * @product highcharts highmaps
              */
             softConnector: true,
             /**
@@ -742,7 +745,7 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @type      {number}
          * @since     1.3.6
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @apioption plotOptions.pie.endAngle
          */
         /**
@@ -768,7 +771,7 @@ var PieSeries = /** @class */ (function (_super) {
          *         True, the hiddden point is ignored
          *
          * @since   2.3.0
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -799,7 +802,7 @@ var PieSeries = /** @class */ (function (_super) {
          * @type      {number|string}
          * @default   0
          * @since     2.0
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @apioption plotOptions.pie.innerSize
          */
         /**
@@ -822,7 +825,7 @@ var PieSeries = /** @class */ (function (_super) {
          * @type      {number|string}
          * @default   80
          * @since     3.0
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @apioption plotOptions.pie.minSize
          */
         /**
@@ -839,7 +842,7 @@ var PieSeries = /** @class */ (function (_super) {
          *         Smaller pie
          *
          * @type    {number|string|null}
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -851,7 +854,7 @@ var PieSeries = /** @class */ (function (_super) {
          * @sample {highcharts} highcharts/plotoptions/series-showinlegend/
          *         One series in the legend, one hidden
          *
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -863,7 +866,7 @@ var PieSeries = /** @class */ (function (_super) {
          * @sample {highcharts} highcharts/plotoptions/pie-slicedoffset-20/
          *         20px offset
          *
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -878,7 +881,7 @@ var PieSeries = /** @class */ (function (_super) {
          * @type      {number}
          * @default   0
          * @since     2.3.4
-         * @product   highcharts
+         * @product   highcharts highmaps
          * @apioption plotOptions.pie.startAngle
          */
         /**
@@ -890,7 +893,7 @@ var PieSeries = /** @class */ (function (_super) {
          * `stickyTracking` is false and `tooltip.shared` is false, the tooltip
          * will be hidden when moving the mouse between series.
          *
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -912,11 +915,11 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @default #ffffff
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
-        borderColor: "#ffffff" /* backgroundColor */,
+        borderColor: "#ffffff" /* Palette.backgroundColor */,
         /**
          * The width of the border surrounding each slice.
          *
@@ -931,7 +934,7 @@ var PieSeries = /** @class */ (function (_super) {
          * @sample {highcharts} highcharts/plotoptions/pie-borderwidth/
          *         3px border
          *
-         * @product highcharts
+         * @product highcharts highmaps
          *
          * @private
          */
@@ -945,7 +948,7 @@ var PieSeries = /** @class */ (function (_super) {
             /**
              * @extends   plotOptions.series.states.hover
              * @excluding marker, lineWidth, lineWidthPlus
-             * @product   highcharts
+             * @product   highcharts highmaps
              */
             hover: {
                 /**
@@ -959,7 +962,7 @@ var PieSeries = /** @class */ (function (_super) {
                  * @sample {highcharts} highcharts/plotoptions/pie-states-hover-brightness/
                  *         Brightened by 0.5
                  *
-                 * @product highcharts
+                 * @product highcharts highmaps
                  */
                 brightness: 0.1
             }
@@ -1002,7 +1005,7 @@ export default PieSeries;
  * @extends   series,plotOptions.pie
  * @excluding cropThreshold, dataParser, dataURL, stack, xAxis, yAxis,
  *            dataSorting, step, boostThreshold, boostBlending
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie
  */
 /**
@@ -1046,19 +1049,19 @@ export default PieSeries;
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @extends   series.line.data
  * @excluding marker, x
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie.data
  */
 /**
  * @type      {Highcharts.SeriesPieDataLabelsOptionsObject}
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie.data.dataLabels
  */
 /**
  * The sequential index of the data point in the legend.
  *
  * @type      {number}
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie.data.legendIndex
  */
 /**
@@ -1068,18 +1071,18 @@ export default PieSeries;
  *         One sliced point
  *
  * @type      {boolean}
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie.data.sliced
  */
 /**
  * @extends plotOptions.pie.dataLabels
  * @excluding align, allowOverlap, inside, staggerLines, step
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie.dataLabels
  */
 /**
  * @excluding legendItemClick
- * @product   highcharts
+ * @product   highcharts highmaps
  * @apioption series.pie.events
  */
 ''; // placeholder for transpiled doclets above

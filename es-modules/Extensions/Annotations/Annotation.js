@@ -195,10 +195,11 @@ var Annotation = /** @class */ (function () {
     Annotation.prototype.getLabelsAndShapesOptions = function (baseOptions, newOptions) {
         var mergedOptions = {};
         ['labels', 'shapes'].forEach(function (name) {
-            if (baseOptions[name]) {
+            var someBaseOptions = baseOptions[name];
+            if (someBaseOptions) {
                 if (newOptions[name]) {
                     mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                        return merge(baseOptions[name][i], basicOptions);
+                        return merge(someBaseOptions[i], basicOptions);
                     });
                 }
                 else {
@@ -209,9 +210,10 @@ var Annotation = /** @class */ (function () {
         return mergedOptions;
     };
     Annotation.prototype.addShapes = function () {
-        (this.options.shapes || []).forEach(function (shapeOptions, i) {
+        var shapes = this.options.shapes || [];
+        shapes.forEach(function (shapeOptions, i) {
             var shape = this.initShape(shapeOptions, i);
-            merge(true, this.options.shapes[i], shape.options);
+            merge(true, shapes[i], shape.options);
         }, this);
     };
     Annotation.prototype.addLabels = function () {
@@ -687,7 +689,7 @@ merge(Annotation.prototype,
              *
              * @type {Highcharts.ColorString}
              */
-            borderColor: "#000000" /* neutralColor100 */,
+            borderColor: "#000000" /* Palette.neutralColor100 */,
             /**
              * The border radius in pixels for the annotaiton's label.
              *
@@ -1118,8 +1120,8 @@ merge(Annotation.prototype,
             height: 10,
             style: {
                 cursor: 'pointer',
-                fill: "#ffffff" /* backgroundColor */,
-                stroke: "#000000" /* neutralColor100 */,
+                fill: "#ffffff" /* Palette.backgroundColor */,
+                stroke: "#000000" /* Palette.neutralColor100 */,
                 'stroke-width': 2
             },
             visible: false,
@@ -1299,7 +1301,8 @@ chartProto.callbacks.push(function (chart) {
             chart.options.exporting.csv.annotations &&
             chart.options.exporting.csv.annotations.join);
         annotations.forEach(function (annotation) {
-            if (annotation.options.labelOptions.includeInDataExport) {
+            if (annotation.options.labelOptions &&
+                annotation.options.labelOptions.includeInDataExport) {
                 annotation.labels.forEach(function (label) {
                     if (label.options.text) {
                         var annotationText_1 = label.options.text;
@@ -1384,8 +1387,17 @@ wrap(Pointer.prototype, 'onContainerMouseDown', function (proceed) {
     }
 });
 H.Annotation = Annotation;
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Annotation;
-/* eslint-enable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * Object of shape point.
  *

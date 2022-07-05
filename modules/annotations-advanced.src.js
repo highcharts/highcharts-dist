@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Annotations module
  *
@@ -2090,9 +2090,12 @@
              * @param {number} ry a radius in y direction to be set
              */
             ControllableEllipse.prototype.setYRadius = function (ry) {
+                var shapes = this.annotation.userOptions.shapes;
                 this.options.ry = ry;
-                this.annotation.userOptions.shapes[0].ry = ry;
-                this.annotation.options.shapes[0].ry = ry;
+                if (shapes && shapes[0]) {
+                    shapes[0].ry = ry;
+                    shapes[0].ry = ry;
+                }
             };
             /* *
              *
@@ -2645,7 +2648,7 @@
 
         return ControllableImage;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Annotations.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Extensions/Annotations/Mixins/ControllableMixin.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Mixins/EventEmitterMixin.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (A, Chart, ControllableMixin, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, EventEmitterMixin, H, MockPoint, Pointer, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Annotation.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Extensions/Annotations/Mixins/ControllableMixin.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Mixins/EventEmitterMixin.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (A, Chart, ControllableMixin, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, EventEmitterMixin, H, MockPoint, Pointer, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -2838,10 +2841,11 @@
             Annotation.prototype.getLabelsAndShapesOptions = function (baseOptions, newOptions) {
                 var mergedOptions = {};
                 ['labels', 'shapes'].forEach(function (name) {
-                    if (baseOptions[name]) {
+                    var someBaseOptions = baseOptions[name];
+                    if (someBaseOptions) {
                         if (newOptions[name]) {
                             mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                                return merge(baseOptions[name][i], basicOptions);
+                                return merge(someBaseOptions[i], basicOptions);
                             });
                         }
                         else {
@@ -2852,10 +2856,11 @@
                 return mergedOptions;
             };
             Annotation.prototype.addShapes = function () {
-                (this.options.shapes || []).forEach(function (shapeOptions, i) {
+                var shapes = this.options.shapes || [];
+                shapes.forEach(function (shapeOptions, i) {
                     var shape = this.initShape(shapeOptions,
                         i);
-                    merge(true, this.options.shapes[i], shape.options);
+                    merge(true, shapes[i], shape.options);
                 }, this);
             };
             Annotation.prototype.addLabels = function () {
@@ -3353,7 +3358,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    borderColor: "#000000" /* neutralColor100 */,
+                    borderColor: "#000000" /* Palette.neutralColor100 */,
                     /**
                      * The border radius in pixels for the annotaiton's label.
                      *
@@ -3784,8 +3789,8 @@
                     height: 10,
                     style: {
                         cursor: 'pointer',
-                        fill: "#ffffff" /* backgroundColor */,
-                        stroke: "#000000" /* neutralColor100 */,
+                        fill: "#ffffff" /* Palette.backgroundColor */,
+                        stroke: "#000000" /* Palette.neutralColor100 */,
                         'stroke-width': 2
                     },
                     visible: false,
@@ -3972,7 +3977,8 @@
                     chart.options.exporting.csv.annotations &&
                     chart.options.exporting.csv.annotations.join);
                 annotations.forEach(function (annotation) {
-                    if (annotation.options.labelOptions.includeInDataExport) {
+                    if (annotation.options.labelOptions &&
+                        annotation.options.labelOptions.includeInDataExport) {
                         annotation.labels.forEach(function (label) {
                             if (label.options.text) {
                                 var annotationText_1 = label.options.text;
@@ -4060,7 +4066,16 @@
             }
         });
         H.Annotation = Annotation;
-        /* eslint-enable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * Object of shape point.
          *
@@ -4125,7 +4140,7 @@
 
         return Annotation;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/BasicAnnotation.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/BasicAnnotation.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -4268,7 +4283,8 @@
                                     coords = this.chart.pointer.getCoordinates(e),
                                     x = coords.xAxis[0].value,
                                     y = coords.yAxis[0].value,
-                                    points = target.options.points;
+                                    points = target.options.points,
+                                    shapes = annotation.userOptions.shapes;
                                 // Top right point
                                 points[1].x = x;
                                 // Bottom right point (cursor position)
@@ -4276,8 +4292,9 @@
                                 points[2].y = y;
                                 // Bottom left
                                 points[3].y = y;
-                                annotation.userOptions.shapes[0].points =
-                                    target.options.points;
+                                if (shapes && shapes[0]) {
+                                    shapes[0].points = target.options.points;
+                                }
                                 annotation.redraw(false);
                             }
                         }
@@ -4298,13 +4315,15 @@
                             // TRANSLATION
                             drag: function (e, target) {
                                 var annotation = target.annotation,
-                                    position = this.mouseMoveToTranslation(e);
+                                    position = this.mouseMoveToTranslation(e),
+                                    shapes = annotation.userOptions.shapes;
                                 target.setRadius(Math.max(target.options.r +
                                     position.y /
                                         Math.sin(Math.PI / 4), 5));
-                                annotation.userOptions.shapes[0].r = target.options.r;
-                                annotation.userOptions.shapes[0].point =
-                                    target.options.point;
+                                if (shapes && shapes[0]) {
+                                    shapes[0].r = target.options.r;
+                                    shapes[0].point = target.options.point;
+                                }
                                 target.redraw(false);
                             }
                         }
@@ -4385,7 +4404,7 @@
 
         return BasicAnnotation;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/CrookedLine.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/CrookedLine.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -4578,7 +4597,7 @@
 
         return CrookedLine;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/ElliottWave.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Core/Utilities.js']], function (Annotation, CrookedLine, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/ElliottWave.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Core/Utilities.js']], function (Annotation, CrookedLine, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -4676,7 +4695,7 @@
 
         return ElliottWave;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/Tunnel.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, CrookedLine, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/Tunnel.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, CrookedLine, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -4801,6 +4820,7 @@
                 this.translatePoint(0, dh, 3);
                 this.options.typeOptions.height = this.points[3].y -
                     this.points[0].y;
+                this.userOptions.typeOptions.height = this.options.typeOptions.height;
             };
             return Tunnel;
         }(CrookedLine));
@@ -4896,7 +4916,7 @@
 
         return Tunnel;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/InfinityLine.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, CrookedLine, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/InfinityLine.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, CrookedLine, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -5077,7 +5097,7 @@
 
         return InfinityLine;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/TimeCycles.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Core/Utilities.js']], function (Annotation, CrookedLine, ControlPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/TimeCycles.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Core/Utilities.js']], function (Annotation, CrookedLine, ControlPoint, U) {
         /* *
          *
          *  Authors: Rafal Sebestjanski and Pawel Lysy
@@ -5310,7 +5330,7 @@
 
         return TimeCycles;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/Fibonacci.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Extensions/Annotations/Types/Tunnel.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, Tunnel, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/Fibonacci.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Extensions/Annotations/Types/Tunnel.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, Tunnel, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -5497,7 +5517,7 @@
                 /**
                  * The color of line.
                  */
-                lineColor: "#999999" /* neutralColor40 */,
+                lineColor: "#999999" /* Palette.neutralColor40 */,
                 /**
                  * An array of colors for the lines.
                  */
@@ -5535,7 +5555,7 @@
 
         return Fibonacci;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/FibonacciTimeZones.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/Types/InfinityLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, CrookedLine, InfinityLine, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/FibonacciTimeZones.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Types/CrookedLine.js'], _modules['Extensions/Annotations/Types/InfinityLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, CrookedLine, InfinityLine, MockPoint, U) {
         /* *
          *
          *  Author: Rafal Sebestjanski
@@ -5772,7 +5792,7 @@
 
         return FibonacciTimeZones;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/Pitchfork.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/Types/InfinityLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, InfinityLine, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/Pitchfork.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/Types/InfinityLine.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, InfinityLine, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -5976,7 +5996,7 @@
 
         return Pitchfork;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/VerticalLine.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/VerticalLine.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Annotation, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -6153,7 +6173,7 @@
 
         return VerticalLine;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Types/Measure.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Types/Measure.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Core/Utilities.js']], function (Annotation, ControlPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -7125,7 +7145,7 @@
 
         return ChartNavigationComposition;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, ChartNavigationComposition, F, H, D, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, ChartNavigationComposition, F, H, D, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -8104,8 +8124,9 @@
                         /** @ignore-option */
                         steps: [
                             function (e, annotation) {
-                                var mockPointOpts = annotation.options.shapes[0]
-                                        .point,
+                                var shapes = annotation.options.shapes;
+                                var mockPointOpts = ((shapes && shapes[0] && shapes[0].point) ||
+                                        {}),
                                     distance;
                                 if (isNumber(mockPointOpts.xAxis) &&
                                     isNumber(mockPointOpts.yAxis)) {
@@ -8232,7 +8253,9 @@
                         /** @ignore-option */
                         steps: [
                             function (e, annotation) {
-                                var points = annotation.options.shapes[0].points,
+                                var shapes = annotation.options.shapes;
+                                var points = ((shapes && shapes[0] && shapes[0].points) ||
+                                        []),
                                     coords = this.chart.pointer.getCoordinates(e),
                                     coordsX = this.utils.getAssignedAxis(coords.xAxis),
                                     coordsY = this.utils.getAssignedAxis(coords.yAxis),
@@ -8305,7 +8328,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/10.1.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/10.2.0/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -8795,7 +8818,7 @@
                     // Advanced annotations:
                     lang[options.langKey] || options.langKey, 
                     // Basic shapes:
-                    options.shapes && options.shapes[0].type)));
+                    options.shapes && options.shapes[0].type, '')));
                     // add buttons
                     button = this.addButton(popupDiv, lang.removeButton || 'remove', 'remove', popupDiv, callback);
                     button.className += ' ' + PREFIX + 'annotation-remove-button';
@@ -9623,7 +9646,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/10.1.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/10.2.0/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

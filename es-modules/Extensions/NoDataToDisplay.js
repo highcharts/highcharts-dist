@@ -117,7 +117,7 @@ defaultOptions.noData = {
         /** @ignore */
         fontSize: '12px',
         /** @ignore */
-        color: "#666666" /* neutralColor60 */
+        color: "#666666" /* Palette.neutralColor60 */
     }
 };
 /**

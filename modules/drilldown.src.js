@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Highcharts Drilldown module
  *
@@ -326,6 +326,9 @@
                     if (xOffset) {
                         newPositions.x += xOffset;
                     }
+                    if (breadcrumbs.options.rtl) {
+                        newPositions.x += positionOptions.width;
+                    }
                     newPositions.y = pick(newPositions.y, this.yOffset, 0);
                     breadcrumbs.group.align(newPositions, true, alignTo);
                 }
@@ -540,10 +543,19 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.updateListElements = function () {
-                var updateXPosition = function (element,
+                var breadcrumbs = this,
+                    elementList = breadcrumbs.elementList,
+                    buttonSpacing = breadcrumbs.options.buttonSpacing,
+                    list = breadcrumbs.list,
+                    rtl = breadcrumbs.options.rtl,
+                    rtlFactor = rtl ? -1 : 1,
+                    updateXPosition = function (element,
                     spacing) {
-                        return element.getBBox().width + spacing;
-                }, breadcrumbs = this, elementList = breadcrumbs.elementList, buttonSpacing = breadcrumbs.options.buttonSpacing, list = breadcrumbs.list;
+                        return rtlFactor * element.getBBox().width +
+                            rtlFactor * spacing;
+                }, adjustToRTL = function (element, posX, posY) {
+                    element.translate(posX - element.getBBox().width, posY);
+                };
                 // Inital position for calculating the breadcrumbs group.
                 var posX = breadcrumbs.group ?
                         updateXPosition(breadcrumbs.group,
@@ -562,9 +574,12 @@
                         if (!currentBreadcrumb.separator &&
                             !isLast) {
                             // Add spacing for the next separator
-                            posX += buttonSpacing;
+                            posX += rtlFactor * buttonSpacing;
                             currentBreadcrumb.separator =
                                 breadcrumbs.renderSeparator(posX, posY);
+                            if (rtl) {
+                                adjustToRTL(currentBreadcrumb.separator, posX, posY);
+                            }
                             posX += updateXPosition(currentBreadcrumb.separator, buttonSpacing);
                         }
                         else if (currentBreadcrumb.separator &&
@@ -577,10 +592,16 @@
                     else {
                         // Render a button.
                         button = breadcrumbs.renderButton(breadcrumb, posX, posY);
+                        if (rtl) {
+                            adjustToRTL(button, posX, posY);
+                        }
                         posX += updateXPosition(button, buttonSpacing);
                         // Render a separator.
                         if (!isLast) {
                             separator = breadcrumbs.renderSeparator(posX, posY);
+                            if (rtl) {
+                                adjustToRTL(separator, posX, posY);
+                            }
                             posX += updateXPosition(separator, buttonSpacing);
                         }
                         elementList[breadcrumb.level] = {
@@ -639,7 +660,7 @@
                         }
                     },
                     style: {
-                        color: "#335cad" /* highlightColor80 */
+                        color: "#335cad" /* Palette.highlightColor80 */
                     }
                 },
                 /**
@@ -709,6 +730,16 @@
                  */
                 relativeTo: 'plotBox',
                 /**
+                 * Whether to reverse the order of buttons. This is common in Arabic
+                 * and Hebrew.
+                 *
+                 * @type       {boolean}
+                 * @since 10.2.0
+                 * @sample     {highcharts} highcharts/breadcrumbs/rtl
+                 *             Breadcrumbs in RTL
+                 */
+                rtl: false,
+                /**
                  * Positioning for the button row. The breadcrumbs buttons will be
                  * aligned properly for the default chart layout (title,  subtitle,
                  * legend, range selector) for the custom chart layout set the position
@@ -768,7 +799,7 @@
                      *  @since 10.0.0
                      */
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 },
                 /**
@@ -1193,7 +1224,7 @@
                 /** @ignore-option */
                 cursor: 'pointer',
                 /** @ignore-option */
-                color: "#003399" /* highlightColor100 */,
+                color: "#003399" /* Palette.highlightColor100 */,
                 /** @ignore-option */
                 fontWeight: 'bold',
                 /** @ignore-option */
@@ -1217,7 +1248,7 @@
              */
             activeDataLabelStyle: {
                 cursor: 'pointer',
-                color: "#003399" /* highlightColor100 */,
+                color: "#003399" /* Palette.highlightColor100 */,
                 fontWeight: 'bold',
                 textDecoration: 'underline'
             },

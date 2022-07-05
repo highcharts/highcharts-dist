@@ -48,11 +48,11 @@ var charts = H.charts, doc = H.doc, win = H.win;
 function error(code, stop, chart, params) {
     var severity = stop ? 'Highcharts error' : 'Highcharts warning';
     if (code === 32) {
-        code = severity + ": Deprecated member";
+        code = "".concat(severity, ": Deprecated member");
     }
     var isCode = isNumber(code);
     var message = isCode ?
-        severity + " #" + code + ": www.highcharts.com/errors/" + code + "/" :
+        "".concat(severity, " #").concat(code, ": www.highcharts.com/errors/").concat(code, "/") :
         code.toString();
     var defaultHandler = function () {
         if (stop) {
@@ -71,7 +71,7 @@ function error(code, stop, chart, params) {
             message += '?';
         }
         objectEach(params, function (value, key) {
-            additionalMessages_1 += "\n - " + key + ": " + value;
+            additionalMessages_1 += "\n - ".concat(key, ": ").concat(value);
             if (isCode) {
                 message += encodeURI(key) + '=' + encodeURI(value);
             }
@@ -526,7 +526,7 @@ function pick() {
 function css(el, styles) {
     if (H.isMS && !H.svg) { // #2686
         if (styles && defined(styles.opacity)) {
-            styles.filter = "alpha(opacity=" + styles.opacity * 100 + ")";
+            styles.filter = "alpha(opacity=".concat(styles.opacity * 100, ")");
         }
     }
     extend(el.style, styles);
@@ -1235,7 +1235,7 @@ objectEach({
 }, function (val, key) {
     H[key] = function (arr) {
         var _a;
-        error(32, false, void 0, (_a = {}, _a["Highcharts." + key] = "use Array." + val, _a));
+        error(32, false, void 0, (_a = {}, _a["Highcharts.".concat(key)] = "use Array.".concat(val), _a));
         return Array.prototype[val].apply(arr, [].slice.call(arguments, 1));
     };
 });

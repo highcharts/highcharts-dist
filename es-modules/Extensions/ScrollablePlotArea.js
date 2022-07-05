@@ -24,7 +24,7 @@ import Chart from '../Core/Chart/Chart.js';
 import Series from '../Core/Series/Series.js';
 import RendererRegistry from '../Core/Renderer/RendererRegistry.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, merge = U.merge, pick = U.pick;
+var addEvent = U.addEvent, createElement = U.createElement, defined = U.defined, merge = U.merge, pick = U.pick;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 addEvent(Chart, 'afterSetChartSize', function (e) {
     var scrollablePlotArea = this.options.chart.scrollablePlotArea, scrollableMinWidth = scrollablePlotArea && scrollablePlotArea.minWidth, scrollableMinHeight = scrollablePlotArea && scrollablePlotArea.minHeight, scrollablePixelsX, scrollablePixelsY, corrections;
@@ -51,7 +51,7 @@ addEvent(Chart, 'afterSetChartSize', function (e) {
         }
         else if (scrollableMinHeight) {
             this.scrollablePixelsY = scrollablePixelsY = Math.max(0, scrollableMinHeight - this.chartHeight);
-            if (scrollablePixelsY) {
+            if (defined(scrollablePixelsY)) {
                 this.scrollablePlotBox = (this.renderer.scrollablePlotBox = merge(this.plotBox));
                 this.plotBox.height = this.plotHeight += scrollablePixelsY;
                 if (this.inverted) {
@@ -181,7 +181,7 @@ Chart.prototype.moveFixedElements = function () {
         axisClass = '.highcharts-yaxis';
     }
     if (axisClass) {
-        fixedSelectors.push(axisClass + ":not(.highcharts-radial-axis)", axisClass + "-labels:not(.highcharts-radial-axis-labels)");
+        fixedSelectors.push("".concat(axisClass, ":not(.highcharts-radial-axis)"), "".concat(axisClass, "-labels:not(.highcharts-radial-axis-labels)"));
     }
     fixedSelectors.forEach(function (className) {
         [].forEach.call(container.querySelectorAll(className), function (elem) {

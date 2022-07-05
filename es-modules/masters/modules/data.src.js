@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -16,6 +16,7 @@ import Data from '../../Extensions/Data.js';
 var G = Highcharts;
 // Functions
 G.ajax = HttpUtilities.ajax;
+G.data = Data.data;
 G.getJSON = HttpUtilities.getJSON;
 G.post = HttpUtilities.post;
 // Classes

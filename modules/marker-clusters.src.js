@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Marker clusters module for Highcharts
  *
@@ -291,7 +291,7 @@
                     /** @internal */
                     lineWidth: 0,
                     /** @internal */
-                    lineColor: "#ffffff" /* backgroundColor */
+                    lineColor: "#ffffff" /* Palette.backgroundColor */
                 },
                 /**
                  * Fires when the cluster point is clicked and `drillToCluster` is enabled.
@@ -1043,8 +1043,6 @@
             },
             optimizedKmeans: function (processedXData, processedYData, dataIndexes, options) {
                 var series = this,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
                     pointMaxDistance = options.processedDistance ||
                         clusterDefaultOptions.layoutAlgorithm.gridSize,
                     group = {},
@@ -1453,8 +1451,6 @@
             var series = this,
                 chart = series.chart,
                 mapView = chart.mapView,
-                xAxis = series.xAxis,
-                yAxis = series.yAxis,
                 xData = series.xData,
                 yData = series.yData,
                 clusterOptions = series.options.cluster,

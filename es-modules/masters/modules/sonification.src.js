@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -32,11 +32,7 @@ import Timeline from '../../Extensions/Sonification/Timeline.js';
 import TimelineEvent from '../../Extensions/Sonification/TimelineEvent.js';
 import TimelinePath from '../../Extensions/Sonification/TimelinePath.js';
 var G = Highcharts;
-G.sonification = __assign(__assign({}, Sonification), { instruments: Instrument.definitions, Earcon: Earcon,
-    Instrument: Instrument,
-    Timeline: Timeline,
-    TimelineEvent: TimelineEvent,
-    TimelinePath: TimelinePath });
+G.sonification = __assign(__assign({}, Sonification), { instruments: Instrument.definitions, Earcon: Earcon, Instrument: Instrument, Timeline: Timeline, TimelineEvent: TimelineEvent, TimelinePath: TimelinePath });
 G.Earcon = Earcon;
 G.Instrument = Instrument;
 ChartSonify.compose(G.Chart);

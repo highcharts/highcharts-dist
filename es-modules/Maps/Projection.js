@@ -8,12 +8,14 @@
  *
  * */
 'use strict';
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 import PC from '../Core/Geometry/PolygonClip.js';
 var clipLineString = PC.clipLineString, clipPolygon = PC.clipPolygon;
@@ -131,7 +133,7 @@ var Projection = /** @class */ (function () {
             if (roughDistance > 10) {
                 var greatCircle = Projection.greatCircle(poly[i], poly[i + 1]);
                 if (greatCircle.length) {
-                    poly.splice.apply(poly, __spreadArrays([i + 1, 0], greatCircle));
+                    poly.splice.apply(poly, __spreadArray([i + 1, 0], greatCircle, false));
                 }
             }
         }
@@ -268,8 +270,8 @@ var Projection = /** @class */ (function () {
                         intersections[i].direction * floatCorrection);
                     var lonMinus = wrapLon(antimeridian -
                         intersections[i].direction * floatCorrection);
-                    var slice = poly.splice.apply(poly, __spreadArrays([index,
-                        intersections[i + 1].i - index], Projection.greatCircle([lonPlus, intersections[i].lat], [lonPlus, intersections[i + 1].lat], true)));
+                    var slice = poly.splice.apply(poly, __spreadArray([index,
+                        intersections[i + 1].i - index], Projection.greatCircle([lonPlus, intersections[i].lat], [lonPlus, intersections[i + 1].lat], true), false));
                     // Add interpolated points close to the cut
                     slice.push.apply(slice, Projection.greatCircle([lonMinus, intersections[i + 1].lat], [lonMinus, intersections[i].lat], true));
                     polygons.push(slice);
@@ -295,8 +297,8 @@ var Projection = /** @class */ (function () {
                                 polarSegment.push([lon, polarLatitude]);
                             }
                             polarSegment.push.apply(polarSegment, Projection.greatCircle([lon2, polarLatitude], [lon2, polarIntersection.lat], true));
-                            poly_1.splice.apply(poly_1, __spreadArrays([indexOf,
-                                0], polarSegment));
+                            poly_1.splice.apply(poly_1, __spreadArray([indexOf,
+                                0], polarSegment, false));
                             break;
                         }
                     }

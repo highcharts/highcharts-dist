@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -36,7 +36,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/ColorMapMixin.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -46,66 +46,92 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        // @todo cleanup & reduction - consider composition
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
-        var defined = U.defined,
-            addEvent = U.addEvent;
-        // Move points to the top of the z-index order when hovered
-        addEvent(Point, 'afterSetState', function (e) {
-            var point = this;
-            if (point.moveToTopOnHover && point.graphic) {
-                point.graphic.attr({
-                    zIndex: e && e.state === 'hover' ? 1 : 0
-                });
-            }
-        });
-        /**
-         * Mixin for maps and heatmaps
+        var columnProto = SeriesRegistry.seriesTypes.column.prototype;
+        var addEvent = U.addEvent,
+            defined = U.defined;
+        /* *
          *
-         * @private
-         * @mixin Highcharts.colorMapPointMixin
-         */
-        var PointMixin = {
+         *  Composition
+         *
+         * */
+        var ColorMapComposition;
+        (function (ColorMapComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Color points have a value option that determines whether or not it is
-                 * a null point
-                 * @private
-                 */
-                isValid: function () {
-                    // undefined is allowed
-                    return (this.value !== null &&
-                        this.value !== Infinity &&
-                        this.value !== -Infinity);
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        /**
-         * @private
-         * @mixin Highcharts.colorMapSeriesMixin
-         */
-        var SeriesMixin = {
-                pointArrayMap: ['value'],
-                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
-                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-                getSymbol: noop,
-                parallelArrays: ['x', 'y', 'value'],
+                isValid: pointIsValid
+            };
+            ColorMapComposition.seriesMembers = {
                 colorKey: 'value',
-                pointAttribs: seriesTypes.column.prototype.pointAttribs,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Get the color attibutes to apply on the graphic
-                 * @private
-                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
-                 * @param {Highcharts.Point} point
-                 * @return {Highcharts.SVGAttributes}
-                 *         The SVG attributes
-                 */
-                colorAttribs: function (point) {
-                    var ret = {};
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                parallelArrays: ['x', 'y', 'value'],
+                pointArrayMap: ['value'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                colorAttribs: seriesColorAttribs,
+                pointAttribs: columnProto.pointAttribs
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function compose(SeriesClass) {
+                var PointClass = SeriesClass.prototype.pointClass;
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    addEvent(PointClass, 'afterSetState', onPointAfterSetState);
+                }
+                return SeriesClass;
+            }
+            ColorMapComposition.compose = compose;
+            /**
+             * Move points to the top of the z-index order when hovered.
+             * @private
+             */
+            function onPointAfterSetState(e) {
+                var point = this;
+                if (point.moveToTopOnHover && point.graphic) {
+                    point.graphic.attr({
+                        zIndex: e && e.state === 'hover' ? 1 : 0
+                    });
+                }
+            }
+            /**
+             * Color points have a value option that determines whether or not it is
+             * a null point
+             * @private
+             */
+            function pointIsValid() {
+                return (this.value !== null &&
+                    this.value !== Infinity &&
+                    this.value !== -Infinity &&
+                    // undefined is allowed, but NaN is not (#17279)
+                    (this.value === void 0 || !isNaN(this.value)));
+            }
+            /**
+             * Get the color attibutes to apply on the graphic
+             * @private
+             * @function Highcharts.colorMapSeriesMixin.colorAttribs
+             * @param {Highcharts.Point} point
+             * @return {Highcharts.SVGAttributes}
+             *         The SVG attributes
+             */
+            function seriesColorAttribs(point) {
+                var ret = {};
                 if (defined(point.color) &&
                     (!point.state || point.state === 'normal') // #15746
                 ) {
@@ -113,13 +139,14 @@
                 }
                 return ret;
             }
-        };
-        var ColorMapMixin = {
-                PointMixin: PointMixin,
-                SeriesMixin: SeriesMixin
-            };
+        })(ColorMapComposition || (ColorMapComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return ColorMapMixin;
+        return ColorMapComposition;
     });
     _registerModule(_modules, 'Series/Treemap/TreemapAlgorithmGroup.js', [], function () {
         /* *
@@ -216,126 +243,98 @@
 
         return TreemapAlgorithmGroup;
     });
-    _registerModule(_modules, 'Series/DrawPointComposition.js', [], function () {
+    _registerModule(_modules, 'Series/DrawPointUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var isNumber = U.isNumber;
         /* *
          *
-         *  Composition
+         *  Functions
          *
          * */
-        var DrawPointComposition;
-        (function (DrawPointComposition) {
-            /* *
-             *
-             *  Declarations
-             *
-             * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(PointClass) {
-                if (composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
-                    var pointProto = PointClass.prototype;
-                    pointProto.draw = draw;
-                    if (!pointProto.shouldDraw) {
-                        pointProto.shouldDraw = shouldDraw;
-                    }
+        /**
+         * Handles the drawing of a component.
+         * Can be used for any type of component that reserves the graphic property,
+         * and provides a shouldDraw on its context.
+         *
+         * @private
+         *
+         * @todo add type checking.
+         * @todo export this function to enable usage
+         */
+        function draw(point, params) {
+            var animatableAttribs = params.animatableAttribs,
+                onComplete = params.onComplete,
+                css = params.css,
+                renderer = params.renderer;
+            var animation = (point.series && point.series.chart.hasRendered) ?
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (point.series &&
+                        point.series.options.animation);
+            var graphic = point.graphic;
+            params.attribs = params.attribs || {};
+            // Assigning class in dot notation does go well in IE8
+            // eslint-disable-next-line dot-notation
+            params.attribs['class'] = point.getClassName();
+            if (shouldDraw(point)) {
+                if (!graphic) {
+                    point.graphic = graphic = params.shapeType === 'text' ?
+                        renderer.text() :
+                        renderer[params.shapeType](params.shapeArgs || {});
+                    graphic.add(params.group);
                 }
-                return PointClass;
+                if (css) {
+                    graphic.css(css);
+                }
+                graphic
+                    .attr(params.attribs)
+                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
-            DrawPointComposition.compose = compose;
-            /**
-             * Handles the drawing of a component.
-             * Can be used for any type of component that reserves the graphic property,
-             * and provides a shouldDraw on its context.
-             *
-             * @private
-             *
-             * @todo add type checking.
-             * @todo export this function to enable usage
-             */
-            function draw(params) {
-                var _this = this;
-                var animatableAttribs = params.animatableAttribs,
-                    onComplete = params.onComplete,
-                    css = params.css,
-                    renderer = params.renderer;
-                var animation = (this.series && this.series.chart.hasRendered) ?
-                        // Chart-level animation on updates
-                        void 0 :
-                        // Series-level animation on new points
-                        (this.series &&
-                            this.series.options.animation);
-                var graphic = this.graphic;
-                params.attribs = params.attribs || {};
-                // Assigning class in dot notation does go well in IE8
-                // eslint-disable-next-line dot-notation
-                params.attribs['class'] = this.getClassName();
-                if (this.shouldDraw()) {
-                    if (!graphic) {
-                        this.graphic = graphic = params.shapeType === 'text' ?
-                            renderer.text() :
-                            renderer[params.shapeType](params.shapeArgs || {});
-                        graphic.add(params.group);
+            else if (graphic) {
+                var destroy_1 = function () {
+                        point.graphic = graphic = (graphic && graphic.destroy());
+                    if (typeof onComplete === 'function') {
+                        onComplete();
                     }
-                    if (css) {
-                        graphic.css(css);
-                    }
-                    graphic
-                        .attr(params.attribs)
-                        .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
+                };
+                // animate only runs complete callback if something was animated.
+                if (Object.keys(animatableAttribs).length) {
+                    graphic.animate(animatableAttribs, void 0, function () { return destroy_1(); });
                 }
-                else if (graphic) {
-                    var destroy_1 = function () {
-                            _this.graphic = graphic = (graphic && graphic.destroy());
-                        if (typeof onComplete === 'function') {
-                            onComplete();
-                        }
-                    };
-                    // animate only runs complete callback if something was animated.
-                    if (Object.keys(animatableAttribs).length) {
-                        graphic.animate(animatableAttribs, void 0, function () {
-                            destroy_1();
-                        });
-                    }
-                    else {
-                        destroy_1();
-                    }
+                else {
+                    destroy_1();
                 }
             }
-            /**
-             * @private
-             */
-            function shouldDraw() {
-                return !this.isNull;
+        }
+        /**
+         * @private
+         */
+        function shouldDraw(point) {
+            switch (point.series && point.series.type) {
+                case 'treemap':
+                    return isNumber(point.plotY) && point.y !== null;
+                default:
+                    return !point.isNull;
             }
-        })(DrawPointComposition || (DrawPointComposition = {}));
+        }
         /* *
          *
          *  Default Export
          *
          * */
+        var DrawPointUtilities = {
+                draw: draw,
+                shouldDraw: shouldDraw
+            };
 
-        return DrawPointComposition;
+        return DrawPointUtilities;
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapPoint.js', [_modules['Series/DrawPointComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DrawPointComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapPoint.js', [_modules['Series/DrawPointUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DPU, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -399,6 +398,9 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
+            TreemapPoint.prototype.draw = function (params) {
+                DPU.draw(this, params);
+            };
             TreemapPoint.prototype.getClassName = function () {
                 var className = Point.prototype.getClassName.call(this),
                     series = this.series,
@@ -436,14 +438,13 @@
                 }
             };
             TreemapPoint.prototype.shouldDraw = function () {
-                return isNumber(this.plotY) && this.y !== null;
+                return DPU.shouldDraw(this);
             };
             return TreemapPoint;
         }(ScatterPoint));
         extend(TreemapPoint.prototype, {
             setVisible: PiePoint.prototype.setVisible
         });
-        DrawPointComposition.compose(TreemapPoint);
         /* *
          *
          *  Default Export
@@ -1037,6 +1038,9 @@
                     if (xOffset) {
                         newPositions.x += xOffset;
                     }
+                    if (breadcrumbs.options.rtl) {
+                        newPositions.x += positionOptions.width;
+                    }
                     newPositions.y = pick(newPositions.y, this.yOffset, 0);
                     breadcrumbs.group.align(newPositions, true, alignTo);
                 }
@@ -1251,10 +1255,19 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.updateListElements = function () {
-                var updateXPosition = function (element,
+                var breadcrumbs = this,
+                    elementList = breadcrumbs.elementList,
+                    buttonSpacing = breadcrumbs.options.buttonSpacing,
+                    list = breadcrumbs.list,
+                    rtl = breadcrumbs.options.rtl,
+                    rtlFactor = rtl ? -1 : 1,
+                    updateXPosition = function (element,
                     spacing) {
-                        return element.getBBox().width + spacing;
-                }, breadcrumbs = this, elementList = breadcrumbs.elementList, buttonSpacing = breadcrumbs.options.buttonSpacing, list = breadcrumbs.list;
+                        return rtlFactor * element.getBBox().width +
+                            rtlFactor * spacing;
+                }, adjustToRTL = function (element, posX, posY) {
+                    element.translate(posX - element.getBBox().width, posY);
+                };
                 // Inital position for calculating the breadcrumbs group.
                 var posX = breadcrumbs.group ?
                         updateXPosition(breadcrumbs.group,
@@ -1273,9 +1286,12 @@
                         if (!currentBreadcrumb.separator &&
                             !isLast) {
                             // Add spacing for the next separator
-                            posX += buttonSpacing;
+                            posX += rtlFactor * buttonSpacing;
                             currentBreadcrumb.separator =
                                 breadcrumbs.renderSeparator(posX, posY);
+                            if (rtl) {
+                                adjustToRTL(currentBreadcrumb.separator, posX, posY);
+                            }
                             posX += updateXPosition(currentBreadcrumb.separator, buttonSpacing);
                         }
                         else if (currentBreadcrumb.separator &&
@@ -1288,10 +1304,16 @@
                     else {
                         // Render a button.
                         button = breadcrumbs.renderButton(breadcrumb, posX, posY);
+                        if (rtl) {
+                            adjustToRTL(button, posX, posY);
+                        }
                         posX += updateXPosition(button, buttonSpacing);
                         // Render a separator.
                         if (!isLast) {
                             separator = breadcrumbs.renderSeparator(posX, posY);
+                            if (rtl) {
+                                adjustToRTL(separator, posX, posY);
+                            }
                             posX += updateXPosition(separator, buttonSpacing);
                         }
                         elementList[breadcrumb.level] = {
@@ -1350,7 +1372,7 @@
                         }
                     },
                     style: {
-                        color: "#335cad" /* highlightColor80 */
+                        color: "#335cad" /* Palette.highlightColor80 */
                     }
                 },
                 /**
@@ -1420,6 +1442,16 @@
                  */
                 relativeTo: 'plotBox',
                 /**
+                 * Whether to reverse the order of buttons. This is common in Arabic
+                 * and Hebrew.
+                 *
+                 * @type       {boolean}
+                 * @since 10.2.0
+                 * @sample     {highcharts} highcharts/breadcrumbs/rtl
+                 *             Breadcrumbs in RTL
+                 */
+                rtl: false,
+                /**
                  * Positioning for the button row. The breadcrumbs buttons will be
                  * aligned properly for the default chart layout (title,  subtitle,
                  * legend, range selector) for the custom chart layout set the position
@@ -1479,7 +1511,7 @@
                      *  @since 10.0.0
                      */
                     style: {
-                        color: "#666666" /* neutralColor60 */
+                        color: "#666666" /* Palette.neutralColor60 */
                     }
                 },
                 /**
@@ -1734,7 +1766,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapMixin.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -2370,8 +2402,6 @@
                     breadcrumbsOptions = merge(options.drillUpButton,
                     options.breadcrumbs);
                 var setOptionsEvent;
-                // If color series logic is loaded, add some properties
-                this.colorAttribs = ColorMapMixin.SeriesMixin.colorAttribs;
                 setOptionsEvent = addEvent(series, 'setOptions', function (event) {
                     var options = event.userOptions;
                     if (defined(options.allowDrillToNode) &&
@@ -2451,7 +2481,7 @@
                     level = point && mapOptionsToLevel[point.node.level] || {},
                     options = this.options,
                     attr,
-                    stateOptions = (state && options.states[state]) || {},
+                    stateOptions = state && options.states && options.states[state] || {},
                     className = (point && point.getClassName()) || '',
                     opacity;
                 // Set attributes by precedence. Point trumps level trumps series.
@@ -3178,7 +3208,7 @@
                  *
                  * @type {Highcharts.ColorString}
                  */
-                borderColor: "#e6e6e6" /* neutralColor10 */,
+                borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
                 /**
                  * The width of the border surrounding each tree map item.
                  */
@@ -3207,7 +3237,7 @@
                         /**
                          * The border color for the hovered state.
                          */
-                        borderColor: "#999999" /* neutralColor40 */,
+                        borderColor: "#999999" /* Palette.neutralColor40 */,
                         /**
                          * Brightness for the hovered point. Defaults to 0 if the
                          * heatmap series is loaded first, otherwise 0.1.
@@ -3238,6 +3268,7 @@
         }(ScatterSeries));
         extend(TreemapSeries.prototype, {
             buildKDTree: noop,
+            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
             colorKey: 'colorValue',
             directTouch: true,
             drawLegendSymbol: LegendSymbol.drawRectangle,
@@ -3252,6 +3283,7 @@
                 recursive: TreemapUtilities.recursive
             }
         });
+        ColorMapComposition.compose(TreemapSeries);
         SeriesRegistry.registerSeriesType('treemap', TreemapSeries);
         /* *
          *
@@ -3349,7 +3381,7 @@
 
         return TreemapSeries;
     });
-    _registerModule(_modules, 'Series/Sunburst/SunburstPoint.js', [_modules['Series/DrawPointComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DrawPointComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Sunburst/SunburstPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  This module implements sunburst charts in Highcharts.
@@ -3466,7 +3498,6 @@
             haloPath: Point.prototype.haloPath,
             setState: Point.prototype.setState
         });
-        DrawPointComposition.compose(SunburstPoint);
         /* *
          *
          *  Defaul Export
@@ -4262,7 +4293,7 @@
             SunburstSeries.prototype.translate = function () {
                 var series = this,
                     options = series.options,
-                    positions = series.center = getCenter.call(series),
+                    positions = series.center = series.getCenter(),
                     radians = series.startAndEndRadians = getStartAndEndRadians(options.startAngle,
                     options.endAngle),
                     innerRadius = positions[3] / 2,
@@ -4591,6 +4622,9 @@
         }(TreemapSeries));
         extend(SunburstSeries.prototype, {
             drawDataLabels: noop,
+            getCenter: getCenter,
+            // Mark that the sunburst is supported by the series on point feature.
+            onPointSupported: true,
             pointAttribs: ColumnSeries.prototype.pointAttribs,
             pointClass: SunburstPoint,
             utils: SunburstUtilities

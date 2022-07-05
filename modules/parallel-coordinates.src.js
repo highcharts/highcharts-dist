@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -325,7 +325,7 @@
                         }
                         point.clientX = point.plotX;
                         point.plotY = chart.yAxis[i]
-                            .translate(point.y, false, true, null, true);
+                            .translate(point.y, false, true, void 0, true);
                         if (typeof lastPlotX !== 'undefined') {
                             closestPointRangePx = Math.min(closestPointRangePx, Math.abs(point.plotX - lastPlotX));
                         }

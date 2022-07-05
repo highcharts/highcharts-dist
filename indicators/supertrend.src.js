@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.1.0 (2022-04-29)
+ * @license Highstock JS v10.2.0 (2022-07-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -488,7 +488,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                risingTrendColor: "#06b535" /* positiveColor */,
+                risingTrendColor: "#06b535" /* Palette.positiveColor */,
                 /**
                  * Color of the Supertrend series line that is above the main series.
                  *
@@ -497,7 +497,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                fallingTrendColor: "#f21313" /* negativeColor */,
+                fallingTrendColor: "#f21313" /* Palette.negativeColor */,
                 /**
                  * The styles for the Supertrend line that intersect main series.
                  *
@@ -515,7 +515,7 @@
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        lineColor: "#333333" /* neutralColor80 */,
+                        lineColor: "#333333" /* Palette.neutralColor80 */,
                         /**
                          * The dash or dot style of the grid lines. For possible
                          * values, see

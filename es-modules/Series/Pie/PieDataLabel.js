@@ -331,7 +331,7 @@ var ColumnDataLabel;
                                     'stroke-width': connectorWidth,
                                     'stroke': (pointDataLabelsOptions.connectorColor ||
                                         point.color ||
-                                        "#666666" /* neutralColor60 */)
+                                        "#666666" /* Palette.neutralColor60 */)
                                 });
                             }
                         }

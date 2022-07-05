@@ -13,6 +13,16 @@ import * as _Highcharts from "./highcharts.src";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "./highcharts.src" {
+    interface Point {
+        /**
+         * Range series only. The high or maximum value for each data point.
+         */
+        high?: number;
+        /**
+         * Range series only. The low or minimum value for each data point.
+         */
+        low?: number;
+    }
     /**
      * Merge the default options with custom options and return the new options
      * structure. Commonly used for defining reusable templates.

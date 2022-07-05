@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.1.0 (2022-04-29)
+ * @license Highmaps JS v10.2.0 (2022-07-05)
  * @module highcharts/highmaps
  *
  * (c) 2011-2021 Torstein Honsi

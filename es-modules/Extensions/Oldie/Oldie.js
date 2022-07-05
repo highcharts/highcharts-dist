@@ -36,7 +36,7 @@ var VMLRenderer, VMLElement;
  * @apioption global.VMLRadialGradientURL
  */
 getOptions().global.VMLRadialGradientURL =
-    'http://code.highcharts.com/10.1.0/gfx/vml-radial-gradient.png';
+    'http://code.highcharts.com/10.2.0/gfx/vml-radial-gradient.png';
 // Utilites
 if (doc && !doc.defaultView) {
     H.getStyle = U.getStyle = function getStyle(el, prop) {
@@ -498,7 +498,7 @@ if (!svg) {
                     // apply the opacity
                     markup = [
                         '<stroke color="',
-                        shadowOptions.color || "#000000" /* neutralColor100 */,
+                        shadowOptions.color || "#000000" /* Palette.neutralColor100 */,
                         '" opacity="', shadowElementOpacity * i, '"/>'
                     ];
                     createElement(renderer.prepVML(markup), null, null, shadow);

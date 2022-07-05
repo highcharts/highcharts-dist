@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Highcharts funnel module
  *
@@ -509,13 +509,13 @@
                          *
                          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                          */
-                        color: "#cccccc" /* neutralColor20 */,
+                        color: "#cccccc" /* Palette.neutralColor20 */,
                         /**
                          * A specific border color for the selected point.
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        borderColor: "#000000" /* neutralColor100 */
+                        borderColor: "#000000" /* Palette.neutralColor100 */
                     }
                 }
             });

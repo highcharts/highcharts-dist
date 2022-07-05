@@ -12,18 +12,19 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import ColumnSeries from '../Column/ColumnSeries.js';
-import LineSeries from '../Line/LineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, LineSeries = _a.line;
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, extend = U.extend, merge = U.merge;
 /* *
@@ -39,6 +40,11 @@ var addEvent = U.addEvent, extend = U.extend, merge = U.merge;
 var ScatterSeries = /** @class */ (function (_super) {
     __extends(ScatterSeries, _super);
     function ScatterSeries() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -99,7 +105,6 @@ var ScatterSeries = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @function Highcharts.seriesTypes.scatter#drawGraph
      */
     ScatterSeries.prototype.drawGraph = function () {
         if (this.options.lineWidth) {
@@ -303,4 +308,4 @@ export default ScatterSeries;
  * @product   highcharts highstock
  * @apioption series.scatter.data
  */
-''; // adds doclets above to transpilat
+''; // keeps doclets above in JS file

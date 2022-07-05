@@ -202,13 +202,13 @@ extend(defaultOptions, {
              *
              * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            backgroundColor: "#f2f2f2" /* neutralColor5 */,
+            backgroundColor: "#f2f2f2" /* Palette.neutralColor5 */,
             /**
              * The stroke for the handle border and the stripes inside.
              *
              * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            borderColor: "#999999" /* neutralColor40 */
+            borderColor: "#999999" /* Palette.neutralColor40 */
         },
         /**
          * The color of the mask covering the areas of the navigator series
@@ -225,7 +225,7 @@ extend(defaultOptions, {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @default rgba(102,133,194,0.3)
          */
-        maskFill: color("#6685c2" /* highlightColor60 */).setOpacity(0.3).get(),
+        maskFill: color("#6685c2" /* Palette.highlightColor60 */).setOpacity(0.3).get(),
         /**
          * The color of the line marking the currently zoomed area in the
          * navigator.
@@ -236,7 +236,7 @@ extend(defaultOptions, {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @default #cccccc
          */
-        outlineColor: "#cccccc" /* neutralColor20 */,
+        outlineColor: "#cccccc" /* Palette.neutralColor20 */,
         /**
          * The width of the line marking the currently zoomed area in the
          * navigator.
@@ -427,7 +427,7 @@ extend(defaultOptions, {
             className: 'highcharts-navigator-xaxis',
             tickLength: 0,
             lineWidth: 0,
-            gridLineColor: "#e6e6e6" /* neutralColor10 */,
+            gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
             gridLineWidth: 1,
             tickPixelInterval: 200,
             labels: {
@@ -437,7 +437,7 @@ extend(defaultOptions, {
                  */
                 style: {
                     /** @ignore */
-                    color: "#999999" /* neutralColor40 */
+                    color: "#999999" /* Palette.neutralColor40 */
                 },
                 x: 3,
                 y: -4

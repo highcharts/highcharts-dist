@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.1.0 (2022-04-29)
+ * @license Highmaps JS v10.2.0 (2022-07-05)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -638,7 +638,7 @@
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      * @product highcharts highstock highmaps
                      */
-                    color: "#999999" /* neutralColor40 */
+                    color: "#999999" /* Palette.neutralColor40 */
                 },
                 /**
                  * The axis labels show the number for each tick.
@@ -680,7 +680,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                minColor: "#e6ebf5" /* highlightColor10 */,
+                minColor: "#e6ebf5" /* Palette.highlightColor10 */,
                 /**
                  * The color to represent the maximum of the color axis. Unless
                  * [dataClasses](#colorAxis.dataClasses) or
@@ -699,7 +699,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                maxColor: "#003399" /* highlightColor100 */,
+                maxColor: "#003399" /* Palette.highlightColor100 */,
                 /**
                  * Color stops for the gradient of a scalar color axis. Use this in
                  * cases where a linear gradient between a `minColor` and `maxColor`
@@ -1440,7 +1440,7 @@
                             setState: noop,
                             isDataClass: true,
                             setVisible: function () {
-                                vis = axis.visible = !vis;
+                                this.visible = vis = axis.visible = !vis;
                                 axis.series.forEach(function (series) {
                                     series.points.forEach(function (point) {
                                         if (point.dataClass === i) {
@@ -1776,7 +1776,6 @@
          * */
         var doc = H.doc;
         var addEvent = U.addEvent,
-            defined = U.defined,
             extend = U.extend,
             isNumber = U.isNumber,
             merge = U.merge,
@@ -1841,9 +1840,6 @@
                 chart = this.chart,
                 o = chart.options.mapNavigation,
                 attr,
-                states,
-                hoverStates,
-                selectStates,
                 outerHandler = function (e) {
                     this.handler.call(chart,
                 e);
@@ -2200,7 +2196,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/ColorMapMixin.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2210,66 +2206,92 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        // @todo cleanup & reduction - consider composition
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
-        var defined = U.defined,
-            addEvent = U.addEvent;
-        // Move points to the top of the z-index order when hovered
-        addEvent(Point, 'afterSetState', function (e) {
-            var point = this;
-            if (point.moveToTopOnHover && point.graphic) {
-                point.graphic.attr({
-                    zIndex: e && e.state === 'hover' ? 1 : 0
-                });
-            }
-        });
-        /**
-         * Mixin for maps and heatmaps
+        var columnProto = SeriesRegistry.seriesTypes.column.prototype;
+        var addEvent = U.addEvent,
+            defined = U.defined;
+        /* *
          *
-         * @private
-         * @mixin Highcharts.colorMapPointMixin
-         */
-        var PointMixin = {
+         *  Composition
+         *
+         * */
+        var ColorMapComposition;
+        (function (ColorMapComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Color points have a value option that determines whether or not it is
-                 * a null point
-                 * @private
-                 */
-                isValid: function () {
-                    // undefined is allowed
-                    return (this.value !== null &&
-                        this.value !== Infinity &&
-                        this.value !== -Infinity);
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        /**
-         * @private
-         * @mixin Highcharts.colorMapSeriesMixin
-         */
-        var SeriesMixin = {
-                pointArrayMap: ['value'],
-                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
-                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-                getSymbol: noop,
-                parallelArrays: ['x', 'y', 'value'],
+                isValid: pointIsValid
+            };
+            ColorMapComposition.seriesMembers = {
                 colorKey: 'value',
-                pointAttribs: seriesTypes.column.prototype.pointAttribs,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Get the color attibutes to apply on the graphic
-                 * @private
-                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
-                 * @param {Highcharts.Point} point
-                 * @return {Highcharts.SVGAttributes}
-                 *         The SVG attributes
-                 */
-                colorAttribs: function (point) {
-                    var ret = {};
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                parallelArrays: ['x', 'y', 'value'],
+                pointArrayMap: ['value'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                colorAttribs: seriesColorAttribs,
+                pointAttribs: columnProto.pointAttribs
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function compose(SeriesClass) {
+                var PointClass = SeriesClass.prototype.pointClass;
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    addEvent(PointClass, 'afterSetState', onPointAfterSetState);
+                }
+                return SeriesClass;
+            }
+            ColorMapComposition.compose = compose;
+            /**
+             * Move points to the top of the z-index order when hovered.
+             * @private
+             */
+            function onPointAfterSetState(e) {
+                var point = this;
+                if (point.moveToTopOnHover && point.graphic) {
+                    point.graphic.attr({
+                        zIndex: e && e.state === 'hover' ? 1 : 0
+                    });
+                }
+            }
+            /**
+             * Color points have a value option that determines whether or not it is
+             * a null point
+             * @private
+             */
+            function pointIsValid() {
+                return (this.value !== null &&
+                    this.value !== Infinity &&
+                    this.value !== -Infinity &&
+                    // undefined is allowed, but NaN is not (#17279)
+                    (this.value === void 0 || !isNaN(this.value)));
+            }
+            /**
+             * Get the color attibutes to apply on the graphic
+             * @private
+             * @function Highcharts.colorMapSeriesMixin.colorAttribs
+             * @param {Highcharts.Point} point
+             * @return {Highcharts.SVGAttributes}
+             *         The SVG attributes
+             */
+            function seriesColorAttribs(point) {
+                var ret = {};
                 if (defined(point.color) &&
                     (!point.state || point.state === 'normal') // #15746
                 ) {
@@ -2277,13 +2299,14 @@
                 }
                 return ret;
             }
-        };
-        var ColorMapMixin = {
-                PointMixin: PointMixin,
-                SeriesMixin: SeriesMixin
-            };
+        })(ColorMapComposition || (ColorMapComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return ColorMapMixin;
+        return ColorMapComposition;
     });
     _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
         /* *
@@ -2612,7 +2635,7 @@
 
         return MapUtilities;
     });
-    _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Series/ColorMapMixin.js'], _modules['Maps/MapUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, MapUtilities, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Series/ColorMapComposition.js'], _modules['Maps/MapUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapComposition, MapUtilities, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2743,7 +2766,7 @@
              */
             MapPoint.prototype.onMouseOver = function (e) {
                 U.clearTimeout(this.colorInterval);
-                if (this.value !== null || this.series.options.nullInteraction) {
+                if (!this.isNull || this.series.options.nullInteraction) {
                     _super.prototype.onMouseOver.call(this, e);
                 }
                 else {
@@ -2773,9 +2796,9 @@
             return MapPoint;
         }(ScatterSeries.prototype.pointClass));
         extend(MapPoint.prototype, {
-            dataLabelOnNull: ColorMapMixin.PointMixin.dataLabelOnNull,
-            isValid: ColorMapMixin.PointMixin.isValid,
-            moveToTopOnHover: ColorMapMixin.PointMixin.moveToTopOnHover
+            dataLabelOnNull: ColorMapComposition.pointMembers.dataLabelOnNull,
+            moveToTopOnHover: ColorMapComposition.pointMembers.moveToTopOnHover,
+            isValid: ColorMapComposition.pointMembers.isValid
         });
         /* *
          *
@@ -2960,7 +2983,7 @@
                  *         Inset border options
                  * @type {Highcharts.ColorType}
                  */
-                borderColor: "#cccccc" /* neutralColor20 */,
+                borderColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The pixel border width of the insets.
                  *
@@ -3084,7 +3107,7 @@
 
         return defaultOptions;
     });
-    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Maps/MapUtilities.js'], _modules['Core/Utilities.js']], function (Chart, F, H, MU, U) {
+    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -3096,7 +3119,6 @@
          * */
         var format = F.format;
         var win = H.win;
-        var pointInPolygon = MU.pointInPolygon;
         var error = U.error,
             extend = U.extend,
             merge = U.merge,
@@ -3996,14 +4018,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __spreadArrays = (this && this.__spreadArrays) || function () {
-                for (var s = 0,
-            i = 0,
-            il = arguments.length; i < il; i++) s += arguments[i].length;
-            for (var r = Array(s), k = 0, i = 0; i < il; i++)
-                for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                    r[k] = a[j];
-            return r;
+        var __spreadArray = (this && this.__spreadArray) || function (to,
+            from,
+            pack) {
+                if (pack || arguments.length === 2) for (var i = 0,
+            l = from.length,
+            ar; i < l; i++) {
+                    if (ar || !(i in from)) {
+                        if (!ar) ar = Array.prototype.slice.call(from, 0,
+            i);
+                    ar[i] = from[i];
+                }
+            }
+            return to.concat(ar || Array.prototype.slice.call(from));
         };
         var clipLineString = PC.clipLineString,
             clipPolygon = PC.clipPolygon;
@@ -4132,7 +4159,7 @@
                         var greatCircle = Projection.greatCircle(poly[i],
                             poly[i + 1]);
                         if (greatCircle.length) {
-                            poly.splice.apply(poly, __spreadArrays([i + 1, 0], greatCircle));
+                            poly.splice.apply(poly, __spreadArray([i + 1, 0], greatCircle, false));
                         }
                     }
                 }
@@ -4299,13 +4326,14 @@
                             var lonMinus = wrapLon(antimeridian -
                                     intersections[i].direction * floatCorrection);
                             var slice = poly.splice.apply(poly,
-                                __spreadArrays([index,
+                                __spreadArray([index,
                                     intersections[i + 1].i - index],
                                 Projection.greatCircle([lonPlus,
                                 intersections[i].lat],
                                 [lonPlus,
                                 intersections[i + 1].lat],
-                                true)));
+                                true),
+                                false));
                             // Add interpolated points close to the cut
                             slice.push.apply(slice, Projection.greatCircle([lonMinus, intersections[i + 1].lat], [lonMinus, intersections[i].lat], true));
                             polygons.push(slice);
@@ -4338,8 +4366,8 @@
                                         polarSegment.push([lon, polarLatitude]);
                                     }
                                     polarSegment.push.apply(polarSegment, Projection.greatCircle([lon2, polarLatitude], [lon2, polarIntersection.lat], true));
-                                    poly_1.splice.apply(poly_1, __spreadArrays([indexOf,
-                                        0], polarSegment));
+                                    poly_1.splice.apply(poly_1, __spreadArray([indexOf,
+                                        0], polarSegment, false));
                                     break;
                                 }
                             }
@@ -4606,14 +4634,19 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var __spreadArrays = (this && this.__spreadArrays) || function () {
-                for (var s = 0,
-            i = 0,
-            il = arguments.length; i < il; i++) s += arguments[i].length;
-            for (var r = Array(s), k = 0, i = 0; i < il; i++)
-                for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                    r[k] = a[j];
-            return r;
+        var __spreadArray = (this && this.__spreadArray) || function (to,
+            from,
+            pack) {
+                if (pack || arguments.length === 2) for (var i = 0,
+            l = from.length,
+            ar; i < l; i++) {
+                    if (ar || !(i in from)) {
+                        if (!ar) ar = Array.prototype.slice.call(from, 0,
+            i);
+                    ar[i] = from[i];
+                }
+            }
+            return to.concat(ar || Array.prototype.slice.call(from));
         };
         var topo2geo = GeoJSONModule.topo2geo;
         var maps = MapChart.maps;
@@ -4691,9 +4724,10 @@
                 var recommendedProjection;
                 if (!(this instanceof MapViewInset)) {
                     // Handle the global map and series-level mapData
-                    var geoMaps = __spreadArrays([
+                    var geoMaps = __spreadArray([
                             chart.options.chart.map
-                        ], (chart.options.series || []).map(function (s) { return s.mapData; })).map(function (mapData) { return _this.getGeoMap(mapData); });
+                        ], (chart.options.series || []).map(function (s) { return s.mapData; }),
+                        true).map(function (mapData) { return _this.getGeoMap(mapData); });
                     var allGeoBounds_1 = [];
                     geoMaps.forEach(function (geoMap) {
                         if (geoMap) {
@@ -4796,7 +4830,7 @@
                 var toObject = function (insets) {
                         var ob = {};
                     insets.forEach(function (inset, i) {
-                        ob[inset && inset.id || "i" + i] = inset;
+                        ob[inset && inset.id || "i".concat(i)] = inset;
                     });
                     return ob;
                 };
@@ -5099,7 +5133,10 @@
                     if (typeof this.options.maxZoom === 'number') {
                         zoom = Math.min(zoom, this.options.maxZoom);
                     }
-                    this.zoom = zoom;
+                    // Use isNumber to prevent Infinity (#17205)
+                    if (isNumber(zoom)) {
+                        this.zoom = zoom;
+                    }
                 }
                 var bounds = this.getProjectedBounds();
                 if (bounds) {
@@ -5240,7 +5277,7 @@
                     }
                     if (typeof mouseDownX === 'number' &&
                         typeof mouseDownY === 'number') {
-                        var key = mouseDownX + "," + mouseDownY, _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
+                        var key = "" + mouseDownX + ",".concat(mouseDownY), _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
                         // Reset starting position
                         if (key !== mouseDownKey) {
                             mouseDownKey = key;
@@ -5539,8 +5576,8 @@
                                 merge(chart.plotBox, { x: 0,
                             y: 0 });
                         polygon = polygon.map(function (xy) { return [
-                            relativeLength(xy[0] + "%", relativeTo_1.width, relativeTo_1.x),
-                            relativeLength(xy[1] + "%", relativeTo_1.height, relativeTo_1.y)
+                            relativeLength("" + xy[0] + "%", relativeTo_1.width, relativeTo_1.x),
+                            relativeLength("" + xy[1] + "%", relativeTo_1.height, relativeTo_1.y)
                         ]; });
                     }
                     return {
@@ -5605,8 +5642,8 @@
                                 var x = point[0],
                         y = point[1];
                             if (options.units === 'percent') {
-                                x = chart.plotLeft + relativeLength(x + "%", field_1.width, field_1.x);
-                                y = chart.plotTop + relativeLength(y + "%", field_1.height, field_1.y);
+                                x = chart.plotLeft + relativeLength("" + x + "%", field_1.width, field_1.x);
+                                y = chart.plotTop + relativeLength("" + y + "%", field_1.height, field_1.y);
                             }
                             x = Math.floor(x) + crisp_1;
                             y = Math.floor(y) + crisp_1;
@@ -5635,7 +5672,7 @@
 
         return MapView;
     });
-    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapMixin.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapMixin, CU, H, LegendSymbol, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, LegendSymbol, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5848,12 +5885,13 @@
              */
             MapSeries.prototype.drawPoints = function () {
                 var _this = this;
-                var _a = this,
+                var series = this,
+                    _a = this,
                     chart = _a.chart,
                     group = _a.group,
                     _b = _a.transformGroups,
-                    transformGroups = _b === void 0 ? [] : _b;
-                var mapView = chart.mapView,
+                    transformGroups = _b === void 0 ? [] : _b,
+                    mapView = chart.mapView,
                     renderer = chart.renderer;
                 if (!mapView) {
                     return;
@@ -5893,7 +5931,9 @@
                     ColumnSeries.prototype.drawPoints.apply(this);
                     // Add class names
                     this.points.forEach(function (point) {
-                        if (point.graphic) {
+                        var graphic = point.graphic;
+                        if (graphic) {
+                            var animate_1 = graphic.animate;
                             var className = '';
                             if (point.name) {
                                 className +=
@@ -5906,12 +5946,49 @@
                                         point.properties['hc-key'].toString().toLowerCase();
                             }
                             if (className) {
-                                point.graphic.addClass(className);
+                                graphic.addClass(className);
                             }
                             // In styled mode, apply point colors by CSS
                             if (chart.styledMode) {
-                                point.graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
+                                graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
                             }
+                            graphic.animate = function (params, options, complete) {
+                                var switchBack = false;
+                                // When strokeWidth is animating
+                                if (params['stroke-width']) {
+                                    var strokeWidth = pick(series.getStrokeWidth(series.options), 1 // Styled mode
+                                        ),
+                                        inheritedStrokeWidth = (strokeWidth /
+                                            (chart.mapView &&
+                                                chart.mapView.getScale() ||
+                                                1));
+                                    // For animating from inherit,
+                                    // .attr() reads the property as the starting point
+                                    if (graphic['stroke-width'] === 'inherit') {
+                                        graphic['stroke-width'] = inheritedStrokeWidth;
+                                    }
+                                    // For animating to inherit
+                                    if (params['stroke-width'] === 'inherit') {
+                                        params['stroke-width'] = inheritedStrokeWidth;
+                                        switchBack = true;
+                                    }
+                                }
+                                var ret = animate_1.call(graphic,
+                                    params,
+                                    options,
+                                    switchBack ? function () {
+                                        // Switch back to "inherit" for zooming
+                                        // to work with the existing logic + complete
+                                        graphic.attr({
+                                            'stroke-width': 'inherit'
+                                        });
+                                    // Proceed
+                                    if (complete) {
+                                        complete.apply(this, arguments);
+                                    }
+                                } : complete);
+                                return ret;
+                            };
                         }
                     });
                 }
@@ -5919,8 +5996,7 @@
                 transformGroups.forEach(function (transformGroup, i) {
                     var view = i === 0 ? mapView : mapView.insets[i - 1],
                         svgTransform = view.getSVGTransform(),
-                        strokeWidth = pick(_this.options[(_this.pointAttrToOptions &&
-                            _this.pointAttrToOptions['stroke-width']) || 'borderWidth'], 1 // Styled mode
+                        strokeWidth = pick(_this.getStrokeWidth(_this.options), 1 // Styled mode
                         );
                     /*
                     Animate or move to the new zoom level. In order to prevent
@@ -6032,6 +6108,18 @@
                 return this.bounds;
             };
             /**
+             * Return the stroke-width either from a series options or point options
+             * object. This function is used by both the map series where the
+             * `borderWidth` sets the stroke-width, and the mapline series where the
+             * `lineWidth` sets the stroke-width.
+             * @private
+             */
+            MapSeries.prototype.getStrokeWidth = function (options) {
+                var pointAttrToOptions = this.pointAttrToOptions;
+                return options[pointAttrToOptions &&
+                    pointAttrToOptions['stroke-width'] || 'borderWidth'];
+            };
+            /**
              * Define hasData function for non-cartesian series. Returns true if the
              * series has points at all.
              * @private
@@ -6055,15 +6143,25 @@
                     point,
                     state);
                 // Individual stroke width
-                var pointStrokeWidth = point.options[(this.pointAttrToOptions &&
-                        this.pointAttrToOptions['stroke-width']) || 'borderWidth'];
+                var pointStrokeWidth = this.getStrokeWidth(point.options);
+                // Handle state specific border or line width
+                if (state) {
+                    var stateOptions = merge(this.options.states[state],
+                        point.options.states &&
+                            point.options.states[state] ||
+                            {});
+                    pointStrokeWidth = this.getStrokeWidth(stateOptions);
+                }
                 if (pointStrokeWidth && mapView) {
                     pointStrokeWidth /= mapView.getScale();
                 }
                 // In order for dash style to avoid being scaled, set the transformed
                 // stroke width on the item
-                if (attr.dashstyle && mapView && this.options.borderWidth) {
-                    pointStrokeWidth = this.options.borderWidth / mapView.getScale();
+                var seriesStrokeWidth = this.getStrokeWidth(this.options);
+                if (attr.dashstyle &&
+                    mapView &&
+                    isNumber(seriesStrokeWidth)) {
+                    pointStrokeWidth = seriesStrokeWidth / mapView.getScale();
                 }
                 attr['stroke-width'] = pick(pointStrokeWidth, 
                 // By default set the stroke-width on the group element and let all
@@ -6086,10 +6184,15 @@
              * Extend setData to call processData and generatePoints immediately.
              * @private
              */
-            MapSeries.prototype.setData = function () {
-                _super.prototype.setData.apply(this, arguments);
+            MapSeries.prototype.setData = function (data, redraw, animation, updatePoints) {
+                if (redraw === void 0) { redraw = true; }
+                delete this.bounds;
+                _super.prototype.setData.call(this, data, false, void 0, updatePoints);
                 this.processData();
                 this.generatePoints();
+                if (redraw) {
+                    this.chart.redraw(animation);
+                }
             };
             /**
              * Extend processData to join in mapData. If the allAreas option is true,
@@ -6274,7 +6377,17 @@
                     this.processData();
                     this.generatePoints();
                     delete this.bounds;
-                    this.getProjectedBounds();
+                    if (mapView &&
+                        !mapView.userOptions.center &&
+                        !isNumber(mapView.userOptions.zoom)) {
+                        // Not only recalculate bounds but also fit view
+                        mapView.fitToBounds(void 0, void 0, false); // #17012
+                    }
+                    else {
+                        // If center and zoom is defined in user options, get bounds but
+                        // don't change view
+                        this.getProjectedBounds();
+                    }
                 }
                 if (mapView) {
                     var mainSvgTransform_1 = mapView.getSVGTransform();
@@ -6357,7 +6470,7 @@
                  *
                  * @private
                  */
-                nullColor: "#f7f7f7" /* neutralColor3 */,
+                nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
                 /**
                  * Whether to allow pointer interaction like tooltips and mouse events
                  * on null points.
@@ -6411,7 +6524,7 @@
                  *
                  * @private
                  */
-                borderColor: "#cccccc" /* neutralColor20 */,
+                borderColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The border width of each map area.
                  *
@@ -6546,7 +6659,7 @@
                          * @product   highmaps
                          * @apioption plotOptions.series.states.select.color
                          */
-                        color: "#cccccc" /* neutralColor20 */
+                        color: "#cccccc" /* Palette.neutralColor20 */
                     },
                     inactive: {
                         opacity: 1
@@ -6557,9 +6670,9 @@
         }(ScatterSeries));
         extend(MapSeries.prototype, {
             type: 'map',
-            axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
-            colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
-            colorKey: ColorMapMixin.SeriesMixin.colorKey,
+            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
+            colorKey: ColorMapComposition.seriesMembers.colorKey,
             // When tooltip is not shared, this series (and derivatives) requires
             // direct touch/hover. KD-tree does not apply.
             directTouch: true,
@@ -6572,18 +6685,19 @@
             forceDL: true,
             getCenter: CU.getCenter,
             getExtremesFromAll: true,
-            getSymbol: ColorMapMixin.SeriesMixin.getSymbol,
+            getSymbol: noop,
             isCartesian: false,
-            parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
-            pointArrayMap: ColorMapMixin.SeriesMixin.pointArrayMap,
+            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+            pointArrayMap: ColorMapComposition.seriesMembers.pointArrayMap,
             pointClass: MapPoint,
             // X axis and Y axis must have same translation slope
             preserveAspectRatio: true,
             searchPoint: noop,
-            trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups,
+            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
             // Get axis extremes from paths, not values
             useMapGeometry: true
         });
+        ColorMapComposition.compose(MapSeries);
         SeriesRegistry.registerSeriesType('map', MapSeries);
         /* *
          *
@@ -7003,6 +7117,21 @@
          * @product   highmaps
          * @apioption series.mapline.data
          */
+        /**
+         * Pixel width of the mapline line.
+         *
+         * @type      {number}
+         * @since 10.2.0
+         * @product   highmaps
+         * @apioption plotOptions.mapline.states.hover.lineWidth
+         */
+        /**
+         *
+         * @type      {number}
+         * @product   highmaps
+         * @excluding borderWidth
+         * @apioption plotOptions.mapline.states.hover
+         */
         ''; // adds doclets above to transpiled file
 
         return MapLineSeries;
@@ -7034,8 +7163,7 @@
             };
         })();
         var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
-        var isNumber = U.isNumber,
-            merge = U.merge;
+        var isNumber = U.isNumber;
         /* *
          *
          *  Class
@@ -7251,7 +7379,7 @@
                     overflow: false,
                     style: {
                         /** @internal */
-                        color: "#000000" /* neutralColor100 */
+                        color: "#000000" /* Palette.neutralColor100 */
                     }
                 }
             });
@@ -7417,6 +7545,12 @@
          * @product   highmaps
          * @apioption series.mappoint.data.y
          */
+        /**
+        * @type      {number}
+        * @product   highmaps
+        * @excluding borderColor, borderWidth
+        * @apioption plotOptions.mappoint
+        */
         ''; // adds doclets above to transpiled file
 
         return MapPointSeries;
@@ -7594,7 +7728,7 @@
                         /** @ignore-option */
                         fontSize: '10px',
                         /** @ignore-option */
-                        color: "#000000" /* neutralColor100 */
+                        color: "#000000" /* Palette.neutralColor100 */
                     },
                     /**
                      * The x position offset of the label relative to the
@@ -8749,7 +8883,7 @@
                     this.chart.series.forEach(function (otherSeries) {
                         if (otherSeries.bubblePadding && (otherSeries.visible ||
                             !_this.chart.options.chart.ignoreHiddenSeries)) {
-                            var zExtremes_1 = otherSeries.getZExtremes();
+                            var zExtremes_1 = (otherSeries.onPoint || otherSeries).getZExtremes();
                             if (zExtremes_1) {
                                 zMin_1 = Math.min(zMin_1 || zExtremes_1.zMin, zExtremes_1.zMin);
                                 zMax_1 = Math.max(zMax_1 || zExtremes_1.zMax, zExtremes_1.zMax);
@@ -8769,7 +8903,7 @@
                 for (i = 0, len = zData.length; i < len; i++) {
                     value = zData[i];
                     // Separate method to get individual radius for bubbleLegend
-                    radii.push(this.getRadius(zExtremes.zMin, zExtremes.zMax, minPxSize, maxPxSize, value, yData[i]));
+                    radii.push(this.getRadius(zExtremes.zMin, zExtremes.zMax, minPxSize, maxPxSize, value, yData && yData[i]));
                 }
                 this.radii = radii;
             };
@@ -8870,8 +9004,12 @@
                         };
                     }
                     else { // below zThreshold
-                        // #1691
-                        point.shapeArgs = point.plotY = point.dlBox = void 0;
+                        point.shapeArgs = point.dlBox = void 0; // #1691
+                        point.plotY = 0; // #17281
+                        point.marker = {
+                            width: 0,
+                            height: 0
+                        };
                     }
                 }
             };
@@ -9194,7 +9332,10 @@
                     hasActiveSeries = true;
                     var data = series[dataKey];
                     if (isXAxis) {
-                        series.getRadii(0, 0, series);
+                        (series.onPoint || series).getRadii(0, 0, series);
+                        if (series.onPoint) {
+                            series.radii = series.onPoint.radii;
+                        }
                     }
                     if (range > 0) {
                         var i = data.length;
@@ -9829,27 +9970,27 @@
                     seriesOptions.pointPadding, 0),
                     cellAttr = {
                         x1: clamp(Math.round(xAxis.len -
-                            (xAxis.translate(point.x - xPad,
+                            xAxis.translate(point.x - xPad,
                     false,
                     true,
                     false,
-                    true, -pointPlacement) || 0)), -xAxis.len, 2 * xAxis.len),
+                    true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
                         x2: clamp(Math.round(xAxis.len -
-                            (xAxis.translate(point.x + xPad,
+                            xAxis.translate(point.x + xPad,
                     false,
                     true,
                     false,
-                    true, -pointPlacement) || 0)), -xAxis.len, 2 * xAxis.len),
-                        y1: clamp(Math.round((yAxis.translate(point.y - yPad,
+                    true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                        y1: clamp(Math.round(yAxis.translate(point.y - yPad,
                     false,
                     true,
                     false,
-                    true) || 0)), -yAxis.len, 2 * yAxis.len),
-                        y2: clamp(Math.round((yAxis.translate(point.y + yPad,
+                    true)), -yAxis.len, 2 * yAxis.len),
+                        y2: clamp(Math.round(yAxis.translate(point.y + yPad,
                     false,
                     true,
                     false,
-                    true) || 0)), -yAxis.len, 2 * yAxis.len)
+                    true)), -yAxis.len, 2 * yAxis.len)
                     };
                 var dimensions = [['width', 'x'], ['height', 'y']];
                 // Handle marker's fixed width, and height values including border
@@ -9927,7 +10068,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapMixin.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -10325,7 +10466,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                nullColor: "#f7f7f7" /* neutralColor3 */,
+                nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
                 dataLabels: {
                     formatter: function () {
                         var numberFormatter = this.series.chart.numberFormatter;
@@ -10506,25 +10647,26 @@
             return HeatmapSeries;
         }(ScatterSeries));
         extend(HeatmapSeries.prototype, {
+            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+            colorKey: ColorMapComposition.seriesMembers.colorKey,
+            directTouch: true,
+            getExtremesFromAll: true,
+            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+            pointArrayMap: ['y', 'value'],
+            pointClass: HeatmapPoint,
+            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
             /**
              * @private
              */
             alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-            axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
-            colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
-            colorKey: ColorMapMixin.SeriesMixin.colorKey,
-            directTouch: true,
+            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
             /**
              * @private
              */
             drawLegendSymbol: LegendSymbol.drawRectangle,
-            getExtremesFromAll: true,
-            getSymbol: Series.prototype.getSymbol,
-            parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
-            pointArrayMap: ['y', 'value'],
-            pointClass: HeatmapPoint,
-            trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups
+            getSymbol: Series.prototype.getSymbol
         });
+        ColorMapComposition.compose(HeatmapSeries);
         SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
         /* *
          *

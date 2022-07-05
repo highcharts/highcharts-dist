@@ -377,7 +377,7 @@ var Axis = /** @class */ (function () {
             axis.tickInterval;
         var i = numericSymbols && numericSymbols.length, multi, ret;
         if (categories) {
-            ret = "" + this.value;
+            ret = "".concat(this.value);
         }
         else if (dateTimeLabelFormat) { // datetime axis
             ret = time.dateFormat(dateTimeLabelFormat, value);
@@ -449,7 +449,6 @@ var Axis = /** @class */ (function () {
                     if (axis.isXAxis) {
                         xData = series.xData;
                         if (xData.length) {
-                            var isPositive = function (number) { return number > 0; };
                             xData = axis.logarithmic ?
                                 xData.filter(axis.validatePositiveValue) :
                                 xData;
@@ -518,7 +517,11 @@ var Axis = /** @class */ (function () {
      */
     Axis.prototype.translate = function (val, backwards, cvsCoord, old, handleLog, pointPlacement) {
         var axis = (this.linkedParent || this), // #1417
-        localMin = old && axis.old ? axis.old.min : axis.min, minPixelPadding = axis.minPixelPadding, doPostTranslate = (axis.isOrdinal ||
+        localMin = (old && axis.old ? axis.old.min : axis.min);
+        if (!isNumber(localMin)) {
+            return NaN;
+        }
+        var minPixelPadding = axis.minPixelPadding, doPostTranslate = (axis.isOrdinal ||
             axis.brokenAxis && axis.brokenAxis.hasBreaks ||
             (axis.logarithmic && handleLog)) && axis.lin2val;
         var sign = 1, cvsOffset = 0, localA = old && axis.old ? axis.old.transA : axis.transA, returnValue = 0;
@@ -552,14 +555,10 @@ var Axis = /** @class */ (function () {
                 val = axis.val2lin(val);
             }
             var value = sign * (val - localMin) * localA;
-            returnValue = isNumber(localMin) ?
-                ((!axis.isRadial ? correctFloat(value) : value) +
-                    cvsOffset +
-                    (sign * minPixelPadding) +
-                    (isNumber(pointPlacement) ?
-                        localA * pointPlacement :
-                        0)) :
-                void 0;
+            returnValue = (!axis.isRadial ? correctFloat(value) : value) +
+                cvsOffset +
+                (sign * minPixelPadding) +
+                (isNumber(pointPlacement) ? localA * pointPlacement : 0);
         }
         return returnValue;
     };
@@ -579,7 +578,7 @@ var Axis = /** @class */ (function () {
      * Pixel position of the value on the chart or axis.
      */
     Axis.prototype.toPixels = function (value, paneCoordinates) {
-        return this.translate(value, false, !this.horiz, null, true) +
+        return this.translate(value, false, !this.horiz, void 0, true) +
             (paneCoordinates ? 0 : this.pos);
     };
     /**
@@ -599,7 +598,7 @@ var Axis = /** @class */ (function () {
      * The axis value.
      */
     Axis.prototype.toValue = function (pixel, paneCoordinates) {
-        return this.translate(pixel - (paneCoordinates ? 0 : this.pos), true, !this.horiz, null, true);
+        return this.translate(pixel - (paneCoordinates ? 0 : this.pos), true, !this.horiz, void 0, true);
     };
     /**
      * Create the path for a plot line that goes from the given value on
@@ -643,7 +642,7 @@ var Axis = /** @class */ (function () {
             translatedValue: translatedValue
         };
         fireEvent(this, 'getPlotLinePath', evt, function (e) {
-            translatedValue = pick(translatedValue, axis.translate(value, null, null, old));
+            translatedValue = pick(translatedValue, axis.translate(value, void 0, void 0, old));
             // Keep the translated value within sane bounds, and avoid Infinity
             // to fail the isNumber test (#7709).
             translatedValue = clamp(translatedValue, -1e5, 1e5);
@@ -1917,7 +1916,7 @@ var Axis = /** @class */ (function () {
      * @param {number} threshold
      * The threshold in axis values.
      *
-     * @return {number|undefined}
+     * @return {number}
      * The translated threshold position in terms of pixels, and corrected to
      * stay within the axis bounds.
      */
@@ -2346,8 +2345,8 @@ var Axis = /** @class */ (function () {
         if (!axis.axisGroup) {
             var createGroup = function (name, suffix, zIndex) { return renderer.g(name)
                 .attr({ zIndex: zIndex })
-                .addClass("highcharts-" + coll.toLowerCase() + suffix + " " +
-                (_this.isRadial ? "highcharts-radial-axis" + suffix + " " : '') +
+                .addClass("highcharts-".concat(coll.toLowerCase()).concat(suffix, " ") +
+                (_this.isRadial ? "highcharts-radial-axis".concat(suffix, " ") : '') +
                 (className || ''))
                 .add(axisParent); };
             axis.gridGroup = createGroup('grid', '-grid', options.gridZIndex);
@@ -2919,10 +2918,10 @@ var Axis = /** @class */ (function () {
                         stroke: options.color ||
                             (categorized ?
                                 Color
-                                    .parse("#ccd6eb" /* highlightColor20 */)
+                                    .parse("#ccd6eb" /* Palette.highlightColor20 */)
                                     .setOpacity(0.25)
                                     .get() :
-                                "#cccccc" /* neutralColor20 */),
+                                "#cccccc" /* Palette.neutralColor20 */),
                         'stroke-width': pick(options.width, 1)
                     }).css({
                         'pointer-events': 'none'

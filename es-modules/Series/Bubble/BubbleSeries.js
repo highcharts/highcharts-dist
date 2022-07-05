@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -118,7 +120,7 @@ var BubbleSeries = /** @class */ (function (_super) {
             this.chart.series.forEach(function (otherSeries) {
                 if (otherSeries.bubblePadding && (otherSeries.visible ||
                     !_this.chart.options.chart.ignoreHiddenSeries)) {
-                    var zExtremes_1 = otherSeries.getZExtremes();
+                    var zExtremes_1 = (otherSeries.onPoint || otherSeries).getZExtremes();
                     if (zExtremes_1) {
                         zMin_1 = Math.min(zMin_1 || zExtremes_1.zMin, zExtremes_1.zMin);
                         zMax_1 = Math.max(zMax_1 || zExtremes_1.zMax, zExtremes_1.zMax);
@@ -138,7 +140,7 @@ var BubbleSeries = /** @class */ (function (_super) {
         for (i = 0, len = zData.length; i < len; i++) {
             value = zData[i];
             // Separate method to get individual radius for bubbleLegend
-            radii.push(this.getRadius(zExtremes.zMin, zExtremes.zMax, minPxSize, maxPxSize, value, yData[i]));
+            radii.push(this.getRadius(zExtremes.zMin, zExtremes.zMax, minPxSize, maxPxSize, value, yData && yData[i]));
         }
         this.radii = radii;
     };
@@ -229,8 +231,12 @@ var BubbleSeries = /** @class */ (function (_super) {
                 };
             }
             else { // below zThreshold
-                // #1691
-                point.shapeArgs = point.plotY = point.dlBox = void 0;
+                point.shapeArgs = point.dlBox = void 0; // #1691
+                point.plotY = 0; // #17281
+                point.marker = {
+                    width: 0,
+                    height: 0
+                };
             }
         }
     };
@@ -536,7 +542,10 @@ Axis.prototype.beforePadding = function () {
             hasActiveSeries = true;
             var data = series[dataKey];
             if (isXAxis) {
-                series.getRadii(0, 0, series);
+                (series.onPoint || series).getRadii(0, 0, series);
+                if (series.onPoint) {
+                    series.radii = series.onPoint.radii;
+                }
             }
             if (range > 0) {
                 var i = data.length;

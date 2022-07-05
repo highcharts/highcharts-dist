@@ -35,7 +35,7 @@ function isHighContrastModeActive() {
         var testDiv = doc.createElement('div');
         var imageSrc = 'data:image/gif;base64,' +
             'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-        testDiv.style.backgroundImage = "url(" + imageSrc + ")"; // #13071
+        testDiv.style.backgroundImage = "url(".concat(imageSrc, ")"); // #13071
         doc.body.appendChild(testDiv);
         var bi = (testDiv.currentStyle ||
             win.getComputedStyle(testDiv)).backgroundImage;

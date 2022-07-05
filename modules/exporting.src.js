@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Exporting module
  *
@@ -1148,7 +1148,7 @@
                      * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      * @since 2.0
                      */
-                    symbolFill: "#666666" /* neutralColor60 */,
+                    symbolFill: "#666666" /* Palette.neutralColor60 */,
                     /**
                      * The color of the symbol's stroke or line.
                      *
@@ -1158,7 +1158,7 @@
                      * @type  {Highcharts.ColorString}
                      * @since 2.0
                      */
-                    symbolStroke: "#666666" /* neutralColor60 */,
+                    symbolStroke: "#666666" /* Palette.neutralColor60 */,
                     /**
                      * The pixel stroke width of the symbol on the button.
                      *
@@ -1219,9 +1219,9 @@
                  */
                 menuStyle: {
                     /** @ignore-option */
-                    border: "1px solid " + "#999999" /* neutralColor40 */,
+                    border: "1px solid ".concat("#999999" /* Palette.neutralColor40 */),
                     /** @ignore-option */
-                    background: "#ffffff" /* backgroundColor */,
+                    background: "#ffffff" /* Palette.backgroundColor */,
                     /** @ignore-option */
                     padding: '5px 0'
                 },
@@ -1247,7 +1247,7 @@
                     /** @ignore-option */
                     padding: '0.5em 1em',
                     /** @ignore-option */
-                    color: "#333333" /* neutralColor80 */,
+                    color: "#333333" /* Palette.neutralColor80 */,
                     /** @ignore-option */
                     background: 'none',
                     /** @ignore-option */
@@ -1274,9 +1274,9 @@
                  */
                 menuItemHoverStyle: {
                     /** @ignore-option */
-                    background: "#335cad" /* highlightColor80 */,
+                    background: "#335cad" /* Palette.highlightColor80 */,
                     /** @ignore-option */
-                    color: "#ffffff" /* backgroundColor */
+                    color: "#ffffff" /* Palette.backgroundColor */
                 }
             };
         /* *
@@ -1394,29 +1394,24 @@
             discardElement = U.discardElement,
             merge = U.merge,
             objectEach = U.objectEach;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Perform an Ajax call.
          *
          * @function Highcharts.ajax
          *
-         * @param {Partial<Highcharts.AjaxSettingsObject>} attr
+         * @param {Highcharts.AjaxSettingsObject} settings
          *        The Ajax settings to use.
          *
          * @return {false|undefined}
          *         Returns false, if error occured.
          */
-        function ajax(attr) {
-            var options = merge(true, {
-                    url: false,
-                    type: 'get',
-                    dataType: 'json',
-                    success: false,
-                    error: false,
-                    data: false,
-                    headers: {}
-                },
-                attr),
-                headers = {
+        function ajax(settings) {
+            var headers = {
                     json: 'application/json',
                     xml: 'application/xml',
                     text: 'text/plain',
@@ -1424,6 +1419,7 @@
                 },
                 r = new XMLHttpRequest();
             /**
+             * Private error handler.
              * @private
              * @param {XMLHttpRequest} xhr
              * Internal request object.
@@ -1431,54 +1427,53 @@
              * Occured error.
              */
             function handleError(xhr, err) {
-                if (options.error) {
-                    options.error(xhr, err);
+                if (settings.error) {
+                    settings.error(xhr, err);
                 }
                 else {
                     // @todo Maybe emit a highcharts error event here
                 }
             }
-            if (!options.url) {
+            if (!settings.url) {
                 return false;
             }
-            r.open(options.type.toUpperCase(), options.url, true);
-            if (!options.headers['Content-Type']) {
-                r.setRequestHeader('Content-Type', headers[options.dataType] || headers.text);
+            r.open((settings.type || 'get').toUpperCase(), settings.url, true);
+            if (!settings.headers || !settings.headers['Content-Type']) {
+                r.setRequestHeader('Content-Type', headers[settings.dataType || 'json'] || headers.text);
             }
-            objectEach(options.headers, function (val, key) {
+            objectEach(settings.headers, function (val, key) {
                 r.setRequestHeader(key, val);
             });
-            if (options.responseType) {
-                r.responseType = options.responseType;
+            if (settings.responseType) {
+                r.responseType = settings.responseType;
             }
             // @todo lacking timeout handling
             r.onreadystatechange = function () {
                 var res;
                 if (r.readyState === 4) {
                     if (r.status === 200) {
-                        if (options.responseType !== 'blob') {
+                        if (settings.responseType !== 'blob') {
                             res = r.responseText;
-                            if (options.dataType === 'json') {
+                            if (settings.dataType === 'json') {
                                 try {
                                     res = JSON.parse(res);
                                 }
                                 catch (e) {
-                                    return handleError(r, e);
+                                    if (e instanceof Error) {
+                                        return handleError(r, e);
+                                    }
                                 }
                             }
                         }
-                        return options.success && options.success(res, r);
+                        return settings.success && settings.success(res, r);
                     }
                     handleError(r, r.responseText);
                 }
             };
-            try {
-                options.data = JSON.stringify(options.data);
+            if (settings.data && typeof settings.data !== 'string') {
+                settings.data = JSON.stringify(settings.data);
             }
-            catch (e) {
-                // empty
-            }
-            r.send(options.data || true);
+            r.send(settings.data);
         }
         /**
          * Get a JSON resource over XHR, also supporting CORS without preflight.
@@ -1535,7 +1530,7 @@
                     type: 'hidden',
                     name: name,
                     value: val
-                }, null, form);
+                }, void 0, form);
             });
             // submit
             form.submit();
@@ -1552,33 +1547,38 @@
                 getJSON: getJSON,
                 post: post
             };
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
         /**
          * @interface Highcharts.AjaxSettingsObject
          */ /**
         * The payload to send.
         *
         * @name Highcharts.AjaxSettingsObject#data
-        * @type {string|Highcharts.Dictionary<any>}
+        * @type {string|Highcharts.Dictionary<any>|undefined}
         */ /**
         * The data type expected.
         * @name Highcharts.AjaxSettingsObject#dataType
-        * @type {"json"|"xml"|"text"|"octet"}
+        * @type {"json"|"xml"|"text"|"octet"|undefined}
         */ /**
         * Function to call on error.
         * @name Highcharts.AjaxSettingsObject#error
-        * @type {Function}
+        * @type {Function|undefined}
         */ /**
         * The headers; keyed on header name.
         * @name Highcharts.AjaxSettingsObject#headers
-        * @type {Highcharts.Dictionary<string>}
+        * @type {Highcharts.Dictionary<string>|undefined}
         */ /**
         * Function to call on success.
         * @name Highcharts.AjaxSettingsObject#success
-        * @type {Function}
+        * @type {Function|undefined}
         */ /**
         * The HTTP method to use. For example GET or POST.
         * @name Highcharts.AjaxSettingsObject#type
-        * @type {string}
+        * @type {string|undefined}
         */ /**
         * The URL to call.
         * @name Highcharts.AjaxSettingsObject#url
@@ -1707,7 +1707,7 @@
                 var attr = btnOptions.theme;
                 var callback;
                 if (!chart.styledMode) {
-                    attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
+                    attr.fill = pick(attr.fill, "#ffffff" /* Palette.backgroundColor */);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
                 if (onclick) {
@@ -1740,7 +1740,7 @@
                 }
                 if (!chart.styledMode) {
                     attr['stroke-linecap'] = 'round';
-                    attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
+                    attr.fill = pick(attr.fill, "#ffffff" /* Palette.backgroundColor */);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
                 var button = renderer
@@ -2519,7 +2519,7 @@
                                     }
                                     // Styles
                                 }
-                                else {
+                                else if (prop !== 'parentRule') {
                                     filteredStyles[prop] = val;
                                 }
                             }

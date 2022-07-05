@@ -19,10 +19,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -34,6 +36,7 @@ import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
 import CU from '../../Core/Geometry/CircleUtilities.js';
 var getAreaOfIntersectionBetweenCircles = CU.getAreaOfIntersectionBetweenCircles, getCirclesIntersectionPolygon = CU.getCirclesIntersectionPolygon, isCircle1CompletelyOverlappingCircle2 = CU.isCircle1CompletelyOverlappingCircle2, isPointInsideAllCircles = CU.isPointInsideAllCircles, isPointOutsideAllCircles = CU.isPointOutsideAllCircles;
+import DPU from '../DrawPointUtilities.js';
 import GU from '../../Core/Geometry/GeometryUtilities.js';
 var getCenterOfPoints = GU.getCenterOfPoints;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -339,7 +342,7 @@ var VennSeries = /** @class */ (function (_super) {
                 extend(attribs, series.pointAttribs(point, point.state));
             }
             // Draw the point graphic.
-            point.draw({
+            DPU.draw(point, {
                 isNew: !point.graphic,
                 animatableAttribs: shapeArgs,
                 attribs: attribs,
@@ -478,7 +481,7 @@ var VennSeries = /** @class */ (function (_super) {
      * @optionparent plotOptions.venn
      */
     VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-        borderColor: "#cccccc" /* neutralColor20 */,
+        borderColor: "#cccccc" /* Palette.neutralColor20 */,
         borderDashStyle: 'solid',
         borderWidth: 1,
         brighten: 0,
@@ -505,14 +508,14 @@ var VennSeries = /** @class */ (function (_super) {
              */
             hover: {
                 opacity: 1,
-                borderColor: "#333333" /* neutralColor80 */
+                borderColor: "#333333" /* Palette.neutralColor80 */
             },
             /**
              * @excluding halo
              */
             select: {
-                color: "#cccccc" /* neutralColor20 */,
-                borderColor: "#000000" /* neutralColor100 */,
+                color: "#cccccc" /* Palette.neutralColor20 */,
+                borderColor: "#000000" /* Palette.neutralColor100 */,
                 animation: false
             },
             inactive: {

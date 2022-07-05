@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -518,7 +518,7 @@
                  * @type {Highcharts.ColorString}
                  * @private
                  */
-                borderColor: "#666666" /* neutralColor60 */,
+                borderColor: "#666666" /* Palette.neutralColor60 */,
                 /**
                  * The border radius of the node cards.
                  *
@@ -678,7 +678,7 @@
                  * @type {Highcharts.ColorString}
                  * @private
                  */
-                linkColor: "#666666" /* neutralColor60 */,
+                linkColor: "#666666" /* Palette.neutralColor60 */,
                 /**
                  * The line width of the links connecting nodes, in pixels.
                  *

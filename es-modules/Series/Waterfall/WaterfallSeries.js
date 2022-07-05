@@ -12,10 +12,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -171,9 +173,9 @@ var WaterfallSeries = /** @class */ (function (_super) {
                         hPos = y - pointY;
                     }
                     point.below = yPos <= threshold;
-                    shapeArgs.y = yAxis.translate(yPos, false, true, false, true) || 0;
+                    shapeArgs.y = yAxis.translate(yPos, false, true, false, true);
                     shapeArgs.height = Math.abs(shapeArgs.y -
-                        (yAxis.translate(hPos, false, true, false, true) || 0));
+                        yAxis.translate(hPos, false, true, false, true));
                     var dummyStackItem = yAxis.waterfall.dummyStackItem;
                     if (dummyStackItem) {
                         dummyStackItem.x = i;
@@ -185,11 +187,11 @@ var WaterfallSeries = /** @class */ (function (_super) {
             else {
                 // up points
                 y = Math.max(previousY, previousY + pointY) + range[0];
-                shapeArgs.y = yAxis.translate(y, false, true, false, true) || 0;
+                shapeArgs.y = yAxis.translate(y, false, true, false, true);
                 // sum points
                 if (point.isSum) {
-                    shapeArgs.y = yAxis.translate(range[1], false, true, false, true) || 0;
-                    shapeArgs.height = Math.min(yAxis.translate(range[0], false, true, false, true) || 0, yAxis.len) - shapeArgs.y; // #4256
+                    shapeArgs.y = yAxis.translate(range[1], false, true, false, true);
+                    shapeArgs.height = Math.min(yAxis.translate(range[0], false, true, false, true), yAxis.len) - shapeArgs.y; // #4256
                     point.below = range[1] <= threshold;
                 }
                 else if (point.isIntermediateSum) {
@@ -207,9 +209,9 @@ var WaterfallSeries = /** @class */ (function (_super) {
                         hPos ^= yPos;
                         yPos ^= hPos;
                     }
-                    shapeArgs.y = yAxis.translate(yPos, false, true, false, true) || 0;
+                    shapeArgs.y = yAxis.translate(yPos, false, true, false, true);
                     shapeArgs.height = Math.abs(shapeArgs.y -
-                        Math.min(yAxis.translate(hPos, false, true, false, true) || 0, yAxis.len));
+                        Math.min(yAxis.translate(hPos, false, true, false, true), yAxis.len));
                     previousIntermediate += range[1];
                     point.below = yPos <= threshold;
                     // If it's not the sum point, update previous stack end position
@@ -217,8 +219,8 @@ var WaterfallSeries = /** @class */ (function (_super) {
                 }
                 else {
                     shapeArgs.height = yValue > 0 ?
-                        (yAxis.translate(previousY, false, true, false, true) || 0) - shapeArgs.y :
-                        (yAxis.translate(previousY, false, true, false, true) || 0) - (yAxis.translate(previousY - yValue, false, true, false, true) || 0);
+                        yAxis.translate(previousY, false, true, false, true) - shapeArgs.y :
+                        yAxis.translate(previousY, false, true, false, true) - yAxis.translate(previousY - yValue, false, true, false, true);
                     previousY += yValue;
                     point.below = previousY < threshold;
                 }
@@ -592,7 +594,7 @@ var WaterfallSeries = /** @class */ (function (_super) {
          * @since   3.0
          * @product highcharts
          */
-        lineColor: "#333333" /* neutralColor80 */,
+        lineColor: "#333333" /* Palette.neutralColor80 */,
         /**
          * A name for the dash style to use for the line connecting the columns
          * of the waterfall series. Possible values: Dash, DashDot, Dot,
@@ -617,7 +619,7 @@ var WaterfallSeries = /** @class */ (function (_super) {
          * @since   3.0
          * @product highcharts
          */
-        borderColor: "#333333" /* neutralColor80 */,
+        borderColor: "#333333" /* Palette.neutralColor80 */,
         states: {
             hover: {
                 lineWidthPlus: 0 // #3126

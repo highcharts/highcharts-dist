@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.1.0 (2022-04-29)
+ * @license Highstock JS v10.2.0 (2022-07-05)
  *
  * Hollow Candlestick series type for Highcharts Stock
  *
@@ -243,8 +243,8 @@
                 var series = this;
                 // Return line color based on trend direction
                 return trendDirection === 'up' ?
-                    series.options.upColor || "#06b535" /* positiveColor */ :
-                    series.options.color || "#f21313" /* negativeColor */;
+                    series.options.upColor || "#06b535" /* Palette.positiveColor */ :
+                    series.options.color || "#f21313" /* Palette.negativeColor */;
             };
             /**
              * Return fill color based on candle type.
@@ -265,8 +265,8 @@
                     return 'transparent';
                 }
                 return hollowcandleInfo.trendDirection === 'up' ?
-                    series.options.upColor || "#06b535" /* positiveColor */ :
-                    series.options.color || "#f21313" /* negativeColor */;
+                    series.options.upColor || "#06b535" /* Palette.positiveColor */ :
+                    series.options.color || "#f21313" /* Palette.negativeColor */;
             };
             /**
              * @private
@@ -354,7 +354,7 @@
                  * @type    {ColorType}
                  * @product highstock
                  */
-                color: "#f21313" /* negativeColor */,
+                color: "#f21313" /* Palette.negativeColor */,
                 dataGrouping: {
                     groupAll: true,
                     groupPixelWidth: 10
@@ -371,7 +371,7 @@
                  * @type    {ColorType}
                  * @product highstock
                  */
-                lineColor: "#f21313" /* negativeColor */,
+                lineColor: "#f21313" /* Palette.negativeColor */,
                 /**
                  * The fill color of the candlestick when the current
                  * close is higher than the previous one.
@@ -384,7 +384,7 @@
                  * @type    {ColorType}
                  * @product highstock
                  */
-                upColor: "#06b535" /* positiveColor */,
+                upColor: "#06b535" /* Palette.positiveColor */,
                 /**
                  * The color of the line/border of the hollow candlestick when
                  * the current close is higher than the previous one.
@@ -397,7 +397,7 @@
                  * @type    {ColorType}
                  * @product highstock
                  */
-                upLineColor: "#06b535" /* positiveColor */
+                upLineColor: "#06b535" /* Palette.positiveColor */
             });
             return HollowCandlestickSeries;
         }(CandlestickSeries));

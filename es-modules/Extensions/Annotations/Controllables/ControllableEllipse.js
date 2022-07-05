@@ -175,9 +175,12 @@ var ControllableEllipse = /** @class */ (function () {
      * @param {number} ry a radius in y direction to be set
      */
     ControllableEllipse.prototype.setYRadius = function (ry) {
+        var shapes = this.annotation.userOptions.shapes;
         this.options.ry = ry;
-        this.annotation.userOptions.shapes[0].ry = ry;
-        this.annotation.options.shapes[0].ry = ry;
+        if (shapes && shapes[0]) {
+            shapes[0].ry = ry;
+            shapes[0].ry = ry;
+        }
     };
     /* *
      *

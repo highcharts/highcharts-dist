@@ -700,7 +700,7 @@ var navigation = {
          * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @since 2.0
          */
-        symbolFill: "#666666" /* neutralColor60 */,
+        symbolFill: "#666666" /* Palette.neutralColor60 */,
         /**
          * The color of the symbol's stroke or line.
          *
@@ -710,7 +710,7 @@ var navigation = {
          * @type  {Highcharts.ColorString}
          * @since 2.0
          */
-        symbolStroke: "#666666" /* neutralColor60 */,
+        symbolStroke: "#666666" /* Palette.neutralColor60 */,
         /**
          * The pixel stroke width of the symbol on the button.
          *
@@ -771,9 +771,9 @@ var navigation = {
      */
     menuStyle: {
         /** @ignore-option */
-        border: "1px solid " + "#999999" /* neutralColor40 */,
+        border: "1px solid ".concat("#999999" /* Palette.neutralColor40 */),
         /** @ignore-option */
-        background: "#ffffff" /* backgroundColor */,
+        background: "#ffffff" /* Palette.backgroundColor */,
         /** @ignore-option */
         padding: '5px 0'
     },
@@ -799,7 +799,7 @@ var navigation = {
         /** @ignore-option */
         padding: '0.5em 1em',
         /** @ignore-option */
-        color: "#333333" /* neutralColor80 */,
+        color: "#333333" /* Palette.neutralColor80 */,
         /** @ignore-option */
         background: 'none',
         /** @ignore-option */
@@ -826,9 +826,9 @@ var navigation = {
      */
     menuItemHoverStyle: {
         /** @ignore-option */
-        background: "#335cad" /* highlightColor80 */,
+        background: "#335cad" /* Palette.highlightColor80 */,
         /** @ignore-option */
-        color: "#ffffff" /* backgroundColor */
+        color: "#ffffff" /* Palette.backgroundColor */
     }
 };
 /* *

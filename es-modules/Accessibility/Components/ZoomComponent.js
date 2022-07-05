@@ -14,34 +14,55 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
 import AccessibilityComponent from '../AccessibilityComponent.js';
-import ChartUtilities from '../Utils/ChartUtilities.js';
-var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
-import H from '../../Core/Globals.js';
-var noop = H.noop;
+import CU from '../Utils/ChartUtilities.js';
+var unhideChartElementFromAT = CU.unhideChartElementFromAT;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import U from '../../Core/Utilities.js';
-var attr = U.attr, extend = U.extend, pick = U.pick;
+var attr = U.attr, pick = U.pick;
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
+/**
+ * Pan along axis in a direction (1 or -1), optionally with a defined
+ * granularity (number of steps it takes to walk across current view)
+ * @private
+ */
+function axisPanStep(axis, direction, granularity) {
+    var gran = granularity || 3;
+    var extremes = axis.getExtremes();
+    var step = (extremes.max - extremes.min) / gran * direction;
+    var newMax = extremes.max + step;
+    var newMin = extremes.min + step;
+    var size = newMax - newMin;
+    if (direction < 0 && newMin < extremes.dataMin) {
+        newMin = extremes.dataMin;
+        newMax = newMin + size;
+    }
+    else if (direction > 0 && newMax > extremes.dataMax) {
+        newMax = extremes.dataMax;
+        newMin = newMax - size;
+    }
+    axis.setExtremes(newMin, newMax);
+}
 /**
  * @private
  */
 function chartHasMapZoom(chart) {
-    return !!(chart.mapZoom &&
+    return !!((chart.mapZoom) &&
         chart.mapNavigation &&
         chart.mapNavigation.navButtons.length);
 }
@@ -201,7 +222,7 @@ var ZoomComponent = /** @class */ (function (_super) {
         var keys = this.keyCodes, panAxis = (keyCode === keys.up || keyCode === keys.down) ?
             'yAxis' : 'xAxis', stepDirection = (keyCode === keys.left || keyCode === keys.up) ?
             -1 : 1;
-        this.chart[panAxis][0].panStep(stepDirection);
+        axisPanStep(this.chart[panAxis][0], stepDirection);
         return keyboardNavigationHandler.response.success;
     };
     /**
@@ -309,67 +330,6 @@ var ZoomComponent = /** @class */ (function (_super) {
     };
     return ZoomComponent;
 }(AccessibilityComponent));
-/* *
- *
- *  Class Namespace
- *
- * */
-(function (ZoomComponent) {
-    /* *
-     *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    ZoomComponent.composedClasses = [];
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * @private
-     */
-    function compose(AxisClass) {
-        if (ZoomComponent.composedClasses.indexOf(AxisClass) === -1) {
-            ZoomComponent.composedClasses.push(AxisClass);
-            var axisProto = AxisClass.prototype;
-            axisProto.panStep = axisPanStep;
-        }
-    }
-    ZoomComponent.compose = compose;
-    /**
-     * Pan along axis in a direction (1 or -1), optionally with a defined
-     * granularity (number of steps it takes to walk across current view)
-     *
-     * @private
-     * @function Highcharts.Axis#panStep
-     *
-     * @param {number} direction
-     * @param {number} [granularity]
-     */
-    function axisPanStep(direction, granularity) {
-        var gran = granularity || 3;
-        var extremes = this.getExtremes();
-        var step = (extremes.max - extremes.min) / gran * direction;
-        var newMax = extremes.max + step;
-        var newMin = extremes.min + step;
-        var size = newMax - newMin;
-        if (direction < 0 && newMin < extremes.dataMin) {
-            newMin = extremes.dataMin;
-            newMax = newMin + size;
-        }
-        else if (direction > 0 && newMax > extremes.dataMax) {
-            newMax = extremes.dataMax;
-            newMin = newMax - size;
-        }
-        this.setExtremes(newMin, newMax);
-    }
-})(ZoomComponent || (ZoomComponent = {}));
 /* *
  *
  *  Default Export

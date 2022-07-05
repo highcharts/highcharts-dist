@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.1.0 (2022-04-29)
+ * @license Highcharts JS v10.2.0 (2022-07-05)
  *
  * Solid angular gauge module
  *
@@ -463,7 +463,7 @@
                     thresholdAngleRad;
                 // Handle the threshold option
                 if (isNumber(options.threshold)) {
-                    thresholdAngleRad = yAxis.startAngleRad + yAxis.translate(options.threshold, null, null, null, true);
+                    thresholdAngleRad = yAxis.startAngleRad + yAxis.translate(options.threshold, void 0, void 0, void 0, true);
                 }
                 this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
                 series.points.forEach(function (point) {
@@ -472,9 +472,9 @@
                         var graphic = point.graphic,
                             rotation = (yAxis.startAngleRad +
                                 yAxis.translate(point.y,
-                            null,
-                            null,
-                            null,
+                            void 0,
+                            void 0,
+                            void 0,
                             true)),
                             radius = ((pInt(pick(point.options.radius,
                             options.radius, 100)) * center[2]) / 200),

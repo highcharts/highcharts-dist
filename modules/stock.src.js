@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.1.0 (2022-04-29)
+ * @license Highstock JS v10.2.0 (2022-07-05)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -717,11 +717,27 @@
                         i,
                         ordinalPositions = [],
                         overscrollPointsRange = Number.MAX_VALUE,
-                        useOrdinal = false;
+                        useOrdinal = false,
+                        adjustOrdinalExtremesPoints = false,
+                        isBoosted = false;
                     // Apply the ordinal logic
                     if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
+                        var distanceBetweenPoint_1 = 0;
                         axis.series.forEach(function (series, i) {
                             uniqueOrdinalPositions = [];
+                            // For an axis with multiple series, check if the distance
+                            // between points is identical throughout all series.
+                            if (i > 0 &&
+                                series.options.id !== 'highcharts-navigator-series') {
+                                adjustOrdinalExtremesPoints =
+                                    distanceBetweenPoint_1 !== series.processedXData[1] -
+                                        series.processedXData[0];
+                            }
+                            distanceBetweenPoint_1 =
+                                series.processedXData[1] - series.processedXData[0];
+                            if (series.isSeriesBoosting) {
+                                isBoosted = series.isSeriesBoosting;
+                            }
                             if ((!ignoreHiddenSeries || series.visible !== false) &&
                                 (series
                                     .takeOrdinalPosition !== false ||
@@ -756,6 +772,14 @@
                                 }
                             }
                         });
+                        // If the distance between points is not identical throughout
+                        // all series, remove the first and last ordinal position to
+                        // avoid enabling ordinal logic when it is not needed, #17405.
+                        // Only for boosted series because changes are negligible.
+                        if (adjustOrdinalExtremesPoints && isBoosted) {
+                            ordinalPositions.pop();
+                            ordinalPositions.shift();
+                        }
                         // cache the length
                         len = ordinalPositions.length;
                         // Check if we really need the overhead of mapping axis data
@@ -3823,7 +3847,7 @@
                     yAxis = series.yAxis,
                     names = (this.pointArrayMap && this.pointArrayMap.slice()) || [],
                     translated = names.map(function (name) {
-                        return "plot" + (name.charAt(0).toUpperCase() + name.slice(1));
+                        return "plot".concat(name.charAt(0).toUpperCase() + name.slice(1));
                 });
                 translated.push('yBottom');
                 names.push('low');
@@ -4680,7 +4704,7 @@
                  * @default #000000
                  * @product highstock
                  */
-                lineColor: "#000000" /* neutralColor100 */,
+                lineColor: "#000000" /* Palette.neutralColor100 */,
                 /**
                  * The pixel width of the candlestick line/border. Defaults to `1`.
                  *
@@ -4706,7 +4730,7 @@
                  * @default #ffffff
                  * @product highstock
                 */
-                upColor: "#ffffff" /* backgroundColor */,
+                upColor: "#ffffff" /* Palette.backgroundColor */,
                 /**
                  * @product highstock
                  */
@@ -4835,6 +4859,7 @@
                     arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
+                _this.ttBelow = false;
                 return _this;
             }
             /* *
@@ -5624,7 +5649,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highstock
                  */
-                fillColor: "#ffffff" /* backgroundColor */,
+                fillColor: "#ffffff" /* Palette.backgroundColor */,
                 /**
                  * The color of the line/border of the flag.
                  *
@@ -5654,14 +5679,14 @@
                          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                          * @product highstock
                          */
-                        lineColor: "#000000" /* neutralColor100 */,
+                        lineColor: "#000000" /* Palette.neutralColor100 */,
                         /**
                          * The fill or background color of the flag.
                          *
                          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                          * @product highstock
                          */
-                        fillColor: "#ccd6eb" /* highlightColor20 */
+                        fillColor: "#ccd6eb" /* Palette.highlightColor20 */
                     }
                 },
                 /**
@@ -6119,7 +6144,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                barBackgroundColor: "#cccccc" /* neutralColor20 */,
+                barBackgroundColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The width of the bar's border.
                  *
@@ -6132,7 +6157,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                barBorderColor: "#cccccc" /* neutralColor20 */,
+                barBorderColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The color of the small arrow inside the scrollbar buttons.
                  *
@@ -6141,7 +6166,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                buttonArrowColor: "#333333" /* neutralColor80 */,
+                buttonArrowColor: "#333333" /* Palette.neutralColor80 */,
                 /**
                  * The color of scrollbar buttons.
                  *
@@ -6150,7 +6175,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                buttonBackgroundColor: "#e6e6e6" /* neutralColor10 */,
+                buttonBackgroundColor: "#e6e6e6" /* Palette.neutralColor10 */,
                 /**
                  * The color of the border of the scrollbar buttons.
                  *
@@ -6159,7 +6184,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                buttonBorderColor: "#cccccc" /* neutralColor20 */,
+                buttonBorderColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The border width of the scrollbar buttons.
                  *
@@ -6172,7 +6197,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                rifleColor: "#333333" /* neutralColor80 */,
+                rifleColor: "#333333" /* Palette.neutralColor80 */,
                 /**
                  * The color of the track background.
                  *
@@ -6181,7 +6206,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                trackBackgroundColor: "#f2f2f2" /* neutralColor5 */,
+                trackBackgroundColor: "#f2f2f2" /* Palette.neutralColor5 */,
                 /**
                  * The color of the border of the scrollbar track.
                  *
@@ -6190,7 +6215,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                trackBorderColor: "#f2f2f2" /* neutralColor5 */,
+                trackBorderColor: "#f2f2f2" /* Palette.neutralColor5 */,
                 /**
                  * The corner radius of the border of the scrollbar track.
                  *
@@ -7306,13 +7331,13 @@
                      *
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      */
-                    backgroundColor: "#f2f2f2" /* neutralColor5 */,
+                    backgroundColor: "#f2f2f2" /* Palette.neutralColor5 */,
                     /**
                      * The stroke for the handle border and the stripes inside.
                      *
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      */
-                    borderColor: "#999999" /* neutralColor40 */
+                    borderColor: "#999999" /* Palette.neutralColor40 */
                 },
                 /**
                  * The color of the mask covering the areas of the navigator series
@@ -7329,7 +7354,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default rgba(102,133,194,0.3)
                  */
-                maskFill: color("#6685c2" /* highlightColor60 */).setOpacity(0.3).get(),
+                maskFill: color("#6685c2" /* Palette.highlightColor60 */).setOpacity(0.3).get(),
                 /**
                  * The color of the line marking the currently zoomed area in the
                  * navigator.
@@ -7340,7 +7365,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default #cccccc
                  */
-                outlineColor: "#cccccc" /* neutralColor20 */,
+                outlineColor: "#cccccc" /* Palette.neutralColor20 */,
                 /**
                  * The width of the line marking the currently zoomed area in the
                  * navigator.
@@ -7531,7 +7556,7 @@
                     className: 'highcharts-navigator-xaxis',
                     tickLength: 0,
                     lineWidth: 0,
-                    gridLineColor: "#e6e6e6" /* neutralColor10 */,
+                    gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
                     gridLineWidth: 1,
                     tickPixelInterval: 200,
                     labels: {
@@ -7541,7 +7566,7 @@
                          */
                         style: {
                             /** @ignore */
-                            color: "#999999" /* neutralColor40 */
+                            color: "#999999" /* Palette.neutralColor40 */
                         },
                         x: 3,
                         y: -4
@@ -9700,7 +9725,7 @@
                  */
                 inputStyle: {
                     /** @ignore */
-                    color: "#335cad" /* highlightColor80 */,
+                    color: "#335cad" /* Palette.highlightColor80 */,
                     /** @ignore */
                     cursor: 'pointer'
                 },
@@ -9717,7 +9742,7 @@
                  */
                 labelStyle: {
                     /** @ignore */
-                    color: "#666666" /* neutralColor60 */
+                    color: "#666666" /* Palette.neutralColor60 */
                 }
             }
         });
@@ -9821,7 +9846,8 @@
                     rangeSetting,
                     ctx,
                     ytdExtremes,
-                    dataGrouping = rangeOptions.dataGrouping;
+                    dataGrouping = rangeOptions.dataGrouping,
+                    addOffsetMin = true;
                 // chart has no data, base series is removed
                 if (dataMin === null || dataMax === null) {
                     return;
@@ -9854,12 +9880,16 @@
                         if (isNumber(ctx.newMax)) {
                             newMax = ctx.newMax;
                         }
+                        // #15799: offsetMin is added in minFromRange so that it works
+                        // with pre-selected buttons as well
+                        addOffsetMin = false;
                     }
                     // Fixed times like minutes, hours, days
                 }
                 else if (range) {
                     newMin = Math.max(newMax - range, dataMin);
                     newMax = Math.min(newMin + range, dataMax);
+                    addOffsetMin = false;
                 }
                 else if (type === 'ytd') {
                     // On user clicks on the buttons, or a delayed action running from
@@ -9870,14 +9900,17 @@
                         // event (below). When the series are initialized, but before
                         // the chart is rendered, we have access to the xData array
                         // (#942).
-                        if (typeof dataMax === 'undefined') {
+                        if (typeof dataMax === 'undefined' ||
+                            typeof dataMin === 'undefined') {
                             dataMin = Number.MAX_VALUE;
                             dataMax = Number.MIN_VALUE;
                             chart.series.forEach(function (series) {
                                 // reassign it to the last item
                                 var xData = series.xData;
-                                dataMin = Math.min(xData[0], dataMin);
-                                dataMax = Math.max(xData[xData.length - 1], dataMax);
+                                if (xData) {
+                                    dataMin = Math.min(xData[0], dataMin);
+                                    dataMax = Math.max(xData[xData.length - 1], dataMax);
+                                }
                             });
                             redraw = false;
                         }
@@ -9897,16 +9930,15 @@
                     // If the navigator exist and the axis range is declared reset that
                     // range and from now on only use the range set by a user, #14742.
                     if (chart.navigator && chart.navigator.baseSeries[0]) {
-                        chart.navigator.baseSeries[0].xAxis.options
-                            .range = void 0;
+                        chart.navigator.baseSeries[0].xAxis.options.range = void 0;
                     }
                     newMin = dataMin;
                     newMax = dataMax;
                 }
-                if (defined(newMin)) {
+                if (addOffsetMin && rangeOptions._offsetMin && defined(newMin)) {
                     newMin += rangeOptions._offsetMin;
                 }
-                if (defined(newMax)) {
+                if (rangeOptions._offsetMax && defined(newMax)) {
                     newMax += rangeOptions._offsetMax;
                 }
                 if (this.dropdown) {
@@ -9963,10 +9995,10 @@
                         var minInput = rangeSelector.minInput,
                     maxInput = rangeSelector.maxInput;
                     // #3274 in some case blur is not defined
-                    if (minInput && minInput.blur) {
+                    if (minInput && (minInput.blur)) {
                         fireEvent(minInput, 'blur');
                     }
-                    if (maxInput && maxInput.blur) {
+                    if (maxInput && (maxInput.blur)) {
                         fireEvent(maxInput, 'blur');
                     }
                 };
@@ -10285,7 +10317,7 @@
                 }
                 else if (H.isSafari && !hasTimezone(input)) {
                     var offset = new Date(input).getTimezoneOffset() / 60;
-                    input += offset <= 0 ? "+" + pad(-offset) + ":00" : "-" + pad(offset) + ":00";
+                    input += offset <= 0 ? "+".concat(pad(-offset), ":00") : "-".concat(pad(offset), ":00");
                 }
                 var date = Date.parse(input);
                 // If the value isn't parsed directly to a value by the
@@ -10407,7 +10439,7 @@
                     // Styles
                     label.css(merge(chartStyle, options.labelStyle));
                     dateBox.css(merge({
-                        color: "#333333" /* neutralColor80 */
+                        color: "#333333" /* Palette.neutralColor80 */
                     }, chartStyle, options.inputStyle));
                     css(input, extend({
                         position: 'absolute',
@@ -11045,7 +11077,7 @@
                 var userButtonTheme = (chart.userOptions.rangeSelector &&
                         chart.userOptions.rangeSelector.buttonTheme) || {};
                 var getAttribs = function (text) { return ({
-                        text: text ? text + " \u25BE" : '▾',
+                        text: text ? "" + text + " \u25BE" : '▾',
                         width: 'auto',
                         paddingLeft: pick(options.buttonTheme.paddingLeft,
                     userButtonTheme.padding, 8),
@@ -11374,8 +11406,8 @@
                 min = max - rangeOptions;
                 range = rangeOptions;
             }
-            else {
-                min = max + getTrueRange(max, -rangeOptions.count);
+            else if (rangeOptions) {
+                min = max + getTrueRange(max, -(rangeOptions.count || 1));
                 // Let the fixedRange reflect initial settings (#5930)
                 if (this.chart) {
                     this.chart.fixedRange = max - min;
@@ -11390,10 +11422,15 @@
                 if (typeof range === 'undefined') { // #4501
                     range = getTrueRange(min, rangeOptions.count);
                 }
-                this.newMax = Math.min(min + range, this.dataMax);
+                this.newMax = Math.min(min + range, pick(this.dataMax, Number.MAX_VALUE));
             }
             if (!isNumber(max)) {
                 min = void 0;
+            }
+            else if (!isNumber(rangeOptions) &&
+                rangeOptions &&
+                rangeOptions._offsetMin) {
+                min += rangeOptions._offsetMin;
             }
             return min;
         };
@@ -11988,7 +12025,7 @@
                         uniqueAxes.push(axis2);
                     }
                 });
-                transVal = pick(translatedValue, axis.translate(value, null, null, e.old));
+                transVal = pick(translatedValue, axis.translate(value, void 0, void 0, e.old));
                 if (isNumber(transVal)) {
                     if (axis.horiz) {
                         uniqueAxes.forEach(function (axis2) {
@@ -12117,12 +12154,12 @@
                         .attr({
                         fill: options.backgroundColor ||
                             point && point.series && point.series.color || // #14888
-                            "#666666" /* neutralColor60 */,
+                            "#666666" /* Palette.neutralColor60 */,
                         stroke: options.borderColor || '',
                         'stroke-width': options.borderWidth || 0
                     })
                         .css(extend({
-                        color: "#ffffff" /* backgroundColor */,
+                        color: "#ffffff" /* Palette.backgroundColor */,
                         fontWeight: 'normal',
                         fontSize: '11px',
                         textAlign: 'center'

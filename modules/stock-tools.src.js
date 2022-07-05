@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.1.0 (2022-04-29)
+ * @license Highstock JS v10.2.0 (2022-07-05)
  *
  * Advanced Highcharts Stock tools
  *
@@ -2091,9 +2091,12 @@
              * @param {number} ry a radius in y direction to be set
              */
             ControllableEllipse.prototype.setYRadius = function (ry) {
+                var shapes = this.annotation.userOptions.shapes;
                 this.options.ry = ry;
-                this.annotation.userOptions.shapes[0].ry = ry;
-                this.annotation.options.shapes[0].ry = ry;
+                if (shapes && shapes[0]) {
+                    shapes[0].ry = ry;
+                    shapes[0].ry = ry;
+                }
             };
             /* *
              *
@@ -2646,7 +2649,7 @@
 
         return ControllableImage;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Annotations.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Extensions/Annotations/Mixins/ControllableMixin.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Mixins/EventEmitterMixin.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (A, Chart, ControllableMixin, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, EventEmitterMixin, H, MockPoint, Pointer, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Annotation.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Extensions/Annotations/Mixins/ControllableMixin.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Mixins/EventEmitterMixin.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (A, Chart, ControllableMixin, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, EventEmitterMixin, H, MockPoint, Pointer, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -2839,10 +2842,11 @@
             Annotation.prototype.getLabelsAndShapesOptions = function (baseOptions, newOptions) {
                 var mergedOptions = {};
                 ['labels', 'shapes'].forEach(function (name) {
-                    if (baseOptions[name]) {
+                    var someBaseOptions = baseOptions[name];
+                    if (someBaseOptions) {
                         if (newOptions[name]) {
                             mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                                return merge(baseOptions[name][i], basicOptions);
+                                return merge(someBaseOptions[i], basicOptions);
                             });
                         }
                         else {
@@ -2853,10 +2857,11 @@
                 return mergedOptions;
             };
             Annotation.prototype.addShapes = function () {
-                (this.options.shapes || []).forEach(function (shapeOptions, i) {
+                var shapes = this.options.shapes || [];
+                shapes.forEach(function (shapeOptions, i) {
                     var shape = this.initShape(shapeOptions,
                         i);
-                    merge(true, this.options.shapes[i], shape.options);
+                    merge(true, shapes[i], shape.options);
                 }, this);
             };
             Annotation.prototype.addLabels = function () {
@@ -3354,7 +3359,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    borderColor: "#000000" /* neutralColor100 */,
+                    borderColor: "#000000" /* Palette.neutralColor100 */,
                     /**
                      * The border radius in pixels for the annotaiton's label.
                      *
@@ -3785,8 +3790,8 @@
                     height: 10,
                     style: {
                         cursor: 'pointer',
-                        fill: "#ffffff" /* backgroundColor */,
-                        stroke: "#000000" /* neutralColor100 */,
+                        fill: "#ffffff" /* Palette.backgroundColor */,
+                        stroke: "#000000" /* Palette.neutralColor100 */,
                         'stroke-width': 2
                     },
                     visible: false,
@@ -3973,7 +3978,8 @@
                     chart.options.exporting.csv.annotations &&
                     chart.options.exporting.csv.annotations.join);
                 annotations.forEach(function (annotation) {
-                    if (annotation.options.labelOptions.includeInDataExport) {
+                    if (annotation.options.labelOptions &&
+                        annotation.options.labelOptions.includeInDataExport) {
                         annotation.labels.forEach(function (label) {
                             if (label.options.text) {
                                 var annotationText_1 = label.options.text;
@@ -4061,7 +4067,16 @@
             }
         });
         H.Annotation = Annotation;
-        /* eslint-enable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * Object of shape point.
          *
@@ -4220,7 +4235,7 @@
 
         return ChartNavigationComposition;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, ChartNavigationComposition, F, H, D, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotation.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, ChartNavigationComposition, F, H, D, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -5199,8 +5214,9 @@
                         /** @ignore-option */
                         steps: [
                             function (e, annotation) {
-                                var mockPointOpts = annotation.options.shapes[0]
-                                        .point,
+                                var shapes = annotation.options.shapes;
+                                var mockPointOpts = ((shapes && shapes[0] && shapes[0].point) ||
+                                        {}),
                                     distance;
                                 if (isNumber(mockPointOpts.xAxis) &&
                                     isNumber(mockPointOpts.yAxis)) {
@@ -5327,7 +5343,9 @@
                         /** @ignore-option */
                         steps: [
                             function (e, annotation) {
-                                var points = annotation.options.shapes[0].points,
+                                var shapes = annotation.options.shapes;
+                                var points = ((shapes && shapes[0] && shapes[0].points) ||
+                                        []),
                                     coords = this.chart.pointer.getCoordinates(e),
                                     coordsX = this.utils.getAssignedAxis(coords.xAxis),
                                     coordsY = this.utils.getAssignedAxis(coords.yAxis),
@@ -5400,7 +5418,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/10.1.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/10.2.0/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -6626,7 +6644,7 @@
                             },
                             labelOptions: {
                                 style: {
-                                    color: "#666666" /* neutralColor60 */
+                                    color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
                         },
@@ -6688,7 +6706,7 @@
                             },
                             labelOptions: {
                                 style: {
-                                    color: "#666666" /* neutralColor60 */
+                                    color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
                         },
@@ -6740,23 +6758,23 @@
                         y: y },
                                 crosshairX: {
                                     strokeWidth: 1,
-                                    stroke: "#000000" /* neutralColor100 */
+                                    stroke: "#000000" /* Palette.neutralColor100 */
                                 },
                                 crosshairY: {
                                     enabled: false,
                                     strokeWidth: 0,
-                                    stroke: "#000000" /* neutralColor100 */
+                                    stroke: "#000000" /* Palette.neutralColor100 */
                                 },
                                 background: {
                                     width: 0,
                                     height: 0,
                                     strokeWidth: 0,
-                                    stroke: "#ffffff" /* backgroundColor */
+                                    stroke: "#ffffff" /* Palette.backgroundColor */
                                 }
                             },
                             labelOptions: {
                                 style: {
-                                    color: "#666666" /* neutralColor60 */
+                                    color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
                         },
@@ -6805,22 +6823,22 @@
                                 crosshairX: {
                                     enabled: false,
                                     strokeWidth: 0,
-                                    stroke: "#000000" /* neutralColor100 */
+                                    stroke: "#000000" /* Palette.neutralColor100 */
                                 },
                                 crosshairY: {
                                     strokeWidth: 1,
-                                    stroke: "#000000" /* neutralColor100 */
+                                    stroke: "#000000" /* Palette.neutralColor100 */
                                 },
                                 background: {
                                     width: 0,
                                     height: 0,
                                     strokeWidth: 0,
-                                    stroke: "#ffffff" /* backgroundColor */
+                                    stroke: "#ffffff" /* Palette.backgroundColor */
                                 }
                             },
                             labelOptions: {
                                 style: {
-                                    color: "#666666" /* neutralColor60 */
+                                    color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
                         },
@@ -6873,16 +6891,16 @@
                                 },
                                 crosshairX: {
                                     strokeWidth: 1,
-                                    stroke: "#000000" /* neutralColor100 */
+                                    stroke: "#000000" /* Palette.neutralColor100 */
                                 },
                                 crosshairY: {
                                     strokeWidth: 1,
-                                    stroke: "#000000" /* neutralColor100 */
+                                    stroke: "#000000" /* Palette.neutralColor100 */
                                 }
                             },
                             labelOptions: {
                                 style: {
-                                    color: "#666666" /* neutralColor60 */
+                                    color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
                         },
@@ -6938,7 +6956,7 @@
                             },
                             labelOptions: {
                                 style: {
-                                    color: "#666666" /* neutralColor60 */
+                                    color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
                         },
@@ -7033,10 +7051,11 @@
                                         y: coordsY.value,
                                         controlPoint: {
                                             style: {
-                                                fill: "#f21313" /* negativeColor */
+                                                fill: "#f21313" /* Palette.negativeColor */
                                             }
                                         }
-                                    }, { x: x, y: y },
+                                    },
+                                    { x: x, y: y },
                                     { x: x, y: y }],
                                 innerBackground: {
                                     fill: 'rgba(100, 170, 255, 0.8)'
@@ -7097,7 +7116,7 @@
                         },
                         labelOptions: {
                             style: {
-                                color: "#666666" /* neutralColor60 */,
+                                color: "#666666" /* Palette.neutralColor60 */,
                                 fontSize: '11px'
                             }
                         },
@@ -7189,7 +7208,7 @@
                         },
                         labelOptions: {
                             style: {
-                                color: "#666666" /* neutralColor60 */,
+                                color: "#666666" /* Palette.neutralColor60 */,
                                 fontSize: '11px'
                             }
                         },
@@ -7245,7 +7264,7 @@
                             connector: {
                                 fill: 'none',
                                 stroke: closestPoint.below ?
-                                    "#f21313" /* negativeColor */ : "#06b535" /* positiveColor */
+                                    "#f21313" /* Palette.negativeColor */ : "#06b535" /* Palette.positiveColor */
                             }
                         },
                         shapeOptions: {
@@ -9488,7 +9507,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/10.1.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/10.2.0/gfx/stock-icons/';
             };
             return Toolbar;
         }());

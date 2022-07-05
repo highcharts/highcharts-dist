@@ -79,7 +79,7 @@ var PlotLineOrBand = /** @class */ (function () {
         // Set the presentational attributes
         if (!axis.chart.styledMode) {
             if (isLine) {
-                attribs.stroke = color || "#999999" /* neutralColor40 */;
+                attribs.stroke = color || "#999999" /* Palette.neutralColor40 */;
                 attribs['stroke-width'] = pick(options.width, 1);
                 if (options.dashStyle) {
                     attribs.dashstyle =
@@ -87,7 +87,7 @@ var PlotLineOrBand = /** @class */ (function () {
                 }
             }
             else if (isBand) { // plot band
-                attribs.fill = color || "#e6ebf5" /* highlightColor10 */;
+                attribs.fill = color || "#e6ebf5" /* Palette.highlightColor10 */;
                 if (options.borderWidth) {
                     attribs.stroke = options.borderColor;
                     attribs['stroke-width'] = options.borderWidth;

@@ -988,7 +988,7 @@ var SVGElement = /** @class */ (function () {
             duration: pick(duration, 150),
             complete: function () {
                 // #3088, assuming we're only using this for tooltips
-                elemWrapper.attr({ y: -9999 }).hide();
+                elemWrapper.hide();
             }
         });
     };
@@ -1121,7 +1121,7 @@ var SVGElement = /** @class */ (function () {
                     bBox.height = height = ({
                         '11px,17': 14,
                         '13px,20': 16
-                    }[(fontSize || '') + "," + Math.round(height)] ||
+                    }["".concat(fontSize || '', ",").concat(Math.round(height))] ||
                         height);
                 }
                 // Adjust for rotated text
@@ -1316,7 +1316,7 @@ var SVGElement = /** @class */ (function () {
     SVGElement.prototype.removeClass = function (className) {
         return this.attr('class', ('' + this.attr('class'))
             .replace(isString(className) ?
-            new RegExp("(^| )" + className + "( |$)") : // #12064, #13590
+            new RegExp("(^| )".concat(className, "( |$)")) : // #12064, #13590
             className, ' ')
             .replace(/ +/g, ' ')
             .trim());
@@ -1532,7 +1532,7 @@ var SVGElement = /** @class */ (function () {
      */
     SVGElement.prototype.shadow = function (shadowOptions, group, cutOff) {
         var shadows = [], element = this.element, oldShadowOptions = this.oldShadowOptions, defaultShadowOptions = {
-            color: "#000000" /* neutralColor100 */,
+            color: "#000000" /* Palette.neutralColor100 */,
             offsetX: this.parentInverted ? -1 : 1,
             offsetY: this.parentInverted ? -1 : 1,
             opacity: 0.15,
@@ -1568,14 +1568,14 @@ var SVGElement = /** @class */ (function () {
         else if (!this.shadows) {
             shadowElementOpacity = options.opacity / options.width;
             transform = this.parentInverted ?
-                "translate(" + options.offsetY + ", " + options.offsetX + ")" :
-                "translate(" + options.offsetX + ", " + options.offsetY + ")";
+                "translate(".concat(options.offsetY, ", ").concat(options.offsetX, ")") :
+                "translate(".concat(options.offsetX, ", ").concat(options.offsetY, ")");
             for (i = 1; i <= options.width; i++) {
                 shadow = element.cloneNode(false);
                 strokeWidth = (options.width * 2) + 1 - (2 * i);
                 attr(shadow, {
                     stroke: (shadowOptions.color ||
-                        "#000000" /* neutralColor100 */),
+                        "#000000" /* Palette.neutralColor100 */),
                     'stroke-opacity': shadowElementOpacity * i,
                     'stroke-width': strokeWidth,
                     transform: transform,

@@ -12,16 +12,18 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import ColorMapMixin from '../ColorMapMixin.js';
+import ColorMapComposition from '../ColorMapComposition.js';
 import MapUtilities from '../../Maps/MapUtilities.js';
 var boundsFromPath = MapUtilities.boundsFromPath;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -117,7 +119,7 @@ var MapPoint = /** @class */ (function (_super) {
      */
     MapPoint.prototype.onMouseOver = function (e) {
         U.clearTimeout(this.colorInterval);
-        if (this.value !== null || this.series.options.nullInteraction) {
+        if (!this.isNull || this.series.options.nullInteraction) {
             _super.prototype.onMouseOver.call(this, e);
         }
         else {
@@ -147,9 +149,9 @@ var MapPoint = /** @class */ (function (_super) {
     return MapPoint;
 }(ScatterSeries.prototype.pointClass));
 extend(MapPoint.prototype, {
-    dataLabelOnNull: ColorMapMixin.PointMixin.dataLabelOnNull,
-    isValid: ColorMapMixin.PointMixin.isValid,
-    moveToTopOnHover: ColorMapMixin.PointMixin.moveToTopOnHover
+    dataLabelOnNull: ColorMapComposition.pointMembers.dataLabelOnNull,
+    moveToTopOnHover: ColorMapComposition.pointMembers.moveToTopOnHover,
+    isValid: ColorMapComposition.pointMembers.isValid
 });
 /* *
  *

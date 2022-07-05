@@ -8,7 +8,7 @@
  *
  * */
 'use strict';
-import Annotation from './Annotations.js';
+import Annotation from './Annotation.js';
 import Chart from '../../Core/Chart/Chart.js';
 import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import F from '../../Core/FormatUtilities.js';
@@ -930,8 +930,9 @@ setOptions({
                 /** @ignore-option */
                 steps: [
                     function (e, annotation) {
-                        var mockPointOpts = annotation.options.shapes[0]
-                            .point, distance;
+                        var shapes = annotation.options.shapes;
+                        var mockPointOpts = ((shapes && shapes[0] && shapes[0].point) ||
+                            {}), distance;
                         if (isNumber(mockPointOpts.xAxis) &&
                             isNumber(mockPointOpts.yAxis)) {
                             var inverted = this.chart.inverted, x = this.chart.xAxis[mockPointOpts.xAxis]
@@ -1037,7 +1038,9 @@ setOptions({
                 /** @ignore-option */
                 steps: [
                     function (e, annotation) {
-                        var points = annotation.options.shapes[0].points, coords = this.chart.pointer.getCoordinates(e), coordsX = this.utils.getAssignedAxis(coords.xAxis), coordsY = this.utils.getAssignedAxis(coords.yAxis), x, y;
+                        var shapes = annotation.options.shapes;
+                        var points = ((shapes && shapes[0] && shapes[0].points) ||
+                            []), coords = this.chart.pointer.getCoordinates(e), coordsX = this.utils.getAssignedAxis(coords.xAxis), coordsY = this.utils.getAssignedAxis(coords.yAxis), x, y;
                         if (coordsX && coordsY) {
                             x = coordsX.value;
                             y = coordsY.value;
@@ -1102,7 +1105,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/10.1.0/gfx/stock-icons/
+         * @default   https://code.highcharts.com/10.2.0/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */

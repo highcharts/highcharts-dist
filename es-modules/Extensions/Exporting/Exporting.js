@@ -106,7 +106,7 @@ var Exporting;
         var attr = btnOptions.theme;
         var callback;
         if (!chart.styledMode) {
-            attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
+            attr.fill = pick(attr.fill, "#ffffff" /* Palette.backgroundColor */);
             attr.stroke = pick(attr.stroke, 'none');
         }
         if (onclick) {
@@ -139,7 +139,7 @@ var Exporting;
         }
         if (!chart.styledMode) {
             attr['stroke-linecap'] = 'round';
-            attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
+            attr.fill = pick(attr.fill, "#ffffff" /* Palette.backgroundColor */);
             attr.stroke = pick(attr.stroke, 'none');
         }
         var button = renderer
@@ -884,7 +884,7 @@ var Exporting;
                             }
                             // Styles
                         }
-                        else {
+                        else if (prop !== 'parentRule') {
                             filteredStyles[prop] = val;
                         }
                     }

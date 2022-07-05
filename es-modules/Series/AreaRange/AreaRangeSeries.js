@@ -12,27 +12,148 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
 import AreaRangePoint from './AreaRangePoint.js';
-import AreaSeries from '../Area/AreaSeries.js';
-var areaProto = AreaSeries.prototype;
-import ColumnSeries from '../Column/ColumnSeries.js';
-var columnProto = ColumnSeries.prototype;
 import H from '../../Core/Globals.js';
 var noop = H.noop;
-import Series from '../../Core/Series/Series.js';
-var seriesProto = Series.prototype;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+var _a = SeriesRegistry.seriesTypes, AreaSeries = _a.area, areaProto = _a.area.prototype, columnProto = _a.column.prototype;
 import U from '../../Core/Utilities.js';
 var defined = U.defined, extend = U.extend, isArray = U.isArray, pick = U.pick, merge = U.merge;
+/* *
+ *
+ *  Constants
+ *
+ * */
+/**
+ * The area range series is a carteseian series with higher and lower values for
+ * each point along an X axis, where the area between the values is shaded.
+ *
+ * @sample {highcharts} highcharts/demo/arearange/
+ *         Area range chart
+ * @sample {highstock} stock/demo/arearange/
+ *         Area range chart
+ *
+ * @extends      plotOptions.area
+ * @product      highcharts highstock
+ * @excluding    stack, stacking
+ * @requires     highcharts-more
+ * @optionparent plotOptions.arearange
+ */
+var areaRangeSeriesOptions = {
+    /**
+     * @see [fillColor](#plotOptions.arearange.fillColor)
+     * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
+     *
+     * @apioption plotOptions.arearange.color
+     */
+    /**
+     * @default   low
+     * @apioption plotOptions.arearange.colorKey
+     */
+    /**
+     * @see [color](#plotOptions.arearange.color)
+     * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
+     *
+     * @apioption plotOptions.arearange.fillColor
+     */
+    /**
+     * @see [color](#plotOptions.arearange.color)
+     * @see [fillColor](#plotOptions.arearange.fillColor)
+     *
+     * @default   {highcharts} 0.75
+     * @default   {highstock} 0.75
+     * @apioption plotOptions.arearange.fillOpacity
+     */
+    /**
+     * Whether to apply a drop shadow to the graph line. Since 2.3 the
+     * shadow can be an object configuration containing `color`, `offsetX`,
+     * `offsetY`, `opacity` and `width`.
+     *
+     * @type      {boolean|Highcharts.ShadowOptionsObject}
+     * @product   highcharts
+     * @apioption plotOptions.arearange.shadow
+     */
+    /**
+     * Pixel width of the arearange graph line.
+     *
+     * @since 2.3.0
+     *
+     * @private
+     */
+    lineWidth: 1,
+    threshold: null,
+    tooltip: {
+        pointFormat: '<span style="color:{series.color}">\u25CF</span> ' +
+            '{series.name}: <b>{point.low}</b> - <b>{point.high}</b><br/>'
+    },
+    /**
+     * Whether the whole area or just the line should respond to mouseover
+     * tooltips and other mouse or touch events.
+     *
+     * @since 2.3.0
+     *
+     * @private
+     */
+    trackByArea: true,
+    /**
+     * Extended data labels for range series types. Range series data
+     * labels use no `x` and `y` options. Instead, they have `xLow`,
+     * `xHigh`, `yLow` and `yHigh` options to allow the higher and lower
+     * data label sets individually.
+     *
+     * @declare Highcharts.SeriesAreaRangeDataLabelsOptionsObject
+     * @exclude x, y
+     * @since   2.3.0
+     * @product highcharts highstock
+     *
+     * @private
+     */
+    dataLabels: {
+        align: void 0,
+        verticalAlign: void 0,
+        /**
+         * X offset of the lower data labels relative to the point value.
+         *
+         * @sample highcharts/plotoptions/arearange-datalabels/
+         *         Data labels on range series
+         * @sample highcharts/plotoptions/arearange-datalabels/
+         *         Data labels on range series
+         */
+        xLow: 0,
+        /**
+         * X offset of the higher data labels relative to the point value.
+         *
+         * @sample highcharts/plotoptions/arearange-datalabels/
+         *         Data labels on range series
+         */
+        xHigh: 0,
+        /**
+         * Y offset of the lower data labels relative to the point value.
+         *
+         * @sample highcharts/plotoptions/arearange-datalabels/
+         *         Data labels on range series
+         */
+        yLow: 0,
+        /**
+         * Y offset of the higher data labels relative to the point value.
+         *
+         * @sample highcharts/plotoptions/arearange-datalabels/
+         *         Data labels on range series
+         */
+        yHigh: 0
+    }
+};
 /* *
  *
  *  Class
@@ -52,7 +173,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
     function AreaRangeSeries() {
         /**
          *
-         *  Static properties
+         *  Static Properties
          *
          */
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -67,14 +188,12 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         _this.lowerStateMarkerGraphic = void 0;
         _this.xAxis = void 0;
         return _this;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     AreaRangeSeries.prototype.toYData = function (point) {
         return [point.low, point.high];
     };
@@ -131,7 +250,8 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      * @private
      */
     AreaRangeSeries.prototype.getGraphPath = function (points) {
-        var highPoints = [], highAreaPoints = [], i, getGraphPath = areaProto.getGraphPath, point, pointShim, linePath, lowerPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls, step = options.step, higherPath, higherAreaPath;
+        var highPoints = [], highAreaPoints = [], getGraphPath = areaProto.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
+        var i, point, pointShim, step = options.step;
         points = points || this.points;
         // Create the top line and the top part of the area fill. The area fill
         // compensates for null points by drawing down to the lower graph,
@@ -174,7 +294,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             }
         }
         // Get the paths
-        lowerPath = getGraphPath.call(this, points);
+        var lowerPath = getGraphPath.call(this, points);
         if (step) {
             if (step === true) {
                 step = 'left';
@@ -185,12 +305,11 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                 right: 'left'
             }[step]; // swap for reading in getGraphPath
         }
-        higherPath = getGraphPath.call(this, highPoints);
-        higherAreaPath = getGraphPath.call(this, highAreaPoints);
+        var higherPath = getGraphPath.call(this, highPoints);
+        var higherAreaPath = getGraphPath.call(this, highAreaPoints);
         options.step = step;
         // Create a line on both top and bottom of the range
-        linePath = []
-            .concat(lowerPath, higherPath);
+        var linePath = [].concat(lowerPath, higherPath);
         // For the area path, we need to change the 'move' statement into
         // 'lineTo'
         if (!this.chart.polar &&
@@ -217,7 +336,8 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      * @private
      */
     AreaRangeSeries.prototype.drawDataLabels = function () {
-        var data = this.points, length = data.length, i, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, point, up, inverted = this.chart.inverted, upperDataLabelOptions, lowerDataLabelOptions;
+        var data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
+        var i, point, up, upperDataLabelOptions, lowerDataLabelOptions;
         if (dataLabelOptions) {
             // Split into upper and lower options. If data labels is an array,
             // the first element is the upper label, the second is the lower.
@@ -281,9 +401,9 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                     }
                 }
                 this.options.dataLabels = upperDataLabelOptions;
-                if (seriesProto.drawDataLabels) {
+                if (areaProto.drawDataLabels) {
                     // #1209:
-                    seriesProto.drawDataLabels.apply(this, arguments);
+                    areaProto.drawDataLabels.apply(this, arguments);
                 }
                 // Reset state after the upper labels were created. Move
                 // it to point.dataLabelUpper and reassign the originals.
@@ -327,8 +447,8 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                     }
                 }
                 this.options.dataLabels = lowerDataLabelOptions;
-                if (seriesProto.drawDataLabels) {
-                    seriesProto.drawDataLabels.apply(this, arguments);
+                if (areaProto.drawDataLabels) {
+                    areaProto.drawDataLabels.apply(this, arguments);
                 }
             }
             // Merge upper and lower into point.dataLabels for later destroying
@@ -354,9 +474,10 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         columnProto.alignDataLabel.apply(this, arguments);
     };
     AreaRangeSeries.prototype.drawPoints = function () {
-        var series = this, pointLength = series.points.length, point, i;
+        var series = this, pointLength = series.points.length;
+        var i, point;
         // Draw bottom points
-        seriesProto.drawPoints.apply(series, arguments);
+        areaProto.drawPoints.apply(series, arguments);
         // Prepare drawing top points
         i = 0;
         while (i < pointLength) {
@@ -392,7 +513,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             i++;
         }
         // Draw top points
-        seriesProto.drawPoints.apply(series, arguments);
+        areaProto.drawPoints.apply(series, arguments);
         // Reset top points preliminary modifications
         i = 0;
         while (i < pointLength) {
@@ -406,142 +527,28 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             i++;
         }
     };
-    /**
-     * The area range series is a carteseian series with higher and lower
-     * values for each point along an X axis, where the area between the
-     * values is shaded.
-     *
-     * @sample {highcharts} highcharts/demo/arearange/
-     *         Area range chart
-     * @sample {highstock} stock/demo/arearange/
-     *         Area range chart
-     *
-     * @extends      plotOptions.area
-     * @product      highcharts highstock
-     * @excluding    stack, stacking
-     * @requires     highcharts-more
-     * @optionparent plotOptions.arearange
-     */
-    AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, {
-        /**
-         * @see [fillColor](#plotOptions.arearange.fillColor)
-         * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
-         *
-         * @apioption plotOptions.arearange.color
-         */
-        /**
-         * @default   low
-         * @apioption plotOptions.arearange.colorKey
-         */
-        /**
-         * @see [color](#plotOptions.arearange.color)
-         * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
-         *
-         * @apioption plotOptions.arearange.fillColor
-         */
-        /**
-         * @see [color](#plotOptions.arearange.color)
-         * @see [fillColor](#plotOptions.arearange.fillColor)
-         *
-         * @default   {highcharts} 0.75
-         * @default   {highstock} 0.75
-         * @apioption plotOptions.arearange.fillOpacity
-         */
-        /**
-         * Whether to apply a drop shadow to the graph line. Since 2.3 the
-         * shadow can be an object configuration containing `color`, `offsetX`,
-         * `offsetY`, `opacity` and `width`.
-         *
-         * @type      {boolean|Highcharts.ShadowOptionsObject}
-         * @product   highcharts
-         * @apioption plotOptions.arearange.shadow
-         */
-        /**
-         * Pixel width of the arearange graph line.
-         *
-         * @since 2.3.0
-         *
-         * @private
-         */
-        lineWidth: 1,
-        threshold: null,
-        tooltip: {
-            pointFormat: '<span style="color:{series.color}">\u25CF</span> ' +
-                '{series.name}: <b>{point.low}</b> - <b>{point.high}</b><br/>'
-        },
-        /**
-         * Whether the whole area or just the line should respond to mouseover
-         * tooltips and other mouse or touch events.
-         *
-         * @since 2.3.0
-         *
-         * @private
-         */
-        trackByArea: true,
-        /**
-         * Extended data labels for range series types. Range series data
-         * labels use no `x` and `y` options. Instead, they have `xLow`,
-         * `xHigh`, `yLow` and `yHigh` options to allow the higher and lower
-         * data label sets individually.
-         *
-         * @declare Highcharts.SeriesAreaRangeDataLabelsOptionsObject
-         * @exclude x, y
-         * @since   2.3.0
-         * @product highcharts highstock
-         *
-         * @private
-         */
-        dataLabels: {
-            align: void 0,
-            verticalAlign: void 0,
-            /**
-             * X offset of the lower data labels relative to the point value.
-             *
-             * @sample highcharts/plotoptions/arearange-datalabels/
-             *         Data labels on range series
-             * @sample highcharts/plotoptions/arearange-datalabels/
-             *         Data labels on range series
-             */
-            xLow: 0,
-            /**
-             * X offset of the higher data labels relative to the point value.
-             *
-             * @sample highcharts/plotoptions/arearange-datalabels/
-             *         Data labels on range series
-             */
-            xHigh: 0,
-            /**
-             * Y offset of the lower data labels relative to the point value.
-             *
-             * @sample highcharts/plotoptions/arearange-datalabels/
-             *         Data labels on range series
-             */
-            yLow: 0,
-            /**
-             * Y offset of the higher data labels relative to the point value.
-             *
-             * @sample highcharts/plotoptions/arearange-datalabels/
-             *         Data labels on range series
-             */
-            yHigh: 0
-        }
-    });
+    AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
     return AreaRangeSeries;
 }(AreaSeries));
 extend(AreaRangeSeries.prototype, {
-    pointArrayMap: ['low', 'high'],
-    pointValKey: 'low',
     deferTranslatePolar: true,
+    pointArrayMap: ['low', 'high'],
     pointClass: AreaRangePoint,
+    pointValKey: 'low',
     setStackedPoints: noop
 });
 SeriesRegistry.registerSeriesType('arearange', AreaRangeSeries);
 /* *
  *
- *  Default export
+ *  Default Export
  *
  * */
 export default AreaRangeSeries;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `arearange` series. If the [type](#series.arearange.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

@@ -13,6 +13,15 @@
 // - Set up systematic tests for all series types, paired with tests of the data
 //   module importing the same data.
 'use strict';
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
 import AST from '../Core/Renderer/HTML/AST.js';
@@ -297,6 +306,41 @@ addEvent(Chart, 'render', function () {
         this.options.exporting.showTable &&
         !this.options.chart.forExport) {
         this.viewData();
+    }
+});
+addEvent(Chart, 'afterViewData', function () {
+    var chart = this, dataTableDiv = chart.dataTableDiv, row = document.querySelectorAll('thead')[0].querySelectorAll('tr')[0], getCellValue = function (tr, index) {
+        return tr.children[index].textContent;
+    }, comparer = function (index, ascending) {
+        return function (a, b) {
+            var sort = function (v1, v2) { return (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
+                v1 - v2 :
+                v1.toString().localeCompare(v2)); };
+            return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
+        };
+    };
+    if (dataTableDiv) {
+        row.childNodes.forEach(function (th) {
+            var table = th.closest('table');
+            th.addEventListener('click', function () {
+                var rows = __spreadArray([], dataTableDiv.querySelectorAll('tr:not(thead tr)'), true), headers = __spreadArray([], th.parentNode.children, true);
+                rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
+                    !chart.ascendingOrderInTable)).forEach(function (tr) {
+                    table.appendChild(tr);
+                });
+                headers.forEach(function (th) {
+                    ['highcharts-sort-ascending', 'highcharts-sort-descending']
+                        .forEach(function (className) {
+                        if (th.classList.contains(className)) {
+                            th.classList.remove(className);
+                        }
+                    });
+                });
+                th.classList.add(chart.ascendingOrderInTable ?
+                    'highcharts-sort-ascending' :
+                    'highcharts-sort-descending');
+            });
+        });
     }
 });
 /* eslint-enable no-invalid-this */
@@ -587,6 +631,12 @@ Chart.prototype.getCSV = function (useLocalDecimalPoint) {
             }
             row[j] = val;
         }
+        // The first row is the header - it defines the number of columns.
+        // Empty columns between not-empty cells are covered in the getDataRows
+        // method.
+        // Now add empty values only to the end of the row so all rows have
+        // the same number of columns, #17186
+        row.length = rows.length ? rows[0].length : 0;
         // Add the values
         csv += row.join(itemDelimiter);
         // Add the line delimiter
@@ -622,11 +672,11 @@ Chart.prototype.getTable = function (useLocalDecimalPoint) {
             return node.textContent || '';
         }
         var attributes = node.attributes;
-        var html = "<" + node.tagName;
+        var html = "<".concat(node.tagName);
         if (attributes) {
             Object.keys(attributes).forEach(function (key) {
                 var value = attributes[key];
-                html += " " + key + "=\"" + value + "\"";
+                html += " ".concat(key, "=\"").concat(value, "\"");
             });
         }
         html += '>';
@@ -634,7 +684,7 @@ Chart.prototype.getTable = function (useLocalDecimalPoint) {
         (node.children || []).forEach(function (child) {
             html += serialize(child);
         });
-        html += "</" + node.tagName + ">";
+        html += "</".concat(node.tagName, ">");
         return html;
     };
     var tree = this.getTableAST(useLocalDecimalPoint);
@@ -676,17 +726,17 @@ Chart.prototype.getTableAST = function (useLocalDecimalPoint) {
     }, 
     // Get table cell HTML from value
     getCellHTMLFromValue = function (tagName, classes, attributes, value) {
-        var textContent = pick(value, ''), className = 'text' + (classes ? ' ' + classes : '');
+        var textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
         // Convert to string if number
         if (typeof textContent === 'number') {
             textContent = textContent.toString();
             if (decimalPoint === ',') {
                 textContent = textContent.replace('.', decimalPoint);
             }
-            className = 'number';
+            className = 'highcharts-number';
         }
         else if (!value) {
-            className = 'empty';
+            className = 'highcharts-empty';
         }
         attributes = extend({ 'class': className }, attributes);
         return {
@@ -812,7 +862,7 @@ Chart.prototype.getTableAST = function (useLocalDecimalPoint) {
     var e = {
         tree: {
             tagName: 'table',
-            id: "highcharts-data-table-" + this.index,
+            id: "highcharts-data-table-".concat(this.index),
             children: treeChildren
         }
     };

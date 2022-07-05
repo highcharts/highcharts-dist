@@ -12,7 +12,7 @@ import H from '../Core/Globals.js';
 var deg2rad = H.deg2rad;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-var isNumber = U.isNumber, pick = U.pick, relativeLength = U.relativeLength;
+var fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick, relativeLength = U.relativeLength;
 /**
  * @private
  */
@@ -75,6 +75,7 @@ var CenteredUtilities;
             thickness * 2 < positions[2] && thickness > 0) {
             positions[3] = positions[2] - thickness * 2;
         }
+        fireEvent(this, 'afterGetCenter', { positions: positions });
         return positions;
     }
     CenteredUtilities.getCenter = getCenter;

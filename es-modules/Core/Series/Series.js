@@ -575,7 +575,7 @@ var Series = /** @class */ (function () {
             this.getCyclic('color');
         }
         else if (this.options.colorByPoint) {
-            this.color = "#cccccc" /* neutralColor20 */;
+            this.color = "#cccccc" /* Palette.neutralColor20 */;
         }
         else {
             this.getCyclic('color', this.options.color ||
@@ -746,7 +746,7 @@ var Series = /** @class */ (function () {
             data.forEach(function (point, i) {
                 // .update doesn't exist on a linked, hidden series (#3709)
                 // (#10187)
-                if (point !== oldData[i].y && oldData[i].update) {
+                if (point !== oldData[i].y && (oldData[i].update)) {
                     oldData[i].update(point, false, null, false);
                 }
             });
@@ -947,7 +947,7 @@ var Series = /** @class */ (function () {
             // destroy old points
             i = oldDataLength;
             while (i--) {
-                if (oldData[i] && oldData[i].destroy) {
+                if (oldData[i] && (oldData[i].destroy)) {
                     oldData[i].destroy();
                 }
             }
@@ -1744,7 +1744,7 @@ var Series = /** @class */ (function () {
         this.setClip();
         // Destroy temporary clip rectangles that are no longer in use
         objectEach(this.chart.sharedClips, function (clip, key, sharedClips) {
-            if (clip && !_this.chart.container.querySelector("[clip-path=\"url(#" + clip.id + ")\"]")) {
+            if (clip && !_this.chart.container.querySelector("[clip-path=\"url(#".concat(clip.id, ")\"]"))) {
                 clip.destroy();
                 delete sharedClips[key];
             }
@@ -2707,7 +2707,7 @@ var Series = /** @class */ (function () {
         }
         // Shift the first point off the parallel arrays
         if (shift) {
-            if (data[0] && data[0].remove) {
+            if (data[0] && (data[0].remove)) {
                 data[0].remove(false);
             }
             else {

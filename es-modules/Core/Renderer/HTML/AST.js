@@ -92,7 +92,7 @@ var AST = /** @class */ (function () {
             }
             if (!valid) {
                 error(33, false, void 0, {
-                    'Invalid attribute in config': "" + key
+                    'Invalid attribute in config': "".concat(key)
                 });
                 delete attributes[key];
             }
