@@ -201,9 +201,12 @@ var ScatterSeries = /** @class */ (function (_super) {
          * series, in a scatter plot the series.name by default shows in the
          * headerFormat and point.x and point.y in the pointFormat.
          *
-         * @product highcharts highstock
+         * @product highcharts highstock highmaps
          */
         tooltip: {
+            /**
+             * @product highcharts highstock
+             */
             headerFormat: '<span style="color:{point.color}">\u25CF</span> ' +
                 '<span style="font-size: 10px"> {series.name}</span><br/>',
             pointFormat: 'x: <b>{point.x}</b><br/>y: <b>{point.y}</b><br/>'

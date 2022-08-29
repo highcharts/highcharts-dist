@@ -436,6 +436,8 @@ var PieSeries = /** @class */ (function (_super) {
      *               boostBlending
      * @product      highcharts highmaps
      * @optionparent plotOptions.pie
+     *
+     * @private
      */
     PieSeries.defaultOptions = merge(Series.defaultOptions, {
         /**
@@ -544,7 +546,7 @@ var PieSeries = /** @class */ (function (_super) {
             /**
              * Alignment method for data labels. Possible values are:
              *
-             * - `toPlotEdges`: Each label touches the nearest vertical edge of
+             * - `plotEdges`: Each label touches the nearest vertical edge of
              *   the plot area.
              *
              * - `connectors`: Connectors have the same x position and the

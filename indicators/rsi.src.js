@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -64,12 +64,20 @@
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var isNumber = U.isNumber,
             merge = U.merge;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
         }
-        /* eslint-enable require-jsdoc */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The RSI series type.
          *
@@ -82,6 +90,11 @@
         var RSIIndicator = /** @class */ (function (_super) {
                 __extends(RSIIndicator, _super);
             function RSIIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -211,6 +224,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Highcharts funnel module
  *
@@ -518,7 +518,7 @@
 
         return Funnel3DPoint;
     });
-    _registerModule(_modules, 'Series/Funnel3D/Funnel3DSeries.js', [_modules['Series/Funnel3D/Funnel3DComposition.js'], _modules['Series/Funnel3D/Funnel3DPoint.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Funnel3DComposition, Funnel3DPoint, H, Math3D, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Funnel3D/Funnel3DSeries.js', [_modules['Series/Funnel3D/Funnel3DComposition.js'], _modules['Series/Funnel3D/Funnel3DPoint.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Funnel3DComposition, Funnel3DPoint, H, Math3D, SeriesRegistry, U) {
         /* *
          *
          *  Highcharts funnel3d series module

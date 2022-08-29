@@ -23,9 +23,15 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, SMAIndicator = _a.sma, EMAIndicator = _a.ema;
+var EMAIndicator = SeriesRegistry.seriesTypes.ema;
+var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The Klinger oscillator series type.
  *
@@ -258,6 +264,11 @@ SeriesRegistry.registerSeriesType('klinger', KlingerIndicator);
  *
  * */
 export default KlingerIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A Klinger oscillator. If the [type](#series.klinger.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -68,7 +68,7 @@
             extend = U.extend;
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -83,6 +83,11 @@
         var ZigzagIndicator = /** @class */ (function (_super) {
                 __extends(ZigzagIndicator, _super);
             function ZigzagIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -270,6 +275,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

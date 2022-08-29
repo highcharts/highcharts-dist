@@ -49,6 +49,8 @@ var defined = U.defined, extend = U.extend, isArray = U.isArray, pick = U.pick, 
  * @excluding    stack, stacking
  * @requires     highcharts-more
  * @optionparent plotOptions.arearange
+ *
+ * @private
  */
 var areaRangeSeriesOptions = {
     /**
@@ -216,16 +218,20 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      * @private
      */
     AreaRangeSeries.prototype.translate = function () {
-        var series = this, yAxis = series.yAxis;
+        var series = this;
         areaProto.translate.apply(series);
         // Set plotLow and plotHigh
-        series.points.forEach(function (point) {
+        series.points.forEach(function (point, i) {
             var high = point.high, plotY = point.plotY;
             if (point.isNull) {
                 point.plotY = null;
             }
             else {
+                var yAxis = series.chart.hasParallelCoordinates ?
+                    series.chart.yAxis[i] :
+                    series.yAxis;
                 point.plotLow = plotY;
+                // Calculate plotHigh value based on each yAxis scale (#15752)
                 point.plotHigh = yAxis.translate(series.dataModify ?
                     series.dataModify.modifyValue(high) : high, 0, 1, 0, 1);
                 if (series.dataModify) {

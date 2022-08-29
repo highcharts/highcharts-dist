@@ -410,6 +410,9 @@ var seriesDefaults = {
     /**
      * The line cap used for line ends and line joins on the graph.
      *
+     * @sample highcharts/series-line/linecap/
+     *         Line cap comparison
+     *
      * @type       {Highcharts.SeriesLinecapValue}
      * @default    round
      * @product    highcharts highstock
@@ -1811,13 +1814,13 @@ var seriesDefaults = {
          */
         x: 0,
         /**
-         * The Z index of the data labels. The default Z index puts it above
-         * the series. Use a Z index of 2 to display it behind the series.
+         * The z index of the data labels. Use a `zIndex` of 6 to display it above
+         * the series, or use a `zIndex` of 2 to display it behind the series.
          *
          * @type      {number}
          * @default   6
          * @since     2.3.5
-         * @apioption plotOptions.series.dataLabels.z
+         * @apioption plotOptions.series.dataLabels.zIndex
          */
         /**
          * The y position offset of the label relative to the point in
@@ -2255,6 +2258,8 @@ var seriesDefaults = {
      *
      * @sample highcharts/coloraxis/custom-color-key/
      *         Custom color key
+     * @sample highcharts/coloraxis/color-key-with-stops/
+     *         Custom colorKey with color axis stops
      * @sample highcharts/coloraxis/changed-default-color-key/
      *         Changed default color key
      *

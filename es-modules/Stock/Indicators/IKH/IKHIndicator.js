@@ -28,7 +28,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach;
-/* eslint-disable require-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 function maxHigh(arr) {
     return arr.reduce(function (max, res) {
@@ -101,6 +105,7 @@ function drawSenkouSpan(opt) {
 // Data integrity in Ichimoku is different than default 'averages':
 // Point: [undefined, value, value, ...] is correct
 // Point: [undefined, undefined, undefined, ...] is incorrect
+// @todo compose
 H.approximations['ichimoku-averages'] = function () {
     var ret = [], isEmptyRange;
     [].forEach.call(arguments, function (arr, i) {
@@ -111,7 +116,11 @@ H.approximations['ichimoku-averages'] = function () {
     // sum method handle null (#7377)
     return isEmptyRange ? void 0 : ret;
 };
-/* eslint-enable require-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The IKH series type.
  *
@@ -121,20 +130,20 @@ H.approximations['ichimoku-averages'] = function () {
  *
  * @augments Highcharts.Series
  */
-/* *
-*
-* Class
-*
-* */
 var IKHIndicator = /** @class */ (function (_super) {
     __extends(IKHIndicator, _super);
     function IKHIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
-        *
-        *  Properties
-        *
-        * */
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
@@ -145,10 +154,10 @@ var IKHIndicator = /** @class */ (function (_super) {
         return _this;
     }
     /* *
-    *
-    * Functions
-    *
-    * */
+     *
+     * Functions
+     *
+     * */
     IKHIndicator.prototype.init = function () {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -668,7 +677,17 @@ extend(IKHIndicator.prototype, {
     nameComponents: ['periodSenkouSpanB', 'period', 'periodTenkan']
 });
 SeriesRegistry.registerSeriesType('ikh', IKHIndicator);
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default IKHIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `IKH` series. If the [type](#series.ikh.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

@@ -10,8 +10,8 @@
 'use strict';
 import A from '../Animation/AnimationUtilities.js';
 var animObject = A.animObject, setAnimation = A.setAnimation;
-import D from '../DefaultOptions.js';
-var defaultOptions = D.defaultOptions;
+import DO from '../DefaultOptions.js';
+var defaultOptions = DO.defaultOptions;
 import F from '../Foundation.js';
 var registerEventOptions = F.registerEventOptions;
 import H from '../Globals.js';
@@ -670,7 +670,7 @@ var Series = /** @class */ (function () {
     };
     /**
      * Internal function called from setData. If the point count is the same
-     * as is was, or if there are overlapping X values, just run
+     * as it was, or if there are overlapping X values, just run
      * Point.update which is cheaper, allows animation, and keeps references
      * to points. This also allows adding or removing points if the X-es
      * don't match.
@@ -825,6 +825,7 @@ var Series = /** @class */ (function () {
      *        `false` to prevent.
      */
     Series.prototype.setData = function (data, redraw, animation, updatePoints) {
+        if (redraw === void 0) { redraw = true; }
         var series = this, oldData = series.points, oldDataLength = (oldData && oldData.length) || 0, options = series.options, chart = series.chart, dataSorting = options.dataSorting, xAxis = series.xAxis, turboThreshold = options.turboThreshold, xData = this.xData, yData = this.yData, pointArrayMap = series.pointArrayMap, valueCount = pointArrayMap && pointArrayMap.length, keys = options.keys;
         var i, pt, updatedData, indexOfX = 0, indexOfY = 1, firstPoint = null, copiedData;
         if (!chart.options.chart.allowMutatingData) { // #4259
@@ -839,7 +840,6 @@ var Series = /** @class */ (function () {
         }
         data = copiedData || data || [];
         var dataLength = data.length;
-        redraw = pick(redraw, true);
         if (dataSorting && dataSorting.enabled) {
             data = this.sortData(data);
         }
@@ -854,7 +854,7 @@ var Series = /** @class */ (function () {
             series.visible &&
             // Soft updating has no benefit in boost, and causes JS error
             // (#8355)
-            !series.isSeriesBoosting) {
+            !series.boosted) {
             updatedData = this.updateData(data, animation);
         }
         if (!updatedData) {
@@ -1200,26 +1200,6 @@ var Series = /** @class */ (function () {
             else {
                 // splat the y data in case of ohlc data array
                 point = (new PointClass()).init(series, [processedXData[i]].concat(splat(processedYData[i])));
-                /**
-                 * Highcharts Stock only. If a point object is created by data
-                 * grouping, it doesn't reflect actual points in the raw
-                 * data. In this case, the `dataGroup` property holds
-                 * information that points back to the raw data.
-                 *
-                 * - `dataGroup.start` is the index of the first raw data
-                 *   point in the group.
-                 *
-                 * - `dataGroup.length` is the amount of points in the
-                 *   group.
-                 *
-                 * @product highstock
-                 *
-                 * @name Highcharts.Point#dataGroup
-                 * @type {Highcharts.DataGroupingInfoObject|undefined}
-                 *
-                 * @sample stock/members/point-datagroup
-                 *         Click to inspect raw data points
-                 */
                 point.dataGroup = series.groupMap[groupCropStartIndex + i];
                 if (point.dataGroup.options) {
                     point.options = point.dataGroup.options;
@@ -2017,7 +1997,7 @@ var Series = /** @class */ (function () {
      * @function Highcharts.Series#applyZones
      */
     Series.prototype.applyZones = function () {
-        var series = this, chart = this.chart, renderer = chart.renderer, zones = this.zones, clips = (this.clips || []), graph = this.graph, area = this.area, chartSizeMax = Math.max(chart.chartWidth, chart.chartHeight), axis = this[(this.zoneAxis || 'y') + 'Axis'], inverted = chart.inverted;
+        var series = this, chart = this.chart, renderer = chart.renderer, zones = this.zones, clips = (this.clips || []), graph = this.graph, area = this.area, plotSizeMax = Math.max(chart.plotWidth, chart.plotHeight), axis = this[(this.zoneAxis || 'y') + 'Axis'], inverted = chart.inverted;
         var translatedFrom, translatedTo, clipAttr, extremes, reversed, horiz, pxRange, pxPosMin, pxPosMax, zoneArea, zoneGraph, ignoreZones = false;
         if (zones.length &&
             (graph || area) &&
@@ -2041,8 +2021,8 @@ var Series = /** @class */ (function () {
                 translatedFrom = reversed ?
                     (horiz ? chart.plotWidth : 0) :
                     (horiz ? 0 : (axis.toPixels(extremes.min) || 0));
-                translatedFrom = clamp(pick(translatedTo, translatedFrom), 0, chartSizeMax);
-                translatedTo = clamp(Math.round(axis.toPixels(pick(threshold.value, extremes.max), true) || 0), 0, chartSizeMax);
+                translatedFrom = clamp(pick(translatedTo, translatedFrom), 0, plotSizeMax);
+                translatedTo = clamp(Math.round(axis.toPixels(pick(threshold.value, extremes.max), true) || 0), 0, plotSizeMax);
                 if (ignoreZones) {
                     translatedFrom = translatedTo =
                         axis.toPixels(extremes.max);
@@ -2055,7 +2035,7 @@ var Series = /** @class */ (function () {
                         x: inverted ? pxPosMax : pxPosMin,
                         y: 0,
                         width: pxRange,
-                        height: chartSizeMax
+                        height: plotSizeMax
                     };
                     if (!horiz) {
                         clipAttr.x = chart.plotHeight - clipAttr.x;
@@ -2065,7 +2045,7 @@ var Series = /** @class */ (function () {
                     clipAttr = {
                         x: 0,
                         y: inverted ? pxPosMax : pxPosMin,
-                        width: chartSizeMax,
+                        width: plotSizeMax,
                         height: pxRange
                     };
                     if (horiz) {
@@ -2491,7 +2471,7 @@ var Series = /** @class */ (function () {
             }
             if (tree[sideB]) {
                 // compare distance to current best to splitting point to
-                // decide wether to check side B or not
+                // decide whether to check side B or not
                 if (Math.sqrt(tdist * tdist) < ret[kdComparer]) {
                     nPoint2 = _search(search, tree[sideB], depth + 1, dimensions);
                     ret = (nPoint2[kdComparer] <
@@ -3358,6 +3338,31 @@ var Series = /** @class */ (function () {
         return this.chart.isInsidePlot(plotX, plotY, options);
     };
     Series.defaultOptions = SeriesDefaults;
+    /**
+     * Registry of all available series types.
+     *
+     * @name Highcharts.Series.types
+     * @type {Highcharts.Dictionary<typeof_Highcharts.Series>}
+     */
+    Series.types = SeriesRegistry.seriesTypes;
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
+    /**
+     * Registers a series class to be accessible via `Series.types`.
+     *
+     * @function Highcharts.Series.registerType
+     *
+     * @param {string} seriesType
+     * The series type as an identifier string in lower case.
+     *
+     * @param {Function} SeriesClass
+     * The series class as a class pattern or a constructor function with
+     * prototype.
+     */
+    Series.registerType = SeriesRegistry.registerSeriesType;
     return Series;
 }());
 extend(Series.prototype, {

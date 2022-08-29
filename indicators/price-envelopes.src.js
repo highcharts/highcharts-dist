@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -65,6 +65,11 @@
         var extend = U.extend,
             isArray = U.isArray,
             merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Price Envelopes series type.
          *
@@ -77,13 +82,28 @@
         var PriceEnvelopesIndicator = /** @class */ (function (_super) {
                 __extends(PriceEnvelopesIndicator, _super);
             function PriceEnvelopesIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             PriceEnvelopesIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
                 // Set default color for lines:
@@ -286,6 +306,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

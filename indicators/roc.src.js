@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -67,7 +67,11 @@
         var isArray = U.isArray,
             merge = U.merge,
             extend = U.extend;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         function populateAverage(xVal, yVal, i, period, index) {
             /* Calculated as:
@@ -94,7 +98,6 @@
             }
             return [xVal[i], rocY];
         }
-        /* eslint-enable require-jsdoc */
         /* *
          *
          *  Class
@@ -112,6 +115,11 @@
         var ROCIndicator = /** @class */ (function (_super) {
                 __extends(ROCIndicator, _super);
             function ROCIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -200,6 +208,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

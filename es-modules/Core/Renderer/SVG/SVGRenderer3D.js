@@ -31,7 +31,7 @@ import Color from '../../Color/Color.js';
 var color = Color.parse;
 import H from '../../Globals.js';
 var charts = H.charts, deg2rad = H.deg2rad;
-import Math3D from '../../../Extensions/Math3D.js';
+import Math3D from '../../Math3D.js';
 var perspective = Math3D.perspective, shapeArea = Math3D.shapeArea;
 import SVGElement from './SVGElement.js';
 import SVGElement3D from './SVGElement3D.js';

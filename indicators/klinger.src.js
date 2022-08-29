@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Stock JS v10.2.0 (2022-07-05)
+ * @license Highcharts Stock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -363,14 +363,18 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            EMAIndicator = _a.ema;
+        var EMAIndicator = SeriesRegistry.seriesTypes.ema;
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var correctFloat = U.correctFloat,
             error = U.error,
             extend = U.extend,
             isArray = U.isArray,
             merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Klinger oscillator series type.
          *
@@ -623,6 +627,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

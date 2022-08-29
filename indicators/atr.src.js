@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -64,7 +64,11 @@
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var isArray = U.isArray,
             merge = U.merge;
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         /**
          * @private
@@ -92,10 +96,9 @@
             y = (((prevATR * (period - 1)) + TR) / period);
             return [x, y];
         }
-        /* eslint-enable valid-jsdoc */
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -110,6 +113,11 @@
         var ATRIndicator = /** @class */ (function (_super) {
                 __extends(ATRIndicator, _super);
             function ATRIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -204,6 +212,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

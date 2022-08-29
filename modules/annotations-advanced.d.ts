@@ -20,7 +20,7 @@ declare module "../highcharts" {
          * @param options
          *        The annotation options for the new, detailed annotation.
          *
-         * @return - The newly generated annotation.
+         * @return The newly generated annotation.
          */
         addAnnotation(options: AnnotationsOptions, redraw?: boolean): Annotation;
         /**

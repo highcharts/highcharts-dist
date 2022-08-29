@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -11,7 +11,6 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import '../../Extensions/FullScreen.js';
 import Exporting from '../../Extensions/Exporting/Exporting.js';
 import HttpUtilities from '../../Core/HttpUtilities.js';
 var G = Highcharts;

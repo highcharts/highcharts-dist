@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -61,16 +61,19 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            ATRIndicator = _a.atr,
-            SMAIndicator = _a.sma;
+        var ATRIndicator = SeriesRegistry.seriesTypes.atr;
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var addEvent = U.addEvent,
             correctFloat = U.correctFloat,
             isArray = U.isArray,
             extend = U.extend,
             merge = U.merge,
             objectEach = U.objectEach;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         function createPointObj(mainSeries, index, close) {
             return {
@@ -79,7 +82,6 @@
                 x: mainSeries.xData[index]
             };
         }
-        /* eslint-enable require-jsdoc */
         /* *
          *
          *  Class
@@ -97,6 +99,11 @@
         var SupertrendIndicator = /** @class */ (function (_super) {
                 __extends(SupertrendIndicator, _super);
             function SupertrendIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -543,6 +550,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

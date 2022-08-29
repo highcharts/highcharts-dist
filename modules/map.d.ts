@@ -383,10 +383,10 @@ declare module "../highcharts" {
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
     /**
-     * The world size in terms of 10k meters in the Web Mercator projection, to
-     * match a 256 square tile to zoom level 0
+     * Add logic to pad each axis with the amount of pixels necessary to avoid
+     * the bubbles to overflow.
      */
-    let worldSize: any;
+    function axisBeforePadding(): void;
     /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.

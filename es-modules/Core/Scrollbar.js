@@ -583,7 +583,9 @@ var Scrollbar = /** @class */ (function () {
      * @function Highcharts.Scrollbar#shouldUpdateExtremes
      */
     Scrollbar.prototype.shouldUpdateExtremes = function (eventType) {
-        return (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
+        return (pick(this.options.liveRedraw, H.svg &&
+            !H.isTouchDevice &&
+            !this.chart.boosted) ||
             // Mouseup always should change extremes
             eventType === 'mouseup' ||
             eventType === 'touchend' ||

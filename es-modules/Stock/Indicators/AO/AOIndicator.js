@@ -24,7 +24,8 @@ var __extends = (this && this.__extends) || (function () {
 import H from '../../../Core/Globals.js';
 var noop = H.noop;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, SMAIndicator = _a.sma, ColumnSeries = _a.column;
+var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+var columnProto = SeriesRegistry.seriesTypes.column.prototype;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, isArray = U.isArray;
 /* *
@@ -44,22 +45,27 @@ var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, isArray =
 var AOIndicator = /** @class */ (function (_super) {
     __extends(AOIndicator, _super);
     function AOIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        /**
+        /* *
          *
-         * Properties
+         *  Properties
          *
-         */
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
-    /**
+    /* *
      *
-     * Functions
+     *  Functions
      *
-     */
+     * */
     AOIndicator.prototype.drawGraph = function () {
         var indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0], i;
         if (!userColor && firstPoint) {
@@ -185,10 +191,10 @@ extend(AOIndicator.prototype, {
     nameComponents: false,
     // Columns support:
     markerAttribs: noop,
-    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
-    crispCol: ColumnSeries.prototype.crispCol,
-    translate: ColumnSeries.prototype.translate,
-    drawPoints: ColumnSeries.prototype.drawPoints
+    getColumnMetrics: columnProto.getColumnMetrics,
+    crispCol: columnProto.crispCol,
+    translate: columnProto.translate,
+    drawPoints: columnProto.drawPoints
 });
 SeriesRegistry.registerSeriesType('ao', AOIndicator);
 /* *
@@ -197,6 +203,11 @@ SeriesRegistry.registerSeriesType('ao', AOIndicator);
  *
  * */
 export default AOIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * An `AO` series. If the [type](#series.ao.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

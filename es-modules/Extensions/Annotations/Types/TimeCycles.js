@@ -26,6 +26,11 @@ import CrookedLine from './CrookedLine.js';
 import ControlPoint from '../ControlPoint.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge, isNumber = U.isNumber, defined = U.defined;
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Function to create start of the path.
  * @param {number} x x position of the TimeCycles
@@ -46,19 +51,18 @@ function getStartingPath(x, y) {
  *
  */
 function getCirclePath(pixelInterval, numberOfCircles, startX, y) {
-    var strToRepeat = function (i) { return [
-        'A',
-        pixelInterval / 2,
-        pixelInterval / 2,
-        0,
-        1,
-        1,
-        startX + i * pixelInterval,
-        y
-    ]; };
     var path = [];
     for (var i = 1; i <= numberOfCircles; i++) {
-        path.push(strToRepeat(i));
+        path.push([
+            'A',
+            pixelInterval / 2,
+            pixelInterval / 2,
+            0,
+            1,
+            1,
+            startX + i * pixelInterval,
+            y
+        ]);
     }
     return path;
 }
@@ -67,12 +71,16 @@ function getCirclePath(pixelInterval, numberOfCircles, startX, y) {
  *  Class
  *
  * */
-/* eslint-disable no-invalid-this, valid-jsdoc */
 var TimeCycles = /** @class */ (function (_super) {
     __extends(TimeCycles, _super);
     function TimeCycles() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     TimeCycles.prototype.init = function (annotation, options, index) {
         if (defined(options.yAxis)) {
             options.points.forEach(function (point) {
@@ -178,11 +186,6 @@ TimeCycles.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions
             }]
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.timeCycles = TimeCycles;
 /* *
  *

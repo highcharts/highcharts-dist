@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -366,7 +366,6 @@
         var AroonIndicator = SeriesRegistry.seriesTypes.aroon;
         var extend = U.extend,
             merge = U.merge;
-        var AROON = SeriesRegistry.seriesTypes.aroon;
         /* *
          *
          *  Class
@@ -416,7 +415,7 @@
                     aroonDown,
                     oscillator,
                     i;
-                aroon = AROON.prototype.getValues.call(this, series, params);
+                aroon = _super.prototype.getValues.call(this, series, params);
                 for (i = 0; i < aroon.yData.length; i++) {
                     aroonUp = aroon.yData[i][0];
                     aroonDown = aroon.yData[i][1];
@@ -469,6 +468,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

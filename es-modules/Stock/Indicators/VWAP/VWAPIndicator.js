@@ -31,7 +31,7 @@ import U from '../../../Core/Utilities.js';
 var error = U.error, isArray = U.isArray, merge = U.merge;
 /* *
  *
- * Class
+ *  Class
  *
  * */
 /**
@@ -46,6 +46,11 @@ var error = U.error, isArray = U.isArray, merge = U.merge;
 var VWAPIndicator = /** @class */ (function (_super) {
     __extends(VWAPIndicator, _super);
     function VWAPIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -179,6 +184,11 @@ SeriesRegistry.registerSeriesType('vwap', VWAPIndicator);
  *
  * */
 export default VWAPIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `Volume Weighted Average Price (VWAP)` series. If the
  * [type](#series.vwap.type) option is not specified, it is inherited from

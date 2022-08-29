@@ -31,7 +31,6 @@ var extend = U.extend, isArray = U.isArray, merge = U.merge;
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 // Utils:
 /**
  * @private
@@ -228,6 +227,11 @@ SeriesRegistry.registerSeriesType('bb', BBIndicator);
  *
  * */
 export default BBIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A bollinger bands indicator. If the [type](#series.bb.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

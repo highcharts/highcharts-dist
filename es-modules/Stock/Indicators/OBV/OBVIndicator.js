@@ -42,6 +42,11 @@ var isNumber = U.isNumber, error = U.error, extend = U.extend, merge = U.merge;
 var OBVIndicator = /** @class */ (function (_super) {
     __extends(OBVIndicator, _super);
     function OBVIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -157,6 +162,11 @@ SeriesRegistry.registerSeriesType('obv', OBVIndicator);
  *
  * */
 export default OBVIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `OBV` series. If the [type](#series.obv.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

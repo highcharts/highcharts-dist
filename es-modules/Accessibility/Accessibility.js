@@ -16,6 +16,8 @@ import H from '../Core/Globals.js';
 var doc = H.doc;
 import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge;
+import HU from './Utils/HTMLUtilities.js';
+var removeElement = HU.removeElement;
 import A11yI18n from './A11yI18n.js';
 import ContainerComponent from './Components/ContainerComponent.js';
 import FocusBorder from './FocusBorder.js';
@@ -183,6 +185,10 @@ var Accessibility = /** @class */ (function () {
         // Destroy proxy provider
         if (this.proxyProvider) {
             this.proxyProvider.destroy();
+        }
+        // Remove announcer container
+        if (chart.announcerContainer) {
+            removeElement(chart.announcerContainer);
         }
         // Kill keyboard nav
         if (this.keyboardNavigation) {

@@ -26,6 +26,11 @@ var StochasticIndicator = SeriesRegistry.seriesTypes.stochastic;
 var seriesTypes = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The Slow Stochastic series type.
  *
@@ -38,12 +43,27 @@ var extend = U.extend, merge = U.merge;
 var SlowStochasticIndicator = /** @class */ (function (_super) {
     __extends(SlowStochasticIndicator, _super);
     function SlowStochasticIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     SlowStochasticIndicator.prototype.getValues = function (series, params) {
         var periods = params.periods, fastValues = seriesTypes.stochastic.prototype.getValues.call(this, series, params), slowValues = {
             values: [],
@@ -121,6 +141,11 @@ SeriesRegistry.registerSeriesType('slowstochastic', SlowStochasticIndicator);
  *
  * */
 export default SlowStochasticIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A Slow Stochastic indicator. If the [type](#series.slowstochastic.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

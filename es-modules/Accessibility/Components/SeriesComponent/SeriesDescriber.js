@@ -182,7 +182,8 @@ function getPointA11yTimeDescription(point) {
  */
 function getPointXDescription(point) {
     var timeDesc = getPointA11yTimeDescription(point), xAxis = point.series.xAxis || {}, pointCategory = xAxis.categories && defined(point.category) &&
-        ('' + point.category).replace('<br/>', ' '), canUseId = point.id && point.id.indexOf('highcharts-') < 0, fallback = 'x, ' + point.x;
+        ('' + point.category).replace('<br/>', ' '), canUseId = defined(point.id) &&
+        ('' + point.id).indexOf('highcharts-') < 0, fallback = 'x, ' + point.x;
     return point.name || timeDesc || pointCategory ||
         (canUseId ? point.id : fallback);
 }
@@ -379,7 +380,7 @@ function describeSeries(series) {
         // For some series types the order of elements do not match the
         // order of points in series. In that case we have to reverse them
         // in order for AT to read them out in an understandable order.
-        // Due to z-index issues we can not do this for 3D charts.
+        // Due to z-index issues we cannot do this for 3D charts.
         if (seriesEl.lastChild === firstPointEl && !is3d) {
             reverseChildNodes(seriesEl);
         }

@@ -25,6 +25,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, isArray = U.isArray, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The Price Envelopes series type.
  *
@@ -37,12 +42,27 @@ var extend = U.extend, isArray = U.isArray, merge = U.merge;
 var PriceEnvelopesIndicator = /** @class */ (function (_super) {
     __extends(PriceEnvelopesIndicator, _super);
     function PriceEnvelopesIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     PriceEnvelopesIndicator.prototype.init = function () {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -227,6 +247,11 @@ SeriesRegistry.registerSeriesType('priceenvelopes', PriceEnvelopesIndicator);
  *
  * */
 export default PriceEnvelopesIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A price envelopes indicator. If the [type](#series.priceenvelopes.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

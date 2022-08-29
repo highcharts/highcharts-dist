@@ -26,6 +26,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, isArray = U.isArray, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The Williams %R series type.
  *
@@ -120,6 +125,11 @@ SeriesRegistry.registerSeriesType('williamsr', WilliamsRIndicator);
  *
  * */
 export default WilliamsRIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `Williams %R Oscillator` series. If the [type](#series.williamsr.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

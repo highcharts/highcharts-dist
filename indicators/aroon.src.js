@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -367,7 +367,11 @@
         var extend = U.extend,
             merge = U.merge,
             pick = U.pick;
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils
         // Index of element with extreme value from array (min or max)
         /**
@@ -386,7 +390,6 @@
             }
             return valueIndex;
         }
-        /* eslint-enable valid-jsdoc */
         /* *
          *
          *  Class
@@ -404,6 +407,11 @@
         var AroonIndicator = /** @class */ (function (_super) {
                 __extends(AroonIndicator, _super);
             function AroonIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -536,6 +544,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

@@ -336,7 +336,7 @@ if (seriesTypes.boxplot) {
             }
         },
         median: {
-            // Median can not be dragged individually, just move the whole
+            // Median cannot be dragged individually, just move the whole
             // point for this.
             axis: 'y',
             move: true
@@ -989,6 +989,7 @@ var defaultDragHandleOptions = {
  * @type       {string}
  * @since      6.2.0
  * @validvalue ["alt", "ctrl", "meta", "shift"]
+ * @deprecated
  * @requires  modules/draggable-points
  * @apioption  chart.zoomKey
  */
@@ -1268,7 +1269,7 @@ function getPositionSnapshot(e, points, guideBox) {
  */
 function getGroupedPoints(point) {
     var series = point.series, points = [], groupKey = series.options.dragDrop.groupBy;
-    if (series.isSeriesBoosting) { // #11156
+    if (series.boosted) { // #11156
         series.options.data.forEach(function (pointOptions, i) {
             points.push((new series.pointClass()).init(// eslint-disable-line new-cap
             series, pointOptions));
@@ -2052,7 +2053,7 @@ addEvent(Point, 'remove', function () {
  */
 Chart.prototype.zoomOrPanKeyPressed = function (e) {
     // Check whether the panKey and zoomKey are set in chart.userOptions
-    var chartOptions = this.userOptions.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zoomKey && chartOptions.zoomKey + 'Key';
+    var chartOptions = this.options.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zooming.key && chartOptions.zooming.key + 'Key';
     return (e[zoomKey] || e[panKey]);
 };
 /**

@@ -25,22 +25,26 @@ import CrookedLine from './CrookedLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge;
-/* eslint-disable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * @private
  */
 function getSecondCoordinate(p1, p2, x) {
     return (p2.y - p1.y) / (p2.x - p1.x) * (x - p1.x) + p1.y;
 }
+/* *
+ *
+ *  Class
+ *
+ * */
 var Tunnel = /** @class */ (function (_super) {
     __extends(Tunnel, _super);
-    /* *
-     *
-     * Constructors
-     *
-     * */
-    function Tunnel(chart, options) {
-        return _super.call(this, chart, options) || this;
+    function Tunnel() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
@@ -200,11 +204,6 @@ Tunnel.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions,
         }
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.tunnel = Tunnel;
 /* *
  *

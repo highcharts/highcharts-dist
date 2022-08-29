@@ -13,7 +13,7 @@ var getDeferredAnimation = A.getDeferredAnimation;
 import F from '../FormatUtilities.js';
 var format = F.format;
 import U from '../Utilities.js';
-var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
+var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
 /* *
  *
  *  Composition
@@ -230,7 +230,9 @@ var DataLabel;
      * @private
      */
     function drawDataLabels() {
-        var series = this, chart = series.chart, seriesOptions = series.options, points = series.points, hasRendered = series.hasRendered || 0, renderer = chart.renderer;
+        var series = this, chart = series.chart, seriesOptions = series.options, points = series.points, hasRendered = series.hasRendered || 0, renderer = chart.renderer, _a = chart.options.chart, backgroundColor = _a.backgroundColor, plotBackgroundColor = _a.plotBackgroundColor, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
+            (isString(backgroundColor) && backgroundColor) ||
+            "#000000" /* Palette.neutralColor100 */);
         var seriesDlOptions = seriesOptions.dataLabels, pointOptions, dataLabelsGroup;
         var dataLabelAnim = seriesDlOptions.animation, animationConfig = seriesDlOptions.defer ?
             getDeferredAnimation(chart, dataLabelAnim, series) :
@@ -301,7 +303,7 @@ var DataLabel;
                                     labelDistance < 0 ||
                                     !!seriesOptions.stacking ?
                                     point.contrastColor :
-                                    "#000000" /* Palette.neutralColor100 */;
+                                    contrastColor;
                             }
                             else {
                                 delete point.contrastColor;
@@ -406,9 +408,6 @@ var DataLabel;
                             // read text bounding box
                             dataLabel.css(style).shadow(labelOptions.shadow);
                         }
-                        if (!dataLabel.added) {
-                            dataLabel.add(dataLabelsGroup);
-                        }
                         if (labelOptions.textPath && !labelOptions.useHTML) {
                             dataLabel.setTextPath((point.getDataLabelPath &&
                                 point.getDataLabelPath(dataLabel)) || point.graphic, labelOptions.textPath);
@@ -417,6 +416,9 @@ var DataLabel;
                                 // clean the DOM
                                 point.dataLabelPath = (point.dataLabelPath.destroy());
                             }
+                        }
+                        if (!dataLabel.added) {
+                            dataLabel.add(dataLabelsGroup);
                         }
                         // Now the data label is created and placed at 0,0, so
                         // we need to align it

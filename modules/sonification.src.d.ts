@@ -512,8 +512,8 @@ declare module "../highcharts.src" {
          * function receives the point as argument, and should return a numeric
          * value. The points with the lowest numeric values are then played
          * first, and the time between points will be proportional to the
-         * distance between the numeric values. This option can not be
-         * overridden per series.
+         * distance between the numeric values. This option cannot be overridden
+         * per series.
          */
         pointPlayTime: (string|Function);
         /**

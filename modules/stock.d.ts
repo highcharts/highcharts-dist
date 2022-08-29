@@ -60,6 +60,14 @@ declare module "../highcharts" {
          */
         setDataGrouping(dataGrouping?: (boolean|DataGroupingOptionsObject), redraw?: boolean): void;
     }
+    interface DataGroupingInfoObject {
+        length: number;
+        options?: SeriesOptionsType;
+        start: number;
+    }
+    interface Point {
+        dataGroup?: DataGroupingInfoObject;
+    }
     interface Series {
         /**
          * Highcharts Stock only. Set the compare mode of the series after

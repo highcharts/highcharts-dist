@@ -52,20 +52,20 @@ var PCIndicator = /** @class */ (function (_super) {
          * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
-        *
-        *  Properties
-        *
-        * */
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
     /* *
-    *
-    *  Functions
-    *
-    * */
+     *
+     *  Functions
+     *
+     * */
     PCIndicator.prototype.getValues = function (series, params) {
         var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
@@ -181,6 +181,11 @@ SeriesRegistry.registerSeriesType('pc', PCIndicator);
  *
  * */
 export default PCIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A Price channel indicator. If the [type](#series.pc.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

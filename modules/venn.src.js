@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -327,7 +327,7 @@
             }
             CircleUtilities.getCirclesIntersectionPoints = getCirclesIntersectionPoints;
             /**
-             * Tests wether the first circle is completely overlapping the second
+             * Tests whether the first circle is completely overlapping the second
              * circle.
              *
              * @private
@@ -346,7 +346,7 @@
             }
             CircleUtilities.isCircle1CompletelyOverlappingCircle2 = isCircle1CompletelyOverlappingCircle2;
             /**
-             * Tests wether a point lies within a given circle.
+             * Tests whether a point lies within a given circle.
              * @private
              * @param {Highcharts.PositionObject} point
              * The point to test for.
@@ -362,7 +362,7 @@
             }
             CircleUtilities.isPointInsideCircle = isPointInsideCircle;
             /**
-             * Tests wether a point lies within a set of circles.
+             * Tests whether a point lies within a set of circles.
              *
              * @private
              *
@@ -382,7 +382,7 @@
             }
             CircleUtilities.isPointInsideAllCircles = isPointInsideAllCircles;
             /**
-             * Tests wether a point lies outside a set of circles.
+             * Tests whether a point lies outside a set of circles.
              *
              * TODO: add unit tests.
              *

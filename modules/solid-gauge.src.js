@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Solid angular gauge module
  *
@@ -363,7 +363,7 @@
                  * @apioption plotOptions.solidgauge.radius
                  */
                 /**
-                 * Wether to draw rounded edges on the gauge.
+                 * Whether to draw rounded edges on the gauge.
                  *
                  * @sample {highcharts} highcharts/demo/gauge-activity/
                  *         Activity Gauge

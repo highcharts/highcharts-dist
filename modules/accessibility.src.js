@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Accessibility module
  *
@@ -38,314 +38,6 @@
             }
         }
     }
-    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (F, U) {
-        /* *
-         *
-         *  Accessibility module - internationalization support
-         *
-         *  (c) 2010-2021 Highsoft AS
-         *  Author: Øystein Moseng
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var format = F.format;
-        var getNestedProperty = U.getNestedProperty,
-            pick = U.pick;
-        /* *
-         *
-         *  Composition
-         *
-         * */
-        var A11yI18nComposition;
-        (function (A11yI18nComposition) {
-            /* *
-             *
-             *  Declarations
-             *
-             * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(ChartClass) {
-                if (composedClasses.indexOf(ChartClass) === -1) {
-                    composedClasses.push(ChartClass);
-                    var chartProto = ChartClass.prototype;
-                    chartProto.langFormat = langFormat;
-                }
-                return ChartClass;
-            }
-            A11yI18nComposition.compose = compose;
-            /**
-             * i18n utility function.  Format a single array or plural statement in a
-             * format string.  If the statement is not an array or plural statement,
-             * returns the statement within brackets.  Invalid array statements return
-             * an empty string.
-             *
-             * @private
-             * @function formatExtendedStatement
-             * @param {string} statement
-             * @param {Highcharts.Dictionary<*>} ctx
-             * Context to apply to the format string.
-             */
-            function formatExtendedStatement(statement, ctx) {
-                var eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
-                var arr,
-                    result;
-                // Dealing with an each-function?
-                if (eachStart > -1) {
-                    var eachEnd = statement.slice(eachStart).indexOf(')') + eachStart, preEach = statement.substring(0, eachStart), postEach = statement.substring(eachEnd + 1), eachStatement = statement.substring(eachStart + 6, eachEnd), eachArguments = eachStatement.split(',');
-                    var lenArg = Number(eachArguments[1]),
-                        len = void 0;
-                    result = '';
-                    arr = getNestedProperty(eachArguments[0], ctx);
-                    if (arr) {
-                        lenArg = isNaN(lenArg) ? arr.length : lenArg;
-                        len = lenArg < 0 ?
-                            arr.length + lenArg :
-                            Math.min(lenArg, arr.length); // Overshoot
-                        // Run through the array for the specified length
-                        for (var i = 0; i < len; ++i) {
-                            result += preEach + arr[i] + postEach;
-                        }
-                    }
-                    return result.length ? result : '';
-                }
-                // Dealing with a plural-function?
-                if (pluralStart > -1) {
-                    var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
-                    switch (num) {
-                        case 0:
-                            result = pick(pluralArguments[4], pluralArguments[1]);
-                            break;
-                        case 1:
-                            result = pick(pluralArguments[2], pluralArguments[1]);
-                            break;
-                        case 2:
-                            result = pick(pluralArguments[3], pluralArguments[1]);
-                            break;
-                        default:
-                            result = pluralArguments[1];
-                    }
-                    return result ? stringTrim(result) : '';
-                }
-                // Array index
-                if (indexStart > -1) {
-                    var arrayName = statement.substring(0,
-                        indexStart),
-                        ix = Number(statement.substring(indexStart + 1,
-                        indexEnd));
-                    var val = void 0;
-                    arr = getNestedProperty(arrayName, ctx);
-                    if (!isNaN(ix) && arr) {
-                        if (ix < 0) {
-                            val = arr[arr.length + ix];
-                            // Handle negative overshoot
-                            if (typeof val === 'undefined') {
-                                val = arr[0];
-                            }
-                        }
-                        else {
-                            val = arr[ix];
-                            // Handle positive overshoot
-                            if (typeof val === 'undefined') {
-                                val = arr[arr.length - 1];
-                            }
-                        }
-                    }
-                    return typeof val !== 'undefined' ? val : '';
-                }
-                // Standard substitution, delegate to format or similar
-                return '{' + statement + '}';
-            }
-            /* eslint-disable max-len */
-            /**
-             * i18n formatting function.  Extends Highcharts.format() functionality by
-             * also handling arrays and plural conditionals.  Arrays can be indexed as
-             * follows:
-             *
-             * - Format: 'This is the first index: {myArray[0]}. The last: {myArray[-1]}.'
-             *
-             * - Context: { myArray: [0, 1, 2, 3, 4, 5] }
-             *
-             * - Result: 'This is the first index: 0. The last: 5.'
-             *
-             *
-             * They can also be iterated using the #each() function.  This will repeat
-             * the contents of the bracket expression for each element.  Example:
-             *
-             * - Format: 'List contains: {#each(myArray)cm }'
-             *
-             * - Context: { myArray: [0, 1, 2] }
-             *
-             * - Result: 'List contains: 0cm 1cm 2cm '
-             *
-             *
-             * The #each() function optionally takes a length parameter.  If positive,
-             * this parameter specifies the max number of elements to iterate through.
-             * If negative, the function will subtract the number from the length of the
-             * array.  Use this to stop iterating before the array ends.  Example:
-             *
-             * - Format: 'List contains: {#each(myArray, -1) }and {myArray[-1]}.'
-             *
-             * - Context: { myArray: [0, 1, 2, 3] }
-             *
-             * - Result: 'List contains: 0, 1, 2, and 3.'
-             *
-             *
-             * Use the #plural() function to pick a string depending on whether or not a
-             * context object is 1.  Arguments are #plural(obj, plural, singular).
-             * Example:
-             *
-             * - Format: 'Has {numPoints} {#plural(numPoints, points, point}.'
-             *
-             * - Context: { numPoints: 5 }
-             *
-             * - Result: 'Has 5 points.'
-             *
-             *
-             * Optionally there are additional parameters for dual and none:
-             * #plural(obj, plural, singular, dual, none).  Example:
-             *
-             * - Format: 'Has {#plural(numPoints, many points, one point, two points,
-             *   none}.'
-             *
-             * - Context: { numPoints: 2 }
-             *
-             * - Result: 'Has two points.'
-             *
-             *
-             * The dual or none parameters will take precedence if they are supplied.
-             *
-             * @requires modules/accessibility
-             *
-             * @function Highcharts.i18nFormat
-             *
-             * @param {string} formatString
-             * The string to format.
-             *
-             * @param {Highcharts.Dictionary<*>} context
-             * Context to apply to the format string.
-             *
-             * @param {Highcharts.Chart} chart
-             * A `Chart` instance with a time object and numberFormatter, passed on to
-             * format().
-             *
-             * @return {string}
-             * The formatted string.
-             */
-            function i18nFormat(formatString, context, chart) {
-                var getFirstBracketStatement = function (sourceStr, offset) {
-                        var str = sourceStr.slice(offset || 0), startBracket = str.indexOf('{'), endBracket = str.indexOf('}');
-                    if (startBracket > -1 && endBracket > startBracket) {
-                        return {
-                            statement: str.substring(startBracket + 1, endBracket),
-                            begin: offset + startBracket + 1,
-                            end: offset + endBracket
-                        };
-                    }
-                }, tokens = [];
-                var bracketRes,
-                    constRes,
-                    cursor = 0;
-                // Tokenize format string into bracket statements and constants
-                do {
-                    bracketRes = getFirstBracketStatement(formatString, cursor);
-                    constRes = formatString.substring(cursor, bracketRes && bracketRes.begin - 1);
-                    // If we have constant content before this bracket statement, add it
-                    if (constRes.length) {
-                        tokens.push({
-                            value: constRes,
-                            type: 'constant'
-                        });
-                    }
-                    // Add the bracket statement
-                    if (bracketRes) {
-                        tokens.push({
-                            value: bracketRes.statement,
-                            type: 'statement'
-                        });
-                    }
-                    cursor = bracketRes ? bracketRes.end + 1 : cursor + 1;
-                } while (bracketRes);
-                // Perform the formatting.  The formatArrayStatement function returns
-                // the statement in brackets if it is not an array statement, which
-                // means it gets picked up by format below.
-                tokens.forEach(function (token) {
-                    if (token.type === 'statement') {
-                        token.value = formatExtendedStatement(token.value, context);
-                    }
-                });
-                // Join string back together and pass to format to pick up non-array
-                // statements.
-                return format(tokens.reduce(function (acc, cur) { return acc + cur.value; }, ''), context, chart);
-            }
-            A11yI18nComposition.i18nFormat = i18nFormat;
-            /* eslint-enable max-len */
-            /**
-             * Apply context to a format string from lang options of the chart.
-             *
-             * @requires modules/accessibility
-             *
-             * @function Highcharts.Chart#langFormat
-             *
-             * @param {string} langKey
-             * Key (using dot notation) into lang option structure.
-             *
-             * @param {Highcharts.Dictionary<*>} context
-             * Context to apply to the format string.
-             *
-             * @return {string}
-             * The formatted string.
-             */
-            function langFormat(langKey, context) {
-                var keys = langKey.split('.');
-                var formatString = this.options.lang,
-                    i = 0;
-                for (; i < keys.length; ++i) {
-                    formatString = formatString && formatString[keys[i]];
-                }
-                return typeof formatString === 'string' ?
-                    i18nFormat(formatString, context, this) : '';
-            }
-            /**
-             * String trim that works for IE6-8 as well.
-             *
-             * @private
-             * @function stringTrim
-             *
-             * @param {string} str
-             * The input string
-             *
-             * @return {string}
-             * The trimmed string
-             */
-            function stringTrim(str) {
-                return str.trim && str.trim() || str.replace(/^\s+|\s+$/g, '');
-            }
-        })(A11yI18nComposition || (A11yI18nComposition = {}));
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-
-        return A11yI18nComposition;
-    });
     _registerModule(_modules, 'Accessibility/Utils/HTMLUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
@@ -653,6 +345,314 @@
             };
 
         return HTMLUtilities;
+    });
+    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (F, U) {
+        /* *
+         *
+         *  Accessibility module - internationalization support
+         *
+         *  (c) 2010-2021 Highsoft AS
+         *  Author: Øystein Moseng
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var format = F.format;
+        var getNestedProperty = U.getNestedProperty,
+            pick = U.pick;
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var A11yI18nComposition;
+        (function (A11yI18nComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(ChartClass) {
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    var chartProto = ChartClass.prototype;
+                    chartProto.langFormat = langFormat;
+                }
+                return ChartClass;
+            }
+            A11yI18nComposition.compose = compose;
+            /**
+             * i18n utility function.  Format a single array or plural statement in a
+             * format string.  If the statement is not an array or plural statement,
+             * returns the statement within brackets.  Invalid array statements return
+             * an empty string.
+             *
+             * @private
+             * @function formatExtendedStatement
+             * @param {string} statement
+             * @param {Highcharts.Dictionary<*>} ctx
+             * Context to apply to the format string.
+             */
+            function formatExtendedStatement(statement, ctx) {
+                var eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
+                var arr,
+                    result;
+                // Dealing with an each-function?
+                if (eachStart > -1) {
+                    var eachEnd = statement.slice(eachStart).indexOf(')') + eachStart, preEach = statement.substring(0, eachStart), postEach = statement.substring(eachEnd + 1), eachStatement = statement.substring(eachStart + 6, eachEnd), eachArguments = eachStatement.split(',');
+                    var lenArg = Number(eachArguments[1]),
+                        len = void 0;
+                    result = '';
+                    arr = getNestedProperty(eachArguments[0], ctx);
+                    if (arr) {
+                        lenArg = isNaN(lenArg) ? arr.length : lenArg;
+                        len = lenArg < 0 ?
+                            arr.length + lenArg :
+                            Math.min(lenArg, arr.length); // Overshoot
+                        // Run through the array for the specified length
+                        for (var i = 0; i < len; ++i) {
+                            result += preEach + arr[i] + postEach;
+                        }
+                    }
+                    return result.length ? result : '';
+                }
+                // Dealing with a plural-function?
+                if (pluralStart > -1) {
+                    var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
+                    switch (num) {
+                        case 0:
+                            result = pick(pluralArguments[4], pluralArguments[1]);
+                            break;
+                        case 1:
+                            result = pick(pluralArguments[2], pluralArguments[1]);
+                            break;
+                        case 2:
+                            result = pick(pluralArguments[3], pluralArguments[1]);
+                            break;
+                        default:
+                            result = pluralArguments[1];
+                    }
+                    return result ? stringTrim(result) : '';
+                }
+                // Array index
+                if (indexStart > -1) {
+                    var arrayName = statement.substring(0,
+                        indexStart),
+                        ix = Number(statement.substring(indexStart + 1,
+                        indexEnd));
+                    var val = void 0;
+                    arr = getNestedProperty(arrayName, ctx);
+                    if (!isNaN(ix) && arr) {
+                        if (ix < 0) {
+                            val = arr[arr.length + ix];
+                            // Handle negative overshoot
+                            if (typeof val === 'undefined') {
+                                val = arr[0];
+                            }
+                        }
+                        else {
+                            val = arr[ix];
+                            // Handle positive overshoot
+                            if (typeof val === 'undefined') {
+                                val = arr[arr.length - 1];
+                            }
+                        }
+                    }
+                    return typeof val !== 'undefined' ? val : '';
+                }
+                // Standard substitution, delegate to format or similar
+                return '{' + statement + '}';
+            }
+            /* eslint-disable max-len */
+            /**
+             * i18n formatting function.  Extends Highcharts.format() functionality by
+             * also handling arrays and plural conditionals.  Arrays can be indexed as
+             * follows:
+             *
+             * - Format: 'This is the first index: {myArray[0]}. The last: {myArray[-1]}.'
+             *
+             * - Context: { myArray: [0, 1, 2, 3, 4, 5] }
+             *
+             * - Result: 'This is the first index: 0. The last: 5.'
+             *
+             *
+             * They can also be iterated using the #each() function.  This will repeat
+             * the contents of the bracket expression for each element.  Example:
+             *
+             * - Format: 'List contains: {#each(myArray)cm }'
+             *
+             * - Context: { myArray: [0, 1, 2] }
+             *
+             * - Result: 'List contains: 0cm 1cm 2cm '
+             *
+             *
+             * The #each() function optionally takes a length parameter.  If positive,
+             * this parameter specifies the max number of elements to iterate through.
+             * If negative, the function will subtract the number from the length of the
+             * array.  Use this to stop iterating before the array ends.  Example:
+             *
+             * - Format: 'List contains: {#each(myArray, -1) }and {myArray[-1]}.'
+             *
+             * - Context: { myArray: [0, 1, 2, 3] }
+             *
+             * - Result: 'List contains: 0, 1, 2, and 3.'
+             *
+             *
+             * Use the #plural() function to pick a string depending on whether or not a
+             * context object is 1.  Arguments are #plural(obj, plural, singular).
+             * Example:
+             *
+             * - Format: 'Has {numPoints} {#plural(numPoints, points, point}.'
+             *
+             * - Context: { numPoints: 5 }
+             *
+             * - Result: 'Has 5 points.'
+             *
+             *
+             * Optionally there are additional parameters for dual and none:
+             * #plural(obj, plural, singular, dual, none).  Example:
+             *
+             * - Format: 'Has {#plural(numPoints, many points, one point, two points,
+             *   none}.'
+             *
+             * - Context: { numPoints: 2 }
+             *
+             * - Result: 'Has two points.'
+             *
+             *
+             * The dual or none parameters will take precedence if they are supplied.
+             *
+             * @requires modules/accessibility
+             *
+             * @function Highcharts.i18nFormat
+             *
+             * @param {string} formatString
+             * The string to format.
+             *
+             * @param {Highcharts.Dictionary<*>} context
+             * Context to apply to the format string.
+             *
+             * @param {Highcharts.Chart} chart
+             * A `Chart` instance with a time object and numberFormatter, passed on to
+             * format().
+             *
+             * @return {string}
+             * The formatted string.
+             */
+            function i18nFormat(formatString, context, chart) {
+                var getFirstBracketStatement = function (sourceStr, offset) {
+                        var str = sourceStr.slice(offset || 0), startBracket = str.indexOf('{'), endBracket = str.indexOf('}');
+                    if (startBracket > -1 && endBracket > startBracket) {
+                        return {
+                            statement: str.substring(startBracket + 1, endBracket),
+                            begin: offset + startBracket + 1,
+                            end: offset + endBracket
+                        };
+                    }
+                }, tokens = [];
+                var bracketRes,
+                    constRes,
+                    cursor = 0;
+                // Tokenize format string into bracket statements and constants
+                do {
+                    bracketRes = getFirstBracketStatement(formatString, cursor);
+                    constRes = formatString.substring(cursor, bracketRes && bracketRes.begin - 1);
+                    // If we have constant content before this bracket statement, add it
+                    if (constRes.length) {
+                        tokens.push({
+                            value: constRes,
+                            type: 'constant'
+                        });
+                    }
+                    // Add the bracket statement
+                    if (bracketRes) {
+                        tokens.push({
+                            value: bracketRes.statement,
+                            type: 'statement'
+                        });
+                    }
+                    cursor = bracketRes ? bracketRes.end + 1 : cursor + 1;
+                } while (bracketRes);
+                // Perform the formatting.  The formatArrayStatement function returns
+                // the statement in brackets if it is not an array statement, which
+                // means it gets picked up by format below.
+                tokens.forEach(function (token) {
+                    if (token.type === 'statement') {
+                        token.value = formatExtendedStatement(token.value, context);
+                    }
+                });
+                // Join string back together and pass to format to pick up non-array
+                // statements.
+                return format(tokens.reduce(function (acc, cur) { return acc + cur.value; }, ''), context, chart);
+            }
+            A11yI18nComposition.i18nFormat = i18nFormat;
+            /* eslint-enable max-len */
+            /**
+             * Apply context to a format string from lang options of the chart.
+             *
+             * @requires modules/accessibility
+             *
+             * @function Highcharts.Chart#langFormat
+             *
+             * @param {string} langKey
+             * Key (using dot notation) into lang option structure.
+             *
+             * @param {Highcharts.Dictionary<*>} context
+             * Context to apply to the format string.
+             *
+             * @return {string}
+             * The formatted string.
+             */
+            function langFormat(langKey, context) {
+                var keys = langKey.split('.');
+                var formatString = this.options.lang,
+                    i = 0;
+                for (; i < keys.length; ++i) {
+                    formatString = formatString && formatString[keys[i]];
+                }
+                return typeof formatString === 'string' ?
+                    i18nFormat(formatString, context, this) : '';
+            }
+            /**
+             * String trim that works for IE6-8 as well.
+             *
+             * @private
+             * @function stringTrim
+             *
+             * @param {string} str
+             * The input string
+             *
+             * @return {string}
+             * The trimmed string
+             */
+            function stringTrim(str) {
+                return str.trim && str.trim() || str.replace(/^\s+|\s+$/g, '');
+            }
+        })(A11yI18nComposition || (A11yI18nComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return A11yI18nComposition;
     });
     _registerModule(_modules, 'Accessibility/Utils/ChartUtilities.js', [_modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (H, HU, U) {
         /* *
@@ -3677,9 +3677,10 @@
          */
         function shouldDoLegendA11y(chart) {
             var items = chart.legend && chart.legend.allItems,
-                legendA11yOptions = (chart.options.legend.accessibility || {});
+                legendA11yOptions = (chart.options.legend.accessibility || {}),
+                unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some(function (c) { return !c.dataClasses || !c.dataClasses.length; });
             return !!(items && items.length &&
-                !(chart.colorAxis && chart.colorAxis.length) &&
+                !unsupportedColorAxis &&
                 legendA11yOptions.enabled !== false);
         }
         /**
@@ -3733,7 +3734,7 @@
             LegendComponent.prototype.init = function () {
                 var component = this;
                 this.recreateProxies();
-                // Note: Chart could create legend dynamically, so events can not be
+                // Note: Chart could create legend dynamically, so events cannot be
                 // tied to the component's chart's current legend.
                 // @todo 1. attach component to created legends
                 // @todo 2. move listeners to composition and access `this.component`
@@ -4024,15 +4025,13 @@
              * @private
              */
             LegendComponent.prototype.shouldHaveLegendNavigation = function () {
+                if (!shouldDoLegendA11y(this.chart)) {
+                    return false;
+                }
                 var chart = this.chart,
                     legendOptions = chart.options.legend || {},
-                    hasLegend = chart.legend && chart.legend.allItems,
-                    hasColorAxis = chart.colorAxis && chart.colorAxis.length,
                     legendA11yOptions = (legendOptions.accessibility || {});
-                return !!(hasLegend &&
-                    chart.legend.display &&
-                    !hasColorAxis &&
-                    legendA11yOptions.enabled &&
+                return !!(chart.legend.display &&
                     legendA11yOptions.keyboardNavigation &&
                     legendA11yOptions.keyboardNavigation.enabled);
             };
@@ -4343,7 +4342,8 @@
          */
         function getPointXDescription(point) {
             var timeDesc = getPointA11yTimeDescription(point), xAxis = point.series.xAxis || {}, pointCategory = xAxis.categories && defined(point.category) &&
-                    ('' + point.category).replace('<br/>', ' '), canUseId = point.id && point.id.indexOf('highcharts-') < 0, fallback = 'x, ' + point.x;
+                    ('' + point.category).replace('<br/>', ' '), canUseId = defined(point.id) &&
+                    ('' + point.id).indexOf('highcharts-') < 0, fallback = 'x, ' + point.x;
             return point.name || timeDesc || pointCategory ||
                 (canUseId ? point.id : fallback);
         }
@@ -4563,7 +4563,7 @@
                 // For some series types the order of elements do not match the
                 // order of points in series. In that case we have to reverse them
                 // in order for AT to read them out in an understandable order.
-                // Due to z-index issues we can not do this for 3D charts.
+                // Due to z-index issues we cannot do this for 3D charts.
                 if (seriesEl.lastChild === firstPointEl && !is3d) {
                     reverseChildNodes(seriesEl);
                 }
@@ -10693,7 +10693,7 @@
                              * Style options for the focus border drawn around elements
                              * while navigating through them. Note that some browsers in
                              * addition draw their own borders for focused elements. These
-                             * automatic borders can not be styled by Highcharts.
+                             * automatic borders cannot be styled by Highcharts.
                              *
                              * In styled mode, the border is given the
                              * `.highcharts-focus-border` class.
@@ -11675,7 +11675,7 @@
 
         return copyDeprecatedOptions;
     });
-    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/FocusBorder.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/ProxyProvider.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/A11yDefaults.js'], _modules['Accessibility/Options/LangDefaults.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (D, H, U, A11yI18n, ContainerComponent, FocusBorder, InfoRegionsComponent, KeyboardNavigation, LegendComponent, MenuComponent, NewDataAnnouncer, ProxyProvider, RangeSelectorComponent, SeriesComponent, ZoomComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
+    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/FocusBorder.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/ProxyProvider.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/A11yDefaults.js'], _modules['Accessibility/Options/LangDefaults.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (D, H, U, HU, A11yI18n, ContainerComponent, FocusBorder, InfoRegionsComponent, KeyboardNavigation, LegendComponent, MenuComponent, NewDataAnnouncer, ProxyProvider, RangeSelectorComponent, SeriesComponent, ZoomComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -11693,6 +11693,7 @@
             extend = U.extend,
             fireEvent = U.fireEvent,
             merge = U.merge;
+        var removeElement = HU.removeElement;
         /* *
          *
          *  Class
@@ -11845,6 +11846,10 @@
                 // Destroy proxy provider
                 if (this.proxyProvider) {
                     this.proxyProvider.destroy();
+                }
+                // Remove announcer container
+                if (chart.announcerContainer) {
+                    removeElement(chart.announcerContainer);
                 }
                 // Kill keyboard nav
                 if (this.keyboardNavigation) {

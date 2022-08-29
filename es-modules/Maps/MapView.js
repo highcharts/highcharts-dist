@@ -45,7 +45,8 @@ import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, clamp = U.clamp, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
 /**
  * The world size in terms of 10k meters in the Web Mercator projection, to
- * match a 256 square tile to zoom level 0
+ * match a 256 square tile to zoom level 0.
+ * @private
  */
 var worldSize = 400.979322;
 var tileSize = 256;

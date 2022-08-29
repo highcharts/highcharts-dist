@@ -218,10 +218,6 @@ var VectorSeries = /** @class */ (function (_super) {
          */
         lineWidth: 2,
         /**
-         * @ignore
-         */
-        marker: null,
-        /**
          * What part of the vector it should be rotated around. Can be one of
          * `start`, `center` and `end`. When `start`, the vectors will start
          * from the given [x, y] position, and when `end` the vectors will end
@@ -253,6 +249,8 @@ var VectorSeries = /** @class */ (function (_super) {
          * length is computed between 0 and this value.
          */
         vectorLength: 20
+    }, {
+        marker: null
     });
     return VectorSeries;
 }(ScatterSeries));

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * ColorAxis module
  *
@@ -707,6 +707,10 @@
                  * first item is a float between 0 and 1 assigning the relative
                  * position in the gradient, and the second item is the color.
                  *
+                 * @sample highcharts/coloraxis/coloraxis-stops/
+                 *         Color axis stops
+                 * @sample highcharts/coloraxis/color-key-with-stops/
+                 *         Color axis stops with custom colorKey
                  * @sample {highmaps} maps/demo/heatmap/
                  *         Heatmap with three color stops
                  *

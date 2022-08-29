@@ -26,7 +26,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge, pick = U.pick;
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils
 // Index of element with extreme value from array (min or max)
 /**
@@ -43,7 +47,6 @@ function getExtremeIndexInArray(arr, extreme) {
     }
     return valueIndex;
 }
-/* eslint-enable valid-jsdoc */
 /* *
  *
  *  Class
@@ -61,6 +64,11 @@ function getExtremeIndexInArray(arr, extreme) {
 var AroonIndicator = /** @class */ (function (_super) {
     __extends(AroonIndicator, _super);
     function AroonIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -182,6 +190,11 @@ SeriesRegistry.registerSeriesType('aroon', AroonIndicator);
  *
  * */
 export default AroonIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A Aroon indicator. If the [type](#series.aroon.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

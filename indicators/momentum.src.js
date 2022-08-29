@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -65,13 +65,21 @@
         var extend = U.extend,
             isArray = U.isArray,
             merge = U.merge;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         function populateAverage(xVal, yVal, i, period, index) {
             var mmY = yVal[i - 1][index] - yVal[i - period - 1][index],
                 mmX = xVal[i - 1];
             return [mmX, mmY];
         }
-        /* eslint-enable require-jsdoc */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Momentum series type.
          *
@@ -84,13 +92,28 @@
         var MomentumIndicator = /** @class */ (function (_super) {
                 __extends(MomentumIndicator, _super);
             function MomentumIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             MomentumIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     index = params.index,
@@ -157,6 +180,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

@@ -738,7 +738,7 @@ var TreemapSeries = /** @class */ (function (_super) {
      * The id of the new root node.
      *
      * @param {boolean} [redraw=true]
-     * Wether to redraw the chart or not.
+     * Whether to redraw the chart or not.
      *
      * @param {Object} [eventArguments]
      * Arguments to be accessed in event handler.
@@ -750,7 +750,7 @@ var TreemapSeries = /** @class */ (function (_super) {
      * Id of the previous root.
      *
      * @param {boolean} [eventArguments.redraw]
-     * Wether to redraw the chart after.
+     * Whether to redraw the chart after.
      *
      * @param {Object} [eventArguments.series]
      * The series to update the root of.
@@ -775,7 +775,7 @@ var TreemapSeries = /** @class */ (function (_super) {
          * @param {Object} args The event arguments.
          * @param {string} args.newRootId Id of the new root.
          * @param {string} args.previousRootId Id of the previous root.
-         * @param {boolean} args.redraw Wether to redraw the chart after.
+         * @param {boolean} args.redraw Whether to redraw the chart after.
          * @param {Object} args.series The series to update the root of.
          * @param {string} [args.trigger=undefined] The action which
          * triggered the event. Undefined if the setRootNode is called

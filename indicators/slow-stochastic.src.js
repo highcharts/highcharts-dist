@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Slow Stochastic series type for Highcharts Stock
  *
@@ -65,6 +65,11 @@
         var seriesTypes = SeriesRegistry.seriesTypes;
         var extend = U.extend,
             merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Slow Stochastic series type.
          *
@@ -77,13 +82,28 @@
         var SlowStochasticIndicator = /** @class */ (function (_super) {
                 __extends(SlowStochasticIndicator, _super);
             function SlowStochasticIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             SlowStochasticIndicator.prototype.getValues = function (series, params) {
                 var periods = params.periods,
                     fastValues = seriesTypes.stochastic.prototype.getValues.call(this,
@@ -162,6 +182,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

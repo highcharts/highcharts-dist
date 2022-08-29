@@ -24,16 +24,15 @@ import ControlPoint from '../ControlPoint.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge;
-/* eslint-disable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 var CrookedLine = /** @class */ (function (_super) {
     __extends(CrookedLine, _super);
-    /* *
-     *
-     * Constructors
-     *
-     * */
-    function CrookedLine(chart, options) {
-        return _super.call(this, chart, options) || this;
+    function CrookedLine() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
@@ -69,11 +68,9 @@ var CrookedLine = /** @class */ (function (_super) {
     CrookedLine.prototype.addShapes = function () {
         var typeOptions = this.options.typeOptions, shape = this.initShape(merge(typeOptions.line, {
             type: 'path',
-            points: this.points.map(function (_point, i) {
-                return function (target) {
-                    return target.annotation.points[i];
-                };
-            })
+            points: this.points.map(function (_point, i) { return (function (target) {
+                return target.annotation.points[i];
+            }); })
         }), 0);
         typeOptions.line = shape.options;
     };
@@ -173,15 +170,10 @@ CrookedLine.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions
         }
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.crookedLine = CrookedLine;
 /* *
  *
- *  Export Default
+ *  Default Export
  *
  * */
 export default CrookedLine;

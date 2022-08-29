@@ -22,11 +22,16 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, ATRIndicator = _a.atr, SMAIndicator = _a.sma;
+var ATRIndicator = SeriesRegistry.seriesTypes.atr;
+var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 import StockChart from '../../../Core/Chart/StockChart.js';
 var addEvent = U.addEvent, correctFloat = U.correctFloat, isArray = U.isArray, extend = U.extend, merge = U.merge, objectEach = U.objectEach;
-/* eslint-disable require-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 function createPointObj(mainSeries, index, close) {
     return {
@@ -35,7 +40,6 @@ function createPointObj(mainSeries, index, close) {
         x: mainSeries.xData[index]
     };
 }
-/* eslint-enable require-jsdoc */
 /* *
  *
  *  Class
@@ -53,6 +57,11 @@ function createPointObj(mainSeries, index, close) {
 var SupertrendIndicator = /** @class */ (function (_super) {
     __extends(SupertrendIndicator, _super);
     function SupertrendIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -469,6 +478,11 @@ SeriesRegistry.registerSeriesType('supertrend', SupertrendIndicator);
  *
  * */
 export default SupertrendIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `Supertrend indicator` series. If the [type](#series.supertrend.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

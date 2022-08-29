@@ -100,7 +100,7 @@ function getDlOptions(params) {
             if (point.innerArcLength < 1 &&
                 point.outerArcLength > shape.radius) {
                 rotationRad = 0;
-                // Triger setTextPath function to get textOutline etc.
+                // Trigger setTextPath function to get textOutline etc.
                 if (point.dataLabelPath && rotationMode === 'circular') {
                     options.textPath = {
                         enabled: true
@@ -124,7 +124,7 @@ function getDlOptions(params) {
             else {
                 // Trigger the destroyTextPath function
                 if (point.dataLabel &&
-                    point.dataLabel.textPathWrapper &&
+                    point.dataLabel.textPath &&
                     rotationMode === 'circular') {
                     options.textPath = {
                         enabled: false
@@ -614,6 +614,7 @@ var SunburstSeries = /** @class */ (function (_super) {
      * @product      highcharts
      * @requires     modules/sunburst.js
      * @optionparent plotOptions.sunburst
+     *
      * @private
      */
     SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, {
@@ -660,6 +661,13 @@ var SunburstSeries = /** @class */ (function (_super) {
          *
          * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @apioption plotOptions.sunburst.levels.color
+         */
+        /**
+         * Determines whether the chart should receive one color per point based
+         * on this level.
+         *
+         * @type      {boolean}
+         * @apioption plotOptions.sunburst.levels.colorByPoint
          */
         /**
          * Can set a `colorVariation` on all points which lies on the same
@@ -734,6 +742,8 @@ var SunburstSeries = /** @class */ (function (_super) {
          * @type    {Array<number|string>}
          * @default ["50%", "50%"]
          * @product highcharts
+         *
+         * @private
          */
         center: ['50%', '50%'],
         colorByPoint: false,
@@ -741,10 +751,14 @@ var SunburstSeries = /** @class */ (function (_super) {
          * Disable inherited opacity from Treemap series.
          *
          * @ignore-option
+         *
+         * @private
          */
         opacity: 1,
         /**
          * @declare Highcharts.SeriesSunburstDataLabelsOptionsObject
+         *
+         * @private
          */
         dataLabels: {
             allowOverlap: true,
@@ -776,6 +790,8 @@ var SunburstSeries = /** @class */ (function (_super) {
          * Which point to use as a root in the visualization.
          *
          * @type {string}
+         *
+         * @private
          */
         rootId: void 0,
         /**
@@ -783,6 +799,8 @@ var SunburstSeries = /** @class */ (function (_super) {
          * set to false the first level visible when drilling is considered
          * to be level one. Otherwise the level will be the same as the tree
          * structure.
+         *
+         * @private
          */
         levelIsConstant: true,
         /**
@@ -792,6 +810,8 @@ var SunburstSeries = /** @class */ (function (_super) {
          *         Sunburst with various sizes per level
          *
          * @since 6.0.5
+         *
+         * @private
          */
         levelSize: {
             /**
@@ -839,6 +859,8 @@ var SunburstSeries = /** @class */ (function (_super) {
          *         Sliced sunburst
          *
          * @since 6.0.4
+         *
+         * @private
          */
         slicedOffset: 10
     });

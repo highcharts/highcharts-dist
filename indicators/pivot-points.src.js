@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -61,8 +61,12 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        /* eslint-disable valid-jsdoc */
+        var SMAPoint = SeriesRegistry.seriesTypes.sma.prototype.pointClass;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * @private
          */
@@ -80,7 +84,6 @@
                 point[prop] = null;
             }
         }
-        /* eslint-enable valid-jsdoc */
         /* *
          *
          *  Class
@@ -89,11 +92,11 @@
         var PivotPointsPoint = /** @class */ (function (_super) {
                 __extends(PivotPointsPoint, _super);
             function PivotPointsPoint() {
-                /**
+                /* *
                  *
-                 * Properties
+                 *  Properties
                  *
-                 */
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 _this.P = void 0;
@@ -101,11 +104,11 @@
                 _this.series = void 0;
                 return _this;
             }
-            /**
-              *
-              * Functions
-              *
-              */
+            /* *
+             *
+             *  Functions
+             *
+             * */
             PivotPointsPoint.prototype.destroyElements = function () {
                 destroyExtraLabels(this, 'destroyElements');
             };
@@ -114,7 +117,7 @@
                 destroyExtraLabels(this, 'destroyElements');
             };
             return PivotPointsPoint;
-        }(SMAIndicator.prototype.pointClass));
+        }(SMAPoint));
         /* *
          *
          *  Default Export
@@ -169,13 +172,18 @@
         var PivotPointsIndicator = /** @class */ (function (_super) {
                 __extends(PivotPointsIndicator, _super);
             function PivotPointsIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
-                /**
+                /* *
                  *
-                 * Properties
+                 *  Properties
                  *
-                 */
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -183,11 +191,11 @@
                 _this.plotEndPoint = void 0;
                 return _this;
             }
-            /**
+            /* *
              *
-             * Functions
+             *  Functions
              *
-             */
+             * */
             PivotPointsIndicator.prototype.toYData = function (point) {
                 return [point.P]; // The rest should not affect extremes
             };
@@ -462,6 +470,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

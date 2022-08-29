@@ -264,6 +264,11 @@ SeriesRegistry.registerSeriesType('dmi', DMIIndicator);
  *
  * */
 export default DMIIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * The Directional Movement Index (DMI) indicator series.
  * If the [type](#series.dmi.type) option is not

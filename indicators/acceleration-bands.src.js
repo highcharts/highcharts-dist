@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -367,7 +367,11 @@
         var correctFloat = U.correctFloat,
             extend = U.extend,
             merge = U.merge;
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * @private
          */
@@ -387,7 +391,11 @@
         function getPointLB(low, base) {
             return low * (correctFloat(1 - 2 * base));
         }
-        /* eslint-enable valid-jsdoc */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The ABands series type
          *

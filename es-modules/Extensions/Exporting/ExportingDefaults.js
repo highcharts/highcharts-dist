@@ -429,7 +429,9 @@ var exporting = {
         viewFullscreen: {
             textKey: 'viewFullscreen',
             onclick: function () {
-                this.fullscreen.toggle();
+                if (this.fullscreen) {
+                    this.fullscreen.toggle();
+                }
             }
         },
         /**

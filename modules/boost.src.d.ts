@@ -24,36 +24,18 @@ declare module "../highcharts.src" {
          */
         isChartSeriesBoosting(chart: Chart): boolean;
     }
-    interface Series {
-        /**
-         * If implemented in the core, parts of this can probably be shared with
-         * other similar methods in Highcharts.
-         */
-        destroyGraphics(): void;
-        /**
-         * Enter boost mode and apply boost-specific properties.
-         */
-        enterBoost(): void;
-        /**
-         * Exit from boost mode and restore non-boost properties.
-         */
-        exitBoost(): void;
-        /**
-         * Return a full Point object based on the index. The boost module uses
-         * stripped point objects for performance reasons.
-         *
-         * @param boostPoint
-         *        A stripped-down point object
-         *
-         * @return A Point object as per
-         *         https://api.highcharts.com/highcharts#Point
-         */
-        getPoint(boostPoint: (object|Point)): Point;
-    }
     /**
      * Initialize the canvas boost.
      */
     function initCanvasBoost(): void;
+    /**
+     * Override a bunch of methods the same way. If the number of points is
+     * below the threshold, run the original method. If not, check for a canvas
+     * version or do nothing.
+     *
+     * Note that we're not overriding any of these for heatmaps.
+     */
+    function wrapSeriesFunctions(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

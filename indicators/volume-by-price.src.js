@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -37,7 +37,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/VBP/VBPPoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js']], function (Point, SeriesRegistry) {
+    _registerModule(_modules, 'Stock/Indicators/VBP/VBPPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -61,12 +61,12 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        var SMAPoint = SeriesRegistry.seriesTypes.sma.prototype.pointClass;
         /* *
          *
-         *  Imports
+         *  Class
          *
          * */
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var VBPPoint = /** @class */ (function (_super) {
                 __extends(VBPPoint, _super);
             function VBPPoint() {
@@ -78,10 +78,10 @@
                 if (this.negativeGraphic) {
                     this.negativeGraphic = this.negativeGraphic.destroy();
                 }
-                return Point.prototype.destroy.apply(this, arguments);
+                return _super.prototype.destroy.apply(this, arguments);
             };
             return VBPPoint;
-        }(SMAIndicator.prototype.pointClass));
+        }(SMAPoint));
         /* *
          *
          *  Default Export
@@ -121,6 +121,7 @@
         var animObject = A.animObject;
         var noop = H.noop;
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var columnPrototype = SeriesRegistry.seriesTypes.column.prototype;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -130,7 +131,11 @@
             extend = U.extend,
             isArray = U.isArray,
             merge = U.merge;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils
         function arrayExtremesOHLC(data) {
             var dataLength = data.length,
@@ -152,9 +157,12 @@
                 max: max
             };
         }
-        /* eslint-enable require-jsdoc */
-        var abs = Math.abs,
-            columnPrototype = SeriesRegistry.seriesTypes.column.prototype;
+        var abs = Math.abs;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Volume By Price (VBP) series type.
          *
@@ -167,8 +175,18 @@
         var VBPIndicator = /** @class */ (function (_super) {
                 __extends(VBPIndicator, _super);
             function VBPIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.negWidths = void 0;
                 _this.options = void 0;
@@ -181,6 +199,11 @@
                 _this.zoneLinesSVG = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             VBPIndicator.prototype.init = function (chart) {
                 var indicator = this,
                     params,
@@ -704,6 +727,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

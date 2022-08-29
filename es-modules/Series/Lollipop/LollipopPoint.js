@@ -24,7 +24,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Point = SeriesRegistry.series.prototype.pointClass, _a = SeriesRegistry.seriesTypes, areaProto = _a.area.prototype, DumbbellPoint = _a.dumbbell.prototype.pointClass;
+var pointProto = SeriesRegistry.series.prototype.pointClass.prototype, _a = SeriesRegistry.seriesTypes, areaProto = _a.area.prototype, DumbbellPoint = _a.dumbbell.prototype.pointClass;
 import U from '../../Core/Utilities.js';
 var isObject = U.isObject, extend = U.extend;
 /* *
@@ -35,28 +35,38 @@ var isObject = U.isObject, extend = U.extend;
 var LollipopPoint = /** @class */ (function (_super) {
     __extends(LollipopPoint, _super);
     function LollipopPoint() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.series = void 0;
         _this.options = void 0;
+        _this.series = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    LollipopPoint.prototype.init = function (_series, options, _x) {
+        if (isObject(options) && 'low' in options) {
+            options.y = options.low;
+            delete options.low;
+        }
+        return pointProto.init.apply(this, arguments);
+    };
     return LollipopPoint;
 }(DumbbellPoint));
 extend(LollipopPoint.prototype, {
     pointSetState: areaProto.pointClass.prototype.setState,
     // Does not work with the inherited `isvalid`
-    isValid: Point.prototype.isValid,
-    init: function (series, options, x) {
-        if (isObject(options) && 'low' in options) {
-            options.y = options.low;
-            delete options.low;
-        }
-        return Point.prototype.init.apply(this, arguments);
-    }
+    isValid: pointProto.isValid
 });
 /* *
  *
- *  Default export
+ *  Default Export
  *
  * */
 export default LollipopPoint;

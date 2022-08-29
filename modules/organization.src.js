@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -374,7 +374,7 @@
             };
             OrganizationSeries.prototype.pointAttribs = function (point, state) {
                 var series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
-                        levelOptions.states[state]) || {}, values = ['borderRadius', 'linkColor', 'linkLineWidth']
+                        levelOptions.states[state]) || {}, values = ['borderRadius', 'linkColor', 'linkLineWidth', 'linkOpacity']
                         .reduce(function (obj, key) {
                         obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
                     return obj;
@@ -382,6 +382,7 @@
                 if (!point.isNode) {
                     attribs.stroke = values.linkColor;
                     attribs['stroke-width'] = values.linkLineWidth;
+                    attribs.opacity = values.linkOpacity;
                     delete attribs.fill;
                 }
                 else {
@@ -510,12 +511,15 @@
              * @product      highcharts
              * @requires     modules/organization
              * @optionparent plotOptions.organization
+             *
+             * @private
              */
             OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, {
                 /**
                  * The border color of the node cards.
                  *
                  * @type {Highcharts.ColorString}
+                 *
                  * @private
                  */
                 borderColor: "#666666" /* Palette.neutralColor60 */,
@@ -670,12 +674,15 @@
                  * @type {Highcharts.OrganizationHangingIndentTranslationValue}
                  * @since 10.0.0
                  * @default inherit
+                 *
+                 * @private
                  */
                 hangingIndentTranslation: 'inherit',
                 /**
                  * The color of the links between nodes.
                  *
                  * @type {Highcharts.ColorString}
+                 *
                  * @private
                  */
                 linkColor: "#666666" /* Palette.neutralColor60 */,
@@ -698,6 +705,7 @@
                  * is set to `shrink`.
                  *
                  * @see [nodeWidth](#plotOptions.organization.nodeWidth)
+                 *
                  * @private
                  */
                 minNodeLength: 10,

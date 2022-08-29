@@ -177,7 +177,7 @@ function onSeriesAfterTranslate() {
         // of non-shared.
         series.kdByAngle = chart_1.tooltip && chart_1.tooltip.shared;
         if (series.kdByAngle) {
-            series.searchPoint = series.polar.searchPointByAngle;
+            series.searchPoint = searchPointByAngle;
         }
         else {
             series.options.findNearestPointBy = 'xy';
@@ -224,6 +224,17 @@ function onSeriesAfterTranslate() {
             }));
         }
     }
+}
+/**
+ * Search a k-d tree by the point angle, used for shared tooltips in polar
+ * charts
+ * @private
+ */
+function searchPointByAngle(e) {
+    var series = this, chart = series.chart, xAxis = series.xAxis, center = xAxis.pane && xAxis.pane.center, plotX = e.chartX - (center && center[0] || 0) - chart.plotLeft, plotY = e.chartY - (center && center[1] || 0) - chart.plotTop;
+    return series.searchKDTree({
+        clientX: 180 + (Math.atan2(plotX, plotY) * (-180 / Math.PI))
+    });
 }
 /**
  * Extend chart.get to also search in panes. Used internally in
@@ -756,17 +767,6 @@ var PolarAdditions = /** @class */ (function () {
             start: start,
             end: end
         };
-    };
-    /**
-     * Search a k-d tree by the point angle, used for shared tooltips in polar
-     * charts
-     * @private
-     */
-    PolarAdditions.prototype.searchPointByAngle = function (e) {
-        var series = this.series, chart = series.chart, xAxis = series.xAxis, center = xAxis.pane.center, plotX = e.chartX - center[0] - chart.plotLeft, plotY = e.chartY - center[1] - chart.plotTop;
-        return series.searchKDTree({
-            clientX: 180 + (Math.atan2(plotX, plotY) * (-180 / Math.PI))
-        });
     };
     /**
      * Translate a point's plotX and plotY from the internal angle and radius

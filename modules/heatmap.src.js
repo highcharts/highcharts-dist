@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.2.0 (2022-07-05)
+ * @license Highmaps JS v10.2.1 (2022-08-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -705,6 +705,10 @@
                  * first item is a float between 0 and 1 assigning the relative
                  * position in the gradient, and the second item is the color.
                  *
+                 * @sample highcharts/coloraxis/coloraxis-stops/
+                 *         Color axis stops
+                 * @sample highcharts/coloraxis/color-key-with-stops/
+                 *         Color axis stops with custom colorKey
                  * @sample {highmaps} maps/demo/heatmap/
                  *         Heatmap with three color stops
                  *
@@ -2126,7 +2130,11 @@
                  */
                 animation: false,
                 /**
-                 * The border radius for each heatmap item.
+                 * The border radius for each heatmap item. The border's color and
+                 * width can be set in marker options.
+                 *
+                 * @see [lineColor](#plotOptions.heatmap.marker.lineColor)
+                 * @see [lineWidth](#plotOptions.heatmap.marker.lineWidth)
                  */
                 borderRadius: 0,
                 /**

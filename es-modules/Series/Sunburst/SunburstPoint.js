@@ -30,7 +30,7 @@ var __extends = (this && this.__extends) || (function () {
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var Point = SeriesRegistry.series.prototype.pointClass, TreemapPoint = SeriesRegistry.seriesTypes.treemap.prototype.pointClass;
 import U from '../../Core/Utilities.js';
-var correctFloat = U.correctFloat, extend = U.extend;
+var correctFloat = U.correctFloat, extend = U.extend, wrap = U.wrap;
 /* *
  *
  *  Class
@@ -79,22 +79,21 @@ var SunburstPoint = /** @class */ (function (_super) {
         if (this.dataLabelPath) {
             this.dataLabelPath = this.dataLabelPath.destroy();
         }
+        // All times
         this.dataLabelPath = renderer
             .arc({
             open: true,
             longArc: moreThanHalf ? 1 : 0
         })
-            // Add it inside the data label group so it gets destroyed
-            // with the label
-            .add(label);
-        this.dataLabelPath.attr({
+            .attr({
             start: (upperHalf ? start : end),
             end: (upperHalf ? end : start),
             clockwise: +upperHalf,
             x: shapeArgs.x,
             y: shapeArgs.y,
             r: (r + shapeArgs.innerR) / 2
-        });
+        })
+            .add(renderer.defs);
         return this.dataLabelPath;
     };
     SunburstPoint.prototype.isValid = function () {

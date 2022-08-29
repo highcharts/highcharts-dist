@@ -28,9 +28,9 @@ var __extends = (this && this.__extends) || (function () {
 import A from '../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
 import DependencyWheelPoint from './DependencyWheelPoint.js';
-import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import H from '../../Core/Globals.js';
 var deg2rad = H.deg2rad;
+import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, PieSeries = _a.pie, SankeySeries = _a.sankey;
 import U from '../../Core/Utilities.js';
@@ -289,6 +289,20 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
         center: [null, null],
         curveFactor: 0.6,
         /**
+         * Distance between the data label and the center of the node.
+         *
+         * @type      {number}
+         * @default   0
+         * @apioption plotOptions.dependencywheel.dataLabels.distance
+         */
+        /**
+         * Size of the wheel in pixel or percent relative to the canvas space.
+         *
+         * @type      {number|string}
+         * @default   100%
+         * @apioption plotOptions.dependencywheel.size
+         */
+        /**
          * The start angle of the dependency wheel, in degrees where 0 is up.
          */
         startAngle: 0
@@ -355,7 +369,7 @@ export default DependencyWheelSeries;
  *     }]
  *  ```
  *
- * @type      {Array<*>}
+ * @type      {Array<Array<string,string,number>|*>}
  * @extends   series.sankey.data
  * @product   highcharts
  * @excluding outgoing, dataLabels

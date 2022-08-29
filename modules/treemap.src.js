@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -775,11 +775,15 @@
         extend(defaultOptions.lang, 
         /**
          * @optionparent lang
+         *
+         * @private
          */
         {
             /**
              * @since 10.0.0
              * @product  highcharts
+             *
+             * @private
              */
             mainBreadcrumb: 'Main'
         });
@@ -2616,7 +2620,7 @@
              * The id of the new root node.
              *
              * @param {boolean} [redraw=true]
-             * Wether to redraw the chart or not.
+             * Whether to redraw the chart or not.
              *
              * @param {Object} [eventArguments]
              * Arguments to be accessed in event handler.
@@ -2628,7 +2632,7 @@
              * Id of the previous root.
              *
              * @param {boolean} [eventArguments.redraw]
-             * Wether to redraw the chart after.
+             * Whether to redraw the chart after.
              *
              * @param {Object} [eventArguments.series]
              * The series to update the root of.
@@ -2656,7 +2660,7 @@
                  * @param {Object} args The event arguments.
                  * @param {string} args.newRootId Id of the new root.
                  * @param {string} args.previousRootId Id of the previous root.
-                 * @param {boolean} args.redraw Wether to redraw the chart after.
+                 * @param {boolean} args.redraw Whether to redraw the chart after.
                  * @param {Object} args.series The series to update the root of.
                  * @param {string} [args.trigger=undefined] The action which
                  * triggered the event. Undefined if the setRootNode is called

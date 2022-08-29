@@ -637,6 +637,8 @@ var ColumnSeries = /** @class */ (function (_super) {
      *               lineWidth, marker, step, useOhlcData
      * @product      highcharts highstock
      * @optionparent plotOptions.column
+     *
+     * @private
      */
     ColumnSeries.defaultOptions = merge(Series.defaultOptions, {
         /**

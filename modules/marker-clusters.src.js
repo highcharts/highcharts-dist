@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Marker clusters module for Highcharts
  *
@@ -403,6 +403,8 @@
                  * @sample maps/marker-clusters/europe/
                  *         Format tooltip for clusters using tooltip.formatter
                  *
+                 * @type      {string}
+                 * @default   Clustered points: {point.clusterPointsAmount}
                  * @apioption tooltip.clusterFormat
                  */
                 clusterFormat: '<span>Clustered points: ' +

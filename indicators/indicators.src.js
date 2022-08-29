@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -458,7 +458,7 @@
          * @requires  stock/indicators/indicators
          * @apioption series.sma
          */
-        ''; // adds doclet above to the transpiled file
+        (''); // adds doclet above to the transpiled file
 
         return SMAIndicator;
     });
@@ -507,6 +507,11 @@
         var EMAIndicator = /** @class */ (function (_super) {
                 __extends(EMAIndicator, _super);
             function EMAIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -622,6 +627,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

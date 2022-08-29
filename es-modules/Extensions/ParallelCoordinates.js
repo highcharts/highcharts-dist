@@ -19,7 +19,7 @@ import D from '../Core/DefaultOptions.js';
 var setOptions = D.setOptions;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, erase = U.erase, extend = U.extend, merge = U.merge, pick = U.pick, splat = U.splat, wrap = U.wrap;
+var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, pick = U.pick, splat = U.splat, wrap = U.wrap;
 /* *
  *
  *  Constants
@@ -87,7 +87,7 @@ var defaultParallelOptions = {
      *            gridLineDashStyle, gridLineWidth, minorGridLineColor,
      *            minorGridLineDashStyle, minorGridLineWidth, plotBands,
      *            plotLines, angle, gridLineInterpolation, maxColor, maxZoom,
-     *            minColor, scrollbar, stackLabels, stops
+     *            minColor, scrollbar, stackLabels, stops,
      * @requires  modules/parallel-coordinates
      */
     parallelAxes: {
@@ -436,14 +436,18 @@ var ParallelAxis;
             return;
         }
         if (chart && chart.hasParallelCoordinates && !axis.isXAxis) {
-            var index_1 = parallelCoordinates.position, currentPoints_1 = [];
+            var index_1 = parallelCoordinates.position;
+            var currentPoints_1 = [];
             axis.series.forEach(function (series) {
-                if (series.visible &&
-                    defined(series.yData[index_1])) {
-                    // We need to use push() beacause of null points
-                    currentPoints_1.push(series.yData[index_1]);
+                if (series.yData &&
+                    series.visible &&
+                    isNumber(index_1)) {
+                    var y = series.yData[index_1];
+                    // Take into account range series points as well (#15752)
+                    currentPoints_1.push.apply(currentPoints_1, splat(y));
                 }
             });
+            currentPoints_1 = currentPoints_1.filter(isNumber);
             axis.dataMin = arrayMin(currentPoints_1);
             axis.dataMax = arrayMax(currentPoints_1);
             e.preventDefault();

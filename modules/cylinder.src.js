@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Highcharts cylinder module
  *
@@ -101,7 +101,7 @@
 
         return CylinderPoint;
     });
-    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, U) {
+    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series

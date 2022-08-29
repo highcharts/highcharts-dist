@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -37,7 +37,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/LinearRegression/LinearRegression.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/LinearRegression/LinearRegressionIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
          *  (c) 2010-2021 Kamil Kulig
@@ -69,7 +69,7 @@
             merge = U.merge;
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -84,6 +84,11 @@
         var LinearRegressionIndicator = /** @class */ (function (_super) {
                 __extends(LinearRegressionIndicator, _super);
             function LinearRegressionIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -324,6 +329,11 @@
          *  Default Export
          *
          * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A linear regression series. If the
          * [type](#series.linearregression.type) option is not specified, it is
@@ -341,7 +351,7 @@
 
         return LinearRegressionIndicator;
     });
-    _registerModule(_modules, 'Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopes.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
          *  (c) 2010-2021 Kamil Kulig
@@ -372,7 +382,7 @@
             merge = U.merge;
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -387,6 +397,11 @@
         var LinearRegressionSlopesIndicator = /** @class */ (function (_super) {
                 __extends(LinearRegressionSlopesIndicator, _super);
             function LinearRegressionSlopesIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -433,6 +448,11 @@
          *  Default Export
          *
          * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A linear regression intercept series. If the
          * [type](#series.linearregressionslope.type) option is not specified, it is
@@ -450,7 +470,7 @@
 
         return LinearRegressionSlopesIndicator;
     });
-    _registerModule(_modules, 'Stock/Indicators/LinearRegressionIntercept/LinearRegressionIntercept.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
          *  (c) 2010-2021 Kamil Kulig
@@ -481,7 +501,7 @@
             merge = U.merge;
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -496,6 +516,11 @@
         var LinearRegressionInterceptIndicator = /** @class */ (function (_super) {
                 __extends(LinearRegressionInterceptIndicator, _super);
             function LinearRegressionInterceptIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -542,6 +567,11 @@
          *  Default Export
          *
          * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A linear regression intercept series. If the
          * [type](#series.linearregressionintercept.type) option is not specified, it is
@@ -559,7 +589,7 @@
 
         return LinearRegressionInterceptIndicator;
     });
-    _registerModule(_modules, 'Stock/Indicators/LinearRegressionAngle/LinearRegressionAngle.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
          *  (c) 2010-2021 Kamil Kulig
@@ -590,7 +620,7 @@
             merge = U.merge;
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -605,6 +635,11 @@
         var LinearRegressionAngleIndicator = /** @class */ (function (_super) {
                 __extends(LinearRegressionAngleIndicator, _super);
             function LinearRegressionAngleIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -623,12 +658,12 @@
              *
              * */
             /**
-            * Convert a slope of a line to angle (in degrees) between
-            * the line and x axis
-            * @private
-            * @param {number} slope of the straight line function
-            * @return {number} angle in degrees
-            */
+             * Convert a slope of a line to angle (in degrees) between
+             * the line and x axis
+             * @private
+             * @param {number} slope of the straight line function
+             * @return {number} angle in degrees
+             */
             LinearRegressionAngleIndicator.prototype.slopeToAngle = function (slope) {
                 return Math.atan(slope) * (180 / Math.PI); // rad to deg
             };

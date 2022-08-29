@@ -44,7 +44,7 @@ var Point = /** @class */ (function () {
          * point. For other axes it holds the X value.
          *
          * @name Highcharts.Point#category
-         * @type {string}
+         * @type {number|string}
          */
         this.category = void 0;
         /**
@@ -390,7 +390,7 @@ var Point = /** @class */ (function () {
             props.push('graphic', 'upperGraphic', 'shadowGroup');
         }
         if (kinds.dataLabel) {
-            props.push('dataLabel', 'dataLabelUpper', 'connector');
+            props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper', 'connector');
         }
         i = props.length;
         while (i--) {

@@ -110,9 +110,9 @@ var NavigatorAxis = /** @class */ (function () {
             var chartOptions = chart.options;
             var navigator = chartOptions.navigator;
             var navigatorAxis = axis.navigatorAxis;
-            var pinchType = chartOptions.chart.pinchType;
+            var pinchType = chartOptions.chart.zooming.pinchType;
             var rangeSelector = chartOptions.rangeSelector;
-            var zoomType = chartOptions.chart.zoomType;
+            var zoomType = chartOptions.chart.zooming.type;
             var previousZoom;
             if (axis.isXAxis && ((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled))) {

@@ -23,16 +23,15 @@ import Annotation from '../Annotation.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge;
-/* eslint-disable no-invalid-this */
+/* *
+ *
+ *  Class
+ *
+ * */
 var BasicAnnotation = /** @class */ (function (_super) {
     __extends(BasicAnnotation, _super);
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    function BasicAnnotation(chart, options) {
-        return _super.call(this, chart, options) || this;
+    function BasicAnnotation() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
@@ -40,7 +39,9 @@ var BasicAnnotation = /** @class */ (function (_super) {
      *
      * */
     BasicAnnotation.prototype.addControlPoints = function () {
-        var options = this.options, controlPoints = BasicAnnotation.basicControlPoints, annotationType = this.basicType, optionsGroup = options.labels || options.shapes;
+        var options = this.options, controlPoints = BasicAnnotation.basicControlPoints, annotationType = this.basicType, optionsGroup = (options.labels ||
+            options.shapes ||
+            []);
         optionsGroup.forEach(function (group) {
             group.controlPoints = controlPoints[annotationType];
         });
@@ -229,11 +230,6 @@ var BasicAnnotation = /** @class */ (function (_super) {
     return BasicAnnotation;
 }(Annotation));
 BasicAnnotation.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, {});
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.basicAnnotation = BasicAnnotation;
 /* *
  *

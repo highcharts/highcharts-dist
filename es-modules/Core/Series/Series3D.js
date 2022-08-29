@@ -25,7 +25,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import Math3D from '../../Extensions/Math3D.js';
+import Math3D from '../Math3D.js';
 var perspective = Math3D.perspective;
 import Series from '../Series/Series.js';
 import U from '../Utilities.js';

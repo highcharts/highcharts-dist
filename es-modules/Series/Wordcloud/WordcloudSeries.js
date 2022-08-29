@@ -298,7 +298,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
          * NB! This option is currently not decided to be published in the API,
          * and is therefore marked as private.
          *
-         * @private
+         * @ignore-option
          */
         allowExtendPlayingField: true,
         animation: {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -10,4 +10,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/XRange/XRangeSeries.js';
+import Highcharts from '../../Core/Globals.js';
+import XRangeSeries from '../../Series/XRange/XRangeSeries.js';
+var G = Highcharts;
+XRangeSeries.compose(G.Axis);

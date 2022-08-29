@@ -504,10 +504,8 @@ var Pointer = /** @class */ (function () {
             // Only search on hovered series if it has stickyTracking false
             [hoverSeries] :
             // Filter what series to look in.
-            series.filter(function (s) {
-                return eventArgs.filter ? eventArgs.filter(s) : filter(s) &&
-                    s.stickyTracking;
-            });
+            series.filter(function (s) { return s.stickyTracking &&
+                (eventArgs.filter || filter)(s); });
         // Use existing hovered point or find the one closest to coordinates.
         var hoverPoint = useExisting || !e ?
             existingHoverPoint :
@@ -532,8 +530,8 @@ var Pointer = /** @class */ (function () {
                         * Boost returns a minimal point. Convert it to a usable
                         * point for tooltip and states.
                         */
-                        if (s.chart.isBoosting) {
-                            point = s.getPoint(point);
+                        if (s.boosted && s.boost) {
+                            point = s.boost.getPoint(point);
                         }
                         hoverPoints.push(point);
                     }
@@ -1382,7 +1380,7 @@ var Pointer = /** @class */ (function () {
      * @function Highcharts.Pointer#touchSelect
      */
     Pointer.prototype.touchSelect = function (e) {
-        return Boolean(this.chart.options.chart.zoomBySingleTouch &&
+        return Boolean(this.chart.options.chart.zooming.singleTouch &&
             e.touches &&
             e.touches.length === 1);
     };
@@ -1394,10 +1392,10 @@ var Pointer = /** @class */ (function () {
      */
     Pointer.prototype.zoomOption = function (e) {
         var chart = this.chart, options = chart.options.chart, inverted = chart.inverted;
-        var zoomType = options.zoomType || '', zoomX, zoomY;
+        var zoomType = options.zooming.type || '', zoomX, zoomY;
         // Look for the pinchType option
         if (/touch/.test(e.type)) {
-            zoomType = pick(options.pinchType, zoomType);
+            zoomType = pick(options.zooming.pinchType, zoomType);
         }
         this.zoomX = zoomX = /x/.test(zoomType);
         this.zoomY = zoomY = /y/.test(zoomType);

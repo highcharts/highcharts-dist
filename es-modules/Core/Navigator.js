@@ -392,6 +392,18 @@ extend(defaultOptions, {
             threshold: null
         },
         /**
+         * Enable or disable navigator sticking to right, while adding new
+         * points. If `undefined`, the navigator sticks to the axis maximum only
+         * if it was already at the maximum prior to adding points.
+         *
+         * @type      {boolean}
+         * @default   undefined
+         * @since 10.2.1
+         * @sample {highstock} stock/navigator/sticktomax-false/
+         * stickToMax set to false
+         * @apioption navigator.stickToMax
+         */
+        /**
          * Options for the navigator X axis. Default series options for the
          * navigator xAxis are:
          * ```js
@@ -1142,7 +1154,9 @@ var Navigator = /** @class */ (function () {
                 pick(navigator.scrollbar.options.liveRedraw, 
                 // By default, don't run live redraw on VML, on touch
                 // devices or if the chart is in boost.
-                H.svg && !isTouchDevice && !this.chart.isBoosting)) {
+                H.svg &&
+                    !isTouchDevice &&
+                    !this.chart.boosted)) {
                 e.DOMType = e.type; // DOMType is for IE8
                 setTimeout(function () {
                     navigator.onMouseUp(e);
@@ -1722,12 +1736,13 @@ var Navigator = /** @class */ (function () {
      * @function Highcharts.Navigator#updateDataHandler
      */
     Navigator.prototype.updatedDataHandler = function () {
-        var navigator = this.chart.navigator, baseSeries = this, navigatorSeries = this.navigatorSeries;
-        // If the scrollbar is scrolled all the way to the right, keep right as
-        // new data  comes in.
-        navigator.stickToMax = navigator.reversedExtremes ?
+        var navigator = this.chart.navigator, baseSeries = this, navigatorSeries = this.navigatorSeries, shouldStickToMax = navigator.reversedExtremes ?
             Math.round(navigator.zoomedMin) === 0 :
             Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
+        // If the scrollbar is scrolled all the way to the right, keep right as
+        // new data comes in, unless user set navigator.stickToMax to false.
+        navigator.stickToMax = pick(this.chart.options.navigator &&
+            this.chart.options.navigator.stickToMax, shouldStickToMax);
         navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
         // Set the navigator series data to the new data of the base series
         if (navigatorSeries && !navigator.hasNavigatorData) {
@@ -1849,8 +1864,10 @@ if (!H.Navigator) {
         var chartOptions = this.options, navigator = chartOptions.navigator, rangeSelector = chartOptions.rangeSelector;
         if (((navigator && navigator.enabled) ||
             (rangeSelector && rangeSelector.enabled)) &&
-            ((!isTouchDevice && chartOptions.chart.zoomType === 'x') ||
-                (isTouchDevice && chartOptions.chart.pinchType === 'x'))) {
+            ((!isTouchDevice &&
+                chartOptions.chart.zooming.type === 'x') ||
+                (isTouchDevice &&
+                    chartOptions.chart.zooming.pinchType === 'x'))) {
             return false;
         }
     });

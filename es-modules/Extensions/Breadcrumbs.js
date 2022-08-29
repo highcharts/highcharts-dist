@@ -22,11 +22,15 @@ var addEvent = U.addEvent, objectEach = U.objectEach, extend = U.extend, fireEve
 extend(defaultOptions.lang, 
 /**
  * @optionparent lang
+ *
+ * @private
  */
 {
     /**
      * @since 10.0.0
      * @product  highcharts
+     *
+     * @private
      */
     mainBreadcrumb: 'Main'
 });

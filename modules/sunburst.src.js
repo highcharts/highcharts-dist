@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -775,11 +775,15 @@
         extend(defaultOptions.lang, 
         /**
          * @optionparent lang
+         *
+         * @private
          */
         {
             /**
              * @since 10.0.0
              * @product  highcharts
+             *
+             * @private
              */
             mainBreadcrumb: 'Main'
         });
@@ -2616,7 +2620,7 @@
              * The id of the new root node.
              *
              * @param {boolean} [redraw=true]
-             * Wether to redraw the chart or not.
+             * Whether to redraw the chart or not.
              *
              * @param {Object} [eventArguments]
              * Arguments to be accessed in event handler.
@@ -2628,7 +2632,7 @@
              * Id of the previous root.
              *
              * @param {boolean} [eventArguments.redraw]
-             * Wether to redraw the chart after.
+             * Whether to redraw the chart after.
              *
              * @param {Object} [eventArguments.series]
              * The series to update the root of.
@@ -2656,7 +2660,7 @@
                  * @param {Object} args The event arguments.
                  * @param {string} args.newRootId Id of the new root.
                  * @param {string} args.previousRootId Id of the previous root.
-                 * @param {boolean} args.redraw Wether to redraw the chart after.
+                 * @param {boolean} args.redraw Whether to redraw the chart after.
                  * @param {Object} args.series The series to update the root of.
                  * @param {string} [args.trigger=undefined] The action which
                  * triggered the event. Undefined if the setRootNode is called
@@ -3414,7 +3418,8 @@
         var Point = SeriesRegistry.series.prototype.pointClass,
             TreemapPoint = SeriesRegistry.seriesTypes.treemap.prototype.pointClass;
         var correctFloat = U.correctFloat,
-            extend = U.extend;
+            extend = U.extend,
+            wrap = U.wrap;
         /* *
          *
          *  Class
@@ -3470,22 +3475,21 @@
                 if (this.dataLabelPath) {
                     this.dataLabelPath = this.dataLabelPath.destroy();
                 }
+                // All times
                 this.dataLabelPath = renderer
                     .arc({
                     open: true,
                     longArc: moreThanHalf ? 1 : 0
                 })
-                    // Add it inside the data label group so it gets destroyed
-                    // with the label
-                    .add(label);
-                this.dataLabelPath.attr({
+                    .attr({
                     start: (upperHalf ? start : end),
                     end: (upperHalf ? end : start),
                     clockwise: +upperHalf,
                     x: shapeArgs.x,
                     y: shapeArgs.y,
                     r: (r + shapeArgs.innerR) / 2
-                });
+                })
+                    .add(renderer.defs);
                 return this.dataLabelPath;
             };
             SunburstPoint.prototype.isValid = function () {
@@ -3779,7 +3783,7 @@
                     if (point.innerArcLength < 1 &&
                         point.outerArcLength > shape.radius) {
                         rotationRad = 0;
-                        // Triger setTextPath function to get textOutline etc.
+                        // Trigger setTextPath function to get textOutline etc.
                         if (point.dataLabelPath && rotationMode === 'circular') {
                             options.textPath = {
                                 enabled: true
@@ -3803,7 +3807,7 @@
                     else {
                         // Trigger the destroyTextPath function
                         if (point.dataLabel &&
-                            point.dataLabel.textPathWrapper &&
+                            point.dataLabel.textPath &&
                             rotationMode === 'circular') {
                             options.textPath = {
                                 enabled: false
@@ -4390,6 +4394,7 @@
              * @product      highcharts
              * @requires     modules/sunburst.js
              * @optionparent plotOptions.sunburst
+             *
              * @private
              */
             SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, {
@@ -4436,6 +4441,13 @@
                  *
                  * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @apioption plotOptions.sunburst.levels.color
+                 */
+                /**
+                 * Determines whether the chart should receive one color per point based
+                 * on this level.
+                 *
+                 * @type      {boolean}
+                 * @apioption plotOptions.sunburst.levels.colorByPoint
                  */
                 /**
                  * Can set a `colorVariation` on all points which lies on the same
@@ -4510,6 +4522,8 @@
                  * @type    {Array<number|string>}
                  * @default ["50%", "50%"]
                  * @product highcharts
+                 *
+                 * @private
                  */
                 center: ['50%', '50%'],
                 colorByPoint: false,
@@ -4517,10 +4531,14 @@
                  * Disable inherited opacity from Treemap series.
                  *
                  * @ignore-option
+                 *
+                 * @private
                  */
                 opacity: 1,
                 /**
                  * @declare Highcharts.SeriesSunburstDataLabelsOptionsObject
+                 *
+                 * @private
                  */
                 dataLabels: {
                     allowOverlap: true,
@@ -4552,6 +4570,8 @@
                  * Which point to use as a root in the visualization.
                  *
                  * @type {string}
+                 *
+                 * @private
                  */
                 rootId: void 0,
                 /**
@@ -4559,6 +4579,8 @@
                  * set to false the first level visible when drilling is considered
                  * to be level one. Otherwise the level will be the same as the tree
                  * structure.
+                 *
+                 * @private
                  */
                 levelIsConstant: true,
                 /**
@@ -4568,6 +4590,8 @@
                  *         Sunburst with various sizes per level
                  *
                  * @since 6.0.5
+                 *
+                 * @private
                  */
                 levelSize: {
                     /**
@@ -4615,6 +4639,8 @@
                  *         Sliced sunburst
                  *
                  * @since 6.0.4
+                 *
+                 * @private
                  */
                 slicedOffset: 10
             });

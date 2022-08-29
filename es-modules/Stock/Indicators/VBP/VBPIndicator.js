@@ -32,10 +32,15 @@ import H from '../../../Core/Globals.js';
 var noop = H.noop;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+var columnPrototype = SeriesRegistry.seriesTypes.column.prototype;
 import U from '../../../Core/Utilities.js';
 import StockChart from '../../../Core/Chart/StockChart.js';
 var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
-/* eslint-disable require-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils
 function arrayExtremesOHLC(data) {
     var dataLength = data.length, min = data[0][3], max = min, i = 1, currentPoint;
@@ -53,8 +58,12 @@ function arrayExtremesOHLC(data) {
         max: max
     };
 }
-/* eslint-enable require-jsdoc */
-var abs = Math.abs, columnPrototype = SeriesRegistry.seriesTypes.column.prototype;
+var abs = Math.abs;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The Volume By Price (VBP) series type.
  *
@@ -67,7 +76,17 @@ var abs = Math.abs, columnPrototype = SeriesRegistry.seriesTypes.column.prototyp
 var VBPIndicator = /** @class */ (function (_super) {
     __extends(VBPIndicator, _super);
     function VBPIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.negWidths = void 0;
         _this.options = void 0;
@@ -80,6 +99,11 @@ var VBPIndicator = /** @class */ (function (_super) {
         _this.zoneLinesSVG = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     VBPIndicator.prototype.init = function (chart) {
         var indicator = this, params, baseSeries, volumeSeries;
         H.seriesTypes.sma.prototype.init.apply(indicator, arguments);
@@ -543,6 +567,11 @@ SeriesRegistry.registerSeriesType('vbp', VBPIndicator);
  *
  * */
 export default VBPIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `Volume By Price (VBP)` series. If the [type](#series.vbp.type) option is
  * not specified, it is inherited from [chart.type](#chart.type).

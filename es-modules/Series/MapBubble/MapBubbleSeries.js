@@ -25,14 +25,10 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import BubbleSeries from '../Bubble/BubbleSeries.js';
 import MapBubblePoint from './MapBubblePoint.js';
-import MapSeries from '../Map/MapSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var MapPointSeries = SeriesRegistry.seriesTypes.mappoint;
+var _a = SeriesRegistry.seriesTypes, mapProto = _a.map.prototype, mapPointProto = _a.mappoint.prototype;
 import U from '../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge;
-import '../../Core/DefaultOptions.js';
-import '../Bubble/BubbleSeries.js';
-import '../Map/MapSeries.js';
 /* *
  *
  *  Class
@@ -44,10 +40,18 @@ import '../Map/MapSeries.js';
  * @name Highcharts.seriesTypes.mapbubble
  *
  * @augments Highcharts.Series
+ *
+ * @requires BubbleSeries
+ * @requires MapPointSeries
  */
 var MapBubbleSeries = /** @class */ (function (_super) {
     __extends(MapBubbleSeries, _super);
     function MapBubbleSeries() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -66,16 +70,10 @@ var MapBubbleSeries = /** @class */ (function (_super) {
         }, compareX, e);
     };
     MapBubbleSeries.prototype.translate = function () {
-        MapPointSeries.prototype.translate.call(this);
+        mapPointProto.translate.call(this);
         this.getRadii();
         this.translateBubble();
     };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    MapBubbleSeries.compose = BubbleSeries.compose;
     /**
      * A map bubble series is a bubble series laid out on top of a map
      * series, where each bubble is tied to a specific map area.
@@ -152,7 +150,6 @@ var MapBubbleSeries = /** @class */ (function (_super) {
          *
          * @product   highmaps
          * @apioption plotOptions.mapbubble.maxSize
-
          */
         /**
          * Minimum bubble size. Bubbles will automatically size between the
@@ -243,6 +240,9 @@ var MapBubbleSeries = /** @class */ (function (_super) {
          * @default   0
          * @apioption plotOptions.mapbubble.zThreshold
          */
+        /**
+         * @default 500
+         */
         animationLimit: 500,
         joinBy: 'hc-key',
         tooltip: {
@@ -254,16 +254,16 @@ var MapBubbleSeries = /** @class */ (function (_super) {
 extend(MapBubbleSeries.prototype, {
     type: 'mapbubble',
     axisTypes: ['colorAxis'],
-    getProjectedBounds: MapSeries.prototype.getProjectedBounds,
+    getProjectedBounds: mapProto.getProjectedBounds,
     isCartesian: false,
     // If one single value is passed, it is interpreted as z
     pointArrayMap: ['z'],
     pointClass: MapBubblePoint,
-    processData: MapSeries.prototype.processData,
-    projectPoint: MapPointSeries.prototype.projectPoint,
-    setData: MapSeries.prototype.setData,
-    setOptions: MapSeries.prototype.setOptions,
-    updateData: MapSeries.prototype.updateData,
+    processData: mapProto.processData,
+    projectPoint: mapPointProto.projectPoint,
+    setData: mapProto.setData,
+    setOptions: mapProto.setOptions,
+    updateData: mapProto.updateData,
     useMapGeometry: true,
     xyFromShape: true
 });

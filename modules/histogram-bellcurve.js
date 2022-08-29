@@ -1,5 +1,5 @@
 /*
- Highcharts JS v10.2.0 (2022-07-05)
+ Highcharts JS v10.2.1 (2022-08-29)
 
  (c) 2010-2021 Highsoft AS
  Author: Sebastian Domas

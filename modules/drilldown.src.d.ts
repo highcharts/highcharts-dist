@@ -79,16 +79,6 @@ declare module "../highcharts.src" {
          */
         fadeIn(animation?: (boolean|Partial<AnimationOptionsObject>)): void;
     }
-    /**
-     * A function to fade in a group. First, the element is being hidden, then,
-     * using `opactiy`, is faded in. Used for example by `dataLabelsGroup` where
-     * simple SVGElement.fadeIn() is not enough, because of other features (e.g.
-     * InactiveState) using `opacity` to fadeIn/fadeOut.
-     *
-     * @param group
-     *        The SVG element to be faded in.
-     */
-    function fadeInGroup(group?: SVGElement): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

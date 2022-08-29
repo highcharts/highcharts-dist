@@ -931,6 +931,9 @@ var Axis = /** @class */ (function () {
             // Backwards mapping is much faster than array searching (#7725)
             this.names.keys[point.name] = x;
         }
+        else if (point.x) {
+            x = point.x; // #17438
+        }
         return x;
     };
     /**

@@ -216,7 +216,7 @@ function drawSeriesLabels(chart) {
                 series.labelBySeries = label.destroy();
             }
         }
-        if (series.visible && !series.isSeriesBoosting && points) {
+        if (series.visible && !series.boosted && points) {
             if (!label) {
                 var labelText = series.name;
                 if (typeof labelOptions.format === 'string') {
@@ -539,7 +539,7 @@ function onChartRedraw(e) {
             if (options.enabled &&
                 series.visible &&
                 (series.graph || series.area) &&
-                !series.isSeriesBoosting) {
+                !series.boosted) {
                 chart_1.labelSeries.push(series);
                 if (options.minFontSize && options.maxFontSize) {
                     series.sum = series.yData.reduce(function (pv, cv) {

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Advanced Highcharts Stock tools
  *
@@ -38,24 +38,57 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/FullScreen.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (Chart, H, AST, U) {
+    _registerModule(_modules, 'Extensions/Exporting/Fullscreen.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (AST, U) {
         /* *
-         * (c) 2009-2021 Rafal Sebestjanski
          *
-         * Full screen for Highcharts
+         *  (c) 2009-2021 Rafal Sebestjanski
          *
-         * License: www.highcharts.com/license
-         */
-        var doc = H.doc;
-        var addEvent = U.addEvent,
-            fireEvent = U.fireEvent;
+         *  Full screen for Highcharts
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         /**
          * The module allows user to enable display chart in full screen mode.
          * Used in StockTools too.
          * Based on default solutions in browsers.
-         *
          */
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        var addEvent = U.addEvent,
+            fireEvent = U.fireEvent;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function onChartBeforeRender() {
+            /**
+             * @name Highcharts.Chart#fullscreen
+             * @type {Highcharts.Fullscreen}
+             * @requires modules/full-screen
+             */
+            this.fullscreen = new Fullscreen(this);
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * Handles displaying chart's container in the fullscreen mode.
          *
@@ -63,8 +96,8 @@
          *
          * @class
          * @name Highcharts.Fullscreen
-         * @hideconstructor
-         * @requires modules/full-screen
+         *
+         * @requires modules/exporting
          */
         var Fullscreen = /** @class */ (function () {
                 /* *
@@ -121,6 +154,24 @@
                     }
                 }
             }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /**
+             * Prepares the chart class to support fullscreen.
+             *
+             * @param {typeof_Highcharts.Chart} ChartClass
+             * The chart class to decorate with fullscreen support.
+             */
+            Fullscreen.compose = function (ChartClass) {
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    // Initialize fullscreen
+                    addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
+                }
+            };
             /* *
              *
              *  Functions
@@ -281,16 +332,11 @@
             };
             return Fullscreen;
         }());
-        H.Fullscreen = Fullscreen;
-        // Initialize fullscreen
-        addEvent(Chart, 'beforeRender', function () {
-            /**
-             * @name Highcharts.Chart#fullscreen
-             * @type {Highcharts.Fullscreen}
-             * @requires modules/full-screen
-             */
-            this.fullscreen = new H.Fullscreen(this);
-        });
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /* *
          *
          *  API Declarations
@@ -318,6 +364,7 @@
          * @param {global.Event} event
          *        The event that occured.
          */
+        (''); // keeps doclets above separated from following code
         /* *
          *
          *  API Options
@@ -332,7 +379,7 @@
          *         Title size change on fullscreen open
          *
          * @type      {Highcharts.FullScreenfullscreenCloseCallbackFunction}
-         * @since 10.1.0
+         * @since     10.1.0
          * @context   Highcharts.Chart
          * @requires  modules/full-screen
          * @apioption chart.events.fullscreenClose
@@ -345,17 +392,20 @@
          *         Title size change on fullscreen open
          *
          * @type      {Highcharts.FullScreenfullscreenOpenCallbackFunction}
-         * @since 10.1.0
+         * @since     10.1.0
          * @context   Highcharts.Chart
          * @requires  modules/full-screen
          * @apioption chart.events.fullscreenOpen
          */
         (''); // keeps doclets above in transpiled file
 
-        return H.Fullscreen;
+        return Fullscreen;
     });
-    _registerModule(_modules, 'masters/modules/full-screen.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/full-screen.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Exporting/Fullscreen.js']], function (Highcharts, Fullscreen) {
 
+        var G = Highcharts;
+        G.Fullscreen = Fullscreen;
+        Fullscreen.compose(G.Chart);
 
     });
 }));

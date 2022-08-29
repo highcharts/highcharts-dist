@@ -42,6 +42,11 @@ var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
 var EMAIndicator = /** @class */ (function (_super) {
     __extends(EMAIndicator, _super);
     function EMAIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -142,6 +147,11 @@ SeriesRegistry.registerSeriesType('ema', EMAIndicator);
  *
  * */
 export default EMAIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `EMA` series. If the [type](#series.ema.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

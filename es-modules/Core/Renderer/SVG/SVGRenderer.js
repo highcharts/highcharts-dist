@@ -193,7 +193,7 @@ var SVGRenderer = /** @class */ (function () {
         this.url = this.getReferenceURL();
         // Add description
         var desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.2.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.2.1'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -516,7 +516,7 @@ var SVGRenderer = /** @class */ (function () {
      * The shape type.
      *
      * @param {boolean} [useHTML=false]
-     * Wether to use HTML to render the label.
+     * Whether to use HTML to render the label.
      *
      * @return {Highcharts.SVGElement}
      * The button element.
@@ -1615,7 +1615,7 @@ var SVGRenderer = /** @class */ (function () {
      *        coordinates it should be pinned to.
      *
      * @param {boolean} [useHTML=false]
-     *        Wether to use HTML to render the label.
+     *        Whether to use HTML to render the label.
      *
      * @param {boolean} [baseline=false]
      *        Whether to position the label relative to the text baseline,

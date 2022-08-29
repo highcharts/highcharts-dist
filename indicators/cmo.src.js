@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -64,7 +64,11 @@
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var isNumber = U.isNumber,
             merge = U.merge;
-        /* eslint-enable require-jsdoc */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The CMO series type.
          *
@@ -77,6 +81,11 @@
         var CMOIndicator = /** @class */ (function (_super) {
                 __extends(CMOIndicator, _super);
             function CMOIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -201,6 +210,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

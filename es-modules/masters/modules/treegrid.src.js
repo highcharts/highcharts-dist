@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.2.0 (2022-07-05)
+ * @license Highcharts Gantt JS v10.2.1 (2022-08-29)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -11,7 +11,7 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import TreeGridAxis from '../../Core/Axis/TreeGridAxis.js';
+import TreeGridAxis from '../../Core/Axis/TreeGrid/TreeGridAxis.js';
 var G = Highcharts;
 // Compositions
 TreeGridAxis.compose(G.Axis, G.Chart, G.Series, G.Tick);

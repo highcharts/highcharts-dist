@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,9 +11,9 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Stock/Indicators/LinearRegression/LinearRegression.js';
+import '../../Stock/Indicators/LinearRegression/LinearRegressionIndicator.js';
 // eslint-disable-next-line max-len
-import '../../Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopes.js';
+import '../../Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js';
 // eslint-disable-next-line max-len
-import '../../Stock/Indicators/LinearRegressionIntercept/LinearRegressionIntercept.js';
-import '../../Stock/Indicators/LinearRegressionAngle/LinearRegressionAngle.js';
+import '../../Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js';
+import '../../Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js';

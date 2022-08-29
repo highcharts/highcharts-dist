@@ -5,6 +5,7 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
+'use strict';
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -20,14 +21,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
+var SMAPoint = SeriesRegistry.seriesTypes.sma.prototype.pointClass;
 /* *
  *
- *  Imports
+ *  Class
  *
  * */
-import Point from '../../../Core/Series/Point.js';
-import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 var VBPPoint = /** @class */ (function (_super) {
     __extends(VBPPoint, _super);
     function VBPPoint() {
@@ -39,10 +39,10 @@ var VBPPoint = /** @class */ (function (_super) {
         if (this.negativeGraphic) {
             this.negativeGraphic = this.negativeGraphic.destroy();
         }
-        return Point.prototype.destroy.apply(this, arguments);
+        return _super.prototype.destroy.apply(this, arguments);
     };
     return VBPPoint;
-}(SMAIndicator.prototype.pointClass));
+}(SMAPoint));
 /* *
  *
  *  Default Export

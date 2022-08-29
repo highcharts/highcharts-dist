@@ -33,6 +33,28 @@ declare module "../highcharts.src" {
          */
         setDataGrouping(dataGrouping?: (boolean|DataGroupingOptionsObject), redraw?: boolean): void;
     }
+    /**
+     * (Highstock) Highcharts Stock only.
+     */
+    interface DataGroupingInfoObject {
+        length: number;
+        options?: SeriesOptionsType;
+        start: number;
+    }
+    interface Point {
+        /**
+         * (Highstock) Highcharts Stock only. If a point object is created by
+         * data grouping, it doesn't reflect actual points in the raw data. In
+         * this case, the `dataGroup` property holds information that points
+         * back to the raw data.
+         *
+         * - `dataGroup.start` is the index of the first raw data point in the
+         * group.
+         *
+         * - `dataGroup.length` is the amount of points in the group.
+         */
+        dataGroup?: DataGroupingInfoObject;
+    }
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

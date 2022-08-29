@@ -26,7 +26,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge;
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * @private
  */
@@ -46,7 +50,11 @@ function getPointUB(high, base) {
 function getPointLB(low, base) {
     return low * (correctFloat(1 - 2 * base));
 }
-/* eslint-enable valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The ABands series type
  *

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -62,9 +62,8 @@
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            ColumnSeries = _a.column;
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var columnProto = SeriesRegistry.seriesTypes.column.prototype;
         var extend = U.extend,
             merge = U.merge,
             correctFloat = U.correctFloat,
@@ -86,23 +85,28 @@
         var AOIndicator = /** @class */ (function (_super) {
                 __extends(AOIndicator, _super);
             function AOIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
-                /**
+                /* *
                  *
-                 * Properties
+                 *  Properties
                  *
-                 */
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
-            /**
+            /* *
              *
-             * Functions
+             *  Functions
              *
-             */
+             * */
             AOIndicator.prototype.drawGraph = function () {
                 var indicator = this,
                     options = indicator.options,
@@ -251,15 +255,20 @@
             nameComponents: false,
             // Columns support:
             markerAttribs: noop,
-            getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
-            crispCol: ColumnSeries.prototype.crispCol,
-            translate: ColumnSeries.prototype.translate,
-            drawPoints: ColumnSeries.prototype.drawPoints
+            getColumnMetrics: columnProto.getColumnMetrics,
+            crispCol: columnProto.crispCol,
+            translate: columnProto.translate,
+            drawPoints: columnProto.drawPoints
         });
         SeriesRegistry.registerSeriesType('ao', AOIndicator);
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

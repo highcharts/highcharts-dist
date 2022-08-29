@@ -56,9 +56,9 @@ function scrollLegendToItem(legend, itemIx) {
  * @private
  */
 function shouldDoLegendA11y(chart) {
-    var items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {});
+    var items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some(function (c) { return !c.dataClasses || !c.dataClasses.length; });
     return !!(items && items.length &&
-        !(chart.colorAxis && chart.colorAxis.length) &&
+        !unsupportedColorAxis &&
         legendA11yOptions.enabled !== false);
 }
 /**
@@ -111,7 +111,7 @@ var LegendComponent = /** @class */ (function (_super) {
     LegendComponent.prototype.init = function () {
         var component = this;
         this.recreateProxies();
-        // Note: Chart could create legend dynamically, so events can not be
+        // Note: Chart could create legend dynamically, so events cannot be
         // tied to the component's chart's current legend.
         // @todo 1. attach component to created legends
         // @todo 2. move listeners to composition and access `this.component`
@@ -394,11 +394,11 @@ var LegendComponent = /** @class */ (function (_super) {
      * @private
      */
     LegendComponent.prototype.shouldHaveLegendNavigation = function () {
-        var chart = this.chart, legendOptions = chart.options.legend || {}, hasLegend = chart.legend && chart.legend.allItems, hasColorAxis = chart.colorAxis && chart.colorAxis.length, legendA11yOptions = (legendOptions.accessibility || {});
-        return !!(hasLegend &&
-            chart.legend.display &&
-            !hasColorAxis &&
-            legendA11yOptions.enabled &&
+        if (!shouldDoLegendA11y(this.chart)) {
+            return false;
+        }
+        var chart = this.chart, legendOptions = chart.options.legend || {}, legendA11yOptions = (legendOptions.accessibility || {});
+        return !!(chart.legend.display &&
             legendA11yOptions.keyboardNavigation &&
             legendA11yOptions.keyboardNavigation.enabled);
     };

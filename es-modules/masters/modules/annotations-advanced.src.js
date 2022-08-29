@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -10,7 +10,8 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/Annotations/Annotation.js';
+import Highcharts from '../../Core/Globals.js';
+import Annotation from '../../Extensions/Annotations/Annotation.js';
 import '../../Extensions/Annotations/Types/BasicAnnotation.js';
 import '../../Extensions/Annotations/Types/CrookedLine.js';
 import '../../Extensions/Annotations/Types/ElliottWave.js';
@@ -22,5 +23,6 @@ import '../../Extensions/Annotations/Types/FibonacciTimeZones.js';
 import '../../Extensions/Annotations/Types/Pitchfork.js';
 import '../../Extensions/Annotations/Types/VerticalLine.js';
 import '../../Extensions/Annotations/Types/Measure.js';
-import '../../Extensions/Annotations/NavigationBindings.js';
-import '../../Extensions/Annotations/Popup.js';
+var G = Highcharts;
+G.Annotation = Annotation;
+Annotation.compose(G.Chart, G.Pointer, G.SVGRenderer);

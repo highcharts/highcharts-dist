@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -484,7 +484,7 @@
                         series.labelBySeries = label.destroy();
                     }
                 }
-                if (series.visible && !series.isSeriesBoosting && points) {
+                if (series.visible && !series.boosted && points) {
                     if (!label) {
                         var labelText = series.name;
                         if (typeof labelOptions.format === 'string') {
@@ -832,7 +832,7 @@
                     if (options.enabled &&
                         series.visible &&
                         (series.graph || series.area) &&
-                        !series.isSeriesBoosting) {
+                        !series.boosted) {
                         chart_1.labelSeries.push(series);
                         if (options.minFontSize && options.maxFontSize) {
                             series.sum = series.yData.reduce(function (pv, cv) {

@@ -32,6 +32,11 @@ declare module "./highcharts" {
      */
     function setOptions(options: Options): void;
     /**
+     * Add logic to pad each axis with the amount of pixels necessary to avoid
+     * the bubbles to overflow.
+     */
+    function axisBeforePadding(): void;
+    /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.
      */
@@ -58,14 +63,6 @@ declare module "./highcharts" {
      * (#4920)
      */
     function onAxisAutoLabelAlign(): void;
-    /**
-     * Remove label collector function on axis remove/update.
-     */
-    function onAxisDestroy(): void;
-    /**
-     * Modify axis instance with radial logic before common axis init.
-     */
-    function onAxisInit(): void;
     /**
      * Prepare axis translation.
      */

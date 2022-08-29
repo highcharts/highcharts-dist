@@ -31,6 +31,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The CMF series type.
  *
@@ -43,6 +48,11 @@ var merge = U.merge;
 var CMFIndicator = /** @class */ (function (_super) {
     __extends(CMFIndicator, _super);
     function CMFIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -58,6 +68,11 @@ var CMFIndicator = /** @class */ (function (_super) {
         _this.nameBase = 'Chaikin Money Flow';
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * Checks if the series and volumeSeries are accessible, number of
      * points.x is longer than period, is series has OHLC data
@@ -230,6 +245,11 @@ SeriesRegistry.registerSeriesType('cmf', CMFIndicator);
  *
  * */
 export default CMFIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `CMF` series. If the [type](#series.cmf.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

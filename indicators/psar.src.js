@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Parabolic SAR Indicator for Highcharts Stock
  *
@@ -68,7 +68,11 @@
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var merge = U.merge,
             extend = U.extend;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         function toFixed(a, n) {
             return parseFloat(a.toFixed(n));
@@ -139,10 +143,9 @@
             }
             return pEP;
         }
-        /* eslint-enable require-jsdoc */
         /* *
          *
-         * Class
+         *  Class
          *
          * */
         /**
@@ -157,6 +160,11 @@
         var PSARIndicator = /** @class */ (function (_super) {
                 __extends(PSARIndicator, _super);
             function PSARIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -327,6 +335,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

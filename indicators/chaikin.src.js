@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -64,6 +64,11 @@
         var error = U.error,
             extend = U.extend,
             merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The AD series type.
          *
@@ -220,7 +225,7 @@
 
         return ADIndicator;
     });
-    _registerModule(_modules, 'Stock/Indicators/Chaikin/ChaikinIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/Chaikin/ChaikinIndicator.js', [_modules['Stock/Indicators/AD/ADIndicator.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AD, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -244,9 +249,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            AD = _a.ad,
-            EMAIndicator = _a.ema;
+        var EMAIndicator = SeriesRegistry.seriesTypes.ema;
         var correctFloat = U.correctFloat,
             extend = U.extend,
             merge = U.merge,
@@ -401,6 +404,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

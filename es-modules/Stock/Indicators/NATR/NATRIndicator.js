@@ -24,7 +24,12 @@ var __extends = (this && this.__extends) || (function () {
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var ATRIndicator = SeriesRegistry.seriesTypes.atr;
 import U from '../../../Core/Utilities.js';
-var merge = U.merge, extend = U.extend;
+var merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The NATR series type.
  *
@@ -37,6 +42,11 @@ var merge = U.merge, extend = U.extend;
 var NATRIndicator = /** @class */ (function (_super) {
     __extends(NATRIndicator, _super);
     function NATRIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /**
          * @lends Highcharts.Series#
@@ -97,6 +107,11 @@ SeriesRegistry.registerSeriesType('natr', NATRIndicator);
  *
  * */
 export default NATRIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `NATR` series. If the [type](#series.natr.type) option is not specified, it
  * is inherited from [chart.type](#chart.type).

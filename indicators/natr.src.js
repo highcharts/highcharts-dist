@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -62,8 +62,12 @@
             };
         })();
         var ATRIndicator = SeriesRegistry.seriesTypes.atr;
-        var merge = U.merge,
-            extend = U.extend;
+        var merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The NATR series type.
          *
@@ -76,6 +80,11 @@
         var NATRIndicator = /** @class */ (function (_super) {
                 __extends(NATRIndicator, _super);
             function NATRIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /**
@@ -139,6 +148,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

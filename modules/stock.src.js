@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -735,8 +735,8 @@
                             }
                             distanceBetweenPoint_1 =
                                 series.processedXData[1] - series.processedXData[0];
-                            if (series.isSeriesBoosting) {
-                                isBoosted = series.isSeriesBoosting;
+                            if (series.boosted) {
+                                isBoosted = series.boosted;
                             }
                             if ((!ignoreHiddenSeries || series.visible !== false) &&
                                 (series
@@ -1706,7 +1706,7 @@
 
         return DataModifyComposition;
     });
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
         /* *
          *
          *  (c) 2009-2021 Torstein Honsi
@@ -2381,32 +2381,6 @@
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick;
-        /**
-         * @typedef {"average"|"averages"|"open"|"high"|"low"|"close"|"sum"} Highcharts.DataGroupingApproximationValue
-         */
-        /**
-         * The position of the point inside the group.
-         *
-         * @typedef    {"start"|"middle"|"end"} Highcharts.DataGroupingAnchor
-         */
-        /**
-         * The position of the first or last point in the series inside the group.
-         *
-         * @typedef    {"start"|"middle"|"end"|"firstPoint"|"lastPoint"} Highcharts.DataGroupingAnchorExtremes
-         */
-        /**
-         * @interface Highcharts.DataGroupingInfoObject
-         */ /**
-        * @name Highcharts.DataGroupingInfoObject#length
-        * @type {number}
-        */ /**
-        * @name Highcharts.DataGroupingInfoObject#options
-        * @type {Highcharts.SeriesOptionsType|undefined}
-        */ /**
-        * @name Highcharts.DataGroupingInfoObject#start
-        * @type {number}
-        */
-        ''; // detach doclets above
         /* ************************************************************************** *
          *  Start data grouping module                                                *
          * ************************************************************************** */
@@ -3306,8 +3280,72 @@
                 series.hasProcessed = false;
             });
         });
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        // @todo move to master
         H.dataGrouping = dataGrouping;
-        /* eslint-enable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * @typedef {"average"|"averages"|"open"|"high"|"low"|"close"|"sum"} Highcharts.DataGroupingApproximationValue
+         */
+        /**
+         * The position of the point inside the group.
+         *
+         * @typedef    {"start"|"middle"|"end"} Highcharts.DataGroupingAnchor
+         */
+        /**
+         * The position of the first or last point in the series inside the group.
+         *
+         * @typedef    {"start"|"middle"|"end"|"firstPoint"|"lastPoint"} Highcharts.DataGroupingAnchorExtremes
+         */
+        /**
+         * Highcharts Stock only.
+         *
+         * @product highstock
+         * @interface Highcharts.DataGroupingInfoObject
+         */ /**
+        * @name Highcharts.DataGroupingInfoObject#length
+        * @type {number}
+        */ /**
+        * @name Highcharts.DataGroupingInfoObject#options
+        * @type {Highcharts.SeriesOptionsType|undefined}
+        */ /**
+        * @name Highcharts.DataGroupingInfoObject#start
+        * @type {number}
+        */
+        /**
+         * Highcharts Stock only. If a point object is created by data
+         * grouping, it doesn't reflect actual points in the raw
+         * data. In this case, the `dataGroup` property holds
+         * information that points back to the raw data.
+         *
+         * - `dataGroup.start` is the index of the first raw data
+         *   point in the group.
+         *
+         * - `dataGroup.length` is the amount of points in the
+         *   group.
+         *
+         * @sample stock/members/point-datagroup
+         *         Click to inspect raw data points
+         *
+         * @product highstock
+         *
+         * @name Highcharts.Point#dataGroup
+         * @type {Highcharts.DataGroupingInfoObject|undefined}
+         */
+        (''); // detach doclets above
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * Data grouping is the concept of sampling the data values into larger
          * blocks in order to ease readability and increase performance of the
@@ -6870,7 +6908,9 @@
              * @function Highcharts.Scrollbar#shouldUpdateExtremes
              */
             Scrollbar.prototype.shouldUpdateExtremes = function (eventType) {
-                return (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
+                return (pick(this.options.liveRedraw, H.svg &&
+                    !H.isTouchDevice &&
+                    !this.chart.boosted) ||
                     // Mouseup always should change extremes
                     eventType === 'mouseup' ||
                     eventType === 'touchend' ||
@@ -7074,9 +7114,9 @@
                     var chartOptions = chart.options;
                     var navigator = chartOptions.navigator;
                     var navigatorAxis = axis.navigatorAxis;
-                    var pinchType = chartOptions.chart.pinchType;
+                    var pinchType = chartOptions.chart.zooming.pinchType;
                     var rangeSelector = chartOptions.rangeSelector;
-                    var zoomType = chartOptions.chart.zoomType;
+                    var zoomType = chartOptions.chart.zooming.type;
                     var previousZoom;
                     if (axis.isXAxis && ((navigator && navigator.enabled) ||
                         (rangeSelector && rangeSelector.enabled))) {
@@ -7520,6 +7560,18 @@
                      */
                     threshold: null
                 },
+                /**
+                 * Enable or disable navigator sticking to right, while adding new
+                 * points. If `undefined`, the navigator sticks to the axis maximum only
+                 * if it was already at the maximum prior to adding points.
+                 *
+                 * @type      {boolean}
+                 * @default   undefined
+                 * @since 10.2.1
+                 * @sample {highstock} stock/navigator/sticktomax-false/
+                 * stickToMax set to false
+                 * @apioption navigator.stickToMax
+                 */
                 /**
                  * Options for the navigator X axis. Default series options for the
                  * navigator xAxis are:
@@ -8344,7 +8396,9 @@
                         pick(navigator.scrollbar.options.liveRedraw, 
                         // By default, don't run live redraw on VML, on touch
                         // devices or if the chart is in boost.
-                        H.svg && !isTouchDevice && !this.chart.isBoosting)) {
+                        H.svg &&
+                            !isTouchDevice &&
+                            !this.chart.boosted)) {
                         e.DOMType = e.type; // DOMType is for IE8
                         setTimeout(function () {
                             navigator.onMouseUp(e);
@@ -8979,12 +9033,14 @@
             Navigator.prototype.updatedDataHandler = function () {
                 var navigator = this.chart.navigator,
                     baseSeries = this,
-                    navigatorSeries = this.navigatorSeries;
+                    navigatorSeries = this.navigatorSeries,
+                    shouldStickToMax = navigator.reversedExtremes ?
+                        Math.round(navigator.zoomedMin) === 0 :
+                        Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
                 // If the scrollbar is scrolled all the way to the right, keep right as
-                // new data  comes in.
-                navigator.stickToMax = navigator.reversedExtremes ?
-                    Math.round(navigator.zoomedMin) === 0 :
-                    Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
+                // new data comes in, unless user set navigator.stickToMax to false.
+                navigator.stickToMax = pick(this.chart.options.navigator &&
+                    this.chart.options.navigator.stickToMax, shouldStickToMax);
                 navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
                 // Set the navigator series data to the new data of the base series
                 if (navigatorSeries && !navigator.hasNavigatorData) {
@@ -9116,8 +9172,10 @@
                     rangeSelector = chartOptions.rangeSelector;
                 if (((navigator && navigator.enabled) ||
                     (rangeSelector && rangeSelector.enabled)) &&
-                    ((!isTouchDevice && chartOptions.chart.zoomType === 'x') ||
-                        (isTouchDevice && chartOptions.chart.pinchType === 'x'))) {
+                    ((!isTouchDevice &&
+                        chartOptions.chart.zooming.type === 'x') ||
+                        (isTouchDevice &&
+                            chartOptions.chart.zooming.pinchType === 'x'))) {
                     return false;
                 }
             });
@@ -11702,7 +11760,9 @@
                                 enabled: true,
                                 type: 'x'
                             },
-                            pinchType: 'x'
+                            zooming: {
+                                pinchType: 'x'
+                            }
                         },
                         navigator: {
                             enabled: navigatorEnabled
@@ -12138,7 +12198,7 @@
             if (!crossLabel) {
                 crossLabel = this.crossLabel = chart.renderer
                     .label('', 0, void 0, options.shape || 'callout')
-                    .addClass('highcharts-crosshair-label highcharts-color-' + (point ?
+                    .addClass('highcharts-crosshair-label highcharts-color-' + (point && point.series ?
                     point.series.colorIndex :
                     this.series[0] && this.series[0].colorIndex))
                     .attr({
@@ -12187,7 +12247,7 @@
                     this.toValue(horiz ? e.chartX : e.chartY);
             // Crosshair should be rendered within Axis range (#7219). Also, the point
             // of currentPriceIndicator should be inside the plot area, #14879.
-            var isInside = point ?
+            var isInside = point && point.series ?
                     point.series.isPointInside(point) :
                     (isNumber(value) && value > min && value < max);
             var text = '';

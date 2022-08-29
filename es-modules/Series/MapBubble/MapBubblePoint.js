@@ -28,9 +28,11 @@ var __extends = (this && this.__extends) || (function () {
  *  Imports
  *
  * */
-import MapPoint from '../Map/MapPoint.js';
+import BubblePoint from '../Bubble/BubblePoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, BubbleSeries = _a.bubble, MapSeries = _a.map;
+var mapPointProto = SeriesRegistry.seriesTypes.map.prototype.pointClass.prototype;
+import U from '../../Core/Utilities.js';
+var extend = U.extend;
 /* *
  *
  *  Class
@@ -39,26 +41,22 @@ var _a = SeriesRegistry.seriesTypes, BubbleSeries = _a.bubble, MapSeries = _a.ma
 var MapBubblePoint = /** @class */ (function (_super) {
     __extends(MapBubblePoint, _super);
     function MapBubblePoint() {
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.applyOptions = MapSeries.prototype.pointClass.prototype.applyOptions;
-        _this.getProjectedBounds = MapPoint.prototype.getProjectedBounds;
-        return _this;
-        /* eslint-enable valid-jsdoc */
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    /* eslint-disable valid-jsdoc */
-    /**
-     * @private
-     */
+    /* *
+     *
+     *  Functions
+     *
+     * */
     MapBubblePoint.prototype.isValid = function () {
         return typeof this.z === 'number';
     };
     return MapBubblePoint;
-}(BubbleSeries.prototype.pointClass));
+}(BubblePoint));
+extend(MapBubblePoint.prototype, {
+    applyOptions: mapPointProto.applyOptions,
+    getProjectedBounds: mapPointProto.getProjectedBounds
+});
 /* *
  *
  *  Default Export

@@ -24,7 +24,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var isArray = U.isArray, merge = U.merge;
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 /**
  * @private
@@ -44,10 +48,9 @@ function meanDeviation(arr, sma) {
     }
     return sum;
 }
-/* eslint-enable valid-jsdoc */
 /* *
  *
- * Class
+ *  Class
  *
  * */
 /**
@@ -62,6 +65,11 @@ function meanDeviation(arr, sma) {
 var CCIIndicator = /** @class */ (function (_super) {
     __extends(CCIIndicator, _super);
     function CCIIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -141,6 +149,11 @@ SeriesRegistry.registerSeriesType('cci', CCIIndicator);
  *
  * */
 export default CCIIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `CCI` series. If the [type](#series.cci.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

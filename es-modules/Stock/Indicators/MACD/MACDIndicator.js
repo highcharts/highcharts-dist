@@ -24,14 +24,15 @@ var __extends = (this && this.__extends) || (function () {
 import H from '../../../Core/Globals.js';
 var noop = H.noop;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, SMAIndicator = _a.sma, ColumnSeries = _a.column;
+var ColumnSeries = SeriesRegistry.seriesTypes.column;
+var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, correctFloat = U.correctFloat, defined = U.defined, merge = U.merge;
-/**
+/* *
  *
- * Class
+ *  Class
  *
- */
+ * */
 /**
  * The MACD series type.
  *
@@ -44,12 +45,17 @@ var extend = U.extend, correctFloat = U.correctFloat, defined = U.defined, merge
 var MACDIndicator = /** @class */ (function (_super) {
     __extends(MACDIndicator, _super);
     function MACDIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        /**
+        /* *
          *
-         * Properties
+         *  Properties
          *
-         */
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
@@ -60,11 +66,11 @@ var MACDIndicator = /** @class */ (function (_super) {
         _this.signalZones = void 0;
         return _this;
     }
-    /**
+    /* *
      *
-     * Functions
+     *  Functions
      *
-     */
+     * */
     MACDIndicator.prototype.init = function () {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         var originalColor = this.color, originalColorIndex = this.userOptions._colorIndex;
@@ -400,6 +406,11 @@ SeriesRegistry.registerSeriesType('macd', MACDIndicator);
  *
  * */
 export default MACDIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `MACD` series. If the [type](#series.macd.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2020-2021 Highsoft AS
+ *  (c) 2020-2022 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -579,7 +579,7 @@ var DataTable = /** @class */ (function () {
      * @function Highcharts.DataTable#getRow
      *
      * @param {number} rowIndex
-     * Row index.
+     * Row index to retrieve. First row has index 0.
      *
      * @param {Array<string>} [columnNamesOrAliases]
      * Column names or aliases in order to retrieve.

@@ -34,7 +34,7 @@ var pick = U.pick, merge = U.merge, extend = U.extend;
  *
  * */
 /**
- * lollipop series type
+ * Lollipop series type
  *
  * @private
  * @class
@@ -48,7 +48,7 @@ var LollipopSeries = /** @class */ (function (_super) {
     function LollipopSeries() {
         /* *
          *
-         *  Static properties
+         *  Static Properties
          *
          * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -62,6 +62,11 @@ var LollipopSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     LollipopSeries.prototype.toYData = function (point) {
         return [pick(point.y, point.low)];
     };
@@ -80,7 +85,7 @@ var LollipopSeries = /** @class */ (function (_super) {
      * @product      highcharts highstock
      * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
      *               lowColor, stickyTracking, trackByArea
-     * @since 8.0.0
+     * @since        8.0.0
      * @optionparent plotOptions.lollipop
      */
     LollipopSeries.defaultOptions = merge(DumbbellSeries.defaultOptions, {
@@ -202,10 +207,10 @@ export default LollipopSeries;
  * @apioption series.lollipop.data
  */
 /**
-* The y value of the point.
-*
-* @type      {number|null}
-* @product   highcharts highstock
-* @apioption series.line.data.y
-*/
-''; // adds doclets above to transpiled file
+ * The y value of the point.
+ *
+ * @type      {number|null}
+ * @product   highcharts highstock
+ * @apioption series.line.data.y
+ */
+(''); // adds doclets above to transpiled file

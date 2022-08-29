@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Dependency wheel module
  *
@@ -66,7 +66,7 @@
             };
         })();
         var SankeyPoint = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
-        var extend = U.extend;
+        var wrap = U.wrap;
         /* *
          *
          *  Class
@@ -105,22 +105,34 @@
              * @private
              */
             DependencyWheelPoint.prototype.getDataLabelPath = function (label) {
+                var _this = this;
                 var renderer = this.series.chart.renderer,
                     shapeArgs = this.shapeArgs,
                     upperHalf = this.angle < 0 || this.angle > Math.PI,
                     start = shapeArgs.start || 0,
                     end = shapeArgs.end || 0;
+                // First time
                 if (!this.dataLabelPath) {
-                    this.dataLabelPath = renderer
-                        .arc({
-                        open: true,
-                        longArc: Math.abs(Math.abs(start) - Math.abs(end)) < Math.PI ? 0 : 1
-                    })
-                        // Add it inside the data label group so it gets destroyed
-                        // with the label
-                        .add(label);
+                    // Destroy the path with the label
+                    wrap(label, 'destroy', function (proceed) {
+                        if (_this.dataLabelPath) {
+                            _this.dataLabelPath = _this.dataLabelPath.destroy();
+                        }
+                        return proceed.call(label);
+                    });
+                    // Subsequent times
                 }
-                this.dataLabelPath.attr({
+                else {
+                    this.dataLabelPath = this.dataLabelPath.destroy();
+                    delete this.dataLabelPath;
+                }
+                // All times
+                this.dataLabelPath = renderer
+                    .arc({
+                    open: true,
+                    longArc: Math.abs(Math.abs(start) - Math.abs(end)) < Math.PI ? 0 : 1
+                })
+                    .attr({
                     x: shapeArgs.x,
                     y: shapeArgs.y,
                     r: (shapeArgs.r +
@@ -128,7 +140,8 @@
                     start: (upperHalf ? start : end),
                     end: (upperHalf ? end : start),
                     clockwise: +upperHalf
-                });
+                })
+                    .add(renderer.defs);
                 return this.dataLabelPath;
             };
             DependencyWheelPoint.prototype.isValid = function () {
@@ -145,7 +158,7 @@
 
         return DependencyWheelPoint;
     });
-    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, DependencyWheelPoint, SankeyColumnComposition, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Core/Globals.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, DependencyWheelPoint, H, SankeyColumnComposition, SeriesRegistry, U) {
         /* *
          *
          *  Dependency wheel module
@@ -454,6 +467,20 @@
                 center: [null, null],
                 curveFactor: 0.6,
                 /**
+                 * Distance between the data label and the center of the node.
+                 *
+                 * @type      {number}
+                 * @default   0
+                 * @apioption plotOptions.dependencywheel.dataLabels.distance
+                 */
+                /**
+                 * Size of the wheel in pixel or percent relative to the canvas space.
+                 *
+                 * @type      {number|string}
+                 * @default   100%
+                 * @apioption plotOptions.dependencywheel.size
+                 */
+                /**
                  * The start angle of the dependency wheel, in degrees where 0 is up.
                  */
                 startAngle: 0
@@ -519,7 +546,7 @@
          *     }]
          *  ```
          *
-         * @type      {Array<*>}
+         * @type      {Array<Array<string,string,number>|*>}
          * @extends   series.sankey.data
          * @product   highcharts
          * @excluding outgoing, dataLabels

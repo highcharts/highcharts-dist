@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -61,7 +61,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var Point = SeriesRegistry.series.prototype.pointClass,
+        var pointProto = SeriesRegistry.series.prototype.pointClass.prototype,
             _a = SeriesRegistry.seriesTypes,
             areaProto = _a.area.prototype,
             DumbbellPoint = _a.dumbbell.prototype.pointClass;
@@ -75,29 +75,39 @@
         var LollipopPoint = /** @class */ (function (_super) {
                 __extends(LollipopPoint, _super);
             function LollipopPoint() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
-                _this.series = void 0;
                 _this.options = void 0;
+                _this.series = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            LollipopPoint.prototype.init = function (_series, options, _x) {
+                if (isObject(options) && 'low' in options) {
+                    options.y = options.low;
+                    delete options.low;
+                }
+                return pointProto.init.apply(this, arguments);
+            };
             return LollipopPoint;
         }(DumbbellPoint));
         extend(LollipopPoint.prototype, {
             pointSetState: areaProto.pointClass.prototype.setState,
             // Does not work with the inherited `isvalid`
-            isValid: Point.prototype.isValid,
-            init: function (series, options, x) {
-                if (isObject(options) && 'low' in options) {
-                    options.y = options.low;
-                    delete options.low;
-                }
-                return Point.prototype.init.apply(this, arguments);
-            }
+            isValid: pointProto.isValid
         });
         /* *
          *
-         *  Default export
+         *  Default Export
          *
          * */
 
@@ -142,7 +152,7 @@
          *
          * */
         /**
-         * lollipop series type
+         * Lollipop series type
          *
          * @private
          * @class
@@ -156,7 +166,7 @@
             function LollipopSeries() {
                 /* *
                  *
-                 *  Static properties
+                 *  Static Properties
                  *
                  * */
                 var _this = _super !== null && _super.apply(this,
@@ -171,6 +181,11 @@
                 _this.points = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             LollipopSeries.prototype.toYData = function (point) {
                 return [pick(point.y, point.low)];
             };
@@ -189,7 +204,7 @@
              * @product      highcharts highstock
              * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
              *               lowColor, stickyTracking, trackByArea
-             * @since 8.0.0
+             * @since        8.0.0
              * @optionparent plotOptions.lollipop
              */
             LollipopSeries.defaultOptions = merge(DumbbellSeries.defaultOptions, {
@@ -310,13 +325,13 @@
          * @apioption series.lollipop.data
          */
         /**
-        * The y value of the point.
-        *
-        * @type      {number|null}
-        * @product   highcharts highstock
-        * @apioption series.line.data.y
-        */
-        ''; // adds doclets above to transpiled file
+         * The y value of the point.
+         *
+         * @type      {number|null}
+         * @product   highcharts highstock
+         * @apioption series.line.data.y
+         */
+        (''); // adds doclets above to transpiled file
 
         return LollipopSeries;
     });

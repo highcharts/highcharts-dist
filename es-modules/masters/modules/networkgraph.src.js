@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -10,4 +10,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/Networkgraph/Networkgraph.js';
+import Highcharts from '../../Core/Globals.js';
+import NetworkgraphSeries from '../../Series/Networkgraph/NetworkgraphSeries.js';
+var G = Highcharts;
+NetworkgraphSeries.compose(G.Chart);

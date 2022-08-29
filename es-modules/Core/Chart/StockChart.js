@@ -94,7 +94,9 @@ var StockChart = /** @class */ (function (_super) {
                     enabled: true,
                     type: 'x'
                 },
-                pinchType: 'x'
+                zooming: {
+                    pinchType: 'x'
+                }
             },
             navigator: {
                 enabled: navigatorEnabled
@@ -501,7 +503,7 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
     if (!crossLabel) {
         crossLabel = this.crossLabel = chart.renderer
             .label('', 0, void 0, options.shape || 'callout')
-            .addClass('highcharts-crosshair-label highcharts-color-' + (point ?
+            .addClass('highcharts-crosshair-label highcharts-color-' + (point && point.series ?
             point.series.colorIndex :
             this.series[0] && this.series[0].colorIndex))
             .attr({
@@ -550,7 +552,7 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
         this.toValue(horiz ? e.chartX : e.chartY);
     // Crosshair should be rendered within Axis range (#7219). Also, the point
     // of currentPriceIndicator should be inside the plot area, #14879.
-    var isInside = point ?
+    var isInside = point && point.series ?
         point.series.isPointInside(point) :
         (isNumber(value) && value > min && value < max);
     var text = '';

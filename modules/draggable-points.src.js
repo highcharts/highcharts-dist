@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -387,7 +387,7 @@
                     }
                 },
                 median: {
-                    // Median can not be dragged individually, just move the whole
+                    // Median cannot be dragged individually, just move the whole
                     // point for this.
                     axis: 'y',
                     move: true
@@ -1048,6 +1048,7 @@
          * @type       {string}
          * @since      6.2.0
          * @validvalue ["alt", "ctrl", "meta", "shift"]
+         * @deprecated
          * @requires  modules/draggable-points
          * @apioption  chart.zoomKey
          */
@@ -1342,7 +1343,7 @@
             var series = point.series,
                 points = [],
                 groupKey = series.options.dragDrop.groupBy;
-            if (series.isSeriesBoosting) { // #11156
+            if (series.boosted) { // #11156
                 series.options.data.forEach(function (pointOptions, i) {
                     points.push((new series.pointClass()).init(// eslint-disable-line new-cap
                     series, pointOptions));
@@ -2199,7 +2200,7 @@
          */
         Chart.prototype.zoomOrPanKeyPressed = function (e) {
             // Check whether the panKey and zoomKey are set in chart.userOptions
-            var chartOptions = this.userOptions.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zoomKey && chartOptions.zoomKey + 'Key';
+            var chartOptions = this.options.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zooming.key && chartOptions.zooming.key + 'Key';
             return (e[zoomKey] || e[panKey]);
         };
         /**

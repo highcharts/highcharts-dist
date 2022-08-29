@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Vector plot series module
  *
@@ -265,10 +265,6 @@
                  */
                 lineWidth: 2,
                 /**
-                 * @ignore
-                 */
-                marker: null,
-                /**
                  * What part of the vector it should be rotated around. Can be one of
                  * `start`, `center` and `end`. When `start`, the vectors will start
                  * from the given [x, y] position, and when `end` the vectors will end
@@ -300,6 +296,8 @@
                  * length is computed between 0 and this value.
                  */
                 vectorLength: 20
+            }, {
+                marker: null
             });
             return VectorSeries;
         }(ScatterSeries));

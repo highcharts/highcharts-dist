@@ -24,20 +24,19 @@ import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge;
-/* eslint-disable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 var Pitchfork = /** @class */ (function (_super) {
     __extends(Pitchfork, _super);
-    /* *
-     *
-     * Constructors
-     *
-     * */
-    function Pitchfork(chart, options) {
-        return _super.call(this, chart, options) || this;
+    function Pitchfork() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
-     * Static Functions
+     *  Static Functions
      *
      * */
     Pitchfork.outerLineEdgePoint = function (firstPointIndex) {
@@ -138,11 +137,11 @@ var Pitchfork = /** @class */ (function (_super) {
         typeOptions.innerBackground = innerBackground.options;
         typeOptions.outerBackground = outerBackground.options;
     };
-    /**
+    /* *
      *
-     * Static Properties
+     *  Static Properties
      *
-     */
+     * */
     Pitchfork.topLineEdgePoint = Pitchfork.outerLineEdgePoint(1);
     Pitchfork.bottomLineEdgePoint = Pitchfork.outerLineEdgePoint(0);
     return Pitchfork;
@@ -182,11 +181,6 @@ Pitchfork.prototype.defaultOptions = merge(InfinityLine.prototype.defaultOptions
         }
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.pitchfork = Pitchfork;
 /* *
  *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Sankey diagram module
  *
@@ -1464,6 +1464,8 @@
              *               zones, minPointLength, dataSorting, boostBlending
              * @requires     modules/sankey
              * @optionparent plotOptions.sankey
+             *
+             * @private
              */
             SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
                 borderWidth: 0,
@@ -2015,11 +2017,21 @@
          *     }]
          *  ```
          *
+         *  When you provide the data as tuples, the keys option has to be set as well.
+         *
+         *  ```js
+         *     keys: ['from', 'to', 'weight'],
+         *     data: [
+         *         ['Category1', 'Category2', 2],
+         *         ['Category1', 'Category3', 5]
+         *     ]
+         *  ```
+         *
          * @sample {highcharts} highcharts/series/data-array-of-objects/
          *         Config objects
          *
          * @declare   Highcharts.SeriesSankeyPointOptionsObject
-         * @type      {Array<*>}
+         * @type      {Array<*>|Array<Array<(string|number)>>}
          * @extends   series.line.data
          * @excluding dragDrop, drilldown, marker, x, y
          * @product   highcharts

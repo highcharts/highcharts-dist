@@ -25,6 +25,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var EMAIndicator = SeriesRegistry.seriesTypes.ema;
 import U from '../../../Core/Utilities.js';
 var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The DEMA series Type
  *
@@ -37,13 +42,28 @@ var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
 var DEMAIndicator = /** @class */ (function (_super) {
     __extends(DEMAIndicator, _super);
     function DEMAIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.EMApercent = void 0;
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     DEMAIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, index, i, xVal) {
         return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     };
@@ -134,6 +154,11 @@ SeriesRegistry.registerSeriesType('dema', DEMAIndicator);
  *
  * */
 export default DEMAIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `DEMA` series. If the [type](#series.dema.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

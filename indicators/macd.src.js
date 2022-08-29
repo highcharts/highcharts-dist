@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -62,18 +62,17 @@
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            ColumnSeries = _a.column;
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var extend = U.extend,
             correctFloat = U.correctFloat,
             defined = U.defined,
             merge = U.merge;
-        /**
+        /* *
          *
-         * Class
+         *  Class
          *
-         */
+         * */
         /**
          * The MACD series type.
          *
@@ -86,13 +85,18 @@
         var MACDIndicator = /** @class */ (function (_super) {
                 __extends(MACDIndicator, _super);
             function MACDIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
-                /**
+                /* *
                  *
-                 * Properties
+                 *  Properties
                  *
-                 */
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -103,11 +107,11 @@
                 _this.signalZones = void 0;
                 return _this;
             }
-            /**
+            /* *
              *
-             * Functions
+             *  Functions
              *
-             */
+             * */
             MACDIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
                 var originalColor = this.color,
@@ -458,6 +462,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

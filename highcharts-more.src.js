@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -652,6 +652,8 @@
          * @excluding    stack, stacking
          * @requires     highcharts-more
          * @optionparent plotOptions.arearange
+         *
+         * @private
          */
         var areaRangeSeriesOptions = {
                 /**
@@ -827,18 +829,21 @@
              * @private
              */
             AreaRangeSeries.prototype.translate = function () {
-                var series = this,
-                    yAxis = series.yAxis;
+                var series = this;
                 areaProto.translate.apply(series);
                 // Set plotLow and plotHigh
-                series.points.forEach(function (point) {
+                series.points.forEach(function (point, i) {
                     var high = point.high,
                         plotY = point.plotY;
                     if (point.isNull) {
                         point.plotY = null;
                     }
                     else {
+                        var yAxis = series.chart.hasParallelCoordinates ?
+                                series.chart.yAxis[i] :
+                                series.yAxis;
                         point.plotLow = plotY;
+                        // Calculate plotHigh value based on each yAxis scale (#15752)
                         point.plotHigh = yAxis.translate(series.dataModify ?
                             series.dataModify.modifyValue(high) : high, 0, 1, 0, 1);
                         if (series.dataModify) {
@@ -2509,28 +2514,11 @@
             merge = U.merge,
             pick = U.pick,
             stableSort = U.stableSort;
-        /**
-         * @interface Highcharts.BubbleLegendFormatterContextObject
-         */ /**
-        * The center y position of the range.
-        * @name Highcharts.BubbleLegendFormatterContextObject#center
-        * @type {number}
-        */ /**
-        * The radius of the bubble range.
-        * @name Highcharts.BubbleLegendFormatterContextObject#radius
-        * @type {number}
-        */ /**
-        * The bubble value.
-        * @name Highcharts.BubbleLegendFormatterContextObject#value
-        * @type {number}
-        */
-        ''; // detach doclets above
         /* *
          *
          *  Class
          *
          * */
-        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * BubbleLegend class.
          *
@@ -2544,7 +2532,17 @@
          * Legend of item.
          */
         var BubbleLegendItem = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
                 function BubbleLegendItem(options, legend) {
+                    /* *
+                     *
+                     *  Properties
+                     *
+                     * */
                     this.chart = void 0;
                 this.fontMetrics = void 0;
                 this.legend = void 0;
@@ -2563,15 +2561,14 @@
                 this.setState = noop;
                 this.init(options, legend);
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Create basic bubbleLegend properties similar to item in legend.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#init
-             * @param {Highcharts.LegendBubbleLegendOptions} options
-             *        Bubble legend options
-             * @param {Highcharts.Legend} legend
-             *        Legend
              */
             BubbleLegendItem.prototype.init = function (options, legend) {
                 this.options = options;
@@ -2583,9 +2580,9 @@
              * Depending on the position option, add bubbleLegend to legend items.
              *
              * @private
-             * @function Highcharts.BubbleLegend#addToLegend
+             *
              * @param {Array<(Highcharts.Point|Highcharts.Series)>} items
-             * All legend items
+             *        All legend items
              */
             BubbleLegendItem.prototype.addToLegend = function (items) {
                 // Insert bubbleLegend into legend items
@@ -2596,7 +2593,7 @@
              * creation.
              *
              * @private
-             * @function Highcharts.BubbleLegend#drawLegendSymbol
+             *
              * @param {Highcharts.Legend} legend
              *        Legend instance
              */
@@ -2638,9 +2635,7 @@
             };
             /**
              * Set style options for each bubbleLegend range.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#setOptions
              */
             BubbleLegendItem.prototype.setOptions = function () {
                 var ranges = this.ranges,
@@ -2692,9 +2687,10 @@
              * used code from BubbleSeries.js 'getRadius' method.
              *
              * @private
-             * @function Highcharts.BubbleLegend#getRangeRadius
+             *
              * @param {number} value
              *        Range value
+             *
              * @return {number|null}
              *         Radius for one range
              */
@@ -2710,9 +2706,7 @@
             };
             /**
              * Render the legendSymbol group.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#render
              */
             BubbleLegendItem.prototype.render = function () {
                 var renderer = this.chart.renderer,
@@ -2744,7 +2738,7 @@
              * Render one range, consisting of bubble symbol, connector and label.
              *
              * @private
-             * @function Highcharts.BubbleLegend#renderRange
+             *
              * @param {Highcharts.LegendBubbleLegendRangesOptions} range
              *        Range options
              */
@@ -2825,9 +2819,7 @@
             };
             /**
              * Get the label which takes up the most space.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#getMaxLabelSize
              */
             BubbleLegendItem.prototype.getMaxLabelSize = function () {
                 var labels = this.symbols.labels;
@@ -2849,9 +2841,10 @@
              * Get formatted label for range.
              *
              * @private
-             * @function Highcharts.BubbleLegend#formatLabel
+             *
              * @param {Highcharts.LegendBubbleLegendRangesOptions} range
              *        Range options
+             *
              * @return {string}
              *         Range label text
              */
@@ -2867,9 +2860,7 @@
             /**
              * By using default chart 'hideOverlappingLabels' method, hide or show
              * labels and connectors.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#hideOverlappingLabels
              */
             BubbleLegendItem.prototype.hideOverlappingLabels = function () {
                 var chart = this.chart,
@@ -2892,7 +2883,7 @@
              * Calculate ranges from created series.
              *
              * @private
-             * @function Highcharts.BubbleLegend#getRanges
+             *
              * @return {Array<Highcharts.LegendBubbleLegendRangesOptions>}
              *         Array of range objects
              */
@@ -2944,7 +2935,7 @@
              * Calculate bubble legend sizes from rendered series.
              *
              * @private
-             * @function Highcharts.BubbleLegend#predictBubbleSizes
+             *
              * @return {Array<number,number>}
              *         Calculated min and max bubble sizes
              */
@@ -2985,11 +2976,7 @@
             };
             /**
              * Correct ranges with calculated sizes.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#updateRanges
-             * @param {number} min
-             * @param {number} max
              */
             BubbleLegendItem.prototype.updateRanges = function (min, max) {
                 var bubbleLegendOptions = this.legend.options.bubbleLegend;
@@ -3001,9 +2988,7 @@
              * Because of the possibility of creating another legend line, predicted
              * bubble legend sizes may differ by a few pixels, so it is necessary to
              * correct them.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#correctSizes
              */
             BubbleLegendItem.prototype.correctSizes = function () {
                 var legend = this.legend,
@@ -3025,6 +3010,27 @@
          *  Default Export
          *
          * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * @interface Highcharts.BubbleLegendFormatterContextObject
+         */ /**
+        * The center y position of the range.
+        * @name Highcharts.BubbleLegendFormatterContextObject#center
+        * @type {number}
+        */ /**
+        * The radius of the bubble range.
+        * @name Highcharts.BubbleLegendFormatterContextObject#radius
+        * @type {number}
+        */ /**
+        * The bubble value.
+        * @name Highcharts.BubbleLegendFormatterContextObject#value
+        * @type {number}
+        */
+        ''; // detach doclets above
 
         return BubbleLegendItem;
     });
@@ -3046,282 +3052,274 @@
             wrap = U.wrap;
         /* *
          *
-         *  Namespace
+         *  Constants
          *
          * */
-        var BubbleLegendComposition;
-        (function (BubbleLegendComposition) {
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * If ranges are not specified, determine ranges from rendered bubble series
-             * and render legend again.
-             */
-            function chartDrawChartBox(proceed, options, callback) {
-                var chart = this,
-                    legend = chart.legend,
-                    bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
-                var bubbleLegendOptions,
-                    bubbleSizes;
-                if (legend && legend.options.enabled && legend.bubbleLegend &&
-                    legend.options.bubbleLegend.autoRanges && bubbleSeries) {
-                    bubbleLegendOptions = legend.bubbleLegend.options;
-                    bubbleSizes = legend.bubbleLegend.predictBubbleSizes();
-                    legend.bubbleLegend.updateRanges(bubbleSizes[0], bubbleSizes[1]);
-                    // Disable animation on init
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * If ranges are not specified, determine ranges from rendered bubble series
+         * and render legend again.
+         */
+        function chartDrawChartBox(proceed, options, callback) {
+            var chart = this,
+                legend = chart.legend,
+                bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
+            var bubbleLegendOptions,
+                bubbleSizes;
+            if (legend && legend.options.enabled && legend.bubbleLegend &&
+                legend.options.bubbleLegend.autoRanges && bubbleSeries) {
+                bubbleLegendOptions = legend.bubbleLegend.options;
+                bubbleSizes = legend.bubbleLegend.predictBubbleSizes();
+                legend.bubbleLegend.updateRanges(bubbleSizes[0], bubbleSizes[1]);
+                // Disable animation on init
+                if (!bubbleLegendOptions.placed) {
+                    legend.group.placed = false;
+                    legend.allItems.forEach(function (item) {
+                        item.legendGroup.translateY = null;
+                    });
+                }
+                // Create legend with bubbleLegend
+                legend.render();
+                chart.getMargins();
+                chart.axes.forEach(function (axis) {
+                    if (axis.visible) { // #11448
+                        axis.render();
+                    }
                     if (!bubbleLegendOptions.placed) {
-                        legend.group.placed = false;
-                        legend.allItems.forEach(function (item) {
-                            item.legendGroup.translateY = null;
+                        axis.setScale();
+                        axis.updateNames();
+                        // Disable axis animation on init
+                        objectEach(axis.ticks, function (tick) {
+                            tick.isNew = true;
+                            tick.isNewLabel = true;
                         });
                     }
-                    // Create legend with bubbleLegend
+                });
+                bubbleLegendOptions.placed = true;
+                // After recalculate axes, calculate margins again.
+                chart.getMargins();
+                // Call default 'drawChartBox' method.
+                proceed.call(chart, options, callback);
+                // Check bubble legend sizes and correct them if necessary.
+                legend.bubbleLegend.correctSizes();
+                // Correct items positions with different dimensions in legend.
+                retranslateItems(legend, getLinesHeights(legend));
+            }
+            else {
+                proceed.call(chart, options, callback);
+                // Allow color change on static bubble legend after click on legend
+                if (legend && legend.options.enabled && legend.bubbleLegend) {
                     legend.render();
-                    chart.getMargins();
-                    chart.axes.forEach(function (axis) {
-                        if (axis.visible) { // #11448
-                            axis.render();
-                        }
-                        if (!bubbleLegendOptions.placed) {
-                            axis.setScale();
-                            axis.updateNames();
-                            // Disable axis animation on init
-                            objectEach(axis.ticks, function (tick) {
-                                tick.isNew = true;
-                                tick.isNewLabel = true;
-                            });
-                        }
-                    });
-                    bubbleLegendOptions.placed = true;
-                    // After recalculate axes, calculate margins again.
-                    chart.getMargins();
-                    // Call default 'drawChartBox' method.
-                    proceed.call(chart, options, callback);
-                    // Check bubble legend sizes and correct them if necessary.
-                    legend.bubbleLegend.correctSizes();
-                    // Correct items positions with different dimensions in legend.
                     retranslateItems(legend, getLinesHeights(legend));
                 }
-                else {
-                    proceed.call(chart, options, callback);
-                    // Allow color change on static bubble legend after click on legend
-                    if (legend && legend.options.enabled && legend.bubbleLegend) {
-                        legend.render();
-                        retranslateItems(legend, getLinesHeights(legend));
-                    }
-                }
             }
-            /**
-             * Compose classes for use with Bubble series.
-             * @private
-             *
-             * @param {Highcharts.Chart} ChartClass
-             * Core chart class to use with Bubble series.
-             *
-             * @param {Highcharts.Legend} LegendClass
-             * Core legend class to use with Bubble series.
-             *
-             * @param {Highcharts.Series} SeriesClass
-             * Core series class to use with Bubble series.
-             */
-            function compose(ChartClass, LegendClass, SeriesClass) {
-                if (composedClasses.indexOf(ChartClass) === -1) {
-                    composedClasses.push(ChartClass);
-                    setOptions({
-                        // Set default bubble legend options
-                        legend: {
-                            bubbleLegend: BubbleLegendDefaults
-                        }
-                    });
-                    wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
-                }
-                if (composedClasses.indexOf(LegendClass) === -1) {
-                    composedClasses.push(LegendClass);
-                    addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-                }
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
-                    addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
-                }
-            }
-            BubbleLegendComposition.compose = compose;
-            /**
-             * Check if there is at least one visible bubble series.
-             *
-             * @private
-             * @function getVisibleBubbleSeriesIndex
-             * @param {Highcharts.Chart} chart
-             * Chart to check.
-             * @return {number}
-             * First visible bubble series index
-             */
-            function getVisibleBubbleSeriesIndex(chart) {
-                var series = chart.series;
-                var i = 0;
-                while (i < series.length) {
-                    if (series[i] &&
-                        series[i].isBubble &&
-                        series[i].visible &&
-                        series[i].zData.length) {
-                        return i;
+        }
+        /**
+         * Compose classes for use with Bubble series.
+         * @private
+         *
+         * @param {Highcharts.Chart} ChartClass
+         * Core chart class to use with Bubble series.
+         *
+         * @param {Highcharts.Legend} LegendClass
+         * Core legend class to use with Bubble series.
+         *
+         * @param {Highcharts.Series} SeriesClass
+         * Core series class to use with Bubble series.
+         */
+        function compose(ChartClass, LegendClass, SeriesClass) {
+            if (composedClasses.indexOf(ChartClass) === -1) {
+                composedClasses.push(ChartClass);
+                setOptions({
+                    // Set default bubble legend options
+                    legend: {
+                        bubbleLegend: BubbleLegendDefaults
                     }
-                    i++;
-                }
-                return -1;
-            }
-            /**
-             * Calculate height for each row in legend.
-             *
-             * @private
-             * @function getLinesHeights
-             *
-             * @param {Highcharts.Legend} legend
-             * Legend to calculate from.
-             *
-             * @return {Array<Highcharts.Dictionary<number>>}
-             * Informations about line height and items amount
-             */
-            function getLinesHeights(legend) {
-                var items = legend.allItems,
-                    lines = [],
-                    length = items.length;
-                var lastLine,
-                    i = 0,
-                    j = 0;
-                for (i = 0; i < length; i++) {
-                    if (items[i].legendItemHeight) {
-                        // for bubbleLegend
-                        items[i].itemHeight = items[i].legendItemHeight;
-                    }
-                    if ( // Line break
-                    items[i] === items[length - 1] ||
-                        items[i + 1] &&
-                            items[i]._legendItemPos[1] !==
-                                items[i + 1]._legendItemPos[1]) {
-                        lines.push({ height: 0 });
-                        lastLine = lines[lines.length - 1];
-                        // Find the highest item in line
-                        for (j; j <= i; j++) {
-                            if (items[j].itemHeight > lastLine.height) {
-                                lastLine.height = items[j].itemHeight;
-                            }
-                        }
-                        lastLine.step = i;
-                    }
-                }
-                return lines;
-            }
-            /**
-             * Start the bubble legend creation process.
-             */
-            function onLegendAfterGetAllItems(e) {
-                var legend = this,
-                    bubbleLegend = legend.bubbleLegend,
-                    legendOptions = legend.options,
-                    options = legendOptions.bubbleLegend,
-                    bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
-                // Remove unnecessary element
-                if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
-                    // Allow change the way of calculating ranges in update
-                    if (options.ranges.length) {
-                        options.autoRanges =
-                            !!options.ranges[0].autoRanges;
-                    }
-                    // Update bubbleLegend dimensions in each redraw
-                    legend.destroyItem(bubbleLegend);
-                }
-                // Create bubble legend
-                if (bubbleSeriesIndex >= 0 &&
-                    legendOptions.enabled &&
-                    options.enabled) {
-                    options.seriesIndex = bubbleSeriesIndex;
-                    legend.bubbleLegend = new BubbleLegendItem(options, legend);
-                    legend.bubbleLegend.addToLegend(e.allItems);
-                }
-            }
-            /**
-             * Toggle bubble legend depending on the visible status of bubble series.
-             */
-            function onSeriesLegendItemClick() {
-                var series = this,
-                    chart = series.chart,
-                    visible = series.visible,
-                    legend = series.chart.legend;
-                var status;
-                if (legend && legend.bubbleLegend) {
-                    // Temporary correct 'visible' property
-                    series.visible = !visible;
-                    // Save future status for getRanges method
-                    series.ignoreSeries = visible;
-                    // Check if at lest one bubble series is visible
-                    status = getVisibleBubbleSeriesIndex(chart) >= 0;
-                    // Hide bubble legend if all bubble series are disabled
-                    if (legend.bubbleLegend.visible !== status) {
-                        // Show or hide bubble legend
-                        legend.update({
-                            bubbleLegend: { enabled: status }
-                        });
-                        legend.bubbleLegend.visible = status; // Restore default status
-                    }
-                    series.visible = visible;
-                }
-            }
-            /**
-             * Correct legend items translation in case of different elements heights.
-             *
-             * @private
-             * @function Highcharts.Legend#retranslateItems
-             *
-             * @param {Highcharts.Legend} legend
-             * Legend to translate in.
-             *
-             * @param {Array<Highcharts.Dictionary<number>>} lines
-             * Informations about line height and items amount
-             */
-            function retranslateItems(legend, lines) {
-                var items = legend.allItems,
-                    rtl = legend.options.rtl;
-                var orgTranslateX,
-                    orgTranslateY,
-                    movementX,
-                    actualLine = 0;
-                items.forEach(function (item, index) {
-                    orgTranslateX = item.legendGroup.translateX;
-                    orgTranslateY = item._legendItemPos[1];
-                    movementX = item.movementX;
-                    if (movementX || (rtl && item.ranges)) {
-                        movementX = rtl ?
-                            orgTranslateX - item.options.maxSize / 2 :
-                            orgTranslateX + movementX;
-                        item.legendGroup.attr({ translateX: movementX });
-                    }
-                    if (index > lines[actualLine].step) {
-                        actualLine++;
-                    }
-                    item.legendGroup.attr({
-                        translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
-                    });
-                    item._legendItemPos[1] = orgTranslateY +
-                        lines[actualLine].height / 2;
                 });
+                wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
             }
-            /* eslint-disable valid-jsdoc */
-        })(BubbleLegendComposition || (BubbleLegendComposition = {}));
+            if (composedClasses.indexOf(LegendClass) === -1) {
+                composedClasses.push(LegendClass);
+                addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
+            }
+            if (composedClasses.indexOf(SeriesClass) === -1) {
+                composedClasses.push(SeriesClass);
+                addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
+            }
+        }
+        /**
+         * Check if there is at least one visible bubble series.
+         *
+         * @private
+         * @function getVisibleBubbleSeriesIndex
+         * @param {Highcharts.Chart} chart
+         * Chart to check.
+         * @return {number}
+         * First visible bubble series index
+         */
+        function getVisibleBubbleSeriesIndex(chart) {
+            var series = chart.series;
+            var i = 0;
+            while (i < series.length) {
+                if (series[i] &&
+                    series[i].isBubble &&
+                    series[i].visible &&
+                    series[i].zData.length) {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
+        }
+        /**
+         * Calculate height for each row in legend.
+         *
+         * @private
+         * @function getLinesHeights
+         *
+         * @param {Highcharts.Legend} legend
+         * Legend to calculate from.
+         *
+         * @return {Array<Highcharts.Dictionary<number>>}
+         * Informations about line height and items amount
+         */
+        function getLinesHeights(legend) {
+            var items = legend.allItems,
+                lines = [],
+                length = items.length;
+            var lastLine,
+                i = 0,
+                j = 0;
+            for (i = 0; i < length; i++) {
+                if (items[i].legendItemHeight) {
+                    // for bubbleLegend
+                    items[i].itemHeight = items[i].legendItemHeight;
+                }
+                if ( // Line break
+                items[i] === items[length - 1] ||
+                    items[i + 1] &&
+                        items[i]._legendItemPos[1] !==
+                            items[i + 1]._legendItemPos[1]) {
+                    lines.push({ height: 0 });
+                    lastLine = lines[lines.length - 1];
+                    // Find the highest item in line
+                    for (j; j <= i; j++) {
+                        if (items[j].itemHeight > lastLine.height) {
+                            lastLine.height = items[j].itemHeight;
+                        }
+                    }
+                    lastLine.step = i;
+                }
+            }
+            return lines;
+        }
+        /**
+         * Start the bubble legend creation process.
+         */
+        function onLegendAfterGetAllItems(e) {
+            var legend = this,
+                bubbleLegend = legend.bubbleLegend,
+                legendOptions = legend.options,
+                options = legendOptions.bubbleLegend,
+                bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
+            // Remove unnecessary element
+            if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
+                // Allow change the way of calculating ranges in update
+                if (options.ranges.length) {
+                    options.autoRanges =
+                        !!options.ranges[0].autoRanges;
+                }
+                // Update bubbleLegend dimensions in each redraw
+                legend.destroyItem(bubbleLegend);
+            }
+            // Create bubble legend
+            if (bubbleSeriesIndex >= 0 &&
+                legendOptions.enabled &&
+                options.enabled) {
+                options.seriesIndex = bubbleSeriesIndex;
+                legend.bubbleLegend = new BubbleLegendItem(options, legend);
+                legend.bubbleLegend.addToLegend(e.allItems);
+            }
+        }
+        /**
+         * Toggle bubble legend depending on the visible status of bubble series.
+         */
+        function onSeriesLegendItemClick() {
+            var series = this,
+                chart = series.chart,
+                visible = series.visible,
+                legend = series.chart.legend;
+            var status;
+            if (legend && legend.bubbleLegend) {
+                // Temporary correct 'visible' property
+                series.visible = !visible;
+                // Save future status for getRanges method
+                series.ignoreSeries = visible;
+                // Check if at lest one bubble series is visible
+                status = getVisibleBubbleSeriesIndex(chart) >= 0;
+                // Hide bubble legend if all bubble series are disabled
+                if (legend.bubbleLegend.visible !== status) {
+                    // Show or hide bubble legend
+                    legend.update({
+                        bubbleLegend: { enabled: status }
+                    });
+                    legend.bubbleLegend.visible = status; // Restore default status
+                }
+                series.visible = visible;
+            }
+        }
+        /**
+         * Correct legend items translation in case of different elements heights.
+         *
+         * @private
+         * @function Highcharts.Legend#retranslateItems
+         *
+         * @param {Highcharts.Legend} legend
+         * Legend to translate in.
+         *
+         * @param {Array<Highcharts.Dictionary<number>>} lines
+         * Informations about line height and items amount
+         */
+        function retranslateItems(legend, lines) {
+            var items = legend.allItems,
+                rtl = legend.options.rtl;
+            var orgTranslateX,
+                orgTranslateY,
+                movementX,
+                actualLine = 0;
+            items.forEach(function (item, index) {
+                orgTranslateX = item.legendGroup.translateX;
+                orgTranslateY = item._legendItemPos[1];
+                movementX = item.movementX;
+                if (movementX || (rtl && item.ranges)) {
+                    movementX = rtl ?
+                        orgTranslateX - item.options.maxSize / 2 :
+                        orgTranslateX + movementX;
+                    item.legendGroup.attr({ translateX: movementX });
+                }
+                if (index > lines[actualLine].step) {
+                    actualLine++;
+                }
+                item.legendGroup.attr({
+                    translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
+                });
+                item._legendItemPos[1] = orgTranslateY +
+                    lines[actualLine].height / 2;
+            });
+        }
         /* *
          *
          *  Default Export
          *
          * */
+        var BubbleLegendComposition = {
+                compose: compose
+            };
 
         return BubbleLegendComposition;
     });
@@ -3405,7 +3403,7 @@
 
         return BubblePoint;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Series/Bubble/BubbleLegendComposition.js'], _modules['Series/Bubble/BubblePoint.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, BubbleLegendComposition, BubblePoint, Color, H, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Series/Bubble/BubbleLegendComposition.js'], _modules['Series/Bubble/BubblePoint.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleLegendComposition, BubblePoint, Color, H, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -3433,8 +3431,9 @@
         })();
         var color = Color.parse;
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
+        var Series = SeriesRegistry.series,
+            _a = SeriesRegistry.seriesTypes,
+            columnProto = _a.column.prototype,
             ScatterSeries = _a.scatter;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
@@ -3444,6 +3443,77 @@
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Add logic to pad each axis with the amount of pixels necessary to avoid the
+         * bubbles to overflow.
+         */
+        function axisBeforePadding() {
+            var _this = this;
+            var axisLength = this.len,
+                chart = this.chart,
+                isXAxis = this.isXAxis,
+                dataKey = isXAxis ? 'xData' : 'yData',
+                min = this.min,
+                range = this.max - min;
+            var pxMin = 0,
+                pxMax = axisLength,
+                transA = axisLength / range,
+                hasActiveSeries;
+            // Handle padding on the second pass, or on redraw
+            this.series.forEach(function (series) {
+                if (series.bubblePadding &&
+                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+                    // Correction for #1673
+                    _this.allowZoomOutside = true;
+                    hasActiveSeries = true;
+                    var data = series[dataKey];
+                    if (isXAxis) {
+                        (series.onPoint || series).getRadii(0, 0, series);
+                        if (series.onPoint) {
+                            series.radii = series.onPoint.radii;
+                        }
+                    }
+                    if (range > 0) {
+                        var i = data.length;
+                        while (i--) {
+                            if (isNumber(data[i]) &&
+                                _this.dataMin <= data[i] &&
+                                data[i] <= _this.max) {
+                                var radius = series.radii && series.radii[i] || 0;
+                                pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
+                                pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                            }
+                        }
+                    }
+                }
+            });
+            // Apply the padding to the min and max properties
+            if (hasActiveSeries && range > 0 && !this.logarithmic) {
+                pxMax -= axisLength;
+                transA *= (axisLength +
+                    Math.max(0, pxMin) - // #8901
+                    Math.min(pxMax, axisLength)) / axisLength;
+                [
+                    ['min', 'userMin', pxMin],
+                    ['max', 'userMax', pxMax]
+                ].forEach(function (keys) {
+                    if (typeof pick(_this.options[keys[0]], _this[keys[1]]) === 'undefined') {
+                        _this[keys[0]] += keys[2] / transA;
+                    }
+                });
+            }
+        }
         /* *
          *
          *  Class
@@ -3473,14 +3543,24 @@
                 _this.yData = void 0;
                 _this.zData = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            BubbleSeries.compose = function (AxisClass, ChartClass, LegendClass, SeriesClass) {
+                BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
+                if (composedClasses.indexOf(AxisClass) === -1) {
+                    composedClasses.push(AxisClass);
+                    AxisClass.prototype.beforePadding = axisBeforePadding;
+                }
+            };
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Perform animation on the bubbles
              * @private
@@ -3515,11 +3595,11 @@
              */
             BubbleSeries.prototype.getRadii = function () {
                 var _this = this;
+                var zData = this.zData,
+                    yData = this.yData,
+                    radii = [];
                 var len,
                     i,
-                    zData = this.zData,
-                    yData = this.yData,
-                    radii = [],
                     value,
                     zExtremes = this.chart.bubbleZExtremes;
                 var _a = this.getPxExtremes(),
@@ -3566,8 +3646,8 @@
             BubbleSeries.prototype.getRadius = function (zMin, zMax, minSize, maxSize, value, yValue) {
                 var options = this.options,
                     sizeByArea = options.sizeBy !== 'width',
-                    zThreshold = options.zThreshold,
-                    zRange = zMax - zMin,
+                    zThreshold = options.zThreshold;
+                var zRange = zMax - zMin,
                     pos = 0.5;
                 // #8608 - bubble should be visible when z is undefined
                 if (yValue === null || value === null) {
@@ -3700,7 +3780,6 @@
                     }
                 }
             };
-            BubbleSeries.compose = BubbleLegendComposition.compose;
             /**
              * A bubble series is a three dimensional series type where each point
              * renders an X, Y and Z value. Each points is drawn as a bubble where the
@@ -3939,7 +4018,7 @@
             return BubbleSeries;
         }(ScatterSeries));
         extend(BubbleSeries.prototype, {
-            alignDataLabel: ColumnSeries.prototype.alignDataLabel,
+            alignDataLabel: columnProto.alignDataLabel,
             applyZones: noop,
             bubblePadding: true,
             buildKDTree: noop,
@@ -3956,70 +4035,10 @@
         addEvent(BubbleSeries, 'updatedData', function (e) {
             delete e.target.chart.bubbleZExtremes;
         });
-        /* *
-         *
-         *  Axis ?
-         *
-         * */
-        // Add logic to pad each axis with the amount of pixels necessary to avoid the
-        // bubbles to overflow.
-        Axis.prototype.beforePadding = function () {
-            var axis = this,
-                axisLength = this.len,
-                chart = this.chart,
-                pxMin = 0,
-                pxMax = axisLength,
-                isXAxis = this.isXAxis,
-                dataKey = isXAxis ? 'xData' : 'yData',
-                min = this.min,
-                range = this.max - min,
-                transA = axisLength / range,
-                hasActiveSeries;
-            // Handle padding on the second pass, or on redraw
-            this.series.forEach(function (series) {
-                if (series.bubblePadding &&
-                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
-                    // Correction for #1673
-                    axis.allowZoomOutside = true;
-                    hasActiveSeries = true;
-                    var data = series[dataKey];
-                    if (isXAxis) {
-                        (series.onPoint || series).getRadii(0, 0, series);
-                        if (series.onPoint) {
-                            series.radii = series.onPoint.radii;
-                        }
-                    }
-                    if (range > 0) {
-                        var i = data.length;
-                        while (i--) {
-                            if (isNumber(data[i]) &&
-                                axis.dataMin <= data[i] &&
-                                data[i] <= axis.max) {
-                                var radius = series.radii && series.radii[i] || 0;
-                                pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
-                                pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
-                            }
-                        }
-                    }
-                }
-            });
-            // Apply the padding to the min and max properties
-            if (hasActiveSeries && range > 0 && !this.logarithmic) {
-                pxMax -= axisLength;
-                transA *= (axisLength +
-                    Math.max(0, pxMin) - // #8901
-                    Math.min(pxMax, axisLength)) / axisLength;
-                [
-                    ['min', 'userMin', pxMin],
-                    ['max', 'userMax', pxMax]
-                ].forEach(function (keys) {
-                    if (typeof pick(axis.options[keys[0]], axis[keys[1]]) === 'undefined') {
-                        axis[keys[0]] += keys[2] / transA;
-                    }
-                });
-            }
-            /* eslint-enable valid-jsdoc */
-        };
+        // After removing series, delete the chart-level Z extremes cache, #17502.
+        addEvent(BubbleSeries, 'remove', function (e) {
+            delete e.target.chart.bubbleZExtremes;
+        });
         SeriesRegistry.registerSeriesType('bubble', BubbleSeries);
         /* *
          *
@@ -4691,7 +4710,7 @@
                             (chart.plotHeight - translatedThreshold);
                     // topXwidth and bottomXwidth = width of lines from the center
                     // calculated from tanges proportion.
-                    // Can not be a NaN #12514
+                    // Cannot be a NaN #12514
                     topXwidth = stackHeight ?
                         (barW * (barY - topPointY)) / stackHeight : 0;
                     // like topXwidth, but with height of point
@@ -5806,6 +5825,312 @@
 
         return GaugeSeries;
     });
+    _registerModule(_modules, 'Series/DragNodesComposition.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  Networkgraph series
+         *
+         *  (c) 2010-2021 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function compose(ChartClass) {
+            if (composedClasses.indexOf(ChartClass) === -1) {
+                composedClasses.push(ChartClass);
+                addEvent(ChartClass, 'load', onChartLoad);
+            }
+        }
+        /**
+         * Draggable mode:
+         * @private
+         */
+        function onChartLoad() {
+            var chart = this;
+            var mousedownUnbinder,
+                mousemoveUnbinder,
+                mouseupUnbinder;
+            if (chart.container) {
+                mousedownUnbinder = addEvent(chart.container, 'mousedown', function (event) {
+                    var point = chart.hoverPoint;
+                    if (point &&
+                        point.series &&
+                        point.series.hasDraggableNodes &&
+                        point.series.options.draggable) {
+                        point.series.onMouseDown(point, event);
+                        mousemoveUnbinder = addEvent(chart.container, 'mousemove', function (e) { return (point &&
+                            point.series &&
+                            point.series.onMouseMove(point, e)); });
+                        mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', function (e) {
+                            mousemoveUnbinder();
+                            mouseupUnbinder();
+                            return point &&
+                                point.series &&
+                                point.series.onMouseUp(point, e);
+                        });
+                    }
+                });
+            }
+            addEvent(chart, 'destroy', function () {
+                mousedownUnbinder();
+            });
+        }
+        /**
+         * Mouse down action, initializing drag&drop mode.
+         *
+         * @private
+         * @param {Highcharts.Point} point
+         *        The point that event occured.
+         * @param {Highcharts.PointerEventObject} event
+         *        Browser event, before normalization.
+         */
+        function onMouseDown(point, event) {
+            var normalizedEvent = this.chart.pointer.normalize(event);
+            point.fixedPosition = {
+                chartX: normalizedEvent.chartX,
+                chartY: normalizedEvent.chartY,
+                plotX: point.plotX,
+                plotY: point.plotY
+            };
+            point.inDragMode = true;
+        }
+        /**
+         * Mouse move action during drag&drop.
+         *
+         * @private
+         *
+         * @param {global.Event} event
+         *        Browser event, before normalization.
+         * @param {Highcharts.Point} point
+         *        The point that event occured.
+         *
+         */
+        function onMouseMove(point, event) {
+            if (point.fixedPosition && point.inDragMode) {
+                var series = this,
+                    chart = series.chart,
+                    normalizedEvent = chart.pointer.normalize(event),
+                    diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
+                    diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
+                    graphLayoutsLookup = chart.graphLayoutsLookup;
+                var newPlotX = void 0,
+                    newPlotY = void 0;
+                // At least 5px to apply change (avoids simple click):
+                if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
+                    newPlotX = point.fixedPosition.plotX - diffX;
+                    newPlotY = point.fixedPosition.plotY - diffY;
+                    if (chart.isInsidePlot(newPlotX, newPlotY)) {
+                        point.plotX = newPlotX;
+                        point.plotY = newPlotY;
+                        point.hasDragged = true;
+                        this.redrawHalo(point);
+                        graphLayoutsLookup.forEach(function (layout) {
+                            layout.restartSimulation();
+                        });
+                    }
+                }
+            }
+        }
+        /**
+         * Mouse up action, finalizing drag&drop.
+         *
+         * @private
+         * @param {Highcharts.Point} point
+         *        The point that event occured.
+         */
+        function onMouseUp(point, _event) {
+            if (point.fixedPosition) {
+                if (point.hasDragged) {
+                    if (this.layout.enableSimulation) {
+                        this.layout.start();
+                    }
+                    else {
+                        this.chart.redraw();
+                    }
+                }
+                point.inDragMode = point.hasDragged = false;
+                if (!this.options.fixedDraggable) {
+                    delete point.fixedPosition;
+                }
+            }
+        }
+        /**
+         * Redraw halo on mousemove during the drag&drop action.
+         *
+         * @private
+         * @param {Highcharts.Point} point
+         *        The point that should show halo.
+         */
+        function redrawHalo(point) {
+            if (point && this.halo) {
+                this.halo.attr({
+                    d: point.haloPath(this.options.states.hover.halo.size)
+                });
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var DragNodesComposition = {
+                compose: compose,
+                onMouseDown: onMouseDown,
+                onMouseMove: onMouseMove,
+                onMouseUp: onMouseUp,
+                redrawHalo: redrawHalo
+            };
+
+        return DragNodesComposition;
+    });
+    _registerModule(_modules, 'Series/GraphLayoutComposition.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Utilities.js']], function (A, U) {
+        /* *
+         *
+         *  Networkgraph series
+         *
+         *  (c) 2010-2021 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var setAnimation = A.setAnimation;
+        var addEvent = U.addEvent;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        var integrations = {};
+        var layouts = {};
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function compose(ChartClass) {
+            if (composedClasses.indexOf(ChartClass)) {
+                composedClasses.push(ChartClass);
+                addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
+                addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
+                addEvent(ChartClass, 'predraw', onChartPredraw);
+                addEvent(ChartClass, 'render', onChartRender);
+            }
+        }
+        /**
+         * Re-enable simulation after print.
+         * @private
+         */
+        function onChartAfterPrint() {
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    // return to default simulation
+                    layout.updateSimulation();
+                });
+                this.redraw();
+            }
+        }
+        /**
+         * Disable simulation before print if enabled.
+         * @private
+         */
+        function onChartBeforePrint() {
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    layout.updateSimulation(false);
+                });
+                this.redraw();
+            }
+        }
+        /**
+         * Clear previous layouts.
+         * @private
+         */
+        function onChartPredraw() {
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    layout.stop();
+                });
+            }
+        }
+        /**
+         * @private
+         */
+        function onChartRender() {
+            var systemsStable,
+                afterRender = false;
+            var layoutStep = function (layout) {
+                    if (layout.maxIterations-- &&
+                        isFinite(layout.temperature) &&
+                        !layout.isStable() &&
+                        !layout.enableSimulation) {
+                        // Hook similar to build-in addEvent, but instead of
+                        // creating whole events logic, use just a function.
+                        // It's faster which is important for rAF code.
+                        // Used e.g. in packed-bubble series for bubble radius
+                        // calculations
+                        if (layout.beforeStep) {
+                            layout.beforeStep();
+                    }
+                    layout.step();
+                    systemsStable = false;
+                    afterRender = true;
+                }
+            };
+            if (this.graphLayoutsLookup) {
+                setAnimation(false, this);
+                // Start simulation
+                this.graphLayoutsLookup.forEach(function (layout) { return layout.start(); });
+                // Just one sync step, to run different layouts similar to
+                // async mode.
+                while (!systemsStable) {
+                    systemsStable = true;
+                    this.graphLayoutsLookup.forEach(layoutStep);
+                }
+                if (afterRender) {
+                    this.series.forEach(function (series) {
+                        if (series && series.layout) {
+                            series.render();
+                        }
+                    });
+                }
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var GraphLayoutComposition = {
+                compose: compose,
+                integrations: integrations,
+                layouts: layouts
+            };
+
+        return GraphLayoutComposition;
+    });
     _registerModule(_modules, 'Series/PackedBubble/PackedBubblePoint.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js']], function (Chart, Point, SeriesRegistry) {
         /* *
          *
@@ -5832,7 +6157,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var BubbleSeries = SeriesRegistry.seriesTypes.bubble;
+        var BubblePoint = SeriesRegistry.seriesTypes.bubble.prototype.pointClass;
         /* *
          *
          *  Class
@@ -5902,7 +6227,7 @@
                 }
             };
             return PackedBubblePoint;
-        }(BubbleSeries.prototype.pointClass));
+        }(BubblePoint));
         /* *
          *
          *  Default Export
@@ -5911,512 +6236,411 @@
 
         return PackedBubblePoint;
     });
-    _registerModule(_modules, 'Series/Networkgraph/DraggableNodes.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  Networkgraph series
-         *
-         *  (c) 2010-2021 Paweł Fus
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *  Imports
          *
          * */
-        var addEvent = U.addEvent;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        H.dragNodesMixin = {
-            /**
-             * Mouse down action, initializing drag&drop mode.
-             *
-             * @private
-             * @param {Highcharts.Point} point The point that event occured.
-             * @param {Highcharts.PointerEventObject} event Browser event, before normalization.
-             */
-            onMouseDown: function (point, event) {
-                var normalizedEvent = this.chart.pointer.normalize(event);
-                point.fixedPosition = {
-                    chartX: normalizedEvent.chartX,
-                    chartY: normalizedEvent.chartY,
-                    plotX: point.plotX,
-                    plotY: point.plotY
-                };
-                point.inDragMode = true;
-            },
-            /**
-             * Mouse move action during drag&drop.
-             *
-             * @private
-             *
-             * @param {global.Event} event Browser event, before normalization.
-             * @param {Highcharts.Point} point The point that event occured.
-             *
-             */
-            onMouseMove: function (point, event) {
-                if (point.fixedPosition && point.inDragMode) {
-                    var series = this,
-                        chart = series.chart,
-                        normalizedEvent = chart.pointer.normalize(event),
-                        diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
-                        diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
-                        newPlotX = void 0,
-                        newPlotY = void 0,
-                        graphLayoutsLookup = chart.graphLayoutsLookup;
-                    // At least 5px to apply change (avoids simple click):
-                    if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
-                        newPlotX = point.fixedPosition.plotX - diffX;
-                        newPlotY = point.fixedPosition.plotY - diffY;
-                        if (chart.isInsidePlot(newPlotX, newPlotY)) {
-                            point.plotX = newPlotX;
-                            point.plotY = newPlotY;
-                            point.hasDragged = true;
-                            this.redrawHalo(point);
-                            graphLayoutsLookup.forEach(function (layout) {
-                                layout.restartSimulation();
-                            });
-                        }
-                    }
-                }
-            },
-            /**
-             * Mouse up action, finalizing drag&drop.
-             *
-             * @private
-             * @param {Highcharts.Point} point The point that event occured.
-             */
-            onMouseUp: function (point, event) {
-                if (point.fixedPosition) {
-                    if (point.hasDragged) {
-                        if (this.layout.enableSimulation) {
-                            this.layout.start();
-                        }
-                        else {
-                            this.chart.redraw();
-                        }
-                    }
-                    point.inDragMode = point.hasDragged = false;
-                    if (!this.options.fixedDraggable) {
-                        delete point.fixedPosition;
-                    }
-                }
-            },
-            // Draggable mode:
-            /**
-             * Redraw halo on mousemove during the drag&drop action.
-             *
-             * @private
-             * @param {Highcharts.Point} point The point that should show halo.
-             */
-            redrawHalo: function (point) {
-                if (point && this.halo) {
-                    this.halo.attr({
-                        d: point.haloPath(this.options.states.hover.halo.size)
-                    });
-                }
-            }
-        };
-        /*
-         * Draggable mode:
+        var isNumber = U.isNumber;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        /**
+         * A packed bubble series is a two dimensional series type, where each point
+         * renders a value in X, Y position. Each point is drawn as a bubble
+         * where the bubbles don't overlap with each other and the radius
+         * of the bubble relates to the value.
+         *
+         * @sample highcharts/demo/packed-bubble/
+         *         Packed bubble chart
+         * @sample highcharts/demo/packed-bubble-split/
+         *         Split packed bubble chart
+         *
+         * @extends      plotOptions.bubble
+         * @excluding    connectEnds, connectNulls, cropThreshold, dragDrop, jitter,
+         *               keys, pointPlacement, sizeByAbsoluteValue, step, xAxis,
+         *               yAxis, zMax, zMin, dataSorting, boostThreshold,
+         *               boostBlending
+         * @product      highcharts
+         * @since        7.0.0
+         * @requires     highcharts-more
+         * @optionparent plotOptions.packedbubble
          */
-        addEvent(Chart, 'load', function () {
-            var chart = this,
-                mousedownUnbinder,
-                mousemoveUnbinder,
-                mouseupUnbinder;
-            if (chart.container) {
-                mousedownUnbinder = addEvent(chart.container, 'mousedown', function (event) {
-                    var point = chart.hoverPoint;
-                    if (point &&
-                        point.series &&
-                        point.series.hasDraggableNodes &&
-                        point.series.options.draggable) {
-                        point.series.onMouseDown(point, event);
-                        mousemoveUnbinder = addEvent(chart.container, 'mousemove', function (e) {
-                            return point &&
-                                point.series &&
-                                point.series.onMouseMove(point, e);
-                        });
-                        mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', function (e) {
-                            mousemoveUnbinder();
-                            mouseupUnbinder();
-                            return point &&
-                                point.series &&
-                                point.series.onMouseUp(point, e);
-                        });
-                    }
-                });
-            }
-            addEvent(chart, 'destroy', function () {
-                mousedownUnbinder();
-            });
-        });
-
-    });
-    _registerModule(_modules, 'Series/Networkgraph/Integrations.js', [_modules['Core/Globals.js']], function (H) {
-        /* *
-         *
-         *  Networkgraph series
-         *
-         *  (c) 2010-2021 Paweł Fus
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        H.networkgraphIntegrations = {
-            verlet: {
+        var PackedBubbleSeriesDefaults = {
                 /**
-                 * Attractive force funtion. Can be replaced by API's
-                 * `layoutAlgorithm.attractiveForce`
+                 * Minimum bubble size. Bubbles will automatically size between the
+                 * `minSize` and `maxSize` to reflect the value of each bubble.
+                 * Can be either pixels (when no unit is given),
+            or a percentage of
+                 * the smallest one of the plot width and height,
+            divided by the square
+                 * root of total number of points.
                  *
-                 * @private
-                 * @param {number} d current distance between two nodes
-                 * @param {number} k expected distance between two nodes
-                 * @return {number} force
-                 */
-                attractiveForceFunction: function (d, k) {
-                    // Used in API:
-                    return (k - d) / d;
-                },
-                /**
-                 * Repulsive force funtion. Can be replaced by API's
-                 * `layoutAlgorithm.repulsiveForce`
+                 * @sample highcharts/plotoptions/bubble-size/
+                 *         Bubble size
                  *
-                 * @private
-                 * @param {number} d current distance between two nodes
-                 * @param {number} k expected distance between two nodes
-                 * @return {number} force
-                 */
-                repulsiveForceFunction: function (d, k) {
-                    // Used in API:
-                    return (k - d) / d * (k > d ? 1 : 0); // Force only for close nodes
-                },
-                /**
-                 * Barycenter force. Calculate and applys barycenter forces on the
-                 * nodes. Making them closer to the center of their barycenter point.
+                 * @type {number|string}
                  *
-                 * In Verlet integration, force is applied on a node immidatelly to it's
-                 * `plotX` and `plotY` position.
-                 *
-                 * @private
-                     */
-                barycenter: function () {
-                    var gravitationalConstant = this.options.gravitationalConstant,
-                        xFactor = this.barycenter.xFactor,
-                        yFactor = this.barycenter.yFactor;
-                    // To consider:
-                    xFactor = (xFactor - (this.box.left + this.box.width) / 2) *
-                        gravitationalConstant;
-                    yFactor = (yFactor - (this.box.top + this.box.height) / 2) *
-                        gravitationalConstant;
-                    this.nodes.forEach(function (node) {
-                        if (!node.fixedPosition) {
-                            node.plotX -=
-                                xFactor / node.mass / node.degree;
-                            node.plotY -=
-                                yFactor / node.mass / node.degree;
-                        }
-                    });
-                },
-                /**
-                 * Repulsive force.
-                 *
-                 * In Verlet integration, force is applied on a node immidatelly to it's
-                 * `plotX` and `plotY` position.
-                 *
-                 * @private
-                 * @param {Highcharts.Point} node
-                 *        Node that should be translated by force.
-                 * @param {number} force
-                 *        Force calcualated in `repulsiveForceFunction`
-                 * @param {Highcharts.PositionObject} distance
-                 *        Distance between two nodes e.g. `{x, y}`
-                     */
-                repulsive: function (node, force, distanceXY) {
-                    var factor = force * this.diffTemperature / node.mass / node.degree;
-                    if (!node.fixedPosition) {
-                        node.plotX += distanceXY.x * factor;
-                        node.plotY += distanceXY.y * factor;
-                    }
-                },
-                /**
-                 * Attractive force.
-                 *
-                 * In Verlet integration, force is applied on a node immidatelly to it's
-                 * `plotX` and `plotY` position.
-                 *
-                 * @private
-                 * @param {Highcharts.Point} link
-                 *        Link that connects two nodes
-                 * @param {number} force
-                 *        Force calcualated in `repulsiveForceFunction`
-                 * @param {Highcharts.PositionObject} distance
-                 *        Distance between two nodes e.g. `{x, y}`
-                     */
-                attractive: function (link, force, distanceXY) {
-                    var massFactor = link.getMass(),
-                        translatedX = -distanceXY.x * force * this.diffTemperature,
-                        translatedY = -distanceXY.y * force * this.diffTemperature;
-                    if (!link.fromNode.fixedPosition) {
-                        link.fromNode.plotX -=
-                            translatedX * massFactor.fromNode / link.fromNode.degree;
-                        link.fromNode.plotY -=
-                            translatedY * massFactor.fromNode / link.fromNode.degree;
-                    }
-                    if (!link.toNode.fixedPosition) {
-                        link.toNode.plotX +=
-                            translatedX * massFactor.toNode / link.toNode.degree;
-                        link.toNode.plotY +=
-                            translatedY * massFactor.toNode / link.toNode.degree;
-                    }
-                },
-                /**
-                 * Integration method.
-                 *
-                 * In Verlet integration, forces are applied on node immidatelly to it's
-                 * `plotX` and `plotY` position.
-                 *
-                 * Verlet without velocity:
-                 *
-                 *    x(n+1) = 2 * x(n) - x(n-1) + A(T) * deltaT ^ 2
-                 *
-                 * where:
-                 *     - x(n+1) - new position
-                 *     - x(n) - current position
-                 *     - x(n-1) - previous position
-                 *
-                 * Assuming A(t) = 0 (no acceleration) and (deltaT = 1) we get:
-                 *
-                 *     x(n+1) = x(n) + (x(n) - x(n-1))
-                 *
-                 * where:
-                 *     - (x(n) - x(n-1)) - position change
-                 *
-                 * TO DO:
-                 * Consider Verlet with velocity to support additional
-                 * forces. Or even Time-Corrected Verlet by Jonathan
-                 * "lonesock" Dummer
-                 *
-                 * @private
-                 * @param {Highcharts.NetworkgraphLayout} layout layout object
-                 * @param {Highcharts.Point} node node that should be translated
-                     */
-                integrate: function (layout, node) {
-                    var friction = -layout.options.friction,
-                        maxSpeed = layout.options.maxSpeed,
-                        prevX = node.prevX,
-                        prevY = node.prevY, 
-                        // Apply friciton:
-                        diffX = ((node.plotX + node.dispX -
-                            prevX) * friction),
-                        diffY = ((node.plotY + node.dispY -
-                            prevY) * friction),
-                        abs = Math.abs,
-                        signX = abs(diffX) / (diffX || 1), // need to deal with 0
-                        signY = abs(diffY) / (diffY || 1);
-                    // Apply max speed:
-                    diffX = signX * Math.min(maxSpeed, Math.abs(diffX));
-                    diffY = signY * Math.min(maxSpeed, Math.abs(diffY));
-                    // Store for the next iteration:
-                    node.prevX = node.plotX + node.dispX;
-                    node.prevY = node.plotY + node.dispY;
-                    // Update positions:
-                    node.plotX += diffX;
-                    node.plotY += diffY;
-                    node.temperature = layout.vectorLength({
-                        x: diffX,
-                        y: diffY
-                    });
-                },
-                /**
-                 * Estiamte the best possible distance between two nodes, making graph
-                 * readable.
                  * @private
                  */
-                getK: function (layout) {
-                    return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.5);
+                minSize: '10%',
+                /**
+                 * Maximum bubble size. Bubbles will automatically size between the
+                 * `minSize` and `maxSize` to reflect the value of each bubble.
+                 * Can be either pixels (when no unit is given),
+            or a percentage of
+                 * the smallest one of the plot width and height,
+            divided by the square
+                 * root of total number of points.
+                 *
+                 * @sample highcharts/plotoptions/bubble-size/
+                 *         Bubble size
+                 *
+                 * @type {number|string}
+                 *
+                 * @private
+                 */
+                maxSize: '50%',
+                sizeBy: 'area',
+                zoneAxis: 'y',
+                crisp: false,
+                tooltip: {
+                    pointFormat: 'Value: {point.value}'
+                },
+                /**
+                 * Flag to determine if nodes are draggable or not. Available for
+                 * graph with useSimulation set to true only.
+                 *
+                 * @since 7.1.0
+                 *
+                 * @private
+                 */
+                draggable: true,
+                /**
+                 * An option is giving a possibility to choose between using simulation
+                 * for calculating bubble positions. These reflects in both animation
+                 * and final position of bubbles. Simulation is also adding options to
+                 * the series graph based on used layout. In case of big data sets,
+            with
+                 * any performance issues,
+            it is possible to disable animation and pack
+                 * bubble in a simple circular way.
+                 *
+                 * @sample highcharts/series-packedbubble/spiral/
+                 *         useSimulation set to false
+                 *
+                 * @since 7.1.0
+                 *
+                 * @private
+                 */
+                useSimulation: true,
+                /**
+                 * Series options for parent nodes.
+                 *
+                 * @since 8.1.1
+                 *
+                 * @private
+                 */
+                parentNode: {
+                    /**
+                     * Allow this series' parent nodes to be selected
+                     * by clicking on the graph.
+                     *
+                     * @since 8.1.1
+                     */
+                    allowPointSelect: false
+                },
+                /**
+                /**
+                 *
+                 * @declare Highcharts.SeriesPackedBubbleDataLabelsOptionsObject
+                 *
+                 * @private
+                 */
+                dataLabels: {
+                    /**
+                     * The
+                     * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+                     * specifying what to show for _node_ in the networkgraph. In v7.0
+                     * defaults to `{key}`,
+            since v7.1 defaults to `undefined` and
+                     * `formatter` is used instead.
+                     *
+                     * @type      {string}
+                     * @since     7.0.0
+                     * @apioption plotOptions.packedbubble.dataLabels.format
+                     */
+                    // eslint-disable-next-line valid-jsdoc
+                    /**
+                     * Callback JavaScript function to format the data label for a node.
+                     * Note that if a `format` is defined,
+            the format takes precedence
+                     * and the formatter is ignored.
+                     *
+                     * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
+                     * @since 7.0.0
+                     */
+                    formatter: function () {
+                        var numberFormatter = this.series.chart.numberFormatter;
+                    var value = this.point.value;
+                    return isNumber(value) ? numberFormatter(value, -1) : '';
+                },
+                /**
+                 * @type      {string}
+                 * @since     7.1.0
+                 * @apioption plotOptions.packedbubble.dataLabels.parentNodeFormat
+                 */
+                // eslint-disable-next-line valid-jsdoc
+                /**
+                 * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
+                 * @since 7.1.0
+                 */
+                parentNodeFormatter: function () {
+                    return this.name;
+                },
+                /**
+                 * @sample {highcharts} highcharts/series-packedbubble/packed-dashboard
+                 *         Dashboard with dataLabels on parentNodes
+                 *
+                 * @declare Highcharts.SeriesPackedBubbleDataLabelsTextPathOptionsObject
+                 * @since   7.1.0
+                 */
+                parentNodeTextPath: {
+                    /**
+                     * Presentation attributes for the text path.
+                     *
+                     * @type      {Highcharts.SVGAttributes}
+                     * @since     7.1.0
+                     * @apioption plotOptions.packedbubble.dataLabels.attributes
+                     */
+                    /**
+                     * Enable or disable `textPath` option for link's or marker's
+                     * data labels.
+                     *
+                     * @since 7.1.0
+                     */
+                    enabled: true
+                },
+                /**
+                 * Options for a _node_ label text which should follow marker's
+                 * shape.
+                 *
+                 * **Note:** Only SVG-based renderer supports this option.
+                 *
+                 * @extends   plotOptions.series.dataLabels.textPath
+                 * @apioption plotOptions.packedbubble.dataLabels.textPath
+                 */
+                padding: 0,
+                style: {
+                    transition: 'opacity 2000ms'
                 }
             },
-            euler: {
+            /**
+             * Options for layout algorithm when simulation is enabled. Inside there
+             * are options to change the speed, padding, initial bubbles positions
+             * and more.
+             *
+             * @extends   plotOptions.networkgraph.layoutAlgorithm
+             * @excluding approximation, attractiveForce, repulsiveForce, theta
+             * @since     7.1.0
+             *
+             * @private
+             */
+            layoutAlgorithm: {
                 /**
-                 * Attractive force funtion. Can be replaced by API's
-                 * `layoutAlgorithm.attractiveForce`
+                 * Initial layout algorithm for positioning nodes. Can be one of
+                 * the built-in options ("circle", "random") or a function where
+                 * positions should be set on each node (`this.nodes`) as
+                 * `node.plotX` and `node.plotY`.
                  *
-                 * Other forces that can be used:
+                 * @sample highcharts/series-networkgraph/initial-positions/
+                 *         Initial positions with callback
                  *
-                 * basic, not recommended:
-                 *    `function (d, k) { return d / k }`
-                 *
-                 * @private
-                 * @param {number} d current distance between two nodes
-                 * @param {number} k expected distance between two nodes
-                 * @return {number} force
+                 * @type {"circle"|"random"|Function}
                  */
-                attractiveForceFunction: function (d, k) {
-                    return d * d / k;
-                },
+                initialPositions: 'circle',
                 /**
-                 * Repulsive force funtion. Can be replaced by API's
-                 * `layoutAlgorithm.repulsiveForce`.
+                 * @sample highcharts/series-packedbubble/initial-radius/
+                 *         Initial radius set to 200
                  *
-                 * Other forces that can be used:
-                 *
-                 * basic, not recommended:
-                 *    `function (d, k) { return k / d }`
-                 *
-                 * standard:
-                 *    `function (d, k) { return k * k / d }`
-                 *
-                 * grid-variant:
-                 *    `function (d, k) { return k * k / d * (2 * k - d > 0 ? 1 : 0) }`
-                 *
-                 * @private
-                 * @param {number} d current distance between two nodes
-                 * @param {number} k expected distance between two nodes
-                 * @return {number} force
+                 * @extends   plotOptions.networkgraph.layoutAlgorithm.initialPositionRadius
+                 * @excluding states
                  */
-                repulsiveForceFunction: function (d, k) {
-                    return k * k / d;
-                },
+                initialPositionRadius: 20,
                 /**
-                 * Barycenter force. Calculate and applys barycenter forces on the
-                 * nodes. Making them closer to the center of their barycenter point.
-                 *
-                 * In Euler integration, force is stored in a node, not changing it's
-                 * position. Later, in `integrate()` forces are applied on nodes.
-                 *
-                 * @private
-                     */
-                barycenter: function () {
-                    var gravitationalConstant = this.options.gravitationalConstant,
-                        xFactor = this.barycenter.xFactor,
-                        yFactor = this.barycenter.yFactor;
-                    this.nodes.forEach(function (node) {
-                        if (!node.fixedPosition) {
-                            var degree = node.getDegree(),
-                                phi = degree * (1 + degree / 2);
-                            node.dispX += ((xFactor - node.plotX) *
-                                gravitationalConstant *
-                                phi / node.degree);
-                            node.dispY += ((yFactor - node.plotY) *
-                                gravitationalConstant *
-                                phi / node.degree);
-                        }
-                    });
-                },
+                 * The distance between two bubbles, when the algorithm starts to
+                 * treat two bubbles as overlapping. The `bubblePadding` is also the
+                 * expected distance between all the bubbles on simulation end.
+                 */
+                bubblePadding: 5,
                 /**
-                 * Repulsive force.
-                 *
-                 * @private
-                 * @param {Highcharts.Point} node
-                 *        Node that should be translated by force.
-                 * @param {number} force
-                 *        Force calcualated in `repulsiveForceFunction`
-                 * @param {Highcharts.PositionObject} distanceXY
-                 *        Distance between two nodes e.g. `{x, y}`
-                     */
-                repulsive: function (node, force, distanceXY, distanceR) {
-                    node.dispX +=
-                        (distanceXY.x / distanceR) * force / node.degree;
-                    node.dispY +=
-                        (distanceXY.y / distanceR) * force / node.degree;
-                },
+                 * Whether bubbles should interact with their parentNode to keep
+                 * them inside.
+                 */
+                parentNodeLimit: false,
                 /**
-                 * Attractive force.
+                 * Whether series should interact with each other or not. When
+                 * `parentNodeLimit` is set to true, thi option should be set to
+                 * false to avoid sticking points in wrong series parentNode.
+                 */
+                seriesInteraction: true,
+                /**
+                 * In case of split series, this option allows user to drag and
+                 * drop points between series, for changing point related series.
                  *
-                 * In Euler integration, force is stored in a node, not changing it's
-                 * position. Later, in `integrate()` forces are applied on nodes.
+                 * @sample highcharts/series-packedbubble/packed-dashboard/
+                 *         Example of drag'n drop bubbles for bubble kanban
+                 */
+                dragBetweenSeries: false,
+                /**
+                 * Layout algorithm options for parent nodes.
                  *
-                 * @private
-                 * @param {Highcharts.Point} link
-                 *        Link that connects two nodes
-                 * @param {number} force
-                 *        Force calcualated in `repulsiveForceFunction`
-                 * @param {Highcharts.PositionObject} distanceXY
-                 *        Distance between two nodes e.g. `{x, y}`
-                 * @param {number} distanceR
+                 * @extends   plotOptions.networkgraph.layoutAlgorithm
+                 * @excluding approximation, attractiveForce, enableSimulation,
+                 *            repulsiveForce, theta
+                 */
+                parentNodeOptions: {
+                    maxIterations: 400,
+                    gravitationalConstant: 0.03,
+                    maxSpeed: 50,
+                    initialPositionRadius: 100,
+                    seriesInteraction: true,
+                    /**
+                     * Styling options for parentNodes markers. Similar to
+                     * line.marker options.
+                     *
+                     * @sample highcharts/series-packedbubble/parentnode-style/
+                     *         Bubble size
+                     *
+                     * @extends   plotOptions.series.marker
+                     * @excluding states
                      */
-                attractive: function (link, force, distanceXY, distanceR) {
-                    var massFactor = link.getMass(),
-                        translatedX = (distanceXY.x / distanceR) * force,
-                        translatedY = (distanceXY.y / distanceR) * force;
-                    if (!link.fromNode.fixedPosition) {
-                        link.fromNode.dispX -=
-                            translatedX * massFactor.fromNode / link.fromNode.degree;
-                        link.fromNode.dispY -=
-                            translatedY * massFactor.fromNode / link.fromNode.degree;
-                    }
-                    if (!link.toNode.fixedPosition) {
-                        link.toNode.dispX +=
-                            translatedX * massFactor.toNode / link.toNode.degree;
-                        link.toNode.dispY +=
-                            translatedY * massFactor.toNode / link.toNode.degree;
+                    marker: {
+                        fillColor: null,
+                        fillOpacity: 1,
+                        lineWidth: null,
+                        lineColor: null,
+                        symbol: 'circle'
                     }
                 },
+                enableSimulation: true,
                 /**
-                 * Integration method.
-                 *
-                 * In Euler integration, force were stored in a node, not changing it's
-                 * position. Now, in the integrator method, we apply changes.
-                 *
-                 * Euler:
-                 *
-                 * Basic form: `x(n+1) = x(n) + v(n)`
-                 *
-                 * With Rengoild-Fruchterman we get:
-                 * `x(n+1) = x(n) + v(n) / length(v(n)) * min(v(n), temperature(n))`
-                 * where:
-                 * - `x(n+1)`: next position
-                 * - `x(n)`: current position
-                 * - `v(n)`: velocity (comes from net force)
-                 * - `temperature(n)`: current temperature
-                 *
-                 * Known issues:
-                 * Oscillations when force vector has the same magnitude but opposite
-                 * direction in the next step. Potentially solved by decreasing force by
-                 * `v * (1 / node.degree)`
-                 *
-                 * Note:
-                 * Actually `min(v(n), temperature(n))` replaces simulated annealing.
-                 *
-                 * @private
-                 * @param {Highcharts.NetworkgraphLayout} layout
-                 *        Layout object
-                 * @param {Highcharts.Point} node
-                 *        Node that should be translated
-                     */
-                integrate: function (layout, node) {
-                    var distanceR;
-                    node.dispX +=
-                        node.dispX * layout.options.friction;
-                    node.dispY +=
-                        node.dispY * layout.options.friction;
-                    distanceR = node.temperature = layout.vectorLength({
-                        x: node.dispX,
-                        y: node.dispY
-                    });
-                    if (distanceR !== 0) {
-                        node.plotX += (node.dispX / distanceR *
-                            Math.min(Math.abs(node.dispX), layout.temperature));
-                        node.plotY += (node.dispY / distanceR *
-                            Math.min(Math.abs(node.dispY), layout.temperature));
-                    }
-                },
-                /**
-                 * Estiamte the best possible distance between two nodes, making graph
-                 * readable.
-                 * @private
+                 * Type of the algorithm used when positioning bubbles.
+                 * @ignore-option
                  */
-                getK: function (layout) {
-                    return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.3);
-                }
+                type: 'packedbubble',
+                /**
+                 * Integration type. Integration determines how forces are applied
+                 * on particles. The `packedbubble` integration is based on
+                 * the networkgraph `verlet` integration, where the new position
+                 * is based on a previous position without velocity:
+                 * `newPosition += previousPosition - newPosition`.
+                 *
+                 * @sample highcharts/series-networkgraph/forces/
+                 *
+                 * @ignore-option
+                 */
+                integration: 'packedbubble',
+                maxIterations: 1000,
+                /**
+                 * Whether to split series into individual groups or to mix all
+                 * series together.
+                 *
+                 * @since   7.1.0
+                 * @default false
+                 */
+                splitSeries: false,
+                /**
+                 * Max speed that node can get in one iteration. In terms of
+                 * simulation, it's a maximum translation (in pixels) that a node
+                 * can move (in both, x and y, dimensions). While `friction` is
+                 * applied on all nodes, max speed is applied only for nodes that
+                 * move very fast, for example small or disconnected ones.
+                 *
+                 * @see [layoutAlgorithm.integration](#series.networkgraph.layoutAlgorithm.integration)
+                 *
+                 * @see [layoutAlgorithm.friction](#series.networkgraph.layoutAlgorithm.friction)
+                 */
+                maxSpeed: 5,
+                gravitationalConstant: 0.01,
+                friction: -0.981
             }
         };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A `packedbubble` series. If the [type](#series.packedbubble.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @type      {Object}
+         * @extends   series,plotOptions.packedbubble
+         * @excluding cropThreshold, dataParser, dataSorting, dataURL, dragDrop, stack,
+         *            boostThreshold, boostBlending
+         * @product   highcharts
+         * @requires  highcharts-more
+         * @apioption series.packedbubble
+         */
+        /**
+         * An array of data points for the series. For the `packedbubble` series type,
+         * points can be given in the following ways:
+         *
+         * 1.  An array of `values`.
+         *
+         *  ```js
+         *     data: [5, 1, 20]
+         *  ```
+         *
+         * 2.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data points
+         * exceeds the series' [turboThreshold](#series.packedbubble.turboThreshold),
+         * this option is not available.
+         *
+         *  ```js
+         *     data: [{
+         *         value: 1,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         value: 5,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         *
+         * @type      {Array<Object|Array>}
+         * @extends   series.line.data
+         * @excluding marker, x, y
+         * @sample    {highcharts} highcharts/series/data-array-of-objects/
+         *            Config objects
+         * @product   highcharts
+         * @apioption series.packedbubble.data
+         */
+        /**
+         * @type      {Highcharts.SeriesPackedBubbleDataLabelsOptionsObject|Array<Highcharts.SeriesPackedBubbleDataLabelsOptionsObject>}
+         * @product   highcharts
+         * @apioption series.packedbubble.data.dataLabels
+         */
+        /**
+         * @excluding enabled,enabledThreshold,height,radius,width
+         * @product   highcharts
+         * @apioption series.packedbubble.marker
+         */
+        ''; // adds doclets above to transpiled file
 
+        return PackedBubbleSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Networkgraph/QuadTree.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/VerletIntegration.js', [], function () {
         /* *
          *
          *  Networkgraph series
@@ -6428,8 +6652,509 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Attractive force.
+         *
+         * In Verlet integration, force is applied on a node immidatelly to it's
+         * `plotX` and `plotY` position.
+         *
+         * @private
+         * @param {Highcharts.Point} link
+         *        Link that connects two nodes
+         * @param {number} force
+         *        Force calcualated in `repulsiveForceFunction`
+         * @param {Highcharts.PositionObject} distance
+         *        Distance between two nodes e.g. `{x, y}`
+         */
+        function attractive(link, force, distanceXY) {
+            var massFactor = link.getMass(),
+                translatedX = -distanceXY.x * force * this.diffTemperature,
+                translatedY = -distanceXY.y * force * this.diffTemperature;
+            if (!link.fromNode.fixedPosition) {
+                link.fromNode.plotX -=
+                    translatedX * massFactor.fromNode / link.fromNode.degree;
+                link.fromNode.plotY -=
+                    translatedY * massFactor.fromNode / link.fromNode.degree;
+            }
+            if (!link.toNode.fixedPosition) {
+                link.toNode.plotX +=
+                    translatedX * massFactor.toNode / link.toNode.degree;
+                link.toNode.plotY +=
+                    translatedY * massFactor.toNode / link.toNode.degree;
+            }
+        }
+        /**
+         * Attractive force funtion. Can be replaced by API's
+         * `layoutAlgorithm.attractiveForce`
+         *
+         * @private
+         * @param {number} d current distance between two nodes
+         * @param {number} k expected distance between two nodes
+         * @return {number} force
+         */
+        function attractiveForceFunction(d, k) {
+            // Used in API:
+            return (k - d) / d;
+        }
+        /**
+         * Barycenter force. Calculate and applys barycenter forces on the
+         * nodes. Making them closer to the center of their barycenter point.
+         *
+         * In Verlet integration, force is applied on a node immidatelly to it's
+         * `plotX` and `plotY` position.
+         *
+         * @private
+         */
+        function barycenter() {
+            var gravitationalConstant = this.options.gravitationalConstant,
+                xFactor = this.barycenter.xFactor,
+                yFactor = this.barycenter.yFactor;
+            // To consider:
+            xFactor = (xFactor - (this.box.left + this.box.width) / 2) *
+                gravitationalConstant;
+            yFactor = (yFactor - (this.box.top + this.box.height) / 2) *
+                gravitationalConstant;
+            this.nodes.forEach(function (node) {
+                if (!node.fixedPosition) {
+                    node.plotX -=
+                        xFactor / node.mass / node.degree;
+                    node.plotY -=
+                        yFactor / node.mass / node.degree;
+                }
+            });
+        }
+        /**
+         * Estiamte the best possible distance between two nodes, making graph
+         * readable.
+         * @private
+         */
+        function getK(layout) {
+            return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.5);
+        }
+        /**
+         * Integration method.
+         *
+         * In Verlet integration, forces are applied on node immidatelly to it's
+         * `plotX` and `plotY` position.
+         *
+         * Verlet without velocity:
+         *
+         *    x(n+1) = 2 * x(n) - x(n-1) + A(T) * deltaT ^ 2
+         *
+         * where:
+         *     - x(n+1) - new position
+         *     - x(n) - current position
+         *     - x(n-1) - previous position
+         *
+         * Assuming A(t) = 0 (no acceleration) and (deltaT = 1) we get:
+         *
+         *     x(n+1) = x(n) + (x(n) - x(n-1))
+         *
+         * where:
+         *     - (x(n) - x(n-1)) - position change
+         *
+         * TO DO:
+         * Consider Verlet with velocity to support additional
+         * forces. Or even Time-Corrected Verlet by Jonathan
+         * "lonesock" Dummer
+         *
+         * @private
+         * @param {Highcharts.NetworkgraphLayout} layout layout object
+         * @param {Highcharts.Point} node node that should be translated
+         */
+        function integrate(layout, node) {
+            var friction = -layout.options.friction,
+                maxSpeed = layout.options.maxSpeed,
+                prevX = node.prevX,
+                prevY = node.prevY, 
+                // Apply friciton:
+                diffX = ((node.plotX + node.dispX -
+                    prevX) * friction),
+                diffY = ((node.plotY + node.dispY -
+                    prevY) * friction),
+                abs = Math.abs,
+                signX = abs(diffX) / (diffX || 1), // need to deal with 0
+                signY = abs(diffY) / (diffY || 1);
+            // Apply max speed:
+            diffX = signX * Math.min(maxSpeed, Math.abs(diffX));
+            diffY = signY * Math.min(maxSpeed, Math.abs(diffY));
+            // Store for the next iteration:
+            node.prevX = node.plotX + node.dispX;
+            node.prevY = node.plotY + node.dispY;
+            // Update positions:
+            node.plotX += diffX;
+            node.plotY += diffY;
+            node.temperature = layout.vectorLength({
+                x: diffX,
+                y: diffY
+            });
+        }
+        /**
+         * Repulsive force.
+         *
+         * In Verlet integration, force is applied on a node immidatelly to it's
+         * `plotX` and `plotY` position.
+         *
+         * @private
+         * @param {Highcharts.Point} node
+         *        Node that should be translated by force.
+         * @param {number} force
+         *        Force calcualated in `repulsiveForceFunction`
+         * @param {Highcharts.PositionObject} distance
+         *        Distance between two nodes e.g. `{x, y}`
+         */
+        function repulsive(node, force, distanceXY) {
+            var factor = force * this.diffTemperature / node.mass / node.degree;
+            if (!node.fixedPosition) {
+                node.plotX += distanceXY.x * factor;
+                node.plotY += distanceXY.y * factor;
+            }
+        }
+        /**
+         * Repulsive force funtion. Can be replaced by API's
+         * `layoutAlgorithm.repulsiveForce`
+         *
+         * @private
+         * @param {number} d current distance between two nodes
+         * @param {number} k expected distance between two nodes
+         * @return {number} force
+         */
+        function repulsiveForceFunction(d, k) {
+            // Used in API:
+            return (k - d) / d * (k > d ? 1 : 0); // Force only for close nodes
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var VerletIntegration = {
+                attractive: attractive,
+                attractiveForceFunction: attractiveForceFunction,
+                barycenter: barycenter,
+                getK: getK,
+                integrate: integrate,
+                repulsive: repulsive,
+                repulsiveForceFunction: repulsiveForceFunction
+            };
+
+        return VerletIntegration;
+    });
+    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleIntegration.js', [_modules['Core/Globals.js'], _modules['Series/Networkgraph/VerletIntegration.js']], function (H, VerletIntegration) {
+        /* *
+         *
+         *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var noop = H.noop;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function barycenter() {
+            var layout = this,
+                gravitationalConstant = layout.options.gravitationalConstant,
+                box = layout.box,
+                nodes = layout.nodes;
+            var centerX,
+                centerY;
+            for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+                var node = nodes_1[_i];
+                if (layout.options.splitSeries && !node.isParentNode) {
+                    centerX = node.series.parentNode.plotX;
+                    centerY = node.series.parentNode.plotY;
+                }
+                else {
+                    centerX = box.width / 2;
+                    centerY = box.height / 2;
+                }
+                if (!node.fixedPosition) {
+                    node.plotX -=
+                        (node.plotX - centerX) *
+                            gravitationalConstant /
+                            (node.mass * Math.sqrt(nodes.length));
+                    node.plotY -=
+                        (node.plotY - centerY) *
+                            gravitationalConstant /
+                            (node.mass * Math.sqrt(nodes.length));
+                }
+            }
+        }
+        /**
+         * @private
+         */
+        function repulsive(node, force, distanceXY, repNode) {
+            var factor = (force * this.diffTemperature / node.mass /
+                    node.degree),
+                x = distanceXY.x * factor,
+                y = distanceXY.y * factor;
+            if (!node.fixedPosition) {
+                node.plotX += x;
+                node.plotY += y;
+            }
+            if (!repNode.fixedPosition) {
+                repNode.plotX -= x;
+                repNode.plotY -= y;
+            }
+        }
+        /**
+         * @private
+         */
+        function repulsiveForceFunction(d, k, node, repNode) {
+            return Math.min(d, (node.marker.radius +
+                repNode.marker.radius) / 2);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var PackedBubbleIntegration = {
+                barycenter: barycenter,
+                getK: noop,
+                integrate: VerletIntegration.integrate,
+                repulsive: repulsive,
+                repulsiveForceFunction: repulsiveForceFunction
+            };
+
+        return PackedBubbleIntegration;
+    });
+    _registerModule(_modules, 'Series/Networkgraph/EulerIntegration.js', [], function () {
+        /* *
+         *
+         *  Networkgraph series
+         *
+         *  (c) 2010-2021 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Attractive force.
+         *
+         * In Euler integration, force is stored in a node, not changing it's
+         * position. Later, in `integrate()` forces are applied on nodes.
+         *
+         * @private
+         * @param {Highcharts.Point} link
+         *        Link that connects two nodes
+         * @param {number} force
+         *        Force calcualated in `repulsiveForceFunction`
+         * @param {Highcharts.PositionObject} distanceXY
+         *        Distance between two nodes e.g. `{x, y}`
+         * @param {number} distanceR
+             */
+        function attractive(link, force, distanceXY, distanceR) {
+            var massFactor = link.getMass(),
+                translatedX = (distanceXY.x / distanceR) * force,
+                translatedY = (distanceXY.y / distanceR) * force;
+            if (!link.fromNode.fixedPosition) {
+                link.fromNode.dispX -=
+                    translatedX * massFactor.fromNode / link.fromNode.degree;
+                link.fromNode.dispY -=
+                    translatedY * massFactor.fromNode / link.fromNode.degree;
+            }
+            if (!link.toNode.fixedPosition) {
+                link.toNode.dispX +=
+                    translatedX * massFactor.toNode / link.toNode.degree;
+                link.toNode.dispY +=
+                    translatedY * massFactor.toNode / link.toNode.degree;
+            }
+        }
+        /**
+         * Attractive force funtion. Can be replaced by API's
+         * `layoutAlgorithm.attractiveForce`
+         *
+         * Other forces that can be used:
+         *
+         * basic, not recommended:
+         *    `function (d, k) { return d / k }`
+         *
+         * @private
+         * @param {number} d current distance between two nodes
+         * @param {number} k expected distance between two nodes
+         * @return {number} force
+         */
+        function attractiveForceFunction(d, k) {
+            return d * d / k;
+        }
+        /**
+         * Barycenter force. Calculate and applys barycenter forces on the
+         * nodes. Making them closer to the center of their barycenter point.
+         *
+         * In Euler integration, force is stored in a node, not changing it's
+         * position. Later, in `integrate()` forces are applied on nodes.
+         *
+         * @private
+         */
+        function barycenter() {
+            var gravitationalConstant = this.options.gravitationalConstant,
+                xFactor = this.barycenter.xFactor,
+                yFactor = this.barycenter.yFactor;
+            this.nodes.forEach(function (node) {
+                if (!node.fixedPosition) {
+                    var degree = node.getDegree(),
+                        phi = degree * (1 + degree / 2);
+                    node.dispX += ((xFactor - node.plotX) *
+                        gravitationalConstant *
+                        phi / node.degree);
+                    node.dispY += ((yFactor - node.plotY) *
+                        gravitationalConstant *
+                        phi / node.degree);
+                }
+            });
+        }
+        /**
+         * Estiamte the best possible distance between two nodes, making graph
+         * readable.
+         * @private
+         */
+        function getK(layout) {
+            return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.3);
+        }
+        /**
+         * Integration method.
+         *
+         * In Euler integration, force were stored in a node, not changing it's
+         * position. Now, in the integrator method, we apply changes.
+         *
+         * Euler:
+         *
+         * Basic form: `x(n+1) = x(n) + v(n)`
+         *
+         * With Rengoild-Fruchterman we get:
+         * `x(n+1) = x(n) + v(n) / length(v(n)) * min(v(n), temperature(n))`
+         * where:
+         * - `x(n+1)`: next position
+         * - `x(n)`: current position
+         * - `v(n)`: velocity (comes from net force)
+         * - `temperature(n)`: current temperature
+         *
+         * Known issues:
+         * Oscillations when force vector has the same magnitude but opposite
+         * direction in the next step. Potentially solved by decreasing force by
+         * `v * (1 / node.degree)`
+         *
+         * Note:
+         * Actually `min(v(n), temperature(n))` replaces simulated annealing.
+         *
+         * @private
+         * @param {Highcharts.NetworkgraphLayout} layout
+         *        Layout object
+         * @param {Highcharts.Point} node
+         *        Node that should be translated
+         */
+        function integrate(layout, node) {
+            var distanceR;
+            node.dispX +=
+                node.dispX * layout.options.friction;
+            node.dispY +=
+                node.dispY * layout.options.friction;
+            distanceR = node.temperature = layout.vectorLength({
+                x: node.dispX,
+                y: node.dispY
+            });
+            if (distanceR !== 0) {
+                node.plotX += (node.dispX / distanceR *
+                    Math.min(Math.abs(node.dispX), layout.temperature));
+                node.plotY += (node.dispY / distanceR *
+                    Math.min(Math.abs(node.dispY), layout.temperature));
+            }
+        }
+        /**
+         * Repulsive force.
+         *
+         * @private
+         * @param {Highcharts.Point} node
+         *        Node that should be translated by force.
+         * @param {number} force
+         *        Force calcualated in `repulsiveForceFunction`
+         * @param {Highcharts.PositionObject} distanceXY
+         *        Distance between two nodes e.g. `{x, y}`
+         */
+        function repulsive(node, force, distanceXY, distanceR) {
+            node.dispX +=
+                (distanceXY.x / distanceR) * force / node.degree;
+            node.dispY +=
+                (distanceXY.y / distanceR) * force / node.degree;
+        }
+        /**
+         * Repulsive force funtion. Can be replaced by API's
+         * `layoutAlgorithm.repulsiveForce`.
+         *
+         * Other forces that can be used:
+         *
+         * basic, not recommended:
+         *    `function (d, k) { return k / d }`
+         *
+         * standard:
+         *    `function (d, k) { return k * k / d }`
+         *
+         * grid-variant:
+         *    `function (d, k) { return k * k / d * (2 * k - d > 0 ? 1 : 0) }`
+         *
+         * @private
+         * @param {number} d current distance between two nodes
+         * @param {number} k expected distance between two nodes
+         * @return {number} force
+         */
+        function repulsiveForceFunction(d, k) {
+            return k * k / d;
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var EulerIntegration = {
+                attractive: attractive,
+                attractiveForceFunction: attractiveForceFunction,
+                barycenter: barycenter,
+                getK: getK,
+                integrate: integrate,
+                repulsive: repulsive,
+                repulsiveForceFunction: repulsiveForceFunction
+            };
+
+        return EulerIntegration;
+    });
+    _registerModule(_modules, 'Series/Networkgraph/QuadTreeNode.js', [], function () {
+        /* *
+         *
+         *  Networkgraph series
+         *
+         *  (c) 2010-2021 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The QuadTree node class. Used in Networkgraph chart as a base for Barnes-Hut
          * approximation.
@@ -6438,9 +7163,56 @@
          * @class
          * @name Highcharts.QuadTreeNode
          *
-         * @param {Highcharts.Dictionary<number>} box Available space for the node
+         * @param {Highcharts.Dictionary<number>} box
+         *        Available space for the node
          */
-        var QuadTreeNode = H.QuadTreeNode = function (box) {
+        var QuadTreeNode = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
+                function QuadTreeNode(box) {
+                    /* *
+                     *
+                     *  Properties
+                     *
+                     * */
+                    /**
+                     * Read only. If QuadTreeNode is an external node, Point is stored in
+                     * `this.body`.
+                     *
+                     * @name Highcharts.QuadTreeNode#body
+                     * @type {boolean|Highcharts.Point}
+                     */
+                    this.body = false;
+                /**
+                 * Read only. Internal nodes when created are empty to reserve the
+                 * space. If Point is added to this QuadTreeNode, QuadTreeNode is no
+                 * longer empty.
+                 *
+                 * @name Highcharts.QuadTreeNode#isEmpty
+                 * @type {boolean}
+                 */
+                this.isEmpty = false;
+                /**
+                 * Read only. Flag to determine if QuadTreeNode is internal (and has
+                 * subnodes with mass and central position) or external (bound to
+                 * Point).
+                 *
+                 * @name Highcharts.QuadTreeNode#isInternal
+                 * @type {boolean}
+                 */
+                this.isInternal = false;
+                /**
+                 * Read only. Array of subnodes. Empty if QuadTreeNode has just one
+                 * Point. When added another Point to this QuadTreeNode, array is
+                 * filled with four subnodes.
+                 *
+                 * @name Highcharts.QuadTreeNode#nodes
+                 * @type {Array<Highcharts.QuadTreeNode>}
+                 */
+                this.nodes = [];
                 /**
                  * Read only. The available space for node.
                  *
@@ -6448,50 +7220,99 @@
                  * @type {Highcharts.Dictionary<number>}
                  */
                 this.box = box;
-            /**
-             * Read only. The minium of width and height values.
+                /**
+                 * Read only. The minium of width and height values.
+                 *
+                 * @name Highcharts.QuadTreeNode#boxSize
+                 * @type {number}
+                 */
+                this.boxSize = Math.min(box.width, box.height);
+            }
+            /* *
              *
-             * @name Highcharts.QuadTreeNode#boxSize
-             * @type {number}
-             */
-            this.boxSize = Math.min(box.width, box.height);
-            /**
-             * Read only. Array of subnodes. Empty if QuadTreeNode has just one Point.
-             * When added another Point to this QuadTreeNode, array is filled with four
-             * subnodes.
+             *  Functions
              *
-             * @name Highcharts.QuadTreeNode#nodes
-             * @type {Array<Highcharts.QuadTreeNode>}
-             */
-            this.nodes = [];
+             * */
             /**
-             * Read only. Flag to determine if QuadTreeNode is internal (and has
-             * subnodes with mass and central position) or external (bound to Point).
+             * When inserting another node into the box, that already hove one node,
+             * divide the available space into another four quadrants.
              *
-             * @name Highcharts.QuadTreeNode#isInternal
-             * @type {boolean}
+             * Indexes of quadrants are:
+             * ```
+             * -------------               -------------
+             * |           |               |     |     |
+             * |           |               |  0  |  1  |
+             * |           |   divide()    |     |     |
+             * |     1     | ----------->  -------------
+             * |           |               |     |     |
+             * |           |               |  3  |  2  |
+             * |           |               |     |     |
+             * -------------               -------------
+             * ```
              */
-            this.isInternal = false;
+            QuadTreeNode.prototype.divideBox = function () {
+                var halfWidth = this.box.width / 2,
+                    halfHeight = this.box.height / 2;
+                // Top left
+                this.nodes[0] = new QuadTreeNode({
+                    left: this.box.left,
+                    top: this.box.top,
+                    width: halfWidth,
+                    height: halfHeight
+                });
+                // Top right
+                this.nodes[1] = new QuadTreeNode({
+                    left: this.box.left + halfWidth,
+                    top: this.box.top,
+                    width: halfWidth,
+                    height: halfHeight
+                });
+                // Bottom right
+                this.nodes[2] = new QuadTreeNode({
+                    left: this.box.left + halfWidth,
+                    top: this.box.top + halfHeight,
+                    width: halfWidth,
+                    height: halfHeight
+                });
+                // Bottom left
+                this.nodes[3] = new QuadTreeNode({
+                    left: this.box.left,
+                    top: this.box.top + halfHeight,
+                    width: halfWidth,
+                    height: halfHeight
+                });
+            };
             /**
-             * Read only. If QuadTreeNode is an external node, Point is stored in
-             * `this.body`.
-             *
-             * @name Highcharts.QuadTreeNode#body
-             * @type {boolean|Highcharts.Point}
+             * Determine which of the quadrants should be used when placing node in
+             * the QuadTree. Returned index is always in range `< 0 , 3 >`.
+             * @private
              */
-            this.body = false;
-            /**
-             * Read only. Internal nodes when created are empty to reserve the space. If
-             * Point is added to this QuadTreeNode, QuadTreeNode is no longer empty.
-             *
-             * @name Highcharts.QuadTreeNode#isEmpty
-             * @type {boolean}
-             */
-            this.isEmpty = true;
-        };
-        extend(QuadTreeNode.prototype, 
-        /** @lends Highcharts.QuadTreeNode.prototype */
-        {
+            QuadTreeNode.prototype.getBoxPosition = function (point) {
+                var left = point.plotX < this.box.left + this.box.width / 2,
+                    top = point.plotY < this.box.top + this.box.height / 2;
+                var index;
+                if (left) {
+                    if (top) {
+                        // Top left
+                        index = 0;
+                    }
+                    else {
+                        // Bottom left
+                        index = 3;
+                    }
+                }
+                else {
+                    if (top) {
+                        // Top right
+                        index = 1;
+                    }
+                    else {
+                        // Bottom right
+                        index = 2;
+                    }
+                }
+                return index;
+            };
             /**
              * Insert recursively point(node) into the QuadTree. If the given
              * quadrant is already occupied, divide it into smaller quadrants.
@@ -6501,7 +7322,7 @@
              * @param {number} depth
              *        Max depth of the QuadTree
              */
-            insert: function (point, depth) {
+            QuadTreeNode.prototype.insert = function (point, depth) {
                 var newQuadTreeNode;
                 if (this.isInternal) {
                     // Internal node:
@@ -6539,8 +7360,8 @@
                             // position, but that could result in different
                             // rendered chart in exporting.
                             newQuadTreeNode = new QuadTreeNode({
-                                top: point.plotX,
-                                left: point.plotY,
+                                top: point.plotX || NaN,
+                                left: point.plotY || NaN,
                                 // Width/height below 1px
                                 width: 0.1,
                                 height: 0.1
@@ -6551,26 +7372,25 @@
                         }
                     }
                 }
-            },
+            };
             /**
              * Each quad node requires it's mass and center position. That mass and
              * position is used to imitate real node in the layout by approximation.
              */
-            updateMassAndCenter: function () {
+            QuadTreeNode.prototype.updateMassAndCenter = function () {
                 var mass = 0,
                     plotX = 0,
                     plotY = 0;
                 if (this.isInternal) {
                     // Calcualte weightened mass of the quad node:
-                    this.nodes.forEach(function (pointMass) {
+                    for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
+                        var pointMass = _a[_i];
                         if (!pointMass.isEmpty) {
                             mass += pointMass.mass;
-                            plotX +=
-                                pointMass.plotX * pointMass.mass;
-                            plotY +=
-                                pointMass.plotY * pointMass.mass;
+                            plotX += pointMass.plotX * pointMass.mass;
+                            plotY += pointMass.plotY * pointMass.mass;
                         }
-                    });
+                    }
                     plotX /= mass;
                     plotY /= mass;
                 }
@@ -6584,88 +7404,34 @@
                 this.mass = mass;
                 this.plotX = plotX;
                 this.plotY = plotY;
-            },
-            /**
-             * When inserting another node into the box, that already hove one node,
-             * divide the available space into another four quadrants.
-             *
-             * Indexes of quadrants are:
-             * ```
-             * -------------               -------------
-             * |           |               |     |     |
-             * |           |               |  0  |  1  |
-             * |           |   divide()    |     |     |
-             * |     1     | ----------->  -------------
-             * |           |               |     |     |
-             * |           |               |  3  |  2  |
-             * |           |               |     |     |
-             * -------------               -------------
-             * ```
-             */
-            divideBox: function () {
-                var halfWidth = this.box.width / 2,
-                    halfHeight = this.box.height / 2;
-                // Top left
-                this.nodes[0] = new QuadTreeNode({
-                    left: this.box.left,
-                    top: this.box.top,
-                    width: halfWidth,
-                    height: halfHeight
-                });
-                // Top right
-                this.nodes[1] = new QuadTreeNode({
-                    left: this.box.left + halfWidth,
-                    top: this.box.top,
-                    width: halfWidth,
-                    height: halfHeight
-                });
-                // Bottom right
-                this.nodes[2] = new QuadTreeNode({
-                    left: this.box.left + halfWidth,
-                    top: this.box.top + halfHeight,
-                    width: halfWidth,
-                    height: halfHeight
-                });
-                // Bottom left
-                this.nodes[3] = new QuadTreeNode({
-                    left: this.box.left,
-                    top: this.box.top + halfHeight,
-                    width: halfWidth,
-                    height: halfHeight
-                });
-            },
-            /**
-             * Determine which of the quadrants should be used when placing node in
-             * the QuadTree. Returned index is always in range `< 0 , 3 >`.
-             * @private
-             */
-            getBoxPosition: function (point) {
-                var left = point.plotX < this.box.left + this.box.width / 2,
-                    top = point.plotY < this.box.top + this.box.height / 2,
-                    index;
-                if (left) {
-                    if (top) {
-                        // Top left
-                        index = 0;
-                    }
-                    else {
-                        // Bottom left
-                        index = 3;
-                    }
-                }
-                else {
-                    if (top) {
-                        // Top right
-                        index = 1;
-                    }
-                    else {
-                        // Bottom right
-                        index = 2;
-                    }
-                }
-                return index;
-            }
-        });
+            };
+            return QuadTreeNode;
+        }());
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return QuadTreeNode;
+    });
+    _registerModule(_modules, 'Series/Networkgraph/QuadTree.js', [_modules['Series/Networkgraph/QuadTreeNode.js']], function (QuadTreeNode) {
+        /* *
+         *
+         *  Networkgraph series
+         *
+         *  (c) 2010-2021 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The QuadTree class. Used in Networkgraph chart as a base for Barnes-Hut
          * approximation.
@@ -6674,41 +7440,60 @@
          * @class
          * @name Highcharts.QuadTree
          *
-         * @param {number} x left position of the plotting area
-         * @param {number} y top position of the plotting area
-         * @param {number} width width of the plotting area
-         * @param {number} height height of the plotting area
+         * @param {number} x
+         *        Left position of the plotting area
+         * @param {number} y
+         *        Top position of the plotting area
+         * @param {number} width
+         *        Width of the plotting area
+         * @param {number} height
+         *        Height of the plotting area
          */
-        var QuadTree = H.QuadTree = function (x,
-            y,
-            width,
-            height) {
-                // Boundary rectangle:
-                this.box = {
-                    left: x,
-                    top: y,
-                    width: width,
-                    height: height
-                };
-            this.maxDepth = 25;
-            this.root = new QuadTreeNode(this.box, '0');
-            this.root.isInternal = true;
-            this.root.isRoot = true;
-            this.root.divideBox();
-        };
-        extend(QuadTree.prototype, 
-        /** @lends Highcharts.QuadTree.prototype */
-        {
+        var QuadTree = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
+                function QuadTree(x, y, width, height) {
+                    // Boundary rectangle:
+                    this.box = {
+                        left: x,
+                        top: y,
+                        width: width,
+                        height: height
+                    };
+                this.maxDepth = 25;
+                this.root = new QuadTreeNode(this.box);
+                this.root.isInternal = true;
+                this.root.isRoot = true;
+                this.root.divideBox();
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Calculate mass of the each QuadNode in the tree.
+             */
+            QuadTree.prototype.calculateMassAndCenter = function () {
+                this.visitNodeRecursive(null, null, function (node) {
+                    node.updateMassAndCenter();
+                });
+            };
             /**
              * Insert nodes into the QuadTree
              *
              * @param {Array<Highcharts.Point>} points
+             *        Points as nodes
              */
-            insertNodes: function (points) {
-                points.forEach(function (point) {
+            QuadTree.prototype.insertNodes = function (points) {
+                for (var _i = 0, points_1 = points; _i < points_1.length; _i++) {
+                    var point = points_1[_i];
                     this.root.insert(point, this.maxDepth);
-                }, this);
-            },
+                }
+            };
             /**
              * Depfth first treversal (DFS). Using `before` and `after` callbacks,
              * we can get two results: preorder and postorder traversals, reminder:
@@ -6726,12 +7511,13 @@
              * DFS (postorder): `d -> e -> b -> c -> a`
              *
              * @param {Highcharts.QuadTreeNode|null} node
-             * @param {Function} [beforeCallback] function to be called before
-             *                      visiting children nodes
-             * @param {Function} [afterCallback] function to be called after
-             *                      visiting children nodes
+             *        QuadTree node
+             * @param {Function} [beforeCallback]
+             *        Function to be called before visiting children nodes.
+             * @param {Function} [afterCallback]
+             *        Function to be called after visiting children nodes.
              */
-            visitNodeRecursive: function (node, beforeCallback, afterCallback) {
+            QuadTree.prototype.visitNodeRecursive = function (node, beforeCallback, afterCallback) {
                 var goFurther;
                 if (!node) {
                     node = this.root;
@@ -6742,13 +7528,14 @@
                 if (goFurther === false) {
                     return;
                 }
-                node.nodes.forEach(function (qtNode) {
+                for (var _i = 0, _a = node.nodes; _i < _a.length; _i++) {
+                    var qtNode = _a[_i];
                     if (qtNode.isInternal) {
                         if (beforeCallback) {
                             goFurther = beforeCallback(qtNode);
                         }
                         if (goFurther === false) {
-                            return;
+                            continue;
                         }
                         this.visitNodeRecursive(qtNode, beforeCallback, afterCallback);
                     }
@@ -6760,23 +7547,22 @@
                     if (afterCallback) {
                         afterCallback(qtNode);
                     }
-                }, this);
+                }
                 if (node === this.root && afterCallback) {
                     afterCallback(node);
                 }
-            },
-            /**
-             * Calculate mass of the each QuadNode in the tree.
-             */
-            calculateMassAndCenter: function () {
-                this.visitNodeRecursive(null, null, function (node) {
-                    node.updateMassAndCenter();
-                });
-            }
-        });
+            };
+            return QuadTree;
+        }());
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
+        return QuadTree;
     });
-    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, A, H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/ReingoldFruchtermanLayout.js', [_modules['Series/Networkgraph/EulerIntegration.js'], _modules['Core/Globals.js'], _modules['Series/GraphLayoutComposition.js'], _modules['Series/Networkgraph/QuadTree.js'], _modules['Core/Utilities.js'], _modules['Series/Networkgraph/VerletIntegration.js']], function (EulerIntegration, H, GraphLayout, QuadTree, U, VerletIntegration) {
         /* *
          *
          *  Networkgraph series
@@ -6788,26 +7574,49 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var setAnimation = A.setAnimation;
-        var addEvent = U.addEvent,
-            clamp = U.clamp,
+        var win = H.win;
+        var clamp = U.clamp,
             defined = U.defined,
-            extend = U.extend,
             isFunction = U.isFunction,
             pick = U.pick;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        H.layouts = {
-            'reingold-fruchterman': function () {
-            }
-        };
-        extend(
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * Reingold-Fruchterman algorithm from
          * "Graph Drawing by Force-directed Placement" paper.
          * @private
          */
-        H.layouts['reingold-fruchterman'].prototype, {
-            init: function (options) {
+        var ReingoldFruchtermanLayout = /** @class */ (function () {
+                function ReingoldFruchtermanLayout() {
+                    /* *
+                     *
+                     *  Static Functions
+                     *
+                     * */
+                    this.attractiveForce = void 0;
+                this.box = {};
+                this.currentStep = 0;
+                this.initialRendering = true;
+                this.integration = void 0;
+                this.links = [];
+                this.nodes = [];
+                this.options = void 0;
+                this.quadTree = void 0;
+                this.repulsiveForce = void 0;
+                this.series = [];
+                this.simulation = false;
+            }
+            ReingoldFruchtermanLayout.compose = function (ChartClass) {
+                GraphLayout.compose(ChartClass);
+                GraphLayout.integrations.euler = EulerIntegration;
+                GraphLayout.integrations.verlet = VerletIntegration;
+                GraphLayout.layouts['reingold-fruchterman'] =
+                    ReingoldFruchtermanLayout;
+            };
+            ReingoldFruchtermanLayout.prototype.init = function (options) {
                 this.options = options;
                 this.nodes = [];
                 this.links = [];
@@ -6820,16 +7629,16 @@
                 };
                 this.setInitialRendering(true);
                 this.integration =
-                    H.networkgraphIntegrations[options.integration];
+                    GraphLayout.integrations[options.integration];
                 this.enableSimulation = options.enableSimulation;
                 this.attractiveForce = pick(options.attractiveForce, this.integration.attractiveForceFunction);
                 this.repulsiveForce = pick(options.repulsiveForce, this.integration.repulsiveForceFunction);
                 this.approximation = options.approximation;
-            },
-            updateSimulation: function (enable) {
+            };
+            ReingoldFruchtermanLayout.prototype.updateSimulation = function (enable) {
                 this.enableSimulation = pick(enable, this.options.enableSimulation);
-            },
-            start: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.start = function () {
                 var layout = this,
                     series = this.series,
                     options = this.options;
@@ -6849,93 +7658,94 @@
                 if (layout.enableSimulation) {
                     layout.step();
                 }
-            },
-            step: function () {
-                var layout = this,
-                    series = this.series,
-                    options = this.options;
+            };
+            ReingoldFruchtermanLayout.prototype.step = function () {
+                var _this = this;
+                var anyLayout = this,
+                    allSeries = this.series;
                 // Algorithm:
-                layout.currentStep++;
-                if (layout.approximation === 'barnes-hut') {
-                    layout.createQuadTree();
-                    layout.quadTree.calculateMassAndCenter();
+                this.currentStep++;
+                if (this.approximation === 'barnes-hut') {
+                    this.createQuadTree();
+                    this.quadTree.calculateMassAndCenter();
                 }
-                layout.forces.forEach(function (forceName) {
-                    layout[forceName + 'Forces'](layout.temperature);
-                });
+                for (var _i = 0, _a = this.forces || []; _i < _a.length; _i++) {
+                    var forceName = _a[_i];
+                    anyLayout[forceName + 'Forces'](this.temperature);
+                }
                 // Limit to the plotting area and cool down:
-                layout.applyLimits(layout.temperature);
+                this.applyLimits();
                 // Cool down the system:
-                layout.temperature = layout.coolDown(layout.startTemperature, layout.diffTemperature, layout.currentStep);
-                layout.prevSystemTemperature = layout.systemTemperature;
-                layout.systemTemperature = layout.getSystemTemperature();
-                if (layout.enableSimulation) {
-                    series.forEach(function (s) {
+                this.temperature = this.coolDown(this.startTemperature, this.diffTemperature, this.currentStep);
+                this.prevSystemTemperature = this.systemTemperature;
+                this.systemTemperature = this.getSystemTemperature();
+                if (this.enableSimulation) {
+                    for (var _b = 0, allSeries_1 = allSeries; _b < allSeries_1.length; _b++) {
+                        var series = allSeries_1[_b];
                         // Chart could be destroyed during the simulation
-                        if (s.chart) {
-                            s.render();
+                        if (series.chart) {
+                            series.render();
                         }
-                    });
-                    if (layout.maxIterations-- &&
-                        isFinite(layout.temperature) &&
-                        !layout.isStable()) {
-                        if (layout.simulation) {
-                            H.win.cancelAnimationFrame(layout.simulation);
+                    }
+                    if (this.maxIterations-- &&
+                        isFinite(this.temperature) &&
+                        !this.isStable()) {
+                        if (this.simulation) {
+                            win.cancelAnimationFrame(this.simulation);
                         }
-                        layout.simulation = H.win.requestAnimationFrame(function () {
-                            layout.step();
-                        });
+                        this.simulation = win.requestAnimationFrame(function () { return _this.step(); });
                     }
                     else {
-                        layout.simulation = false;
+                        this.simulation = false;
                     }
                 }
-            },
-            stop: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.stop = function () {
                 if (this.simulation) {
-                    H.win.cancelAnimationFrame(this.simulation);
+                    win.cancelAnimationFrame(this.simulation);
                 }
-            },
-            setArea: function (x, y, w, h) {
+            };
+            ReingoldFruchtermanLayout.prototype.setArea = function (x, y, w, h) {
                 this.box = {
                     left: x,
                     top: y,
                     width: w,
                     height: h
                 };
-            },
-            setK: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.setK = function () {
                 // Optimal distance between nodes,
                 // available space around the node:
                 this.k = this.options.linkLength || this.integration.getK(this);
-            },
-            addElementsToCollection: function (elements, collection) {
-                elements.forEach(function (elem) {
-                    if (collection.indexOf(elem) === -1) {
-                        collection.push(elem);
+            };
+            ReingoldFruchtermanLayout.prototype.addElementsToCollection = function (elements, collection) {
+                for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
+                    var element = elements_1[_i];
+                    if (collection.indexOf(element) === -1) {
+                        collection.push(element);
                     }
-                });
-            },
-            removeElementFromCollection: function (element, collection) {
+                }
+            };
+            ReingoldFruchtermanLayout.prototype.removeElementFromCollection = function (element, collection) {
                 var index = collection.indexOf(element);
                 if (index !== -1) {
                     collection.splice(index, 1);
                 }
-            },
-            clear: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.clear = function () {
                 this.nodes.length = 0;
                 this.links.length = 0;
                 this.series.length = 0;
                 this.resetSimulation();
-            },
-            resetSimulation: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.resetSimulation = function () {
                 this.forcedStop = false;
                 this.systemTemperature = 0;
                 this.setMaxIterations();
                 this.setTemperature();
                 this.setDiffTemperature();
-            },
-            restartSimulation: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.restartSimulation = function () {
                 if (!this.simulation) {
                     // When dragging nodes, we don't need to calculate
                     // initial positions and rendering nodes:
@@ -6958,30 +7768,31 @@
                     // Extend current simulation:
                     this.resetSimulation();
                 }
-            },
-            setMaxIterations: function (maxIterations) {
+            };
+            ReingoldFruchtermanLayout.prototype.setMaxIterations = function (maxIterations) {
                 this.maxIterations = pick(maxIterations, this.options.maxIterations);
-            },
-            setTemperature: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.setTemperature = function () {
                 this.temperature = this.startTemperature =
                     Math.sqrt(this.nodes.length);
-            },
-            setDiffTemperature: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.setDiffTemperature = function () {
                 this.diffTemperature = this.startTemperature /
                     (this.options.maxIterations + 1);
-            },
-            setInitialRendering: function (enable) {
+            };
+            ReingoldFruchtermanLayout.prototype.setInitialRendering = function (enable) {
                 this.initialRendering = enable;
-            },
-            createQuadTree: function () {
-                this.quadTree = new H.QuadTree(this.box.left, this.box.top, this.box.width, this.box.height);
+            };
+            ReingoldFruchtermanLayout.prototype.createQuadTree = function () {
+                this.quadTree = new QuadTree(this.box.left, this.box.top, this.box.width, this.box.height);
                 this.quadTree.insertNodes(this.nodes);
-            },
-            initPositions: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.initPositions = function () {
                 var initialPositions = this.options.initialPositions;
                 if (isFunction(initialPositions)) {
                     initialPositions.call(this);
-                    this.nodes.forEach(function (node) {
+                    for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
+                        var node = _a[_i];
                         if (!defined(node.prevX)) {
                             node.prevX = node.plotX;
                         }
@@ -6990,7 +7801,7 @@
                         }
                         node.dispX = 0;
                         node.dispY = 0;
-                    });
+                    }
                 }
                 else if (initialPositions === 'circle') {
                     this.setCircularPositions();
@@ -6998,93 +7809,103 @@
                 else {
                     this.setRandomPositions();
                 }
-            },
-            setCircularPositions: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.setCircularPositions = function () {
                 var box = this.box,
                     nodes = this.nodes,
                     nodesLength = nodes.length + 1,
                     angle = 2 * Math.PI / nodesLength,
                     rootNodes = nodes.filter(function (node) {
                         return node.linksTo.length === 0;
-                }), sortedNodes = [], visitedNodes = {}, radius = this.options.initialPositionRadius;
-                /**
-                 * @private
-                 */
-                function addToNodes(node) {
-                    node.linksFrom.forEach(function (link) {
+                }), visitedNodes = {}, radius = this.options.initialPositionRadius, addToNodes = function (node) {
+                    for (var _i = 0, _a = node.linksFrom || []; _i < _a.length; _i++) {
+                        var link = _a[_i];
                         if (!visitedNodes[link.toNode.id]) {
                             visitedNodes[link.toNode.id] = true;
                             sortedNodes.push(link.toNode);
                             addToNodes(link.toNode);
                         }
-                    });
-                }
+                    }
+                };
+                var sortedNodes = [];
                 // Start with identified root nodes an sort the nodes by their
                 // hierarchy. In trees, this ensures that branches don't cross
                 // eachother.
-                rootNodes.forEach(function (rootNode) {
+                for (var _i = 0, rootNodes_1 = rootNodes; _i < rootNodes_1.length; _i++) {
+                    var rootNode = rootNodes_1[_i];
                     sortedNodes.push(rootNode);
                     addToNodes(rootNode);
-                });
+                }
                 // Cyclic tree, no root node found
                 if (!sortedNodes.length) {
                     sortedNodes = nodes;
                     // Dangling, cyclic trees
                 }
                 else {
-                    nodes.forEach(function (node) {
-                        if (sortedNodes.indexOf(node) === -1) {
-                            sortedNodes.push(node);
+                    for (var _a = 0, nodes_1 = nodes; _a < nodes_1.length; _a++) {
+                        var node_1 = nodes_1[_a];
+                        if (sortedNodes.indexOf(node_1) === -1) {
+                            sortedNodes.push(node_1);
                         }
-                    });
+                    }
                 }
+                var node;
                 // Initial positions are laid out along a small circle, appearing
                 // as a cluster in the middle
-                sortedNodes.forEach(function (node, index) {
-                    node.plotX = node.prevX = pick(node.plotX, box.width / 2 + radius * Math.cos(index * angle));
-                    node.plotY = node.prevY = pick(node.plotY, box.height / 2 + radius * Math.sin(index * angle));
+                for (var i = 0, iEnd = sortedNodes.length; i < iEnd; ++i) {
+                    node = sortedNodes[i];
+                    node.plotX = node.prevX = pick(node.plotX, box.width / 2 + radius * Math.cos(i * angle));
+                    node.plotY = node.prevY = pick(node.plotY, box.height / 2 + radius * Math.sin(i * angle));
                     node.dispX = 0;
                     node.dispY = 0;
-                });
-            },
-            setRandomPositions: function () {
+                }
+            };
+            ReingoldFruchtermanLayout.prototype.setRandomPositions = function () {
                 var box = this.box,
                     nodes = this.nodes,
-                    nodesLength = nodes.length + 1;
-                /**
-                 * Return a repeatable, quasi-random number based on an integer
-                 * input. For the initial positions
-                 * @private
-                 */
-                function unrandom(n) {
-                    var rand = n * n / Math.PI;
+                    nodesLength = nodes.length + 1, 
+                    /**
+                     * Return a repeatable,
+                    quasi-random number based on an integer
+                     * input. For the initial positions
+                     * @private
+                     */
+                    unrandom = function (n) {
+                        var rand = n * n / Math.PI;
                     rand = rand - Math.floor(rand);
                     return rand;
-                }
+                };
+                var node;
                 // Initial positions:
-                nodes.forEach(function (node, index) {
-                    node.plotX = node.prevX = pick(node.plotX, box.width * unrandom(index));
-                    node.plotY = node.prevY = pick(node.plotY, box.height * unrandom(nodesLength + index));
+                for (var i = 0, iEnd = nodes.length; i < iEnd; ++i) {
+                    node = nodes[i];
+                    node.plotX = node.prevX = pick(node.plotX, box.width * unrandom(i));
+                    node.plotY = node.prevY = pick(node.plotY, box.height * unrandom(nodesLength + i));
                     node.dispX = 0;
                     node.dispY = 0;
-                });
-            },
-            force: function (name) {
-                this.integration[name].apply(this, Array.prototype.slice.call(arguments, 1));
-            },
-            barycenterForces: function () {
+                }
+            };
+            ReingoldFruchtermanLayout.prototype.force = function (name) {
+                var args = [];
+                for (var _i = 1; _i < arguments.length; _i++) {
+                    args[_i - 1] = arguments[_i];
+                }
+                this.integration[name].apply(this, args);
+            };
+            ReingoldFruchtermanLayout.prototype.barycenterForces = function () {
                 this.getBarycenter();
                 this.force('barycenter');
-            },
-            getBarycenter: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.getBarycenter = function () {
                 var systemMass = 0,
                     cx = 0,
                     cy = 0;
-                this.nodes.forEach(function (node) {
+                for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
+                    var node = _a[_i];
                     cx += node.plotX * node.mass;
                     cy += node.plotY * node.mass;
                     systemMass += node.mass;
-                });
+                }
                 this.barycenter = {
                     x: cx,
                     y: cy,
@@ -7092,23 +7913,22 @@
                     yFactor: cy / systemMass
                 };
                 return this.barycenter;
-            },
-            barnesHutApproximation: function (node, quadNode) {
-                var layout = this,
-                    distanceXY = layout.getDistXY(node,
+            };
+            ReingoldFruchtermanLayout.prototype.barnesHutApproximation = function (node, quadNode) {
+                var distanceXY = this.getDistXY(node,
                     quadNode),
-                    distanceR = layout.vectorLength(distanceXY),
-                    goDeeper,
+                    distanceR = this.vectorLength(distanceXY);
+                var goDeeper,
                     force;
                 if (node !== quadNode && distanceR !== 0) {
                     if (quadNode.isInternal) {
                         // Internal node:
                         if (quadNode.boxSize / distanceR <
-                            layout.options.theta &&
+                            this.options.theta &&
                             distanceR !== 0) {
                             // Treat as an external node:
-                            force = layout.repulsiveForce(distanceR, layout.k);
-                            layout.force('repulsive', node, force * quadNode.mass, distanceXY, distanceR);
+                            force = this.repulsiveForce(distanceR, this.k);
+                            this.force('repulsive', node, force * quadNode.mass, distanceXY, distanceR);
                             goDeeper = false;
                         }
                         else {
@@ -7118,81 +7938,88 @@
                     }
                     else {
                         // External node, direct force:
-                        force = layout.repulsiveForce(distanceR, layout.k);
-                        layout.force('repulsive', node, force * quadNode.mass, distanceXY, distanceR);
+                        force = this.repulsiveForce(distanceR, this.k);
+                        this.force('repulsive', node, force * quadNode.mass, distanceXY, distanceR);
                     }
                 }
                 return goDeeper;
-            },
-            repulsiveForces: function () {
-                var layout = this;
-                if (layout.approximation === 'barnes-hut') {
-                    layout.nodes.forEach(function (node) {
-                        layout.quadTree.visitNodeRecursive(null, function (quadNode) {
-                            return layout.barnesHutApproximation(node, quadNode);
-                        });
-                    });
+            };
+            ReingoldFruchtermanLayout.prototype.repulsiveForces = function () {
+                var _this = this;
+                if (this.approximation === 'barnes-hut') {
+                    var _loop_1 = function (node) {
+                            this_1.quadTree.visitNodeRecursive(null,
+                        function (quadNode) { return (_this.barnesHutApproximation(node,
+                        quadNode)); });
+                    };
+                    var this_1 = this;
+                    for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
+                        var node = _a[_i];
+                        _loop_1(node);
+                    }
                 }
                 else {
-                    layout.nodes.forEach(function (node) {
-                        layout.nodes.forEach(function (repNode) {
-                            var force,
-                                distanceR,
-                                distanceXY;
+                    var force = void 0,
+                        distanceR = void 0,
+                        distanceXY = void 0;
+                    for (var _b = 0, _c = this.nodes; _b < _c.length; _b++) {
+                        var node = _c[_b];
+                        for (var _d = 0, _e = this.nodes; _d < _e.length; _d++) {
+                            var repNode = _e[_d];
                             if (
-                            // Node can not repulse itself:
+                            // Node cannot repulse itself:
                             node !== repNode &&
                                 // Only close nodes affect each other:
                                 // layout.getDistR(node, repNode) < 2 * k &&
                                 // Not dragged:
                                 !node.fixedPosition) {
-                                distanceXY = layout.getDistXY(node, repNode);
-                                distanceR = layout.vectorLength(distanceXY);
+                                distanceXY = this.getDistXY(node, repNode);
+                                distanceR = this.vectorLength(distanceXY);
                                 if (distanceR !== 0) {
-                                    force = layout.repulsiveForce(distanceR, layout.k);
-                                    layout.force('repulsive', node, force * repNode.mass, distanceXY, distanceR);
+                                    force = this.repulsiveForce(distanceR, this.k);
+                                    this.force('repulsive', node, force * repNode.mass, distanceXY, distanceR);
                                 }
                             }
-                        });
-                    });
-                }
-            },
-            attractiveForces: function () {
-                var layout = this,
-                    distanceXY,
-                    distanceR,
-                    force;
-                layout.links.forEach(function (link) {
-                    if (link.fromNode && link.toNode) {
-                        distanceXY = layout.getDistXY(link.fromNode, link.toNode);
-                        distanceR = layout.vectorLength(distanceXY);
-                        if (distanceR !== 0) {
-                            force = layout.attractiveForce(distanceR, layout.k);
-                            layout.force('attractive', link, force, distanceXY, distanceR);
                         }
                     }
-                });
-            },
-            applyLimits: function () {
-                var layout = this,
-                    nodes = layout.nodes;
-                nodes.forEach(function (node) {
+                }
+            };
+            ReingoldFruchtermanLayout.prototype.attractiveForces = function () {
+                var distanceXY,
+                    distanceR,
+                    force;
+                for (var _i = 0, _a = this.links; _i < _a.length; _i++) {
+                    var link = _a[_i];
+                    if (link.fromNode && link.toNode) {
+                        distanceXY = this.getDistXY(link.fromNode, link.toNode);
+                        distanceR = this.vectorLength(distanceXY);
+                        if (distanceR !== 0) {
+                            force = this.attractiveForce(distanceR, this.k);
+                            this.force('attractive', link, force, distanceXY, distanceR);
+                        }
+                    }
+                }
+            };
+            ReingoldFruchtermanLayout.prototype.applyLimits = function () {
+                var nodes = this.nodes;
+                for (var _i = 0, nodes_2 = nodes; _i < nodes_2.length; _i++) {
+                    var node = nodes_2[_i];
                     if (node.fixedPosition) {
                         return;
                     }
-                    layout.integration.integrate(layout, node);
-                    layout.applyLimitBox(node, layout.box);
+                    this.integration.integrate(this, node);
+                    this.applyLimitBox(node, this.box);
                     // Reset displacement:
                     node.dispX = 0;
                     node.dispY = 0;
-                });
-            },
+                }
+            };
             /**
              * External box that nodes should fall. When hitting an edge, node
              * should stop or bounce.
              * @private
              */
-            applyLimitBox: function (node, box) {
+            ReingoldFruchtermanLayout.prototype.applyLimitBox = function (node, box) {
                 var radius = node.radius;
                 /*
                 TO DO: Consider elastic collision instead of stopping.
@@ -7200,7 +8027,7 @@
 
                 - "inelastic":
                 o
-                 \
+                    \
                 ______
                 |  o'
                 |   \
@@ -7208,7 +8035,7 @@
 
                 - "elastic"/"bounced":
                 o
-                 \
+                    \
                 ______
                 |  ^
                 | / \
@@ -7230,13 +8057,13 @@
                 node.plotX = clamp(node.plotX, box.left + radius, box.width - radius);
                 // Limit Y-coordinates:
                 node.plotY = clamp(node.plotY, box.top + radius, box.height - radius);
-            },
+            };
             /**
              * From "A comparison of simulated annealing cooling strategies" by
              * Nourani and Andresen work.
              * @private
              */
-            coolDown: function (temperature, temperatureStep, currentStep) {
+            ReingoldFruchtermanLayout.prototype.coolDown = function (temperature, temperatureStep, currentStep) {
                 // Logarithmic:
                 /*
                 return Math.sqrt(this.nodes.length) -
@@ -7252,25 +8079,28 @@
                 */
                 // Linear:
                 return temperature - temperatureStep * currentStep;
-            },
-            isStable: function () {
+            };
+            ReingoldFruchtermanLayout.prototype.isStable = function () {
                 return Math.abs(this.systemTemperature -
                     this.prevSystemTemperature) < 0.00001 || this.temperature <= 0;
-            },
-            getSystemTemperature: function () {
-                return this.nodes.reduce(function (value, node) {
-                    return value + node.temperature;
-                }, 0);
-            },
-            vectorLength: function (vector) {
+            };
+            ReingoldFruchtermanLayout.prototype.getSystemTemperature = function () {
+                var value = 0;
+                for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
+                    var node = _a[_i];
+                    value += node.temperature;
+                }
+                return value;
+            };
+            ReingoldFruchtermanLayout.prototype.vectorLength = function (vector) {
                 return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-            },
-            getDistR: function (nodeA, nodeB) {
+            };
+            ReingoldFruchtermanLayout.prototype.getDistR = function (nodeA, nodeB) {
                 var distance = this.getDistXY(nodeA,
                     nodeB);
                 return this.vectorLength(distance);
-            },
-            getDistXY: function (nodeA, nodeB) {
+            };
+            ReingoldFruchtermanLayout.prototype.getDistXY = function (nodeA, nodeB) {
                 var xDist = nodeA.plotX - nodeB.plotX,
                     yDist = nodeA.plotY - nodeB.plotY;
                 return {
@@ -7279,86 +8109,18 @@
                     absX: Math.abs(xDist),
                     absY: Math.abs(yDist)
                 };
-            }
-        });
-        /* ************************************************************************** *
-         * Multiple series support:
-         * ************************************************************************** */
-        // Clear previous layouts
-        addEvent(Chart, 'predraw', function () {
-            if (this.graphLayoutsLookup) {
-                this.graphLayoutsLookup.forEach(function (layout) {
-                    layout.stop();
-                });
-            }
-        });
-        addEvent(Chart, 'render', function () {
-            var systemsStable,
-                afterRender = false;
-            /**
-             * @private
-             */
-            function layoutStep(layout) {
-                if (layout.maxIterations-- &&
-                    isFinite(layout.temperature) &&
-                    !layout.isStable() &&
-                    !layout.enableSimulation) {
-                    // Hook similar to build-in addEvent, but instead of
-                    // creating whole events logic, use just a function.
-                    // It's faster which is important for rAF code.
-                    // Used e.g. in packed-bubble series for bubble radius
-                    // calculations
-                    if (layout.beforeStep) {
-                        layout.beforeStep();
-                    }
-                    layout.step();
-                    systemsStable = false;
-                    afterRender = true;
-                }
-            }
-            if (this.graphLayoutsLookup) {
-                setAnimation(false, this);
-                // Start simulation
-                this.graphLayoutsLookup.forEach(function (layout) {
-                    layout.start();
-                });
-                // Just one sync step, to run different layouts similar to
-                // async mode.
-                while (!systemsStable) {
-                    systemsStable = true;
-                    this.graphLayoutsLookup.forEach(layoutStep);
-                }
-                if (afterRender) {
-                    this.series.forEach(function (s) {
-                        if (s && s.layout) {
-                            s.render();
-                        }
-                    });
-                }
-            }
-        });
-        // disable simulation before print if enabled
-        addEvent(Chart, 'beforePrint', function () {
-            if (this.graphLayoutsLookup) {
-                this.graphLayoutsLookup.forEach(function (layout) {
-                    layout.updateSimulation(false);
-                });
-                this.redraw();
-            }
-        });
-        // re-enable simulation after print
-        addEvent(Chart, 'afterPrint', function () {
-            if (this.graphLayoutsLookup) {
-                this.graphLayoutsLookup.forEach(function (layout) {
-                    // return to default simulation
-                    layout.updateSimulation();
-                });
-            }
-            this.redraw();
-        });
+            };
+            return ReingoldFruchtermanLayout;
+        }());
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
+        return ReingoldFruchtermanLayout;
     });
-    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleComposition.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleLayout.js', [_modules['Series/GraphLayoutComposition.js'], _modules['Series/PackedBubble/PackedBubbleIntegration.js'], _modules['Series/Networkgraph/ReingoldFruchtermanLayout.js'], _modules['Core/Utilities.js']], function (GraphLayout, PackedBubbleIntegration, ReingoldFruchtermanLayout, U) {
         /* *
          *
          *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
@@ -7368,77 +8130,96 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var Reingold = H.layouts['reingold-fruchterman'];
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var addEvent = U.addEvent,
-            extendClass = U.extendClass,
             pick = U.pick;
         /* *
          *
-         *  Composition
+         *  Constants
          *
          * */
-        Chart.prototype.getSelectedParentNodes = function () {
-            var chart = this,
-                series = chart.series,
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function chartGetSelectedParentNodes() {
+            var allSeries = this.series,
                 selectedParentsNodes = [];
-            series.forEach(function (series) {
+            allSeries.forEach(function (series) {
                 if (series.parentNode && series.parentNode.selected) {
                     selectedParentsNodes.push(series.parentNode);
                 }
             });
             return selectedParentsNodes;
-        };
-        H.networkgraphIntegrations.packedbubble = {
-            repulsiveForceFunction: function (d, k, node, repNode) {
-                return Math.min(d, (node.marker.radius + repNode.marker.radius) / 2);
-            },
-            barycenter: function () {
-                var layout = this,
-                    gravitationalConstant = layout.options.gravitationalConstant,
-                    box = layout.box,
-                    nodes = layout.nodes,
-                    centerX,
-                    centerY;
-                nodes.forEach(function (node) {
-                    if (layout.options.splitSeries && !node.isParentNode) {
-                        centerX = node.series.parentNode.plotX;
-                        centerY = node.series.parentNode.plotY;
-                    }
-                    else {
-                        centerX = box.width / 2;
-                        centerY = box.height / 2;
-                    }
-                    if (!node.fixedPosition) {
-                        node.plotX -=
-                            (node.plotX - centerX) *
-                                gravitationalConstant /
-                                (node.mass * Math.sqrt(nodes.length));
-                        node.plotY -=
-                            (node.plotY - centerY) *
-                                gravitationalConstant /
-                                (node.mass * Math.sqrt(nodes.length));
-                    }
-                });
-            },
-            repulsive: function (node, force, distanceXY, repNode) {
-                var factor = (force * this.diffTemperature / node.mass /
-                        node.degree),
-                    x = distanceXY.x * factor,
-                    y = distanceXY.y * factor;
-                if (!node.fixedPosition) {
-                    node.plotX += x;
-                    node.plotY += y;
+        }
+        /**
+         * Remove accumulated data points to redistribute all of them again
+         * (i.e after hiding series by legend)
+         * @private
+         */
+        function onChartBeforeRedraw() {
+            if (this.allDataPoints) {
+                delete this.allDataPoints;
+            }
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        var PackedBubbleLayout = /** @class */ (function (_super) {
+                __extends(PackedBubbleLayout, _super);
+            function PackedBubbleLayout() {
+                /* *
+                 *
+                 *  Static Functions
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.index = NaN;
+                _this.nodes = [];
+                _this.options = void 0;
+                _this.series = [];
+                return _this;
+            }
+            PackedBubbleLayout.compose = function (ChartClass) {
+                ReingoldFruchtermanLayout.compose(ChartClass);
+                GraphLayout.integrations.packedbubble = PackedBubbleIntegration;
+                GraphLayout.layouts.packedbubble = PackedBubbleLayout;
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
+                    var chartProto = ChartClass.prototype;
+                    chartProto.getSelectedParentNodes = chartGetSelectedParentNodes;
                 }
-                if (!repNode.fixedPosition) {
-                    repNode.plotX -= x;
-                    repNode.plotY -= y;
-                }
-            },
-            integrate: H.networkgraphIntegrations.verlet.integrate,
-            getK: H.noop
-        };
-        H.layouts.packedbubble = extendClass(Reingold, {
-            beforeStep: function () {
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            PackedBubbleLayout.prototype.beforeStep = function () {
                 if (this.options.marker) {
                     this.series.forEach(function (series) {
                         if (series) {
@@ -7446,9 +8227,9 @@
                         }
                     });
                 }
-            },
+            };
             // #14439, new stable check.
-            isStable: function () {
+            PackedBubbleLayout.prototype.isStable = function () {
                 var tempDiff = Math.abs(this.prevSystemTemperature -
                         this.systemTemperature);
                 var upScaledTemperature = 10 * this.systemTemperature /
@@ -7456,17 +8237,19 @@
                 return Math.abs(upScaledTemperature) < 1 &&
                     tempDiff < 0.00001 ||
                     this.temperature <= 0;
-            },
-            setCircularPositions: function () {
+            };
+            PackedBubbleLayout.prototype.setCircularPositions = function () {
                 var layout = this,
                     box = layout.box,
                     nodes = layout.nodes,
                     nodesLength = nodes.length + 1,
                     angle = 2 * Math.PI / nodesLength,
-                    centerX,
-                    centerY,
                     radius = layout.options.initialPositionRadius;
-                nodes.forEach(function (node, index) {
+                var centerX,
+                    centerY,
+                    index = 0;
+                for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+                    var node = nodes_1[_i];
                     if (layout.options.splitSeries &&
                         !node.isParentNode) {
                         centerX = node.series.parentNode.plotX;
@@ -7482,21 +8265,22 @@
                         radius * Math.sin(node.index || index * angle));
                     node.dispX = 0;
                     node.dispY = 0;
-                });
-            },
-            repulsiveForces: function () {
+                    index++;
+                }
+            };
+            PackedBubbleLayout.prototype.repulsiveForces = function () {
                 var layout = this,
-                    force,
-                    distanceR,
-                    distanceXY,
                     bubblePadding = layout.options.bubblePadding;
+                var force,
+                    distanceR,
+                    distanceXY;
                 layout.nodes.forEach(function (node) {
                     node.degree = node.mass;
                     node.neighbours = 0;
                     layout.nodes.forEach(function (repNode) {
                         force = 0;
                         if (
-                        // Node can not repulse itself:
+                        // Node cannot repulse itself:
                         node !== repNode &&
                             // Only close nodes affect each other:
                             // Not dragged:
@@ -7518,12 +8302,12 @@
                         }
                     });
                 });
-            },
-            applyLimitBox: function (node) {
+            };
+            PackedBubbleLayout.prototype.applyLimitBox = function (node, box) {
                 var layout = this,
-                    distanceXY,
-                    distanceR,
                     factor = 0.01;
+                var distanceXY,
+                    distanceR;
                 // parentNodeLimit should be used together
                 // with seriesInteraction: false
                 if (layout.options.splitSeries &&
@@ -7539,19 +8323,25 @@
                         node.plotY -= distanceXY.y * factor;
                     }
                 }
-                Reingold.prototype.applyLimitBox.apply(this, arguments);
-            }
-        });
-        // Remove accumulated data points to redistribute all of them again
-        // (i.e after hiding series by legend)
-        addEvent(Chart, 'beforeRedraw', function () {
-            if (this.allDataPoints) {
-                delete this.allDataPoints;
-            }
-        });
+                _super.prototype.applyLimitBox.call(this, node, box);
+            };
+            return PackedBubbleLayout;
+        }(ReingoldFruchtermanLayout));
+        /* *
+         *
+         *  Registry
+         *
+         * */
+        GraphLayout.layouts.packedbubble = PackedBubbleLayout;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
+        return PackedBubbleLayout;
     });
-    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/PackedBubble/PackedBubblePoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, PackedBubblePoint, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/PackedBubble/PackedBubbleSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/DragNodesComposition.js'], _modules['Series/GraphLayoutComposition.js'], _modules['Core/Globals.js'], _modules['Series/PackedBubble/PackedBubblePoint.js'], _modules['Series/PackedBubble/PackedBubbleSeriesDefaults.js'], _modules['Series/PackedBubble/PackedBubbleLayout.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Color, DragNodesComposition, GraphLayout, H, PackedBubblePoint, PackedBubbleSeriesDefaults, PackedBubbleLayout, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
@@ -7578,7 +8368,8 @@
             };
         })();
         var color = Color.parse;
-        var Series = SeriesRegistry.series,
+        var noop = H.noop;
+        var seriesProto = SeriesRegistry.series.prototype,
             BubbleSeries = SeriesRegistry.seriesTypes.bubble;
         var addEvent = U.addEvent,
             clamp = U.clamp,
@@ -7589,7 +8380,6 @@
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick;
-        var dragNodesMixin = H.dragNodesMixin;
         /* *
          *
          *  Class
@@ -7621,11 +8411,21 @@
                 _this.data = void 0;
                 _this.layout = void 0;
                 _this.options = void 0;
+                _this.parentNodeMass = 0;
                 _this.points = void 0;
                 _this.xData = void 0;
                 return _this;
                 /* eslint-enable valid-jsdoc */
             }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            PackedBubbleSeries.compose = function (AxisClass, ChartClass, LegendClass, SeriesClass) {
+                BubbleSeries.compose(AxisClass, ChartClass, LegendClass, SeriesClass);
+                PackedBubbleLayout.compose(ChartClass);
+            };
             /* *
              *
              *  Functions
@@ -7636,21 +8436,21 @@
              * Create a single array of all points from all series
              * @private
              */
-            PackedBubbleSeries.prototype.accumulateAllPoints = function (series) {
-                var chart = series.chart,
-                    allDataPoints = [],
-                    i,
-                    j;
-                for (i = 0; i < chart.series.length; i++) {
-                    series = chart.series[i];
+            PackedBubbleSeries.prototype.accumulateAllPoints = function () {
+                var chart = this.chart,
+                    allDataPoints = [];
+                var yData;
+                for (var _i = 0, _a = chart.series; _i < _a.length; _i++) {
+                    var series = _a[_i];
                     if (series.is('packedbubble') && // #13574
                         series.visible ||
                         !chart.options.chart.ignoreHiddenSeries) {
+                        yData = series.yData || [];
                         // add data to array only if series is visible
-                        for (j = 0; j < series.yData.length; j++) {
+                        for (var j = 0; j < yData.length; j++) {
                             allDataPoints.push([
                                 null, null,
-                                series.yData[j],
+                                yData[j],
                                 series.index,
                                 j,
                                 {
@@ -7670,60 +8470,60 @@
              * @private
              */
             PackedBubbleSeries.prototype.addLayout = function () {
-                var series = this,
-                    layoutOptions = series.options.layoutAlgorithm,
-                    graphLayoutsStorage = series.chart.graphLayoutsStorage,
-                    graphLayoutsLookup = series.chart.graphLayoutsLookup,
-                    chartOptions = series.chart.options.chart,
+                var layoutOptions = this.options.layoutAlgorithm =
+                        this.options.layoutAlgorithm || {},
+                    layoutType = layoutOptions.type || 'packedbubble',
+                    chartOptions = this.chart.options.chart;
+                var graphLayoutsStorage = this.chart.graphLayoutsStorage,
+                    graphLayoutsLookup = this.chart.graphLayoutsLookup,
                     layout;
                 if (!graphLayoutsStorage) {
-                    series.chart.graphLayoutsStorage = graphLayoutsStorage = {};
-                    series.chart.graphLayoutsLookup = graphLayoutsLookup = [];
+                    this.chart.graphLayoutsStorage = graphLayoutsStorage = {};
+                    this.chart.graphLayoutsLookup = graphLayoutsLookup = [];
                 }
-                layout = graphLayoutsStorage[layoutOptions.type];
+                layout = graphLayoutsStorage[layoutType];
                 if (!layout) {
                     layoutOptions.enableSimulation =
                         !defined(chartOptions.forExport) ?
                             layoutOptions.enableSimulation :
                             !chartOptions.forExport;
-                    graphLayoutsStorage[layoutOptions.type] = layout =
-                        new H.layouts[layoutOptions.type]();
+                    graphLayoutsStorage[layoutType] = layout =
+                        new GraphLayout.layouts[layoutType]();
                     layout.init(layoutOptions);
                     graphLayoutsLookup.splice(layout.index, 0, layout);
                 }
-                series.layout = layout;
-                series.points.forEach(function (node) {
+                this.layout = layout;
+                this.points.forEach(function (node) {
                     node.mass = 2;
                     node.degree = 1;
                     node.collisionNmb = 1;
                 });
-                layout.setArea(0, 0, series.chart.plotWidth, series.chart.plotHeight);
-                layout.addElementsToCollection([series], layout.series);
-                layout.addElementsToCollection(series.points, layout.nodes);
+                layout.setArea(0, 0, this.chart.plotWidth, this.chart.plotHeight);
+                layout.addElementsToCollection([this], layout.series);
+                layout.addElementsToCollection(this.points, layout.nodes);
             };
             /**
              * Function responsible for adding series layout, used for parent nodes.
              * @private
              */
             PackedBubbleSeries.prototype.addSeriesLayout = function () {
-                var series = this,
-                    layoutOptions = series.options.layoutAlgorithm,
-                    graphLayoutsStorage = series.chart.graphLayoutsStorage,
-                    graphLayoutsLookup = series.chart.graphLayoutsLookup,
+                var layoutOptions = this.options.layoutAlgorithm =
+                        this.options.layoutAlgorithm || {},
+                    layoutType = (layoutOptions.type || 'packedbubble'),
+                    graphLayoutsStorage = this.chart.graphLayoutsStorage,
+                    graphLayoutsLookup = this.chart.graphLayoutsLookup,
                     parentNodeOptions = merge(layoutOptions,
                     layoutOptions.parentNodeOptions, {
-                        enableSimulation: series.layout.options.enableSimulation
-                    }),
-                    parentNodeLayout;
-                parentNodeLayout = graphLayoutsStorage[layoutOptions.type + '-series'];
-                if (!parentNodeLayout) {
-                    graphLayoutsStorage[layoutOptions.type + '-series'] =
-                        parentNodeLayout =
-                            new H.layouts[layoutOptions.type]();
-                    parentNodeLayout.init(parentNodeOptions);
-                    graphLayoutsLookup.splice(parentNodeLayout.index, 0, parentNodeLayout);
+                        enableSimulation: this.layout.options.enableSimulation
+                    });
+                var seriesLayout = graphLayoutsStorage[layoutType + '-series'];
+                if (!seriesLayout) {
+                    graphLayoutsStorage[layoutType + '-series'] = seriesLayout =
+                        new GraphLayout.layouts[layoutType]();
+                    seriesLayout.init(parentNodeOptions);
+                    graphLayoutsLookup.splice(seriesLayout.index, 0, seriesLayout);
                 }
-                series.parentNodeLayout = parentNodeLayout;
+                this.parentNodeLayout = seriesLayout;
                 this.createParentNodes();
             };
             /**
@@ -7732,18 +8532,16 @@
              * @private
              */
             PackedBubbleSeries.prototype.calculateParentRadius = function () {
-                var series = this,
-                    bBox,
+                var bBox = this.seriesBox(),
                     parentPadding = 20,
                     minParentRadius = 20;
-                bBox = series.seriesBox();
-                series.parentNodeRadius = clamp(Math.sqrt(2 * series.parentNodeMass / Math.PI) + parentPadding, minParentRadius, bBox ?
+                this.parentNodeRadius = clamp(Math.sqrt(2 * this.parentNodeMass / Math.PI) + parentPadding, minParentRadius, bBox ?
                     Math.max(Math.sqrt(Math.pow(bBox.width, 2) +
                         Math.pow(bBox.height, 2)) / 2 + parentPadding, minParentRadius) :
-                    Math.sqrt(2 * series.parentNodeMass / Math.PI) + parentPadding);
-                if (series.parentNode) {
-                    series.parentNode.marker.radius =
-                        series.parentNode.radius = series.parentNodeRadius;
+                    Math.sqrt(2 * this.parentNodeMass / Math.PI) + parentPadding);
+                if (this.parentNode) {
+                    this.parentNode.marker.radius =
+                        this.parentNode.radius = this.parentNodeRadius;
                 }
             };
             /**
@@ -7752,7 +8550,8 @@
              */
             PackedBubbleSeries.prototype.calculateZExtremes = function () {
                 var chart = this.chart,
-                    zMin = this.options.zMin,
+                    allSeries = chart.series;
+                var zMin = this.options.zMin,
                     zMax = this.options.zMax,
                     valMin = Infinity,
                     valMax = -Infinity;
@@ -7761,14 +8560,14 @@
                 }
                 // it is needed to deal with null
                 // and undefined values
-                chart.series.forEach(function (s) {
-                    s.yData.forEach(function (p) {
-                        if (defined(p)) {
-                            if (p > valMax) {
-                                valMax = p;
+                allSeries.forEach(function (series) {
+                    series.yData.forEach(function (y) {
+                        if (defined(y)) {
+                            if (y > valMax) {
+                                valMax = y;
                             }
-                            if (p < valMin) {
-                                valMin = p;
+                            if (y < valMin) {
+                                valMin = y;
                             }
                         }
                     });
@@ -7794,29 +8593,29 @@
              * @private
              */
             PackedBubbleSeries.prototype.createParentNodes = function () {
-                var series = this,
-                    chart = series.chart,
-                    parentNodeLayout = series.parentNodeLayout,
-                    nodeAdded,
-                    parentNode = series.parentNode,
-                    PackedBubblePoint = series.pointClass,
-                    layoutOptions = series.layout.options,
+                var _this = this;
+                var PackedBubblePoint = this.pointClass,
+                    chart = this.chart,
+                    parentNodeLayout = this.parentNodeLayout,
+                    layoutOptions = this.layout.options;
+                var nodeAdded,
+                    parentNode = this.parentNode,
                     parentMarkerOptions = {
-                        radius: series.parentNodeRadius,
-                        lineColor: series.color,
-                        fillColor: color(series.color).brighten(0.4).get()
+                        radius: this.parentNodeRadius,
+                        lineColor: this.color,
+                        fillColor: color(this.color).brighten(0.4).get()
                     };
                 if (layoutOptions.parentNodeOptions) {
                     parentMarkerOptions = merge(layoutOptions.parentNodeOptions.marker || {}, parentMarkerOptions);
                 }
-                series.parentNodeMass = 0;
-                series.points.forEach(function (p) {
-                    series.parentNodeMass +=
+                this.parentNodeMass = 0;
+                this.points.forEach(function (p) {
+                    _this.parentNodeMass +=
                         Math.PI * Math.pow(p.marker.radius, 2);
                 });
-                series.calculateParentRadius();
+                this.calculateParentRadius();
                 parentNodeLayout.nodes.forEach(function (node) {
-                    if (node.seriesIndex === series.index) {
+                    if (node.seriesIndex === _this.index) {
                         nodeAdded = true;
                     }
                 });
@@ -7824,7 +8623,7 @@
                 if (!nodeAdded) {
                     if (!parentNode) {
                         parentNode = (new PackedBubblePoint()).init(this, {
-                            mass: series.parentNodeRadius / 2,
+                            mass: this.parentNodeRadius / 2,
                             marker: parentMarkerOptions,
                             dataLabels: {
                                 inside: false
@@ -7838,17 +8637,17 @@
                                 }
                             },
                             dataLabelOnNull: true,
-                            degree: series.parentNodeRadius,
+                            degree: this.parentNodeRadius,
                             isParentNode: true,
-                            seriesIndex: series.index
+                            seriesIndex: this.index
                         });
                     }
-                    if (series.parentNode) {
-                        parentNode.plotX = series.parentNode.plotX;
-                        parentNode.plotY = series.parentNode.plotY;
+                    if (this.parentNode) {
+                        parentNode.plotX = this.parentNode.plotX;
+                        parentNode.plotY = this.parentNode.plotY;
                     }
-                    series.parentNode = parentNode;
-                    parentNodeLayout.addElementsToCollection([series], parentNodeLayout.series);
+                    this.parentNode = parentNode;
+                    parentNodeLayout.addElementsToCollection([this], parentNodeLayout.series);
                     parentNodeLayout.addElementsToCollection([parentNode], parentNodeLayout.nodes);
                 }
             };
@@ -7858,22 +8657,22 @@
              */
             PackedBubbleSeries.prototype.deferLayout = function () {
                 // TODO split layouts to independent methods
-                var series = this,
-                    layoutOptions = series.options.layoutAlgorithm;
-                if (!series.visible) {
+                var layoutOptions = this.options.layoutAlgorithm;
+                if (!this.visible) {
                     return;
                 }
                 // layout is using nodes for position calculation
-                series.addLayout();
+                this.addLayout();
                 if (layoutOptions.splitSeries) {
-                    series.addSeriesLayout();
+                    this.addSeriesLayout();
                 }
             };
             PackedBubbleSeries.prototype.destroy = function () {
+                var _this = this;
                 // Remove the series from all layouts series collections #11469
                 if (this.chart.graphLayoutsLookup) {
                     this.chart.graphLayoutsLookup.forEach(function (layout) {
-                        layout.removeElementFromCollection(this, layout.series);
+                        layout.removeElementFromCollection(_this, layout.series);
                     }, this);
                 }
                 if (this.parentNode &&
@@ -7884,7 +8683,7 @@
                             this.parentNode.dataLabel.destroy();
                     }
                 }
-                Series.prototype.destroy.apply(this, arguments);
+                seriesProto.destroy.apply(this, arguments);
             };
             /**
              * Packedbubble has two separate collecions of nodes if split, render
@@ -7895,14 +8694,14 @@
                 var textPath = this.options.dataLabels.textPath,
                     points = this.points;
                 // Render node labels:
-                Series.prototype.drawDataLabels.apply(this, arguments);
+                seriesProto.drawDataLabels.apply(this, arguments);
                 // Render parentNode labels:
                 if (this.parentNode) {
                     this.parentNode.formatPrefix = 'parentNode';
                     this.points = [this.parentNode];
                     this.options.dataLabels.textPath =
                         this.options.dataLabels.parentNodeTextPath;
-                    Series.prototype.drawDataLabels.apply(this, arguments);
+                    seriesProto.drawDataLabels.apply(this, arguments);
                     // Restore nodes
                     this.points = points;
                     this.options.dataLabels.textPath = textPath;
@@ -7917,54 +8716,52 @@
                 if (!this.layout || !this.layout.options.splitSeries) {
                     return;
                 }
-                var series = this,
-                    chart = series.chart,
-                    parentAttribs = {},
+                var chart = this.chart,
                     nodeMarker = this.layout.options.parentNodeOptions.marker,
                     parentOptions = {
                         fill: (nodeMarker.fillColor ||
-                            color(series.color).brighten(0.4).get()),
+                            color(this.color).brighten(0.4).get()),
                         opacity: nodeMarker.fillOpacity,
-                        stroke: nodeMarker.lineColor || series.color,
+                        stroke: nodeMarker.lineColor || this.color,
                         'stroke-width': pick(nodeMarker.lineWidth,
-                    series.options.lineWidth)
+                    this.options.lineWidth)
                     };
+                var parentAttribs = {};
                 // create the group for parent Nodes if doesn't exist
                 if (!this.parentNodesGroup) {
-                    series.parentNodesGroup = series.plotGroup('parentNodesGroup', 'parentNode', series.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-                    series.group.attr({
+                    this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
+                    this.group.attr({
                         zIndex: 2
                     });
                 }
                 this.calculateParentRadius();
                 parentAttribs = merge({
-                    x: series.parentNode.plotX -
-                        series.parentNodeRadius,
-                    y: series.parentNode.plotY -
-                        series.parentNodeRadius,
-                    width: series.parentNodeRadius * 2,
-                    height: series.parentNodeRadius * 2
+                    x: this.parentNode.plotX -
+                        this.parentNodeRadius,
+                    y: this.parentNode.plotY -
+                        this.parentNodeRadius,
+                    width: this.parentNodeRadius * 2,
+                    height: this.parentNodeRadius * 2
                 }, parentOptions);
-                if (!series.parentNode.graphic) {
-                    series.graph = series.parentNode.graphic =
+                if (!this.parentNode.graphic) {
+                    this.graph = this.parentNode.graphic =
                         chart.renderer.symbol(parentOptions.symbol)
-                            .add(series.parentNodesGroup);
+                            .add(this.parentNodesGroup);
                 }
-                series.parentNode.graphic.attr(parentAttribs);
+                this.parentNode.graphic.attr(parentAttribs);
             };
             PackedBubbleSeries.prototype.drawTracker = function () {
-                var series = this, 
-                    /* chart = series.chart,
-                    pointer = chart.pointer,
-                    onMouseOver = function (e: PointerEvent): void {
-                        const point = pointer.getPointFromEvent(e);
-                    // undefined on graph in scatterchart
-                    if (typeof point !== 'undefined') {
-                        pointer.isDirectTouch = true;
-                        point.onMouseOver(e);
-                    }
-                }, */
-                parentNode = series.parentNode;
+                var parentNode = this.parentNode;
+                // chart = series.chart,
+                // pointer = chart.pointer,
+                // onMouseOver = function (e: PointerEvent): void {
+                //     const point = pointer.getPointFromEvent(e);
+                //     // undefined on graph in scatterchart
+                //     if (typeof point !== 'undefined') {
+                //         pointer.isDirectTouch = true;
+                //         point.onMouseOver(e);
+                //     }
+                // };
                 var dataLabels;
                 _super.prototype.drawTracker.call(this);
                 // Add reference to the point
@@ -7990,56 +8787,58 @@
              * @private
              */
             PackedBubbleSeries.prototype.getPointRadius = function () {
-                var series = this,
-                    chart = series.chart,
+                var _this = this;
+                var chart = this.chart,
                     plotWidth = chart.plotWidth,
                     plotHeight = chart.plotHeight,
-                    seriesOptions = series.options,
+                    seriesOptions = this.options,
                     useSimulation = seriesOptions.useSimulation,
                     smallestSize = Math.min(plotWidth,
                     plotHeight),
                     extremes = {},
                     radii = [],
-                    allDataPoints = chart.allDataPoints,
-                    minSize,
+                    allDataPoints = chart.allDataPoints || [],
+                    allDataPointsLength = allDataPoints.length;
+                var minSize,
                     maxSize,
                     value,
-                    radius,
-                    zExtremes;
+                    radius;
                 ['minSize', 'maxSize'].forEach(function (prop) {
                     var length = parseInt(seriesOptions[prop], 10),
                         isPercent = /%$/.test(seriesOptions[prop]);
                     extremes[prop] = isPercent ?
                         smallestSize * length / 100 :
-                        length * Math.sqrt(allDataPoints.length);
+                        length * Math.sqrt(allDataPointsLength);
                 });
                 chart.minRadius = minSize = extremes.minSize /
-                    Math.sqrt(allDataPoints.length);
+                    Math.sqrt(allDataPointsLength);
                 chart.maxRadius = maxSize = extremes.maxSize /
-                    Math.sqrt(allDataPoints.length);
-                zExtremes = useSimulation ?
-                    series.calculateZExtremes() :
-                    [minSize, maxSize];
-                (allDataPoints || []).forEach(function (point, i) {
+                    Math.sqrt(allDataPointsLength);
+                var zExtremes = useSimulation ?
+                        this.calculateZExtremes() :
+                        [minSize,
+                    maxSize];
+                allDataPoints.forEach(function (point, i) {
                     value = useSimulation ?
                         clamp(point[2], zExtremes[0], zExtremes[1]) :
                         point[2];
-                    radius = series.getRadius(zExtremes[0], zExtremes[1], minSize, maxSize, value);
+                    radius = _this.getRadius(zExtremes[0], zExtremes[1], minSize, maxSize, value);
                     if (radius === 0) {
                         radius = null;
                     }
                     allDataPoints[i][2] = radius;
                     radii.push(radius);
                 });
-                series.radii = radii;
+                this.radii = radii;
             };
             PackedBubbleSeries.prototype.init = function () {
-                Series.prototype.init.apply(this, arguments);
+                seriesProto.init.apply(this, arguments);
                 /* eslint-disable no-invalid-this */
                 // When one series is modified, the others need to be recomputed
                 this.eventsToUnbind.push(addEvent(this, 'updatedData', function () {
+                    var _this = this;
                     this.chart.series.forEach(function (s) {
-                        if (s.type === this.type) {
+                        if (s.type === _this.type) {
                             s.isDirty = true;
                         }
                     }, this);
@@ -8052,12 +8851,13 @@
              * @private
              * @param {Highcharts.Point} point The point that event occured.
              */
-            PackedBubbleSeries.prototype.onMouseUp = function (point) {
+            PackedBubbleSeries.prototype.onMouseUp = function (dnPoint) {
+                var point = dnPoint;
                 if (point.fixedPosition && !point.removed) {
-                    var distanceXY_1,
-                        distanceR_1,
-                        layout_1 = this.layout,
+                    var layout_1 = this.layout,
                         parentNodeLayout = this.parentNodeLayout;
+                    var distanceXY_1,
+                        distanceR_1;
                     if (parentNodeLayout && layout_1.options.dragBetweenSeries) {
                         parentNodeLayout.nodes.forEach(function (node) {
                             if (point && point.marker &&
@@ -8077,7 +8877,7 @@
                             }
                         });
                     }
-                    dragNodesMixin.onMouseUp.apply(this, arguments);
+                    DragNodesComposition.onMouseUp.apply(this, arguments);
                 }
             };
             /**
@@ -8091,20 +8891,19 @@
              * @return {Array<Highcharts.PackedBubbleData>} Positions of all bubbles
              */
             PackedBubbleSeries.prototype.placeBubbles = function (allDataPoints) {
-                var series = this,
-                    checkOverlap = series.checkOverlap,
-                    positionBubble = series.positionBubble,
-                    bubblePos = [],
-                    stage = 1,
+                var checkOverlap = this.checkOverlap,
+                    positionBubble = this.positionBubble,
+                    bubblePos = [];
+                var stage = 1,
                     j = 0,
                     k = 0,
                     calculatedBubble,
-                    sortedArr,
                     arr = [],
                     i;
                 // sort all points
-                sortedArr = allDataPoints.sort(function (a, b) {
-                    return b[2] - a[2];
+                var sortedArr = allDataPoints.sort(function (a,
+                    b) {
+                        return b[2] - a[2];
                 });
                 if (sortedArr.length) {
                     // create first bubble in the middle of the chart
@@ -8169,15 +8968,15 @@
                             }
                         }
                     }
-                    series.chart.stages = bubblePos;
+                    this.chart.stages = bubblePos;
                     // it may not be necessary but adding it just in case -
                     // it is containing all of the bubble levels
-                    series.chart.rawPositions =
+                    this.chart.rawPositions =
                         []
                             .concat.apply([], bubblePos);
                     // bubble positions merged into one array
-                    series.resizeRadius();
-                    arr = series.chart.rawPositions;
+                    this.resizeRadius();
+                    arr = this.chart.rawPositions;
                 }
                 return arr;
             };
@@ -8196,16 +8995,16 @@
             PackedBubbleSeries.prototype.pointAttribs = function (point, state) {
                 var options = this.options,
                     hasParentMarker = point && point.isParentNode;
-                var attr,
-                    fillOpacity,
-                    markerOptions = options.marker;
+                var markerOptions = options.marker;
                 if (hasParentMarker &&
                     options.layoutAlgorithm &&
                     options.layoutAlgorithm.parentNodeOptions) {
                     markerOptions = options.layoutAlgorithm.parentNodeOptions.marker;
                 }
-                fillOpacity = markerOptions.fillOpacity;
-                attr = Series.prototype.pointAttribs.call(this, point, state);
+                var fillOpacity = markerOptions.fillOpacity,
+                    attr = seriesProto.pointAttribs.call(this,
+                    point,
+                    state);
                 if (fillOpacity !== 1) {
                     attr['fill-opacity'] = fillOpacity;
                 }
@@ -8264,13 +9063,12 @@
                 ]; // the same as described before
             };
             PackedBubbleSeries.prototype.render = function () {
-                var series = this,
-                    dataLabels = [];
-                Series.prototype.render.apply(this, arguments);
+                var dataLabels = [];
+                seriesProto.render.apply(this, arguments);
                 // #10823 - dataLabels should stay visible
                 // when enabled allowOverlap.
-                if (!series.options.dataLabels.allowOverlap) {
-                    series.data.forEach(function (point) {
+                if (!this.options.dataLabels.allowOverlap) {
+                    this.data.forEach(function (point) {
                         if (isArray(point.dataLabels)) {
                             point.dataLabels.forEach(function (dataLabel) {
                                 dataLabels.push(dataLabel);
@@ -8280,8 +9078,8 @@
                     // Only hide overlapping dataLabels for layouts that
                     // use simulation. Spiral packedbubble don't need
                     // additional dataLabel hiding on every simulation step
-                    if (series.options.useSimulation) {
-                        series.chart.hideOverlappingLabels(dataLabels);
+                    if (this.options.useSimulation) {
+                        this.chart.hideOverlappingLabels(dataLabels);
                     }
                 }
             };
@@ -8303,36 +9101,36 @@
                     plotLeft = chart.plotLeft,
                     plotTop = chart.plotTop,
                     chartHeight = chart.plotHeight,
-                    chartWidth = chart.plotWidth,
-                    minX,
+                    chartWidth = chart.plotWidth;
+                var minX,
                     maxX,
                     minY,
                     maxY,
-                    radius,
-                    bBox,
-                    spaceRatio,
-                    smallerDimension,
-                    i;
+                    radius;
                 minX = minY = Number.POSITIVE_INFINITY; // set initial values
                 maxX = maxY = Number.NEGATIVE_INFINITY;
-                for (i = 0; i < positions.length; i++) {
-                    radius = positions[i][2];
-                    minX = min(minX, positions[i][0] - radius);
+                for (var _i = 0, positions_1 = positions; _i < positions_1.length; _i++) {
+                    var position = positions_1[_i];
+                    radius = position[2];
+                    minX = min(minX, position[0] - radius);
                     // (x center-radius) is the min x value used by specific bubble
-                    maxX = max(maxX, positions[i][0] + radius);
-                    minY = min(minY, positions[i][1] - radius);
-                    maxY = max(maxY, positions[i][1] + radius);
+                    maxX = max(maxX, position[0] + radius);
+                    minY = min(minY, position[1] - radius);
+                    maxY = max(maxY, position[1] + radius);
                 }
-                bBox = [maxX - minX, maxY - minY];
-                spaceRatio = [
-                    (chartWidth - plotLeft) / bBox[0],
-                    (chartHeight - plotTop) / bBox[1]
-                ];
-                smallerDimension = min.apply([], spaceRatio);
+                var bBox = [maxX - minX,
+                    maxY - minY],
+                    spaceRatio = [
+                        (chartWidth - plotLeft) / bBox[0],
+                        (chartHeight - plotTop) / bBox[1]
+                    ],
+                    smallerDimension = min.apply([],
+                    spaceRatio);
                 if (Math.abs(smallerDimension - 1) > 1e-10) {
                     // if bBox is considered not the same width as possible size
-                    for (i = 0; i < positions.length; i++) {
-                        positions[i][2] *= smallerDimension;
+                    for (var _a = 0, positions_2 = positions; _a < positions_2.length; _a++) {
+                        var position = positions_2[_a];
+                        position[2] *= smallerDimension;
                     }
                     this.placeBubbles(positions);
                 }
@@ -8356,12 +9154,10 @@
              * @private
              */
             PackedBubbleSeries.prototype.seriesBox = function () {
-                var series = this,
-                    chart = series.chart,
-                    data = series.data,
+                var chart = this.chart,
+                    data = this.data,
                     max = Math.max,
-                    min = Math.min,
-                    radius, 
+                    min = Math.min, 
                     // bBox = [xMin, xMax, yMin, yMax]
                     bBox = [
                         chart.plotLeft,
@@ -8369,6 +9165,7 @@
                         chart.plotTop,
                         chart.plotTop + chart.plotHeight
                     ];
+                var radius;
                 data.forEach(function (p) {
                     if (defined(p.plotX) &&
                         defined(p.plotY) &&
@@ -8390,7 +9187,7 @@
              */
             PackedBubbleSeries.prototype.setVisible = function () {
                 var series = this;
-                Series.prototype.setVisible.apply(series, arguments);
+                seriesProto.setVisible.apply(series, arguments);
                 if (series.parentNodeLayout && series.graph) {
                     if (series.visible) {
                         series.graph.show();
@@ -8424,42 +9221,41 @@
              * @private
              */
             PackedBubbleSeries.prototype.translate = function () {
-                var series = this,
-                    chart = series.chart,
-                    data = series.data,
-                    index = series.index,
-                    point,
+                var chart = this.chart,
+                    data = this.data,
+                    index = this.index,
+                    useSimulation = this.options.useSimulation;
+                var point,
                     radius,
-                    positions,
-                    i,
-                    useSimulation = series.options.useSimulation;
-                series.processedXData = series.xData;
-                series.generatePoints();
+                    positions;
+                this.processedXData = this.xData;
+                this.generatePoints();
                 // merged data is an array with all of the data from all series
                 if (!defined(chart.allDataPoints)) {
-                    chart.allDataPoints = series.accumulateAllPoints(series);
+                    chart.allDataPoints = this.accumulateAllPoints();
                     // calculate radius for all added data
-                    series.getPointRadius();
+                    this.getPointRadius();
                 }
                 // after getting initial radius, calculate bubble positions
                 if (useSimulation) {
                     positions = chart.allDataPoints;
                 }
                 else {
-                    positions = series.placeBubbles(chart.allDataPoints);
-                    series.options.draggable = false;
+                    positions = this.placeBubbles(chart.allDataPoints);
+                    this.options.draggable = false;
                 }
                 // Set the shape and arguments to be picked up in drawPoints
-                for (i = 0; i < positions.length; i++) {
-                    if (positions[i][3] === index) {
+                for (var _i = 0, positions_3 = positions; _i < positions_3.length; _i++) {
+                    var position = positions_3[_i];
+                    if (position[3] === index) {
                         // update the series points with the val from positions
                         // array
-                        point = data[positions[i][4]];
-                        radius = pick(positions[i][2], void 0);
+                        point = data[position[4]];
+                        radius = pick(position[2], void 0);
                         if (!useSimulation) {
-                            point.plotX = (positions[i][0] - chart.plotLeft +
+                            point.plotX = (position[0] - chart.plotLeft +
                                 chart.diffX);
-                            point.plotY = (positions[i][1] - chart.plotTop +
+                            point.plotY = (position[1] - chart.plotTop +
                                 chart.diffY);
                         }
                         if (isNumber(radius)) {
@@ -8473,369 +9269,31 @@
                     }
                 }
                 if (useSimulation) {
-                    series.deferLayout();
+                    this.deferLayout();
                 }
-                fireEvent(series, 'afterTranslate');
+                fireEvent(this, 'afterTranslate');
             };
-            /**
-             * A packed bubble series is a two dimensional series type, where each point
-             * renders a value in X, Y position. Each point is drawn as a bubble
-             * where the bubbles don't overlap with each other and the radius
-             * of the bubble relates to the value.
-             *
-             * @sample highcharts/demo/packed-bubble/
-             *         Packed bubble chart
-             * @sample highcharts/demo/packed-bubble-split/
-             *         Split packed bubble chart
-
-             * @extends      plotOptions.bubble
-             * @excluding    connectEnds, connectNulls, cropThreshold, dragDrop, jitter,
-             *               keys, pointPlacement, sizeByAbsoluteValue, step, xAxis,
-             *               yAxis, zMax, zMin, dataSorting, boostThreshold,
-             *               boostBlending
-             * @product      highcharts
-             * @since        7.0.0
-             * @requires     highcharts-more
-             * @optionparent plotOptions.packedbubble
-             */
-            PackedBubbleSeries.defaultOptions = merge(BubbleSeries.defaultOptions, {
-                /**
-                 * Minimum bubble size. Bubbles will automatically size between the
-                 * `minSize` and `maxSize` to reflect the value of each bubble.
-                 * Can be either pixels (when no unit is given), or a percentage of
-                 * the smallest one of the plot width and height, divided by the square
-                 * root of total number of points.
-                 *
-                 * @sample highcharts/plotoptions/bubble-size/
-                 *         Bubble size
-                 *
-                 * @type {number|string}
-                 *
-                 * @private
-                 */
-                minSize: '10%',
-                /**
-                 * Maximum bubble size. Bubbles will automatically size between the
-                 * `minSize` and `maxSize` to reflect the value of each bubble.
-                 * Can be either pixels (when no unit is given), or a percentage of
-                 * the smallest one of the plot width and height, divided by the square
-                 * root of total number of points.
-                 *
-                 * @sample highcharts/plotoptions/bubble-size/
-                 *         Bubble size
-                 *
-                 * @type {number|string}
-                 *
-                 * @private
-                 */
-                maxSize: '50%',
-                sizeBy: 'area',
-                zoneAxis: 'y',
-                crisp: false,
-                tooltip: {
-                    pointFormat: 'Value: {point.value}'
-                },
-                /**
-                 * Flag to determine if nodes are draggable or not. Available for
-                 * graph with useSimulation set to true only.
-                 *
-                 * @since 7.1.0
-                 *
-                 * @private
-                 */
-                draggable: true,
-                /**
-                 * An option is giving a possibility to choose between using simulation
-                 * for calculating bubble positions. These reflects in both animation
-                 * and final position of bubbles. Simulation is also adding options to
-                 * the series graph based on used layout. In case of big data sets, with
-                 * any performance issues, it is possible to disable animation and pack
-                 * bubble in a simple circular way.
-                 *
-                 * @sample highcharts/series-packedbubble/spiral/
-                 *         useSimulation set to false
-                 *
-                 * @since 7.1.0
-                 *
-                 * @private
-                 */
-                useSimulation: true,
-                /**
-                 * Series options for parent nodes.
-                 *
-                 * @since 8.1.1
-                 *
-                 * @private
-                 */
-                parentNode: {
-                    /**
-                     * Allow this series' parent nodes to be selected
-                     * by clicking on the graph.
-                     *
-                     * @since 8.1.1
-                     */
-                    allowPointSelect: false
-                },
-                /**
-                /**
-                 *
-                 * @declare Highcharts.SeriesPackedBubbleDataLabelsOptionsObject
-                 *
-                 * @private
-                 */
-                dataLabels: {
-                    /**
-                     * The
-                     * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
-                     * specifying what to show for _node_ in the networkgraph. In v7.0
-                     * defaults to `{key}`, since v7.1 defaults to `undefined` and
-                     * `formatter` is used instead.
-                     *
-                     * @type      {string}
-                     * @since     7.0.0
-                     * @apioption plotOptions.packedbubble.dataLabels.format
-                     */
-                    // eslint-disable-next-line valid-jsdoc
-                    /**
-                     * Callback JavaScript function to format the data label for a node.
-                     * Note that if a `format` is defined, the format takes precedence
-                     * and the formatter is ignored.
-                     *
-                     * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
-                     * @since 7.0.0
-                     */
-                    formatter: function () {
-                        var numberFormatter = this.series.chart.numberFormatter;
-                        var value = this.point.value;
-                        return isNumber(value) ? numberFormatter(value, -1) : '';
-                    },
-                    /**
-                     * @type      {string}
-                     * @since     7.1.0
-                     * @apioption plotOptions.packedbubble.dataLabels.parentNodeFormat
-                     */
-                    // eslint-disable-next-line valid-jsdoc
-                    /**
-                     * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
-                     * @since 7.1.0
-                     */
-                    parentNodeFormatter: function () {
-                        return this.name;
-                    },
-                    /**
-                     * @sample {highcharts} highcharts/series-packedbubble/packed-dashboard
-                     *         Dashboard with dataLabels on parentNodes
-                     *
-                     * @declare Highcharts.SeriesPackedBubbleDataLabelsTextPathOptionsObject
-                     * @since   7.1.0
-                     */
-                    parentNodeTextPath: {
-                        /**
-                         * Presentation attributes for the text path.
-                         *
-                         * @type      {Highcharts.SVGAttributes}
-                         * @since     7.1.0
-                         * @apioption plotOptions.packedbubble.dataLabels.attributes
-                         */
-                        /**
-                         * Enable or disable `textPath` option for link's or marker's
-                         * data labels.
-                         *
-                         * @since 7.1.0
-                         */
-                        enabled: true
-                    },
-                    /**
-                     * Options for a _node_ label text which should follow marker's
-                     * shape.
-                     *
-                     * **Note:** Only SVG-based renderer supports this option.
-                     *
-                     * @extends   plotOptions.series.dataLabels.textPath
-                     * @apioption plotOptions.packedbubble.dataLabels.textPath
-                     */
-                    padding: 0,
-                    style: {
-                        transition: 'opacity 2000ms'
-                    }
-                },
-                /**
-                 * Options for layout algorithm when simulation is enabled. Inside there
-                 * are options to change the speed, padding, initial bubbles positions
-                 * and more.
-                 *
-                 * @extends   plotOptions.networkgraph.layoutAlgorithm
-                 * @excluding approximation, attractiveForce, repulsiveForce, theta
-                 * @since     7.1.0
-                 *
-                 * @private
-                 */
-                layoutAlgorithm: {
-                    /**
-                     * Initial layout algorithm for positioning nodes. Can be one of
-                     * the built-in options ("circle", "random") or a function where
-                     * positions should be set on each node (`this.nodes`) as
-                     * `node.plotX` and `node.plotY`.
-                     *
-                     * @sample highcharts/series-networkgraph/initial-positions/
-                     *         Initial positions with callback
-                     *
-                     * @type {"circle"|"random"|Function}
-                     */
-                    initialPositions: 'circle',
-                    /**
-                     * @sample highcharts/series-packedbubble/initial-radius/
-                     *         Initial radius set to 200
-                     *
-                     * @extends   plotOptions.networkgraph.layoutAlgorithm.initialPositionRadius
-                     * @excluding states
-                     */
-                    initialPositionRadius: 20,
-                    /**
-                     * The distance between two bubbles, when the algorithm starts to
-                     * treat two bubbles as overlapping. The `bubblePadding` is also the
-                     * expected distance between all the bubbles on simulation end.
-                     */
-                    bubblePadding: 5,
-                    /**
-                     * Whether bubbles should interact with their parentNode to keep
-                     * them inside.
-                     */
-                    parentNodeLimit: false,
-                    /**
-                     * Whether series should interact with each other or not. When
-                     * `parentNodeLimit` is set to true, thi option should be set to
-                     * false to avoid sticking points in wrong series parentNode.
-                     */
-                    seriesInteraction: true,
-                    /**
-                     * In case of split series, this option allows user to drag and
-                     * drop points between series, for changing point related series.
-                     *
-                     * @sample highcharts/series-packedbubble/packed-dashboard/
-                     *         Example of drag'n drop bubbles for bubble kanban
-                     */
-                    dragBetweenSeries: false,
-                    /**
-                     * Layout algorithm options for parent nodes.
-                     *
-                     * @extends   plotOptions.networkgraph.layoutAlgorithm
-                     * @excluding approximation, attractiveForce, enableSimulation,
-                     *            repulsiveForce, theta
-                     */
-                    parentNodeOptions: {
-                        maxIterations: 400,
-                        gravitationalConstant: 0.03,
-                        maxSpeed: 50,
-                        initialPositionRadius: 100,
-                        seriesInteraction: true,
-                        /**
-                         * Styling options for parentNodes markers. Similar to
-                         * line.marker options.
-                         *
-                         * @sample highcharts/series-packedbubble/parentnode-style/
-                         *         Bubble size
-                         *
-                         * @extends   plotOptions.series.marker
-                         * @excluding states
-                         */
-                        marker: {
-                            fillColor: null,
-                            fillOpacity: 1,
-                            lineWidth: null,
-                            lineColor: null,
-                            symbol: 'circle'
-                        }
-                    },
-                    enableSimulation: true,
-                    /**
-                     * Type of the algorithm used when positioning bubbles.
-                     * @ignore-option
-                     */
-                    type: 'packedbubble',
-                    /**
-                     * Integration type. Integration determines how forces are applied
-                     * on particles. The `packedbubble` integration is based on
-                     * the networkgraph `verlet` integration, where the new position
-                     * is based on a previous position without velocity:
-                     * `newPosition += previousPosition - newPosition`.
-                     *
-                     * @sample highcharts/series-networkgraph/forces/
-                     *
-                     * @ignore-option
-                     */
-                    integration: 'packedbubble',
-                    maxIterations: 1000,
-                    /**
-                     * Whether to split series into individual groups or to mix all
-                     * series together.
-                     *
-                     * @since   7.1.0
-                     * @default false
-                     */
-                    splitSeries: false,
-                    /**
-                     * Max speed that node can get in one iteration. In terms of
-                     * simulation, it's a maximum translation (in pixels) that a node
-                     * can move (in both, x and y, dimensions). While `friction` is
-                     * applied on all nodes, max speed is applied only for nodes that
-                     * move very fast, for example small or disconnected ones.
-                     *
-                     * @see [layoutAlgorithm.integration](#series.networkgraph.layoutAlgorithm.integration)
-                     *
-                     * @see [layoutAlgorithm.friction](#series.networkgraph.layoutAlgorithm.friction)
-                     */
-                    maxSpeed: 5,
-                    gravitationalConstant: 0.01,
-                    friction: -0.981
-                }
-            });
+            PackedBubbleSeries.defaultOptions = merge(BubbleSeries.defaultOptions, PackedBubbleSeriesDefaults);
             return PackedBubbleSeries;
         }(BubbleSeries));
         extend(PackedBubbleSeries.prototype, {
-            alignDataLabel: Series.prototype.alignDataLabel,
+            pointClass: PackedBubblePoint,
             axisTypes: [],
             directTouch: true,
-            /**
-             * Array of internal forces. Each force should be later defined in
-             * integrations.js.
-             * @private
-             */
             forces: ['barycenter', 'repulsive'],
-            /**
-             * An internal option used for allowing nodes dragging.
-             * @private
-             */
             hasDraggableNodes: true,
             isCartesian: false,
             noSharedTooltip: true,
-            /**
-             * Mouse down action, initializing drag&drop mode.
-             * @private
-             * @param {global.Event} event Browser event, before normalization.
-             * @param {Highcharts.Point} point The point that event occured.
-             */
-            onMouseDown: dragNodesMixin.onMouseDown,
-            /**
-             * Mouse move action during drag&drop.
-             * @private
-             * @param {global.Event} event Browser event, before normalization.
-             * @param {Highcharts.Point} point The point that event occured.
-             */
-            onMouseMove: dragNodesMixin.onMouseMove,
             pointArrayMap: ['value'],
-            pointClass: PackedBubblePoint,
             pointValKey: 'value',
-            /**
-             * Redraw halo on mousemove during the drag&drop action.
-             * @private
-             * @param {Highcharts.Point} point The point that should show halo.
-             */
-            redrawHalo: dragNodesMixin.redrawHalo,
             requireSorting: false,
-            // solving #12287
-            searchPoint: H.noop,
-            trackerGroups: ['group', 'dataLabelsGroup', 'parentNodesGroup']
+            trackerGroups: ['group', 'dataLabelsGroup', 'parentNodesGroup'],
+            alignDataLabel: seriesProto.alignDataLabel,
+            indexateNodes: noop,
+            onMouseDown: DragNodesComposition.onMouseDown,
+            onMouseMove: DragNodesComposition.onMouseMove,
+            redrawHalo: DragNodesComposition.redrawHalo,
+            searchPoint: noop // solving #12287
         });
         SeriesRegistry.registerSeriesType('packedbubble', PackedBubbleSeries);
         /* *
@@ -8884,69 +9342,6 @@
         * @since 7.0.0
         */
         ''; // detach doclets above
-        /* *
-         *
-         *  API Options
-         *
-         * */
-        /**
-         * A `packedbubble` series. If the [type](#series.packedbubble.type) option is
-         * not specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @type      {Object}
-         * @extends   series,plotOptions.packedbubble
-         * @excluding cropThreshold, dataParser, dataSorting, dataURL, dragDrop, stack,
-         *            boostThreshold, boostBlending
-         * @product   highcharts
-         * @requires  highcharts-more
-         * @apioption series.packedbubble
-         */
-        /**
-         * An array of data points for the series. For the `packedbubble` series type,
-         * points can be given in the following ways:
-         *
-         * 1.  An array of `values`.
-         *
-         *  ```js
-         *     data: [5, 1, 20]
-         *  ```
-         *
-         * 2.  An array of objects with named values. The objects are point
-         * configuration objects as seen below. If the total number of data points
-         * exceeds the series' [turboThreshold](#series.packedbubble.turboThreshold),
-         * this option is not available.
-         *
-         *  ```js
-         *     data: [{
-         *         value: 1,
-         *         name: "Point2",
-         *         color: "#00FF00"
-         *     }, {
-         *         value: 5,
-         *         name: "Point1",
-         *         color: "#FF00FF"
-         *     }]
-         *  ```
-         *
-         * @type      {Array<Object|Array>}
-         * @extends   series.line.data
-         * @excluding marker, x, y
-         * @sample    {highcharts} highcharts/series/data-array-of-objects/
-         *            Config objects
-         * @product   highcharts
-         * @apioption series.packedbubble.data
-         */
-        /**
-         * @type      {Highcharts.SeriesPackedBubbleDataLabelsOptionsObject|Array<Highcharts.SeriesPackedBubbleDataLabelsOptionsObject>}
-         * @product   highcharts
-         * @apioption series.packedbubble.data.dataLabels
-         */
-        /**
-         * @excluding enabled,enabledThreshold,height,radius,width
-         * @product   highcharts
-         * @apioption series.packedbubble.marker
-         */
-        ''; // adds doclets above to transpiled file
 
         return PackedBubbleSeries;
     });
@@ -9152,7 +9547,7 @@
 
         return PolygonSeries;
     });
-    _registerModule(_modules, 'Core/Axis/WaterfallAxis.js', [_modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/WaterfallAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -10919,7 +11314,7 @@
                 // Disable certain features on angular and polar axes
                 if (angular || polar) {
                     this.isRadial = true;
-                    chartOptions.chart.zoomType = null;
+                    chartOptions.chart.zooming.type = null;
                     if (!this.labelCollector) {
                         this.labelCollector = this.createLabelCollector();
                     }
@@ -11432,7 +11827,7 @@
                 // of non-shared.
                 series.kdByAngle = chart_1.tooltip && chart_1.tooltip.shared;
                 if (series.kdByAngle) {
-                    series.searchPoint = series.polar.searchPointByAngle;
+                    series.searchPoint = searchPointByAngle;
                 }
                 else {
                     series.options.findNearestPointBy = 'xy';
@@ -11480,6 +11875,22 @@
                     }));
                 }
             }
+        }
+        /**
+         * Search a k-d tree by the point angle, used for shared tooltips in polar
+         * charts
+         * @private
+         */
+        function searchPointByAngle(e) {
+            var series = this,
+                chart = series.chart,
+                xAxis = series.xAxis,
+                center = xAxis.pane && xAxis.pane.center,
+                plotX = e.chartX - (center && center[0] || 0) - chart.plotLeft,
+                plotY = e.chartY - (center && center[1] || 0) - chart.plotTop;
+            return series.searchKDTree({
+                clientX: 180 + (Math.atan2(plotX, plotY) * (-180 / Math.PI))
+            });
         }
         /**
          * Extend chart.get to also search in panes. Used internally in
@@ -12066,22 +12477,6 @@
                 };
             };
             /**
-             * Search a k-d tree by the point angle, used for shared tooltips in polar
-             * charts
-             * @private
-             */
-            PolarAdditions.prototype.searchPointByAngle = function (e) {
-                var series = this.series,
-                    chart = series.chart,
-                    xAxis = series.xAxis,
-                    center = xAxis.pane.center,
-                    plotX = e.chartX - center[0] - chart.plotLeft,
-                    plotY = e.chartY - center[1] - chart.plotTop;
-                return series.searchKDTree({
-                    clientX: 180 + (Math.atan2(plotX, plotY) * (-180 / Math.PI))
-                });
-            };
-            /**
              * Translate a point's plotX and plotY from the internal angle and radius
              * measures to true plotX, plotY coordinates
              * @private
@@ -12142,10 +12537,11 @@
 
         return PolarAdditions;
     });
-    _registerModule(_modules, 'masters/highcharts-more.src.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Bubble/BubbleSeries.js'], _modules['Series/PolarComposition.js']], function (Highcharts, SeriesRegistry, BubbleSeries, PolarAdditions) {
+    _registerModule(_modules, 'masters/highcharts-more.src.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Bubble/BubbleSeries.js'], _modules['Series/PackedBubble/PackedBubbleSeries.js'], _modules['Series/PolarComposition.js']], function (Highcharts, SeriesRegistry, BubbleSeries, PackedBubbleSeries, PolarAdditions) {
 
         var G = Highcharts;
-        BubbleSeries.compose(G.Chart, G.Legend, G.Series);
+        BubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
+        PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
         PolarAdditions.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, SeriesRegistry.seriesTypes.areasplinerange, SeriesRegistry.seriesTypes.column, SeriesRegistry.seriesTypes.line, SeriesRegistry.seriesTypes.spline);
 
     });

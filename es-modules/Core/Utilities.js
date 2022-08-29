@@ -1005,7 +1005,7 @@ function getStyle(el, prop, toInt) {
         error(27, true);
     }
     // Otherwise, get the computed style
-    var css = win.getComputedStyle(el, undefined); // eslint-disable-line no-undefined
+    var css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
     if (css) {
         style = css.getPropertyValue(prop);
         if (pick(toInt, prop !== 'opacity')) {
@@ -1125,8 +1125,6 @@ function offset(el) {
  *
  * @param {T} [ctx]
  *        The context.
- *
- * @return {void}
  */
 function objectEach(obj, fn, ctx) {
     /* eslint-enable valid-jsdoc */

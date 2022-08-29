@@ -239,7 +239,8 @@ var AST = /** @class */ (function () {
             .trim()
             // The style attribute throws a warning when parsing when CSP is
             // enabled (#6884), so use an alias and pick it up below
-            .replace(/ style="/g, ' data-style="');
+            // Make all quotation marks parse correctly to DOM (#17627)
+            .replace(/ style=(["'])/g, ' data-style=$1');
         var doc;
         if (hasValidDOMParser) {
             doc = new DOMParser().parseFromString(trustedTypesPolicy ?
@@ -363,6 +364,7 @@ var AST = /** @class */ (function () {
         'target',
         'tabindex',
         'text-align',
+        'text-anchor',
         'textAnchor',
         'textLength',
         'title',
@@ -463,6 +465,7 @@ var AST = /** @class */ (function () {
         'svg',
         'table',
         'text',
+        'textPath',
         'thead',
         'tbody',
         'tspan',

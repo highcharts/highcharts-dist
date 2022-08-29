@@ -10,12 +10,11 @@
 'use strict';
 import A from '../../Animation/AnimationUtilities.js';
 var animate = A.animate, animObject = A.animObject, stop = A.stop;
-import AST from '../HTML/AST.js';
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 var deg2rad = H.deg2rad, doc = H.doc, noop = H.noop, svg = H.svg, SVG_NS = H.SVG_NS, win = H.win;
 import U from '../../Utilities.js';
-var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
+var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, removeEvent = U.removeEvent, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
 /* *
  *
  *  Class
@@ -417,27 +416,32 @@ var SVGElement = /** @class */ (function () {
             });
             // For each of the tspans and text nodes, create a copy in the
             // outline.
-            [].forEach.call(elem.childNodes, function (childNode) {
+            var parentElem = elem.querySelector('textPath') || elem;
+            [].forEach.call(parentElem.childNodes, function (childNode) {
                 var clone = childNode.cloneNode(true);
                 if (clone.removeAttribute) {
-                    ['fill', 'stroke', 'stroke-width', 'stroke'].forEach(function (prop) { return clone.removeAttribute(prop); });
+                    ['fill', 'stroke', 'stroke-width', 'stroke'].forEach(function (prop) { return clone
+                        .removeAttribute(prop); });
                 }
                 outline_1.appendChild(clone);
             });
+            // Collect the sum of dy from all children, included nested ones
+            var totalHeight_1 = 0;
+            [].forEach.call(parentElem.querySelectorAll('text tspan'), function (element) {
+                totalHeight_1 += Number(element.getAttribute('dy'));
+            });
             // Insert an absolutely positioned break before the original text
             // to keep it in place
-            var br_1 = doc.createElementNS(SVG_NS, 'tspan');
-            br_1.textContent = '\u200B';
-            // Copy x and y if not null
-            ['x', 'y'].forEach(function (key) {
-                var value = elem.getAttribute(key);
-                if (value) {
-                    br_1.setAttribute(key, value);
-                }
+            var br = doc.createElementNS(SVG_NS, 'tspan');
+            br.textContent = '\u200B';
+            // Reset the position for the following text
+            attr(br, {
+                x: Number(elem.getAttribute('x')),
+                dy: -totalHeight_1
             });
             // Insert the outline
-            outline_1.appendChild(br_1);
-            elem.insertBefore(outline_1, elem.firstChild);
+            outline_1.appendChild(br);
+            parentElem.insertBefore(outline_1, parentElem.firstChild);
         }
     };
     /**
@@ -904,42 +908,6 @@ var SVGElement = /** @class */ (function () {
     };
     /**
      * @private
-     */
-    SVGElement.prototype.destroyTextPath = function (elem, path) {
-        var textElement = elem.getElementsByTagName('text')[0];
-        var childNodes;
-        if (textElement) {
-            // Remove textPath attributes
-            textElement.removeAttribute('dx');
-            textElement.removeAttribute('dy');
-            // Remove ID's:
-            path.element.setAttribute('id', '');
-            // Check if textElement includes textPath,
-            if (this.textPathWrapper &&
-                textElement.getElementsByTagName('textPath').length) {
-                // Move nodes to <text>
-                childNodes = this.textPathWrapper.element.childNodes;
-                // Now move all <tspan>'s and text nodes to the <textPath> node
-                while (childNodes.length) {
-                    textElement.appendChild(childNodes[0]);
-                }
-                // Remove <textPath> from the DOM
-                textElement.removeChild(this.textPathWrapper.element);
-            }
-        }
-        else if (elem.getAttribute('dx') || elem.getAttribute('dy')) {
-            // Remove textPath attributes from elem
-            // to get correct text-outline position
-            elem.removeAttribute('dx');
-            elem.removeAttribute('dy');
-        }
-        if (this.textPathWrapper) {
-            // Set textPathWrapper to undefined and destroy it
-            this.textPathWrapper = this.textPathWrapper.destroy();
-        }
-    };
-    /**
-     * @private
      * @function Highcharts.SVGElement#dSettter
      * @param {number|string|Highcharts.SVGPathArray} value
      * @param {string} key
@@ -1081,9 +1049,12 @@ var SVGElement = /** @class */ (function () {
                         // SVG: use extend because IE9 is not allowed to change
                         // width and height in case of rotation (below)
                         extend({}, element.getBBox()) : {
-                        // Legacy IE in export mode
+                        // HTML elements with `exporting.allowHTML` and
+                        // legacy IE in export mode
                         width: element.offsetWidth,
-                        height: element.offsetHeight
+                        height: element.offsetHeight,
+                        x: 0,
+                        y: 0
                     };
                     // #3842
                     if (isFunction(toggleTextShadowShim)) {
@@ -1373,20 +1344,27 @@ var SVGElement = /** @class */ (function () {
         return this;
     };
     /**
-     * @private
+     * Set a text path for a `text` or `label` element, allowing the text to
+     * flow along a path.
+     *
+     * In order to unset the path for an existing element, call `setTextPath`
+     * with `{ enabled: false }` as the second argument.
+     *
+     * @sample highcharts/members/renderer-textpath/ Text path demonstrated
+     *
      * @function Highcharts.SVGElement#setTextPath
-     * @param {Highcharts.SVGElement} path
-     * Path to follow.
+     *
+     * @param {Highcharts.SVGElement|undefined} path
+     *        Path to follow. If undefined, it allows changing options for the
+     *        existing path.
+     *
      * @param {Highcharts.DataLabelsTextPathOptionsObject} textPathOptions
-     * Options.
-     * @return {Highcharts.SVGElement}
-     * Returns the SVGElement for chaining.
+     *        Options.
+     *
+     * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
     SVGElement.prototype.setTextPath = function (path, textPathOptions) {
-        var elem = this.element, textNode = this.text ? this.text.element : elem, attribsMap = {
-            textAnchor: 'text-anchor'
-        };
-        var adder = false, textPathElement, textPathId, textPathWrapper = this.textPathWrapper, firstTime = !textPathWrapper;
+        var _this = this;
         // Defaults
         textPathOptions = merge(true, {
             enabled: true,
@@ -1396,109 +1374,65 @@ var SVGElement = /** @class */ (function () {
                 textAnchor: 'middle'
             }
         }, textPathOptions);
-        var attrs = AST.filterUserAttributes(textPathOptions.attributes);
-        if (path && textPathOptions && textPathOptions.enabled) {
-            // In case of fixed width for a text, string is rebuilt
-            // (e.g. ellipsis is applied), so we need to rebuild textPath too
-            if (textPathWrapper &&
-                textPathWrapper.element.parentNode === null) {
-                // When buildText functionality was triggered again
-                // and deletes textPathWrapper parentNode
-                firstTime = true;
-                textPathWrapper = textPathWrapper.destroy();
-            }
-            else if (textPathWrapper) {
-                // Case after drillup when spans were added into
-                // the DOM outside the textPathWrapper parentGroup
-                this.removeTextOutline.call(textPathWrapper.parentGroup);
-            }
-            // label() has padding, text() doesn't
-            if (this.options && this.options.padding) {
-                attrs.dx = -this.options.padding;
-            }
-            if (!textPathWrapper) {
-                // Create <textPath>, defer the DOM adder
-                this.textPathWrapper = textPathWrapper =
-                    this.renderer.createElement('textPath');
-                adder = true;
-            }
-            textPathElement = textPathWrapper.element;
-            // Set ID for the path
-            textPathId = path.element.getAttribute('id');
-            if (!textPathId) {
-                path.element.setAttribute('id', textPathId = uniqueKey());
-            }
-            // Change DOM structure, by placing <textPath> tag in <text>
-            if (firstTime) {
-                // Adjust the position
-                textNode.setAttribute('y', 0); // Firefox
-                if (isNumber(attrs.dx)) {
-                    textNode.setAttribute('x', -attrs.dx);
-                }
-                // Move all <tspan>'s and text nodes to the <textPath> node. Do
-                // not move other elements like <title> or <path>
-                var childNodes = [].slice.call(textNode.childNodes);
-                for (var i = 0; i < childNodes.length; i++) {
-                    var childNode = childNodes[i];
-                    if (childNode.nodeType === win.Node.TEXT_NODE ||
-                        childNode.nodeName === 'tspan') {
-                        textPathElement.appendChild(childNode);
-                    }
-                }
-            }
-            // Add <textPath> to the DOM
-            if (adder && textPathWrapper) {
-                textPathWrapper.add({ element: textNode });
-            }
-            // Set basic options:
-            // Use `setAttributeNS` because Safari needs this..
-            textPathElement.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.renderer.url + '#' + textPathId);
-            // Presentation attributes:
-            // dx/dy options must by set on <text> (parent),
-            // the rest should be set on <textPath>
-            if (defined(attrs.dy)) {
-                textPathElement.parentNode
-                    .setAttribute('dy', attrs.dy);
-                delete attrs.dy;
-            }
-            if (defined(attrs.dx)) {
-                textPathElement.parentNode
-                    .setAttribute('dx', attrs.dx);
-                delete attrs.dx;
-            }
-            // Additional attributes
-            objectEach(attrs, function (val, key) {
-                textPathElement.setAttribute(attribsMap[key] || key, val);
-            });
-            // Remove translation, text that follows path does not need that
-            elem.removeAttribute('transform');
-            // Remove shadows and text outlines
-            this.removeTextOutline.call(textPathWrapper);
-            // Remove background and border for label(), see #10545
-            // Alternatively, we can disable setting background rects in
-            // series.drawDataLabels()
-            if (this.text && !this.renderer.styledMode) {
-                this.attr({
-                    fill: 'none',
-                    'stroke-width': 0
-                });
-            }
-            // Disable some functions
-            this.updateTransform = noop;
-            this.applyTextOutline = noop;
+        var url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, attributes = textPathOptions.attributes, enabled = textPathOptions.enabled;
+        path = path || (textPath && textPath.path);
+        // Remove previously added event
+        if (textPath) {
+            textPath.undo();
         }
-        else if (textPathWrapper) {
-            // Reset to prototype
-            delete this.updateTransform;
-            delete this.applyTextOutline;
-            // Restore DOM structure:
-            this.destroyTextPath(elem, path);
-            // Bring attributes back
-            this.updateTransform();
-            // Set textOutline back for text()
-            if (this.options && this.options.rotation) {
-                this.applyTextOutline(this.options.style.textOutline);
-            }
+        if (path && enabled) {
+            var undo = addEvent(textWrapper, 'afterModifyTree', function (e) {
+                if (path && enabled) {
+                    // Set ID for the path
+                    var textPathId = path.attr('id');
+                    if (!textPathId) {
+                        path.attr('id', textPathId = uniqueKey());
+                    }
+                    // Set attributes for the <text>
+                    var textAttribs = {
+                        // dx/dy options must by set on <text> (parent), the
+                        // rest should be set on <textPath>
+                        x: 0,
+                        y: 0
+                    };
+                    if (defined(attributes.dx)) {
+                        textAttribs.dx = attributes.dx;
+                        delete attributes.dx;
+                    }
+                    if (defined(attributes.dy)) {
+                        textAttribs.dy = attributes.dy;
+                        delete attributes.dy;
+                    }
+                    textWrapper.attr(textAttribs);
+                    // Handle label properties
+                    _this.attr({ transform: '' });
+                    if (_this.box) {
+                        _this.box = _this.box.destroy();
+                    }
+                    // Wrap the nodes in a textPath
+                    var children = e.nodes.slice(0);
+                    e.nodes.length = 0;
+                    e.nodes[0] = {
+                        tagName: 'textPath',
+                        attributes: extend(attributes, {
+                            'text-anchor': attributes.textAnchor,
+                            href: "".concat(url, "#").concat(textPathId)
+                        }),
+                        children: children
+                    };
+                }
+            });
+            // Set the reference
+            textWrapper.textPath = { path: path, undo: undo };
+        }
+        else {
+            textWrapper.attr({ dx: 0, dy: 0 });
+            delete textWrapper.textPath;
+        }
+        if (this.added) {
+            // Rebuild text after added
+            textWrapper.textCache = '';
+            this.renderer.buildText(textWrapper);
         }
         return this;
     };
@@ -1864,7 +1798,7 @@ var SVGElement = /** @class */ (function () {
         if (defined(scaleX) || defined(scaleY)) {
             transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
         }
-        if (transform.length) {
+        if (transform.length && !(wrapper.text || wrapper).textPath) {
             element.setAttribute('transform', transform.join(' '));
         }
     };
@@ -2104,6 +2038,12 @@ export default SVGElement;
 */ /**
 * @name Highcharts.SVGAttributes#d
 * @type {string|Highcharts.SVGPathArray|undefined}
+*/ /**
+* @name Highcharts.SVGAttributes#dx
+* @type {number|undefined}
+*/ /**
+* @name Highcharts.SVGAttributes#dy
+* @type {number|undefined}
 */ /**
 * @name Highcharts.SVGAttributes#fill
 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}

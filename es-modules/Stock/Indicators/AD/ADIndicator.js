@@ -24,6 +24,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var error = U.error, extend = U.extend, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The AD series type.
  *

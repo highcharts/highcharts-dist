@@ -43,12 +43,17 @@ var merge = U.merge, extend = U.extend, defined = U.defined, isArray = U.isArray
 var PivotPointsIndicator = /** @class */ (function (_super) {
     __extends(PivotPointsIndicator, _super);
     function PivotPointsIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        /**
+        /* *
          *
-         * Properties
+         *  Properties
          *
-         */
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
@@ -56,11 +61,11 @@ var PivotPointsIndicator = /** @class */ (function (_super) {
         _this.plotEndPoint = void 0;
         return _this;
     }
-    /**
+    /* *
      *
-     * Functions
+     *  Functions
      *
-     */
+     * */
     PivotPointsIndicator.prototype.toYData = function (point) {
         return [point.P]; // The rest should not affect extremes
     };
@@ -297,6 +302,11 @@ SeriesRegistry.registerSeriesType('pivotpoints', PivotPointsIndicator);
  *
  * */
 export default PivotPointsIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A pivot points indicator. If the [type](#series.pivotpoints.type) option is
  * not specified, it is inherited from [chart.type](#chart.type).

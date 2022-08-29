@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * 3D features for Highcharts JS
  *
@@ -35,7 +35,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/Math3D.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Math3D.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -45,9 +45,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = U.pick;
-        // Mathematical Functionility
         var deg2rad = H.deg2rad;
+        var pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /* eslint-disable max-len */
         /**
          * Apply 3-D rotation
@@ -78,6 +82,7 @@
          */
         /* eslint-enable max-len */
         /**
+         * Rotates the position as defined in angles.
          * @private
          * @param {number} x
          *        X coordinate
@@ -85,9 +90,9 @@
          *        Y coordinate
          * @param {number} z
          *        Z coordinate
-         * @param {Highcharts.Rotation3dObject} angles
+         * @param {Highcharts.Rotation3DObject} angles
          *        Rotation angles
-         * @return {Highcharts.Rotation3dObject}
+         * @return {Highcharts.Position3DObject}
          *         Rotated position
          */
         function rotate3D(x, y, z, angles) {
@@ -99,37 +104,6 @@
                     angles.cosA * angles.cosB * z
             };
         }
-        /**
-         * Perspective3D function is available in global Highcharts scope because is
-         * needed also outside of perspective() function (#8042).
-         * @private
-         * @function Highcharts.perspective3D
-         *
-         * @param {Highcharts.Position3DObject} coordinate
-         * 3D position
-         *
-         * @param {Highcharts.Position3DObject} origin
-         * 3D root position
-         *
-         * @param {number} distance
-         * Perspective distance
-         *
-         * @return {Highcharts.PositionObject}
-         * Perspective 3D Position
-         *
-         * @requires highcharts-3d
-         */
-        function perspective3D(coordinate, origin, distance) {
-            var projection = ((distance > 0) &&
-                    (distance < Number.POSITIVE_INFINITY)) ?
-                    distance / (coordinate.z + origin.z + distance) :
-                    1;
-            return {
-                x: coordinate.x * projection,
-                y: coordinate.y * projection
-            };
-        }
-        H.perspective3D = perspective3D;
         /**
          * Transforms a given array of points according to the angles in chart.options.
          *
@@ -199,7 +173,36 @@
                 };
             });
         }
-        H.perspective = perspective;
+        /**
+         * Perspective3D function is available in global Highcharts scope because is
+         * needed also outside of perspective() function (#8042).
+         * @private
+         * @function Highcharts.perspective3D
+         *
+         * @param {Highcharts.Position3DObject} coordinate
+         * 3D position
+         *
+         * @param {Highcharts.Position3DObject} origin
+         * 3D root position
+         *
+         * @param {number} distance
+         * Perspective distance
+         *
+         * @return {Highcharts.PositionObject}
+         * Perspective 3D Position
+         *
+         * @requires highcharts-3d
+         */
+        function perspective3D(coordinate, origin, distance) {
+            var projection = ((distance > 0) &&
+                    (distance < Number.POSITIVE_INFINITY)) ?
+                    distance / (coordinate.z + origin.z + distance) :
+                    1;
+            return {
+                x: coordinate.x * projection,
+                y: coordinate.y * projection
+            };
+        }
         /**
          * Calculate a distance from camera to points - made for calculating zIndex of
          * scatter points.
@@ -235,7 +238,6 @@
                 coordinates.z), 2));
             return distance;
         }
-        H.pointCameraDistance = pointCameraDistance;
         /**
          * Calculate area of a 2D polygon using Shoelace algorithm
          * https://en.wikipedia.org/wiki/Shoelace_formula
@@ -261,7 +263,6 @@
             }
             return area / 2;
         }
-        H.shapeArea = shapeArea;
         /**
          * Calculate area of a 3D polygon after perspective projection
          *
@@ -285,8 +286,12 @@
         function shapeArea3D(vertexes, chart, insidePlotArea) {
             return shapeArea(perspective(vertexes, chart, insidePlotArea));
         }
-        H.shapeArea3d = shapeArea3D;
-        var mathModule = {
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var Math3D = {
                 perspective: perspective,
                 perspective3D: perspective3D,
                 pointCameraDistance: pointCameraDistance,
@@ -294,7 +299,7 @@
                 shapeArea3D: shapeArea3D
             };
 
-        return mathModule;
+        return Math3D;
     });
     _registerModule(_modules, 'Core/Renderer/SVG/SVGElement3D.js', [_modules['Core/Color/Color.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Color, SVGElement, U) {
         /* *
@@ -480,7 +485,7 @@
 
         return SVGElement3D;
     });
-    _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer3D.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGElement3D.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Color, H, Math3D, SVGElement, SVGElement3D, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer3D.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGElement3D.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Color, H, Math3D, SVGElement, SVGElement3D, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1412,7 +1417,7 @@
 
         return SVGRenderer3D;
     });
-    _registerModule(_modules, 'Core/Chart/Chart3D.js', [_modules['Core/Color/Color.js'], _modules['Extensions/Math3D.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Color, Math3D, D, U) {
+    _registerModule(_modules, 'Core/Chart/Chart3D.js', [_modules['Core/Color/Color.js'], _modules['Core/Math3D.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Color, Math3D, D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1930,7 +1935,7 @@
                      */
                     options3d: {
                         /**
-                         * Wether to render the chart using the 3D functionality.
+                         * Whether to render the chart using the 3D functionality.
                          *
                          * @since   4.0
                          * @product highcharts
@@ -3195,56 +3200,46 @@
             merge = U.merge,
             pick = U.pick,
             splat = U.splat;
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
-         * 3D chart with support of z coordinates.
          * @private
-         * @class
          */
-        var ZChart = /** @class */ (function () {
-                function ZChart() {
-                }
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                ZChart.compose = function (ChartClass) {
-                    addEvent(ChartClass, 'afterGetAxes', ZChart.onAfterGetAxes);
-                var chartProto = ChartClass.prototype;
-                chartProto.addZAxis = ZChart.wrapAddZAxis;
-                chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
-                chartProto.collectionsWithUpdate.push('zAxis');
-            };
-            /**
-             * Get the Z axis in addition to the default X and Y.
-             * @private
-             */
-            ZChart.onAfterGetAxes = function () {
-                var chart = this;
-                var options = this.options;
-                var zAxisOptions = options.zAxis = splat(options.zAxis || {});
-                if (!chart.is3d()) {
-                    return;
-                }
-                chart.zAxis = [];
-                zAxisOptions.forEach(function (axisOptions, i) {
-                    axisOptions.index = i;
-                    // Z-Axis is shown horizontally, so it's kind of a X-Axis
-                    axisOptions.isX = true;
-                    chart
-                        .addZAxis(axisOptions)
-                        .setScale();
-                });
-            };
-            /**
-             * @private
-             */
-            ZChart.wrapAddZAxis = function (options) {
-                return new ZAxis(this, options);
-            };
-            return ZChart;
-        }());
+        function chartAddZAxis(options) {
+            return new ZAxis(this, options);
+        }
+        /**
+         * Get the Z axis in addition to the default X and Y.
+         * @private
+         */
+        function onChartAfterGetAxes() {
+            var _this = this;
+            var zAxisOptions = this.options.zAxis = splat(this.options.zAxis || {});
+            if (!this.is3d()) {
+                return;
+            }
+            this.zAxis = [];
+            zAxisOptions.forEach(function (axisOptions, i) {
+                axisOptions.index = i;
+                // Z-Axis is shown horizontally, so it's kind of a X-Axis
+                axisOptions.isX = true;
+                _this.addZAxis(axisOptions).setScale();
+            });
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * 3D axis for z coordinates.
          */
@@ -3252,7 +3247,7 @@
                 __extends(ZAxis, _super);
             /* *
              *
-             *  Constructors
+             *  Constructor
              *
              * */
             function ZAxis(chart, userOptions) {
@@ -3264,34 +3259,47 @@
             }
             /* *
              *
+             *  Static Properties
+             *
+             * */
+            ZAxis.compose = function (ChartClass) {
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
+                    var chartProto = ChartClass.prototype;
+                    chartProto.addZAxis = chartAddZAxis;
+                    chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
+                    chartProto.collectionsWithUpdate.push('zAxis');
+                }
+            };
+            /* *
+             *
              *  Functions
              *
              * */
             ZAxis.prototype.getSeriesExtremes = function () {
-                var axis = this;
-                var chart = axis.chart;
-                axis.hasVisibleSeries = false;
+                var _this = this;
+                var chart = this.chart;
+                this.hasVisibleSeries = false;
                 // Reset properties in case we're redrawing (#3353)
-                axis.dataMin = axis.dataMax = axis.ignoreMinPadding = (axis.ignoreMaxPadding = void 0);
-                if (axis.stacking) {
-                    axis.stacking.buildStacks();
+                this.dataMin = this.dataMax = this.ignoreMinPadding = (this.ignoreMaxPadding = void 0);
+                if (this.stacking) {
+                    this.stacking.buildStacks();
                 }
                 // loop through this axis' series
-                axis.series.forEach(function (series) {
+                this.series.forEach(function (series) {
                     if (series.visible ||
                         !chart.options.chart.ignoreHiddenSeries) {
-                        var seriesOptions = series.options,
-                            zData = void 0,
-                            threshold = seriesOptions.threshold;
-                        axis.hasVisibleSeries = true;
+                        var threshold = series.options.threshold;
+                        _this.hasVisibleSeries = true;
                         // Validate threshold in logarithmic axes
-                        if (axis.positiveValuesOnly && threshold <= 0) {
+                        if (_this.positiveValuesOnly && threshold <= 0) {
                             threshold = void 0;
                         }
-                        zData = series.zData;
+                        var zData = series.zData;
                         if (zData.length) {
-                            axis.dataMin = Math.min(pick(axis.dataMin, zData[0]), Math.min.apply(null, zData));
-                            axis.dataMax = Math.max(pick(axis.dataMax, zData[0]), Math.max.apply(null, zData));
+                            _this.dataMin = Math.min(pick(_this.dataMin, zData[0]), Math.min.apply(null, zData));
+                            _this.dataMax = Math.max(pick(_this.dataMax, zData[0]), Math.max.apply(null, zData));
                         }
                     }
                 });
@@ -3300,12 +3308,11 @@
              * @private
              */
             ZAxis.prototype.setAxisSize = function () {
-                var axis = this;
-                var chart = axis.chart;
+                var chart = this.chart;
                 _super.prototype.setAxisSize.call(this);
-                axis.width = axis.len = (chart.options.chart.options3d &&
+                this.width = this.len = (chart.options.chart.options3d &&
                     chart.options.chart.options3d.depth) || 0;
-                axis.right = chart.chartWidth - axis.width - axis.left;
+                this.right = chart.chartWidth - this.width - this.left;
             };
             /**
              * @private
@@ -3320,14 +3327,13 @@
                 _super.prototype.setOptions.call(this, userOptions);
                 this.coll = 'zAxis';
             };
-            /* *
-             *
-             *  Static Properties
-             *
-             * */
-            ZAxis.ZChartComposition = ZChart;
             return ZAxis;
         }(Axis));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return ZAxis;
     });
@@ -3407,7 +3413,7 @@
 
         return Tick3D;
     });
-    _registerModule(_modules, 'Core/Axis/Axis3D.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/Tick3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, Tick, Tick3D, U) {
+    _registerModule(_modules, 'Core/Axis/Axis3D.js', [_modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/Tick3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, Tick, Tick3D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4080,7 +4086,7 @@
 
         return Axis3D;
     });
-    _registerModule(_modules, 'Core/Series/Series3D.js', [_modules['Extensions/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Math3D, Series, U) {
+    _registerModule(_modules, 'Core/Series/Series3D.js', [_modules['Core/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Math3D, Series, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4224,7 +4230,107 @@
 
         return Series3D;
     });
-    _registerModule(_modules, 'Series/Column3D/Column3DComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Extensions/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, Series, Math3D, SeriesRegistry, StackItem, U) {
+    _registerModule(_modules, 'Series/Area3D/Area3DSeries.js', [_modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Math3D, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Grzegorz Blachliński
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var perspective = Math3D.perspective;
+        var lineProto = SeriesRegistry.seriesTypes.line.prototype;
+        var pick = U.pick,
+            wrap = U.wrap;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        function compose(AreaSeriesClass) {
+            if (composedClasses.indexOf(AreaSeriesClass) === -1) {
+                composedClasses.push(AreaSeriesClass);
+                wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
+            }
+        }
+        function wrapAreaSeriesGetGraphPath(proceed) {
+            var series = this,
+                svgPath = proceed.apply(series,
+                [].slice.call(arguments, 1));
+            // Do not do this if the chart is not 3D
+            if (!series.chart.is3d()) {
+                return svgPath;
+            }
+            var getGraphPath = lineProto.getGraphPath,
+                options = series.options,
+                translatedThreshold = Math.round(// #10909
+                series.yAxis.getThreshold(options.threshold));
+            var bottomPoints = [];
+            if (series.rawPointsX) {
+                for (var i = 0; i < series.points.length; i++) {
+                    bottomPoints.push({
+                        x: series.rawPointsX[i],
+                        y: options.stacking ?
+                            series.points[i].yBottom : translatedThreshold,
+                        z: series.zPadding
+                    });
+                }
+            }
+            var options3d = series.chart.options.chart.options3d;
+            bottomPoints = perspective(bottomPoints, series.chart, true).map(function (point) { return ({ plotX: point.x, plotY: point.y, plotZ: point.z }); });
+            if (series.group && options3d && options3d.depth && options3d.beta) {
+                // Markers should take the global zIndex of series group.
+                if (series.markerGroup) {
+                    series.markerGroup.add(series.group);
+                    series.markerGroup.attr({
+                        translateX: 0,
+                        translateY: 0
+                    });
+                }
+                series.group.attr({
+                    zIndex: Math.max(1, (options3d.beta > 270 || options3d.beta < 90) ?
+                        options3d.depth - Math.round(series.zPadding || 0) :
+                        Math.round(series.zPadding || 0))
+                });
+            }
+            bottomPoints.reversed = true;
+            var bottomPath = getGraphPath.call(series,
+                bottomPoints,
+                true,
+                true);
+            if (bottomPath[0] && bottomPath[0][0] === 'M') {
+                bottomPath[0] = ['L', bottomPath[0][1], bottomPath[0][2]];
+            }
+            if (series.areaPath) {
+                // Remove previously used bottomPath and add the new one.
+                var areaPath = series.areaPath.splice(0,
+                    series.areaPath.length / 2).concat(bottomPath);
+                // Use old xMap in the new areaPath
+                areaPath.xMap = series.areaPath.xMap;
+                series.areaPath = areaPath;
+            }
+            return svgPath;
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var Area3DSeries = {
+                compose: compose
+            };
+
+        return Area3DSeries;
+    });
+    _registerModule(_modules, 'Series/Column3D/Column3DComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, Series, Math3D, SeriesRegistry, StackItem, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5173,7 +5279,7 @@
 
         return Scatter3DPoint;
     });
-    _registerModule(_modules, 'Series/Scatter3D/Scatter3DSeries.js', [_modules['Extensions/Math3D.js'], _modules['Series/Scatter3D/Scatter3DPoint.js'], _modules['Series/Scatter/ScatterSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Math3D, Scatter3DPoint, ScatterSeries, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Scatter3D/Scatter3DSeries.js', [_modules['Core/Math3D.js'], _modules['Series/Scatter3D/Scatter3DPoint.js'], _modules['Series/Scatter/ScatterSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Math3D, Scatter3DPoint, ScatterSeries, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5370,100 +5476,15 @@
 
         return Scatter3DSeries;
     });
-    _registerModule(_modules, 'Series/Area3DSeries.js', [_modules['Extensions/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Math3D, SeriesRegistry, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Grzegorz Blachliński
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var perspective = Math3D.perspective;
-        var _a = SeriesRegistry.seriesTypes,
-            AreaSeriesClass = _a.area,
-            LineSeriesClass = _a.line;
-        var pick = U.pick,
-            wrap = U.wrap;
-        /* eslint-disable no-invalid-this */
-        wrap(AreaSeriesClass.prototype, 'getGraphPath', function (proceed) {
-            var series = this,
-                svgPath = proceed.apply(series,
-                [].slice.call(arguments, 1));
-            // Do not do this if the chart is not 3D
-            if (!series.chart.is3d()) {
-                return svgPath;
-            }
-            var getGraphPath = LineSeriesClass.prototype.getGraphPath,
-                graphPath = [],
-                options = series.options,
-                stacking = options.stacking,
-                bottomPath,
-                bottomPoints = [],
-                graphPoints = [],
-                i,
-                areaPath,
-                connectNulls = pick(// #10574
-                options.connectNulls,
-                stacking === 'percent'),
-                translatedThreshold = Math.round(// #10909
-                series.yAxis.getThreshold(options.threshold)),
-                options3d;
-            if (series.rawPointsX) {
-                for (var i_1 = 0; i_1 < series.points.length; i_1++) {
-                    bottomPoints.push({
-                        x: series.rawPointsX[i_1],
-                        y: options.stacking ?
-                            series.points[i_1].yBottom : translatedThreshold,
-                        z: series.zPadding
-                    });
-                }
-            }
-            options3d = series.chart.options.chart.options3d;
-            bottomPoints = perspective(bottomPoints, series.chart, true).map(function (point) {
-                return { plotX: point.x, plotY: point.y, plotZ: point.z };
-            });
-            if (series.group && options3d && options3d.depth && options3d.beta) {
-                // Markers should take the global zIndex of series group.
-                if (series.markerGroup) {
-                    series.markerGroup.add(series.group);
-                    series.markerGroup.attr({
-                        translateX: 0,
-                        translateY: 0
-                    });
-                }
-                series.group.attr({
-                    zIndex: Math.max(1, (options3d.beta > 270 || options3d.beta < 90) ?
-                        options3d.depth - Math.round(series.zPadding || 0) :
-                        Math.round(series.zPadding || 0))
-                });
-            }
-            bottomPoints.reversed = true;
-            bottomPath = getGraphPath.call(series, bottomPoints, true, true);
-            if (bottomPath[0] && bottomPath[0][0] === 'M') {
-                bottomPath[0] = ['L', bottomPath[0][1], bottomPath[0][2]];
-            }
-            if (series.areaPath) {
-                // Remove previously used bottomPath and add the new one.
-                areaPath = series.areaPath.splice(0, series.areaPath.length / 2).concat(bottomPath);
-                // Use old xMap in the new areaPath
-                areaPath.xMap = series.areaPath.xMap;
-                series.areaPath = areaPath;
-                graphPath = getGraphPath.call(series, graphPoints, false, connectNulls);
-            }
-            return svgPath;
-        });
-
-    });
-    _registerModule(_modules, 'masters/highcharts-3d.src.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer3D.js'], _modules['Core/Chart/Chart3D.js'], _modules['Core/Axis/ZAxis.js'], _modules['Core/Axis/Axis3D.js']], function (Highcharts, SVGRenderer3D, Chart3D, ZAxis, Axis3D) {
+    _registerModule(_modules, 'masters/highcharts-3d.src.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer3D.js'], _modules['Core/Chart/Chart3D.js'], _modules['Core/Axis/ZAxis.js'], _modules['Core/Axis/Axis3D.js'], _modules['Series/Area3D/Area3DSeries.js']], function (Highcharts, SVGRenderer3D, Chart3D, ZAxis, Axis3D, Area3DSeries) {
 
         var G = Highcharts;
         // Compositions
         SVGRenderer3D.compose(G.SVGRenderer);
         Chart3D.compose(G.Chart, G.Fx);
-        ZAxis.ZChartComposition.compose(G.Chart);
+        ZAxis.compose(G.Chart);
         Axis3D.compose(G.Axis);
+        Area3DSeries.compose(G.seriesTypes.area);
 
     });
 }));

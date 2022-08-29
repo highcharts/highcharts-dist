@@ -23,11 +23,15 @@ import Annotation from '../Annotation.js';
 import CrookedLine from './CrookedLine.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge;
-/* eslint-disable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 var ElliottWave = /** @class */ (function (_super) {
     __extends(ElliottWave, _super);
-    function ElliottWave(chart, options) {
-        return _super.call(this, chart, options) || this;
+    function ElliottWave() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
@@ -35,15 +39,16 @@ var ElliottWave = /** @class */ (function (_super) {
      *
      * */
     ElliottWave.prototype.addLabels = function () {
+        var _this = this;
         this.getPointsOptions().forEach(function (point, i) {
-            var typeOptions = this.options.typeOptions, label = this.initLabel(merge(point.label, {
+            var typeOptions = _this.options.typeOptions, label = _this.initLabel(merge(point.label, {
                 text: typeOptions.labels[i],
                 point: function (target) {
                     return target.annotation.points[i];
                 }
             }), false);
             point.label = label.options;
-        }, this);
+        });
     };
     return ElliottWave;
 }(CrookedLine));
@@ -83,11 +88,6 @@ ElliottWave.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOption
         y: -5
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.elliottWave = ElliottWave;
 /* *
  *

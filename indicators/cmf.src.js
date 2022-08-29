@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -68,6 +68,11 @@
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The CMF series type.
          *
@@ -80,6 +85,11 @@
         var CMFIndicator = /** @class */ (function (_super) {
                 __extends(CMFIndicator, _super);
             function CMFIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -96,6 +106,11 @@
                 _this.nameBase = 'Chaikin Money Flow';
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Checks if the series and volumeSeries are accessible, number of
              * points.x is longer than period, is series has OHLC data
@@ -281,6 +296,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

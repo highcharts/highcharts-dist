@@ -27,7 +27,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var isArray = U.isArray, merge = U.merge, extend = U.extend;
-/* eslint-disable require-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 function populateAverage(xVal, yVal, i, period, index) {
     /* Calculated as:
@@ -53,7 +57,6 @@ function populateAverage(xVal, yVal, i, period, index) {
     }
     return [xVal[i], rocY];
 }
-/* eslint-enable require-jsdoc */
 /* *
  *
  *  Class
@@ -71,6 +74,11 @@ function populateAverage(xVal, yVal, i, period, index) {
 var ROCIndicator = /** @class */ (function (_super) {
     __extends(ROCIndicator, _super);
     function ROCIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -152,6 +160,11 @@ SeriesRegistry.registerSeriesType('roc', ROCIndicator);
  *
  * */
 export default ROCIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `ROC` series. If the [type](#series.wma.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

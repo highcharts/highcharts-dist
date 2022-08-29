@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -372,7 +372,6 @@
          *  Functions
          *
          * */
-        /* eslint-disable valid-jsdoc */
         // Utils:
         /**
          * @private
@@ -586,6 +585,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

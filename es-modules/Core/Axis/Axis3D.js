@@ -12,7 +12,7 @@
 'use strict';
 import H from '../Globals.js';
 var deg2rad = H.deg2rad;
-import Math3D from '../../Extensions/Math3D.js';
+import Math3D from '../Math3D.js';
 var perspective = Math3D.perspective, perspective3D = Math3D.perspective3D, shapeArea = Math3D.shapeArea;
 import Tick from './Tick.js';
 import Tick3D from './Tick3D.js';

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Debugger module
  *
@@ -149,7 +149,7 @@
 
         return errorMessages;
     });
-    _registerModule(_modules, 'Extensions/Debugger/Debugger.js', [_modules['Core/Chart/Chart.js'], _modules['Extensions/Debugger/ErrorMessages.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Chart, ErrorMessages, H, D, U) {
+    _registerModule(_modules, 'Extensions/Debugger/Debugger.js', [_modules['Extensions/Debugger/ErrorMessages.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (ErrorMessages, H, D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -159,55 +159,94 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var charts = H.charts;
         var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             find = U.find,
             isNumber = U.isNumber;
         /* *
          *
-         *  Compositions
+         *  Constants
          *
          * */
-        setOptions({
-            /**
-             * @optionparent chart
-             */
-            chart: {
+        var composedClasses = [];
+        var defaultOptions = {
                 /**
-                 * Whether to display errors on the chart. When `false`, the errors will
-                 * be shown only in the console.
-                 *
-                 * @sample highcharts/chart/display-errors/
-                 *         Show errors on chart
-                 *
-                 * @since    7.0.0
-                 * @requires modules/debugger
+                 * @optionparent chart
                  */
-                displayErrors: true
+                chart: {
+                    /**
+                     * Whether to display errors on the chart. When `false`,
+            the errors will
+                     * be shown only in the console.
+                     *
+                     * @sample highcharts/chart/display-errors/
+                     *         Show errors on chart
+                     *
+                     * @since    7.0.0
+                     * @requires modules/debugger
+                     */
+                    displayErrors: true
+                }
+            };
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function compose(ChartClass) {
+            if (composedClasses.indexOf(ChartClass) === -1) {
+                composedClasses.push(ChartClass);
+                addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
             }
-        });
-        /* eslint-disable no-invalid-this */
-        addEvent(H, 'displayError', function (e) {
+            if (composedClasses.indexOf(H) === -1) {
+                composedClasses.push(H);
+                addEvent(H, 'displayError', onHighchartsDisplayError);
+            }
+            if (composedClasses.indexOf(setOptions) === -1) {
+                composedClasses.push(setOptions);
+                setOptions(defaultOptions);
+            }
+        }
+        /**
+         * @private
+         */
+        function onChartBeforeRedraw() {
+            var errorElements = this.errorElements;
+            if (errorElements && errorElements.length) {
+                for (var _i = 0, errorElements_1 = errorElements; _i < errorElements_1.length; _i++) {
+                    var el = errorElements_1[_i];
+                    el.destroy();
+                }
+            }
+            delete this.errorElements;
+        }
+        /**
+         * @private
+         */
+        function onHighchartsDisplayError(e) {
             // Display error on the chart causing the error or the last created chart.
-            var chart = e.chart ||
-                    find(charts.slice().reverse(),
-                function (c) { return !!c; });
+            var chart = (e.chart ||
+                    find(this.charts.slice().reverse(),
+                function (c) { return !!c; }));
             if (!chart) {
                 return;
             }
             var code = e.code,
-                msg,
                 options = chart.options.chart,
-                renderer = chart.renderer,
+                renderer = chart.renderer;
+            var msg,
                 chartWidth,
                 chartHeight;
             if (chart.errorElements) {
-                chart.errorElements.forEach(function (el) {
+                for (var _i = 0, _a = chart.errorElements; _i < _a.length; _i++) {
+                    var el = _a[_i];
                     if (el) {
                         el.destroy();
                     }
-                });
+                }
             }
             if (options && options.displayErrors && renderer) {
                 chart.errorElements = [];
@@ -243,21 +282,23 @@
                     y: chartHeight - chart.errorElements[1].getBBox().height
                 });
             }
-        });
-        addEvent(Chart, 'beforeRedraw', function () {
-            var errorElements = this.errorElements;
-            if (errorElements && errorElements.length) {
-                errorElements.forEach(function (el) {
-                    el.destroy();
-                });
-            }
-            delete this.errorElements;
-        });
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var Debugger = {
+                compose: compose
+            };
 
+        return Debugger;
     });
-    _registerModule(_modules, 'masters/modules/debugger.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Debugger/ErrorMessages.js']], function (Highcharts, ErrorMessages) {
+    _registerModule(_modules, 'masters/modules/debugger.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Debugger/Debugger.js'], _modules['Extensions/Debugger/ErrorMessages.js']], function (Highcharts, Debugger, ErrorMessages) {
 
-        Highcharts.errorMessages = ErrorMessages;
+        var G = Highcharts;
+        G.errorMessages = ErrorMessages;
+        Debugger.compose(G.Chart);
 
     });
 }));

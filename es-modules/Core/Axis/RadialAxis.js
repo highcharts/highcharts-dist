@@ -661,7 +661,7 @@ var RadialAxis;
         // Disable certain features on angular and polar axes
         if (angular || polar) {
             this.isRadial = true;
-            chartOptions.chart.zoomType = null;
+            chartOptions.chart.zooming.type = null;
             if (!this.labelCollector) {
                 this.labelCollector = this.createLabelCollector();
             }

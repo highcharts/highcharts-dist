@@ -124,7 +124,7 @@ var ColumnPyramidSeries = /** @class */ (function (_super) {
                     (chart.plotHeight - translatedThreshold);
             // topXwidth and bottomXwidth = width of lines from the center
             // calculated from tanges proportion.
-            // Can not be a NaN #12514
+            // Cannot be a NaN #12514
             topXwidth = stackHeight ?
                 (barW * (barY - topPointY)) / stackHeight : 0;
             // like topXwidth, but with height of point

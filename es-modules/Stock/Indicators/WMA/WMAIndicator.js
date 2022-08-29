@@ -27,7 +27,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var isArray = U.isArray, merge = U.merge;
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 /**
  * @private
@@ -57,7 +61,11 @@ function populateAverage(points, xVal, yVal, i) {
     points.shift(); // remove point until range < period
     return [wmaX, wmaY];
 }
-/* eslint-enable valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The SMA series type.
  *
@@ -70,12 +78,27 @@ function populateAverage(points, xVal, yVal, i) {
 var WMAIndicator = /** @class */ (function (_super) {
     __extends(WMAIndicator, _super);
     function WMAIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     WMAIndicator.prototype.getValues = function (series, params) {
         var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, range = 1, xValue = xVal[0], yValue = yVal[0], WMA = [], xData = [], yData = [], index = -1, i, points, WMAPoint;
         if (xVal.length < period) {
@@ -140,6 +163,11 @@ SeriesRegistry.registerSeriesType('wma', WMAIndicator);
  *
  * */
 export default WMAIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `WMA` series. If the [type](#series.wma.type) option is not specified, it
  * is inherited from [chart.type](#chart.type).

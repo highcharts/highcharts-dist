@@ -30,10 +30,70 @@ import U from '../../../Core/Utilities.js';
 var merge = U.merge;
 /* *
  *
+ *  Functions
+ *
+ * */
+/**
+Method taken (and slightly changed) from the InfinityLine annotation.
+
+It uses x coordinate to create two mock points on the same x. Then,
+it uses some logic from InfinityLine to find equation of the line passing
+through our two points and, using that equation, it finds and returns
+the coordinates of where the line intersects the plot area edges.
+
+This is being done for each fibonacci time zone line.
+
+
+        this point here is found
+            |
+            v
+    |---------*--------------------------------------------------------|
+    |                                                                  |
+    |                                                                  |
+    |                                                                  |
+    |                                                                  |
+    |         *   copy of the primary point                            |
+    |                                                                  |
+    |         *   primary point (e.g. the one given in options)        |
+    |                                                                  |
+    |---------*--------------------------------------------------------|
+        and this point here is found (intersection with the plot area edge)
+
+* @private
+*/
+function edgePoint(startIndex, endIndex, fibonacciIndex) {
+    return function (target) {
+        var chart = target.annotation.chart, plotLeftOrTop = chart.inverted ? chart.plotTop : chart.plotLeft;
+        var points = target.annotation.points;
+        var xAxis = points[0].series.xAxis, 
+        // Distance between the two first lines in pixels
+        deltaX = points.length > 1 ?
+            points[1].plotX - points[0].plotX : 0, 
+        // firstLine.x + fibb * offset
+        x = xAxis.toValue(points[0].plotX + plotLeftOrTop + fibonacciIndex * deltaX);
+        // We need 2 mock points with the same x coordinate, different y
+        points = [
+            new MockPoint(chart, points[0].target, {
+                x: x,
+                y: 0,
+                xAxis: points[0].options.xAxis,
+                yAxis: points[0].options.yAxis
+            }),
+            new MockPoint(chart, points[0].target, {
+                x: x,
+                y: 1,
+                xAxis: points[0].options.xAxis,
+                yAxis: points[0].options.yAxis
+            })
+        ];
+        return InfinityLine.findEdgePoint(points[startIndex], points[endIndex]);
+    };
+}
+/* *
+ *
  *  Class
  *
  * */
-/* eslint-disable no-invalid-this, valid-jsdoc */
 var FibonacciTimeZones = /** @class */ (function (_super) {
     __extends(FibonacciTimeZones, _super);
     function FibonacciTimeZones() {
@@ -44,61 +104,6 @@ var FibonacciTimeZones = /** @class */ (function (_super) {
      *  Functions
      *
      * */
-    /*
-    Method taken (and slightly changed) from the InfinityLine annotation.
-
-    It uses x coordinate to create two mock points on the same x. Then,
-    it uses some logic from InfinityLine to find equation of the line passing
-    through our two points and, using that equation, it finds and returns
-    the coordinates of where the line intersects the plot area edges.
-
-    This is being done for each fibonacci time zone line.
-
-
-            this point here is found
-               |
-               v
-     |---------*--------------------------------------------------------|
-     |                                                                  |
-     |                                                                  |
-     |                                                                  |
-     |                                                                  |
-     |         *   copy of the primary point                            |
-     |                                                                  |
-     |         *   primary point (e.g. the one given in options)        |
-     |                                                                  |
-     |---------*--------------------------------------------------------|
-            and this point here is found (intersection with the plot area edge)
-
-    */
-    FibonacciTimeZones.prototype.edgePoint = function (startIndex, endIndex, fibonacciIndex) {
-        return function (target) {
-            var chart = target.annotation.chart, plotLeftOrTop = chart.inverted ? chart.plotTop : chart.plotLeft;
-            var points = target.annotation.points;
-            var xAxis = points[0].series.xAxis, 
-            // Distance between the two first lines in pixels
-            deltaX = points.length > 1 ?
-                points[1].plotX - points[0].plotX : 0, 
-            // firstLine.x + fibb * offset
-            x = xAxis.toValue(points[0].plotX + plotLeftOrTop + fibonacciIndex * deltaX);
-            // We need 2 mock points with the same x coordinate, different y
-            points = [
-                new MockPoint(chart, points[0].target, {
-                    x: x,
-                    y: 0,
-                    xAxis: points[0].options.xAxis,
-                    yAxis: points[0].options.yAxis
-                }),
-                new MockPoint(chart, points[0].target, {
-                    x: x,
-                    y: 1,
-                    xAxis: points[0].options.xAxis,
-                    yAxis: points[0].options.yAxis
-                })
-            ];
-            return InfinityLine.findEdgePoint(points[startIndex], points[endIndex]);
-        };
-    };
     FibonacciTimeZones.prototype.addShapes = function () {
         var numberOfLines = 11;
         var fibb = 1, nextFibb = 1;
@@ -106,8 +111,8 @@ var FibonacciTimeZones = /** @class */ (function (_super) {
             // The fibb variable equals to 1 twice - correct it in the first
             // iteration so the lines don't overlap
             var correctedFibb = !i ? 0 : fibb, points = [
-                this.edgePoint(1, 0, correctedFibb),
-                this.edgePoint(0, 1, correctedFibb)
+                edgePoint(1, 0, correctedFibb),
+                edgePoint(0, 1, correctedFibb)
             ];
             // Calculate fibbonacci
             nextFibb = fibb + nextFibb;
@@ -184,11 +189,6 @@ FibonacciTimeZones.prototype.defaultOptions = merge(CrookedLine.prototype.defaul
         }
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.fibonacciTimeZones = FibonacciTimeZones;
 /* *
  *

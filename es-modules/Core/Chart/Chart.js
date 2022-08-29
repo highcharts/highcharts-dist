@@ -219,6 +219,15 @@ var Chart = /** @class */ (function () {
             this.labelCollectors = [];
             this.callback = callback;
             this.isResizing = 0;
+            var zooming = optionsChart.zooming = optionsChart.zooming || {};
+            // Other options have no default so just pick
+            if (userOptions.chart && !userOptions.chart.zooming) {
+                zooming.resetButton = optionsChart.resetZoomButton;
+            }
+            zooming.key = pick(zooming.key, optionsChart.zoomKey);
+            zooming.pinchType = pick(zooming.pinchType, optionsChart.pinchType);
+            zooming.singleTouch = pick(zooming.singleTouch, optionsChart.zoomBySingleTouch);
+            zooming.type = pick(zooming.type, optionsChart.zoomType);
             /**
              * The options structure for the chart after merging
              * {@link #defaultOptions} and {@link #userOptions}. It contains
@@ -2515,7 +2524,7 @@ var Chart = /** @class */ (function () {
      * @emits Highcharts.Chart#event:beforeShowResetZoom
      */
     Chart.prototype.showResetZoom = function () {
-        var chart = this, lang = defaultOptions.lang, btnOptions = chart.options.chart.resetZoomButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
+        var chart = this, lang = defaultOptions.lang, btnOptions = chart.options.chart.zooming.resetButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
             btnOptions.relativeTo === 'spacingBox' ?
             null :
             'scrollablePlotBox');
@@ -2740,6 +2749,8 @@ extend(Chart.prototype, {
      *
      * Note: We need to define these references after initializers are bound to
      * chart's prototype.
+     *
+     * @private
      */
     collectionsWithInit: {
         // collectionName: [ initializingMethod, [extraArguments] ]
@@ -2750,6 +2761,7 @@ extend(Chart.prototype, {
     /**
      * These collections (arrays) implement update() methods with support for
      * one-to-one option.
+     * @private
      */
     collectionsWithUpdate: [
         'xAxis',
@@ -2759,6 +2771,7 @@ extend(Chart.prototype, {
     /**
      * These properties cause isDirtyBox to be set to true when updating. Can be
      * extended from plugins.
+     * @private
      */
     propsRequireDirtyBox: [
         'backgroundColor',
@@ -2775,7 +2788,7 @@ extend(Chart.prototype, {
     /**
      * These properties require a full reflow of chart elements, best
      * implemented through running `Chart.setSize` internally (#8190).
-     * @type {Array}
+     * @private
      */
     propsRequireReflow: [
         'margin',
@@ -2792,6 +2805,7 @@ extend(Chart.prototype, {
     /**
      * These properties cause all series to be updated when updating. Can be
      * extended from plugins.
+     * @private
      */
     propsRequireUpdateSeries: [
         'chart.inverted',

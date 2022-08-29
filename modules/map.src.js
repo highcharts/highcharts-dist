@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.2.0 (2022-07-05)
+ * @license Highmaps JS v10.2.1 (2022-08-29)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -707,6 +707,10 @@
                  * first item is a float between 0 and 1 assigning the relative
                  * position in the gradient, and the second item is the color.
                  *
+                 * @sample highcharts/coloraxis/coloraxis-stops/
+                 *         Color axis stops
+                 * @sample highcharts/coloraxis/color-key-with-stops/
+                 *         Color axis stops with custom colorKey
                  * @sample {highmaps} maps/demo/heatmap/
                  *         Heatmap with three color stops
                  *
@@ -2180,7 +2184,7 @@
             var mapNavigation = this.chart.options.mapNavigation;
             // Pinch status
             if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
-                this.chart.options.chart.pinchType = 'xy';
+                this.chart.options.chart.zooming.pinchType = 'xy';
             }
             proceed.apply(this, [].slice.call(arguments, 1));
         });
@@ -4664,7 +4668,8 @@
             relativeLength = U.relativeLength;
         /**
          * The world size in terms of 10k meters in the Web Mercator projection, to
-         * match a 256 square tile to zoom level 0
+         * match a 256 square tile to zoom level 0.
+         * @private
          */
         var worldSize = 400.979322;
         var tileSize = 256;
@@ -6426,6 +6431,8 @@
              * @excluding    marker, cluster
              * @product      highmaps
              * @optionparent plotOptions.map
+             *
+             * @private
              */
             MapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
                 /**
@@ -6436,6 +6443,8 @@
                  *         US map with world map backdrop
                  *
                  * @since 10.0.0
+                 *
+                 * @private
                  */
                 affectsMapView: true,
                 animation: false,
@@ -6829,8 +6838,9 @@
          * The geometry type. Can be one of `LineString`, `Polygon`, `MultiLineString`
          * or `MultiPolygon`.
          *
+         * @declare   Highcharts.MapGeometryTypeValue
          * @type      {string}
-         * @since 9.3.0
+         * @since     9.3.0
          * @product   highmaps
          * @validvalue ["LineString", "Polygon", "MultiLineString", "MultiPolygon"]
          * @apioption series.map.data.geometry.type
@@ -7857,28 +7867,11 @@
             merge = U.merge,
             pick = U.pick,
             stableSort = U.stableSort;
-        /**
-         * @interface Highcharts.BubbleLegendFormatterContextObject
-         */ /**
-        * The center y position of the range.
-        * @name Highcharts.BubbleLegendFormatterContextObject#center
-        * @type {number}
-        */ /**
-        * The radius of the bubble range.
-        * @name Highcharts.BubbleLegendFormatterContextObject#radius
-        * @type {number}
-        */ /**
-        * The bubble value.
-        * @name Highcharts.BubbleLegendFormatterContextObject#value
-        * @type {number}
-        */
-        ''; // detach doclets above
         /* *
          *
          *  Class
          *
          * */
-        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * BubbleLegend class.
          *
@@ -7892,7 +7885,17 @@
          * Legend of item.
          */
         var BubbleLegendItem = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
                 function BubbleLegendItem(options, legend) {
+                    /* *
+                     *
+                     *  Properties
+                     *
+                     * */
                     this.chart = void 0;
                 this.fontMetrics = void 0;
                 this.legend = void 0;
@@ -7911,15 +7914,14 @@
                 this.setState = noop;
                 this.init(options, legend);
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Create basic bubbleLegend properties similar to item in legend.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#init
-             * @param {Highcharts.LegendBubbleLegendOptions} options
-             *        Bubble legend options
-             * @param {Highcharts.Legend} legend
-             *        Legend
              */
             BubbleLegendItem.prototype.init = function (options, legend) {
                 this.options = options;
@@ -7931,9 +7933,9 @@
              * Depending on the position option, add bubbleLegend to legend items.
              *
              * @private
-             * @function Highcharts.BubbleLegend#addToLegend
+             *
              * @param {Array<(Highcharts.Point|Highcharts.Series)>} items
-             * All legend items
+             *        All legend items
              */
             BubbleLegendItem.prototype.addToLegend = function (items) {
                 // Insert bubbleLegend into legend items
@@ -7944,7 +7946,7 @@
              * creation.
              *
              * @private
-             * @function Highcharts.BubbleLegend#drawLegendSymbol
+             *
              * @param {Highcharts.Legend} legend
              *        Legend instance
              */
@@ -7986,9 +7988,7 @@
             };
             /**
              * Set style options for each bubbleLegend range.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#setOptions
              */
             BubbleLegendItem.prototype.setOptions = function () {
                 var ranges = this.ranges,
@@ -8040,9 +8040,10 @@
              * used code from BubbleSeries.js 'getRadius' method.
              *
              * @private
-             * @function Highcharts.BubbleLegend#getRangeRadius
+             *
              * @param {number} value
              *        Range value
+             *
              * @return {number|null}
              *         Radius for one range
              */
@@ -8058,9 +8059,7 @@
             };
             /**
              * Render the legendSymbol group.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#render
              */
             BubbleLegendItem.prototype.render = function () {
                 var renderer = this.chart.renderer,
@@ -8092,7 +8091,7 @@
              * Render one range, consisting of bubble symbol, connector and label.
              *
              * @private
-             * @function Highcharts.BubbleLegend#renderRange
+             *
              * @param {Highcharts.LegendBubbleLegendRangesOptions} range
              *        Range options
              */
@@ -8173,9 +8172,7 @@
             };
             /**
              * Get the label which takes up the most space.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#getMaxLabelSize
              */
             BubbleLegendItem.prototype.getMaxLabelSize = function () {
                 var labels = this.symbols.labels;
@@ -8197,9 +8194,10 @@
              * Get formatted label for range.
              *
              * @private
-             * @function Highcharts.BubbleLegend#formatLabel
+             *
              * @param {Highcharts.LegendBubbleLegendRangesOptions} range
              *        Range options
+             *
              * @return {string}
              *         Range label text
              */
@@ -8215,9 +8213,7 @@
             /**
              * By using default chart 'hideOverlappingLabels' method, hide or show
              * labels and connectors.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#hideOverlappingLabels
              */
             BubbleLegendItem.prototype.hideOverlappingLabels = function () {
                 var chart = this.chart,
@@ -8240,7 +8236,7 @@
              * Calculate ranges from created series.
              *
              * @private
-             * @function Highcharts.BubbleLegend#getRanges
+             *
              * @return {Array<Highcharts.LegendBubbleLegendRangesOptions>}
              *         Array of range objects
              */
@@ -8292,7 +8288,7 @@
              * Calculate bubble legend sizes from rendered series.
              *
              * @private
-             * @function Highcharts.BubbleLegend#predictBubbleSizes
+             *
              * @return {Array<number,number>}
              *         Calculated min and max bubble sizes
              */
@@ -8333,11 +8329,7 @@
             };
             /**
              * Correct ranges with calculated sizes.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#updateRanges
-             * @param {number} min
-             * @param {number} max
              */
             BubbleLegendItem.prototype.updateRanges = function (min, max) {
                 var bubbleLegendOptions = this.legend.options.bubbleLegend;
@@ -8349,9 +8341,7 @@
              * Because of the possibility of creating another legend line, predicted
              * bubble legend sizes may differ by a few pixels, so it is necessary to
              * correct them.
-             *
              * @private
-             * @function Highcharts.BubbleLegend#correctSizes
              */
             BubbleLegendItem.prototype.correctSizes = function () {
                 var legend = this.legend,
@@ -8373,6 +8363,27 @@
          *  Default Export
          *
          * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * @interface Highcharts.BubbleLegendFormatterContextObject
+         */ /**
+        * The center y position of the range.
+        * @name Highcharts.BubbleLegendFormatterContextObject#center
+        * @type {number}
+        */ /**
+        * The radius of the bubble range.
+        * @name Highcharts.BubbleLegendFormatterContextObject#radius
+        * @type {number}
+        */ /**
+        * The bubble value.
+        * @name Highcharts.BubbleLegendFormatterContextObject#value
+        * @type {number}
+        */
+        ''; // detach doclets above
 
         return BubbleLegendItem;
     });
@@ -8394,282 +8405,274 @@
             wrap = U.wrap;
         /* *
          *
-         *  Namespace
+         *  Constants
          *
          * */
-        var BubbleLegendComposition;
-        (function (BubbleLegendComposition) {
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * If ranges are not specified, determine ranges from rendered bubble series
-             * and render legend again.
-             */
-            function chartDrawChartBox(proceed, options, callback) {
-                var chart = this,
-                    legend = chart.legend,
-                    bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
-                var bubbleLegendOptions,
-                    bubbleSizes;
-                if (legend && legend.options.enabled && legend.bubbleLegend &&
-                    legend.options.bubbleLegend.autoRanges && bubbleSeries) {
-                    bubbleLegendOptions = legend.bubbleLegend.options;
-                    bubbleSizes = legend.bubbleLegend.predictBubbleSizes();
-                    legend.bubbleLegend.updateRanges(bubbleSizes[0], bubbleSizes[1]);
-                    // Disable animation on init
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * If ranges are not specified, determine ranges from rendered bubble series
+         * and render legend again.
+         */
+        function chartDrawChartBox(proceed, options, callback) {
+            var chart = this,
+                legend = chart.legend,
+                bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
+            var bubbleLegendOptions,
+                bubbleSizes;
+            if (legend && legend.options.enabled && legend.bubbleLegend &&
+                legend.options.bubbleLegend.autoRanges && bubbleSeries) {
+                bubbleLegendOptions = legend.bubbleLegend.options;
+                bubbleSizes = legend.bubbleLegend.predictBubbleSizes();
+                legend.bubbleLegend.updateRanges(bubbleSizes[0], bubbleSizes[1]);
+                // Disable animation on init
+                if (!bubbleLegendOptions.placed) {
+                    legend.group.placed = false;
+                    legend.allItems.forEach(function (item) {
+                        item.legendGroup.translateY = null;
+                    });
+                }
+                // Create legend with bubbleLegend
+                legend.render();
+                chart.getMargins();
+                chart.axes.forEach(function (axis) {
+                    if (axis.visible) { // #11448
+                        axis.render();
+                    }
                     if (!bubbleLegendOptions.placed) {
-                        legend.group.placed = false;
-                        legend.allItems.forEach(function (item) {
-                            item.legendGroup.translateY = null;
+                        axis.setScale();
+                        axis.updateNames();
+                        // Disable axis animation on init
+                        objectEach(axis.ticks, function (tick) {
+                            tick.isNew = true;
+                            tick.isNewLabel = true;
                         });
                     }
-                    // Create legend with bubbleLegend
+                });
+                bubbleLegendOptions.placed = true;
+                // After recalculate axes, calculate margins again.
+                chart.getMargins();
+                // Call default 'drawChartBox' method.
+                proceed.call(chart, options, callback);
+                // Check bubble legend sizes and correct them if necessary.
+                legend.bubbleLegend.correctSizes();
+                // Correct items positions with different dimensions in legend.
+                retranslateItems(legend, getLinesHeights(legend));
+            }
+            else {
+                proceed.call(chart, options, callback);
+                // Allow color change on static bubble legend after click on legend
+                if (legend && legend.options.enabled && legend.bubbleLegend) {
                     legend.render();
-                    chart.getMargins();
-                    chart.axes.forEach(function (axis) {
-                        if (axis.visible) { // #11448
-                            axis.render();
-                        }
-                        if (!bubbleLegendOptions.placed) {
-                            axis.setScale();
-                            axis.updateNames();
-                            // Disable axis animation on init
-                            objectEach(axis.ticks, function (tick) {
-                                tick.isNew = true;
-                                tick.isNewLabel = true;
-                            });
-                        }
-                    });
-                    bubbleLegendOptions.placed = true;
-                    // After recalculate axes, calculate margins again.
-                    chart.getMargins();
-                    // Call default 'drawChartBox' method.
-                    proceed.call(chart, options, callback);
-                    // Check bubble legend sizes and correct them if necessary.
-                    legend.bubbleLegend.correctSizes();
-                    // Correct items positions with different dimensions in legend.
                     retranslateItems(legend, getLinesHeights(legend));
                 }
-                else {
-                    proceed.call(chart, options, callback);
-                    // Allow color change on static bubble legend after click on legend
-                    if (legend && legend.options.enabled && legend.bubbleLegend) {
-                        legend.render();
-                        retranslateItems(legend, getLinesHeights(legend));
-                    }
-                }
             }
-            /**
-             * Compose classes for use with Bubble series.
-             * @private
-             *
-             * @param {Highcharts.Chart} ChartClass
-             * Core chart class to use with Bubble series.
-             *
-             * @param {Highcharts.Legend} LegendClass
-             * Core legend class to use with Bubble series.
-             *
-             * @param {Highcharts.Series} SeriesClass
-             * Core series class to use with Bubble series.
-             */
-            function compose(ChartClass, LegendClass, SeriesClass) {
-                if (composedClasses.indexOf(ChartClass) === -1) {
-                    composedClasses.push(ChartClass);
-                    setOptions({
-                        // Set default bubble legend options
-                        legend: {
-                            bubbleLegend: BubbleLegendDefaults
-                        }
-                    });
-                    wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
-                }
-                if (composedClasses.indexOf(LegendClass) === -1) {
-                    composedClasses.push(LegendClass);
-                    addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-                }
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
-                    addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
-                }
-            }
-            BubbleLegendComposition.compose = compose;
-            /**
-             * Check if there is at least one visible bubble series.
-             *
-             * @private
-             * @function getVisibleBubbleSeriesIndex
-             * @param {Highcharts.Chart} chart
-             * Chart to check.
-             * @return {number}
-             * First visible bubble series index
-             */
-            function getVisibleBubbleSeriesIndex(chart) {
-                var series = chart.series;
-                var i = 0;
-                while (i < series.length) {
-                    if (series[i] &&
-                        series[i].isBubble &&
-                        series[i].visible &&
-                        series[i].zData.length) {
-                        return i;
+        }
+        /**
+         * Compose classes for use with Bubble series.
+         * @private
+         *
+         * @param {Highcharts.Chart} ChartClass
+         * Core chart class to use with Bubble series.
+         *
+         * @param {Highcharts.Legend} LegendClass
+         * Core legend class to use with Bubble series.
+         *
+         * @param {Highcharts.Series} SeriesClass
+         * Core series class to use with Bubble series.
+         */
+        function compose(ChartClass, LegendClass, SeriesClass) {
+            if (composedClasses.indexOf(ChartClass) === -1) {
+                composedClasses.push(ChartClass);
+                setOptions({
+                    // Set default bubble legend options
+                    legend: {
+                        bubbleLegend: BubbleLegendDefaults
                     }
-                    i++;
-                }
-                return -1;
-            }
-            /**
-             * Calculate height for each row in legend.
-             *
-             * @private
-             * @function getLinesHeights
-             *
-             * @param {Highcharts.Legend} legend
-             * Legend to calculate from.
-             *
-             * @return {Array<Highcharts.Dictionary<number>>}
-             * Informations about line height and items amount
-             */
-            function getLinesHeights(legend) {
-                var items = legend.allItems,
-                    lines = [],
-                    length = items.length;
-                var lastLine,
-                    i = 0,
-                    j = 0;
-                for (i = 0; i < length; i++) {
-                    if (items[i].legendItemHeight) {
-                        // for bubbleLegend
-                        items[i].itemHeight = items[i].legendItemHeight;
-                    }
-                    if ( // Line break
-                    items[i] === items[length - 1] ||
-                        items[i + 1] &&
-                            items[i]._legendItemPos[1] !==
-                                items[i + 1]._legendItemPos[1]) {
-                        lines.push({ height: 0 });
-                        lastLine = lines[lines.length - 1];
-                        // Find the highest item in line
-                        for (j; j <= i; j++) {
-                            if (items[j].itemHeight > lastLine.height) {
-                                lastLine.height = items[j].itemHeight;
-                            }
-                        }
-                        lastLine.step = i;
-                    }
-                }
-                return lines;
-            }
-            /**
-             * Start the bubble legend creation process.
-             */
-            function onLegendAfterGetAllItems(e) {
-                var legend = this,
-                    bubbleLegend = legend.bubbleLegend,
-                    legendOptions = legend.options,
-                    options = legendOptions.bubbleLegend,
-                    bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
-                // Remove unnecessary element
-                if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
-                    // Allow change the way of calculating ranges in update
-                    if (options.ranges.length) {
-                        options.autoRanges =
-                            !!options.ranges[0].autoRanges;
-                    }
-                    // Update bubbleLegend dimensions in each redraw
-                    legend.destroyItem(bubbleLegend);
-                }
-                // Create bubble legend
-                if (bubbleSeriesIndex >= 0 &&
-                    legendOptions.enabled &&
-                    options.enabled) {
-                    options.seriesIndex = bubbleSeriesIndex;
-                    legend.bubbleLegend = new BubbleLegendItem(options, legend);
-                    legend.bubbleLegend.addToLegend(e.allItems);
-                }
-            }
-            /**
-             * Toggle bubble legend depending on the visible status of bubble series.
-             */
-            function onSeriesLegendItemClick() {
-                var series = this,
-                    chart = series.chart,
-                    visible = series.visible,
-                    legend = series.chart.legend;
-                var status;
-                if (legend && legend.bubbleLegend) {
-                    // Temporary correct 'visible' property
-                    series.visible = !visible;
-                    // Save future status for getRanges method
-                    series.ignoreSeries = visible;
-                    // Check if at lest one bubble series is visible
-                    status = getVisibleBubbleSeriesIndex(chart) >= 0;
-                    // Hide bubble legend if all bubble series are disabled
-                    if (legend.bubbleLegend.visible !== status) {
-                        // Show or hide bubble legend
-                        legend.update({
-                            bubbleLegend: { enabled: status }
-                        });
-                        legend.bubbleLegend.visible = status; // Restore default status
-                    }
-                    series.visible = visible;
-                }
-            }
-            /**
-             * Correct legend items translation in case of different elements heights.
-             *
-             * @private
-             * @function Highcharts.Legend#retranslateItems
-             *
-             * @param {Highcharts.Legend} legend
-             * Legend to translate in.
-             *
-             * @param {Array<Highcharts.Dictionary<number>>} lines
-             * Informations about line height and items amount
-             */
-            function retranslateItems(legend, lines) {
-                var items = legend.allItems,
-                    rtl = legend.options.rtl;
-                var orgTranslateX,
-                    orgTranslateY,
-                    movementX,
-                    actualLine = 0;
-                items.forEach(function (item, index) {
-                    orgTranslateX = item.legendGroup.translateX;
-                    orgTranslateY = item._legendItemPos[1];
-                    movementX = item.movementX;
-                    if (movementX || (rtl && item.ranges)) {
-                        movementX = rtl ?
-                            orgTranslateX - item.options.maxSize / 2 :
-                            orgTranslateX + movementX;
-                        item.legendGroup.attr({ translateX: movementX });
-                    }
-                    if (index > lines[actualLine].step) {
-                        actualLine++;
-                    }
-                    item.legendGroup.attr({
-                        translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
-                    });
-                    item._legendItemPos[1] = orgTranslateY +
-                        lines[actualLine].height / 2;
                 });
+                wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
             }
-            /* eslint-disable valid-jsdoc */
-        })(BubbleLegendComposition || (BubbleLegendComposition = {}));
+            if (composedClasses.indexOf(LegendClass) === -1) {
+                composedClasses.push(LegendClass);
+                addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
+            }
+            if (composedClasses.indexOf(SeriesClass) === -1) {
+                composedClasses.push(SeriesClass);
+                addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
+            }
+        }
+        /**
+         * Check if there is at least one visible bubble series.
+         *
+         * @private
+         * @function getVisibleBubbleSeriesIndex
+         * @param {Highcharts.Chart} chart
+         * Chart to check.
+         * @return {number}
+         * First visible bubble series index
+         */
+        function getVisibleBubbleSeriesIndex(chart) {
+            var series = chart.series;
+            var i = 0;
+            while (i < series.length) {
+                if (series[i] &&
+                    series[i].isBubble &&
+                    series[i].visible &&
+                    series[i].zData.length) {
+                    return i;
+                }
+                i++;
+            }
+            return -1;
+        }
+        /**
+         * Calculate height for each row in legend.
+         *
+         * @private
+         * @function getLinesHeights
+         *
+         * @param {Highcharts.Legend} legend
+         * Legend to calculate from.
+         *
+         * @return {Array<Highcharts.Dictionary<number>>}
+         * Informations about line height and items amount
+         */
+        function getLinesHeights(legend) {
+            var items = legend.allItems,
+                lines = [],
+                length = items.length;
+            var lastLine,
+                i = 0,
+                j = 0;
+            for (i = 0; i < length; i++) {
+                if (items[i].legendItemHeight) {
+                    // for bubbleLegend
+                    items[i].itemHeight = items[i].legendItemHeight;
+                }
+                if ( // Line break
+                items[i] === items[length - 1] ||
+                    items[i + 1] &&
+                        items[i]._legendItemPos[1] !==
+                            items[i + 1]._legendItemPos[1]) {
+                    lines.push({ height: 0 });
+                    lastLine = lines[lines.length - 1];
+                    // Find the highest item in line
+                    for (j; j <= i; j++) {
+                        if (items[j].itemHeight > lastLine.height) {
+                            lastLine.height = items[j].itemHeight;
+                        }
+                    }
+                    lastLine.step = i;
+                }
+            }
+            return lines;
+        }
+        /**
+         * Start the bubble legend creation process.
+         */
+        function onLegendAfterGetAllItems(e) {
+            var legend = this,
+                bubbleLegend = legend.bubbleLegend,
+                legendOptions = legend.options,
+                options = legendOptions.bubbleLegend,
+                bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
+            // Remove unnecessary element
+            if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
+                // Allow change the way of calculating ranges in update
+                if (options.ranges.length) {
+                    options.autoRanges =
+                        !!options.ranges[0].autoRanges;
+                }
+                // Update bubbleLegend dimensions in each redraw
+                legend.destroyItem(bubbleLegend);
+            }
+            // Create bubble legend
+            if (bubbleSeriesIndex >= 0 &&
+                legendOptions.enabled &&
+                options.enabled) {
+                options.seriesIndex = bubbleSeriesIndex;
+                legend.bubbleLegend = new BubbleLegendItem(options, legend);
+                legend.bubbleLegend.addToLegend(e.allItems);
+            }
+        }
+        /**
+         * Toggle bubble legend depending on the visible status of bubble series.
+         */
+        function onSeriesLegendItemClick() {
+            var series = this,
+                chart = series.chart,
+                visible = series.visible,
+                legend = series.chart.legend;
+            var status;
+            if (legend && legend.bubbleLegend) {
+                // Temporary correct 'visible' property
+                series.visible = !visible;
+                // Save future status for getRanges method
+                series.ignoreSeries = visible;
+                // Check if at lest one bubble series is visible
+                status = getVisibleBubbleSeriesIndex(chart) >= 0;
+                // Hide bubble legend if all bubble series are disabled
+                if (legend.bubbleLegend.visible !== status) {
+                    // Show or hide bubble legend
+                    legend.update({
+                        bubbleLegend: { enabled: status }
+                    });
+                    legend.bubbleLegend.visible = status; // Restore default status
+                }
+                series.visible = visible;
+            }
+        }
+        /**
+         * Correct legend items translation in case of different elements heights.
+         *
+         * @private
+         * @function Highcharts.Legend#retranslateItems
+         *
+         * @param {Highcharts.Legend} legend
+         * Legend to translate in.
+         *
+         * @param {Array<Highcharts.Dictionary<number>>} lines
+         * Informations about line height and items amount
+         */
+        function retranslateItems(legend, lines) {
+            var items = legend.allItems,
+                rtl = legend.options.rtl;
+            var orgTranslateX,
+                orgTranslateY,
+                movementX,
+                actualLine = 0;
+            items.forEach(function (item, index) {
+                orgTranslateX = item.legendGroup.translateX;
+                orgTranslateY = item._legendItemPos[1];
+                movementX = item.movementX;
+                if (movementX || (rtl && item.ranges)) {
+                    movementX = rtl ?
+                        orgTranslateX - item.options.maxSize / 2 :
+                        orgTranslateX + movementX;
+                    item.legendGroup.attr({ translateX: movementX });
+                }
+                if (index > lines[actualLine].step) {
+                    actualLine++;
+                }
+                item.legendGroup.attr({
+                    translateY: Math.round(orgTranslateY + lines[actualLine].height / 2)
+                });
+                item._legendItemPos[1] = orgTranslateY +
+                    lines[actualLine].height / 2;
+            });
+        }
         /* *
          *
          *  Default Export
          *
          * */
+        var BubbleLegendComposition = {
+                compose: compose
+            };
 
         return BubbleLegendComposition;
     });
@@ -8753,7 +8756,7 @@
 
         return BubblePoint;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Series/Bubble/BubbleLegendComposition.js'], _modules['Series/Bubble/BubblePoint.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, BubbleLegendComposition, BubblePoint, Color, H, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Series/Bubble/BubbleLegendComposition.js'], _modules['Series/Bubble/BubblePoint.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleLegendComposition, BubblePoint, Color, H, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -8781,8 +8784,9 @@
         })();
         var color = Color.parse;
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
+        var Series = SeriesRegistry.series,
+            _a = SeriesRegistry.seriesTypes,
+            columnProto = _a.column.prototype,
             ScatterSeries = _a.scatter;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
@@ -8792,6 +8796,77 @@
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Add logic to pad each axis with the amount of pixels necessary to avoid the
+         * bubbles to overflow.
+         */
+        function axisBeforePadding() {
+            var _this = this;
+            var axisLength = this.len,
+                chart = this.chart,
+                isXAxis = this.isXAxis,
+                dataKey = isXAxis ? 'xData' : 'yData',
+                min = this.min,
+                range = this.max - min;
+            var pxMin = 0,
+                pxMax = axisLength,
+                transA = axisLength / range,
+                hasActiveSeries;
+            // Handle padding on the second pass, or on redraw
+            this.series.forEach(function (series) {
+                if (series.bubblePadding &&
+                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+                    // Correction for #1673
+                    _this.allowZoomOutside = true;
+                    hasActiveSeries = true;
+                    var data = series[dataKey];
+                    if (isXAxis) {
+                        (series.onPoint || series).getRadii(0, 0, series);
+                        if (series.onPoint) {
+                            series.radii = series.onPoint.radii;
+                        }
+                    }
+                    if (range > 0) {
+                        var i = data.length;
+                        while (i--) {
+                            if (isNumber(data[i]) &&
+                                _this.dataMin <= data[i] &&
+                                data[i] <= _this.max) {
+                                var radius = series.radii && series.radii[i] || 0;
+                                pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
+                                pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                            }
+                        }
+                    }
+                }
+            });
+            // Apply the padding to the min and max properties
+            if (hasActiveSeries && range > 0 && !this.logarithmic) {
+                pxMax -= axisLength;
+                transA *= (axisLength +
+                    Math.max(0, pxMin) - // #8901
+                    Math.min(pxMax, axisLength)) / axisLength;
+                [
+                    ['min', 'userMin', pxMin],
+                    ['max', 'userMax', pxMax]
+                ].forEach(function (keys) {
+                    if (typeof pick(_this.options[keys[0]], _this[keys[1]]) === 'undefined') {
+                        _this[keys[0]] += keys[2] / transA;
+                    }
+                });
+            }
+        }
         /* *
          *
          *  Class
@@ -8821,14 +8896,24 @@
                 _this.yData = void 0;
                 _this.zData = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            BubbleSeries.compose = function (AxisClass, ChartClass, LegendClass, SeriesClass) {
+                BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
+                if (composedClasses.indexOf(AxisClass) === -1) {
+                    composedClasses.push(AxisClass);
+                    AxisClass.prototype.beforePadding = axisBeforePadding;
+                }
+            };
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Perform animation on the bubbles
              * @private
@@ -8863,11 +8948,11 @@
              */
             BubbleSeries.prototype.getRadii = function () {
                 var _this = this;
+                var zData = this.zData,
+                    yData = this.yData,
+                    radii = [];
                 var len,
                     i,
-                    zData = this.zData,
-                    yData = this.yData,
-                    radii = [],
                     value,
                     zExtremes = this.chart.bubbleZExtremes;
                 var _a = this.getPxExtremes(),
@@ -8914,8 +8999,8 @@
             BubbleSeries.prototype.getRadius = function (zMin, zMax, minSize, maxSize, value, yValue) {
                 var options = this.options,
                     sizeByArea = options.sizeBy !== 'width',
-                    zThreshold = options.zThreshold,
-                    zRange = zMax - zMin,
+                    zThreshold = options.zThreshold;
+                var zRange = zMax - zMin,
                     pos = 0.5;
                 // #8608 - bubble should be visible when z is undefined
                 if (yValue === null || value === null) {
@@ -9048,7 +9133,6 @@
                     }
                 }
             };
-            BubbleSeries.compose = BubbleLegendComposition.compose;
             /**
              * A bubble series is a three dimensional series type where each point
              * renders an X, Y and Z value. Each points is drawn as a bubble where the
@@ -9287,7 +9371,7 @@
             return BubbleSeries;
         }(ScatterSeries));
         extend(BubbleSeries.prototype, {
-            alignDataLabel: ColumnSeries.prototype.alignDataLabel,
+            alignDataLabel: columnProto.alignDataLabel,
             applyZones: noop,
             bubblePadding: true,
             buildKDTree: noop,
@@ -9304,70 +9388,10 @@
         addEvent(BubbleSeries, 'updatedData', function (e) {
             delete e.target.chart.bubbleZExtremes;
         });
-        /* *
-         *
-         *  Axis ?
-         *
-         * */
-        // Add logic to pad each axis with the amount of pixels necessary to avoid the
-        // bubbles to overflow.
-        Axis.prototype.beforePadding = function () {
-            var axis = this,
-                axisLength = this.len,
-                chart = this.chart,
-                pxMin = 0,
-                pxMax = axisLength,
-                isXAxis = this.isXAxis,
-                dataKey = isXAxis ? 'xData' : 'yData',
-                min = this.min,
-                range = this.max - min,
-                transA = axisLength / range,
-                hasActiveSeries;
-            // Handle padding on the second pass, or on redraw
-            this.series.forEach(function (series) {
-                if (series.bubblePadding &&
-                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
-                    // Correction for #1673
-                    axis.allowZoomOutside = true;
-                    hasActiveSeries = true;
-                    var data = series[dataKey];
-                    if (isXAxis) {
-                        (series.onPoint || series).getRadii(0, 0, series);
-                        if (series.onPoint) {
-                            series.radii = series.onPoint.radii;
-                        }
-                    }
-                    if (range > 0) {
-                        var i = data.length;
-                        while (i--) {
-                            if (isNumber(data[i]) &&
-                                axis.dataMin <= data[i] &&
-                                data[i] <= axis.max) {
-                                var radius = series.radii && series.radii[i] || 0;
-                                pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
-                                pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
-                            }
-                        }
-                    }
-                }
-            });
-            // Apply the padding to the min and max properties
-            if (hasActiveSeries && range > 0 && !this.logarithmic) {
-                pxMax -= axisLength;
-                transA *= (axisLength +
-                    Math.max(0, pxMin) - // #8901
-                    Math.min(pxMax, axisLength)) / axisLength;
-                [
-                    ['min', 'userMin', pxMin],
-                    ['max', 'userMax', pxMax]
-                ].forEach(function (keys) {
-                    if (typeof pick(axis.options[keys[0]], axis[keys[1]]) === 'undefined') {
-                        axis[keys[0]] += keys[2] / transA;
-                    }
-                });
-            }
-            /* eslint-enable valid-jsdoc */
-        };
+        // After removing series, delete the chart-level Z extremes cache, #17502.
+        addEvent(BubbleSeries, 'remove', function (e) {
+            delete e.target.chart.bubbleZExtremes;
+        });
         SeriesRegistry.registerSeriesType('bubble', BubbleSeries);
         /* *
          *
@@ -9475,7 +9499,7 @@
 
         return BubbleSeries;
     });
-    _registerModule(_modules, 'Series/MapBubble/MapBubblePoint.js', [_modules['Series/Map/MapPoint.js'], _modules['Core/Series/SeriesRegistry.js']], function (MapPoint, SeriesRegistry) {
+    _registerModule(_modules, 'Series/MapBubble/MapBubblePoint.js', [_modules['Series/Bubble/BubblePoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubblePoint, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9506,9 +9530,8 @@
          *  Imports
          *
          * */
-        var _a = SeriesRegistry.seriesTypes,
-            BubbleSeries = _a.bubble,
-            MapSeries = _a.map;
+        var mapPointProto = SeriesRegistry.seriesTypes.map.prototype.pointClass.prototype;
+        var extend = U.extend;
         /* *
          *
          *  Class
@@ -9517,27 +9540,22 @@
         var MapBubblePoint = /** @class */ (function (_super) {
                 __extends(MapBubblePoint, _super);
             function MapBubblePoint() {
-                /* *
-                 *
-                 *  Functions
-                 *
-                 * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
-                _this.applyOptions = MapSeries.prototype.pointClass.prototype.applyOptions;
-                _this.getProjectedBounds = MapPoint.prototype.getProjectedBounds;
-                return _this;
-                /* eslint-enable valid-jsdoc */
+                return _super !== null && _super.apply(this, arguments) || this;
             }
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
+            /* *
+             *
+             *  Functions
+             *
+             * */
             MapBubblePoint.prototype.isValid = function () {
                 return typeof this.z === 'number';
             };
             return MapBubblePoint;
-        }(BubbleSeries.prototype.pointClass));
+        }(BubblePoint));
+        extend(MapBubblePoint.prototype, {
+            applyOptions: mapPointProto.applyOptions,
+            getProjectedBounds: mapPointProto.getProjectedBounds
+        });
         /* *
          *
          *  Default Export
@@ -9546,7 +9564,7 @@
 
         return MapBubblePoint;
     });
-    _registerModule(_modules, 'Series/MapBubble/MapBubbleSeries.js', [_modules['Series/Bubble/BubbleSeries.js'], _modules['Series/MapBubble/MapBubblePoint.js'], _modules['Series/Map/MapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleSeries, MapBubblePoint, MapSeries, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/MapBubble/MapBubbleSeries.js', [_modules['Series/Bubble/BubbleSeries.js'], _modules['Series/MapBubble/MapBubblePoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleSeries, MapBubblePoint, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9572,7 +9590,9 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var MapPointSeries = SeriesRegistry.seriesTypes.mappoint;
+        var _a = SeriesRegistry.seriesTypes,
+            mapProto = _a.map.prototype,
+            mapPointProto = _a.mappoint.prototype;
         var extend = U.extend,
             merge = U.merge;
         /* *
@@ -9586,10 +9606,18 @@
          * @name Highcharts.seriesTypes.mapbubble
          *
          * @augments Highcharts.Series
+         *
+         * @requires BubbleSeries
+         * @requires MapPointSeries
          */
         var MapBubbleSeries = /** @class */ (function (_super) {
                 __extends(MapBubbleSeries, _super);
             function MapBubbleSeries() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
@@ -9609,16 +9637,10 @@
                 }, compareX, e);
             };
             MapBubbleSeries.prototype.translate = function () {
-                MapPointSeries.prototype.translate.call(this);
+                mapPointProto.translate.call(this);
                 this.getRadii();
                 this.translateBubble();
             };
-            /* *
-             *
-             *  Static Properties
-             *
-             * */
-            MapBubbleSeries.compose = BubbleSeries.compose;
             /**
              * A map bubble series is a bubble series laid out on top of a map
              * series, where each bubble is tied to a specific map area.
@@ -9695,7 +9717,6 @@
                  *
                  * @product   highmaps
                  * @apioption plotOptions.mapbubble.maxSize
-
                  */
                 /**
                  * Minimum bubble size. Bubbles will automatically size between the
@@ -9786,6 +9807,9 @@
                  * @default   0
                  * @apioption plotOptions.mapbubble.zThreshold
                  */
+                /**
+                 * @default 500
+                 */
                 animationLimit: 500,
                 joinBy: 'hc-key',
                 tooltip: {
@@ -9797,16 +9821,16 @@
         extend(MapBubbleSeries.prototype, {
             type: 'mapbubble',
             axisTypes: ['colorAxis'],
-            getProjectedBounds: MapSeries.prototype.getProjectedBounds,
+            getProjectedBounds: mapProto.getProjectedBounds,
             isCartesian: false,
             // If one single value is passed, it is interpreted as z
             pointArrayMap: ['z'],
             pointClass: MapBubblePoint,
-            processData: MapSeries.prototype.processData,
-            projectPoint: MapPointSeries.prototype.projectPoint,
-            setData: MapSeries.prototype.setData,
-            setOptions: MapSeries.prototype.setOptions,
-            updateData: MapSeries.prototype.updateData,
+            processData: mapProto.processData,
+            projectPoint: mapPointProto.projectPoint,
+            setData: mapProto.setData,
+            setOptions: mapProto.setOptions,
+            updateData: mapProto.updateData,
             useMapGeometry: true,
             xyFromShape: true
         });
@@ -10401,7 +10425,11 @@
                  */
                 animation: false,
                 /**
-                 * The border radius for each heatmap item.
+                 * The border radius for each heatmap item. The border's color and
+                 * width can be set in marker options.
+                 *
+                 * @see [lineColor](#plotOptions.heatmap.marker.lineColor)
+                 * @see [lineWidth](#plotOptions.heatmap.marker.lineWidth)
                  */
                 borderRadius: 0,
                 /**
@@ -11048,7 +11076,7 @@
         G.maps = MapChart.maps;
         G.Projection = Projection;
         ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
-        MapBubbleSeries.compose(G.Chart, G.Legend, G.Series);
+        MapBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
 
     });
 }));

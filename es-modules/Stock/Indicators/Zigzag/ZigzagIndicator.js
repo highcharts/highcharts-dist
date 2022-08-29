@@ -29,7 +29,7 @@ import U from '../../../Core/Utilities.js';
 var merge = U.merge, extend = U.extend;
 /* *
  *
- * Class
+ *  Class
  *
  * */
 /**
@@ -44,6 +44,11 @@ var merge = U.merge, extend = U.extend;
 var ZigzagIndicator = /** @class */ (function (_super) {
     __extends(ZigzagIndicator, _super);
     function ZigzagIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -215,6 +220,11 @@ SeriesRegistry.registerSeriesType('zigzag', ZigzagIndicator);
  *
  * */
 export default ZigzagIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `Zig Zag` series. If the [type](#series.zigzag.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

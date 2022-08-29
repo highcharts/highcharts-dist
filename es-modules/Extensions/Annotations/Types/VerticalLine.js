@@ -23,16 +23,15 @@ import Annotation from '../Annotation.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
 var merge = U.merge, pick = U.pick;
-/* eslint-disable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 var VerticalLine = /** @class */ (function (_super) {
     __extends(VerticalLine, _super);
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    function VerticalLine(chart, userOptions) {
-        return _super.call(this, chart, userOptions) || this;
+    function VerticalLine() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     /* *
      *
@@ -49,7 +48,8 @@ var VerticalLine = /** @class */ (function (_super) {
         };
     };
     VerticalLine.connectorSecondPoint = function (target) {
-        var annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, typeOptions = annotation.options.typeOptions, point = annotation.points[0], left = pick(point.series.yAxis && point.series.yAxis.left, 0), top = pick(point.series.yAxis && point.series.yAxis.top, 0), yOffset = typeOptions.yOffset, y = MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
+        var annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, typeOptions = annotation.options.typeOptions, point = annotation.points[0], left = pick(point.series.yAxis && point.series.yAxis.left, 0), top = pick(point.series.yAxis && point.series.yAxis.top, 0), y = MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
+        var yOffset = typeOptions.yOffset;
         if (typeOptions.label.offset < 0) {
             yOffset *= -1;
         }
@@ -79,7 +79,8 @@ var VerticalLine = /** @class */ (function (_super) {
         typeOptions.connector = connector.options;
     };
     VerticalLine.prototype.addLabels = function () {
-        var typeOptions = this.options.typeOptions, labelOptions = typeOptions.label, x = 0, y = labelOptions.offset, verticalAlign = labelOptions.offset < 0 ? 'bottom' : 'top', align = 'center';
+        var typeOptions = this.options.typeOptions, labelOptions = typeOptions.label;
+        var x = 0, y = labelOptions.offset, verticalAlign = labelOptions.offset < 0 ? 'bottom' : 'top', align = 'center';
         if (this.chart.inverted) {
             x = labelOptions.offset;
             y = 0;
@@ -144,11 +145,6 @@ VerticalLine.prototype.defaultOptions = merge(Annotation.prototype.defaultOption
         }
     }
 });
-/* *
- *
- *  Registry
- *
- * */
 Annotation.types.verticalLine = VerticalLine;
 /* *
  *

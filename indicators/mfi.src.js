@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Money Flow Index indicator for Highcharts Stock
  *
@@ -70,7 +70,11 @@
             merge = U.merge,
             error = U.error,
             isArray = U.isArray;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         function sumArray(array) {
             return array.reduce(function (prev, cur) {
@@ -86,7 +90,6 @@
         function calculateRawMoneyFlow(typicalPrice, volume) {
             return typicalPrice * volume;
         }
-        /* eslint-enable require-jsdoc */
         /* *
          *
          *  Class
@@ -104,23 +107,28 @@
         var MFIIndicator = /** @class */ (function (_super) {
                 __extends(MFIIndicator, _super);
             function MFIIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
-                *
-                *  Properties
-                *
-                * */
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
             /* *
-            *
-            *  Functions
-            *
-            * */
+             *
+             *  Functions
+             *
+             * */
             MFIIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     xVal = series.xData,
@@ -244,6 +252,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

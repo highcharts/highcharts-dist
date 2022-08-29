@@ -296,6 +296,8 @@ var TimelineSeries = /** @class */ (function (_super) {
      *               boostBlending
      * @requires     modules/timeline
      * @optionparent plotOptions.timeline
+     *
+     * @private
      */
     TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, {
         colorByPoint: true,

@@ -373,4 +373,4 @@ export default SMAIndicator;
  * @requires  stock/indicators/indicators
  * @apioption series.sma
  */
-''; // adds doclet above to the transpiled file
+(''); // adds doclet above to the transpiled file

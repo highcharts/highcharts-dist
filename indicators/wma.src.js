@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -66,7 +66,11 @@
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var isArray = U.isArray,
             merge = U.merge;
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         /**
          * @private
@@ -100,7 +104,11 @@
             points.shift(); // remove point until range < period
             return [wmaX, wmaY];
         }
-        /* eslint-enable valid-jsdoc */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The SMA series type.
          *
@@ -113,13 +121,28 @@
         var WMAIndicator = /** @class */ (function (_super) {
                 __extends(WMAIndicator, _super);
             function WMAIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             WMAIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     xVal = series.xData,
@@ -194,6 +217,11 @@
         /* *
          *
          *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
          *
          * */
         /**

@@ -25,7 +25,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import Math3D from '../../Extensions/Math3D.js';
+import Math3D from '../../Core/Math3D.js';
 var pointCameraDistance = Math3D.pointCameraDistance;
 import Scatter3DPoint from './Scatter3DPoint.js';
 import ScatterSeries from '../Scatter/ScatterSeries.js';

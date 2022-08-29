@@ -50,11 +50,21 @@ var StochasticIndicator = /** @class */ (function (_super) {
          *
          * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     StochasticIndicator.prototype.init = function () {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -193,6 +203,11 @@ SeriesRegistry.registerSeriesType('stochastic', StochasticIndicator);
  *
  * */
 export default StochasticIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A Stochastic indicator. If the [type](#series.stochastic.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

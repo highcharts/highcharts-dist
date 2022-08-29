@@ -25,12 +25,20 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var isNumber = U.isNumber, merge = U.merge;
-/* eslint-disable require-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
-/* eslint-enable require-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The RSI series type.
  *
@@ -43,6 +51,11 @@ function toFixed(a, n) {
 var RSIIndicator = /** @class */ (function (_super) {
     __extends(RSIIndicator, _super);
     function RSIIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -158,6 +171,11 @@ SeriesRegistry.registerSeriesType('rsi', RSIIndicator);
  *
  * */
 export default RSIIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `RSI` series. If the [type](#series.rsi.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

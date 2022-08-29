@@ -25,7 +25,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, pick = U.pick;
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 /**
  * @private
@@ -54,12 +58,17 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
 var DPOIndicator = /** @class */ (function (_super) {
     __extends(DPOIndicator, _super);
     function DPOIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
-        *
-        *   Properties
-        *
-        * */
+         *
+         *   Properties
+         *
+         * */
         _this.options = void 0;
         _this.data = void 0;
         _this.points = void 0;
@@ -70,9 +79,6 @@ var DPOIndicator = /** @class */ (function (_super) {
      *  Functions
      *
      * */
-    /**
-     * @lends Highcharts.Series#
-     */
     DPOIndicator.prototype.getValues = function (series, params) {
         var period = params.period, index = params.index, offset = Math.floor(period / 2 + 1), range = period + offset, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, 
         // 0- date, 1- Detrended Price Oscillator
@@ -148,6 +154,11 @@ SeriesRegistry.registerSeriesType('dpo', DPOIndicator);
  *
  * */
 export default DPOIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A Detrended Price Oscillator. If the [type](#series.dpo.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).

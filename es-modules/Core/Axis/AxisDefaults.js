@@ -2833,7 +2833,7 @@ var AxisDefaults;
             formatter: function () {
                 var numberFormatter = this.axis.chart.numberFormatter;
                 /* eslint-enable valid-jsdoc */
-                return numberFormatter(this.total, -1);
+                return numberFormatter(this.total || 0, -1);
             },
             /**
              * CSS styles for the label.

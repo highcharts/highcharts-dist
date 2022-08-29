@@ -42,12 +42,17 @@ var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U
 var PPOIndicator = /** @class */ (function (_super) {
     __extends(PPOIndicator, _super);
     function PPOIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
-        *
-        *   Properties
-        *
-        * */
+         *
+         *   Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
@@ -149,6 +154,11 @@ SeriesRegistry.registerSeriesType('ppo', PPOIndicator);
  *
  * */
 export default PPOIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `Percentage Price Oscillator` series. If the [type](#series.ppo.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).

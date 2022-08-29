@@ -12,7 +12,7 @@
 'use strict';
 import Color from '../Color/Color.js';
 var color = Color.parse;
-import Math3D from '../../Extensions/Math3D.js';
+import Math3D from '../Math3D.js';
 var perspective = Math3D.perspective, shapeArea3D = Math3D.shapeArea3D;
 import D from '../DefaultOptions.js';
 var genericDefaultOptions = D.defaultOptions;
@@ -469,7 +469,7 @@ var Chart3D;
              */
             options3d: {
                 /**
-                 * Wether to render the chart using the 3D functionality.
+                 * Whether to render the chart using the 3D functionality.
                  *
                  * @since   4.0
                  * @product highcharts

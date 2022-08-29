@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -325,7 +325,7 @@
             return !isOverlapping;
         }
         /**
-         * Checks wether two convex polygons are colliding by using the Separating
+         * Checks whether two convex polygons are colliding by using the Separating
          * Axis Theorem.
          *
          * @private
@@ -1351,7 +1351,7 @@
                  * NB! This option is currently not decided to be published in the API,
                  * and is therefore marked as private.
                  *
-                 * @private
+                 * @ignore-option
                  */
                 allowExtendPlayingField: true,
                 animation: {

@@ -701,6 +701,8 @@ var MapSeries = /** @class */ (function (_super) {
      * @excluding    marker, cluster
      * @product      highmaps
      * @optionparent plotOptions.map
+     *
+     * @private
      */
     MapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
         /**
@@ -711,6 +713,8 @@ var MapSeries = /** @class */ (function (_super) {
          *         US map with world map backdrop
          *
          * @since 10.0.0
+         *
+         * @private
          */
         affectsMapView: true,
         animation: false,
@@ -1105,8 +1109,9 @@ export default MapSeries;
  * The geometry type. Can be one of `LineString`, `Polygon`, `MultiLineString`
  * or `MultiPolygon`.
  *
+ * @declare   Highcharts.MapGeometryTypeValue
  * @type      {string}
- * @since 9.3.0
+ * @since     9.3.0
  * @product   highmaps
  * @validvalue ["LineString", "Polygon", "MultiLineString", "MultiPolygon"]
  * @apioption series.map.data.geometry.type

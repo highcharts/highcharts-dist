@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  * @module highcharts/modules/debugger
  * @requires highcharts
  *
@@ -11,6 +11,8 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
+import Debugger from '../../Extensions/Debugger/Debugger.js';
 import ErrorMessages from '../../Extensions/Debugger/ErrorMessages.js';
-Highcharts.errorMessages = ErrorMessages;
-import '../../Extensions/Debugger/Debugger.js';
+var G = Highcharts;
+G.errorMessages = ErrorMessages;
+Debugger.compose(G.Chart);

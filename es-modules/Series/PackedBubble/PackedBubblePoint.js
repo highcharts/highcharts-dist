@@ -26,7 +26,7 @@ var __extends = (this && this.__extends) || (function () {
 import Chart from '../../Core/Chart/Chart.js';
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var BubbleSeries = SeriesRegistry.seriesTypes.bubble;
+var BubblePoint = SeriesRegistry.seriesTypes.bubble.prototype.pointClass;
 /* *
  *
  *  Class
@@ -91,7 +91,7 @@ var PackedBubblePoint = /** @class */ (function (_super) {
         }
     };
     return PackedBubblePoint;
-}(BubbleSeries.prototype.pointClass));
+}(BubblePoint));
 /* *
  *
  *  Default Export

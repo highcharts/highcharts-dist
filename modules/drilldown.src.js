@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.2.0 (2022-07-05)
+ * @license Highcharts JS v10.2.1 (2022-08-29)
  *
  * Highcharts Drilldown module
  *
@@ -63,11 +63,15 @@
         extend(defaultOptions.lang, 
         /**
          * @optionparent lang
+         *
+         * @private
          */
         {
             /**
              * @since 10.0.0
              * @product  highcharts
+             *
+             * @private
              */
             mainBreadcrumb: 'Main'
         });
@@ -1144,14 +1148,11 @@
          * to the parent series. The parent series' name is inserted for
          * `{series.name}`.
          *
+         * @deprecated
          * @since    3.0.8
          * @product  highcharts highmaps
          * @requires modules/drilldown
          * @apioption lang.drillUpText
-         *
-         * @deprecated
-         *
-         * @private
          */
         });
         /**
@@ -1163,11 +1164,12 @@
          * [code.highcharts.com/modules/drilldown.js
          * ](https://code.highcharts.com/modules/drilldown.js).
          *
+         * @sample {highcharts} highcharts/series-organization/drilldown
+         *         Organization chart drilldown
+         *
          * @product      highcharts highmaps
          * @requires     modules/drilldown
          * @optionparent drilldown
-         * @sample {highcharts} highcharts/series-organization/drilldown
-         *         Organization chart drilldown
          */
         defaultOptions.drilldown = {
             /**
@@ -1546,7 +1548,8 @@
                     yMin: yAxis && yAxis.userMin,
                     yMax: yAxis && yAxis.userMax
                 },
-                resetZoomButton: this.resetZoomButton
+                resetZoomButton: last && last.levelNumber === levelNumber ?
+                    void 0 : this.resetZoomButton
             }, colorProp);
             // Push it to the lookup array
             this.drilldownLevels.push(level);
@@ -1749,9 +1752,9 @@
          * then, using `opactiy`, is faded in. Used for example by `dataLabelsGroup`
          * where simple SVGElement.fadeIn() is not enough, because of other features
          * (e.g. InactiveState) using `opacity` to fadeIn/fadeOut.
-         *
          * @requires module:modules/drilldown
          *
+         * @private
          * @param {undefined|SVGElement} [group]
          * The SVG element to be faded in.
          */

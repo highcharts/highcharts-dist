@@ -29,7 +29,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 var merge = U.merge, extend = U.extend;
-/* eslint-disable require-jsdoc */
+/* *
+ *
+ *  Functions
+ *
+ * */
 // Utils:
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
@@ -100,10 +104,9 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
     }
     return pEP;
 }
-/* eslint-enable require-jsdoc */
 /* *
  *
- * Class
+ *  Class
  *
  * */
 /**
@@ -118,6 +121,11 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
 var PSARIndicator = /** @class */ (function (_super) {
     __extends(PSARIndicator, _super);
     function PSARIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -267,6 +275,11 @@ SeriesRegistry.registerSeriesType('psar', PSARIndicator);
  *
  * */
 export default PSARIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `PSAR` series. If the [type](#series.psar.type) option is not specified, it
  * is inherited from [chart.type](#chart.type).

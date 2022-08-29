@@ -25,6 +25,11 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var TEMAIndicator = SeriesRegistry.seriesTypes.tema;
 import U from '../../../Core/Utilities.js';
 var correctFloat = U.correctFloat, merge = U.merge;
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * The TRIX series type.
  *
@@ -37,12 +42,27 @@ var correctFloat = U.correctFloat, merge = U.merge;
 var TRIXIndicator = /** @class */ (function (_super) {
     __extends(TRIXIndicator, _super);
     function TRIXIndicator() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Properties
+         *
+         * */
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     // TRIX is calculated using TEMA so we just extend getTemaPoint method.
     TRIXIndicator.prototype.getTemaPoint = function (xVal, tripledPeriod, EMAlevels, i) {
         if (i > tripledPeriod) {
@@ -83,6 +103,11 @@ SeriesRegistry.registerSeriesType('trix', TRIXIndicator);
  *
  * */
 export default TRIXIndicator;
+/* *
+ *
+ *  API Options
+ *
+ * */
 /**
  * A `TRIX` series. If the [type](#series.trix.type) option is not specified, it
  * is inherited from [chart.type](#chart.type).

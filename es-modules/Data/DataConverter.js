@@ -466,6 +466,11 @@ var DataConverter = /** @class */ (function () {
         }
         return format;
     };
+    /* *
+     *
+     *  Static Properties
+     *
+     * */
     /**
      * Default options
      */

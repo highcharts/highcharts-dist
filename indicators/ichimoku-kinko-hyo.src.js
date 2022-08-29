@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.2.0 (2022-07-05)
+ * @license Highstock JS v10.2.1 (2022-08-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -69,7 +69,11 @@
             isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach;
-        /* eslint-disable require-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
         // Utils:
         function maxHigh(arr) {
             return arr.reduce(function (max, res) {
@@ -147,6 +151,7 @@
         // Data integrity in Ichimoku is different than default 'averages':
         // Point: [undefined, value, value, ...] is correct
         // Point: [undefined, undefined, undefined, ...] is incorrect
+        // @todo compose
         H.approximations['ichimoku-averages'] = function () {
             var ret = [],
                 isEmptyRange;
@@ -158,7 +163,11 @@
             // sum method handle null (#7377)
             return isEmptyRange ? void 0 : ret;
         };
-        /* eslint-enable require-jsdoc */
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The IKH series type.
          *
@@ -168,21 +177,21 @@
          *
          * @augments Highcharts.Series
          */
-        /* *
-        *
-        * Class
-        *
-        * */
         var IKHIndicator = /** @class */ (function (_super) {
                 __extends(IKHIndicator, _super);
             function IKHIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 /* *
-                *
-                *  Properties
-                *
-                * */
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -193,10 +202,10 @@
                 return _this;
             }
             /* *
-            *
-            * Functions
-            *
-            * */
+             *
+             * Functions
+             *
+             * */
             IKHIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
                 // Set default color for lines:
@@ -774,6 +783,16 @@
             nameComponents: ['periodSenkouSpanB', 'period', 'periodTenkan']
         });
         SeriesRegistry.registerSeriesType('ikh', IKHIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A `IKH` series. If the [type](#series.ikh.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
