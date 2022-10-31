@@ -1,5 +1,5 @@
 /*
- Highcharts JS v10.3.0 (2022-10-31)
+ Highcharts JS v10.3.1 (2022-10-31)
 
  (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
 

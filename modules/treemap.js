@@ -1,5 +1,5 @@
 /*
- Highcharts JS v10.3.0 (2022-10-31)
+ Highcharts JS v10.3.1 (2022-10-31)
 
  (c) 2014-2021 Highsoft AS
  Authors: Jon Arild Nygard / Oystein Moseng

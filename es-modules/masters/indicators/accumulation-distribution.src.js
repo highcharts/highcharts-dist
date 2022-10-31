@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.0 (2022-10-31)
+ * @license Highstock JS v10.3.1 (2022-10-31)
  * @module highcharts/indicators/accumulation-distribution
  * @requires highcharts
  * @requires highcharts/modules/stock

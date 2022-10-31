@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.0 (2022-10-31)
+ * @license Highcharts JS v10.3.1 (2022-10-31)
  *
  * 3D features for Highcharts JS
  *
