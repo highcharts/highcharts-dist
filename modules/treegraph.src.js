@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.1 (2022-10-31)
+ * @license Highcharts JS v10.3.2 (2022-11-28)
  * Treegraph chart series type
  *
  *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
@@ -379,6 +379,7 @@
                 _this.isLink = false;
                 _this.series = void 0;
                 _this.node = void 0;
+                _this.setState = Point.prototype.setState;
                 return _this;
             }
             /* *
@@ -504,9 +505,6 @@
                         (inverted ? -btnHeight * 0.3 : width + btnWidth * -0.3),
                     y: y + height / 2 - btnHeight / 2 + btnOptions.y
                 };
-            };
-            TreegraphPoint.prototype.setState = function () {
-                Point.prototype.setState.apply(this, arguments);
             };
             return TreegraphPoint;
         }(TreemapPoint));
@@ -1427,6 +1425,11 @@
                 level = (point && point.level) || level;
                 return _super.prototype.buildTree.call(this, id, index, level, list, parent);
             };
+            TreegraphSeries.prototype.markerAttribs = function () {
+                // The super Series.markerAttribs returns { width: NaN, height: NaN },
+                // so just disable this for now.
+                return {};
+            };
             TreegraphSeries.prototype.setCollapsedStatus = function (node, visibility) {
                 var _this = this;
                 var point = node.point;
@@ -1439,6 +1442,10 @@
                 node.children.forEach(function (childNode) {
                     _this.setCollapsedStatus(childNode, visibility);
                 });
+            };
+            TreegraphSeries.prototype.drawTracker = function () {
+                ColumnSeries.prototype.drawTracker.apply(this, arguments);
+                ColumnSeries.prototype.drawTracker.call(this, this.links);
             };
             /**
              * Run pre-translation by generating the nodeColumns.

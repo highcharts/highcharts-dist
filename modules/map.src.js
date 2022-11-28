@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.3.1 (2022-10-31)
+ * @license Highmaps JS v10.3.2 (2022-11-28)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -2741,18 +2741,17 @@
                     point = _super.prototype.applyOptions.call(this,
                     options,
                     x),
-                    joinBy = series.joinBy,
-                    mapPoint;
+                    joinBy = series.joinBy;
                 if (series.mapData && series.mapMap) {
-                    var joinKey = joinBy[1];
-                    var mapKey = _super.prototype.getNestedProperty.call(point,
-                        joinKey);
-                    mapPoint = typeof mapKey !== 'undefined' &&
-                        series.mapMap[mapKey];
+                    var joinKey = joinBy[1],
+                        mapKey = _super.prototype.getNestedProperty.call(point,
+                        joinKey),
+                        mapPoint = typeof mapKey !== 'undefined' &&
+                            series.mapMap[mapKey];
                     if (mapPoint) {
                         extend(point, mapPoint); // copy over properties
                     }
-                    else {
+                    else if (series.pointArrayMap.indexOf('value') !== -1) {
                         point.value = point.value || null;
                     }
                 }
@@ -2819,17 +2818,47 @@
              * Highmaps only. Zoom in on the point using the global animation.
              *
              * @sample maps/members/point-zoomto/
-             *         Zoom to points from butons
+             *         Zoom to points from buttons
              *
              * @requires modules/map
              *
              * @function Highcharts.Point#zoomTo
              */
             MapPoint.prototype.zoomTo = function () {
-                var point = this;
-                var chart = point.series.chart;
-                if (chart.mapView && point.bounds) {
-                    chart.mapView.fitToBounds(point.bounds, void 0, false);
+                var point = this,
+                    chart = point.series.chart,
+                    mapView = chart.mapView;
+                var bounds = point.bounds;
+                if (mapView && bounds) {
+                    var inset = isNumber(point.insetIndex) &&
+                            mapView.insets[point.insetIndex];
+                    if (inset) {
+                        // If in an inset, translate the bounds to pixels ...
+                        var px1 = inset.projectedUnitsToPixels({
+                                x: bounds.x1,
+                                y: bounds.y1
+                            }),
+                            px2 = inset.projectedUnitsToPixels({
+                                x: bounds.x2,
+                                y: bounds.y2
+                            }), 
+                            // ... then back to projected units in the main mapView
+                            proj1 = mapView.pixelsToProjectedUnits({
+                                x: px1.x,
+                                y: px1.y
+                            }),
+                            proj2 = mapView.pixelsToProjectedUnits({
+                                x: px2.x,
+                                y: px2.y
+                            });
+                        bounds = {
+                            x1: proj1.x,
+                            y1: proj1.y,
+                            x2: proj2.x,
+                            y2: proj2.y
+                        };
+                    }
+                    mapView.fitToBounds(bounds, void 0, false);
                     point.series.isDirty = true;
                     chart.redraw();
                 }
@@ -5757,6 +5786,7 @@
             fireEvent = U.fireEvent,
             getNestedProperty = U.getNestedProperty,
             isArray = U.isArray,
+            defined = U.defined,
             isNumber = U.isNumber,
             isObject = U.isObject,
             merge = U.merge,
@@ -6216,11 +6246,12 @@
                 if (!point.visible) {
                     attr.fill = this.options.nullColor;
                 }
-                attr['stroke-width'] = pick(pointStrokeWidth, 
-                // By default set the stroke-width on the group element and let all
-                // point graphics inherit. That way we don't have to iterate over
-                // all points to update the stroke-width on zooming.
-                'inherit');
+                if (defined(pointStrokeWidth)) {
+                    attr['stroke-width'] = pointStrokeWidth;
+                }
+                else {
+                    delete attr['stroke-width'];
+                }
                 return attr;
             };
             /**
@@ -9155,12 +9186,9 @@
                         };
                     }
                     else { // below zThreshold
-                        point.shapeArgs = point.dlBox = void 0; // #1691
-                        point.plotY = 0; // #17281
-                        point.marker = {
-                            width: 0,
-                            height: 0
-                        };
+                        // #1691
+                        point.shapeArgs = point.plotY = point.dlBox = void 0;
+                        point.isInside = false; // #17281
                     }
                 }
             };

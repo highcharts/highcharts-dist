@@ -205,14 +205,13 @@ var SVGLabel = /** @class */ (function (_super) {
      * box and add it before the text in the DOM.
      */
     SVGLabel.prototype.onAdd = function () {
-        var str = this.textStr;
         this.text.add(this);
         this.attr({
             // Alignment is available now  (#3295, 0 not rendered if given
             // as a value)
-            text: (defined(str) ? str : ''),
-            x: this.x,
-            y: this.y
+            text: pick(this.textStr, ''),
+            x: this.x || 0,
+            y: this.y || 0
         });
         if (this.box && defined(this.anchorX)) {
             this.attr({

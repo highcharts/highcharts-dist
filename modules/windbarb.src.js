@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.1 (2022-10-31)
+ * @license Highcharts JS v10.3.2 (2022-11-28)
  *
  * Wind barb series module
  *
@@ -131,9 +131,9 @@
              *
              * @private
              */
-            function getPlotBox() {
+            function getPlotBox(name) {
                 return seriesProto.getPlotBox.call((this.options.onSeries &&
-                    this.chart.get(this.options.onSeries)) || this);
+                    this.chart.get(this.options.onSeries)) || this, name);
             }
             OnSeriesComposition.getPlotBox = getPlotBox;
             /**
@@ -360,7 +360,6 @@
             };
         })();
         var animObject = A.animObject;
-        var noop = H.noop;
         var Series = SeriesRegistry.series,
             ColumnSeries = SeriesRegistry.seriesTypes.column;
         var extend = U.extend,
@@ -696,11 +695,11 @@
                 'Gentle breeze', 'Moderate breeze', 'Fresh breeze',
                 'Strong breeze', 'Near gale', 'Gale', 'Strong gale', 'Storm',
                 'Violent storm', 'Hurricane'],
+            invertible: false,
             parallelArrays: ['x', 'value', 'direction'],
             pointArrayMap: ['value', 'direction'],
             pointClass: WindbarbPoint,
             trackerGroups: ['markerGroup'],
-            invertGroups: noop,
             translate: function () {
                 var beaufortFloor = this.beaufortFloor,
                     beaufortName = this.beaufortName;

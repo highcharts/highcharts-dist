@@ -1,0 +1,2 @@
+import '../../Series/Histogram/HistogramSeries.js';
+import '../../Series/Bellcurve/BellcurveSeries.js';

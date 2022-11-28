@@ -224,6 +224,10 @@ var SankeySeries = /** @class */ (function (_super) {
             fill: Color.parse(color).setOpacity(values.linkOpacity).get()
         };
     };
+    SankeySeries.prototype.drawTracker = function () {
+        ColumnSeries.prototype.drawTracker.call(this, this.points);
+        ColumnSeries.prototype.drawTracker.call(this, this.nodes);
+    };
     SankeySeries.prototype.drawPoints = function () {
         ColumnSeries.prototype.drawPoints.call(this, this.points);
         ColumnSeries.prototype.drawPoints.call(this, this.nodes);

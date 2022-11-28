@@ -1,5 +1,5 @@
 /*
- Highcharts JS v10.3.1 (2022-10-31)
+ Highcharts JS v10.3.2 (2022-11-28)
 
  Arc diagram module
 
@@ -20,6 +20,6 @@ f-h)*w(m.linkRadius,Math.min(Math.abs(c+f-h)/2,b.nodeY-Math.abs(f)));a.shapeArgs
 d.plotHeight,(d.inverted?d.plotWidth:d.plotHeight)/a.series.nodes.length-this.nodePadding),f=a.getSum()*(b.sankeyColumn.scale||0);m=e.equalNodes?m:Math.max(f*c,this.options.minLinkWidth||0);var g=Math.round(e.marker&&e.marker.lineWidth||0)%2/2,k=b.sankeyColumn.offset(a,c);c=Math.floor(w(k&&k.absoluteLeft,(b.sankeyColumn.left(c)||0)+(k&&k.relativeLeft||0)))+g;var l=y(e.marker,a.options.marker);k=l.symbol;var h=l.radius;b=parseInt(e.offset,10)*((d.inverted?d.plotWidth:d.plotHeight)-(Math.floor(this.colDistance*
 (a.column||0)+(l.lineWidth||0)/2)+g+(b.sankeyColumn.scale||0)*(b.sankeyColumn.maxRadius||0)/2))/100;(a.sum=f)?(a.nodeX=c,a.nodeY=b,f=a.options.width||e.width||m,m=a.options.height||e.height||m,g=b,e.reversed&&(g=(d.plotSizeY||0)-b,d.inverted&&(g=(d.plotSizeY||0)-b)),this.mapOptionsToLevel&&(a.dlOptions=v.getDLOptions({level:this.mapOptionsToLevel[a.level],optionsPoint:a.options})),a.plotX=1,a.plotY=1,a.tooltipPos=d.inverted?[(d.plotSizeY||0)-g-m/2,(d.plotSizeX||0)-c-f/2]:[c+f/2,g+m/2],a.shapeType=
 "path",a.shapeArgs={d:z[k||"circle"](c,g-(h||m)/2,h||f,h||m),width:h||f,height:h||m},a.dlBox={x:c+f/2,y:g,height:0,width:0}):a.dlOptions={enabled:!1}};b.prototype.drawDataLabels=function(){if(this.options.dataLabels){var a=this.options.dataLabels.textPath;x.prototype.drawDataLabels.call(this,this.nodes);this.options.dataLabels.textPath=this.options.dataLabels.linkTextPath;x.prototype.drawDataLabels.call(this,this.data);this.options.dataLabels.textPath=a}};b.prototype.pointAttribs=function(b,e){if(b&&
-b.isNode){var c=u.prototype.pointAttribs.apply(this,arguments);return n(c,["opacity"])}return a.prototype.pointAttribs.apply(this,arguments)};b.prototype.markerAttribs=function(b){return b.isNode?a.prototype.markerAttribs.apply(this,arguments):{}};b.defaultOptions=y(v.defaultOptions,{centeredLinks:!1,offset:"100%",equalNodes:!1,reversed:!1,dataLabels:{linkTextPath:{attributes:{startOffset:"25%"}}},marker:{symbol:"circle",fillOpacity:1,states:{}}});return b}(v);q(b.prototype,{orderNodes:!1});b.prototype.pointClass=
-a;t.registerSeriesType("arcdiagram",b);"";return b});e(a,"masters/modules/arc-diagram.src.js",[],function(){})});
+b.isNode){var c=u.prototype.pointAttribs.apply(this,arguments);return n(c,["opacity"])}return a.prototype.pointAttribs.apply(this,arguments)};b.prototype.markerAttribs=function(b){return b.isNode?a.prototype.markerAttribs.apply(this,arguments):{}};b.defaultOptions=y(v.defaultOptions,{centeredLinks:!1,offset:"100%",equalNodes:!1,reversed:!1,dataLabels:{linkTextPath:{attributes:{startOffset:"25%"}}},marker:{symbol:"circle",fillOpacity:1,lineWidth:0,states:{}}});return b}(v);q(b.prototype,{orderNodes:!1});
+b.prototype.pointClass=a;t.registerSeriesType("arcdiagram",b);"";return b});e(a,"masters/modules/arc-diagram.src.js",[],function(){})});
 //# sourceMappingURL=arc-diagram.js.map

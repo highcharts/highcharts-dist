@@ -15,6 +15,12 @@ export function factory(highcharts: typeof Highcharts): void;
 declare module "./highcharts.src" {
     interface Point {
         /**
+         * Array for multiple SVG graphics representing the point in the chart.
+         * Only used in cases where the point can not be represented by a single
+         * graphic.
+         */
+        graphics?: Array<SVGElement>;
+        /**
          * Range series only. The high or maximum value for each data point.
          */
         high?: number;

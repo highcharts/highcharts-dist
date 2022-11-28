@@ -44,7 +44,7 @@ var DataLabel;
      * @private
      */
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        var series = this, chart = this.chart, inverted = this.isCartesian && chart.inverted, enabledDataSorting = this.enabledDataSorting, plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX), plotY = point.plotY, rotation = options.rotation, align = options.align, isInsidePlot = defined(plotX) &&
+        var series = this, chart = this.chart, inverted = this.isCartesian && chart.inverted, enabledDataSorting = this.enabledDataSorting, plotX = point.plotX, plotY = point.plotY, rotation = options.rotation, align = options.align, isInsidePlot = defined(plotX) &&
             defined(plotY) &&
             chart.isInsidePlot(plotX, Math.round(plotY), {
                 inverted: inverted,
@@ -61,6 +61,7 @@ var DataLabel;
         alignAttr, // the final position;
         justify = pick(options.overflow, (enabledDataSorting ? 'none' : 'justify')) === 'justify', visible = this.visible &&
             point.visible !== false &&
+            defined(plotX) &&
             (point.series.forceDL ||
                 (enabledDataSorting && !justify) ||
                 isInsidePlot ||
@@ -167,12 +168,8 @@ var DataLabel;
             // arrow pointing to thie point
             if (options.shape && !rotation) {
                 dataLabel[isNew ? 'attr' : 'animate']({
-                    anchorX: inverted ?
-                        chart.plotWidth - point.plotY :
-                        point.plotX,
-                    anchorY: inverted ?
-                        chart.plotHeight - point.plotX :
-                        point.plotY
+                    anchorX: inverted ? chart.plotWidth - plotY : plotX,
+                    anchorY: inverted ? chart.plotHeight - plotX : plotY
                 });
             }
         }

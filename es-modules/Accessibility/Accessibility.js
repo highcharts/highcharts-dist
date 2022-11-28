@@ -323,7 +323,7 @@ var Accessibility = /** @class */ (function () {
     /**
      * @private
      */
-    function compose(AxisClass, ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
+    function compose(ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
         // ordered:
         KeyboardNavigation.compose(ChartClass);
         NewDataAnnouncer.compose(SeriesClass);

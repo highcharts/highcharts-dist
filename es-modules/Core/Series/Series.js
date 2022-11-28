@@ -1780,7 +1780,10 @@ var Series = /** @class */ (function () {
                     else if (isInside &&
                         ((markerAttribs.width || 0) > 0 || point.hasImage)) {
                         /**
-                         * The graphic representation of the point.
+                         * SVG graphic representing the point in the chart. In
+                         * some cases it may be a hidden graphic to improve
+                         * accessibility.
+                         *
                          * Typically this is a simple shape, like a `rect`
                          * for column charts or `path` for line markers, but
                          * for some complex series types like boxplot or 3D
@@ -1789,8 +1792,10 @@ var Series = /** @class */ (function () {
                          * the first time {@link Series#drawPoints} runs,
                          * and updated and moved on subsequent runs.
                          *
-                         * @name Point#graphic
-                         * @type {SVGElement}
+                         * @see Highcharts.Point#graphics
+                         *
+                         * @name Highcharts.Point#graphic
+                         * @type {Highcharts.SVGElement|undefined}
                          */
                         point.graphic = graphic = chart.renderer
                             .symbol(symbol, markerAttribs.x, markerAttribs.y, markerAttribs.width, markerAttribs.height, hasPointMarker ?
@@ -2112,47 +2117,6 @@ var Series = /** @class */ (function () {
         }
     };
     /**
-     * Initialize and perform group inversion on series.group and
-     * series.markerGroup.
-     *
-     * @private
-     * @function Highcharts.Series#invertGroups
-     */
-    Series.prototype.invertGroups = function (inverted) {
-        var series = this, chart = series.chart;
-        /**
-         * @private
-         */
-        function setInvert() {
-            ['group', 'markerGroup'].forEach(function (groupName) {
-                if (series[groupName]) {
-                    // VML/HTML needs explicit attributes for flipping
-                    if (chart.renderer.isVML) {
-                        series[groupName].attr({
-                            width: series.yAxis.len,
-                            height: series.xAxis.len
-                        });
-                    }
-                    series[groupName].width = series.yAxis.len;
-                    series[groupName].height = series.xAxis.len;
-                    // If inverted polar, don't invert series group
-                    series[groupName].invert(series.isRadialSeries ? false : inverted);
-                }
-            });
-        }
-        // Pie, go away (#1736)
-        if (!series.xAxis) {
-            return;
-        }
-        // A fixed size is needed for inversion to work
-        series.eventsToUnbind.push(addEvent(chart, 'resize', setInvert));
-        // Do it now
-        setInvert();
-        // On subsequent render and redraw, just do setInvert without
-        // setting up events again
-        series.invertGroups = setInvert;
-    };
-    /**
      * General abstraction for creating plot groups like series.group,
      * series.dataLabelsGroup and series.markerGroup. On subsequent calls,
      * the group will only be adjusted to the updated plot size.
@@ -2191,7 +2155,7 @@ var Series = /** @class */ (function () {
                 ' highcharts-tracker' :
                 '')), true);
         // Place it on first and subsequent (redraw) calls
-        group.attr(attrs)[isNew ? 'attr' : 'animate'](this.getPlotBox());
+        group.attr(attrs)[isNew ? 'attr' : 'animate'](this.getPlotBox(name));
         return group;
     };
     /**
@@ -2199,18 +2163,29 @@ var Series = /** @class */ (function () {
      *
      * @function Highcharts.Series#getPlotBox
      */
-    Series.prototype.getPlotBox = function () {
-        var chart = this.chart;
-        var xAxis = this.xAxis, yAxis = this.yAxis;
+    Series.prototype.getPlotBox = function (name) {
+        var horAxis = this.xAxis, vertAxis = this.yAxis;
+        var chart = this.chart, inverted = (chart.inverted &&
+            !chart.polar &&
+            horAxis &&
+            this.invertible !== false &&
+            (name === 'markers' || name === 'series'));
         // Swap axes for inverted (#2339)
         if (chart.inverted) {
-            xAxis = yAxis;
-            yAxis = this.xAxis;
+            horAxis = vertAxis;
+            vertAxis = this.xAxis;
         }
         return {
-            translateX: xAxis ? xAxis.left : chart.plotLeft,
-            translateY: yAxis ? yAxis.top : chart.plotTop,
-            scaleX: 1,
+            translateX: horAxis ? horAxis.left : chart.plotLeft,
+            translateY: vertAxis ? vertAxis.top : chart.plotTop,
+            rotation: inverted ? 90 : 0,
+            rotationOriginX: inverted ?
+                (horAxis.len - vertAxis.len) / 2 :
+                0,
+            rotationOriginY: inverted ?
+                (horAxis.len + vertAxis.len) / 2 :
+                0,
+            scaleX: inverted ? -1 : 1,
             scaleY: 1
         };
     };
@@ -2263,10 +2238,6 @@ var Series = /** @class */ (function () {
         if (series.animate && animDuration) {
             series.animate(true);
         }
-        // SVGRenderer needs to know this before drawing elements (#1089,
-        // #1795)
-        group.inverted = pick(series.invertible, series.isCartesian) ?
-            inverted : false;
         // Draw the graph if any
         if (series.drawGraph) {
             series.drawGraph();
@@ -2290,8 +2261,6 @@ var Series = /** @class */ (function () {
             series.options.enableMouseTracking !== false) {
             series.drawTracker();
         }
-        // Handle inverted series and tracker groups
-        series.invertGroups(inverted);
         // Run the animation
         if (series.animate && animDuration) {
             series.animate();
@@ -2323,24 +2292,10 @@ var Series = /** @class */ (function () {
      * @function Highcharts.Series#redraw
      */
     Series.prototype.redraw = function () {
-        var series = this, chart = series.chart, 
-        // cache it here as it is set to false in render, but used after
-        wasDirty = series.isDirty || series.isDirtyData, group = series.group, xAxis = series.xAxis, yAxis = series.yAxis;
-        // reposition on resize
-        if (group) {
-            if (chart.inverted) {
-                group.attr({
-                    width: chart.plotWidth,
-                    height: chart.plotHeight
-                });
-            }
-            group.animate({
-                translateX: pick(xAxis && xAxis.left, chart.plotLeft),
-                translateY: pick(yAxis && yAxis.top, chart.plotTop)
-            });
-        }
-        series.translate();
-        series.render();
+        // Cache it here as it is set to false in render, but used after
+        var wasDirty = this.isDirty || this.isDirtyData;
+        this.translate();
+        this.render();
         if (wasDirty) { // #3868, #3945
             delete this.kdTree;
         }
@@ -3152,7 +3107,7 @@ var Series = /** @class */ (function () {
                         lineWidth + (stateOptions[state].lineWidthPlus || 0)); // #4035
                     opacity = pick(stateOptions[state].opacity, opacity);
                 }
-                if (graph && !graph.dashstyle) {
+                if (graph && !graph.dashstyle && isNumber(lineWidth)) {
                     attribs = {
                         'stroke-width': lineWidth
                     };

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.1 (2022-10-31)
+ * @license Highcharts JS v10.3.2 (2022-11-28)
  *
  * Sankey diagram module
  *
@@ -1686,6 +1686,10 @@
                 return {
                     fill: Color.parse(color).setOpacity(values.linkOpacity).get()
                 };
+            };
+            SankeySeries.prototype.drawTracker = function () {
+                ColumnSeries.prototype.drawTracker.call(this, this.points);
+                ColumnSeries.prototype.drawTracker.call(this, this.nodes);
             };
             SankeySeries.prototype.drawPoints = function () {
                 ColumnSeries.prototype.drawPoints.call(this, this.points);

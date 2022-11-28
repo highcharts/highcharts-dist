@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.1 (2022-10-31)
+ * @license Highcharts JS v10.3.2 (2022-11-28)
  *
  * Arc diagram module
  *
@@ -519,7 +519,8 @@
             };
             ArcDiagramSeries.prototype.pointAttribs = function (point, state) {
                 if (point && point.isNode) {
-                    var _a = Series.prototype.pointAttribs.apply(this,
+                    var _a = Series.prototype.pointAttribs
+                            .apply(this,
                         arguments),
                         opacity = _a.opacity,
                         attrs = __rest(_a,
@@ -666,6 +667,7 @@
                 marker: {
                     symbol: 'circle',
                     fillOpacity: 1,
+                    lineWidth: 0,
                     states: {}
                 }
             });

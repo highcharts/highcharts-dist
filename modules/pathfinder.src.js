@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.3.1 (2022-10-31)
+ * @license Highcharts Gantt JS v10.3.2 (2022-11-28)
  *
  * Pathfinder
  *
@@ -2325,19 +2325,20 @@
                 // to new connections.
                 for (var j = 0, k = void 0, found = void 0, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
                     found = false;
+                    var oldCon = oldConnections[j];
                     for (k = 0; k < lenNew; ++k) {
-                        if (oldConnections[j].fromPoint ===
-                            pathfinder.connections[k].fromPoint &&
-                            oldConnections[j].toPoint ===
-                                pathfinder.connections[k].toPoint) {
-                            pathfinder.connections[k].graphics =
-                                oldConnections[j].graphics;
+                        var newCon = pathfinder.connections[k];
+                        if ((oldCon.options && oldCon.options.type) ===
+                            (newCon.options && newCon.options.type) &&
+                            oldCon.fromPoint === newCon.fromPoint &&
+                            oldCon.toPoint === newCon.toPoint) {
+                            newCon.graphics = oldCon.graphics;
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        oldConnections[j].destroy();
+                        oldCon.destroy();
                     }
                 }
                 // Clear obstacles to force recalculation. This must be done on every

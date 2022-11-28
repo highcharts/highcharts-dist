@@ -1169,7 +1169,7 @@ var Pointer = /** @class */ (function () {
      * @emits Highcharts.Point#event:mouseOut
      * @emits Highcharts.Point#event:mouseOver
      */
-    Pointer.prototype.runPointActions = function (e, p) {
+    Pointer.prototype.runPointActions = function (e, p, force) {
         var pointer = this, chart = pointer.chart, series = chart.series, tooltip = (chart.tooltip && chart.tooltip.options.enabled ?
             chart.tooltip :
             void 0), shared = (tooltip ?
@@ -1190,8 +1190,9 @@ var Pointer = /** @class */ (function () {
         // Refresh tooltip for kdpoint if new hover point or tooltip was hidden
         // #3926, #4200
         if (hoverPoint &&
-            // !(hoverSeries && hoverSeries.directTouch) &&
-            (hoverPoint !== chart.hoverPoint || (tooltip && tooltip.isHidden))) {
+            (force ||
+                hoverPoint !== chart.hoverPoint ||
+                (tooltip && tooltip.isHidden))) {
             (chart.hoverPoints || []).forEach(function (p) {
                 if (points.indexOf(p) === -1) {
                     p.setState();

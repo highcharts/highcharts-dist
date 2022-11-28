@@ -1,0 +1,1 @@
+import '../../Extensions/BoostCanvas.js';

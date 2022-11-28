@@ -96,6 +96,10 @@ var AST = /** @class */ (function () {
                 });
                 delete attributes[key];
             }
+            // #17753, < is not allowed in SVG attributes
+            if (isString(val) && attributes[key]) {
+                attributes[key] = val.replace(/</g, '&lt;');
+            }
         });
         return attributes;
     };
@@ -374,6 +378,7 @@ var AST = /** @class */ (function () {
         'x',
         'x1',
         'x2',
+        'xlink:href',
         'y',
         'y1',
         'y2',
@@ -467,6 +472,7 @@ var AST = /** @class */ (function () {
         'text',
         'textPath',
         'thead',
+        'title',
         'tbody',
         'tspan',
         'td',

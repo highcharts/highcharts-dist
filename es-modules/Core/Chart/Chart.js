@@ -1967,7 +1967,9 @@ var Chart = /** @class */ (function () {
             // Make chart behave as an image with the title as alt text
             this.renderer.boxWrapper.attr({
                 role: 'img',
-                'aria-label': (title && title.element.textContent) || ''
+                'aria-label': ((title && title.element.textContent) || ''
+                // #17753, < is not allowed in SVG attributes
+                ).replace(/</g, '&lt;')
             });
             if (!(options.accessibility && options.accessibility.enabled === false)) {
                 error('Highcharts warning: Consider including the ' +

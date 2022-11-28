@@ -341,7 +341,8 @@ var ArcDiagramSeries = /** @class */ (function (_super) {
     };
     ArcDiagramSeries.prototype.pointAttribs = function (point, state) {
         if (point && point.isNode) {
-            var _a = Series.prototype.pointAttribs.apply(this, arguments), opacity = _a.opacity, attrs = __rest(_a, ["opacity"]);
+            var _a = Series.prototype.pointAttribs
+                .apply(this, arguments), opacity = _a.opacity, attrs = __rest(_a, ["opacity"]);
             return attrs;
         }
         return _super.prototype.pointAttribs.apply(this, arguments);
@@ -484,6 +485,7 @@ var ArcDiagramSeries = /** @class */ (function (_super) {
         marker: {
             symbol: 'circle',
             fillOpacity: 1,
+            lineWidth: 0,
             states: {}
         }
     });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.3.1 (2022-10-31)
+ * @license Highcharts Gantt JS v10.3.2 (2022-11-28)
  *
  * Gantt series
  *
@@ -2478,10 +2478,18 @@
                 }
                 // Create the handlers:
                 if (navigatorOptions.handles && navigatorOptions.handles.enabled) {
-                    var handlesOptions_1 = navigatorOptions.handles;
+                    var handlesOptions_1 = navigatorOptions.handles,
+                        height_1 = handlesOptions_1.height,
+                        width_1 = handlesOptions_1.width;
                     [0, 1].forEach(function (index) {
-                        handlesOptions_1.inverted = !!chart.inverted;
-                        navigator.handles[index] = renderer.symbol(handlesOptions_1.symbols[index], -handlesOptions_1.width / 2 - 1, 0, handlesOptions_1.width, handlesOptions_1.height, navigatorOptions.handles);
+                        navigator.handles[index] = renderer.symbol(handlesOptions_1.symbols[index], -width_1 / 2 - 1, 0, width_1, height_1, handlesOptions_1);
+                        if (chart.inverted) {
+                            navigator.handles[index].attr({
+                                rotation: 90,
+                                rotationOriginX: Math.floor(-width_1 / 2),
+                                rotationOriginY: (height_1 + width_1) / 2
+                            });
+                        }
                         // zIndex = 6 for right handle, 7 for left.
                         // Can't be 10, because of the tooltip in inverted chart #2908
                         navigator.handles[index].attr({ zIndex: 7 - index })
@@ -6791,6 +6799,12 @@
                     pointIndex -= cropStart;
                 }
                 return pointIndex;
+            };
+            XRangeSeries.prototype.alignDataLabel = function (point) {
+                var oldPlotX = point.plotX;
+                point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+                _super.prototype.alignDataLabel.apply(this, arguments);
+                point.plotX = oldPlotX;
             };
             /**
              * @private
@@ -12944,19 +12958,20 @@
                 // to new connections.
                 for (var j = 0, k = void 0, found = void 0, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
                     found = false;
+                    var oldCon = oldConnections[j];
                     for (k = 0; k < lenNew; ++k) {
-                        if (oldConnections[j].fromPoint ===
-                            pathfinder.connections[k].fromPoint &&
-                            oldConnections[j].toPoint ===
-                                pathfinder.connections[k].toPoint) {
-                            pathfinder.connections[k].graphics =
-                                oldConnections[j].graphics;
+                        var newCon = pathfinder.connections[k];
+                        if ((oldCon.options && oldCon.options.type) ===
+                            (newCon.options && newCon.options.type) &&
+                            oldCon.fromPoint === newCon.fromPoint &&
+                            oldCon.toPoint === newCon.toPoint) {
+                            newCon.graphics = oldCon.graphics;
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        oldConnections[j].destroy();
+                        oldCon.destroy();
                     }
                 }
                 // Clear obstacles to force recalculation. This must be done on every

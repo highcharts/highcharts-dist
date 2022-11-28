@@ -47,14 +47,6 @@ var Point = /** @class */ (function () {
          * @type {number|string}
          */
         this.category = void 0;
-        /**
-         * The point's current color index, used in styled mode instead of
-         * `color`. The color index is inserted in class names used for styling.
-         *
-         * @name Highcharts.Point#colorIndex
-         * @type {number}
-         */
-        this.colorIndex = void 0;
         this.formatPrefix = 'point';
         this.id = void 0;
         this.isNull = false;
@@ -619,6 +611,13 @@ var Point = /** @class */ (function () {
             }
             colorIndex = series.colorIndex;
         }
+        /**
+         * The point's current color index, used in styled mode instead of
+         * `color`. The color index is inserted in class names used for styling.
+         *
+         * @name Highcharts.Point#colorIndex
+         * @type {number|undefined}
+         */
         this.colorIndex = pick(this.options.colorIndex, colorIndex);
         /**
          * The point's current color.
@@ -1001,7 +1000,7 @@ var Point = /** @class */ (function () {
                 var opacity_1 = pointAttribs.opacity;
                 // Some inactive points (e.g. slices in pie) should apply
                 // opacity also for their labels
-                if (isNumber(opacity_1)) {
+                if (series.options.inactiveOtherPoints && isNumber(opacity_1)) {
                     (point.dataLabels || []).forEach(function (label) {
                         if (label &&
                             !label.hasClass('highcharts-data-label-hidden')) {

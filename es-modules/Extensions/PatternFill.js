@@ -424,16 +424,18 @@ addEvent(Chart, 'endResize', function () {
         // We have non-default patterns to fix. Find them by looping through
         // all points.
         this.series.forEach(function (series) {
-            series.points.forEach(function (point) {
-                var colorOptions = point.options && point.options.color;
-                if (colorOptions &&
-                    colorOptions.pattern) {
-                    colorOptions.pattern
-                        ._width = 'defer';
-                    colorOptions.pattern
-                        ._height = 'defer';
-                }
-            });
+            if (series.visible) {
+                series.points.forEach(function (point) {
+                    var colorOptions = point.options && point.options.color;
+                    if (colorOptions &&
+                        colorOptions.pattern) {
+                        colorOptions.pattern
+                            ._width = 'defer';
+                        colorOptions.pattern
+                            ._height = 'defer';
+                    }
+                });
+            }
         });
         // Redraw without animation
         this.redraw(false);

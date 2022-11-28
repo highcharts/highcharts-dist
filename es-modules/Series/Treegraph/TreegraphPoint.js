@@ -50,6 +50,7 @@ var TreegraphPoint = /** @class */ (function (_super) {
         _this.isLink = false;
         _this.series = void 0;
         _this.node = void 0;
+        _this.setState = Point.prototype.setState;
         return _this;
     }
     /* *
@@ -146,9 +147,6 @@ var TreegraphPoint = /** @class */ (function (_super) {
                 (inverted ? -btnHeight * 0.3 : width + btnWidth * -0.3),
             y: y + height / 2 - btnHeight / 2 + btnOptions.y
         };
-    };
-    TreegraphPoint.prototype.setState = function () {
-        Point.prototype.setState.apply(this, arguments);
     };
     return TreegraphPoint;
 }(TreemapPoint));

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.1 (2022-10-31)
+ * @license Highcharts JS v10.3.2 (2022-11-28)
  *
  * Accessibility module
  *
@@ -53,6 +53,12 @@
         var doc = H.doc,
             win = H.win;
         var css = U.css;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var simulatedEventTarget = win.EventTarget && new win.EventTarget() || 'none';
         /* *
          *
          *  Functions
@@ -172,10 +178,12 @@
             return doc.getElementById(id);
         }
         /**
-         * Get a fake mouse event of a given type
+         * Get a fake mouse event of a given type. If relatedTarget is not given,
+         * it will point to simulatedEventTarget, as an indicator that the event
+         * is fake.
          * @private
          */
-        function getFakeMouseEvent(type, position) {
+        function getFakeMouseEvent(type, position, relatedTarget) {
             var pos = position || {
                     x: 0,
                     y: 0
@@ -185,6 +193,9 @@
                     bubbles: true,
                     cancelable: true,
                     composed: true,
+                    button: 0,
+                    buttons: 1,
+                    relatedTarget: relatedTarget || simulatedEventTarget,
                     view: win,
                     detail: type === 'click' ? 1 : 0,
                     screenX: pos.x,
@@ -340,6 +351,7 @@
                 removeClass: removeClass,
                 removeElement: removeElement,
                 reverseChildNodes: reverseChildNodes,
+                simulatedEventTarget: simulatedEventTarget,
                 stripHTMLTagsFromString: stripHTMLTagsFromString,
                 visuallyHideElement: visuallyHideElement
             };
@@ -3162,7 +3174,8 @@
             win = H.win;
         var addEvent = U.addEvent,
             fireEvent = U.fireEvent;
-        var getElement = HTMLUtilities.getElement;
+        var getElement = HTMLUtilities.getElement,
+            simulatedEventTarget = HTMLUtilities.simulatedEventTarget;
         /* *
          *
          *  Class
@@ -3228,7 +3241,7 @@
                 ep.addEvent(this.tabindexContainer, 'keydown', function (e) { return _this.onKeydown(e); });
                 ep.addEvent(this.tabindexContainer, 'focus', function (e) { return _this.onFocus(e); });
                 ['mouseup', 'touchend'].forEach(function (eventName) {
-                    return ep.addEvent(doc, eventName, function () { return _this.onMouseUp(); });
+                    return ep.addEvent(doc, eventName, function (e) { return _this.onMouseUp(e); });
                 });
                 ['mousedown', 'touchstart'].forEach(function (eventName) {
                     return ep.addEvent(chart.renderTo, eventName, function () {
@@ -3357,9 +3370,10 @@
              * indicator.
              * @private
              */
-            KeyboardNavigation.prototype.onMouseUp = function () {
+            KeyboardNavigation.prototype.onMouseUp = function (e) {
                 delete this.isClickingChart;
-                if (!this.keyboardReset) {
+                if (!this.keyboardReset &&
+                    e.relatedTarget !== simulatedEventTarget) {
                     var chart = this.chart;
                     if (!this.pointerIsOverChart) {
                         var curMod = this.modules &&
@@ -9628,7 +9642,7 @@
 
         return SeriesComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, CU, KeyboardNavigationHandler, U) {
+    _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, CU, HU, KeyboardNavigationHandler, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -9657,6 +9671,7 @@
             };
         })();
         var unhideChartElementFromAT = CU.unhideChartElementFromAT;
+        var getFakeMouseEvent = HU.getFakeMouseEvent;
         var attr = U.attr,
             pick = U.pick;
         /* *
@@ -9665,32 +9680,10 @@
          *
          * */
         /**
-         * Pan along axis in a direction (1 or -1), optionally with a defined
-         * granularity (number of steps it takes to walk across current view)
-         * @private
-         */
-        function axisPanStep(axis, direction, granularity) {
-            var gran = granularity || 3;
-            var extremes = axis.getExtremes();
-            var step = (extremes.max - extremes.min) / gran * direction;
-            var newMax = extremes.max + step;
-            var newMin = extremes.min + step;
-            var size = newMax - newMin;
-            if (direction < 0 && newMin < extremes.dataMin) {
-                newMin = extremes.dataMin;
-                newMax = newMin + size;
-            }
-            else if (direction > 0 && newMax > extremes.dataMax) {
-                newMax = extremes.dataMax;
-                newMin = newMax - size;
-            }
-            axis.setExtremes(newMin, newMax);
-        }
-        /**
          * @private
          */
         function chartHasMapZoom(chart) {
-            return !!((chart.mapZoom) &&
+            return !!((chart.mapView) &&
                 chart.mapNavigation &&
                 chart.mapNavigation.navButtons.length);
         }
@@ -9847,18 +9840,37 @@
                 });
             };
             /**
+             * Arrow key panning for maps.
              * @private
-             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-             * @param {number} keyCode
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler The handler context.
+             * @param {number} keyCode Key pressed.
              * @return {number} Response code
              */
             ZoomComponent.prototype.onMapKbdArrow = function (keyboardNavigationHandler, keyCode) {
-                var keys = this.keyCodes,
-                    panAxis = (keyCode === keys.up || keyCode === keys.down) ?
-                        'yAxis' : 'xAxis',
+                var chart = this.chart,
+                    keys = this.keyCodes,
+                    target = chart.container,
+                    isY = keyCode === keys.up || keyCode === keys.down,
                     stepDirection = (keyCode === keys.left || keyCode === keys.up) ?
-                        -1 : 1;
-                axisPanStep(this.chart[panAxis][0], stepDirection);
+                        1 : -1,
+                    granularity = 10,
+                    diff = (isY ? chart.plotHeight : chart.plotWidth) /
+                        granularity * stepDirection, 
+                    // Randomize since same mousedown coords twice is ignored in MapView
+                    r = Math.random() * 10,
+                    startPos = {
+                        x: target.offsetLeft + chart.plotLeft + chart.plotWidth / 2 + r,
+                        y: target.offsetTop + chart.plotTop + chart.plotHeight / 2 + r
+                    },
+                    endPos = isY ? { x: startPos.x,
+                    y: startPos.y + diff } :
+                        { x: startPos.x + diff,
+                    y: startPos.y };
+                [
+                    getFakeMouseEvent('mousedown', startPos),
+                    getFakeMouseEvent('mousemove', endPos),
+                    getFakeMouseEvent('mouseup', endPos)
+                ].forEach(function (e) { return target.dispatchEvent(e); });
                 return keyboardNavigationHandler.response.success;
             };
             /**
@@ -9876,7 +9888,9 @@
                 // Deselect old
                 chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].setState(0);
                 if (isMoveOutOfRange) {
-                    chart.mapZoom(); // Reset zoom
+                    if (chart.mapView) {
+                        chart.mapView.zoomBy(); // Reset zoom
+                    }
                     return response[isBackwards ? 'prev' : 'next'];
                 }
                 // Select other button
@@ -9887,12 +9901,13 @@
                 return response.success;
             };
             /**
+             * Called on map button click.
              * @private
-             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler The handler context object
              * @return {number} Response code
              */
             ZoomComponent.prototype.onMapKbdClick = function (keyboardNavigationHandler) {
-                var el = this.chart.mapNavButtons[this.focusedMapNavButtonIx].element;
+                var el = this.chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].element;
                 this.fakeClickEvent(el);
                 return keyboardNavigationHandler.response.success;
             };
@@ -12140,7 +12155,7 @@
             /**
              * @private
              */
-            function compose(AxisClass, ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
+            function compose(ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
                 // ordered:
                 KeyboardNavigation.compose(ChartClass);
                 NewDataAnnouncer.compose(SeriesClass);
@@ -12232,7 +12247,7 @@
         G.AccessibilityComponent = AccessibilityComponent;
         G.KeyboardNavigationHandler = KeyboardNavigationHandler;
         G.SeriesAccessibilityDescriber = SeriesDescriber;
-        Accessibility.compose(G.Axis, G.Chart, G.Legend, G.Point, G.Series, G.SVGElement, G.RangeSelector);
+        Accessibility.compose(G.Chart, G.Legend, G.Point, G.Series, G.SVGElement, G.RangeSelector);
 
     });
 }));

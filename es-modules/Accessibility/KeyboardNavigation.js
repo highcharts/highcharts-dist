@@ -17,7 +17,7 @@ import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, fireEvent = U.fireEvent;
 import EventProvider from './Utils/EventProvider.js';
 import HTMLUtilities from './Utils/HTMLUtilities.js';
-var getElement = HTMLUtilities.getElement;
+var getElement = HTMLUtilities.getElement, simulatedEventTarget = HTMLUtilities.simulatedEventTarget;
 /* *
  *
  *  Class
@@ -83,7 +83,7 @@ var KeyboardNavigation = /** @class */ (function () {
         ep.addEvent(this.tabindexContainer, 'keydown', function (e) { return _this.onKeydown(e); });
         ep.addEvent(this.tabindexContainer, 'focus', function (e) { return _this.onFocus(e); });
         ['mouseup', 'touchend'].forEach(function (eventName) {
-            return ep.addEvent(doc, eventName, function () { return _this.onMouseUp(); });
+            return ep.addEvent(doc, eventName, function (e) { return _this.onMouseUp(e); });
         });
         ['mousedown', 'touchstart'].forEach(function (eventName) {
             return ep.addEvent(chart.renderTo, eventName, function () {
@@ -209,9 +209,10 @@ var KeyboardNavigation = /** @class */ (function () {
      * indicator.
      * @private
      */
-    KeyboardNavigation.prototype.onMouseUp = function () {
+    KeyboardNavigation.prototype.onMouseUp = function (e) {
         delete this.isClickingChart;
-        if (!this.keyboardReset) {
+        if (!this.keyboardReset &&
+            e.relatedTarget !== simulatedEventTarget) {
             var chart = this.chart;
             if (!this.pointerIsOverChart) {
                 var curMod = this.modules &&

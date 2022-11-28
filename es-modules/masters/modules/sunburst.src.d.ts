@@ -1,0 +1,2 @@
+import '../../Series/Treemap/TreemapSeries.js';
+import '../../Series/Sunburst/SunburstSeries.js';

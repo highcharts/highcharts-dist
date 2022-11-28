@@ -182,12 +182,14 @@ function seriesSetGroupedPoints() {
  * @function Highcharts.Series#setStackedPoints
  */
 function seriesSetStackedPoints(stackingParam) {
-    var stacking = stackingParam || this.options.stacking;
+    var chart = this.chart, stacking = stackingParam || this.options.stacking;
     if (!stacking || (this.visible !== true &&
-        this.chart.options.chart.ignoreHiddenSeries !== false)) {
+        chart.options.chart.ignoreHiddenSeries !== false)) {
         return;
     }
-    var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? "".concat(series.type, ",").concat(stacking) : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
+    var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? "".concat(series.type, ",").concat(stacking) : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = stacking === 'group' ?
+        chart.yAxis[0] :
+        series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
     var stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;
     yAxis.stacking.stacksTouched += 1;
     // loop over the non-null y values and read them into a local array

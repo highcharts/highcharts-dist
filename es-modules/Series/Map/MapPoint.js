@@ -77,16 +77,14 @@ var MapPoint = /** @class */ (function (_super) {
      * @private
      */
     MapPoint.prototype.applyOptions = function (options, x) {
-        var series = this.series, point = _super.prototype.applyOptions.call(this, options, x), joinBy = series.joinBy, mapPoint;
+        var series = this.series, point = _super.prototype.applyOptions.call(this, options, x), joinBy = series.joinBy;
         if (series.mapData && series.mapMap) {
-            var joinKey = joinBy[1];
-            var mapKey = _super.prototype.getNestedProperty.call(point, joinKey);
-            mapPoint = typeof mapKey !== 'undefined' &&
+            var joinKey = joinBy[1], mapKey = _super.prototype.getNestedProperty.call(point, joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                 series.mapMap[mapKey];
             if (mapPoint) {
                 extend(point, mapPoint); // copy over properties
             }
-            else {
+            else if (series.pointArrayMap.indexOf('value') !== -1) {
                 point.value = point.value || null;
             }
         }
@@ -149,17 +147,43 @@ var MapPoint = /** @class */ (function (_super) {
      * Highmaps only. Zoom in on the point using the global animation.
      *
      * @sample maps/members/point-zoomto/
-     *         Zoom to points from butons
+     *         Zoom to points from buttons
      *
      * @requires modules/map
      *
      * @function Highcharts.Point#zoomTo
      */
     MapPoint.prototype.zoomTo = function () {
-        var point = this;
-        var chart = point.series.chart;
-        if (chart.mapView && point.bounds) {
-            chart.mapView.fitToBounds(point.bounds, void 0, false);
+        var point = this, chart = point.series.chart, mapView = chart.mapView;
+        var bounds = point.bounds;
+        if (mapView && bounds) {
+            var inset = isNumber(point.insetIndex) &&
+                mapView.insets[point.insetIndex];
+            if (inset) {
+                // If in an inset, translate the bounds to pixels ...
+                var px1 = inset.projectedUnitsToPixels({
+                    x: bounds.x1,
+                    y: bounds.y1
+                }), px2 = inset.projectedUnitsToPixels({
+                    x: bounds.x2,
+                    y: bounds.y2
+                }), 
+                // ... then back to projected units in the main mapView
+                proj1 = mapView.pixelsToProjectedUnits({
+                    x: px1.x,
+                    y: px1.y
+                }), proj2 = mapView.pixelsToProjectedUnits({
+                    x: px2.x,
+                    y: px2.y
+                });
+                bounds = {
+                    x1: proj1.x,
+                    y1: proj1.y,
+                    x2: proj2.x,
+                    y2: proj2.y
+                };
+            }
+            mapView.fitToBounds(bounds, void 0, false);
             point.series.isDirty = true;
             chart.redraw();
         }

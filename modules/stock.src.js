@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.1 (2022-10-31)
+ * @license Highstock JS v10.3.2 (2022-11-28)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -5251,10 +5251,18 @@
                 }
                 // Create the handlers:
                 if (navigatorOptions.handles && navigatorOptions.handles.enabled) {
-                    var handlesOptions_1 = navigatorOptions.handles;
+                    var handlesOptions_1 = navigatorOptions.handles,
+                        height_1 = handlesOptions_1.height,
+                        width_1 = handlesOptions_1.width;
                     [0, 1].forEach(function (index) {
-                        handlesOptions_1.inverted = !!chart.inverted;
-                        navigator.handles[index] = renderer.symbol(handlesOptions_1.symbols[index], -handlesOptions_1.width / 2 - 1, 0, handlesOptions_1.width, handlesOptions_1.height, navigatorOptions.handles);
+                        navigator.handles[index] = renderer.symbol(handlesOptions_1.symbols[index], -width_1 / 2 - 1, 0, width_1, height_1, handlesOptions_1);
+                        if (chart.inverted) {
+                            navigator.handles[index].attr({
+                                rotation: 90,
+                                rotationOriginX: Math.floor(-width_1 / 2),
+                                rotationOriginY: (height_1 + width_1) / 2
+                            });
+                        }
                         // zIndex = 6 for right handle, 7 for left.
                         // Can't be 10, because of the tooltip in inverted chart #2908
                         navigator.handles[index].attr({ zIndex: 7 - index })
@@ -11915,9 +11923,9 @@
              *
              * @private
              */
-            function getPlotBox() {
+            function getPlotBox(name) {
                 return seriesProto.getPlotBox.call((this.options.onSeries &&
-                    this.chart.get(this.options.onSeries)) || this);
+                    this.chart.get(this.options.onSeries)) || this, name);
             }
             OnSeriesComposition.getPlotBox = getPlotBox;
             /**
@@ -12391,12 +12399,7 @@
              * Inherit the initialization from base Series.
              * @private
              */
-            init: Series.prototype.init,
-            /**
-             * Don't invert the flag marker group (#4960).
-             * @private
-             */
-            invertGroups: noop
+            init: Series.prototype.init
         });
         SeriesRegistry.registerSeriesType('flags', FlagsSeries);
         /* *

@@ -28,6 +28,8 @@ var __extends = (this && this.__extends) || (function () {
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import CU from '../Utils/ChartUtilities.js';
 var unhideChartElementFromAT = CU.unhideChartElementFromAT;
+import HU from '../Utils/HTMLUtilities.js';
+var getFakeMouseEvent = HU.getFakeMouseEvent;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import U from '../../Core/Utilities.js';
 var attr = U.attr, pick = U.pick;
@@ -37,32 +39,10 @@ var attr = U.attr, pick = U.pick;
  *
  * */
 /**
- * Pan along axis in a direction (1 or -1), optionally with a defined
- * granularity (number of steps it takes to walk across current view)
- * @private
- */
-function axisPanStep(axis, direction, granularity) {
-    var gran = granularity || 3;
-    var extremes = axis.getExtremes();
-    var step = (extremes.max - extremes.min) / gran * direction;
-    var newMax = extremes.max + step;
-    var newMin = extremes.min + step;
-    var size = newMax - newMin;
-    if (direction < 0 && newMin < extremes.dataMin) {
-        newMin = extremes.dataMin;
-        newMax = newMin + size;
-    }
-    else if (direction > 0 && newMax > extremes.dataMax) {
-        newMax = extremes.dataMax;
-        newMin = newMax - size;
-    }
-    axis.setExtremes(newMin, newMax);
-}
-/**
  * @private
  */
 function chartHasMapZoom(chart) {
-    return !!((chart.mapZoom) &&
+    return !!((chart.mapView) &&
         chart.mapNavigation &&
         chart.mapNavigation.navButtons.length);
 }
@@ -213,16 +193,27 @@ var ZoomComponent = /** @class */ (function (_super) {
         });
     };
     /**
+     * Arrow key panning for maps.
      * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-     * @param {number} keyCode
+     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler The handler context.
+     * @param {number} keyCode Key pressed.
      * @return {number} Response code
      */
     ZoomComponent.prototype.onMapKbdArrow = function (keyboardNavigationHandler, keyCode) {
-        var keys = this.keyCodes, panAxis = (keyCode === keys.up || keyCode === keys.down) ?
-            'yAxis' : 'xAxis', stepDirection = (keyCode === keys.left || keyCode === keys.up) ?
-            -1 : 1;
-        axisPanStep(this.chart[panAxis][0], stepDirection);
+        var chart = this.chart, keys = this.keyCodes, target = chart.container, isY = keyCode === keys.up || keyCode === keys.down, stepDirection = (keyCode === keys.left || keyCode === keys.up) ?
+            1 : -1, granularity = 10, diff = (isY ? chart.plotHeight : chart.plotWidth) /
+            granularity * stepDirection, 
+        // Randomize since same mousedown coords twice is ignored in MapView
+        r = Math.random() * 10, startPos = {
+            x: target.offsetLeft + chart.plotLeft + chart.plotWidth / 2 + r,
+            y: target.offsetTop + chart.plotTop + chart.plotHeight / 2 + r
+        }, endPos = isY ? { x: startPos.x, y: startPos.y + diff } :
+            { x: startPos.x + diff, y: startPos.y };
+        [
+            getFakeMouseEvent('mousedown', startPos),
+            getFakeMouseEvent('mousemove', endPos),
+            getFakeMouseEvent('mouseup', endPos)
+        ].forEach(function (e) { return target.dispatchEvent(e); });
         return keyboardNavigationHandler.response.success;
     };
     /**
@@ -240,7 +231,9 @@ var ZoomComponent = /** @class */ (function (_super) {
         // Deselect old
         chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].setState(0);
         if (isMoveOutOfRange) {
-            chart.mapZoom(); // Reset zoom
+            if (chart.mapView) {
+                chart.mapView.zoomBy(); // Reset zoom
+            }
             return response[isBackwards ? 'prev' : 'next'];
         }
         // Select other button
@@ -251,12 +244,13 @@ var ZoomComponent = /** @class */ (function (_super) {
         return response.success;
     };
     /**
+     * Called on map button click.
      * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler The handler context object
      * @return {number} Response code
      */
     ZoomComponent.prototype.onMapKbdClick = function (keyboardNavigationHandler) {
-        var el = this.chart.mapNavButtons[this.focusedMapNavButtonIx].element;
+        var el = this.chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].element;
         this.fakeClickEvent(el);
         return keyboardNavigationHandler.response.success;
     };

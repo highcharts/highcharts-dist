@@ -141,7 +141,12 @@ var Popup = /** @class */ (function () {
         ['click', 'touchstart'].forEach(function (eventName) {
             addEvent(closeBtn, eventName, function () {
                 if (_this.chart) {
-                    fireEvent(_this.chart.navigationBindings, 'closePopup');
+                    var navigationBindings = _this.chart.navigationBindings;
+                    fireEvent(navigationBindings, 'closePopup');
+                    if (navigationBindings &&
+                        navigationBindings.selectedButtonElement) {
+                        fireEvent(navigationBindings, 'deselectButton', { button: navigationBindings.selectedButtonElement });
+                    }
                 }
                 else {
                     _this.closePopup();

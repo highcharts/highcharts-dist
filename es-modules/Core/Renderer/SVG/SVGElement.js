@@ -134,8 +134,6 @@ var SVGElement = /** @class */ (function () {
         if (parent) {
             this.parentGroup = parent;
         }
-        // Mark as inverted
-        this.parentInverted = parent && parent.inverted;
         // Build formatted text
         if (typeof this.textStr !== 'undefined' &&
             this.element.nodeName === 'text' // Not for SVGLabel instances
@@ -1211,25 +1209,6 @@ var SVGElement = /** @class */ (function () {
         fireEvent(this, 'afterInit');
     };
     /**
-     * Invert a group, rotate and flip. This is used internally on inverted
-     * charts, where the points and graphs are drawn as if not inverted, then
-     * the series group elements are inverted.
-     *
-     * @function Highcharts.SVGElement#invert
-     *
-     * @param {boolean} inverted
-     *        Whether to invert or not. An inverted shape can be un-inverted by
-     *        setting it to false.
-     *
-     * @return {Highcharts.SVGElement}
-     *         Return the SVGElement for chaining.
-     */
-    SVGElement.prototype.invert = function (inverted) {
-        this.inverted = inverted;
-        this.updateTransform();
-        return this;
-    };
-    /**
      * Add an event listener. This is a simple setter that replaces the
      * previous event of the same type added by this function, as opposed to
      * the {@link Highcharts#addEvent} function.
@@ -1462,10 +1441,10 @@ var SVGElement = /** @class */ (function () {
      *         Returns the SVGElement for chaining.
      */
     SVGElement.prototype.shadow = function (shadowOptions, group, cutOff) {
-        var shadows = [], element = this.element, oldShadowOptions = this.oldShadowOptions, defaultShadowOptions = {
+        var shadows = [], _a = this, element = _a.element, oldShadowOptions = _a.oldShadowOptions, parentGroup = _a.parentGroup, parentInverted = parentGroup && parentGroup.rotation === 90, defaultShadowOptions = {
             color: "#000000" /* Palette.neutralColor100 */,
-            offsetX: this.parentInverted ? -1 : 1,
-            offsetY: this.parentInverted ? -1 : 1,
+            offsetX: parentInverted ? -1 : 1,
+            offsetY: parentInverted ? -1 : 1,
             opacity: 0.15,
             width: 3
         };
@@ -1498,7 +1477,7 @@ var SVGElement = /** @class */ (function () {
         }
         else if (!this.shadows) {
             shadowElementOpacity = options.opacity / options.width;
-            transform = this.parentInverted ?
+            transform = parentInverted ?
                 "translate(".concat(options.offsetY, ", ").concat(options.offsetX, ")") :
                 "translate(".concat(options.offsetX, ", ").concat(options.offsetY, ")");
             for (i = 1; i <= options.width; i++) {
@@ -1547,9 +1526,7 @@ var SVGElement = /** @class */ (function () {
         return this.attr({ visibility: inherit ? 'inherit' : 'visible' });
     };
     /**
-     * WebKit and Batik have problems with a stroke-width of zero, so in this
-     * case we remove the stroke attribute altogether. #1270, #1369, #3065,
-     * #3072.
+     * Set the stroke-width and record it on the SVGElement
      *
      * @private
      * @function Highcharts.SVGElement#strokeSetter
@@ -1557,24 +1534,10 @@ var SVGElement = /** @class */ (function () {
      * @param {string} key
      * @param {Highcharts.SVGDOMElement} element
      */
-    SVGElement.prototype.strokeSetter = function (value, key, element) {
+    SVGElement.prototype['stroke-widthSetter'] = function (value, key, element) {
+        // Record it for quick access in getter
         this[key] = value;
-        // Only apply the stroke attribute if the stroke width is defined and
-        // larger than 0
-        if (this.stroke && this['stroke-width']) {
-            // Use prototype as instance may be overridden
-            SVGElement.prototype.fillSetter.call(this, this.stroke, 'stroke', element);
-            element.setAttribute('stroke-width', this['stroke-width']);
-            this.hasStroke = true;
-        }
-        else if (key === 'stroke-width' && value === 0 && this.hasStroke) {
-            element.removeAttribute('stroke');
-            this.hasStroke = false;
-        }
-        else if (this.renderer.styledMode && this['stroke-width']) {
-            element.setAttribute('stroke-width', this['stroke-width']);
-            this.hasStroke = true;
-        }
+        element.setAttribute(key, value);
     };
     /**
      * Get the computed stroke width in pixel values. This is used extensively
@@ -1765,14 +1728,7 @@ var SVGElement = /** @class */ (function () {
      * @function Highcharts.SVGElement#updateTransform
      */
     SVGElement.prototype.updateTransform = function () {
-        var wrapper = this, scaleX = wrapper.scaleX, scaleY = wrapper.scaleY, inverted = wrapper.inverted, rotation = wrapper.rotation, matrix = wrapper.matrix, element = wrapper.element;
-        var translateX = wrapper.translateX || 0, translateY = wrapper.translateY || 0;
-        // Flipping affects translate as adjustment for flipping around the
-        // group's axis
-        if (inverted) {
-            translateX += wrapper.width;
-            translateY += wrapper.height;
-        }
+        var _a = this, element = _a.element, matrix = _a.matrix, _b = _a.rotation, rotation = _b === void 0 ? 0 : _b, scaleX = _a.scaleX, scaleY = _a.scaleY, _c = _a.translateX, translateX = _c === void 0 ? 0 : _c, _d = _a.translateY, translateY = _d === void 0 ? 0 : _d;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
@@ -1781,11 +1737,8 @@ var SVGElement = /** @class */ (function () {
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
         }
-        // apply rotation
-        if (inverted) {
-            transform.push('rotate(90) scale(-1,1)');
-        }
-        else if (rotation) { // text rotation
+        // Apply rotation
+        if (rotation) { // text rotation or inverted chart
             transform.push('rotate(' + rotation + ' ' +
                 pick(this.rotationOriginX, element.getAttribute('x'), 0) +
                 ' ' +
@@ -1795,7 +1748,7 @@ var SVGElement = /** @class */ (function () {
         if (defined(scaleX) || defined(scaleY)) {
             transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
         }
-        if (transform.length && !(wrapper.text || wrapper).textPath) {
+        if (transform.length && !(this.text || this).textPath) {
             element.setAttribute('transform', transform.join(' '));
         }
     };
@@ -1906,7 +1859,7 @@ var SVGElement = /** @class */ (function () {
     return SVGElement;
 }());
 // Some shared setters and getters
-SVGElement.prototype['stroke-widthSetter'] = SVGElement.prototype.strokeSetter;
+SVGElement.prototype.strokeSetter = SVGElement.prototype.fillSetter;
 SVGElement.prototype.yGetter = SVGElement.prototype.xGetter;
 SVGElement.prototype.matrixSetter =
     SVGElement.prototype.rotationOriginXSetter =

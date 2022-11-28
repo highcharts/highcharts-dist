@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.1 (2022-10-31)
+ * @license Highcharts JS v10.3.2 (2022-11-28)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -486,16 +486,18 @@
                 // We have non-default patterns to fix. Find them by looping through
                 // all points.
                 this.series.forEach(function (series) {
-                    series.points.forEach(function (point) {
-                        var colorOptions = point.options && point.options.color;
-                        if (colorOptions &&
-                            colorOptions.pattern) {
-                            colorOptions.pattern
-                                ._width = 'defer';
-                            colorOptions.pattern
-                                ._height = 'defer';
-                        }
-                    });
+                    if (series.visible) {
+                        series.points.forEach(function (point) {
+                            var colorOptions = point.options && point.options.color;
+                            if (colorOptions &&
+                                colorOptions.pattern) {
+                                colorOptions.pattern
+                                    ._width = 'defer';
+                                colorOptions.pattern
+                                    ._height = 'defer';
+                            }
+                        });
+                    }
                 });
                 // Redraw without animation
                 this.redraw(false);

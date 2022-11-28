@@ -264,6 +264,26 @@ var Tooltip = /** @class */ (function () {
         return ret.map(Math.round);
     };
     /**
+     * Get the CSS class names for the tooltip's label. Styles the label
+     * by `colorIndex` or user-defined CSS.
+     *
+     * @function Highcharts.Tooltip#getClassName
+     *
+     * @return {string}
+     *         The class names.
+     */
+    Tooltip.prototype.getClassName = function (point, isSplit, isHeader) {
+        var options = this.options, series = point.series, seriesOptions = series.options;
+        return [
+            options.className,
+            'highcharts-label',
+            isHeader && 'highcharts-tooltip-header',
+            isSplit ? 'highcharts-tooltip-box' : 'highcharts-tooltip',
+            !isHeader && 'highcharts-color-' + pick(point.colorIndex, series.colorIndex),
+            (seriesOptions && seriesOptions.className)
+        ].filter(isString).join(' ');
+    };
+    /**
      * Creates the Tooltip label element if it does not exist, then returns it.
      *
      * @function Highcharts.Tooltip#getLabel
@@ -272,9 +292,7 @@ var Tooltip = /** @class */ (function () {
      * Tooltip label
      */
     Tooltip.prototype.getLabel = function () {
-        var tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared, className = ('tooltip' + (defined(options.className) ?
-            ' ' + options.className :
-            '')), pointerEvents = (options.style.pointerEvents ||
+        var tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared, pointerEvents = (options.style.pointerEvents ||
             (this.shouldStickOnContact() ? 'auto' : 'none'));
         var container, renderer = this.chart.renderer;
         // If changing from a split tooltip to a non-split tooltip, we must
@@ -317,11 +335,11 @@ var Tooltip = /** @class */ (function () {
             }
             // Create the label
             if (doSplit) {
-                this.label = renderer.g(className);
+                this.label = renderer.g('tooltip');
             }
             else {
                 this.label = renderer
-                    .label('', 0, 0, options.shape, void 0, void 0, options.useHTML, void 0, className)
+                    .label('', 0, 0, options.shape, void 0, void 0, options.useHTML, void 0, 'tooltip')
                     .attr({
                     padding: options.padding,
                     r: options.borderRadius
@@ -704,7 +722,7 @@ var Tooltip = /** @class */ (function () {
      *        used for the tooltip update.
      */
     Tooltip.prototype.refresh = function (pointOrPoints, mouseEvent) {
-        var tooltip = this, chart = this.chart, options = tooltip.options, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatter = options.formatter || tooltip.defaultFormatter, shared = tooltip.shared, styledMode = chart.styledMode;
+        var tooltip = this, chart = this.chart, options = tooltip.options, pointer = chart.pointer, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatter = options.formatter || tooltip.defaultFormatter, shared = tooltip.shared, styledMode = chart.styledMode;
         var textConfig = {};
         if (!options.enabled || !point.series) { // #16820
             return;
@@ -720,7 +738,7 @@ var Tooltip = /** @class */ (function () {
         var anchor = tooltip.getAnchor(pointOrPoints, mouseEvent), x = anchor[0], y = anchor[1];
         // shared tooltip, array is sent over
         if (shared && tooltip.allowShared) {
-            chart.pointer.applyInactiveState(points);
+            pointer.applyInactiveState(points);
             // Now set hover state for the choosen ones:
             points.forEach(function (item) {
                 item.setState('hover');
@@ -753,7 +771,7 @@ var Tooltip = /** @class */ (function () {
             else {
                 var checkX_1 = x;
                 var checkY_1 = y;
-                if (mouseEvent && chart.pointer.isDirectTouch) {
+                if (mouseEvent && pointer.isDirectTouch) {
                     checkX_1 = mouseEvent.chartX - chart.plotLeft;
                     checkY_1 = mouseEvent.chartY - chart.plotTop;
                 }
@@ -761,14 +779,15 @@ var Tooltip = /** @class */ (function () {
                 if (chart.polar ||
                     currentSeries.options.clip === false ||
                     points.some(function (p) {
-                        return p.series.shouldShowTooltip(checkX_1, checkY_1);
+                        return pointer.isDirectTouch || // ##17929
+                            p.series.shouldShowTooltip(checkX_1, checkY_1);
                     })) {
                     var label = tooltip.getLabel();
                     // Prevent the tooltip from flowing over the chart box
                     // (#6659)
                     if (!options.style.width || styledMode) {
                         label.css({
-                            width: this.chart.spacingBox.width + 'px'
+                            width: chart.spacingBox.width + 'px'
                         });
                     }
                     label.attr({
@@ -777,9 +796,7 @@ var Tooltip = /** @class */ (function () {
                             text
                     });
                     // Set the stroke color of the box to reflect the point
-                    label.removeClass(/highcharts-color-[\d]+/g)
-                        .addClass('highcharts-color-' +
-                        pick(point.colorIndex, currentSeries.colorIndex));
+                    label.addClass(tooltip.getClassName(point), true);
                     if (!styledMode) {
                         label.attr({
                             stroke: (options.borderColor ||
@@ -928,7 +945,6 @@ var Tooltip = /** @class */ (function () {
         function updatePartialTooltip(partialTooltip, point, str) {
             var tt = partialTooltip;
             var isHeader = point.isHeader, series = point.series;
-            var colorClass = 'highcharts-color-' + pick(point.colorIndex, series.colorIndex, 'none');
             if (!tt) {
                 var attribs = {
                     padding: options.padding,
@@ -940,9 +956,7 @@ var Tooltip = /** @class */ (function () {
                 }
                 tt = ren
                     .label('', 0, 0, (options[isHeader ? 'headerShape' : 'shape']), void 0, void 0, options.useHTML)
-                    .addClass((isHeader ? 'highcharts-tooltip-header ' : '') +
-                    'highcharts-tooltip-box ' +
-                    colorClass)
+                    .addClass(tooltip.getClassName(point, true, isHeader))
                     .attr(attribs)
                     .add(tooltipLabel);
             }
@@ -1075,7 +1089,7 @@ var Tooltip = /** @class */ (function () {
                  * to avoid breaking change. Remove distributionBoxTop to make
                  * it consistent.
                  */
-                y: pos + distributionBoxTop,
+                y: (pos || 0) + distributionBoxTop,
                 anchorX: anchorX,
                 anchorY: anchorY
             };
@@ -1174,7 +1188,9 @@ var Tooltip = /** @class */ (function () {
     Tooltip.prototype.styledModeFormat = function (formatString) {
         return formatString
             .replace('style="font-size: 10px"', 'class="highcharts-header"')
-            .replace(/style="color:{(point|series)\.color}"/g, 'class="highcharts-color-{$1.colorIndex}"');
+            .replace(/style="color:{(point|series)\.color}"/g, 'class="highcharts-color-{$1.colorIndex} ' +
+            '{series.options.className} ' +
+            '{point.options.className}"');
     };
     /**
      * Format the footer/header of the tooltip

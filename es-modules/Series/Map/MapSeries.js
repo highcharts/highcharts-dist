@@ -41,7 +41,7 @@ var
 _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, ScatterSeries = _a.scatter;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, find = U.find, fireEvent = U.fireEvent, getNestedProperty = U.getNestedProperty, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
+var extend = U.extend, find = U.find, fireEvent = U.fireEvent, getNestedProperty = U.getNestedProperty, isArray = U.isArray, defined = U.defined, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
 /* *
  *
  *  Class
@@ -464,11 +464,12 @@ var MapSeries = /** @class */ (function (_super) {
         if (!point.visible) {
             attr.fill = this.options.nullColor;
         }
-        attr['stroke-width'] = pick(pointStrokeWidth, 
-        // By default set the stroke-width on the group element and let all
-        // point graphics inherit. That way we don't have to iterate over
-        // all points to update the stroke-width on zooming.
-        'inherit');
+        if (defined(pointStrokeWidth)) {
+            attr['stroke-width'] = pointStrokeWidth;
+        }
+        else {
+            delete attr['stroke-width'];
+        }
         return attr;
     };
     /**

@@ -1,0 +1,10 @@
+import '../Extensions/Pane.js';
+import '../Series/AreaRange/AreaRangeSeries.js';
+import '../Series/AreaSplineRange/AreaSplineRangeSeries.js';
+import '../Series/BoxPlot/BoxPlotSeries.js';
+import '../Series/ColumnRange/ColumnRangeSeries.js';
+import '../Series/ColumnPyramid/ColumnPyramidSeries.js';
+import '../Series/ErrorBar/ErrorBarSeries.js';
+import '../Series/Gauge/GaugeSeries.js';
+import '../Series/Polygon/PolygonSeries.js';
+import '../Series/Waterfall/WaterfallSeries.js';

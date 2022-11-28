@@ -29,7 +29,6 @@ import A from '../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
 import ApproximationRegistry from '../../Extensions/DataGrouping/ApproximationRegistry.js';
 import H from '../../Core/Globals.js';
-var noop = H.noop;
 import OnSeriesComposition from '../OnSeriesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var Series = SeriesRegistry.series, ColumnSeries = SeriesRegistry.seriesTypes.column;
@@ -351,11 +350,11 @@ extend(WindbarbSeries.prototype, {
         'Gentle breeze', 'Moderate breeze', 'Fresh breeze',
         'Strong breeze', 'Near gale', 'Gale', 'Strong gale', 'Storm',
         'Violent storm', 'Hurricane'],
+    invertible: false,
     parallelArrays: ['x', 'value', 'direction'],
     pointArrayMap: ['value', 'direction'],
     pointClass: WindbarbPoint,
     trackerGroups: ['markerGroup'],
-    invertGroups: noop,
     translate: function () {
         var beaufortFloor = this.beaufortFloor, beaufortName = this.beaufortName;
         OnSeriesComposition.translate.call(this);

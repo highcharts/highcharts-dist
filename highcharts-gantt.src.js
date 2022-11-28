@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.3.1 (2022-10-31)
+ * @license Highcharts Gantt JS v10.3.2 (2022-11-28)
  *
  * (c) 2017-2021 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -64,7 +64,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '10.3.1', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '10.3.2', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -3041,6 +3041,8 @@
              * Additional CSS styles to apply inline to the container `div`. Note
              * that since the default font styles are applied in the renderer, it
              * is ignorant of the individual chart options and must be set globally.
+             * Also note that changing the font size in the `chart.style` options only
+             * applies to those elements that do not have a specific `fontSize` setting.
              *
              * @see    In styled mode, general chart styles can be set with the
              *         `.highcharts-root` class.
@@ -8087,6 +8089,10 @@
                         });
                         delete attributes[key];
                     }
+                    // #17753, < is not allowed in SVG attributes
+                    if (isString(val) && attributes[key]) {
+                        attributes[key] = val.replace(/</g, '&lt;');
+                    }
                 });
                 return attributes;
             };
@@ -8368,6 +8374,7 @@
                 'x',
                 'x1',
                 'x2',
+                'xlink:href',
                 'y',
                 'y1',
                 'y2',
@@ -8461,6 +8468,7 @@
                 'text',
                 'textPath',
                 'thead',
+                'title',
                 'tbody',
                 'tspan',
                 'td',
@@ -9117,8 +9125,6 @@
                 if (parent) {
                     this.parentGroup = parent;
                 }
-                // Mark as inverted
-                this.parentInverted = parent && parent.inverted;
                 // Build formatted text
                 if (typeof this.textStr !== 'undefined' &&
                     this.element.nodeName === 'text' // Not for SVGLabel instances
@@ -10261,25 +10267,6 @@
                 fireEvent(this, 'afterInit');
             };
             /**
-             * Invert a group, rotate and flip. This is used internally on inverted
-             * charts, where the points and graphs are drawn as if not inverted, then
-             * the series group elements are inverted.
-             *
-             * @function Highcharts.SVGElement#invert
-             *
-             * @param {boolean} inverted
-             *        Whether to invert or not. An inverted shape can be un-inverted by
-             *        setting it to false.
-             *
-             * @return {Highcharts.SVGElement}
-             *         Return the SVGElement for chaining.
-             */
-            SVGElement.prototype.invert = function (inverted) {
-                this.inverted = inverted;
-                this.updateTransform();
-                return this;
-            };
-            /**
              * Add an event listener. This is a simple setter that replaces the
              * previous event of the same type added by this function, as opposed to
              * the {@link Highcharts#addEvent} function.
@@ -10518,12 +10505,15 @@
              */
             SVGElement.prototype.shadow = function (shadowOptions, group, cutOff) {
                 var shadows = [],
-                    element = this.element,
-                    oldShadowOptions = this.oldShadowOptions,
+                    _a = this,
+                    element = _a.element,
+                    oldShadowOptions = _a.oldShadowOptions,
+                    parentGroup = _a.parentGroup,
+                    parentInverted = parentGroup && parentGroup.rotation === 90,
                     defaultShadowOptions = {
                         color: "#000000" /* Palette.neutralColor100 */,
-                        offsetX: this.parentInverted ? -1 : 1,
-                        offsetY: this.parentInverted ? -1 : 1,
+                        offsetX: parentInverted ? -1 : 1,
+                        offsetY: parentInverted ? -1 : 1,
                         opacity: 0.15,
                         width: 3
                     };
@@ -10561,7 +10551,7 @@
                 }
                 else if (!this.shadows) {
                     shadowElementOpacity = options.opacity / options.width;
-                    transform = this.parentInverted ?
+                    transform = parentInverted ?
                         "translate(".concat(options.offsetY, ", ").concat(options.offsetX, ")") :
                         "translate(".concat(options.offsetX, ", ").concat(options.offsetY, ")");
                     for (i = 1; i <= options.width; i++) {
@@ -10610,9 +10600,7 @@
                 return this.attr({ visibility: inherit ? 'inherit' : 'visible' });
             };
             /**
-             * WebKit and Batik have problems with a stroke-width of zero, so in this
-             * case we remove the stroke attribute altogether. #1270, #1369, #3065,
-             * #3072.
+             * Set the stroke-width and record it on the SVGElement
              *
              * @private
              * @function Highcharts.SVGElement#strokeSetter
@@ -10620,24 +10608,10 @@
              * @param {string} key
              * @param {Highcharts.SVGDOMElement} element
              */
-            SVGElement.prototype.strokeSetter = function (value, key, element) {
+            SVGElement.prototype['stroke-widthSetter'] = function (value, key, element) {
+                // Record it for quick access in getter
                 this[key] = value;
-                // Only apply the stroke attribute if the stroke width is defined and
-                // larger than 0
-                if (this.stroke && this['stroke-width']) {
-                    // Use prototype as instance may be overridden
-                    SVGElement.prototype.fillSetter.call(this, this.stroke, 'stroke', element);
-                    element.setAttribute('stroke-width', this['stroke-width']);
-                    this.hasStroke = true;
-                }
-                else if (key === 'stroke-width' && value === 0 && this.hasStroke) {
-                    element.removeAttribute('stroke');
-                    this.hasStroke = false;
-                }
-                else if (this.renderer.styledMode && this['stroke-width']) {
-                    element.setAttribute('stroke-width', this['stroke-width']);
-                    this.hasStroke = true;
-                }
+                element.setAttribute(key, value);
             };
             /**
              * Get the computed stroke width in pixel values. This is used extensively
@@ -10829,21 +10803,17 @@
              * @function Highcharts.SVGElement#updateTransform
              */
             SVGElement.prototype.updateTransform = function () {
-                var wrapper = this,
-                    scaleX = wrapper.scaleX,
-                    scaleY = wrapper.scaleY,
-                    inverted = wrapper.inverted,
-                    rotation = wrapper.rotation,
-                    matrix = wrapper.matrix,
-                    element = wrapper.element;
-                var translateX = wrapper.translateX || 0,
-                    translateY = wrapper.translateY || 0;
-                // Flipping affects translate as adjustment for flipping around the
-                // group's axis
-                if (inverted) {
-                    translateX += wrapper.width;
-                    translateY += wrapper.height;
-                }
+                var _a = this,
+                    element = _a.element,
+                    matrix = _a.matrix,
+                    _b = _a.rotation,
+                    rotation = _b === void 0 ? 0 : _b,
+                    scaleX = _a.scaleX,
+                    scaleY = _a.scaleY,
+                    _c = _a.translateX,
+                    translateX = _c === void 0 ? 0 : _c,
+                    _d = _a.translateY,
+                    translateY = _d === void 0 ? 0 : _d;
                 // Apply translate. Nearly all transformed elements have translation,
                 // so instead of checking for translate = 0, do it always (#1767,
                 // #1846).
@@ -10852,11 +10822,8 @@
                 if (defined(matrix)) {
                     transform.push('matrix(' + matrix.join(',') + ')');
                 }
-                // apply rotation
-                if (inverted) {
-                    transform.push('rotate(90) scale(-1,1)');
-                }
-                else if (rotation) { // text rotation
+                // Apply rotation
+                if (rotation) { // text rotation or inverted chart
                     transform.push('rotate(' + rotation + ' ' +
                         pick(this.rotationOriginX, element.getAttribute('x'), 0) +
                         ' ' +
@@ -10866,7 +10833,7 @@
                 if (defined(scaleX) || defined(scaleY)) {
                     transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
                 }
-                if (transform.length && !(wrapper.text || wrapper).textPath) {
+                if (transform.length && !(this.text || this).textPath) {
                     element.setAttribute('transform', transform.join(' '));
                 }
             };
@@ -10988,7 +10955,7 @@
             return SVGElement;
         }());
         // Some shared setters and getters
-        SVGElement.prototype['stroke-widthSetter'] = SVGElement.prototype.strokeSetter;
+        SVGElement.prototype.strokeSetter = SVGElement.prototype.fillSetter;
         SVGElement.prototype.yGetter = SVGElement.prototype.xGetter;
         SVGElement.prototype.matrixSetter =
             SVGElement.prototype.rotationOriginXSetter =
@@ -11470,14 +11437,13 @@
              * box and add it before the text in the DOM.
              */
             SVGLabel.prototype.onAdd = function () {
-                var str = this.textStr;
                 this.text.add(this);
                 this.attr({
                     // Alignment is available now  (#3295, 0 not rendered if given
                     // as a value)
-                    text: (defined(str) ? str : ''),
-                    x: this.x,
-                    y: this.y
+                    text: pick(this.textStr, ''),
+                    x: this.x || 0,
+                    y: this.y || 0
                 });
                 if (this.box && defined(this.anchorX)) {
                     this.attr({
@@ -12591,7 +12557,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 var desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.3.1'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.3.2'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -24328,6 +24294,28 @@
                 return ret.map(Math.round);
             };
             /**
+             * Get the CSS class names for the tooltip's label. Styles the label
+             * by `colorIndex` or user-defined CSS.
+             *
+             * @function Highcharts.Tooltip#getClassName
+             *
+             * @return {string}
+             *         The class names.
+             */
+            Tooltip.prototype.getClassName = function (point, isSplit, isHeader) {
+                var options = this.options,
+                    series = point.series,
+                    seriesOptions = series.options;
+                return [
+                    options.className,
+                    'highcharts-label',
+                    isHeader && 'highcharts-tooltip-header',
+                    isSplit ? 'highcharts-tooltip-box' : 'highcharts-tooltip',
+                    !isHeader && 'highcharts-color-' + pick(point.colorIndex, series.colorIndex),
+                    (seriesOptions && seriesOptions.className)
+                ].filter(isString).join(' ');
+            };
+            /**
              * Creates the Tooltip label element if it does not exist, then returns it.
              *
              * @function Highcharts.Tooltip#getLabel
@@ -24340,9 +24328,6 @@
                     styledMode = this.chart.styledMode,
                     options = this.options,
                     doSplit = this.split && this.allowShared,
-                    className = ('tooltip' + (defined(options.className) ?
-                        ' ' + options.className :
-                        '')),
                     pointerEvents = (options.style.pointerEvents ||
                         (this.shouldStickOnContact() ? 'auto' : 'none'));
                 var container,
@@ -24388,11 +24373,11 @@
                     }
                     // Create the label
                     if (doSplit) {
-                        this.label = renderer.g(className);
+                        this.label = renderer.g('tooltip');
                     }
                     else {
                         this.label = renderer
-                            .label('', 0, 0, options.shape, void 0, void 0, options.useHTML, void 0, className)
+                            .label('', 0, 0, options.shape, void 0, void 0, options.useHTML, void 0, 'tooltip')
                             .attr({
                             padding: options.padding,
                             r: options.borderRadius
@@ -24804,6 +24789,7 @@
                 var tooltip = this,
                     chart = this.chart,
                     options = tooltip.options,
+                    pointer = chart.pointer,
                     points = splat(pointOrPoints),
                     point = points[0],
                     pointConfig = [],
@@ -24828,7 +24814,7 @@
                     y = anchor[1];
                 // shared tooltip, array is sent over
                 if (shared && tooltip.allowShared) {
-                    chart.pointer.applyInactiveState(points);
+                    pointer.applyInactiveState(points);
                     // Now set hover state for the choosen ones:
                     points.forEach(function (item) {
                         item.setState('hover');
@@ -24862,7 +24848,7 @@
                     else {
                         var checkX_1 = x;
                         var checkY_1 = y;
-                        if (mouseEvent && chart.pointer.isDirectTouch) {
+                        if (mouseEvent && pointer.isDirectTouch) {
                             checkX_1 = mouseEvent.chartX - chart.plotLeft;
                             checkY_1 = mouseEvent.chartY - chart.plotTop;
                         }
@@ -24870,14 +24856,15 @@
                         if (chart.polar ||
                             currentSeries.options.clip === false ||
                             points.some(function (p) {
-                                return p.series.shouldShowTooltip(checkX_1, checkY_1);
+                                return pointer.isDirectTouch || // ##17929
+                                    p.series.shouldShowTooltip(checkX_1, checkY_1);
                             })) {
                             var label = tooltip.getLabel();
                             // Prevent the tooltip from flowing over the chart box
                             // (#6659)
                             if (!options.style.width || styledMode) {
                                 label.css({
-                                    width: this.chart.spacingBox.width + 'px'
+                                    width: chart.spacingBox.width + 'px'
                                 });
                             }
                             label.attr({
@@ -24886,9 +24873,7 @@
                                     text
                             });
                             // Set the stroke color of the box to reflect the point
-                            label.removeClass(/highcharts-color-[\d]+/g)
-                                .addClass('highcharts-color-' +
-                                pick(point.colorIndex, currentSeries.colorIndex));
+                            label.addClass(tooltip.getClassName(point), true);
                             if (!styledMode) {
                                 label.attr({
                                     stroke: (options.borderColor ||
@@ -25065,7 +25050,6 @@
                     var tt = partialTooltip;
                     var isHeader = point.isHeader,
                         series = point.series;
-                    var colorClass = 'highcharts-color-' + pick(point.colorIndex, series.colorIndex, 'none');
                     if (!tt) {
                         var attribs = {
                                 padding: options.padding,
@@ -25077,9 +25061,7 @@
                         }
                         tt = ren
                             .label('', 0, 0, (options[isHeader ? 'headerShape' : 'shape']), void 0, void 0, options.useHTML)
-                            .addClass((isHeader ? 'highcharts-tooltip-header ' : '') +
-                            'highcharts-tooltip-box ' +
-                            colorClass)
+                            .addClass(tooltip.getClassName(point, true, isHeader))
                             .attr(attribs)
                             .add(tooltipLabel);
                     }
@@ -25238,7 +25220,7 @@
                              * to avoid breaking change. Remove distributionBoxTop to make
                              * it consistent.
                              */
-                            y: pos + distributionBoxTop,
+                            y: (pos || 0) + distributionBoxTop,
                             anchorX: anchorX,
                             anchorY: anchorY
                         };
@@ -25343,7 +25325,9 @@
             Tooltip.prototype.styledModeFormat = function (formatString) {
                 return formatString
                     .replace('style="font-size: 10px"', 'class="highcharts-header"')
-                    .replace(/style="color:{(point|series)\.color}"/g, 'class="highcharts-color-{$1.colorIndex}"');
+                    .replace(/style="color:{(point|series)\.color}"/g, 'class="highcharts-color-{$1.colorIndex} ' +
+                    '{series.options.className} ' +
+                    '{point.options.className}"');
             };
             /**
              * Format the footer/header of the tooltip
@@ -25592,14 +25576,6 @@
                      * @type {number|string}
                      */
                     this.category = void 0;
-                /**
-                 * The point's current color index, used in styled mode instead of
-                 * `color`. The color index is inserted in class names used for styling.
-                 *
-                 * @name Highcharts.Point#colorIndex
-                 * @type {number}
-                 */
-                this.colorIndex = void 0;
                 this.formatPrefix = 'point';
                 this.id = void 0;
                 this.isNull = false;
@@ -26196,6 +26172,13 @@
                     }
                     colorIndex = series.colorIndex;
                 }
+                /**
+                 * The point's current color index, used in styled mode instead of
+                 * `color`. The color index is inserted in class names used for styling.
+                 *
+                 * @name Highcharts.Point#colorIndex
+                 * @type {number|undefined}
+                 */
                 this.colorIndex = pick(this.options.colorIndex, colorIndex);
                 /**
                  * The point's current color.
@@ -26606,7 +26589,7 @@
                         var opacity_1 = pointAttribs.opacity;
                         // Some inactive points (e.g. slices in pie) should apply
                         // opacity also for their labels
-                        if (isNumber(opacity_1)) {
+                        if (series.options.inactiveOtherPoints && isNumber(opacity_1)) {
                             (point.dataLabels || []).forEach(function (label) {
                                 if (label &&
                                     !label.hasClass('highcharts-data-label-hidden')) {
@@ -28208,7 +28191,7 @@
              * @emits Highcharts.Point#event:mouseOut
              * @emits Highcharts.Point#event:mouseOver
              */
-            Pointer.prototype.runPointActions = function (e, p) {
+            Pointer.prototype.runPointActions = function (e, p, force) {
                 var pointer = this,
                     chart = pointer.chart,
                     series = chart.series,
@@ -28242,8 +28225,9 @@
                 // Refresh tooltip for kdpoint if new hover point or tooltip was hidden
                 // #3926, #4200
                 if (hoverPoint &&
-                    // !(hoverSeries && hoverSeries.directTouch) &&
-                    (hoverPoint !== chart.hoverPoint || (tooltip && tooltip.isHidden))) {
+                    (force ||
+                        hoverPoint !== chart.hoverPoint ||
+                        (tooltip && tooltip.isHidden))) {
                     (chart.hoverPoints || []).forEach(function (p) {
                         if (points.indexOf(p) === -1) {
                             p.setState();
@@ -32431,7 +32415,9 @@
                     // Make chart behave as an image with the title as alt text
                     this.renderer.boxWrapper.attr({
                         role: 'img',
-                        'aria-label': (title && title.element.textContent) || ''
+                        'aria-label': ((title && title.element.textContent) || ''
+                        // #17753, < is not allowed in SVG attributes
+                        ).replace(/</g, '&lt;')
                     });
                     if (!(options.accessibility && options.accessibility.enabled === false)) {
                         error('Highcharts warning: Consider including the ' +
@@ -33736,7 +33722,10 @@
                 /**
                  * An additional class name to apply to the series' graphical elements.
                  * This option does not replace default class names of the graphical
-                 * element.
+                 * element. Changes to the series' color will also be reflected in a
+                 * chart's legend and tooltip.
+                 *
+                 * @sample {highcharts} highcharts/css/point-series-classname
                  *
                  * @type      {string}
                  * @since     5.0.0
@@ -37835,7 +37824,10 @@
                             else if (isInside &&
                                 ((markerAttribs.width || 0) > 0 || point.hasImage)) {
                                 /**
-                                 * The graphic representation of the point.
+                                 * SVG graphic representing the point in the chart. In
+                                 * some cases it may be a hidden graphic to improve
+                                 * accessibility.
+                                 *
                                  * Typically this is a simple shape, like a `rect`
                                  * for column charts or `path` for line markers, but
                                  * for some complex series types like boxplot or 3D
@@ -37844,8 +37836,10 @@
                                  * the first time {@link Series#drawPoints} runs,
                                  * and updated and moved on subsequent runs.
                                  *
-                                 * @name Point#graphic
-                                 * @type {SVGElement}
+                                 * @see Highcharts.Point#graphics
+                                 *
+                                 * @name Highcharts.Point#graphic
+                                 * @type {Highcharts.SVGElement|undefined}
                                  */
                                 point.graphic = graphic = chart.renderer
                                     .symbol(symbol, markerAttribs.x, markerAttribs.y, markerAttribs.width, markerAttribs.height, hasPointMarker ?
@@ -38212,48 +38206,6 @@
                 }
             };
             /**
-             * Initialize and perform group inversion on series.group and
-             * series.markerGroup.
-             *
-             * @private
-             * @function Highcharts.Series#invertGroups
-             */
-            Series.prototype.invertGroups = function (inverted) {
-                var series = this,
-                    chart = series.chart;
-                /**
-                 * @private
-                 */
-                function setInvert() {
-                    ['group', 'markerGroup'].forEach(function (groupName) {
-                        if (series[groupName]) {
-                            // VML/HTML needs explicit attributes for flipping
-                            if (chart.renderer.isVML) {
-                                series[groupName].attr({
-                                    width: series.yAxis.len,
-                                    height: series.xAxis.len
-                                });
-                            }
-                            series[groupName].width = series.yAxis.len;
-                            series[groupName].height = series.xAxis.len;
-                            // If inverted polar, don't invert series group
-                            series[groupName].invert(series.isRadialSeries ? false : inverted);
-                        }
-                    });
-                }
-                // Pie, go away (#1736)
-                if (!series.xAxis) {
-                    return;
-                }
-                // A fixed size is needed for inversion to work
-                series.eventsToUnbind.push(addEvent(chart, 'resize', setInvert));
-                // Do it now
-                setInvert();
-                // On subsequent render and redraw, just do setInvert without
-                // setting up events again
-                series.invertGroups = setInvert;
-            };
-            /**
              * General abstraction for creating plot groups like series.group,
              * series.dataLabelsGroup and series.markerGroup. On subsequent calls,
              * the group will only be adjusted to the updated plot size.
@@ -38293,7 +38245,7 @@
                         ' highcharts-tracker' :
                         '')), true);
                 // Place it on first and subsequent (redraw) calls
-                group.attr(attrs)[isNew ? 'attr' : 'animate'](this.getPlotBox());
+                group.attr(attrs)[isNew ? 'attr' : 'animate'](this.getPlotBox(name));
                 return group;
             };
             /**
@@ -38301,19 +38253,31 @@
              *
              * @function Highcharts.Series#getPlotBox
              */
-            Series.prototype.getPlotBox = function () {
-                var chart = this.chart;
-                var xAxis = this.xAxis,
-                    yAxis = this.yAxis;
+            Series.prototype.getPlotBox = function (name) {
+                var horAxis = this.xAxis,
+                    vertAxis = this.yAxis;
+                var chart = this.chart,
+                    inverted = (chart.inverted &&
+                        !chart.polar &&
+                        horAxis &&
+                        this.invertible !== false &&
+                        (name === 'markers' || name === 'series'));
                 // Swap axes for inverted (#2339)
                 if (chart.inverted) {
-                    xAxis = yAxis;
-                    yAxis = this.xAxis;
+                    horAxis = vertAxis;
+                    vertAxis = this.xAxis;
                 }
                 return {
-                    translateX: xAxis ? xAxis.left : chart.plotLeft,
-                    translateY: yAxis ? yAxis.top : chart.plotTop,
-                    scaleX: 1,
+                    translateX: horAxis ? horAxis.left : chart.plotLeft,
+                    translateY: vertAxis ? vertAxis.top : chart.plotTop,
+                    rotation: inverted ? 90 : 0,
+                    rotationOriginX: inverted ?
+                        (horAxis.len - vertAxis.len) / 2 :
+                        0,
+                    rotationOriginY: inverted ?
+                        (horAxis.len + vertAxis.len) / 2 :
+                        0,
+                    scaleX: inverted ? -1 : 1,
                     scaleY: 1
                 };
             };
@@ -38373,10 +38337,6 @@
                 if (series.animate && animDuration) {
                     series.animate(true);
                 }
-                // SVGRenderer needs to know this before drawing elements (#1089,
-                // #1795)
-                group.inverted = pick(series.invertible, series.isCartesian) ?
-                    inverted : false;
                 // Draw the graph if any
                 if (series.drawGraph) {
                     series.drawGraph();
@@ -38400,8 +38360,6 @@
                     series.options.enableMouseTracking !== false) {
                     series.drawTracker();
                 }
-                // Handle inverted series and tracker groups
-                series.invertGroups(inverted);
                 // Run the animation
                 if (series.animate && animDuration) {
                     series.animate();
@@ -38433,28 +38391,10 @@
              * @function Highcharts.Series#redraw
              */
             Series.prototype.redraw = function () {
-                var series = this,
-                    chart = series.chart, 
-                    // cache it here as it is set to false in render, but used after
-                    wasDirty = series.isDirty || series.isDirtyData,
-                    group = series.group,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis;
-                // reposition on resize
-                if (group) {
-                    if (chart.inverted) {
-                        group.attr({
-                            width: chart.plotWidth,
-                            height: chart.plotHeight
-                        });
-                    }
-                    group.animate({
-                        translateX: pick(xAxis && xAxis.left, chart.plotLeft),
-                        translateY: pick(yAxis && yAxis.top, chart.plotTop)
-                    });
-                }
-                series.translate();
-                series.render();
+                // Cache it here as it is set to false in render, but used after
+                var wasDirty = this.isDirty || this.isDirtyData;
+                this.translate();
+                this.render();
                 if (wasDirty) { // #3868, #3945
                     delete this.kdTree;
                 }
@@ -39338,7 +39278,7 @@
                                 lineWidth + (stateOptions[state].lineWidthPlus || 0)); // #4035
                             opacity = pick(stateOptions[state].opacity, opacity);
                         }
-                        if (graph && !graph.dashstyle) {
+                        if (graph && !graph.dashstyle && isNumber(lineWidth)) {
                             attribs = {
                                 'stroke-width': lineWidth
                             };
@@ -40086,9 +40026,14 @@
             }, css, this.scrollingParent);
             // On scroll, reset the chart position because it applies to the scrolled
             // container
+            var lastHoverPoint;
             addEvent(this.scrollingContainer, 'scroll', function () {
                 if (_this.pointer) {
                     delete _this.pointer.chartPosition;
+                    if (_this.hoverPoint) {
+                        lastHoverPoint = _this.hoverPoint;
+                    }
+                    _this.pointer.runPointActions(void 0, lastHoverPoint, true);
                 }
             });
             this.innerContainer = createElement('div', {
@@ -40842,12 +40787,15 @@
          * @function Highcharts.Series#setStackedPoints
          */
         function seriesSetStackedPoints(stackingParam) {
-            var stacking = stackingParam || this.options.stacking;
+            var chart = this.chart,
+                stacking = stackingParam || this.options.stacking;
             if (!stacking || (this.visible !== true &&
-                this.chart.options.chart.ignoreHiddenSeries !== false)) {
+                chart.options.chart.ignoreHiddenSeries !== false)) {
                 return;
             }
-            var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? "" + series.type + ",".concat(stacking) : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
+            var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? "" + series.type + ",".concat(stacking) : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = stacking === 'group' ?
+                    chart.yAxis[0] :
+                    series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
             var stackIndicator,
                 isNegative,
                 stack,
@@ -41279,7 +41227,7 @@
                     if (graph && !styledMode) {
                         attribs = {
                             'stroke': prop[2],
-                            'stroke-width': options.lineWidth,
+                            'stroke-width': options.lineWidth || 0,
                             // Polygon series use filled graph
                             'fill': (series.fillGraph && series.color) || 'none'
                         };
@@ -41565,7 +41513,10 @@
          */
         /**
          * An additional, individual class name for the data point's graphic
-         * representation.
+         * representation. Changes to a point's color will also be reflected in a
+         * chart's legend and tooltip.
+         *
+         * @sample {highcharts} highcharts/css/point-series-classname
          *
          * @type      {string}
          * @since     5.0.0
@@ -43987,7 +43938,8 @@
              * Draw the tracker for a point.
              * @private
              */
-            ColumnSeries.prototype.drawTracker = function () {
+            ColumnSeries.prototype.drawTracker = function (points) {
+                if (points === void 0) { points = this.points; }
                 var series = this,
                     chart = series.chart,
                     pointer = chart.pointer,
@@ -44001,7 +43953,7 @@
                 };
                 var dataLabels;
                 // Add reference to the point
-                series.points.forEach(function (point) {
+                points.forEach(function (point) {
                     dataLabels = (isArray(point.dataLabels) ?
                         point.dataLabels :
                         (point.dataLabel ? [point.dataLabel] : []));
@@ -44033,7 +43985,6 @@
                             }
                             if (!chart.styledMode && series.options.cursor) {
                                 series[key]
-                                    .css(css)
                                     .css({ cursor: series.options.cursor });
                             }
                         }
@@ -44173,8 +44124,7 @@
                     chart = this.chart,
                     inverted = this.isCartesian && chart.inverted,
                     enabledDataSorting = this.enabledDataSorting,
-                    plotX = pick(point.dlBox && point.dlBox.centerX,
-                    point.plotX),
+                    plotX = point.plotX,
                     plotY = point.plotY,
                     rotation = options.rotation,
                     align = options.align,
@@ -44202,6 +44152,7 @@
                     alignAttr, // the final position;
                 justify = pick(options.overflow, (enabledDataSorting ? 'none' : 'justify')) === 'justify', visible = this.visible &&
                     point.visible !== false &&
+                    defined(plotX) &&
                     (point.series.forceDL ||
                         (enabledDataSorting && !justify) ||
                         isInsidePlot ||
@@ -44310,12 +44261,8 @@
                     // arrow pointing to thie point
                     if (options.shape && !rotation) {
                         dataLabel[isNew ? 'attr' : 'animate']({
-                            anchorX: inverted ?
-                                chart.plotWidth - point.plotY :
-                                point.plotX,
-                            anchorY: inverted ?
-                                chart.plotHeight - point.plotX :
-                                point.plotY
+                            anchorX: inverted ? chart.plotWidth - plotY : plotX,
+                            anchorY: inverted ? chart.plotHeight - plotX : plotY
                         });
                     }
                 }
@@ -45136,7 +45083,7 @@
                  * https://api.highcharts.com/highcharts/plotOptions.column.pointPadding)
                  * settings.
                  *
-                 * @sample {highcharts} highcharts/series-scatter/jitter
+                 * @sample {highcharts} highcharts/demo/scatter-jitter
                  *         Jitter on a scatter plot
                  *
                  * @sample {highcharts} highcharts/series-scatter/jitter-boxplot
@@ -50657,10 +50604,18 @@
                 }
                 // Create the handlers:
                 if (navigatorOptions.handles && navigatorOptions.handles.enabled) {
-                    var handlesOptions_1 = navigatorOptions.handles;
+                    var handlesOptions_1 = navigatorOptions.handles,
+                        height_1 = handlesOptions_1.height,
+                        width_1 = handlesOptions_1.width;
                     [0, 1].forEach(function (index) {
-                        handlesOptions_1.inverted = !!chart.inverted;
-                        navigator.handles[index] = renderer.symbol(handlesOptions_1.symbols[index], -handlesOptions_1.width / 2 - 1, 0, handlesOptions_1.width, handlesOptions_1.height, navigatorOptions.handles);
+                        navigator.handles[index] = renderer.symbol(handlesOptions_1.symbols[index], -width_1 / 2 - 1, 0, width_1, height_1, handlesOptions_1);
+                        if (chart.inverted) {
+                            navigator.handles[index].attr({
+                                rotation: 90,
+                                rotationOriginX: Math.floor(-width_1 / 2),
+                                rotationOriginY: (height_1 + width_1) / 2
+                            });
+                        }
                         // zIndex = 6 for right handle, 7 for left.
                         // Can't be 10, because of the tooltip in inverted chart #2908
                         navigator.handles[index].attr({ zIndex: 7 - index })
@@ -54970,6 +54925,12 @@
                     pointIndex -= cropStart;
                 }
                 return pointIndex;
+            };
+            XRangeSeries.prototype.alignDataLabel = function (point) {
+                var oldPlotX = point.plotX;
+                point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+                _super.prototype.alignDataLabel.apply(this, arguments);
+                point.plotX = oldPlotX;
             };
             /**
              * @private
@@ -61123,19 +61084,20 @@
                 // to new connections.
                 for (var j = 0, k = void 0, found = void 0, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
                     found = false;
+                    var oldCon = oldConnections[j];
                     for (k = 0; k < lenNew; ++k) {
-                        if (oldConnections[j].fromPoint ===
-                            pathfinder.connections[k].fromPoint &&
-                            oldConnections[j].toPoint ===
-                                pathfinder.connections[k].toPoint) {
-                            pathfinder.connections[k].graphics =
-                                oldConnections[j].graphics;
+                        var newCon = pathfinder.connections[k];
+                        if ((oldCon.options && oldCon.options.type) ===
+                            (newCon.options && newCon.options.type) &&
+                            oldCon.fromPoint === newCon.fromPoint &&
+                            oldCon.toPoint === newCon.toPoint) {
+                            newCon.graphics = oldCon.graphics;
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        oldConnections[j].destroy();
+                        oldCon.destroy();
                     }
                 }
                 // Clear obstacles to force recalculation. This must be done on every

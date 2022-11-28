@@ -205,6 +205,12 @@ var XRangeSeries = /** @class */ (function (_super) {
         }
         return pointIndex;
     };
+    XRangeSeries.prototype.alignDataLabel = function (point) {
+        var oldPlotX = point.plotX;
+        point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+        _super.prototype.alignDataLabel.apply(this, arguments);
+        point.plotX = oldPlotX;
+    };
     /**
      * @private
      */

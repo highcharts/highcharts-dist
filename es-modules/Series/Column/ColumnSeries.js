@@ -568,7 +568,8 @@ var ColumnSeries = /** @class */ (function (_super) {
      * Draw the tracker for a point.
      * @private
      */
-    ColumnSeries.prototype.drawTracker = function () {
+    ColumnSeries.prototype.drawTracker = function (points) {
+        if (points === void 0) { points = this.points; }
         var series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
             var point = pointer.getPointFromEvent(e);
             // undefined on graph in scatterchart
@@ -579,7 +580,7 @@ var ColumnSeries = /** @class */ (function (_super) {
         };
         var dataLabels;
         // Add reference to the point
-        series.points.forEach(function (point) {
+        points.forEach(function (point) {
             dataLabels = (isArray(point.dataLabels) ?
                 point.dataLabels :
                 (point.dataLabel ? [point.dataLabel] : []));
@@ -611,7 +612,6 @@ var ColumnSeries = /** @class */ (function (_super) {
                     }
                     if (!chart.styledMode && series.options.cursor) {
                         series[key]
-                            .css(css)
                             .css({ cursor: series.options.cursor });
                     }
                 }
