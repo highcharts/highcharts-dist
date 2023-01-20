@@ -152,7 +152,7 @@ var DumbbellSeries = /** @class */ (function (_super) {
                 .attr({
                 zIndex: -1
             })
-                .add(series.markerGroup);
+                .add(series.group);
         }
         point.connector[verb](this.getConnectorAttribs(point));
     };
@@ -186,16 +186,25 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *
      */
     DumbbellSeries.prototype.translate = function () {
+        var _this = this;
+        var inverted = this.chart.inverted;
         // Calculate shapeargs
         this.setShapeArgs.apply(this);
         // Calculate point low / high values
         this.translatePoint.apply(this, arguments);
         // Correct x position
         this.points.forEach(function (point) {
-            var shapeArgs = point.shapeArgs, pointWidth = point.pointWidth;
-            point.plotX = shapeArgs.x;
+            var pointWidth = point.pointWidth, _a = point.shapeArgs, shapeArgs = _a === void 0 ? {} : _a, tooltipPos = point.tooltipPos;
+            point.plotX = shapeArgs.x || 0;
             shapeArgs.x = point.plotX - pointWidth / 2;
-            point.tooltipPos = null;
+            if (tooltipPos) {
+                if (inverted) {
+                    tooltipPos[1] = _this.xAxis.len - point.plotX;
+                }
+                else {
+                    tooltipPos[0] = point.plotX;
+                }
+            }
         });
         this.columnMetrics.offset -= this.columnMetrics.width / 2;
     };

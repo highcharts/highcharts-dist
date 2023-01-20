@@ -1,1 +1,3 @@
-import '../../Series/ParetoSeries/ParetoSeries.js';
+import factory from '../../../modules/pareto.src';
+export * from '../../../modules/pareto.src';
+export default factory;

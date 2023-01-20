@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.2 (2022-11-28)
+ * @license Highstock JS v10.3.3 (2023-01-20)
  *
  * Data grouping module
  *
@@ -740,7 +740,8 @@
                 // defined in groupPixelWidth
                 if (groupPixelWidth &&
                     processedXData &&
-                    processedXData.length) {
+                    processedXData.length &&
+                    plotSizeX) {
                     hasGroupedData = true;
                     // Force recreation of point instances in series.translate, #5699
                     series.isDirty = true;

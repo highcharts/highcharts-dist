@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/AO/AOIndicator.js';
+import factory from '../../../indicators/ao.src';
+export * from '../../../indicators/ao.src';
+export default factory;

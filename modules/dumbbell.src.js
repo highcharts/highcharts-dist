@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -487,7 +487,7 @@
                         .attr({
                         zIndex: -1
                     })
-                        .add(series.markerGroup);
+                        .add(series.group);
                 }
                 point.connector[verb](this.getConnectorAttribs(point));
             };
@@ -522,17 +522,28 @@
              *
              */
             DumbbellSeries.prototype.translate = function () {
+                var _this = this;
+                var inverted = this.chart.inverted;
                 // Calculate shapeargs
                 this.setShapeArgs.apply(this);
                 // Calculate point low / high values
                 this.translatePoint.apply(this, arguments);
                 // Correct x position
                 this.points.forEach(function (point) {
-                    var shapeArgs = point.shapeArgs,
-                        pointWidth = point.pointWidth;
-                    point.plotX = shapeArgs.x;
+                    var pointWidth = point.pointWidth,
+                        _a = point.shapeArgs,
+                        shapeArgs = _a === void 0 ? {} : _a,
+                        tooltipPos = point.tooltipPos;
+                    point.plotX = shapeArgs.x || 0;
                     shapeArgs.x = point.plotX - pointWidth / 2;
-                    point.tooltipPos = null;
+                    if (tooltipPos) {
+                        if (inverted) {
+                            tooltipPos[1] = _this.xAxis.len - point.plotX;
+                        }
+                        else {
+                            tooltipPos[0] = point.plotX;
+                        }
+                    }
                 });
                 this.columnMetrics.offset -= this.columnMetrics.width / 2;
             };

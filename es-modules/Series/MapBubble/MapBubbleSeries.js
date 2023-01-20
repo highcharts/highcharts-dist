@@ -341,6 +341,8 @@ export default MapBubbleSeries;
  */
 /**
  * @excluding enabled, enabledThreshold, height, radius, width
+ * @sample {highmaps} maps/plotoptions/mapbubble-symbol
+ *         Map bubble with mapmarker symbol
  * @apioption series.mapbubble.marker
  */
 ''; // adds doclets above to transpiled file

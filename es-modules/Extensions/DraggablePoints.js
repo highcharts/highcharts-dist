@@ -1728,7 +1728,7 @@ function onResizeHandleMouseDown(e, point, updateProp) {
  * @return {void}
  */
 Point.prototype.showDragHandles = function () {
-    var point = this, series = point.series, chart = series.chart, renderer = chart.renderer, options = merge(series.options.dragDrop, point.options.dragDrop);
+    var point = this, series = point.series, chart = series.chart, inverted = chart.inverted, renderer = chart.renderer, options = merge(series.options.dragDrop, point.options.dragDrop);
     // Go through each updateProp and see if we are supposed to create a handle
     // for it.
     objectEach(series.dragDropProps, function (val, key) {
@@ -1737,7 +1737,7 @@ Point.prototype.showDragHandles = function () {
             'stroke-width': handleOptions.lineWidth,
             fill: handleOptions.color,
             stroke: handleOptions.lineColor
-        }, pathFormatter = handleOptions.pathFormatter || val.handleFormatter, positioner = val.handlePositioner, pos, handle, path, 
+        }, pathFormatter = handleOptions.pathFormatter || val.handleFormatter, handlePositioner = val.handlePositioner, pos, handle, path, 
         // Run validation function on whether or not we allow individual
         // updating of this prop.
         validate = val.validateIndividualDrag ?
@@ -1760,7 +1760,7 @@ Point.prototype.showDragHandles = function () {
             // Store which point this is
             chart.dragHandles.point = point.id;
             // Find position and path of handle
-            pos = positioner(point);
+            pos = handlePositioner(point);
             handleAttrs.d = path = pathFormatter(point);
             // Correct left edge value depending on the xAxis' type, #16596
             var minEdge = point.series.xAxis.categories ? -0.5 : 0;
@@ -1769,7 +1769,7 @@ Point.prototype.showDragHandles = function () {
             }
             // If cursor is not set explicitly, use axis direction
             handleAttrs.cursor = handleOptions.cursor ||
-                ((val.axis === 'x') !== !!chart.inverted ?
+                ((val.axis === 'x') !== !!inverted ?
                     'ew-resize' : 'ns-resize');
             // Create and add the handle element if it doesn't exist
             handle = chart.dragHandles[val.optionName];
@@ -1779,7 +1779,16 @@ Point.prototype.showDragHandles = function () {
                     .add(chart.dragHandles.group);
             }
             // Move and update handle
-            handle.translate(pos.x, pos.y).attr(handleAttrs);
+            handleAttrs.translateX = inverted ?
+                series.yAxis.len - pos.y :
+                pos.x;
+            handleAttrs.translateY = inverted ?
+                series.xAxis.len - pos.x :
+                pos.y;
+            if (inverted) {
+                handleAttrs.rotation = -90;
+            }
+            handle.attr(handleAttrs);
             // Add events
             addEvents(handle.element, ['touchstart', 'mousedown'], function (e) {
                 onResizeHandleMouseDown(getNormalizedEvent(e, chart), point, key);

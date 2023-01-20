@@ -679,7 +679,7 @@ var Legend = /** @class */ (function () {
         for (var _i = 0, _a = distribute(boxes, chart.plotHeight); _i < _a.length; _i++) {
             var box = _a[_i];
             legendItem = box.item.legendItem || {};
-            if (box.pos) {
+            if (isNumber(box.pos)) {
                 legendItem.y = chart.plotTop - chart.spacing[0] + box.pos;
             }
         }

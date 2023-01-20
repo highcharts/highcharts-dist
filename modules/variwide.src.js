@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Highcharts variwide module
  *
@@ -447,7 +447,7 @@
                     if (stack) {
                         pointStack = stack[xValue];
                         if (pointStack && !point.isNull) {
-                            pointStack.setOffset(-(pointWidth / 2) || 0, pointWidth || 0, void 0, void 0, point.plotX);
+                            pointStack.setOffset(series.chart.plotLeft - ((pointWidth / 2) || 0), pointWidth || 0, void 0, void 0, point.plotX, series.xAxis);
                         }
                     }
                 }

@@ -1458,43 +1458,42 @@ var Series = /** @class */ (function () {
                 stack &&
                 stack[xValue]) {
                 stackIndicator = series.getStackIndicator(stackIndicator, xValue, series.index);
-                if (!point.isNull) {
+                if (!point.isNull && stackIndicator.key) {
                     pointStack = stack[xValue];
-                    stackValues =
-                        pointStack.points[stackIndicator.key];
+                    stackValues = pointStack.points[stackIndicator.key];
                 }
-            }
-            if (isArray(stackValues)) {
-                yBottom = stackValues[0];
-                yValue = stackValues[1];
-                if (yBottom === stackThreshold &&
-                    stackIndicator.key ===
-                        stack[xValue].base) {
-                    yBottom = pick((isNumber(threshold) && threshold), yAxis.min);
-                }
-                // #1200, #1232
-                if (yAxis.positiveValuesOnly && yBottom <= 0) {
-                    yBottom = null;
-                }
-                point.total = point.stackTotal = pointStack.total;
-                point.percentage =
-                    pointStack.total &&
-                        (point.y / pointStack.total * 100);
-                point.stackY = yValue;
-                // Place the stack label
-                // in case of variwide series (where widths of points are
-                // different in most cases), stack labels are positioned
-                // wrongly, so the call of the setOffset is omited here and
-                // labels are correctly positioned later, at the end of the
-                // variwide's translate function (#10962)
-                if (!series.irregularWidths) {
-                    pointStack.setOffset(series.pointXOffset || 0, series.barW || 0);
+                if (pointStack && isArray(stackValues)) {
+                    yBottom = stackValues[0];
+                    yValue = stackValues[1];
+                    if (yBottom === stackThreshold &&
+                        stackIndicator.key === stack[xValue].base) {
+                        yBottom = pick(isNumber(threshold) ? threshold : yAxis.min);
+                    }
+                    // #1200, #1232
+                    if (yAxis.positiveValuesOnly &&
+                        defined(yBottom) &&
+                        yBottom <= 0) {
+                        yBottom = void 0;
+                    }
+                    point.total = point.stackTotal = pick(pointStack.total);
+                    point.percentage = defined(point.y) && pointStack.total ?
+                        (point.y / pointStack.total * 100) : void 0;
+                    point.stackY = yValue;
+                    // Place the stack label
+                    // in case of variwide series (where widths of points are
+                    // different in most cases), stack labels are positioned
+                    // wrongly, so the call of the setOffset is omited here and
+                    // labels are correctly positioned later, at the end of the
+                    // variwide's translate function (#10962)
+                    if (!series.irregularWidths) {
+                        pointStack.setOffset(series.pointXOffset || 0, series.barW || 0, void 0, void 0, void 0, series.xAxis);
+                    }
                 }
             }
             // Set translated yBottom or remove it
             point.yBottom = defined(yBottom) ?
                 limitedRange(yAxis.translate(yBottom, 0, 1, 0, 1)) :
-                null;
+                void 0;
             // General hook, used for Highcharts Stock compare and cumulative
             if (series.dataModify) {
                 yValue = series.dataModify.modifyValue(yValue, i);
@@ -1667,12 +1666,13 @@ var Series = /** @class */ (function () {
                 }
                 animationClipRect = chart.renderer.clipRect(clipBox);
                 chart.sharedClips[animationClipKey] = animationClipRect;
+                // The marker clip box. The number 99 is a safe margin to avoid
+                // markers being clipped during animation.
                 var markerClipBox = {
-                    // Include the width of the first marker
-                    x: inverted ? (chart.plotSizeX || 0) + 99 : -99,
-                    y: inverted ? -chart.plotLeft : -chart.plotTop,
-                    width: 99,
-                    height: inverted ? chart.chartWidth : chart.chartHeight
+                    x: inverted ? -99 : -99,
+                    y: inverted ? -99 : -99,
+                    width: inverted ? chart.plotWidth + 199 : 99,
+                    height: inverted ? 99 : chart.plotHeight + 199
                 };
                 markerAnimationClipRect = chart.renderer.clipRect(markerClipBox);
                 chart.sharedClips[animationClipKey + 'm'] = markerAnimationClipRect;
@@ -1700,9 +1700,10 @@ var Series = /** @class */ (function () {
                     if (step_1) {
                         step_1.apply(fx, arguments);
                     }
-                    if (markerAnimationClipRect &&
+                    if (fx.prop === 'width' &&
+                        markerAnimationClipRect &&
                         markerAnimationClipRect.element) {
-                        markerAnimationClipRect.attr(fx.prop, fx.prop === 'width' ? val + 99 : val);
+                        markerAnimationClipRect.attr(inverted ? 'height' : 'width', val + 99);
                     }
                 };
             }
@@ -1743,8 +1744,7 @@ var Series = /** @class */ (function () {
      */
     Series.prototype.drawPoints = function (points) {
         if (points === void 0) { points = this.points; }
-        var series = this, chart = series.chart, options = series.options, seriesMarkerOptions = options.marker, markerGroup = (series[series.specialGroup] ||
-            series.markerGroup), xAxis = series.xAxis, globallyEnabled = pick(seriesMarkerOptions.enabled, !xAxis || xAxis.isRadial ? true : null, 
+        var series = this, chart = series.chart, styledMode = chart.styledMode, colorAxis = series.colorAxis, options = series.options, seriesMarkerOptions = options.marker, markerGroup = series[series.specialGroup || 'markerGroup'], xAxis = series.xAxis, globallyEnabled = pick(seriesMarkerOptions.enabled, !xAxis || xAxis.isRadial ? true : null, 
         // Use larger or equal as radius is null in bubbles (#6321)
         series.closestPointRangePx >= (seriesMarkerOptions.enabledThreshold *
             seriesMarkerOptions.radius));
@@ -1771,13 +1771,8 @@ var Series = /** @class */ (function () {
                             xAxis.width;
                     }
                     var isInside = point.isInside !== false;
-                    if (graphic) { // update
-                        // Since the marker group isn't clipped, each
-                        // individual marker must be toggled
-                        graphic[isInside ? 'show' : 'hide'](isInside)
-                            .animate(markerAttribs);
-                    }
-                    else if (isInside &&
+                    if (!graphic &&
+                        isInside &&
                         ((markerAttribs.width || 0) > 0 || point.hasImage)) {
                         /**
                          * SVG graphic representing the point in the chart. In
@@ -1818,8 +1813,18 @@ var Series = /** @class */ (function () {
                             .animate(markerAttribs);
                     }
                     // Presentational attributes
-                    if (graphic && !chart.styledMode) {
-                        graphic[verb](series.pointAttribs(point, (point.selected && 'select')));
+                    if (graphic) {
+                        var pointAttr = series.pointAttribs(point, ((styledMode || !point.selected) ?
+                            void 0 :
+                            'select'));
+                        if (!styledMode) {
+                            graphic[verb](pointAttr);
+                        }
+                        else if (colorAxis) { // #14114
+                            graphic['css']({
+                                fill: pointAttr.fill
+                            });
+                        }
                     }
                     if (graphic) {
                         graphic.addClass(point.getClassName(), true);
@@ -1851,7 +1856,7 @@ var Series = /** @class */ (function () {
      */
     Series.prototype.markerAttribs = function (point, state) {
         var seriesOptions = this.options, seriesMarkerOptions = seriesOptions.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-            seriesMarkerOptions.symbol);
+            seriesMarkerOptions.symbol), attribs = {};
         var seriesStateOptions, pointStateOptions, radius = pick(pointMarkerOptions.radius, seriesMarkerOptions && seriesMarkerOptions.radius);
         // Handle hover and select states
         if (state) {
@@ -1865,13 +1870,15 @@ var Series = /** @class */ (function () {
         if (point.hasImage) {
             radius = 0; // and subsequently width and height is not set
         }
-        var attribs = isNumber(radius) ? {
-            // Math.floor for #1843:
-            x: seriesOptions.crisp ?
-                Math.floor(point.plotX - radius) :
-                point.plotX - radius,
-            y: point.plotY - radius
-        } : {};
+        var pos = point.pos();
+        if (isNumber(radius) && pos) {
+            attribs.x = pos[0] - radius;
+            attribs.y = pos[1] - radius;
+            if (seriesOptions.crisp) {
+                // Math.floor for #1843:
+                attribs.x = Math.floor(attribs.x);
+            }
+        }
         if (radius) {
             attribs.width = attribs.height = 2 * radius;
         }
@@ -2169,7 +2176,7 @@ var Series = /** @class */ (function () {
             !chart.polar &&
             horAxis &&
             this.invertible !== false &&
-            (name === 'markers' || name === 'series'));
+            name === 'series');
         // Swap axes for inverted (#2339)
         if (chart.inverted) {
             horAxis = vertAxis;
@@ -2933,10 +2940,13 @@ var Series = /** @class */ (function () {
                 kinds.dataLabel = 1;
             }
             else if (!series._hasPointLabels) {
-                var marker = seriesOptions.marker, dataLabels = seriesOptions.dataLabels;
+                var marker = seriesOptions.marker, dataLabels = seriesOptions.dataLabels, oldMarker = oldOptions.marker || {};
+                // If the  marker got disabled or changed its symbol, width or
+                // height - destroy
                 if (marker && (marker.enabled === false ||
-                    (oldOptions.marker && oldOptions.marker.symbol) !==
-                        marker.symbol // #10870, #15946
+                    oldMarker.symbol !== marker.symbol || // #10870, #15946
+                    oldMarker.height !== marker.height || // #16274
+                    oldMarker.width !== marker.width // #16274
                 )) {
                     kinds.graphic = 1;
                 }

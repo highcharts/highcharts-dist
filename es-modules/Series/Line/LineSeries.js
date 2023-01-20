@@ -129,8 +129,12 @@ var LineSeries = /** @class */ (function (_super) {
                     // Polygon series use filled graph
                     'fill': (series.fillGraph && series.color) || 'none'
                 };
+                // Apply dash style
                 if (prop[3]) {
                     attribs.dashstyle = prop[3];
+                    // The reason for the `else if` is that linecaps don't mix well
+                    // with dashstyle. The gaps get partially filled by the
+                    // linecap.
                 }
                 else if (options.linecap !== 'square') {
                     attribs['stroke-linecap'] =

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.2 (2022-11-28)
+ * @license Highstock JS v10.3.3 (2023-01-20)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -81,8 +81,8 @@
          * @private
          */
         function meanDeviation(arr, sma) {
-            var len = arr.length,
-                sum = 0,
+            var len = arr.length;
+            var sum = 0,
                 i;
             for (i = 0; i < len; i++) {
                 sum += Math.abs(sma - (arr[i]));
@@ -134,14 +134,14 @@
                     yVal = series.yData,
                     yValLen = yVal ? yVal.length : 0,
                     TP = [],
-                    periodTP = [],
-                    range = 1,
                     CCI = [],
                     xData = [],
-                    yData = [],
-                    CCIPoint,
+                    yData = [];
+                var CCIPoint,
                     p,
+                    periodTP = [],
                     len,
+                    range = 1,
                     smaTP,
                     TPtemp,
                     meanDev,

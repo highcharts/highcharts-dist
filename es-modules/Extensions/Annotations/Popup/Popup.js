@@ -176,7 +176,7 @@ var Popup = /** @class */ (function () {
      */
     Popup.prototype.addInput = function (option, indicatorType, parentDiv, inputAttributes) {
         var optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
-        if (!inputName.match(/\d/g)) {
+        if (!optionName.match(/^\d+$/)) {
             // add label
             createElement('label', {
                 htmlFor: inputName,

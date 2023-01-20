@@ -553,7 +553,8 @@ var Tick = /** @class */ (function () {
                 value: pos + tickmarkOffset,
                 lineWidth: gridLine.strokeWidth() * reverseCrisp,
                 force: 'pass',
-                old: old
+                old: old,
+                acrossPanes: false // #18025
             });
             // If the parameter 'old' is set, the current call will be followed
             // by another call, therefore do not do any animations this time

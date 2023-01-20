@@ -136,13 +136,11 @@ var SVGLabel = /** @class */ (function (_super) {
                 }
             });
             this.text.css(textStyles_1);
-            var isWidth = 'width' in textStyles_1, isFontStyle = ('fontSize' in textStyles_1 ||
-                'fontWeight' in textStyles_1);
-            // Update existing text, box (#9400, #12163)
-            if (isFontStyle) {
+            // Update existing text, box (#9400, #12163, #18212)
+            if ('fontSize' in textStyles_1 || 'fontWeight' in textStyles_1) {
                 this.updateTextPadding();
             }
-            else if (isWidth) {
+            else if ('width' in textStyles_1 || 'textOverflow' in textStyles_1) {
                 this.updateBoxSize();
             }
         }

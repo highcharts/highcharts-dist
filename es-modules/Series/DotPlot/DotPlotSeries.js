@@ -113,18 +113,23 @@ var DotPlotSeries = /** @class */ (function (_super) {
                         height: Math.round(size),
                         r: radius
                     };
-                    if (graphics[i]) {
-                        graphics[i].animate(attr);
+                    var graphic = graphics[i];
+                    if (graphic) {
+                        graphic.animate(attr);
                     }
                     else {
-                        graphics[i] = renderer.symbol(symbol)
+                        graphic = renderer.symbol(symbol)
                             .attr(extend(attr, pointAttr))
                             .add(point.graphic);
                     }
-                    graphics[i].isActive = true;
+                    graphic.isActive = true;
+                    graphics[i] = graphic;
                 }
             }
             graphics.forEach(function (graphic, i) {
+                if (!graphic) {
+                    return;
+                }
                 if (!graphic.isActive) {
                     graphic.destroy();
                     graphics.splice(i, 1);

@@ -1,1 +1,3 @@
-import '../../Series/Sankey/SankeySeries.js';
+import factory from '../../../modules/sankey.src';
+export * from '../../../modules/sankey.src';
+export default factory;

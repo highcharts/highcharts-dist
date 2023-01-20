@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/WilliamsR/WilliamsRIndicator.js';
+import factory from '../../../indicators/williams-r.src';
+export * from '../../../indicators/williams-r.src';
+export default factory;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1849,6 +1849,7 @@
             var point = this,
                 series = point.series,
                 chart = series.chart,
+                inverted = chart.inverted,
                 renderer = chart.renderer,
                 options = merge(series.options.dragDrop,
                 point.options.dragDrop);
@@ -1865,7 +1866,7 @@
                         stroke: handleOptions.lineColor
                     },
                     pathFormatter = handleOptions.pathFormatter || val.handleFormatter,
-                    positioner = val.handlePositioner,
+                    handlePositioner = val.handlePositioner,
                     pos,
                     handle,
                     path, 
@@ -1891,7 +1892,7 @@
                     // Store which point this is
                     chart.dragHandles.point = point.id;
                     // Find position and path of handle
-                    pos = positioner(point);
+                    pos = handlePositioner(point);
                     handleAttrs.d = path = pathFormatter(point);
                     // Correct left edge value depending on the xAxis' type, #16596
                     var minEdge = point.series.xAxis.categories ? -0.5 : 0;
@@ -1900,7 +1901,7 @@
                     }
                     // If cursor is not set explicitly, use axis direction
                     handleAttrs.cursor = handleOptions.cursor ||
-                        ((val.axis === 'x') !== !!chart.inverted ?
+                        ((val.axis === 'x') !== !!inverted ?
                             'ew-resize' : 'ns-resize');
                     // Create and add the handle element if it doesn't exist
                     handle = chart.dragHandles[val.optionName];
@@ -1910,7 +1911,16 @@
                             .add(chart.dragHandles.group);
                     }
                     // Move and update handle
-                    handle.translate(pos.x, pos.y).attr(handleAttrs);
+                    handleAttrs.translateX = inverted ?
+                        series.yAxis.len - pos.y :
+                        pos.x;
+                    handleAttrs.translateY = inverted ?
+                        series.xAxis.len - pos.x :
+                        pos.y;
+                    if (inverted) {
+                        handleAttrs.rotation = -90;
+                    }
+                    handle.attr(handleAttrs);
                     // Add events
                     addEvents(handle.element, ['touchstart', 'mousedown'], function (e) {
                         onResizeHandleMouseDown(getNormalizedEvent(e, chart), point, key);

@@ -1,1 +1,3 @@
-import '../../Series/Tilemap/TilemapSeries.js';
+import factory from '../../../modules/tilemap.src';
+export * from '../../../modules/tilemap.src';
+export default factory;

@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/NATR/NATRIndicator.js';
+import factory from '../../../indicators/natr.src';
+export * from '../../../indicators/natr.src';
+export default factory;

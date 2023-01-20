@@ -752,7 +752,7 @@ Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions,
             var cpIndex = this.index, chart = target.chart, options = target.options, typeOptions = options.typeOptions, selectType = typeOptions.selectType, controlPointOptions = options.controlPointOptions, inverted = chart.inverted, xAxis = chart.xAxis[typeOptions.xAxis], yAxis = chart.yAxis[typeOptions.yAxis], ext = getExtremes(target.xAxisMin, target.xAxisMax, target.yAxisMin, target.yAxisMax);
             var targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
             if (selectType === 'x') {
-                targetY = (ext.yAxisMax - ext.yAxisMin) / 2;
+                targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
                 // first control point
                 if (cpIndex === 0) {
                     targetX = target.xAxisMin;

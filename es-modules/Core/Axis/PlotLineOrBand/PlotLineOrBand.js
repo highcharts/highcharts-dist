@@ -226,10 +226,12 @@ var PlotLineOrBand = /** @class */ (function () {
             height: arrayMax(yBounds) - y
         });
         if (!label.alignValue || label.alignValue === 'left') {
+            var width = optionsLabel.clip ?
+                axis.width : axis.chart.chartWidth;
             label.css({
                 width: (label.rotation === 90 ?
                     axis.height - (label.alignAttr.y - axis.top) :
-                    axis.width - (label.alignAttr.x - axis.left)) + 'px'
+                    width - (label.alignAttr.x - axis.left)) + 'px'
             });
         }
         label.show(true);
@@ -712,6 +714,14 @@ export default PlotLineOrBand;
  * @default    left
  * @since      2.1
  * @apioption  xAxis.plotLines.label.align
+ */
+/**
+ * Whether to hide labels that are outside the plot area.
+ *
+ * @type      {boolean}
+ * @default   false
+ * @since 10.3.3
+ * @apioption xAxis.plotLines.labels.clip
  */
 /**
  * Callback JavaScript function to format the label. Useful properties like

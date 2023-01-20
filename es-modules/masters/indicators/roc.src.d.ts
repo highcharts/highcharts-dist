@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/ROC/ROCIndicator.js';
+import factory from '../../../indicators/roc.src';
+export * from '../../../indicators/roc.src';
+export default factory;

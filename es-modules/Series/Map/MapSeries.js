@@ -265,31 +265,30 @@ var MapSeries = /** @class */ (function (_super) {
                         graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
                     }
                     graphic.animate = function (params, options, complete) {
-                        var switchBack = false;
+                        var animateIn = (isNumber(params['stroke-width']) &&
+                            !isNumber(graphic['stroke-width'])), animateOut = (isNumber(graphic['stroke-width']) &&
+                            !isNumber(params['stroke-width']));
                         // When strokeWidth is animating
-                        if (params['stroke-width']) {
+                        if (animateIn || animateOut) {
                             var strokeWidth = pick(series.getStrokeWidth(series.options), 1 // Styled mode
                             ), inheritedStrokeWidth = (strokeWidth /
                                 (chart.mapView &&
                                     chart.mapView.getScale() ||
                                     1));
-                            // For animating from inherit,
-                            // .attr() reads the property as the starting point
-                            if (graphic['stroke-width'] === 'inherit') {
+                            // For animating from undefined, .attr() reads the
+                            // property as the starting point
+                            if (animateIn) {
                                 graphic['stroke-width'] = inheritedStrokeWidth;
                             }
-                            // For animating to inherit
-                            if (params['stroke-width'] === 'inherit') {
+                            // For animating to undefined
+                            if (animateOut) {
                                 params['stroke-width'] = inheritedStrokeWidth;
-                                switchBack = true;
                             }
                         }
-                        var ret = animate_1.call(graphic, params, options, switchBack ? function () {
-                            // Switch back to "inherit" for zooming
-                            // to work with the existing logic + complete
-                            graphic.attr({
-                                'stroke-width': 'inherit'
-                            });
+                        var ret = animate_1.call(graphic, params, options, animateOut ? function () {
+                            // Remove the attribute after finished animation
+                            graphic.element.removeAttribute('stroke-width');
+                            delete graphic['stroke-width'];
                             // Proceed
                             if (complete) {
                                 complete.apply(this, arguments);
@@ -317,8 +316,20 @@ var MapSeries = /** @class */ (function (_super) {
             transform properties, it should induce a single updateTransform and
             symbolAttr call.
             */
-            var scale = svgTransform.scaleX;
-            var flipFactor = svgTransform.scaleY > 0 ? 1 : -1;
+            var scale = svgTransform.scaleX, flipFactor = svgTransform.scaleY > 0 ? 1 : -1;
+            var animatePoints = function (scale) {
+                (series.points || []).forEach(function (point) {
+                    var graphic = point.graphic;
+                    var strokeWidth;
+                    if (graphic &&
+                        graphic['stroke-width'] &&
+                        (strokeWidth = _this.getStrokeWidth(point.options))) {
+                        graphic.attr({
+                            'stroke-width': strokeWidth / scale
+                        });
+                    }
+                });
+            };
             if (renderer.globalAnimation && chart.hasRendered) {
                 var startTranslateX_1 = Number(transformGroup.attr('translateX'));
                 var startTranslateY_1 = Number(transformGroup.attr('translateY'));
@@ -330,9 +341,10 @@ var MapSeries = /** @class */ (function (_super) {
                         translateX: (startTranslateX_1 + (svgTransform.translateX - startTranslateX_1) * fx.pos),
                         translateY: (startTranslateY_1 + (svgTransform.translateY - startTranslateY_1) * fx.pos),
                         scaleX: scaleStep,
-                        scaleY: scaleStep * flipFactor
+                        scaleY: scaleStep * flipFactor,
+                        'stroke-width': strokeWidth / scaleStep
                     });
-                    transformGroup.element.setAttribute('stroke-width', strokeWidth / scaleStep);
+                    animatePoints(scaleStep); // #18166
                 };
                 transformGroup
                     .attr({ animator: 0 })
@@ -340,12 +352,8 @@ var MapSeries = /** @class */ (function (_super) {
                 // When dragging or first rendering, animation is off
             }
             else {
-                transformGroup.attr(svgTransform);
-                // Set the stroke-width directly on the group element so the
-                // children inherit it. We need to use setAttribute directly,
-                // because the stroke-widthSetter method expects a stroke color
-                // also to be set.
-                transformGroup.element.setAttribute('stroke-width', strokeWidth / scale);
+                transformGroup.attr(merge(svgTransform, { 'stroke-width': strokeWidth / scale }));
+                animatePoints(scale); // #18166
             }
         });
         this.drawMapDataLabels();
@@ -443,8 +451,10 @@ var MapSeries = /** @class */ (function (_super) {
         if (state) {
             var stateOptions = merge(this.options.states[state], point.options.states &&
                 point.options.states[state] ||
-                {});
-            pointStrokeWidth = this.getStrokeWidth(stateOptions);
+                {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
+            if (defined(stateStrokeWidth)) {
+                pointStrokeWidth = stateStrokeWidth;
+            }
         }
         if (pointStrokeWidth && mapView) {
             pointStrokeWidth /= mapView.getScale();
@@ -470,6 +480,7 @@ var MapSeries = /** @class */ (function (_super) {
         else {
             delete attr['stroke-width'];
         }
+        attr['stroke-linecap'] = attr['stroke-linejoin'] = this.options.linecap;
         return attr;
     };
     /**
@@ -738,6 +749,18 @@ var MapSeries = /** @class */ (function (_super) {
             padding: 0,
             verticalAlign: 'middle'
         },
+        /**
+         * The SVG value used for the `stroke-linecap` and `stroke-linejoin` of
+         * the map borders. Round means that borders are rounded in the ends and
+         * bends.
+         *
+         * @sample maps/demo/mappoint-mapmarker/
+         *         Backdrop coastline with round linecap
+         *
+         * @type   {Highcharts.SeriesLinecapValue}
+         * @since  10.3.3
+         */
+        linecap: 'butt',
         /**
          * @ignore-option
          *
@@ -1061,6 +1084,40 @@ export default MapSeries;
  * @apioption series.map.data
  */
 /**
+ * When using automatic point colors pulled from the global
+ * [colors](colors) or series-specific
+ * [plotOptions.map.colors](series.colors) collections, this option
+ * determines whether the chart should receive one color per series or
+ * one color per point.
+ *
+ * In styled mode, the `colors` or `series.colors` arrays are not
+ * supported, and instead this option gives the points individual color
+ * class names on the form `highcharts-color-{n}`.
+ *
+ * @see [series colors](#plotOptions.map.colors)
+ *
+ * @sample {highmaps} maps/plotoptions/mapline-colorbypoint-false/
+ *         Mapline colorByPoint set to false by default
+ * @sample {highmaps} maps/plotoptions/mapline-colorbypoint-true/
+ *         Mapline colorByPoint set to true
+ *
+ * @type      {boolean}
+ * @default   false
+ * @since     2.0
+ * @product   highmaps
+ * @apioption plotOptions.map.colorByPoint
+ */
+/**
+ * A series specific or series type specific color set to apply instead
+ * of the global [colors](#colors) when [colorByPoint](
+ * #plotOptions.map.colorByPoint) is true.
+ *
+ * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
+ * @since     3.0
+ * @product   highmaps
+ * @apioption plotOptions.map.colors
+ */
+/**
  * Individual color for the point. By default the color is either used
  * to denote the value, or pulled from the global `colors` array.
  *
@@ -1098,9 +1155,14 @@ export default MapSeries;
  * it is recommended to use `mapData` to define the geometry instead
  * of defining it on the data points themselves.
  *
- * The geometry object is compatible to that of a `feature` in geoJSON, so
- * features of geoJSON can be passed directly into the `data`, optionally
+ * The geometry object is compatible to that of a `feature` in GeoJSON, so
+ * features of GeoJSON can be passed directly into the `data`, optionally
  * after first filtering and processing it.
+ *
+ * For pre-projected maps (like GeoJSON maps from our
+ * [map collection](https://code.highcharts.com/mapdata/)), user has to specify
+ * coordinates in `projectedUnits` for geometry type other than `Point`,
+ * instead of `[longitude, latitude]`.
  *
  * @sample maps/series/data-geometry/
  *         Geometry defined in data

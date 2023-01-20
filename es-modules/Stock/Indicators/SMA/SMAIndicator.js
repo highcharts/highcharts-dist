@@ -56,14 +56,12 @@ var SMAIndicator = /** @class */ (function (_super) {
         _this.options = void 0;
         _this.points = void 0;
         return _this;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
@@ -77,7 +75,8 @@ var SMAIndicator = /** @class */ (function (_super) {
      * @private
      */
     SMAIndicator.prototype.getName = function () {
-        var name = this.name, params = [];
+        var params = [];
+        var name = this.name;
         if (!name) {
             (this.nameComponents || []).forEach(function (component, index) {
                 params.push(this.options.params[component] +
@@ -92,7 +91,8 @@ var SMAIndicator = /** @class */ (function (_super) {
      * @private
      */
     SMAIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal.length, range = 0, sum = 0, SMA = [], xData = [], yData = [], index = -1, i, SMAPoint;
+        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal.length, SMA = [], xData = [], yData = [];
+        var i, index = -1, range = 0, SMAPoint, sum = 0;
         if (xVal.length < period) {
             return;
         }
@@ -179,17 +179,20 @@ var SMAIndicator = /** @class */ (function (_super) {
      * @private
      */
     SMAIndicator.prototype.recalculateValues = function () {
-        var indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, emptySet = {
+        var croppedDataValues = [], indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, emptySet = {
             values: [],
             xData: [],
             yData: []
-        }, processedData, croppedDataValues = [], overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
+        };
+        var overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
         // Updating an indicator with redraw=false may destroy data.
         // If there will be a following update for the parent series,
         // we will try to access Series object without any properties
         // (except for prototyped ones). This is what happens
         // for example when using Axis.setDataGrouping(). See #16670
-        processedData = indicator.linkedParent.options ?
+        var processedData = indicator.linkedParent.options &&
+            indicator.linkedParent.yData && // #18176, #18177 indicators should
+            indicator.linkedParent.yData.length ? // work with empty dataset
             (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
         // We need to update points to reflect changes in all,
         // x and y's, values. However, do it only for non-grouped
@@ -241,7 +244,7 @@ var SMAIndicator = /** @class */ (function (_super) {
             indicator.isDirty = true;
             indicator.redraw();
         }
-        indicator.isDirtyData = false;
+        indicator.isDirtyData = !!indicator.linkedSeries;
     };
     /**
      * @private

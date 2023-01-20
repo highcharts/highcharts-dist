@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.2 (2022-11-28)
+ * @license Highstock JS v10.3.3 (2023-01-20)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -133,14 +133,14 @@
                     // 0- date, 1- Detrended Price Oscillator
                     DPO = [],
                     xData = [],
-                    yData = [],
-                    sum = 0,
-                    oscillator,
+                    yData = [];
+                var oscillator,
                     periodIndex,
                     rangeIndex,
                     price,
                     i,
-                    j;
+                    j,
+                    sum = 0;
                 if (xVal.length <= range) {
                     return;
                 }

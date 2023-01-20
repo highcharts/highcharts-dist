@@ -1,1 +1,3 @@
-import '../../Series/Organization/OrganizationSeries.js';
+import factory from '../../../modules/organization.src';
+export * from '../../../modules/organization.src';
+export default factory;

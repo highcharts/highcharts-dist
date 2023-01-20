@@ -25,9 +25,10 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import LollipopPoint from './LollipopPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, areaProto = _a.area.prototype, colProto = _a.column.prototype, DumbbellSeries = _a.dumbbell;
+import Series from '../../Core/Series/Series.js';
+var _a = SeriesRegistry.seriesTypes, colProto = _a.column.prototype, dumbbellProto = _a.dumbbell.prototype, ScatterSeries = _a.scatter;
 import U from '../../Core/Utilities.js';
-var pick = U.pick, merge = U.merge, extend = U.extend;
+var extend = U.extend, merge = U.merge;
 /* *
  *
  *  Class
@@ -62,13 +63,26 @@ var LollipopSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         return _this;
     }
-    /* *
+    /**
+     * Extend the series' drawPoints method by applying a connector
+     * and coloring markers.
+     * @private
      *
-     *  Functions
+     * @function Highcharts.Series#drawPoints
      *
-     * */
-    LollipopSeries.prototype.toYData = function (point) {
-        return [pick(point.y, point.low)];
+     * @param {Highcharts.Series} this The series of points.
+     *
+     */
+    LollipopSeries.prototype.drawPoints = function () {
+        var series = this, pointLength = series.points.length;
+        var i = 0, point;
+        _super.prototype.drawPoints.apply(series, arguments);
+        // Draw connectors
+        while (i < pointLength) {
+            point = series.points[i];
+            series.drawConnector(point);
+            i++;
+        }
     };
     /**
      * The lollipop series is a carteseian series with a line anchored from
@@ -88,9 +102,7 @@ var LollipopSeries = /** @class */ (function (_super) {
      * @since        8.0.0
      * @optionparent plotOptions.lollipop
      */
-    LollipopSeries.defaultOptions = merge(DumbbellSeries.defaultOptions, {
-        /** @ignore-option */
-        lowColor: void 0,
+    LollipopSeries.defaultOptions = merge(Series.defaultOptions, {
         /** @ignore-option */
         threshold: 0,
         /** @ignore-option */
@@ -110,20 +122,25 @@ var LollipopSeries = /** @class */ (function (_super) {
                 halo: false
             }
         },
-        tooltip: {
-            pointFormat: '<span style="color:{series.color}">●</span> {series.name}: <b>{point.y}</b><br/>'
-        }
+        /** @ignore-option */
+        lineWidth: 0,
+        dataLabels: {
+            align: void 0,
+            verticalAlign: void 0
+        },
+        pointRange: 1
     });
     return LollipopSeries;
-}(DumbbellSeries));
+}(Series));
 extend(LollipopSeries.prototype, {
-    pointArrayMap: ['y'],
-    pointValKey: 'y',
-    translatePoint: areaProto.translate,
-    drawPoint: areaProto.drawPoints,
+    alignDataLabel: colProto.alignDataLabel,
+    crispCol: colProto.crispCol,
+    drawConnector: dumbbellProto.drawConnector,
     drawDataLabels: colProto.drawDataLabels,
-    setShapeArgs: colProto.translate,
-    pointClass: LollipopPoint
+    getColumnMetrics: colProto.getColumnMetrics,
+    getConnectorAttribs: dumbbellProto.getConnectorAttribs,
+    pointClass: LollipopPoint,
+    translate: colProto.translate
 });
 SeriesRegistry.registerSeriesType('lollipop', LollipopSeries);
 /* *

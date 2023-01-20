@@ -350,7 +350,7 @@ var BoxPlotSeries = /** @class */ (function (_super) {
                 brightness: -0.3
             }
         },
-
+        */
         /**
          * The color of the stem, the vertical line extending from the box to
          * the whiskers. If `undefined`, the series color is used.

@@ -1,1 +1,3 @@
-import '../../Series/Treegraph/TreegraphSeries.js';
+import factory from '../../../modules/treegraph.src';
+export * from '../../../modules/treegraph.src';
+export default factory;

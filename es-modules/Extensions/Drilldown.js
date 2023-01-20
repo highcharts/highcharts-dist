@@ -1124,6 +1124,7 @@ Tick.prototype.drillable = function () {
         else if (label && label.drillable && label.removeOnDrillableClick) {
             if (!styledMode) {
                 label.styles = {}; // reset for full overwrite of styles
+                label.element.removeAttribute('style'); // #17933
                 label.css(label.basicStyles);
             }
             label.removeOnDrillableClick(); // #3806

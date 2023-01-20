@@ -1,12 +1,3 @@
-/**
- * @license Highcharts JS v@product.version@ (@product.date@)
- * @module highcharts/modules/sonification
- * @requires highcharts
- *
- * Sonification module
- *
- * (c) 2012-2021 Øystein Moseng
- *
- * License: www.highcharts.com/license
- */
-export {};
+import factory from '../../../modules/sonification.src';
+export * from '../../../modules/sonification.src';
+export default factory;

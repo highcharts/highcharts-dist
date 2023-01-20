@@ -21,11 +21,6 @@ var ColorMapComposition;
 (function (ColorMapComposition) {
     /* *
      *
-     *  Declarations
-     *
-     * */
-    /* *
-     *
      *  Constants
      *
      * */

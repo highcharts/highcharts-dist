@@ -205,7 +205,7 @@ wrap(columnProto, 'animate', function (proceed) {
 // series group - if series is added to a group all columns will have the same
 // zIndex in comparison with different series.
 wrap(columnProto, 'plotGroup', function (proceed, prop, _name, _visibility, _zIndex, parent) {
-    if (prop !== 'dataLabelsGroup') {
+    if (prop !== 'dataLabelsGroup' && prop !== 'markerGroup') {
         if (this.chart.is3d()) {
             if (this[prop]) {
                 delete this[prop];
@@ -218,7 +218,7 @@ wrap(columnProto, 'plotGroup', function (proceed, prop, _name, _visibility, _zIn
                 this[prop] = this.chart.columnGroup;
                 this.chart.columnGroup.attr(this.getPlotBox());
                 this[prop].survive = true;
-                if (prop === 'group' || prop === 'markerGroup') {
+                if (prop === 'group') {
                     arguments[3] = 'visible';
                     // For 3D column group and markerGroup should be visible
                 }
@@ -365,9 +365,10 @@ wrap(Series.prototype, 'alignDataLabel', function (proceed, point, dataLabel, op
     proceed.apply(this, [].slice.call(arguments, 1));
 });
 // Added stackLabels position calculation for 3D charts.
-wrap(StackItem.prototype, 'getStackBox', function (proceed, chart, stackItem, x, y, xWidth, h, axis) {
+wrap(StackItem.prototype, 'getStackBox', function (proceed, stackBoxProps) {
     var stackBox = proceed.apply(this, [].slice.call(arguments, 1));
     // Only do this for 3D graph
+    var stackItem = this, chart = this.axis.chart, xWidth = stackBoxProps.width;
     if (chart.is3d() && stackItem.base) {
         // First element of stackItem.base is an index of base series.
         var baseSeriesInd = +(stackItem.base).split(',')[0];
@@ -379,7 +380,7 @@ wrap(StackItem.prototype, 'getStackBox', function (proceed, chart, stackItem, x,
         if (columnSeries &&
             columnSeries instanceof SeriesRegistry.seriesTypes.column) {
             var dLPosition = {
-                x: stackBox.x + (chart.inverted ? h : xWidth / 2),
+                x: stackBox.x + (chart.inverted ? stackBox.height : xWidth / 2),
                 y: stackBox.y,
                 z: columnSeries.options.depth / 2
             };

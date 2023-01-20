@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/Zigzag/ZigzagIndicator.js';
+import factory from '../../../indicators/zigzag.src';
+export * from '../../../indicators/zigzag.src';
+export default factory;

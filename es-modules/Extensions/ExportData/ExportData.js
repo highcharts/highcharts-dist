@@ -797,7 +797,7 @@ function getBlobFromContent(content, type) {
  * @private
  */
 function onChartAfterViewData() {
-    var chart = this, dataTableDiv = chart.dataTableDiv, row = document.querySelectorAll('thead')[0].querySelectorAll('tr')[0], getCellValue = function (tr, index) {
+    var chart = this, dataTableDiv = chart.dataTableDiv, getCellValue = function (tr, index) {
         return tr.children[index].textContent;
     }, comparer = function (index, ascending) {
         return function (a, b) {
@@ -807,28 +807,35 @@ function onChartAfterViewData() {
             return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
         };
     };
-    if (dataTableDiv) {
-        row.childNodes.forEach(function (th) {
-            var table = th.closest('table');
-            th.addEventListener('click', function () {
-                var rows = __spreadArray([], dataTableDiv.querySelectorAll('tr:not(thead tr)'), true), headers = __spreadArray([], th.parentNode.children, true);
-                rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
-                    !chart.ascendingOrderInTable)).forEach(function (tr) {
-                    table.appendChild(tr);
-                });
-                headers.forEach(function (th) {
-                    ['highcharts-sort-ascending', 'highcharts-sort-descending']
-                        .forEach(function (className) {
-                        if (th.classList.contains(className)) {
-                            th.classList.remove(className);
-                        }
+    if (dataTableDiv &&
+        chart.options.exporting &&
+        chart.options.exporting.allowTableSorting) {
+        var row = dataTableDiv.querySelector('thead tr');
+        if (row) {
+            row.childNodes.forEach(function (th) {
+                var table = th.closest('table');
+                th.addEventListener('click', function () {
+                    var rows = __spreadArray([], dataTableDiv.querySelectorAll('tr:not(thead tr)'), true), headers = __spreadArray([], th.parentNode.children, true);
+                    rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
+                        !chart.ascendingOrderInTable)).forEach(function (tr) {
+                        table.appendChild(tr);
                     });
+                    headers.forEach(function (th) {
+                        [
+                            'highcharts-sort-ascending',
+                            'highcharts-sort-descending'
+                        ].forEach(function (className) {
+                            if (th.classList.contains(className)) {
+                                th.classList.remove(className);
+                            }
+                        });
+                    });
+                    th.classList.add(chart.ascendingOrderInTable ?
+                        'highcharts-sort-ascending' :
+                        'highcharts-sort-descending');
                 });
-                th.classList.add(chart.ascendingOrderInTable ?
-                    'highcharts-sort-ascending' :
-                    'highcharts-sort-descending');
             });
-        });
+        }
     }
 }
 /**

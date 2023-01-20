@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  * Treegraph chart series type
  *
  *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
@@ -1205,7 +1205,7 @@
                      * @sample highcharts/series-treegraph/link-text-path
                      *         Treegraph series with link text path dataLabels.
                      *
-                     * @extends plotOptions.treegraph.dataLabels.linkTextPath
+                     * @extends plotOptions.treegraph.dataLabels.textPath
                      * @since 10.3.0
                      */
                     linkTextPath: {

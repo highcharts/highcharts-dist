@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Timeline series
  *
@@ -771,7 +771,13 @@
                     width: width + radius,
                     height: height + radius
                 };
-                return attribs;
+                return (series.chart.inverted) ? {
+                    y: (attribs.x && attribs.width) &&
+                        series.xAxis.len - attribs.x - attribs.width,
+                    x: attribs.y && attribs.y,
+                    width: attribs.height,
+                    height: attribs.width
+                } : attribs;
             };
             TimelineSeries.prototype.processData = function () {
                 var series = this,

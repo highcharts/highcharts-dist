@@ -82,7 +82,8 @@ var DPOIndicator = /** @class */ (function (_super) {
     DPOIndicator.prototype.getValues = function (series, params) {
         var period = params.period, index = params.index, offset = Math.floor(period / 2 + 1), range = period + offset, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, 
         // 0- date, 1- Detrended Price Oscillator
-        DPO = [], xData = [], yData = [], sum = 0, oscillator, periodIndex, rangeIndex, price, i, j;
+        DPO = [], xData = [], yData = [];
+        var oscillator, periodIndex, rangeIndex, price, i, j, sum = 0;
         if (xVal.length <= range) {
             return;
         }

@@ -65,16 +65,17 @@ var DEMAIndicator = /** @class */ (function (_super) {
      *
      * */
     DEMAIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, index, i, xVal) {
-        return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+        return _super.prototype.calculateEma.call(this, xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     };
     DEMAIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, doubledPeriod = 2 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, index = -1, accumulatePeriodPoints = 0, SMA = 0, DEMA = [], xDataDema = [], yDataDema = [], EMA = 0, 
+        var period = params.period, EMAvalues = [], doubledPeriod = 2 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DEMA = [], xDataDema = [], yDataDema = [];
+        var accumulatePeriodPoints = 0, EMA = 0, 
         // EMA(EMA)
         EMAlevel2, 
         // EMA of previous point
         prevEMA, prevEMAlevel2, 
         // EMA values array
-        EMAvalues = [], i, DEMAPoint;
+        i, index = -1, DEMAPoint, SMA = 0;
         this.EMApercent = (2 / (period + 1));
         // Check period, if bigger than EMA points length, skip
         if (yValLen < 2 * period - 1) {
@@ -86,7 +87,7 @@ var DEMAIndicator = /** @class */ (function (_super) {
         }
         // Accumulate first N-points
         accumulatePeriodPoints =
-            EMAIndicator.prototype.accumulatePeriodPoints(period, index, yVal);
+            _super.prototype.accumulatePeriodPoints.call(this, period, index, yVal);
         // first point
         SMA = accumulatePeriodPoints / period;
         accumulatePeriodPoints = 0;

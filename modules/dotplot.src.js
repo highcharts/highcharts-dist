@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Dot plot series type for Highcharts
  *
@@ -169,18 +169,23 @@
                                 height: Math.round(size),
                                 r: radius
                             };
-                            if (graphics[i]) {
-                                graphics[i].animate(attr);
+                            var graphic = graphics[i];
+                            if (graphic) {
+                                graphic.animate(attr);
                             }
                             else {
-                                graphics[i] = renderer.symbol(symbol)
+                                graphic = renderer.symbol(symbol)
                                     .attr(extend(attr, pointAttr))
                                     .add(point.graphic);
                             }
-                            graphics[i].isActive = true;
+                            graphic.isActive = true;
+                            graphics[i] = graphic;
                         }
                     }
                     graphics.forEach(function (graphic, i) {
+                        if (!graphic) {
+                            return;
+                        }
                         if (!graphic.isActive) {
                             graphic.destroy();
                             graphics.splice(i, 1);

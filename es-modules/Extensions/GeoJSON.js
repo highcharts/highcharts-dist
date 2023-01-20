@@ -455,6 +455,7 @@ wrap(Chart.prototype, 'addCredits', function (proceed, credits) {
     }
 });
 H.geojson = geojson;
+H.topo2geo = topo2geo;
 var GeoJSONModule = {
     geojson: geojson,
     topo2geo: topo2geo

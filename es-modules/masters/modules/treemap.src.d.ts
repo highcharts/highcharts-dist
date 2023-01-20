@@ -1,1 +1,3 @@
-import '../../Series/Treemap/TreemapSeries.js';
+import factory from '../../../modules/treemap.src';
+export * from '../../../modules/treemap.src';
+export default factory;

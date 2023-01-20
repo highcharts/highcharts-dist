@@ -39,7 +39,7 @@ import TU from '../TreeUtilities.js';
 var getColor = TU.getColor, getLevelOptions = TU.getLevelOptions, setTreeValues = TU.setTreeValues, updateRootId = TU.updateRootId;
 import U from '../../Core/Utilities.js';
 import SunburstNode from './SunburstNode.js';
-var error = U.error, extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, splat = U.splat;
+var defined = U.defined, error = U.error, extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, splat = U.splat;
 /* *
  *
  *  Constants
@@ -142,7 +142,12 @@ function getDlOptions(params) {
             options.style.width = Math.min(shape.radius * 2.5, (point.outerArcLength + point.innerArcLength) / 2);
         }
         else {
-            options.style.width = shape.radius;
+            if (!defined(options.style.width) &&
+                shape.radius) {
+                options.style.width = point.node.level === 1 ?
+                    2 * shape.radius :
+                    shape.radius;
+            }
         }
         if (rotationMode === 'perpendicular' &&
             point.series.chart.renderer.fontMetrics(options.style.fontSize).h > point.outerArcLength) {

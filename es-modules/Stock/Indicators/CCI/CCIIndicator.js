@@ -42,7 +42,8 @@ function sumArray(array) {
  * @private
  */
 function meanDeviation(arr, sma) {
-    var len = arr.length, sum = 0, i;
+    var len = arr.length;
+    var sum = 0, i;
     for (i = 0; i < len; i++) {
         sum += Math.abs(sma - (arr[i]));
     }
@@ -87,7 +88,8 @@ var CCIIndicator = /** @class */ (function (_super) {
      *
      * */
     CCIIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], periodTP = [], range = 1, CCI = [], xData = [], yData = [], CCIPoint, p, len, smaTP, TPtemp, meanDev, i;
+        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
+        var CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
         // CCI requires close value
         if (xVal.length <= period ||
             !isArray(yVal[0]) ||

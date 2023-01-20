@@ -403,11 +403,10 @@ addEvent(Chart, 'afterIsInsidePlot', function (e) {
     var _a;
     var chart = this;
     if (chart.polar) {
-        var x_1 = e.x - (e.options.paneCoordinates ? chart.plotLeft : 0), y_1 = e.y - (e.options.paneCoordinates ? chart.plotTop : 0);
         if (e.options.inverted) {
-            _a = [y_1, x_1], x_1 = _a[0], y_1 = _a[1];
+            _a = [e.y, e.x], e.x = _a[0], e.y = _a[1];
         }
-        e.isInsidePlot = chart.pane.some(function (pane) { return isInsidePane(x_1, y_1, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad); });
+        e.isInsidePlot = chart.pane.some(function (pane) { return isInsidePane(e.x, e.y, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad); });
     }
 });
 addEvent(Pointer, 'beforeGetHoverData', function (eventArgs) {

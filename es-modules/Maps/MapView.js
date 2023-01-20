@@ -300,6 +300,7 @@ var MapView = /** @class */ (function () {
         }
     };
     MapView.prototype.getProjectedBounds = function () {
+        var projection = this.projection;
         var allBounds = this.chart.series.reduce(function (acc, s) {
             var bounds = s.getProjectedBounds && s.getProjectedBounds();
             if (bounds &&
@@ -308,6 +309,28 @@ var MapView = /** @class */ (function () {
             }
             return acc;
         }, []);
+        // The bounds option
+        var fitToGeometry = this.options.fitToGeometry;
+        if (fitToGeometry) {
+            if (!this.fitToGeometryCache) {
+                if (fitToGeometry.type === 'MultiPoint') {
+                    var positions = fitToGeometry.coordinates
+                        .map(function (lonLat) {
+                        return projection.forward(lonLat);
+                    }), xs = positions.map(function (pos) { return pos[0]; }), ys = positions.map(function (pos) { return pos[1]; });
+                    this.fitToGeometryCache = {
+                        x1: Math.min.apply(0, xs),
+                        x2: Math.max.apply(0, xs),
+                        y1: Math.min.apply(0, ys),
+                        y2: Math.max.apply(0, ys)
+                    };
+                }
+                else {
+                    this.fitToGeometryCache = boundsFromPath(projection.path(fitToGeometry));
+                }
+            }
+            return this.fitToGeometryCache;
+        }
         return this.projection.bounds || MapView.compositeBounds(allBounds);
     };
     MapView.prototype.getScale = function () {
@@ -617,14 +640,16 @@ var MapView = /** @class */ (function () {
                         _this.zoom = zoom;
                         chart.redraw(false);
                     }
+                    // #17925 Skip NaN values
                 }
-                else {
-                    var scale = _this.getScale();
+                else if (isNumber(chartX) && isNumber(chartY)) {
+                    // #17238
+                    var scale = _this.getScale(), flipFactor = _this.projection.hasCoordinates ? 1 : -1;
                     var newCenter = _this.projection.inverse([
                         mouseDownCenterProjected[0] +
                             (mouseDownX - chartX) / scale,
                         mouseDownCenterProjected[1] -
-                            (mouseDownY - chartY) / scale
+                            (mouseDownY - chartY) / scale * flipFactor
                     ]);
                     _this.setView(newCenter, void 0, true, false);
                 }
@@ -693,6 +718,9 @@ var MapView = /** @class */ (function () {
             this.insets.length = 0;
             isDirtyInsets = true;
         }
+        if (isDirtyProjection || 'fitToGeometry' in options) {
+            delete this.fitToGeometryCache;
+        }
         if (isDirtyProjection || isDirtyInsets) {
             this.chart.series.forEach(function (series) {
                 var groups = series.transformGroups;
@@ -725,6 +753,9 @@ var MapView = /** @class */ (function () {
         }
         if (options.center || isNumber(options.zoom)) {
             this.setView(this.options.center, options.zoom, false);
+        }
+        else if ('fitToGeometry' in options) {
+            this.fitToBounds(void 0, void 0, false);
         }
         if (redraw) {
             this.chart.redraw(animation);

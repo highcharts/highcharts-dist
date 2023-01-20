@@ -80,7 +80,7 @@ var ColorAxisComposition;
             extend(SeriesClass.prototype.pointClass.prototype, {
                 setVisible: pointSetVisible
             });
-            addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate);
+            addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
             addEvent(SeriesClass, 'bindAxes', onSeriesBindAxes);
         }
     }

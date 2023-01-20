@@ -1,1 +1,3 @@
-import '../../Series/Item/ItemSeries.js';
+import factory from '../../../modules/item-series.src';
+export * from '../../../modules/item-series.src';
+export default factory;

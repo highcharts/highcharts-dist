@@ -59,10 +59,14 @@ var HeatmapPoint = /** @class */ (function (_super) {
      * @private
      */
     HeatmapPoint.prototype.applyOptions = function (options, x) {
-        var point = _super.prototype.applyOptions.call(this, options, x);
-        point.formatPrefix = point.isNull || point.value === null ?
+        // #17970, if point is null remove its color, because it may be updated
+        if (this.isNull || this.value === null) {
+            delete this.color;
+        }
+        _super.prototype.applyOptions.call(this, options, x);
+        this.formatPrefix = this.isNull || this.value === null ?
             'null' : 'point';
-        return point;
+        return this;
     };
     HeatmapPoint.prototype.getCellAttributes = function () {
         var point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
@@ -106,19 +110,13 @@ var HeatmapPoint = /** @class */ (function (_super) {
         if (!size) {
             return [];
         }
-        var rect = this.shapeArgs;
+        var _a = this.shapeArgs || {}, _b = _a.x, x = _b === void 0 ? 0 : _b, _c = _a.y, y = _c === void 0 ? 0 : _c, _d = _a.width, width = _d === void 0 ? 0 : _d, _e = _a.height, height = _e === void 0 ? 0 : _e;
         return [
-            'M',
-            rect.x - size,
-            rect.y - size,
-            'L',
-            rect.x - size,
-            rect.y + rect.height + size,
-            rect.x + rect.width + size,
-            rect.y + rect.height + size,
-            rect.x + rect.width + size,
-            rect.y - size,
-            'Z'
+            ['M', x - size, y - size],
+            ['L', x - size, y + height + size],
+            ['L', x + width + size, y + height + size],
+            ['L', x + width + size, y - size],
+            ['Z']
         ];
     };
     /**

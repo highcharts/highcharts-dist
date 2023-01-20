@@ -156,25 +156,30 @@ var ItemSeries = /** @class */ (function (_super) {
                     if (typeof r !== 'undefined') {
                         attr.r = r;
                     }
-                    if (graphics[val]) {
-                        graphics[val].animate(attr);
+                    var graphic = graphics[val];
+                    if (graphic) {
+                        graphic.animate(attr);
                     }
                     else {
                         if (pointAttr) {
                             extend(attr, pointAttr);
                         }
-                        graphics[val] = renderer
+                        graphic = renderer
                             .symbol(symbol, void 0, void 0, void 0, void 0, {
                             backgroundSize: 'within'
                         })
                             .attr(attr)
                             .add(point.graphic);
                     }
-                    graphics[val].isActive = true;
+                    graphic.isActive = true;
+                    graphics[val] = graphic;
                     i++;
                 }
             }
             graphics.forEach(function (graphic, i) {
+                if (!graphic) {
+                    return;
+                }
                 if (!graphic.isActive) {
                     graphic.destroy();
                     graphics.splice(i, 1);

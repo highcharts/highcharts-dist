@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.3.2 (2022-11-28)
+ * @license Highmaps JS v10.3.3 (2023-01-20)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -121,7 +121,7 @@
                     extend(SeriesClass.prototype.pointClass.prototype, {
                         setVisible: pointSetVisible
                     });
-                    addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate);
+                    addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
                     addEvent(SeriesClass, 'bindAxes', onSeriesBindAxes);
                 }
             }
@@ -2241,11 +2241,6 @@
         (function (ColorMapComposition) {
             /* *
              *
-             *  Declarations
-             *
-             * */
-            /* *
-             *
              *  Constants
              *
              * */
@@ -2915,6 +2910,22 @@
                  */
                 center: [0, 0],
                 /**
+                 * Fit the map to a geometry object consisting of individual points or
+                 * polygons. This is practical for responsive maps where we want to focus on
+                 * a specific area regardless of map size - unlike setting `center` and
+                 * `zoom`,
+            where the view doesn't scale with different map sizes.
+                 *
+                 * The geometry can be combined with the [padding](#mapView.padding) option
+                 * to avoid touching the edges of the chart.
+                 *
+                 * @type {object}
+                 * @since 10.3.3
+                 *
+                 * @sample maps/mapview/fittogeometry Fitting the view to geometries
+                 */
+                fitToGeometry: void 0,
+                /**
                  * Prevents the end user from zooming too far in on the map. See
                  * [zoom](#mapView.zoom).
                  *
@@ -2930,8 +2941,15 @@
             and a percentage is relative to the plot area
                  * size.
                  *
+                 * An array sets individual padding for the sides in the order [top,
+            right,
+                 * bottom,
+            left].
+                 *
                  * @sample {highmaps} maps/chart/plotbackgroundcolor-color
                  *         Visible plot area and percentage padding
+                 * @sample {highmaps} maps/demo/mappoint-mapmarker
+                 *         Padding for individual sides
                  * @type  {number|string|Array<number|string>}
                  */
                 padding: 0,
@@ -3681,6 +3699,7 @@
             }
         });
         H.geojson = geojson;
+        H.topo2geo = topo2geo;
         var GeoJSONModule = {
                 geojson: geojson,
                 topo2geo: topo2geo
@@ -5023,6 +5042,7 @@
                 }
             };
             MapView.prototype.getProjectedBounds = function () {
+                var projection = this.projection;
                 var allBounds = this.chart.series.reduce(function (acc,
                     s) {
                         var bounds = s.getProjectedBounds && s.getProjectedBounds();
@@ -5032,6 +5052,28 @@
                     }
                     return acc;
                 }, []);
+                // The bounds option
+                var fitToGeometry = this.options.fitToGeometry;
+                if (fitToGeometry) {
+                    if (!this.fitToGeometryCache) {
+                        if (fitToGeometry.type === 'MultiPoint') {
+                            var positions = fitToGeometry.coordinates
+                                    .map(function (lonLat) {
+                                    return projection.forward(lonLat);
+                            }), xs = positions.map(function (pos) { return pos[0]; }), ys = positions.map(function (pos) { return pos[1]; });
+                            this.fitToGeometryCache = {
+                                x1: Math.min.apply(0, xs),
+                                x2: Math.max.apply(0, xs),
+                                y1: Math.min.apply(0, ys),
+                                y2: Math.max.apply(0, ys)
+                            };
+                        }
+                        else {
+                            this.fitToGeometryCache = boundsFromPath(projection.path(fitToGeometry));
+                        }
+                    }
+                    return this.fitToGeometryCache;
+                }
                 return this.projection.bounds || MapView.compositeBounds(allBounds);
             };
             MapView.prototype.getScale = function () {
@@ -5390,14 +5432,17 @@
                                 _this.zoom = zoom;
                                 chart.redraw(false);
                             }
+                            // #17925 Skip NaN values
                         }
-                        else {
-                            var scale = _this.getScale();
+                        else if (isNumber(chartX) && isNumber(chartY)) {
+                            // #17238
+                            var scale = _this.getScale(),
+                                flipFactor = _this.projection.hasCoordinates ? 1 : -1;
                             var newCenter = _this.projection.inverse([
                                     mouseDownCenterProjected[0] +
                                         (mouseDownX - chartX) / scale,
                                     mouseDownCenterProjected[1] -
-                                        (mouseDownY - chartY) / scale
+                                        (mouseDownY - chartY) / scale * flipFactor
                                 ]);
                             _this.setView(newCenter, void 0, true, false);
                         }
@@ -5473,6 +5518,9 @@
                     this.insets.length = 0;
                     isDirtyInsets = true;
                 }
+                if (isDirtyProjection || 'fitToGeometry' in options) {
+                    delete this.fitToGeometryCache;
+                }
                 if (isDirtyProjection || isDirtyInsets) {
                     this.chart.series.forEach(function (series) {
                         var groups = series.transformGroups;
@@ -5505,6 +5553,9 @@
                 }
                 if (options.center || isNumber(options.zoom)) {
                     this.setView(this.options.center, options.zoom, false);
+                }
+                else if ('fitToGeometry' in options) {
+                    this.fitToBounds(void 0, void 0, false);
                 }
                 if (redraw) {
                     this.chart.redraw(animation);
@@ -6029,35 +6080,34 @@
                                 graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
                             }
                             graphic.animate = function (params, options, complete) {
-                                var switchBack = false;
+                                var animateIn = (isNumber(params['stroke-width']) &&
+                                        !isNumber(graphic['stroke-width'])), animateOut = (isNumber(graphic['stroke-width']) &&
+                                        !isNumber(params['stroke-width']));
                                 // When strokeWidth is animating
-                                if (params['stroke-width']) {
+                                if (animateIn || animateOut) {
                                     var strokeWidth = pick(series.getStrokeWidth(series.options), 1 // Styled mode
                                         ),
                                         inheritedStrokeWidth = (strokeWidth /
                                             (chart.mapView &&
                                                 chart.mapView.getScale() ||
                                                 1));
-                                    // For animating from inherit,
-                                    // .attr() reads the property as the starting point
-                                    if (graphic['stroke-width'] === 'inherit') {
+                                    // For animating from undefined, .attr() reads the
+                                    // property as the starting point
+                                    if (animateIn) {
                                         graphic['stroke-width'] = inheritedStrokeWidth;
                                     }
-                                    // For animating to inherit
-                                    if (params['stroke-width'] === 'inherit') {
+                                    // For animating to undefined
+                                    if (animateOut) {
                                         params['stroke-width'] = inheritedStrokeWidth;
-                                        switchBack = true;
                                     }
                                 }
                                 var ret = animate_1.call(graphic,
                                     params,
                                     options,
-                                    switchBack ? function () {
-                                        // Switch back to "inherit" for zooming
-                                        // to work with the existing logic + complete
-                                        graphic.attr({
-                                            'stroke-width': 'inherit'
-                                        });
+                                    animateOut ? function () {
+                                        // Remove the attribute after finished animation
+                                        graphic.element.removeAttribute('stroke-width');
+                                    delete graphic['stroke-width'];
                                     // Proceed
                                     if (complete) {
                                         complete.apply(this, arguments);
@@ -6087,8 +6137,21 @@
                     transform properties, it should induce a single updateTransform and
                     symbolAttr call.
                     */
-                    var scale = svgTransform.scaleX;
-                    var flipFactor = svgTransform.scaleY > 0 ? 1 : -1;
+                    var scale = svgTransform.scaleX,
+                        flipFactor = svgTransform.scaleY > 0 ? 1 : -1;
+                    var animatePoints = function (scale) {
+                            (series.points || []).forEach(function (point) {
+                                var graphic = point.graphic;
+                            var strokeWidth;
+                            if (graphic &&
+                                graphic['stroke-width'] &&
+                                (strokeWidth = _this.getStrokeWidth(point.options))) {
+                                graphic.attr({
+                                    'stroke-width': strokeWidth / scale
+                                });
+                            }
+                        });
+                    };
                     if (renderer.globalAnimation && chart.hasRendered) {
                         var startTranslateX_1 = Number(transformGroup.attr('translateX'));
                         var startTranslateY_1 = Number(transformGroup.attr('translateY'));
@@ -6101,9 +6164,10 @@
                                 translateX: (startTranslateX_1 + (svgTransform.translateX - startTranslateX_1) * fx.pos),
                                 translateY: (startTranslateY_1 + (svgTransform.translateY - startTranslateY_1) * fx.pos),
                                 scaleX: scaleStep,
-                                scaleY: scaleStep * flipFactor
+                                scaleY: scaleStep * flipFactor,
+                                'stroke-width': strokeWidth / scaleStep
                             });
-                            transformGroup.element.setAttribute('stroke-width', strokeWidth / scaleStep);
+                            animatePoints(scaleStep); // #18166
                         };
                         transformGroup
                             .attr({ animator: 0 })
@@ -6111,12 +6175,8 @@
                         // When dragging or first rendering, animation is off
                     }
                     else {
-                        transformGroup.attr(svgTransform);
-                        // Set the stroke-width directly on the group element so the
-                        // children inherit it. We need to use setAttribute directly,
-                        // because the stroke-widthSetter method expects a stroke color
-                        // also to be set.
-                        transformGroup.element.setAttribute('stroke-width', strokeWidth / scale);
+                        transformGroup.attr(merge(svgTransform, { 'stroke-width': strokeWidth / scale }));
+                        animatePoints(scale); // #18166
                     }
                 });
                 this.drawMapDataLabels();
@@ -6225,8 +6285,11 @@
                     var stateOptions = merge(this.options.states[state],
                         point.options.states &&
                             point.options.states[state] ||
-                            {});
-                    pointStrokeWidth = this.getStrokeWidth(stateOptions);
+                            {}),
+                        stateStrokeWidth = this.getStrokeWidth(stateOptions);
+                    if (defined(stateStrokeWidth)) {
+                        pointStrokeWidth = stateStrokeWidth;
+                    }
                 }
                 if (pointStrokeWidth && mapView) {
                     pointStrokeWidth /= mapView.getScale();
@@ -6252,6 +6315,7 @@
                 else {
                     delete attr['stroke-width'];
                 }
+                attr['stroke-linecap'] = attr['stroke-linejoin'] = this.options.linecap;
                 return attr;
             };
             /**
@@ -6539,6 +6603,18 @@
                     padding: 0,
                     verticalAlign: 'middle'
                 },
+                /**
+                 * The SVG value used for the `stroke-linecap` and `stroke-linejoin` of
+                 * the map borders. Round means that borders are rounded in the ends and
+                 * bends.
+                 *
+                 * @sample maps/demo/mappoint-mapmarker/
+                 *         Backdrop coastline with round linecap
+                 *
+                 * @type   {Highcharts.SeriesLinecapValue}
+                 * @since  10.3.3
+                 */
+                linecap: 'butt',
                 /**
                  * @ignore-option
                  *
@@ -6861,6 +6937,40 @@
          * @apioption series.map.data
          */
         /**
+         * When using automatic point colors pulled from the global
+         * [colors](colors) or series-specific
+         * [plotOptions.map.colors](series.colors) collections, this option
+         * determines whether the chart should receive one color per series or
+         * one color per point.
+         *
+         * In styled mode, the `colors` or `series.colors` arrays are not
+         * supported, and instead this option gives the points individual color
+         * class names on the form `highcharts-color-{n}`.
+         *
+         * @see [series colors](#plotOptions.map.colors)
+         *
+         * @sample {highmaps} maps/plotoptions/mapline-colorbypoint-false/
+         *         Mapline colorByPoint set to false by default
+         * @sample {highmaps} maps/plotoptions/mapline-colorbypoint-true/
+         *         Mapline colorByPoint set to true
+         *
+         * @type      {boolean}
+         * @default   false
+         * @since     2.0
+         * @product   highmaps
+         * @apioption plotOptions.map.colorByPoint
+         */
+        /**
+         * A series specific or series type specific color set to apply instead
+         * of the global [colors](#colors) when [colorByPoint](
+         * #plotOptions.map.colorByPoint) is true.
+         *
+         * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
+         * @since     3.0
+         * @product   highmaps
+         * @apioption plotOptions.map.colors
+         */
+        /**
          * Individual color for the point. By default the color is either used
          * to denote the value, or pulled from the global `colors` array.
          *
@@ -6898,9 +7008,14 @@
          * it is recommended to use `mapData` to define the geometry instead
          * of defining it on the data points themselves.
          *
-         * The geometry object is compatible to that of a `feature` in geoJSON, so
-         * features of geoJSON can be passed directly into the `data`, optionally
+         * The geometry object is compatible to that of a `feature` in GeoJSON, so
+         * features of GeoJSON can be passed directly into the `data`, optionally
          * after first filtering and processing it.
+         *
+         * For pre-projected maps (like GeoJSON maps from our
+         * [map collection](https://code.highcharts.com/mapdata/)), user has to specify
+         * coordinates in `projectedUnits` for geometry type other than `Point`,
+         * instead of `[longitude, latitude]`.
          *
          * @sample maps/series/data-geometry/
          *         Geometry defined in data
@@ -7109,6 +7224,10 @@
              *
              * @sample maps/demo/mapline-mappoint/
              *         Mapline and map-point chart
+             * @sample maps/demo/animated-mapline/
+             *         Mapline with CSS keyframe animation
+             * @sample maps/demo/flight-routes
+             *         Flight routes
              *
              * @extends      plotOptions.map
              * @product      highmaps
@@ -7116,7 +7235,13 @@
              */
             MapLineSeries.defaultOptions = merge(MapSeries.defaultOptions, {
                 /**
-                 * The width of the map line.
+                 * Pixel width of the mapline line.
+                 *
+                 * @type      {number}
+                 * @since 10.3.3
+                 * @product   highmaps
+                 * @default   1
+                 * @apioption plotOptions.mapline.lineWidth
                  */
                 lineWidth: 1,
                 /**
@@ -7212,6 +7337,14 @@
          * @apioption plotOptions.mapline.states.hover.lineWidth
          */
         /**
+         * Pixel width of the mapline line.
+         *
+         * @type      {number|undefined}
+         * @since 10.3.3
+         * @product   highmaps
+         * @apioption series.mapline.data.lineWidth
+         */
+        /**
          *
          * @type      {number}
          * @product   highmaps
@@ -7286,7 +7419,7 @@
 
         return MapPointPoint;
     });
-    _registerModule(_modules, 'Series/MapPoint/MapPointSeries.js', [_modules['Core/Globals.js'], _modules['Series/MapPoint/MapPointPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, MapPointPoint, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/MapPoint/MapPointSeries.js', [_modules['Core/Globals.js'], _modules['Series/MapPoint/MapPointPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, MapPointPoint, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -7319,7 +7452,8 @@
         var extend = U.extend,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
-            merge = U.merge;
+            merge = U.merge,
+            pick = U.pick;
         /* *
          *
          *  Class
@@ -7462,6 +7596,10 @@
              *
              * @sample maps/demo/mapline-mappoint/
              *         Map-line and map-point series.
+             * @sample maps/demo/mappoint-mapmarker
+             *         Using the mapmarker symbol for points
+             * @sample maps/demo/mappoint-datalabels-mapmarker
+             *         Using the mapmarker shape for data labels
              *
              * @extends      plotOptions.scatter
              * @product      highmaps
@@ -7484,6 +7622,50 @@
             });
             return MapPointSeries;
         }(ScatterSeries));
+        /* *
+         *
+         * Extra
+         *
+         * */
+        /* *
+         * The mapmarker symbol
+         */
+        var mapmarker = function (x,
+            y,
+            w,
+            h,
+            options) {
+                var isLegendSymbol = options && options.context === 'legend';
+            var anchorX,
+                anchorY;
+            if (isLegendSymbol) {
+                anchorX = x + w / 2;
+                anchorY = y + h;
+                // Put the pin in the anchor position (dataLabel.shape)
+            }
+            else if (options &&
+                typeof options.anchorX === 'number' &&
+                typeof options.anchorY === 'number') {
+                anchorX = options.anchorX;
+                anchorY = options.anchorY;
+                // Put the pin in the center and shift upwards (point.marker.symbol)
+            }
+            else {
+                anchorX = x + w / 2;
+                anchorY = y + h / 2;
+                y -= h;
+            }
+            var r = isLegendSymbol ? h / 3 : h / 2;
+            return [
+                ['M', anchorX, anchorY],
+                ['C', anchorX, anchorY, anchorX - r, y + r * 1.5, anchorX - r, y + r],
+                // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+                ['A', r, r, 1, 1, 1, anchorX + r, y + r],
+                ['C', anchorX + r, y + r * 1.5, anchorX, anchorY, anchorX, anchorY],
+                ['Z']
+            ];
+        };
+        SVGRenderer.prototype.symbols.mapmarker = mapmarker;
         extend(MapPointSeries.prototype, {
             type: 'mappoint',
             axisTypes: ['colorAxis'],
@@ -10001,6 +10183,8 @@
          */
         /**
          * @excluding enabled, enabledThreshold, height, radius, width
+         * @sample {highmaps} maps/plotoptions/mapbubble-symbol
+         *         Map bubble with mapmarker symbol
          * @apioption series.mapbubble.marker
          */
         ''; // adds doclets above to transpiled file
@@ -10071,12 +10255,14 @@
              * @private
              */
             HeatmapPoint.prototype.applyOptions = function (options, x) {
-                var point = _super.prototype.applyOptions.call(this,
-                    options,
-                    x);
-                point.formatPrefix = point.isNull || point.value === null ?
+                // #17970, if point is null remove its color, because it may be updated
+                if (this.isNull || this.value === null) {
+                    delete this.color;
+                }
+                _super.prototype.applyOptions.call(this, options, x);
+                this.formatPrefix = this.isNull || this.value === null ?
                     'null' : 'point';
-                return point;
+                return this;
             };
             HeatmapPoint.prototype.getCellAttributes = function () {
                 var point = this,
@@ -10150,19 +10336,21 @@
                 if (!size) {
                     return [];
                 }
-                var rect = this.shapeArgs;
+                var _a = this.shapeArgs || {},
+                    _b = _a.x,
+                    x = _b === void 0 ? 0 : _b,
+                    _c = _a.y,
+                    y = _c === void 0 ? 0 : _c,
+                    _d = _a.width,
+                    width = _d === void 0 ? 0 : _d,
+                    _e = _a.height,
+                    height = _e === void 0 ? 0 : _e;
                 return [
-                    'M',
-                    rect.x - size,
-                    rect.y - size,
-                    'L',
-                    rect.x - size,
-                    rect.y + rect.height + size,
-                    rect.x + rect.width + size,
-                    rect.y + rect.height + size,
-                    rect.x + rect.width + size,
-                    rect.y - size,
-                    'Z'
+                    ['M', x - size, y - size],
+                    ['L', x - size, y + height + size],
+                    ['L', x + width + size, y + height + size],
+                    ['L', x + width + size, y - size],
+                    ['Z']
                 ];
             };
             /**
@@ -10273,8 +10461,8 @@
              */
             HeatmapSeries.prototype.drawPoints = function () {
                 var _this = this;
-                // In styled mode, use CSS, otherwise the fill used in the style
-                // sheet will take precedence over the fill attribute.
+                // In styled mode, use CSS, otherwise the fill used in the style sheet
+                // will take precedence over the fill attribute.
                 var seriesMarkerOptions = this.options.marker || {};
                 if (seriesMarkerOptions.enabled || this._hasPointMarkers) {
                     Series.prototype.drawPoints.call(this);
@@ -10328,9 +10516,8 @@
              * @private
              */
             HeatmapSeries.prototype.init = function () {
-                var options;
-                Series.prototype.init.apply(this, arguments);
-                options = this.options;
+                _super.prototype.init.apply(this, arguments);
+                var options = this.options;
                 // #3758, prevent resetting in setData
                 options.pointRange = pick(options.pointRange, options.colsize || 1);
                 // general point range
@@ -10354,14 +10541,8 @@
              * @private
              */
             HeatmapSeries.prototype.markerAttribs = function (point, state) {
-                var pointMarkerOptions = point.marker || {},
-                    seriesMarkerOptions = this.options.marker || {},
-                    seriesStateOptions,
-                    pointStateOptions,
-                    shapeArgs = point.shapeArgs || {},
-                    hasImage = point.hasImage,
-                    attribs = {};
-                if (hasImage) {
+                var shapeArgs = point.shapeArgs || {};
+                if (point.hasImage) {
                     return {
                         x: point.plotX,
                         y: point.plotY
@@ -10369,24 +10550,32 @@
                 }
                 // Setting width and height attributes on image does not affect on its
                 // dimensions.
-                if (state) {
-                    seriesStateOptions = (seriesMarkerOptions.states[state] || {});
-                    pointStateOptions = pointMarkerOptions.states &&
-                        pointMarkerOptions.states[state] || {};
-                    [['width', 'x'], ['height', 'y']].forEach(function (dimension) {
-                        // Set new width and height basing on state options.
-                        attribs[dimension[0]] = (pointStateOptions[dimension[0]] ||
-                            seriesStateOptions[dimension[0]] ||
-                            shapeArgs[dimension[0]]) + (pointStateOptions[dimension[0] + 'Plus'] ||
-                            seriesStateOptions[dimension[0] + 'Plus'] || 0);
-                        // Align marker by a new size.
-                        attribs[dimension[1]] =
-                            shapeArgs[dimension[1]] +
-                                (shapeArgs[dimension[0]] -
-                                    attribs[dimension[0]]) / 2;
-                    });
+                if (state && state !== 'normal') {
+                    var pointMarkerOptions = point.options.marker || {},
+                        seriesMarkerOptions = this.options.marker || {},
+                        seriesStateOptions = (seriesMarkerOptions.states &&
+                            seriesMarkerOptions.states[state]) || {},
+                        pointStateOptions = (pointMarkerOptions.states &&
+                            pointMarkerOptions.states[state]) || {};
+                    // Set new width and height basing on state options.
+                    var width = (pointStateOptions.width ||
+                            seriesStateOptions.width ||
+                            shapeArgs.width ||
+                            0) + (pointStateOptions.widthPlus ||
+                            seriesStateOptions.widthPlus ||
+                            0);
+                    var height = (pointStateOptions.height ||
+                            seriesStateOptions.height ||
+                            shapeArgs.height ||
+                            0) + (pointStateOptions.heightPlus ||
+                            seriesStateOptions.heightPlus ||
+                            0);
+                    // Align marker by the new size.
+                    var x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2,
+                        y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
+                    return { x: x, y: y, width: width, height: height };
                 }
-                return state ? attribs : shapeArgs;
+                return shapeArgs;
             };
             /**
              * @private
@@ -10399,9 +10588,7 @@
                     seriesOptions = series.options || {},
                     plotOptions = series.chart.options.plotOptions || {},
                     seriesPlotOptions = plotOptions.series || {},
-                    heatmapPlotOptions = plotOptions.heatmap || {},
-                    stateOptions,
-                    brightness, 
+                    heatmapPlotOptions = plotOptions.heatmap || {}, 
                     // Get old properties in order to keep backward compatibility
                     borderColor = (point && point.options.borderColor) ||
                         seriesOptions.borderColor ||
@@ -10419,33 +10606,19 @@
                     this.color);
                 // Apply old borderWidth property if exists.
                 attr['stroke-width'] = borderWidth;
-                if (state) {
-                    stateOptions =
-                        merge(seriesOptions.states[state], seriesOptions.marker &&
-                            seriesOptions.marker.states[state], point &&
+                if (state && state !== 'normal') {
+                    var stateOptions = merge((seriesOptions.states &&
+                            seriesOptions.states[state]), (seriesOptions.marker &&
+                            seriesOptions.marker.states &&
+                            seriesOptions.marker.states[state]), (point &&
                             point.options.states &&
-                            point.options.states[state] || {});
-                    brightness = stateOptions.brightness;
+                            point.options.states[state] || {}));
                     attr.fill =
                         stateOptions.color ||
-                            Color.parse(attr.fill).brighten(brightness || 0).get();
-                    attr.stroke = stateOptions.lineColor;
+                            Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
+                    attr.stroke = (stateOptions.lineColor || attr.stroke); // #17896
                 }
                 return attr;
-            };
-            /**
-             * @private
-             */
-            HeatmapSeries.prototype.setClip = function (animation) {
-                var series = this,
-                    chart = series.chart;
-                Series.prototype.setClip.apply(series, arguments);
-                if (series.options.clip !== false || animation) {
-                    series.markerGroup
-                        .clip((animation || series.clipBox) && series.sharedClipKey ?
-                        chart.sharedClips[series.sharedClipKey] :
-                        chart.clipRect);
-                }
             };
             /**
              * @private
@@ -10454,45 +10627,33 @@
                 var series = this, options = series.options, symbol = options.marker && options.marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
                 series.generatePoints();
                 series.points.forEach(function (point) {
-                    var pointAttr,
-                        sizeDiff,
-                        hasImage,
-                        cellAttr = point.getCellAttributes(),
-                        shapeArgs = {};
-                    shapeArgs.x = Math.min(cellAttr.x1, cellAttr.x2);
-                    shapeArgs.y = Math.min(cellAttr.y1, cellAttr.y2);
-                    shapeArgs.width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0);
-                    shapeArgs.height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
-                    hasImage = point.hasImage =
-                        (point.marker && point.marker.symbol || symbol || '')
-                            .indexOf('url') === 0;
-                    // If marker shape is regular (symetric), find shorter
-                    // cell's side.
+                    var cellAttr = point.getCellAttributes();
+                    var x = Math.min(cellAttr.x1,
+                        cellAttr.x2),
+                        y = Math.min(cellAttr.y1,
+                        cellAttr.y2),
+                        width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0),
+                        height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
+                    point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
+                    // If marker shape is regular (square), find the shorter cell's
+                    // side.
                     if (hasRegularShape) {
-                        sizeDiff = Math.abs(shapeArgs.width - shapeArgs.height);
-                        shapeArgs.x = Math.min(cellAttr.x1, cellAttr.x2) +
-                            (shapeArgs.width < shapeArgs.height ? 0 : sizeDiff / 2);
-                        shapeArgs.y = Math.min(cellAttr.y1, cellAttr.y2) +
-                            (shapeArgs.width < shapeArgs.height ? sizeDiff / 2 : 0);
-                        shapeArgs.width = shapeArgs.height =
-                            Math.min(shapeArgs.width, shapeArgs.height);
+                        var sizeDiff = Math.abs(width - height);
+                        x = Math.min(cellAttr.x1, cellAttr.x2) +
+                            (width < height ? 0 : sizeDiff / 2);
+                        y = Math.min(cellAttr.y1, cellAttr.y2) +
+                            (width < height ? sizeDiff / 2 : 0);
+                        width = height = Math.min(width, height);
                     }
-                    pointAttr = {
-                        plotX: (cellAttr.x1 + cellAttr.x2) / 2,
-                        plotY: (cellAttr.y1 + cellAttr.y2) / 2,
-                        clientX: (cellAttr.x1 + cellAttr.x2) / 2,
-                        shapeType: 'path',
-                        shapeArgs: merge(true, shapeArgs, {
-                            d: symbols[shape](shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height, { r: options.borderRadius })
-                        })
-                    };
-                    if (hasImage) {
-                        point.marker = {
-                            width: shapeArgs.width,
-                            height: shapeArgs.height
-                        };
+                    if (point.hasImage) {
+                        point.marker = { width: width, height: height };
                     }
-                    extend(point, pointAttr);
+                    point.plotX = point.clientX = (cellAttr.x1 + cellAttr.x2) / 2;
+                    point.plotY = (cellAttr.y1 + cellAttr.y2) / 2;
+                    point.shapeType = 'path';
+                    point.shapeArgs = merge(true, { x: x, y: y, width: width, height: height }, {
+                        d: symbols[shape](x, y, width, height, { r: options.borderRadius })
+                    });
                 });
                 fireEvent(series, 'afterTranslate');
             };
@@ -10605,7 +10766,7 @@
                     /**
                      * @ignore-option
                      */
-                    overflow: false,
+                    overflow: 'allow',
                     padding: 0 // #3837
                 },
                 /**
@@ -10783,6 +10944,7 @@
             parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
             pointArrayMap: ['y', 'value'],
             pointClass: HeatmapPoint,
+            specialGroup: 'group',
             trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
             /**
              * @private

@@ -72,9 +72,8 @@ function onAxisDestroy() {
  * @private
  */
 function onAxisInit() {
-    var axis = this;
-    if (!axis.stacking) {
-        axis.stacking = new AxisAdditions(axis);
+    if (this.coll === 'yAxis' && !this.stacking) {
+        this.stacking = new AxisAdditions(this);
     }
 }
 /**
@@ -331,62 +330,56 @@ var AxisAdditions = /** @class */ (function () {
         var reversedStacks = axis.options.reversedStacks;
         var len = axisSeries.length;
         var actualSeries, i;
-        if (!axis.isXAxis) {
-            stacking.usePercentage = false;
-            i = len;
-            while (i--) {
-                actualSeries = axisSeries[reversedStacks ? i : len - i - 1];
-                actualSeries.setStackedPoints();
-                actualSeries.setGroupedPoints();
-            }
-            // Loop up again to compute percent and stream stack
-            for (i = 0; i < len; i++) {
-                axisSeries[i].modifyStacks();
-            }
-            fireEvent(axis, 'afterBuildStacks');
+        stacking.usePercentage = false;
+        i = len;
+        while (i--) {
+            actualSeries = axisSeries[reversedStacks ? i : len - i - 1];
+            actualSeries.setStackedPoints();
+            actualSeries.setGroupedPoints();
         }
+        // Loop up again to compute percent and stream stack
+        for (i = 0; i < len; i++) {
+            axisSeries[i].modifyStacks();
+        }
+        fireEvent(axis, 'afterBuildStacks');
     };
     /**
      * @private
      */
     AxisAdditions.prototype.cleanStacks = function () {
-        var stacking = this, axis = stacking.axis;
+        var stacking = this;
         var stacks;
-        if (!axis.isXAxis) {
-            if (stacking.oldStacks) {
-                stacks = stacking.stacks = stacking.oldStacks;
-            }
-            // reset stacks
-            objectEach(stacks, function (type) {
-                objectEach(type, function (stack) {
-                    stack.cumulative = stack.total;
-                });
-            });
+        if (stacking.oldStacks) {
+            stacks = stacking.stacks = stacking.oldStacks;
         }
+        // reset stacks
+        objectEach(stacks, function (type) {
+            objectEach(type, function (stack) {
+                stack.cumulative = stack.total;
+            });
+        });
     };
     /**
      * Set all the stacks to initial states and destroy unused ones.
      * @private
      */
     AxisAdditions.prototype.resetStacks = function () {
-        var stacking = this, axis = stacking.axis, stacks = stacking.stacks;
-        if (!axis.isXAxis) {
-            objectEach(stacks, function (type) {
-                objectEach(type, function (stack, x) {
-                    // Clean up memory after point deletion (#1044, #4320)
-                    if (isNumber(stack.touched) &&
-                        stack.touched < stacking.stacksTouched) {
-                        stack.destroy();
-                        delete type[x];
-                        // Reset stacks
-                    }
-                    else {
-                        stack.total = null;
-                        stack.cumulative = null;
-                    }
-                });
+        var _this = this;
+        objectEach(this.stacks, function (type) {
+            objectEach(type, function (stack, x) {
+                // Clean up memory after point deletion (#1044, #4320)
+                if (isNumber(stack.touched) &&
+                    stack.touched < _this.stacksTouched) {
+                    stack.destroy();
+                    delete type[x];
+                    // Reset stacks
+                }
+                else {
+                    stack.total = null;
+                    stack.cumulative = null;
+                }
             });
-        }
+        });
     };
     /**
      * @private

@@ -206,8 +206,15 @@ var Tooltip = /** @class */ (function () {
      */
     Tooltip.prototype.getAnchor = function (points, mouseEvent) {
         var chart = this.chart, pointer = chart.pointer, inverted = chart.inverted, plotTop = chart.plotTop, plotLeft = chart.plotLeft;
-        var ret, yAxis, xAxis, plotX = 0, plotY = 0;
+        var ret;
         points = splat(points);
+        // If reversedStacks are false the tooltip position should be taken from
+        // the last point (#17948)
+        if (points[0].series &&
+            points[0].series.yAxis &&
+            !points[0].series.yAxis.options.reversedStacks) {
+            points = points.slice().reverse();
+        }
         // When tooltip follows mouse, relate the position to the mouse
         if (this.followPointer && mouseEvent) {
             if (typeof mouseEvent.chartX === 'undefined') {
@@ -225,41 +232,27 @@ var Tooltip = /** @class */ (function () {
             // Calculate the average position and adjust for axis positions
         }
         else {
+            var chartX_1 = 0, chartY_1 = 0;
             points.forEach(function (point) {
-                yAxis = point.series.yAxis;
-                xAxis = point.series.xAxis;
-                plotX += point.plotX || 0;
-                plotY += (point.plotLow ?
-                    (point.plotLow + (point.plotHigh || 0)) / 2 :
-                    (point.plotY || 0));
-                // Adjust position for positioned axes (top/left settings)
-                if (xAxis && yAxis) {
-                    if (!inverted) { // #1151
-                        plotX += xAxis.pos - plotLeft;
-                        plotY += yAxis.pos - plotTop;
-                    }
-                    else { // #14771
-                        plotX += (plotTop + chart.plotHeight - xAxis.len - xAxis.pos);
-                        plotY += (plotLeft + chart.plotWidth - yAxis.len - yAxis.pos);
-                    }
+                var pos = point.pos(true);
+                if (pos) {
+                    chartX_1 += pos[0];
+                    chartY_1 += pos[1];
                 }
             });
-            plotX /= points.length;
-            plotY /= points.length;
-            // Use the average position for multiple points
-            ret = [
-                inverted ? chart.plotWidth - plotY : plotX,
-                inverted ? chart.plotHeight - plotX : plotY
-            ];
+            chartX_1 /= points.length;
+            chartY_1 /= points.length;
             // When shared, place the tooltip next to the mouse (#424)
             if (this.shared && points.length > 1 && mouseEvent) {
                 if (inverted) {
-                    ret[0] = mouseEvent.chartX - plotLeft;
+                    chartX_1 = mouseEvent.chartX;
                 }
                 else {
-                    ret[1] = mouseEvent.chartY - plotTop;
+                    chartY_1 = mouseEvent.chartY;
                 }
             }
+            // Use the average position for multiple points
+            ret = [chartX_1 - plotLeft, chartY_1 - plotTop];
         }
         return ret.map(Math.round);
     };
@@ -1252,25 +1245,30 @@ var Tooltip = /** @class */ (function () {
      * @param {Highcharts.Point} point
      */
     Tooltip.prototype.updatePosition = function (point) {
-        var chart = this.chart, options = this.options, pointer = chart.pointer, label = this.getLabel(), 
+        var _a = this, chart = _a.chart, distance = _a.distance, options = _a.options, pointer = chart.pointer, label = this.getLabel(), 
         // Needed for outside: true (#11688)
-        chartPosition = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, label.width, label.height, point);
-        var anchorX = point.plotX + chart.plotLeft, anchorY = point.plotY + chart.plotTop, pad;
+        _b = pointer.getChartPosition(), left = _b.left, top = _b.top, scaleX = _b.scaleX, scaleY = _b.scaleY, pos = (options.positioner || this.getPosition).call(this, label.width, label.height, point);
+        var anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
         // Set the renderer size dynamically to prevent document size to change
         if (this.outside) {
-            pad = options.borderWidth + 2 * this.distance;
+            // Corrects positions, occurs with tooltip positioner (#16944)
+            if (options.positioner) {
+                pos.x += left - distance;
+                pos.y += top - distance;
+            }
+            pad = options.borderWidth + 2 * distance;
             this.renderer.setSize(label.width + pad, label.height + pad, false);
             // Anchor and tooltip container need scaling if chart container has
             // scale transform/css zoom. #11329.
-            if (chartPosition.scaleX !== 1 || chartPosition.scaleY !== 1) {
+            if (scaleX !== 1 || scaleY !== 1) {
                 css(this.container, {
-                    transform: "scale(".concat(chartPosition.scaleX, ", ").concat(chartPosition.scaleY, ")")
+                    transform: "scale(".concat(scaleX, ", ").concat(scaleY, ")")
                 });
-                anchorX *= chartPosition.scaleX;
-                anchorY *= chartPosition.scaleY;
+                anchorX *= scaleX;
+                anchorY *= scaleY;
             }
-            anchorX += chartPosition.left - pos.x;
-            anchorY += chartPosition.top - pos.y;
+            anchorX += left - pos.x;
+            anchorY += top - pos.y;
         }
         // do the move
         this.move(Math.round(pos.x), Math.round(pos.y || 0), // can be undefined (#3977)

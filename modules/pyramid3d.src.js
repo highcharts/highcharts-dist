@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Highcharts 3D funnel module
  *
@@ -133,6 +133,9 @@
                 neckHeight: 0,
                 neckWidth: 0,
                 dataLabels: {
+                    /**
+                     * @default top
+                     */
                     verticalAlign: 'top'
                 }
             });
@@ -154,7 +157,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @since     7.1.0
-         * @extends   series.pyramid,plotOptions.pyramid3d
+         * @extends   series,plotOptions.pyramid3d
          * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase,dataSorting
          * @product   highcharts
          * @sample    {highcharts} highcharts/demo/pyramid3d/ Pyramid3d

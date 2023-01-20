@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.2 (2022-11-28)
+ * @license Highstock JS v10.3.3 (2023-01-20)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -1393,7 +1393,8 @@
                 // defined in groupPixelWidth
                 if (groupPixelWidth &&
                     processedXData &&
-                    processedXData.length) {
+                    processedXData.length &&
+                    plotSizeX) {
                     hasGroupedData = true;
                     // Force recreation of point instances in series.translate, #5699
                     series.isDirty = true;
@@ -9983,7 +9984,9 @@
                                 if (series.points &&
                                     defined(series.points[0]) &&
                                     defined(series.points[0].plotX) &&
-                                    series.points[0].plotX < firstPointX) {
+                                    series.points[0].plotX < firstPointX &&
+                                    // #17128
+                                    series.points[0].plotX >= pick(axis.min, -Infinity)) {
                                     firstPointX = series.points[0].plotX;
                             }
                         });

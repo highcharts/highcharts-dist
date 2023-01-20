@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Boost module
  *
@@ -2403,11 +2403,6 @@
          * @private
          */
         function compose(SeriesClass, seriesTypes, wglMode) {
-            var PointClass = SeriesClass.prototype.pointClass;
-            if (composedClasses.indexOf(PointClass) === -1) {
-                composedClasses.push(PointClass);
-                wrap(PointClass.prototype, 'haloPath', wrapPointHaloPath);
-            }
             if (composedClasses.indexOf(SeriesClass) === -1) {
                 composedClasses.push(SeriesClass);
                 addEvent(SeriesClass, 'destroy', onSeriesDestroy);
@@ -2417,7 +2412,6 @@
                     seriesProto_1.renderCanvas = seriesRenderCanvas;
                 }
                 wrap(seriesProto_1, 'getExtremes', wrapSeriesGetExtremes);
-                wrap(seriesProto_1, 'markerAttribs', wrapSeriesMarkerAttribs);
                 wrap(seriesProto_1, 'processData', wrapSeriesProcessData);
                 wrap(seriesProto_1, 'searchPoint', wrapSeriesSearchPoint);
                 [
@@ -3099,30 +3093,6 @@
             }
         }
         /**
-         * For inverted series, we need to swap X-Y values before running base
-         * methods.
-         * @private
-         */
-        function wrapPointHaloPath(proceed) {
-            var point = this,
-                series = point.series,
-                chart = series.chart,
-                plotX = point.plotX || 0,
-                plotY = point.plotY || 0,
-                inverted = chart.inverted;
-            if (series.boosted && inverted) {
-                point.plotX = series.yAxis.len - plotY;
-                point.plotY = series.xAxis.len - plotX;
-            }
-            var halo = proceed.apply(this,
-                [].slice.call(arguments, 1));
-            if (series.boosted && inverted) {
-                point.plotX = plotX;
-                point.plotY = plotY;
-            }
-            return halo;
-        }
-        /**
          * Used for treemap|heatmap.drawPoints
          * @private
          */
@@ -3201,27 +3171,6 @@
                 return {};
             }
             return proceed.apply(this, [].slice.call(arguments, 1));
-        }
-        /**
-         * @private
-         */
-        function wrapSeriesMarkerAttribs(proceed, point) {
-            var series = this,
-                chart = series.chart,
-                plotX = point.plotX || 0,
-                plotY = point.plotY || 0,
-                inverted = chart.inverted;
-            if (series.boosted && inverted) {
-                point.plotX = series.yAxis.len - plotY;
-                point.plotY = series.xAxis.len - plotX;
-            }
-            var attribs = proceed.apply(this,
-                [].slice.call(arguments, 1));
-            if (series.boosted && inverted) {
-                point.plotX = plotX;
-                point.plotY = plotY;
-            }
-            return attribs;
         }
         /**
          * If the series is a heatmap or treemap, or if the series is not boosting
@@ -3962,6 +3911,7 @@
                 gold: '#ffd700',
                 goldenrod: '#daa520',
                 gray: '#808080',
+                grey: '#808080',
                 green: '#008000',
                 greenyellow: '#adff2f',
                 honeydew: '#f0fff0',

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * ColorAxis module
  *
@@ -121,7 +121,7 @@
                     extend(SeriesClass.prototype.pointClass.prototype, {
                         setVisible: pointSetVisible
                     });
-                    addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate);
+                    addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
                     addEvent(SeriesClass, 'bindAxes', onSeriesBindAxes);
                 }
             }

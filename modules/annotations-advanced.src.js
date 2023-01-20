@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Annotations module
  *
@@ -4415,7 +4415,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/10.3.2/gfx/stock-icons/
+             * @default   https://code.highcharts.com/10.3.3/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -6504,7 +6504,7 @@
              */
             Popup.prototype.addInput = function (option, indicatorType, parentDiv, inputAttributes) {
                 var optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
-                if (!inputName.match(/\d/g)) {
+                if (!optionName.match(/^\d+$/)) {
                     // add label
                     createElement('label', {
                         htmlFor: inputName,
@@ -6691,7 +6691,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/10.3.2/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/10.3.3/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -10227,7 +10227,7 @@
                         x,
                         y;
                     if (selectType === 'x') {
-                        targetY = (ext.yAxisMax - ext.yAxisMin) / 2;
+                        targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
                         // first control point
                         if (cpIndex === 0) {
                             targetX = target.xAxisMin;

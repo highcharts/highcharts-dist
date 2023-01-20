@@ -257,7 +257,13 @@ var TimelineSeries = /** @class */ (function (_super) {
             width: width + radius,
             height: height + radius
         };
-        return attribs;
+        return (series.chart.inverted) ? {
+            y: (attribs.x && attribs.width) &&
+                series.xAxis.len - attribs.x - attribs.width,
+            x: attribs.y && attribs.y,
+            width: attribs.height,
+            height: attribs.width
+        } : attribs;
     };
     TimelineSeries.prototype.processData = function () {
         var series = this, visiblePoints = 0, i;

@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/DEMA/DEMAIndicator.js';
+import factory from '../../../indicators/dema.src';
+export * from '../../../indicators/dema.src';
+export default factory;

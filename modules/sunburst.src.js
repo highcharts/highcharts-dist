@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -56,11 +56,6 @@
          * */
         var ColorMapComposition;
         (function (ColorMapComposition) {
-            /* *
-             *
-             *  Declarations
-             *
-             * */
             /* *
              *
              *  Constants
@@ -3778,7 +3773,8 @@
             getLevelOptions = TU.getLevelOptions,
             setTreeValues = TU.setTreeValues,
             updateRootId = TU.updateRootId;
-        var error = U.error,
+        var defined = U.defined,
+            error = U.error,
             extend = U.extend,
             isNumber = U.isNumber,
             isObject = U.isObject,
@@ -3898,7 +3894,12 @@
                     options.style.width = Math.min(shape.radius * 2.5, (point.outerArcLength + point.innerArcLength) / 2);
                 }
                 else {
-                    options.style.width = shape.radius;
+                    if (!defined(options.style.width) &&
+                        shape.radius) {
+                        options.style.width = point.node.level === 1 ?
+                            2 * shape.radius :
+                            shape.radius;
+                    }
                 }
                 if (rotationMode === 'perpendicular' &&
                     point.series.chart.renderer.fontMetrics(options.style.fontSize).h > point.outerArcLength) {

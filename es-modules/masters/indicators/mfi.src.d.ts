@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/MFI/MFIIndicator.js';
+import factory from '../../../indicators/mfi.src';
+export * from '../../../indicators/mfi.src';
+export default factory;

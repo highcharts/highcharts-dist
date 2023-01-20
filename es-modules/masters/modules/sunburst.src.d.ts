@@ -1,2 +1,3 @@
-import '../../Series/Treemap/TreemapSeries.js';
-import '../../Series/Sunburst/SunburstSeries.js';
+import factory from '../../../modules/sunburst.src';
+export * from '../../../modules/sunburst.src';
+export default factory;

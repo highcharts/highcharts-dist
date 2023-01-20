@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Stock JS v10.3.2 (2022-11-28)
+ * @license Highcharts Stock JS v10.3.3 (2023-01-20)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock

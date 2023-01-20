@@ -143,7 +143,8 @@ function applyGrouping(hasExtremesChanged) {
         // defined in groupPixelWidth
         if (groupPixelWidth &&
             processedXData &&
-            processedXData.length) {
+            processedXData.length &&
+            plotSizeX) {
             hasGroupedData = true;
             // Force recreation of point instances in series.translate, #5699
             series.isDirty = true;

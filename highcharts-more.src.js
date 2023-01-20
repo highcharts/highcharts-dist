@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -449,12 +449,10 @@
             var _a;
             var chart = this;
             if (chart.polar) {
-                var x_1 = e.x - (e.options.paneCoordinates ? chart.plotLeft : 0),
-                    y_1 = e.y - (e.options.paneCoordinates ? chart.plotTop : 0);
                 if (e.options.inverted) {
-                    _a = [y_1, x_1], x_1 = _a[0], y_1 = _a[1];
+                    _a = [e.y, e.x], e.x = _a[0], e.y = _a[1];
                 }
-                e.isInsidePlot = chart.pane.some(function (pane) { return isInsidePane(x_1, y_1, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad); });
+                e.isInsidePlot = chart.pane.some(function (pane) { return isInsidePane(e.x, e.y, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad); });
             }
         });
         addEvent(Pointer, 'beforeGetHoverData', function (eventArgs) {
@@ -1155,7 +1153,7 @@
                         zone: point.zone,
                         y: point.y
                     };
-                    if (point.graphic) {
+                    if (point.graphic || point.graphics[0]) {
                         point.graphics[0] = point.graphic;
                     }
                     point.graphic = point.graphics[1];
@@ -1184,7 +1182,7 @@
                 while (i < pointLength) {
                     point = series.points[i];
                     point.graphics = point.graphics || [];
-                    if (point.graphic) {
+                    if (point.graphic || point.graphics[1]) {
                         point.graphics[1] = point.graphic;
                     }
                     point.graphic = point.graphics[0];
@@ -1224,17 +1222,30 @@
         }, { order: 0 });
         addEvent(AreaRangeSeries, 'afterTranslate', function () {
             var _this = this;
-            // Postprocess after the PolarComposition's afterTranslate
-            if (this.chart.polar) {
-                this.points.forEach(function (point) {
+            var inverted = this.chart.inverted;
+            this.points.forEach(function (point) {
+                // Postprocessing after the PolarComposition's afterTranslate
+                if (_this.chart.polar) {
                     _this.highToXY(point);
                     point.plotLow = point.plotY;
                     point.tooltipPos = [
                         ((point.plotHighX || 0) + (point.plotLowX || 0)) / 2,
                         ((point.plotHigh || 0) + (point.plotLow || 0)) / 2
                     ];
-                });
-            }
+                    // Put the tooltip in the middle of the range
+                }
+                else {
+                    var tooltipPos = point.pos(false,
+                        point.plotLow),
+                        posHigh = point.pos(false,
+                        point.plotHigh);
+                    if (tooltipPos && posHigh) {
+                        tooltipPos[0] = (tooltipPos[0] + posHigh[0]) / 2;
+                        tooltipPos[1] = (tooltipPos[1] + posHigh[1]) / 2;
+                    }
+                    point.tooltipPos = tooltipPos;
+                }
+            });
         }, { order: 3 });
         extend(AreaRangeSeries.prototype, {
             deferTranslatePolar: true,
@@ -1944,7 +1955,7 @@
                         brightness: -0.3
                     }
                 },
-
+                */
                 /**
                  * The color of the stem, the vertical line extending from the box to
                  * the whiskers. If `undefined`, the series color is used.
@@ -10090,7 +10101,7 @@
                             if (dummyStackItem) {
                                 dummyStackItem.x = i;
                                 dummyStackItem.label = actualStack[i].label;
-                                dummyStackItem.setOffset(series.pointXOffset || 0, series.barW || 0, series.stackedYNeg[i], series.stackedYPos[i]);
+                                dummyStackItem.setOffset(series.pointXOffset || 0, series.barW || 0, series.stackedYNeg[i], series.stackedYPos[i], void 0, this.xAxis);
                             }
                         }
                     }

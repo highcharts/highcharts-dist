@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.2 (2022-11-28)
+ * @license Highstock JS v10.3.3 (2023-01-20)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -100,14 +100,12 @@
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
@@ -121,8 +119,8 @@
              * @private
              */
             SMAIndicator.prototype.getName = function () {
-                var name = this.name,
-                    params = [];
+                var params = [];
+                var name = this.name;
                 if (!name) {
                     (this.nameComponents || []).forEach(function (component, index) {
                         params.push(this.options.params[component] +
@@ -141,14 +139,14 @@
                     xVal = series.xData,
                     yVal = series.yData,
                     yValLen = yVal.length,
-                    range = 0,
-                    sum = 0,
                     SMA = [],
                     xData = [],
-                    yData = [],
+                    yData = [];
+                var i,
                     index = -1,
-                    i,
-                    SMAPoint;
+                    range = 0,
+                    SMAPoint,
+                    sum = 0;
                 if (xVal.length < period) {
                     return;
                 }
@@ -238,17 +236,16 @@
              * @private
              */
             SMAIndicator.prototype.recalculateValues = function () {
-                var indicator = this,
+                var croppedDataValues = [],
+                    indicator = this,
                     oldData = indicator.points || [],
                     oldDataLength = (indicator.xData || []).length,
                     emptySet = {
                         values: [],
                         xData: [],
                         yData: []
-                    },
-                    processedData,
-                    croppedDataValues = [],
-                    overwriteData = true,
+                    };
+                var overwriteData = true,
                     oldFirstPointIndex,
                     oldLastPointIndex,
                     croppedData,
@@ -260,8 +257,11 @@
                 // we will try to access Series object without any properties
                 // (except for prototyped ones). This is what happens
                 // for example when using Axis.setDataGrouping(). See #16670
-                processedData = indicator.linkedParent.options ?
-                    (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
+                var processedData = indicator.linkedParent.options &&
+                        indicator.linkedParent.yData && // #18176, #18177 indicators should
+                        indicator.linkedParent.yData.length ? // work with empty dataset
+                        (indicator.getValues(indicator.linkedParent,
+                    indicator.options.params) || emptySet) : emptySet;
                 // We need to update points to reflect changes in all,
                 // x and y's, values. However, do it only for non-grouped
                 // data - grouping does it for us (#8572)
@@ -312,7 +312,7 @@
                     indicator.isDirty = true;
                     indicator.redraw();
                 }
-                indicator.isDirtyData = false;
+                indicator.isDirtyData = !!indicator.linkedSeries;
             };
             /**
              * @private
@@ -531,10 +531,9 @@
                     yValue = index < 0 ?
                         yVal[i - 1] :
                         yVal[i - 1][index],
-                    y;
-                y = typeof calEMA === 'undefined' ?
-                    SMA : correctFloat((yValue * EMApercent) +
-                    (calEMA * (1 - EMApercent)));
+                    y = typeof calEMA === 'undefined' ?
+                        SMA : correctFloat((yValue * EMApercent) +
+                        (calEMA * (1 - EMApercent)));
                 return [x, y];
             };
             EMAIndicator.prototype.getValues = function (series, params) {
@@ -543,15 +542,15 @@
                     yVal = series.yData,
                     yValLen = yVal ? yVal.length : 0,
                     EMApercent = 2 / (period + 1),
-                    sum = 0,
                     EMA = [],
                     xData = [],
-                    yData = [],
-                    index = -1,
-                    SMA = 0,
-                    calEMA,
+                    yData = [];
+                var calEMA,
                     EMAPoint,
-                    i;
+                    i,
+                    index = -1,
+                    sum = 0,
+                    SMA = 0;
                 // Check period, if bigger than points length, skip
                 if (yValLen < period) {
                     return;
@@ -2286,8 +2285,8 @@
          * @private
          */
         function meanDeviation(arr, sma) {
-            var len = arr.length,
-                sum = 0,
+            var len = arr.length;
+            var sum = 0,
                 i;
             for (i = 0; i < len; i++) {
                 sum += Math.abs(sma - (arr[i]));
@@ -2339,14 +2338,14 @@
                     yVal = series.yData,
                     yValLen = yVal ? yVal.length : 0,
                     TP = [],
-                    periodTP = [],
-                    range = 1,
                     CCI = [],
                     xData = [],
-                    yData = [],
-                    CCIPoint,
+                    yData = [];
+                var CCIPoint,
                     p,
+                    periodTP = [],
                     len,
+                    range = 1,
                     smaTP,
                     TPtemp,
                     meanDev,
@@ -3118,14 +3117,14 @@
                     // 0- date, 1- Detrended Price Oscillator
                     DPO = [],
                     xData = [],
-                    yData = [],
-                    sum = 0,
-                    oscillator,
+                    yData = [];
+                var oscillator,
                     periodIndex,
                     rangeIndex,
                     price,
                     i,
-                    j;
+                    j,
+                    sum = 0;
                 if (xVal.length <= range) {
                     return;
                 }
@@ -3688,20 +3687,19 @@
              *
              * */
             DEMAIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, index, i, xVal) {
-                return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+                return _super.prototype.calculateEma.call(this, xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
             };
             DEMAIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
+                    EMAvalues = [],
                     doubledPeriod = 2 * period,
                     xVal = series.xData,
                     yVal = series.yData,
                     yValLen = yVal ? yVal.length : 0,
-                    index = -1,
-                    accumulatePeriodPoints = 0,
-                    SMA = 0,
                     DEMA = [],
                     xDataDema = [],
-                    yDataDema = [],
+                    yDataDema = [];
+                var accumulatePeriodPoints = 0,
                     EMA = 0, 
                     // EMA(EMA)
                     EMAlevel2, 
@@ -3709,9 +3707,10 @@
                     prevEMA,
                     prevEMAlevel2, 
                     // EMA values array
-                    EMAvalues = [],
                     i,
-                    DEMAPoint;
+                    index = -1,
+                    DEMAPoint,
+                    SMA = 0;
                 this.EMApercent = (2 / (period + 1));
                 // Check period, if bigger than EMA points length, skip
                 if (yValLen < 2 * period - 1) {
@@ -3723,7 +3722,7 @@
                 }
                 // Accumulate first N-points
                 accumulatePeriodPoints =
-                    EMAIndicator.prototype.accumulatePeriodPoints(period, index, yVal);
+                    _super.prototype.accumulatePeriodPoints.call(this, period, index, yVal);
                 // first point
                 SMA = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
@@ -4391,23 +4390,34 @@
          *  Functions
          *
          * */
-        // Utils:
+        /**
+         * @private
+         */
         function maxHigh(arr) {
             return arr.reduce(function (max, res) {
                 return Math.max(max, res[1]);
             }, -Infinity);
         }
+        /**
+         * @private
+         */
         function minLow(arr) {
             return arr.reduce(function (min, res) {
                 return Math.min(min, res[2]);
             }, Infinity);
         }
+        /**
+         * @private
+         */
         function highlowLevel(arr) {
             return {
                 high: maxHigh(arr),
                 low: minLow(arr)
             };
         }
+        /**
+         * @private
+         */
         function getClosestPointRange(axis) {
             var closestDataRange,
                 loopLength,
@@ -4429,8 +4439,11 @@
             });
             return closestDataRange;
         }
-        // Check two lines intersection (line a1-a2 and b1-b2)
-        // Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+        /**
+         * Check two lines intersection (line a1-a2 and b1-b2)
+         * Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+         * @private
+         */
         function checkLineIntersection(a1, a2, b1, b2) {
             if (a1 && a2 && b1 && b2) {
                 var saX = a2.plotX - a1.plotX, // Auxiliary section a2-a1 X
@@ -4440,10 +4453,8 @@
                     sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
                     sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
                     // First degree Bézier parameters
-                    u = void 0,
-                    t = void 0;
-                u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY);
-                t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
+                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY),
+                    t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
                 if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
                     return {
                         plotX: a1.plotX + t * saX,
@@ -4451,10 +4462,12 @@
                     };
                 }
             }
-            return false;
         }
-        // Parameter opt (indicator options object) include indicator, points,
-        // nextPoints, color, options, gappedExtend and graph properties
+        /**
+         * Parameter opt (indicator options object) include indicator, points,
+         * nextPoints, color, options, gappedExtend and graph properties
+         * @private
+         */
         function drawSenkouSpan(opt) {
             var indicator = opt.indicator;
             indicator.points = opt.points;
@@ -4465,13 +4478,15 @@
             indicator.fillGraph = true;
             SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
         }
-        // Data integrity in Ichimoku is different than default 'averages':
-        // Point: [undefined, value, value, ...] is correct
-        // Point: [undefined, undefined, undefined, ...] is incorrect
-        // @todo compose
-        ApproximationRegistry['ichimoku-averages'] = function () {
-            var ret = [],
-                isEmptyRange;
+        /**
+         * Data integrity in Ichimoku is different than default 'averages':
+         * Point: [undefined, value, value, ...] is correct
+         * Point: [undefined, undefined, undefined, ...] is incorrect
+         * @private
+         */
+        function ichimokuAverages() {
+            var ret = [];
+            var isEmptyRange;
             [].forEach.call(arguments, function (arr, i) {
                 ret.push(ApproximationRegistry.average(arr));
                 isEmptyRange = !isEmptyRange && typeof ret[i] === 'undefined';
@@ -4479,7 +4494,7 @@
             // Return undefined when first elem. is undefined and let
             // sum method handle null (#7377)
             return isEmptyRange ? void 0 : ret;
-        };
+        }
         /* *
          *
          *  Class
@@ -4509,13 +4524,10 @@
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                _this.graphCollection = void 0;
-                _this.graphsenkouSpan = void 0;
-                _this.ikhMap = void 0;
-                _this.nextPoints = void 0;
+                _this.data = [];
+                _this.options = {};
+                _this.points = [];
+                _this.graphCollection = [];
                 return _this;
             }
             /* *
@@ -4524,7 +4536,7 @@
              *
              * */
             IKHIndicator.prototype.init = function () {
-                SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
+                _super.prototype.init.apply(this, arguments);
                 // Set default color for lines:
                 this.options = merge({
                     tenkanLine: {
@@ -4573,8 +4585,10 @@
             IKHIndicator.prototype.translate = function () {
                 var indicator = this;
                 SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
-                indicator.points.forEach(function (point) {
-                    indicator.pointArrayMap.forEach(function (key) {
+                for (var _i = 0, _a = indicator.points; _i < _a.length; _i++) {
+                    var point = _a[_i];
+                    for (var _b = 0, _c = indicator.pointArrayMap; _b < _c.length; _b++) {
+                        var key = _c[_b];
                         var pointValue = point[key];
                         if (isNumber(pointValue)) {
                             point['plot' + key] = indicator.yAxis.toPixels(pointValue, true);
@@ -4587,13 +4601,12 @@
                             ];
                             point.isNull = false;
                         }
-                    });
-                });
+                    }
+                }
             };
             IKHIndicator.prototype.drawGraph = function () {
                 var indicator = this,
                     mainLinePoints = indicator.points,
-                    pointsLength = mainLinePoints.length,
                     mainLineOptions = indicator.options,
                     mainLinePath = indicator.graph,
                     mainColor = indicator.color,
@@ -4635,7 +4648,8 @@
                     nextPoints = [
                         [],
                         [] // NextPoints negative color
-                    ],
+                    ];
+                var pointsLength = mainLinePoints.length,
                     lineIndex = 0,
                     position,
                     point,
@@ -4670,14 +4684,14 @@
                             intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1],
                             ikhMap.senkouSpanA[index],
                             ikhMap.senkouSpanB[index - 1],
-                            ikhMap.senkouSpanB[index]),
-                            intersectPointObj = {
-                                plotX: intersect.plotX,
-                                plotY: intersect.plotY,
-                                isNull: false,
-                                intersectPoint: true
-                            };
+                            ikhMap.senkouSpanB[index]);
                         if (intersect) {
+                            var intersectPointObj = {
+                                    plotX: intersect.plotX,
+                                    plotY: intersect.plotY,
+                                    isNull: false,
+                                    intersectPoint: true
+                                };
                             // Add intersect point to ichimoku points collection
                             // Create senkouSpan sections
                             ikhMap.senkouSpanA.splice(index, 0, intersectPointObj);
@@ -4706,10 +4720,11 @@
                 // If graphCollection exist then remove svg
                 // element and indicator property
                 if (indicator.graphCollection) {
-                    indicator.graphCollection.forEach(function (graphName) {
+                    for (var _i = 0, _a = indicator.graphCollection; _i < _a.length; _i++) {
+                        var graphName = _a[_i];
                         indicator[graphName].destroy();
                         delete indicator[graphName];
-                    });
+                    }
                 }
                 // Clean graphCollection or initialize it
                 indicator.graphCollection = [];
@@ -4799,8 +4814,8 @@
                 indicator.color = mainColor;
             };
             IKHIndicator.prototype.getGraphPath = function (points) {
-                var indicator = this,
-                    path = [],
+                var indicator = this;
+                var path = [],
                     spanA,
                     spanAarr = [];
                 points = points || this.points;
@@ -4835,9 +4850,8 @@
                     yValLen = (yVal && yVal.length) || 0,
                     closestPointRange = getClosestPointRange(xAxis),
                     IKH = [],
-                    xData = [],
-                    dateStart,
-                    date,
+                    xData = [];
+                var date,
                     slicedTSY,
                     slicedKSY,
                     slicedSSBY,
@@ -4857,7 +4871,7 @@
                     return;
                 }
                 // Add timestamps at the beginning
-                dateStart = xVal[0] - period * closestPointRange;
+                var dateStart = xVal[0] - period * closestPointRange;
                 for (i = 0; i < period; i++) {
                     xData.push(dateStart + i * closestPointRange);
                 }
@@ -5102,6 +5116,12 @@
             pointValKey: 'tenkanSen',
             nameComponents: ['periodSenkouSpanB', 'period', 'periodTenkan']
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
+        ApproximationRegistry['ichimoku-averages'] = ichimokuAverages;
         SeriesRegistry.registerSeriesType('ikh', IKHIndicator);
         /* *
          *

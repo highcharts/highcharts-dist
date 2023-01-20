@@ -508,7 +508,7 @@ var Toolbar = /** @class */ (function () {
     Toolbar.prototype.getIconsURL = function () {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/10.3.2/gfx/stock-icons/';
+            'https://code.highcharts.com/10.3.3/gfx/stock-icons/';
     };
     return Toolbar;
 }());

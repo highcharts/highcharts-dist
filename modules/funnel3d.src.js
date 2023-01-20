@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Highcharts funnel module
  *
@@ -937,7 +937,7 @@
          *         Funnel3d demo
          *
          * @since     7.1.0
-         * @extends   series.funnel,plotOptions.funnel3d
+         * @extends   series,plotOptions.funnel3d
          * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
          * @product   highcharts
          * @requires  highcharts-3d

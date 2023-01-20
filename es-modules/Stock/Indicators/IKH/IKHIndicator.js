@@ -33,23 +33,34 @@ var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.is
  *  Functions
  *
  * */
-// Utils:
+/**
+ * @private
+ */
 function maxHigh(arr) {
     return arr.reduce(function (max, res) {
         return Math.max(max, res[1]);
     }, -Infinity);
 }
+/**
+ * @private
+ */
 function minLow(arr) {
     return arr.reduce(function (min, res) {
         return Math.min(min, res[2]);
     }, Infinity);
 }
+/**
+ * @private
+ */
 function highlowLevel(arr) {
     return {
         high: maxHigh(arr),
         low: minLow(arr)
     };
 }
+/**
+ * @private
+ */
 function getClosestPointRange(axis) {
     var closestDataRange, loopLength, distance, xData, i;
     axis.series.forEach(function (series) {
@@ -67,8 +78,11 @@ function getClosestPointRange(axis) {
     });
     return closestDataRange;
 }
-// Check two lines intersection (line a1-a2 and b1-b2)
-// Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+/**
+ * Check two lines intersection (line a1-a2 and b1-b2)
+ * Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+ * @private
+ */
 function checkLineIntersection(a1, a2, b1, b2) {
     if (a1 && a2 && b1 && b2) {
         var saX = a2.plotX - a1.plotX, // Auxiliary section a2-a1 X
@@ -78,9 +92,7 @@ function checkLineIntersection(a1, a2, b1, b2) {
         sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
         sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
         // First degree Bézier parameters
-        u = void 0, t = void 0;
-        u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY);
-        t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
+        u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY), t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
         if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
             return {
                 plotX: a1.plotX + t * saX,
@@ -88,10 +100,12 @@ function checkLineIntersection(a1, a2, b1, b2) {
             };
         }
     }
-    return false;
 }
-// Parameter opt (indicator options object) include indicator, points,
-// nextPoints, color, options, gappedExtend and graph properties
+/**
+ * Parameter opt (indicator options object) include indicator, points,
+ * nextPoints, color, options, gappedExtend and graph properties
+ * @private
+ */
 function drawSenkouSpan(opt) {
     var indicator = opt.indicator;
     indicator.points = opt.points;
@@ -102,12 +116,15 @@ function drawSenkouSpan(opt) {
     indicator.fillGraph = true;
     SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
 }
-// Data integrity in Ichimoku is different than default 'averages':
-// Point: [undefined, value, value, ...] is correct
-// Point: [undefined, undefined, undefined, ...] is incorrect
-// @todo compose
-ApproximationRegistry['ichimoku-averages'] = function () {
-    var ret = [], isEmptyRange;
+/**
+ * Data integrity in Ichimoku is different than default 'averages':
+ * Point: [undefined, value, value, ...] is correct
+ * Point: [undefined, undefined, undefined, ...] is incorrect
+ * @private
+ */
+function ichimokuAverages() {
+    var ret = [];
+    var isEmptyRange;
     [].forEach.call(arguments, function (arr, i) {
         ret.push(ApproximationRegistry.average(arr));
         isEmptyRange = !isEmptyRange && typeof ret[i] === 'undefined';
@@ -115,7 +132,7 @@ ApproximationRegistry['ichimoku-averages'] = function () {
     // Return undefined when first elem. is undefined and let
     // sum method handle null (#7377)
     return isEmptyRange ? void 0 : ret;
-};
+}
 /* *
  *
  *  Class
@@ -144,13 +161,10 @@ var IKHIndicator = /** @class */ (function (_super) {
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.graphCollection = void 0;
-        _this.graphsenkouSpan = void 0;
-        _this.ikhMap = void 0;
-        _this.nextPoints = void 0;
+        _this.data = [];
+        _this.options = {};
+        _this.points = [];
+        _this.graphCollection = [];
         return _this;
     }
     /* *
@@ -159,7 +173,7 @@ var IKHIndicator = /** @class */ (function (_super) {
      *
      * */
     IKHIndicator.prototype.init = function () {
-        SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
+        _super.prototype.init.apply(this, arguments);
         // Set default color for lines:
         this.options = merge({
             tenkanLine: {
@@ -208,8 +222,10 @@ var IKHIndicator = /** @class */ (function (_super) {
     IKHIndicator.prototype.translate = function () {
         var indicator = this;
         SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
-        indicator.points.forEach(function (point) {
-            indicator.pointArrayMap.forEach(function (key) {
+        for (var _i = 0, _a = indicator.points; _i < _a.length; _i++) {
+            var point = _a[_i];
+            for (var _b = 0, _c = indicator.pointArrayMap; _b < _c.length; _b++) {
+                var key = _c[_b];
                 var pointValue = point[key];
                 if (isNumber(pointValue)) {
                     point['plot' + key] = indicator.yAxis.toPixels(pointValue, true);
@@ -222,11 +238,11 @@ var IKHIndicator = /** @class */ (function (_super) {
                     ];
                     point.isNull = false;
                 }
-            });
-        });
+            }
+        }
     };
     IKHIndicator.prototype.drawGraph = function () {
-        var indicator = this, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, mainLinePath = indicator.graph, mainColor = indicator.color, gappedExtend = {
+        var indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, mainColor = indicator.color, gappedExtend = {
             options: {
                 gapSize: mainLineOptions.gapSize
             }
@@ -257,7 +273,8 @@ var IKHIndicator = /** @class */ (function (_super) {
         nextPoints = [
             [],
             [] // NextPoints negative color
-        ], lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
+        ];
+        var pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
         indicator.ikhMap = ikhMap;
         // Generate points for all lines and spans lines:
         while (pointsLength--) {
@@ -274,13 +291,14 @@ var IKHIndicator = /** @class */ (function (_super) {
             }
             if (negativeColor && pointsLength !== mainLinePoints.length - 1) {
                 // Check if lines intersect
-                var index = ikhMap.senkouSpanB.length - 1, intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1], ikhMap.senkouSpanA[index], ikhMap.senkouSpanB[index - 1], ikhMap.senkouSpanB[index]), intersectPointObj = {
-                    plotX: intersect.plotX,
-                    plotY: intersect.plotY,
-                    isNull: false,
-                    intersectPoint: true
-                };
+                var index = ikhMap.senkouSpanB.length - 1, intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1], ikhMap.senkouSpanA[index], ikhMap.senkouSpanB[index - 1], ikhMap.senkouSpanB[index]);
                 if (intersect) {
+                    var intersectPointObj = {
+                        plotX: intersect.plotX,
+                        plotY: intersect.plotY,
+                        isNull: false,
+                        intersectPoint: true
+                    };
                     // Add intersect point to ichimoku points collection
                     // Create senkouSpan sections
                     ikhMap.senkouSpanA.splice(index, 0, intersectPointObj);
@@ -309,10 +327,11 @@ var IKHIndicator = /** @class */ (function (_super) {
         // If graphCollection exist then remove svg
         // element and indicator property
         if (indicator.graphCollection) {
-            indicator.graphCollection.forEach(function (graphName) {
+            for (var _i = 0, _a = indicator.graphCollection; _i < _a.length; _i++) {
+                var graphName = _a[_i];
                 indicator[graphName].destroy();
                 delete indicator[graphName];
-            });
+            }
         }
         // Clean graphCollection or initialize it
         indicator.graphCollection = [];
@@ -402,7 +421,8 @@ var IKHIndicator = /** @class */ (function (_super) {
         indicator.color = mainColor;
     };
     IKHIndicator.prototype.getGraphPath = function (points) {
-        var indicator = this, path = [], spanA, spanAarr = [];
+        var indicator = this;
+        var path = [], spanA, spanAarr = [];
         points = points || this.points;
         // Render Senkou Span
         if (indicator.fillGraph && indicator.nextPoints) {
@@ -426,7 +446,8 @@ var IKHIndicator = /** @class */ (function (_super) {
         return path;
     };
     IKHIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestPointRange(xAxis), IKH = [], xData = [], dateStart, date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
+        var period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestPointRange(xAxis), IKH = [], xData = [];
+        var date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
         // Ikh requires close value
         if (xVal.length <= period ||
             !isArray(yVal[0]) ||
@@ -434,7 +455,7 @@ var IKHIndicator = /** @class */ (function (_super) {
             return;
         }
         // Add timestamps at the beginning
-        dateStart = xVal[0] - period * closestPointRange;
+        var dateStart = xVal[0] - period * closestPointRange;
         for (i = 0; i < period; i++) {
             xData.push(dateStart + i * closestPointRange);
         }
@@ -679,6 +700,12 @@ extend(IKHIndicator.prototype, {
     pointValKey: 'tenkanSen',
     nameComponents: ['periodSenkouSpanB', 'period', 'periodTenkan']
 });
+/* *
+ *
+ *  Registry
+ *
+ * */
+ApproximationRegistry['ichimoku-averages'] = ichimokuAverages;
 SeriesRegistry.registerSeriesType('ikh', IKHIndicator);
 /* *
  *

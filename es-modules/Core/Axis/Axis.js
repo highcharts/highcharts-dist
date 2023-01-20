@@ -431,10 +431,7 @@ var Axis = /** @class */ (function () {
             // Reset properties in case we're redrawing (#3353)
             axis.dataMin = axis.dataMax = axis.threshold = null;
             axis.softThreshold = !axis.isXAxis;
-            if (axis.stacking) {
-                axis.stacking.buildStacks();
-            }
-            // loop through this axis' series
+            // Loop through this axis' series
             axis.series.forEach(function (series) {
                 if (series.visible ||
                     !chart.options.chart.ignoreHiddenSeries) {
@@ -623,7 +620,7 @@ var Axis = /** @class */ (function () {
          * @private
          */
         function between(x, a, b) {
-            if (force !== 'pass' && x < a || x > b) {
+            if (force !== 'pass' && (x < a || x > b)) {
                 if (force) {
                     x = clamp(x, a, b);
                 }
@@ -1738,6 +1735,7 @@ var Axis = /** @class */ (function () {
             axis.alignToOthers()) {
             if (axis.stacking) {
                 axis.stacking.resetStacks();
+                axis.stacking.buildStacks();
             }
             axis.forceRedraw = false;
             // get data extremes if needed

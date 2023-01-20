@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Highcharts Drilldown module
  *
@@ -2170,6 +2170,7 @@
                 else if (label && label.drillable && label.removeOnDrillableClick) {
                     if (!styledMode) {
                         label.styles = {}; // reset for full overwrite of styles
+                        label.element.removeAttribute('style'); // #17933
                         label.css(label.basicStyles);
                     }
                     label.removeOnDrillableClick(); // #3806

@@ -304,12 +304,15 @@ var AST = /** @class */ (function () {
      * potentially harmful content from the chart configuration before adding to
      * the DOM.
      *
+     * @see [Source code with default values](
+     * https://github.com/highcharts/highcharts/blob/master/ts/Core/Renderer/HTML/AST.ts#:~:text=public%20static%20allowedAttributes)
+     *
      * @example
      * // Allow a custom, trusted attribute
      * Highcharts.AST.allowedAttributes.push('data-value');
      *
      * @name Highcharts.AST.allowedAttributes
-     * @static
+     * @type {Array<string>}
      */
     AST.allowedAttributes = [
         'aria-controls',
@@ -389,12 +392,15 @@ var AST = /** @class */ (function () {
      * `src`. Attribute values will only be allowed if they start with one of
      * these strings.
      *
+     * @see [Source code with default values](
+     * https://github.com/highcharts/highcharts/blob/master/ts/Core/Renderer/HTML/AST.ts#:~:text=public%20static%20allowedReferences)
+     *
      * @example
      * // Allow tel:
      * Highcharts.AST.allowedReferences.push('tel:');
      *
-     * @name Highcharts.AST.allowedReferences
-     * @static
+     * @name    Highcharts.AST.allowedReferences
+     * @type    {Array<string>}
      */
     AST.allowedReferences = [
         'https://',
@@ -409,12 +415,15 @@ var AST = /** @class */ (function () {
      * The list of allowed SVG or HTML tags, used for sanitizing potentially
      * harmful content from the chart configuration before adding to the DOM.
      *
+     * @see [Source code with default values](
+     * https://github.com/highcharts/highcharts/blob/master/ts/Core/Renderer/HTML/AST.ts#:~:text=public%20static%20allowedTags)
+     *
      * @example
      * // Allow a custom, trusted tag
      * Highcharts.AST.allowedTags.push('blink'); // ;)
      *
-     * @name Highcharts.AST.allowedTags
-     * @static
+     * @name    Highcharts.AST.allowedTags
+     * @type    {Array<string>}
      */
     AST.allowedTags = [
         'a',

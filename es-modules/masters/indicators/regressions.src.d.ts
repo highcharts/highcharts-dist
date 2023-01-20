@@ -1,4 +1,3 @@
-import '../../Stock/Indicators/LinearRegression/LinearRegressionIndicator.js';
-import '../../Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js';
-import '../../Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js';
-import '../../Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js';
+import factory from '../../../indicators/regressions.src';
+export * from '../../../indicators/regressions.src';
+export default factory;

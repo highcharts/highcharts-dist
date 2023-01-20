@@ -1,4 +1,3 @@
-import './broken-axis.src.js';
-import './datagrouping.src.js';
-import '../../Series/HLC/HLCSeries.js';
-import '../../Series/Candlestick/CandlestickSeries.js';
+import factory from '../../../modules/stock.src';
+export * from '../../../modules/stock.src';
+export default factory;

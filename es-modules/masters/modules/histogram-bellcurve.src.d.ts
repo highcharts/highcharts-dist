@@ -1,2 +1,3 @@
-import '../../Series/Histogram/HistogramSeries.js';
-import '../../Series/Bellcurve/BellcurveSeries.js';
+import factory from '../../../modules/histogram-bellcurve.src';
+export * from '../../../modules/histogram-bellcurve.src';
+export default factory;

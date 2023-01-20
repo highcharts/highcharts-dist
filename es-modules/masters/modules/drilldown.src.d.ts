@@ -1,2 +1,3 @@
-import '../../Extensions/Drilldown.js';
-import '../../Extensions/Breadcrumbs.js';
+import factory from '../../../modules/drilldown.src';
+export * from '../../../modules/drilldown.src';
+export default factory;

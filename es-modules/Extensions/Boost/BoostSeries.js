@@ -71,11 +71,6 @@ function boostEnabled(chart) {
  * @private
  */
 function compose(SeriesClass, seriesTypes, wglMode) {
-    var PointClass = SeriesClass.prototype.pointClass;
-    if (composedClasses.indexOf(PointClass) === -1) {
-        composedClasses.push(PointClass);
-        wrap(PointClass.prototype, 'haloPath', wrapPointHaloPath);
-    }
     if (composedClasses.indexOf(SeriesClass) === -1) {
         composedClasses.push(SeriesClass);
         addEvent(SeriesClass, 'destroy', onSeriesDestroy);
@@ -85,7 +80,6 @@ function compose(SeriesClass, seriesTypes, wglMode) {
             seriesProto_1.renderCanvas = seriesRenderCanvas;
         }
         wrap(seriesProto_1, 'getExtremes', wrapSeriesGetExtremes);
-        wrap(seriesProto_1, 'markerAttribs', wrapSeriesMarkerAttribs);
         wrap(seriesProto_1, 'processData', wrapSeriesProcessData);
         wrap(seriesProto_1, 'searchPoint', wrapSeriesSearchPoint);
         [
@@ -728,24 +722,6 @@ function seriesRenderCanvas() {
     }
 }
 /**
- * For inverted series, we need to swap X-Y values before running base
- * methods.
- * @private
- */
-function wrapPointHaloPath(proceed) {
-    var point = this, series = point.series, chart = series.chart, plotX = point.plotX || 0, plotY = point.plotY || 0, inverted = chart.inverted;
-    if (series.boosted && inverted) {
-        point.plotX = series.yAxis.len - plotY;
-        point.plotY = series.xAxis.len - plotX;
-    }
-    var halo = proceed.apply(this, [].slice.call(arguments, 1));
-    if (series.boosted && inverted) {
-        point.plotX = plotX;
-        point.plotY = plotY;
-    }
-    return halo;
-}
-/**
  * Used for treemap|heatmap.drawPoints
  * @private
  */
@@ -823,22 +799,6 @@ function wrapSeriesGetExtremes(proceed) {
         return {};
     }
     return proceed.apply(this, [].slice.call(arguments, 1));
-}
-/**
- * @private
- */
-function wrapSeriesMarkerAttribs(proceed, point) {
-    var series = this, chart = series.chart, plotX = point.plotX || 0, plotY = point.plotY || 0, inverted = chart.inverted;
-    if (series.boosted && inverted) {
-        point.plotX = series.yAxis.len - plotY;
-        point.plotY = series.xAxis.len - plotX;
-    }
-    var attribs = proceed.apply(this, [].slice.call(arguments, 1));
-    if (series.boosted && inverted) {
-        point.plotX = plotX;
-        point.plotY = plotY;
-    }
-    return attribs;
 }
 /**
  * If the series is a heatmap or treemap, or if the series is not boosting

@@ -1,2 +1,3 @@
-import '../../Stock/Indicators/SMA/SMAIndicator.js';
-import '../../Stock/Indicators/EMA/EMAIndicator.js';
+import factory from '../../../indicators/indicators.src';
+export * from '../../../indicators/indicators.src';
+export default factory;

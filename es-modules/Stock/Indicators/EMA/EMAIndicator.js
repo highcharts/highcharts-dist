@@ -75,14 +75,14 @@ var EMAIndicator = /** @class */ (function (_super) {
     EMAIndicator.prototype.calculateEma = function (xVal, yVal, i, EMApercent, calEMA, index, SMA) {
         var x = xVal[i - 1], yValue = index < 0 ?
             yVal[i - 1] :
-            yVal[i - 1][index], y;
-        y = typeof calEMA === 'undefined' ?
+            yVal[i - 1][index], y = typeof calEMA === 'undefined' ?
             SMA : correctFloat((yValue * EMApercent) +
             (calEMA * (1 - EMApercent)));
         return [x, y];
     };
     EMAIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), sum = 0, EMA = [], xData = [], yData = [], index = -1, SMA = 0, calEMA, EMAPoint, i;
+        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
+        var calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
         // Check period, if bigger than points length, skip
         if (yValLen < period) {
             return;

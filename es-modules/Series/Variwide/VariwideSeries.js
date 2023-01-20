@@ -190,7 +190,7 @@ var VariwideSeries = /** @class */ (function (_super) {
             if (stack) {
                 pointStack = stack[xValue];
                 if (pointStack && !point.isNull) {
-                    pointStack.setOffset(-(pointWidth / 2) || 0, pointWidth || 0, void 0, void 0, point.plotX);
+                    pointStack.setOffset(series.chart.plotLeft - ((pointWidth / 2) || 0), pointWidth || 0, void 0, void 0, point.plotX, series.xAxis);
                 }
             }
         }

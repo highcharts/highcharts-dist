@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.2 (2022-11-28)
+ * @license Highcharts JS v10.3.3 (2023-01-20)
  *
  * Client side exporting module
  *
@@ -166,7 +166,7 @@
          *
          * */
         var OfflineExportingDefaults = {
-                libURL: 'https://code.highcharts.com/10.3.2/lib/',
+                libURL: 'https://code.highcharts.com/10.3.3/lib/',
                 // When offline-exporting is loaded, redefine the menu item definitions
                 // related to download.
                 menuItemDefinitions: {

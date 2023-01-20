@@ -177,7 +177,7 @@ var WaterfallSeries = /** @class */ (function (_super) {
                     if (dummyStackItem) {
                         dummyStackItem.x = i;
                         dummyStackItem.label = actualStack[i].label;
-                        dummyStackItem.setOffset(series.pointXOffset || 0, series.barW || 0, series.stackedYNeg[i], series.stackedYPos[i]);
+                        dummyStackItem.setOffset(series.pointXOffset || 0, series.barW || 0, series.stackedYNeg[i], series.stackedYPos[i], void 0, this.xAxis);
                     }
                 }
             }

@@ -277,7 +277,7 @@ var Chart = /** @class */ (function () {
              */
             this.numberFormatter = optionsChart.numberFormatter || numberFormat;
             /**
-             * Whether the chart is in styled mode, meaning all presentatinoal
+             * Whether the chart is in styled mode, meaning all presentational
              * attributes are avoided.
              *
              * @name Highcharts.Chart#styledMode

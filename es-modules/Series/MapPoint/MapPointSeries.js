@@ -28,8 +28,9 @@ var noop = H.noop;
 import MapPointPoint from './MapPointPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, MapSeries = _a.map, ScatterSeries = _a.scatter;
+import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge;
+var extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
 import '../../Core/Defaults.js';
 import '../Scatter/ScatterSeries.js';
 /* *
@@ -166,6 +167,10 @@ var MapPointSeries = /** @class */ (function (_super) {
      *
      * @sample maps/demo/mapline-mappoint/
      *         Map-line and map-point series.
+     * @sample maps/demo/mappoint-mapmarker
+     *         Using the mapmarker symbol for points
+     * @sample maps/demo/mappoint-datalabels-mapmarker
+     *         Using the mapmarker shape for data labels
      *
      * @extends      plotOptions.scatter
      * @product      highmaps
@@ -188,6 +193,45 @@ var MapPointSeries = /** @class */ (function (_super) {
     });
     return MapPointSeries;
 }(ScatterSeries));
+/* *
+ *
+ * Extra
+ *
+ * */
+/* *
+ * The mapmarker symbol
+ */
+var mapmarker = function (x, y, w, h, options) {
+    var isLegendSymbol = options && options.context === 'legend';
+    var anchorX, anchorY;
+    if (isLegendSymbol) {
+        anchorX = x + w / 2;
+        anchorY = y + h;
+        // Put the pin in the anchor position (dataLabel.shape)
+    }
+    else if (options &&
+        typeof options.anchorX === 'number' &&
+        typeof options.anchorY === 'number') {
+        anchorX = options.anchorX;
+        anchorY = options.anchorY;
+        // Put the pin in the center and shift upwards (point.marker.symbol)
+    }
+    else {
+        anchorX = x + w / 2;
+        anchorY = y + h / 2;
+        y -= h;
+    }
+    var r = isLegendSymbol ? h / 3 : h / 2;
+    return [
+        ['M', anchorX, anchorY],
+        ['C', anchorX, anchorY, anchorX - r, y + r * 1.5, anchorX - r, y + r],
+        // A rx ry x-axis-rotation large-arc-flag sweep-flag x y
+        ['A', r, r, 1, 1, 1, anchorX + r, y + r],
+        ['C', anchorX + r, y + r * 1.5, anchorX, anchorY, anchorX, anchorY],
+        ['Z']
+    ];
+};
+SVGRenderer.prototype.symbols.mapmarker = mapmarker;
 extend(MapPointSeries.prototype, {
     type: 'mappoint',
     axisTypes: ['colorAxis'],

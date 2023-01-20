@@ -1,1 +1,3 @@
-import '../../Stock/Indicators/CMO/CMOIndicator.js';
+import factory from '../../../indicators/cmo.src';
+export * from '../../../indicators/cmo.src';
+export default factory;

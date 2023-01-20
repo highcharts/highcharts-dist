@@ -24,7 +24,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var CandlestickPoint = SeriesRegistry.seriesTypes.candlestick.prototype.pointClass;
+var _a = SeriesRegistry.seriesTypes, CandlestickPoint = _a.candlestick.prototype.pointClass, HLCPoint = _a.hlc.prototype.pointClass;
 /* *
  *
  *  Class
@@ -33,7 +33,10 @@ var CandlestickPoint = SeriesRegistry.seriesTypes.candlestick.prototype.pointCla
 var HeikinAshiPoint = /** @class */ (function (_super) {
     __extends(HeikinAshiPoint, _super);
     function HeikinAshiPoint() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        // clone inheritence
+        _this.resolveColor = HLCPoint.prototype.resolveColor;
+        return _this;
     }
     return HeikinAshiPoint;
 }(CandlestickPoint));

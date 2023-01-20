@@ -24,9 +24,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var pointProto = SeriesRegistry.series.prototype.pointClass.prototype, _a = SeriesRegistry.seriesTypes, areaProto = _a.area.prototype, DumbbellPoint = _a.dumbbell.prototype.pointClass;
+var Point = SeriesRegistry.series.prototype.pointClass, _a = SeriesRegistry.seriesTypes, ScatterPoint = _a.scatter.prototype.pointClass, DumbbellPoint = _a.dumbbell.prototype.pointClass;
 import U from '../../Core/Utilities.js';
-var isObject = U.isObject, extend = U.extend;
+var extend = U.extend;
 /* *
  *
  *  Class
@@ -43,26 +43,15 @@ var LollipopPoint = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.options = void 0;
         _this.series = void 0;
+        _this.plotX = void 0;
         return _this;
     }
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    LollipopPoint.prototype.init = function (_series, options, _x) {
-        if (isObject(options) && 'low' in options) {
-            options.y = options.low;
-            delete options.low;
-        }
-        return pointProto.init.apply(this, arguments);
-    };
     return LollipopPoint;
-}(DumbbellPoint));
+}(Point));
 extend(LollipopPoint.prototype, {
-    pointSetState: areaProto.pointClass.prototype.setState,
-    // Does not work with the inherited `isvalid`
-    isValid: pointProto.isValid
+    destroy: DumbbellPoint.prototype.destroy,
+    pointSetState: ScatterPoint.prototype.setState,
+    setState: DumbbellPoint.prototype.setState
 });
 /* *
  *
