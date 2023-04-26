@@ -13,7 +13,7 @@
 'use strict';
 import Chart from '../Core/Chart/Chart.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+const { addEvent, fireEvent, isArray, isNumber, objectEach, pick } = U;
 /**
  * Internal type
  * @private
@@ -23,7 +23,7 @@ var addEvent = U.addEvent, fireEvent = U.fireEvent, isArray = U.isArray, isNumbe
 // to be considered because they are usually accompanied by data labels that lie
 // inside the columns.
 addEvent(Chart, 'render', function collectAndHide() {
-    var chart = this, labels = [];
+    let chart = this, labels = [];
     // Consider external label collectors
     (this.labelCollectors || []).forEach(function (collector) {
         labels = labels.concat(collector());
@@ -42,30 +42,28 @@ addEvent(Chart, 'render', function collectAndHide() {
         }
     });
     (this.series || []).forEach(function (series) {
-        var dlOptions = series.options.dataLabels;
+        const dlOptions = series.options.dataLabels;
         if (series.visible &&
             !(dlOptions.enabled === false && !series._hasPointLabels)) { // #3866
-            var push = function (points) {
-                return points.forEach(function (point) {
-                    if (point.visible) {
-                        var dataLabels = (isArray(point.dataLabels) ?
-                            point.dataLabels :
-                            (point.dataLabel ? [point.dataLabel] : []));
-                        dataLabels.forEach(function (label) {
-                            var options = label.options;
-                            label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
-                            if (!options.allowOverlap) {
-                                labels.push(label);
-                            }
-                            else { // #13449
-                                label.oldOpacity = label.opacity;
-                                label.newOpacity = 1;
-                                hideOrShow(label, chart);
-                            }
-                        });
-                    }
-                });
-            };
+            const push = (points) => points.forEach((point) => {
+                if (point.visible) {
+                    const dataLabels = (isArray(point.dataLabels) ?
+                        point.dataLabels :
+                        (point.dataLabel ? [point.dataLabel] : []));
+                    dataLabels.forEach(function (label) {
+                        const options = label.options;
+                        label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
+                        if (!options.allowOverlap) {
+                            labels.push(label);
+                        }
+                        else { // #13449
+                            label.oldOpacity = label.opacity;
+                            label.newOpacity = 1;
+                            hideOrShow(label, chart);
+                        }
+                    });
+                }
+            });
             push(series.nodes || []);
             push(series.points);
         }
@@ -83,7 +81,7 @@ addEvent(Chart, 'render', function collectAndHide() {
  * @requires modules/overlapping-datalabels
  */
 Chart.prototype.hideOverlappingLabels = function (labels) {
-    var chart = this, len = labels.length, ren = chart.renderer, label, i, j, label1, label2, box1, box2, isLabelAffected = false, isIntersectRect = function (box1, box2) {
+    let chart = this, len = labels.length, ren = chart.renderer, label, i, j, label1, label2, box1, box2, isLabelAffected = false, isIntersectRect = function (box1, box2) {
         return !(box2.x >= box1.x + box1.width ||
             box2.x + box2.width <= box1.x ||
             box2.y >= box1.y + box1.height ||
@@ -92,7 +90,7 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
     // Get the box with its position inside the chart, as opposed to getBBox
     // that only reports the position relative to the parent.
     getAbsoluteBox = function (label) {
-        var pos, parent, bBox, 
+        let pos, parent, bBox, 
         // Substract the padding if no background or border (#4333)
         padding = label.box ? 0 : (label.padding || 0), lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
         if (label &&
@@ -107,10 +105,9 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
                 bBox = label.getBBox();
                 label.width = bBox.width;
                 label.height = bBox.height;
-                // Labels positions are computed from top left corner, so
-                // we need to substract the text height from text nodes too.
-                lineHeightCorrection = ren
-                    .fontMetrics(null, label.element).h;
+                // Labels positions are computed from top left corner, so we
+                // need to substract the text height from text nodes too.
+                lineHeightCorrection = ren.fontMetrics(label.element).h;
             }
             boxWidth = label.width - 2 * padding;
             alignValue = {
@@ -194,7 +191,7 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
  * Whether label is affected
  */
 function hideOrShow(label, chart) {
-    var complete, newOpacity, isLabelAffected = false;
+    let complete, newOpacity, isLabelAffected = false;
     if (label) {
         newOpacity = label.newOpacity;
         if (label.oldOpacity !== newOpacity) {

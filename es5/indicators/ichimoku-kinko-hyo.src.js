@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,15 +46,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -62,7 +63,12 @@
         })();
         var color = Color.parse;
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach;
+        var defined = U.defined,
+            extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach;
         /* *
          *
          *  Functions
@@ -97,7 +103,11 @@
          * @private
          */
         function getClosestPointRange(axis) {
-            var closestDataRange, loopLength, distance, xData, i;
+            var closestDataRange,
+                loopLength,
+                distance,
+                xData,
+                i;
             axis.series.forEach(function (series) {
                 if (series.xData) {
                     xData = series.xData;
@@ -121,13 +131,14 @@
         function checkLineIntersection(a1, a2, b1, b2) {
             if (a1 && a2 && b1 && b2) {
                 var saX = a2.plotX - a1.plotX, // Auxiliary section a2-a1 X
-                saY = a2.plotY - a1.plotY, // Auxiliary section a2-a1 Y
-                sbX = b2.plotX - b1.plotX, // Auxiliary section b2-b1 X
-                sbY = b2.plotY - b1.plotY, // Auxiliary section b2-b1 Y
-                sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
-                sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
-                // First degree Bézier parameters
-                u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY), t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
+                    saY = a2.plotY - a1.plotY, // Auxiliary section a2-a1 Y
+                    sbX = b2.plotX - b1.plotX, // Auxiliary section b2-b1 X
+                    sbY = b2.plotY - b1.plotY, // Auxiliary section b2-b1 Y
+                    sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
+                    sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
+                    // First degree Bézier parameters
+                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY),
+                    t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
                 if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
                     return {
                         plotX: a1.plotX + t * saX,
@@ -183,14 +194,15 @@
          * @augments Highcharts.Series
          */
         var IKHIndicator = /** @class */ (function (_super) {
-            __extends(IKHIndicator, _super);
+                __extends(IKHIndicator, _super);
             function IKHIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -277,39 +289,65 @@
                 }
             };
             IKHIndicator.prototype.drawGraph = function () {
-                var indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, mainColor = indicator.color, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, pointArrayMapLength = indicator.pointArrayMap.length, allIchimokuPoints = [
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                    []
-                ], ikhMap = {
-                    tenkanLine: allIchimokuPoints[0],
-                    kijunLine: allIchimokuPoints[1],
-                    chikouLine: allIchimokuPoints[2],
-                    senkouSpanA: allIchimokuPoints[3],
-                    senkouSpanB: allIchimokuPoints[4],
-                    senkouSpan: allIchimokuPoints[5]
-                }, intersectIndexColl = [], senkouSpanOptions = indicator
-                    .options.senkouSpan, color = senkouSpanOptions.color ||
-                    senkouSpanOptions.styles.fill, negativeColor = senkouSpanOptions.negativeColor, 
-                // Points to create color and negativeColor senkouSpan
-                points = [
-                    [],
-                    [] // Points negative color
-                ], 
-                // For span, we need an access to the next points, used in
-                // getGraphPath()
-                nextPoints = [
-                    [],
-                    [] // NextPoints negative color
-                ];
-                var pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
+                var indicator = this,
+                    mainLinePoints = indicator.points,
+                    mainLineOptions = indicator.options,
+                    mainLinePath = indicator.graph,
+                    mainColor = indicator.color,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    },
+                    pointArrayMapLength = indicator.pointArrayMap.length,
+                    allIchimokuPoints = [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ],
+                    ikhMap = {
+                        tenkanLine: allIchimokuPoints[0],
+                        kijunLine: allIchimokuPoints[1],
+                        chikouLine: allIchimokuPoints[2],
+                        senkouSpanA: allIchimokuPoints[3],
+                        senkouSpanB: allIchimokuPoints[4],
+                        senkouSpan: allIchimokuPoints[5]
+                    },
+                    intersectIndexColl = [],
+                    senkouSpanOptions = indicator
+                        .options.senkouSpan,
+                    color = senkouSpanOptions.color ||
+                        senkouSpanOptions.styles.fill,
+                    negativeColor = senkouSpanOptions.negativeColor, 
+                    // Points to create color and negativeColor senkouSpan
+                    points = [
+                        [],
+                        [] // Points negative color
+                    ], 
+                    // For span, we need an access to the next points, used in
+                    // getGraphPath()
+                    nextPoints = [
+                        [],
+                        [] // NextPoints negative color
+                    ];
+                var pointsLength = mainLinePoints.length,
+                    lineIndex = 0,
+                    position,
+                    point,
+                    i,
+                    startIntersect,
+                    endIntersect,
+                    sectionPoints,
+                    sectionNextPoints,
+                    pointsPlotYSum,
+                    nextPointsPlotYSum,
+                    senkouSpanTempColor,
+                    concatArrIndex,
+                    j,
+                    k;
                 indicator.ikhMap = ikhMap;
                 // Generate points for all lines and spans lines:
                 while (pointsLength--) {
@@ -326,14 +364,18 @@
                     }
                     if (negativeColor && pointsLength !== mainLinePoints.length - 1) {
                         // Check if lines intersect
-                        var index = ikhMap.senkouSpanB.length - 1, intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1], ikhMap.senkouSpanA[index], ikhMap.senkouSpanB[index - 1], ikhMap.senkouSpanB[index]);
+                        var index = ikhMap.senkouSpanB.length - 1,
+                            intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1],
+                            ikhMap.senkouSpanA[index],
+                            ikhMap.senkouSpanB[index - 1],
+                            ikhMap.senkouSpanB[index]);
                         if (intersect) {
                             var intersectPointObj = {
-                                plotX: intersect.plotX,
-                                plotY: intersect.plotY,
-                                isNull: false,
-                                intersectPoint: true
-                            };
+                                    plotX: intersect.plotX,
+                                    plotY: intersect.plotY,
+                                    isNull: false,
+                                    intersectPoint: true
+                                };
                             // Add intersect point to ichimoku points collection
                             // Create senkouSpan sections
                             ikhMap.senkouSpanA.splice(index, 0, intersectPointObj);
@@ -457,7 +499,9 @@
             };
             IKHIndicator.prototype.getGraphPath = function (points) {
                 var indicator = this;
-                var path = [], spanA, spanAarr = [];
+                var path = [],
+                    spanA,
+                    spanAarr = [];
                 points = points || this.points;
                 // Render Senkou Span
                 if (indicator.fillGraph && indicator.nextPoints) {
@@ -481,8 +525,29 @@
                 return path;
             };
             IKHIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestPointRange(xAxis), IKH = [], xData = [];
-                var date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
+                var period = params.period,
+                    periodTenkan = params.periodTenkan,
+                    periodSenkouSpanB = params.periodSenkouSpanB,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    xAxis = series.xAxis,
+                    yValLen = (yVal && yVal.length) || 0,
+                    closestPointRange = getClosestPointRange(xAxis),
+                    IKH = [],
+                    xData = [];
+                var date,
+                    slicedTSY,
+                    slicedKSY,
+                    slicedSSBY,
+                    pointTS,
+                    pointKS,
+                    pointSSB,
+                    i,
+                    TS,
+                    KS,
+                    CS,
+                    SSA,
+                    SSB;
                 // Ikh requires close value
                 if (xVal.length <= period ||
                     !isArray(yVal[0]) ||

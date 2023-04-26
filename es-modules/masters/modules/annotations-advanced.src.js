@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -23,6 +23,6 @@ import '../../Extensions/Annotations/Types/FibonacciTimeZones.js';
 import '../../Extensions/Annotations/Types/Pitchfork.js';
 import '../../Extensions/Annotations/Types/VerticalLine.js';
 import '../../Extensions/Annotations/Types/Measure.js';
-var G = Highcharts;
+const G = Highcharts;
 G.Annotation = Annotation;
 Annotation.compose(G.Chart, G.Pointer, G.SVGRenderer);

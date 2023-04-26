@@ -13,8 +13,8 @@
 *  Class
 *
 * */
-var TreemapNode = /** @class */ (function () {
-    function TreemapNode() {
+class TreemapNode {
+    constructor() {
         /* *
         *
         *  Properties
@@ -28,7 +28,7 @@ var TreemapNode = /** @class */ (function () {
     *  Functions
     *
     * */
-    TreemapNode.prototype.init = function (id, i, children, height, level, series, parent) {
+    init(id, i, children, height, level, series, parent) {
         this.id = id;
         this.i = i;
         this.children = children;
@@ -37,9 +37,8 @@ var TreemapNode = /** @class */ (function () {
         this.series = series;
         this.parent = parent;
         return this;
-    };
-    return TreemapNode;
-}());
+    }
+}
 /* *
 *
 *  Default Export

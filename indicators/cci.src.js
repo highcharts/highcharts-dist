@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -44,25 +44,8 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray,
-            merge = U.merge;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { isArray, merge } = U;
         /* *
          *
          *  Functions
@@ -81,9 +64,8 @@
          * @private
          */
         function meanDeviation(arr, sma) {
-            var len = arr.length;
-            var sum = 0,
-                i;
+            const len = arr.length;
+            let sum = 0, i;
             for (i = 0; i < len; i++) {
                 sum += Math.abs(sma - (arr[i]));
             }
@@ -103,49 +85,31 @@
          *
          * @augments Highcharts.Series
          */
-        var CCIIndicator = /** @class */ (function (_super) {
-                __extends(CCIIndicator, _super);
-            function CCIIndicator() {
+        class CCIIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.points = void 0;
-                _this.options = void 0;
-                return _this;
+                this.data = void 0;
+                this.points = void 0;
+                this.options = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            CCIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    TP = [],
-                    CCI = [],
-                    xData = [],
-                    yData = [];
-                var CCIPoint,
-                    p,
-                    periodTP = [],
-                    len,
-                    range = 1,
-                    smaTP,
-                    TPtemp,
-                    meanDev,
-                    i;
+            getValues(series, params) {
+                const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
+                let CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
                 // CCI requires close value
                 if (xVal.length <= period ||
                     !isArray(yVal[0]) ||
@@ -175,31 +139,30 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
+        }
+        /**
+         * Commodity Channel Index (CCI). This series requires `linkedTo` option to
+         * be set.
+         *
+         * @sample stock/indicators/cci
+         *         CCI indicator
+         *
+         * @extends      plotOptions.sma
+         * @since        6.0.0
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/cci
+         * @optionparent plotOptions.cci
+         */
+        CCIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Commodity Channel Index (CCI). This series requires `linkedTo` option to
-             * be set.
-             *
-             * @sample stock/indicators/cci
-             *         CCI indicator
-             *
-             * @extends      plotOptions.sma
-             * @since        6.0.0
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/cci
-             * @optionparent plotOptions.cci
+             * @excluding index
              */
-            CCIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-                /**
-                 * @excluding index
-                 */
-                params: {
-                    index: void 0 // unused index, do not inherit (#15362)
-                }
-            });
-            return CCIIndicator;
-        }(SMAIndicator));
+            params: {
+                index: void 0 // unused index, do not inherit (#15362)
+            }
+        });
         SeriesRegistry.registerSeriesType('cci', CCIIndicator);
         /* *
          *

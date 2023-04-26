@@ -8,32 +8,17 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import GraphLayout from '../GraphLayoutComposition.js';
 import PackedBubbleIntegration from './PackedBubbleIntegration.js';
 import ReingoldFruchtermanLayout from '../Networkgraph/ReingoldFruchtermanLayout.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, pick = U.pick;
+const { addEvent, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -43,8 +28,8 @@ var composedClasses = [];
  * @private
  */
 function chartGetSelectedParentNodes() {
-    var allSeries = this.series, selectedParentsNodes = [];
-    allSeries.forEach(function (series) {
+    const allSeries = this.series, selectedParentsNodes = [];
+    allSeries.forEach((series) => {
         if (series.parentNode && series.parentNode.selected) {
             selectedParentsNodes.push(series.parentNode);
         }
@@ -66,61 +51,57 @@ function onChartBeforeRedraw() {
  *  Class
  *
  * */
-var PackedBubbleLayout = /** @class */ (function (_super) {
-    __extends(PackedBubbleLayout, _super);
-    function PackedBubbleLayout() {
+class PackedBubbleLayout extends ReingoldFruchtermanLayout {
+    constructor() {
         /* *
          *
          *  Static Functions
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.index = NaN;
-        _this.nodes = [];
-        _this.options = void 0;
-        _this.series = [];
-        return _this;
+        super(...arguments);
+        this.index = NaN;
+        this.nodes = [];
+        this.options = void 0;
+        this.series = [];
     }
-    PackedBubbleLayout.compose = function (ChartClass) {
+    static compose(ChartClass) {
         ReingoldFruchtermanLayout.compose(ChartClass);
         GraphLayout.integrations.packedbubble = PackedBubbleIntegration;
         GraphLayout.layouts.packedbubble = PackedBubbleLayout;
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
+        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
-            var chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype;
             chartProto.getSelectedParentNodes = chartGetSelectedParentNodes;
         }
-    };
+    }
     /* *
      *
      *  Functions
      *
      * */
-    PackedBubbleLayout.prototype.beforeStep = function () {
+    beforeStep() {
         if (this.options.marker) {
-            this.series.forEach(function (series) {
+            this.series.forEach((series) => {
                 if (series) {
                     series.calculateParentRadius();
                 }
             });
         }
-    };
+    }
     // #14439, new stable check.
-    PackedBubbleLayout.prototype.isStable = function () {
-        var tempDiff = Math.abs(this.prevSystemTemperature -
+    isStable() {
+        const tempDiff = Math.abs(this.prevSystemTemperature -
             this.systemTemperature);
-        var upScaledTemperature = 10 * this.systemTemperature /
+        const upScaledTemperature = 10 * this.systemTemperature /
             Math.sqrt(this.nodes.length);
         return Math.abs(upScaledTemperature) < 1 &&
             tempDiff < 0.00001 ||
             this.temperature <= 0;
-    };
-    PackedBubbleLayout.prototype.setCircularPositions = function () {
-        var layout = this, box = layout.box, nodes = layout.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, radius = layout.options.initialPositionRadius;
-        var centerX, centerY, index = 0;
-        for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
-            var node = nodes_1[_i];
+    }
+    setCircularPositions() {
+        const layout = this, box = layout.box, nodes = layout.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, radius = layout.options.initialPositionRadius;
+        let centerX, centerY, index = 0;
+        for (const node of nodes) {
             if (layout.options.splitSeries &&
                 !node.isParentNode) {
                 centerX = node.series.parentNode.plotX;
@@ -138,14 +119,14 @@ var PackedBubbleLayout = /** @class */ (function (_super) {
             node.dispY = 0;
             index++;
         }
-    };
-    PackedBubbleLayout.prototype.repulsiveForces = function () {
-        var layout = this, bubblePadding = layout.options.bubblePadding;
-        var force, distanceR, distanceXY;
-        layout.nodes.forEach(function (node) {
+    }
+    repulsiveForces() {
+        const layout = this, bubblePadding = layout.options.bubblePadding;
+        let force, distanceR, distanceXY;
+        layout.nodes.forEach((node) => {
             node.degree = node.mass;
             node.neighbours = 0;
-            layout.nodes.forEach(function (repNode) {
+            layout.nodes.forEach((repNode) => {
                 force = 0;
                 if (
                 // Node cannot repulse itself:
@@ -170,10 +151,10 @@ var PackedBubbleLayout = /** @class */ (function (_super) {
                 }
             });
         });
-    };
-    PackedBubbleLayout.prototype.applyLimitBox = function (node, box) {
-        var layout = this, factor = 0.01;
-        var distanceXY, distanceR;
+    }
+    applyLimitBox(node, box) {
+        const layout = this, factor = 0.01;
+        let distanceXY, distanceR;
         // parentNodeLimit should be used together
         // with seriesInteraction: false
         if (layout.options.splitSeries &&
@@ -189,10 +170,9 @@ var PackedBubbleLayout = /** @class */ (function (_super) {
                 node.plotY -= distanceXY.y * factor;
             }
         }
-        _super.prototype.applyLimitBox.call(this, node, box);
-    };
-    return PackedBubbleLayout;
-}(ReingoldFruchtermanLayout));
+        super.applyLimitBox(node, box);
+    }
+}
 /* *
  *
  *  Registry

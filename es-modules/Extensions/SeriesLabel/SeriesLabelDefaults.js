@@ -35,7 +35,7 @@
  * @requires modules/series-label
  * @optionparent plotOptions.series.label
  */
-var SeriesLabelDefaults = {
+const SeriesLabelDefaults = {
     /**
      * Enable the series label per series.
      */
@@ -105,6 +105,8 @@ var SeriesLabelDefaults = {
      * @type {Highcharts.CSSObject}
      */
     style: {
+        /** @internal */
+        fontSize: '0.8em',
         /** @internal */
         fontWeight: 'bold'
     },

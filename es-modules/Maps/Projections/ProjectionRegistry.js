@@ -9,11 +9,11 @@ import EqualEarth from './EqualEarth.js';
 import Miller from './Miller.js';
 import Orthographic from './Orthographic.js';
 import WebMercator from './WebMercator.js';
-var registry = {
-    EqualEarth: EqualEarth,
-    LambertConformalConic: LambertConformalConic,
-    Miller: Miller,
-    Orthographic: Orthographic,
-    WebMercator: WebMercator
+const registry = {
+    EqualEarth,
+    LambertConformalConic,
+    Miller,
+    Orthographic,
+    WebMercator
 };
 export default registry;

@@ -8,26 +8,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import ScatterSeriesDefaults from './ScatterSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, LineSeries = _a.line;
+const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, merge = U.merge;
+const { addEvent, extend, merge } = U;
 /* *
  *
  *  Class
@@ -38,24 +23,22 @@ var addEvent = U.addEvent, extend = U.extend, merge = U.merge;
  *
  * @private
  */
-var ScatterSeries = /** @class */ (function (_super) {
-    __extends(ScatterSeries, _super);
-    function ScatterSeries() {
+class ScatterSeries extends LineSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -68,21 +51,21 @@ var ScatterSeries = /** @class */ (function (_super) {
      * Optionally add the jitter effect.
      * @private
      */
-    ScatterSeries.prototype.applyJitter = function () {
-        var series = this, jitter = this.options.jitter, len = this.points.length;
+    applyJitter() {
+        const series = this, jitter = this.options.jitter, len = this.points.length;
         /**
          * Return a repeatable, pseudo-random number based on an integer
          * seed.
          * @private
          */
         function unrandom(seed) {
-            var rand = Math.sin(seed) * 10000;
+            const rand = Math.sin(seed) * 10000;
             return rand - Math.floor(rand);
         }
         if (jitter) {
             this.points.forEach(function (point, i) {
                 ['x', 'y'].forEach(function (dim, j) {
-                    var axis, plotProp = 'plot' + dim.toUpperCase(), min, max, translatedJitter;
+                    let axis, plotProp = 'plot' + dim.toUpperCase(), min, max, translatedJitter;
                     if (jitter[dim] && !point.isNull) {
                         axis = series[dim + 'Axis'];
                         translatedJitter =
@@ -103,21 +86,20 @@ var ScatterSeries = /** @class */ (function (_super) {
                 });
             });
         }
-    };
+    }
     /**
      * @private
      */
-    ScatterSeries.prototype.drawGraph = function () {
+    drawGraph() {
         if (this.options.lineWidth) {
-            _super.prototype.drawGraph.call(this);
+            super.drawGraph();
         }
         else if (this.graph) {
             this.graph = this.graph.destroy();
         }
-    };
-    ScatterSeries.defaultOptions = merge(LineSeries.defaultOptions, ScatterSeriesDefaults);
-    return ScatterSeries;
-}(LineSeries));
+    }
+}
+ScatterSeries.defaultOptions = merge(LineSeries.defaultOptions, ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
     drawTracker: ColumnSeries.prototype.drawTracker,
     sorted: false,

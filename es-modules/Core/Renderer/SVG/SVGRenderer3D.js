@@ -10,40 +10,25 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import A from '../../Animation/AnimationUtilities.js';
-var animObject = A.animObject;
+const { animObject } = A;
 import Color from '../../Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import H from '../../Globals.js';
-var charts = H.charts, deg2rad = H.deg2rad;
+const { charts, deg2rad } = H;
 import Math3D from '../../Math3D.js';
-var perspective = Math3D.perspective, shapeArea = Math3D.shapeArea;
+const { perspective, shapeArea } = Math3D;
 import SVGElement from './SVGElement.js';
 import SVGElement3D from './SVGElement3D.js';
 import SVGRenderer from './SVGRenderer.js';
 import U from '../../Utilities.js';
-var defined = U.defined, extend = U.extend, merge = U.merge, pick = U.pick;
+const { defined, extend, merge, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
+const cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
 /* *
  *
  *  Functions
@@ -55,19 +40,15 @@ var cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) -
  *  Class
  *
  * */
-var SVGRenderer3D = /** @class */ (function (_super) {
-    __extends(SVGRenderer3D, _super);
-    function SVGRenderer3D() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class SVGRenderer3D extends SVGRenderer {
     /* *
      *
      *  Static Functions
      *
      * */
     /** @private */
-    SVGRenderer3D.compose = function (SVGRendererClass) {
-        var svgRendererProto = SVGRendererClass.prototype, svgRenderer3dProto = SVGRenderer3D.prototype;
+    static compose(SVGRendererClass) {
+        const svgRendererProto = SVGRendererClass.prototype, svgRenderer3dProto = SVGRenderer3D.prototype;
         svgRendererProto.elements3d = SVGElement3D;
         svgRendererProto.arc3d = svgRenderer3dProto.arc3d;
         svgRendererProto.arc3dPath = svgRenderer3dProto.arc3dPath;
@@ -78,14 +59,14 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         svgRendererProto.polyhedron = svgRenderer3dProto.polyhedron;
         svgRendererProto.toLinePath = svgRenderer3dProto.toLinePath;
         svgRendererProto.toLineSegments = svgRenderer3dProto.toLineSegments;
-    };
+    }
     /**
      * Method to construct a curved path. Can 'wrap' around more then 180
      * degrees.
      * @private
      */
-    SVGRenderer3D.curveTo = function (cx, cy, rx, ry, start, end, dx, dy) {
-        var result = [], arcAngle = end - start;
+    static curveTo(cx, cy, rx, ry, start, end, dx, dy) {
+        let result = [], arcAngle = end - start;
         if ((end > start) && (end - start > Math.PI / 2 + 0.0001)) {
             result = result.concat(this.curveTo(cx, cy, rx, ry, start, start + (Math.PI / 2), dx, dy));
             result = result.concat(this.curveTo(cx, cy, rx, ry, start + (Math.PI / 2), end, dx, dy));
@@ -109,15 +90,15 @@ var SVGRenderer3D = /** @class */ (function (_super) {
                 cx + (rx * Math.cos(end)) + dx,
                 cy + (ry * Math.sin(end)) + dy
             ]];
-    };
+    }
     /* *
      *
      *  Functions
      *
      * */
     /** @private */
-    SVGRenderer3D.prototype.toLinePath = function (points, closed) {
-        var result = [];
+    toLinePath(points, closed) {
+        const result = [];
         // Put "L x y" for each point
         points.forEach(function (point) {
             result.push(['L', point.x, point.y]);
@@ -131,24 +112,24 @@ var SVGRenderer3D = /** @class */ (function (_super) {
             }
         }
         return result;
-    };
+    }
     /** @private */
-    SVGRenderer3D.prototype.toLineSegments = function (points) {
-        var result = [], m = true;
+    toLineSegments(points) {
+        let result = [], m = true;
         points.forEach(function (point) {
             result.push(m ? ['M', point.x, point.y] : ['L', point.x, point.y]);
             m = !m;
         });
         return result;
-    };
+    }
     /**
      * A 3-D Face is defined by it's 3D vertexes, and is only visible if it's
      * vertexes are counter-clockwise (Back-face culling). It is used as a
      * polyhedron Element.
      * @private
      */
-    SVGRenderer3D.prototype.face3d = function (args) {
-        var renderer = this, ret = this.createElement('path');
+    face3d(args) {
+        const renderer = this, ret = this.createElement('path');
         ret.vertexes = [];
         ret.insidePlotArea = false;
         ret.enabled = true;
@@ -164,7 +145,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
                 delete hash.enabled;
                 delete hash.vertexes;
                 delete hash.insidePlotArea;
-                var chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d);
+                const chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d);
                 hash.d = path;
                 hash.visibility = (this.enabled && area > 0) ?
                     'inherit' : 'hidden';
@@ -182,7 +163,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
                 delete params.enabled;
                 delete params.vertexes;
                 delete params.insidePlotArea;
-                var chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d), visibility = (this.enabled && area > 0) ?
+                const chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d), visibility = (this.enabled && area > 0) ?
                     'visible' : 'hidden';
                 params.d = path;
                 this.attr('visibility', visibility);
@@ -191,15 +172,15 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         };
         /* eslint-enable no-invalid-this */
         return ret.attr(args);
-    };
+    }
     /**
      * A Polyhedron is a handy way of defining a group of 3-D faces. It's only
      * attribute is `faces`, an array of attributes of each one of it's Face3D
      * instances.
      * @private
      */
-    SVGRenderer3D.prototype.polyhedron = function (args) {
-        var renderer = this, result = this.g(), destroy = result.destroy;
+    polyhedron(args) {
+        const renderer = this, result = this.g(), destroy = result.destroy;
         if (!this.styledMode) {
             result.attr({
                 'stroke-linejoin': 'round'
@@ -209,7 +190,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         /* eslint-disable no-invalid-this */
         // destroy all children
         result.destroy = function () {
-            for (var i = 0; i < result.faces.length; i++) {
+            for (let i = 0; i < result.faces.length; i++) {
                 result.faces[i].destroy();
             }
             return destroy.call(this);
@@ -222,7 +203,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
                 while (result.faces.length < hash.faces.length) {
                     result.faces.push(renderer.face3d().add(result));
                 }
-                for (var i = 0; i < hash.faces.length; i++) {
+                for (let i = 0; i < hash.faces.length; i++) {
                     if (renderer.styledMode) {
                         delete hash.faces[i].fill;
                     }
@@ -240,7 +221,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
                 while (result.faces.length < params.faces.length) {
                     result.faces.push(renderer.face3d().add(result));
                 }
-                for (var i = 0; i < params.faces.length; i++) {
+                for (let i = 0; i < params.faces.length; i++) {
                     result.faces[i].animate(params.faces[i], duration, complete);
                 }
                 delete params.faces;
@@ -249,35 +230,35 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         };
         /* eslint-enable no-invalid-this */
         return result.attr(args);
-    };
+    }
     /**
      * return result, generalization
      * @private
      * @requires highcharts-3d
      */
-    SVGRenderer3D.prototype.element3d = function (type, shapeArgs) {
+    element3d(type, shapeArgs) {
         // base
-        var ret = this.g();
+        const ret = this.g();
         // extend
         extend(ret, this.elements3d[type]);
         // init
         ret.initArgs(shapeArgs);
         // return
         return ret;
-    };
+    }
     /**
      * generelized, so now use simply
      * @private
      */
-    SVGRenderer3D.prototype.cuboid = function (shapeArgs) {
+    cuboid(shapeArgs) {
         return this.element3d('cuboid', shapeArgs);
-    };
+    }
     /**
      * Generates a cuboid path and zIndexes
      * @private
      */
-    SVGRenderer3D.prototype.cuboidPath = function (shapeArgs) {
-        var x = shapeArgs.x || 0, y = shapeArgs.y || 0, z = shapeArgs.z || 0, 
+    cuboidPath(shapeArgs) {
+        let x = shapeArgs.x || 0, y = shapeArgs.y || 0, z = shapeArgs.z || 0, 
         // For side calculation (right/left)
         // there is a need for height (and other shapeArgs arguments)
         // to be at least 1px
@@ -385,7 +366,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
          * @private
          */
         pickShape = function (verticesIndex1, verticesIndex2, side) {
-            var ret = [[], -1], 
+            let ret = [[], -1], 
             // An array of vertices for cuboid face
             face1 = verticesIndex1.map(mapPath), face2 = verticesIndex2.map(mapPath), 
             // dummy face is calculated the same way as standard face, but
@@ -469,17 +450,17 @@ var SVGRenderer3D = /** @class */ (function (_super) {
             isFront: isFront,
             isTop: isTop
         }; // #4774
-    };
+    }
     /** @private */
-    SVGRenderer3D.prototype.arc3d = function (attribs) {
-        var wrapper = this.g(), renderer = wrapper.renderer, customAttribs = ['x', 'y', 'r', 'innerR', 'start', 'end', 'depth'];
+    arc3d(attribs) {
+        const wrapper = this.g(), renderer = wrapper.renderer, customAttribs = ['x', 'y', 'r', 'innerR', 'start', 'end', 'depth'];
         /**
          * Get custom attributes. Don't mutate the original object and return an
          * object with only custom attr.
          * @private
          */
         function suckOutCustom(params) {
-            var hasCA = false, ca = {}, key;
+            let hasCA = false, ca = {}, key;
             params = merge(params); // Don't mutate the original object
             for (key in params) {
                 if (customAttribs.indexOf(key) !== -1) {
@@ -502,7 +483,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         /* eslint-disable no-invalid-this */
         // Add all faces
         wrapper.onAdd = function () {
-            var parent = wrapper.parentGroup, className = wrapper.attr('class');
+            const parent = wrapper.parentGroup, className = wrapper.attr('class');
             wrapper.top.add(wrapper);
             // These faces are added outside the wrapper group because the
             // z-index relates to neighbour elements as well
@@ -517,7 +498,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         // Cascade to faces
         ['addClass', 'removeClass'].forEach(function (fn) {
             wrapper[fn] = function () {
-                var args = arguments;
+                const args = arguments;
                 ['top', 'out', 'inn', 'side1', 'side2'].forEach(function (face) {
                     wrapper[face][fn].apply(wrapper[face], args);
                 });
@@ -528,7 +509,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
          * @private
          */
         wrapper.setPaths = function (attribs) {
-            var paths = wrapper.renderer.arc3dPath(attribs), zIndex = paths.zTop * 100;
+            const paths = wrapper.renderer.arc3dPath(attribs), zIndex = paths.zTop * 100;
             wrapper.attribs = attribs;
             wrapper.top.attr({ d: paths.top, zIndex: paths.zTop });
             wrapper.inn.attr({ d: paths.inn, zIndex: paths.zInn });
@@ -550,7 +531,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
          * @private
          */
         wrapper.fillSetter = function (value) {
-            var darker = color(value).brighten(-0.1).get();
+            const darker = color(value).brighten(-0.1).get();
             this.fill = value;
             this.side1.attr({ fill: darker });
             this.side2.attr({ fill: darker });
@@ -572,7 +553,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         // Override attr to remove shape attributes and use those to set child
         // paths
         wrapper.attr = function (params) {
-            var ca, paramArr;
+            let ca, paramArr;
             if (typeof params === 'object') {
                 paramArr = suckOutCustom(params);
                 if (paramArr) {
@@ -588,7 +569,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         // related to the shapes directly, and update the shapes from the
         // animation step.
         wrapper.animate = function (params, animation, complete) {
-            var paramArr, from = this.attribs, to, anim, randomProp = ('data-' + Math.random().toString(26).substring(2, 9));
+            let paramArr, from = this.attribs, to, anim, randomProp = ('data-' + Math.random().toString(26).substring(2, 9));
             // Attribute-line properties connected to 3D. These shouldn't have
             // been in the attribs collection in the first place.
             delete params.center;
@@ -656,13 +637,13 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         };
         /* eslint-enable no-invalid-this */
         return wrapper;
-    };
+    }
     /**
      * Generate the paths required to draw a 3D arc.
      * @private
      */
-    SVGRenderer3D.prototype.arc3dPath = function (shapeArgs) {
-        var cx = shapeArgs.x || 0, // x coordinate of the center
+    arc3dPath(shapeArgs) {
+        const cx = shapeArgs.x || 0, // x coordinate of the center
         cy = shapeArgs.y || 0, // y coordinate of the center
         start = shapeArgs.start || 0, // start angle
         end = (shapeArgs.end || 0) - 0.00001, // end angle
@@ -672,7 +653,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         alpha = shapeArgs.alpha || 0, // alpha rotation of the chart
         beta = shapeArgs.beta || 0; // beta rotation of the chart
         // Derived Variables
-        var cs = Math.cos(start), // cosinus of the start angle
+        const cs = Math.cos(start), // cosinus of the start angle
         ss = Math.sin(start), // sinus of the start angle
         ce = Math.cos(end), // cosinus of the end angle
         se = Math.sin(end), // sinus of the end angle
@@ -683,7 +664,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         dx = d * Math.sin(beta), // distance between top and bottom in x
         dy = d * Math.sin(alpha); // distance between top and bottom in y
         // TOP
-        var top = [
+        let top = [
             ['M', cx + (rx * cs), cy + (ry * ss)]
         ];
         top = top.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, start, end, 0, 0));
@@ -693,8 +674,8 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         top = top.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, 0, 0));
         top.push(['Z']);
         // OUTSIDE
-        var b = (beta > 0 ? Math.PI / 2 : 0), a = (alpha > 0 ? 0 : Math.PI / 2);
-        var start2 = start > -b ? start : (end > -b ? -b : start), end2 = end < PI - a ? end : (start < PI - a ? PI - a : end), midEnd = 2 * PI - a;
+        const b = (beta > 0 ? Math.PI / 2 : 0), a = (alpha > 0 ? 0 : Math.PI / 2);
+        const start2 = start > -b ? start : (end > -b ? -b : start), end2 = end < PI - a ? end : (start < PI - a ? PI - a : end), midEnd = 2 * PI - a;
         // When slice goes over bottom middle, need to add both, left and right
         // outer side. Additionally, when we cross right hand edge, create sharp
         // edge. Outer shape/wall:
@@ -718,7 +699,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         // 1..n - rendering order for startAngle = 0, when set to e.g 90, order
         // changes clockwise (1->2, 2->3, n->1) and counterclockwise for
         // negative startAngle
-        var out = [
+        let out = [
             ['M', cx + (rx * cos(start2)), cy + (ry * sin(start2))]
         ];
         out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, start2, end2, 0, 0));
@@ -774,7 +755,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, start2, dx, dy));
         out.push(['Z']);
         // INSIDE
-        var inn = [
+        let inn = [
             ['M', cx + (irx * cs), cy + (iry * ss)]
         ];
         inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, start, end, 0, 0));
@@ -786,14 +767,14 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, dx, dy));
         inn.push(['Z']);
         // SIDES
-        var side1 = [
+        const side1 = [
             ['M', cx + (rx * cs), cy + (ry * ss)],
             ['L', cx + (rx * cs) + dx, cy + (ry * ss) + dy],
             ['L', cx + (irx * cs) + dx, cy + (iry * ss) + dy],
             ['L', cx + (irx * cs), cy + (iry * ss)],
             ['Z']
         ];
-        var side2 = [
+        const side2 = [
             ['M', cx + (rx * ce), cy + (ry * se)],
             ['L', cx + (rx * ce) + dx, cy + (ry * se) + dy],
             ['L', cx + (irx * ce) + dx, cy + (iry * se) + dy],
@@ -802,7 +783,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         ];
         // correction for changed position of vanishing point caused by alpha
         // and beta rotations
-        var angleCorr = Math.atan2(dy, -dx), angleEnd = Math.abs(end + angleCorr), angleStart = Math.abs(start + angleCorr), angleMid = Math.abs((start + end) / 2 + angleCorr);
+        let angleCorr = Math.atan2(dy, -dx), angleEnd = Math.abs(end + angleCorr), angleStart = Math.abs(start + angleCorr), angleMid = Math.abs((start + end) / 2 + angleCorr);
         /**
          * set to 0-PI range
          * @private
@@ -818,7 +799,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
         angleStart = toZeroPIRange(angleStart);
         angleMid = toZeroPIRange(angleMid);
         // *1e5 is to compensate pInt in zIndexSetter
-        var incPrecision = 1e5, a1 = angleMid * incPrecision, a2 = angleStart * incPrecision, a3 = angleEnd * incPrecision;
+        const incPrecision = 1e5, a1 = angleMid * incPrecision, a2 = angleStart * incPrecision, a3 = angleEnd * incPrecision;
         return {
             top: top,
             // max angle is PI, so this is always higher
@@ -833,9 +814,8 @@ var SVGRenderer3D = /** @class */ (function (_super) {
             side2: side2,
             zSide2: a2 * 0.99
         };
-    };
-    return SVGRenderer3D;
-}(SVGRenderer));
+    }
+}
 /* *
  *
  *  Default Export

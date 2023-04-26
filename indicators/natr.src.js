@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -45,24 +45,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var ATRIndicator = SeriesRegistry.seriesTypes.atr;
-        var merge = U.merge;
+        const { atr: ATRIndicator } = SeriesRegistry.seriesTypes;
+        const { merge } = U;
         /* *
          *
          *  Class
@@ -77,16 +61,14 @@
          *
          * @augments Highcharts.Series
          */
-        var NATRIndicator = /** @class */ (function (_super) {
-                __extends(NATRIndicator, _super);
-            function NATRIndicator() {
+        class NATRIndicator extends ATRIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /**
                  * @lends Highcharts.Series#
                  */
@@ -95,23 +77,18 @@
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.points = void 0;
-                _this.options = void 0;
-                return _this;
+                this.data = void 0;
+                this.points = void 0;
+                this.options = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            NATRIndicator.prototype.getValues = function (series, params) {
-                var atrData = (ATRIndicator.prototype.getValues.apply(this,
-                    arguments)),
-                    atrLength = atrData.values.length,
-                    period = params.period - 1,
-                    yVal = series.yData,
-                    i = 0;
+            getValues(series, params) {
+                const atrData = (super.getValues.apply(this, arguments)), atrLength = atrData.values.length, yVal = series.yData;
+                let i = 0, period = params.period - 1;
                 if (!atrData) {
                     return;
                 }
@@ -121,29 +98,28 @@
                     period++;
                 }
                 return atrData;
-            };
-            /**
-             * Normalized average true range indicator (NATR). This series requires
-             * `linkedTo` option to be set and should be loaded after the
-             * `stock/indicators/indicators.js` and `stock/indicators/atr.js`.
-             *
-             * @sample {highstock} stock/indicators/natr
-             *         NATR indicator
-             *
-             * @extends      plotOptions.atr
-             * @since        7.0.0
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/natr
-             * @optionparent plotOptions.natr
-             */
-            NATRIndicator.defaultOptions = merge(ATRIndicator.defaultOptions, {
-                tooltip: {
-                    valueSuffix: '%'
-                }
-            });
-            return NATRIndicator;
-        }(ATRIndicator));
+            }
+        }
+        /**
+         * Normalized average true range indicator (NATR). This series requires
+         * `linkedTo` option to be set and should be loaded after the
+         * `stock/indicators/indicators.js` and `stock/indicators/atr.js`.
+         *
+         * @sample {highstock} stock/indicators/natr
+         *         NATR indicator
+         *
+         * @extends      plotOptions.atr
+         * @since        7.0.0
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/natr
+         * @optionparent plotOptions.natr
+         */
+        NATRIndicator.defaultOptions = merge(ATRIndicator.defaultOptions, {
+            tooltip: {
+                valueSuffix: '%'
+            }
+        });
         SeriesRegistry.registerSeriesType('natr', NATRIndicator);
         /* *
          *

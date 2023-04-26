@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -53,10 +53,17 @@
          * */
         var animObject = A.animObject;
         var getOptions = D.getOptions;
-        var addEvent = U.addEvent, defined = U.defined, erase = U.erase, merge = U.merge, pick = U.pick, removeEvent = U.removeEvent, wrap = U.wrap;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            erase = U.erase,
+            merge = U.merge,
+            pick = U.pick,
+            removeEvent = U.removeEvent,
+            wrap = U.wrap;
         // Add the predefined patterns
         var patterns = H.patterns = (function () {
-            var patterns = [], colors = getOptions().colors;
+                var patterns = [],
+            colors = getOptions().colors;
             // Start with subtle patterns
             [
                 'M 0 0 L 5 5 M 4.5 -0.5 L 5.5 0.5 M -0.5 4.5 L 0.5 5.5',
@@ -108,8 +115,12 @@
          *         The computed hash.
          */
         function hashFromObject(obj, preSeed) {
-            var str = JSON.stringify(obj), strLen = str.length || 0;
-            var hash = 0, i = 0, char, seedStep;
+            var str = JSON.stringify(obj),
+                strLen = str.length || 0;
+            var hash = 0,
+                i = 0,
+                char,
+                seedStep;
             if (preSeed) {
                 seedStep = Math.max(Math.floor(strLen / 500), 1);
                 for (var a = 0; a < strLen; a += seedStep) {
@@ -147,9 +158,10 @@
                 return;
             }
             var bBox = this.graphic && (this.graphic.getBBox &&
-                this.graphic.getBBox(true) ||
-                this.graphic.element &&
-                    this.graphic.element.getBBox()) || {}, shapeArgs = this.shapeArgs;
+                    this.graphic.getBBox(true) ||
+                    this.graphic.element &&
+                        this.graphic.element.getBBox()) || {},
+                shapeArgs = this.shapeArgs;
             // Prefer using shapeArgs, as it is animation agnostic
             if (shapeArgs) {
                 bBox.width = shapeArgs.width || bBox.width;
@@ -167,7 +179,7 @@
                     pattern._height = 'defer';
                     // Mark the pattern to be flipped later if upside down (#16810)
                     var scaleY = this.series.chart.mapView &&
-                        this.series.chart.mapView.getSVGTransform().scaleY;
+                            this.series.chart.mapView.getSVGTransform().scaleY;
                     if (defined(scaleY) && scaleY < 0) {
                         pattern._inverted = true;
                     }
@@ -226,10 +238,23 @@
          * @requires modules/pattern-fill
          */
         SVGRenderer.prototype.addPattern = function (options, animation) {
-            var pattern, animate = pick(animation, true), animationOptions = animObject(animate), path, defaultSize = 32, width = options.width || options._width || defaultSize, height = (options.height || options._height || defaultSize), color = options.color || '#343434', id = options.id, ren = this, rect = function (fill) {
-                ren.rect(0, 0, width, height)
-                    .attr({ fill: fill })
-                    .add(pattern);
+            var pattern,
+                animate = pick(animation,
+                true),
+                animationOptions = animObject(animate),
+                path,
+                defaultSize = 32,
+                width = options.width || options._width || defaultSize,
+                height = (options.height || options._height || defaultSize),
+                color = options.color || '#343434',
+                id = options.id,
+                ren = this,
+                rect = function (fill) {
+                    ren.rect(0, 0,
+                width,
+                height)
+                        .attr({ fill: fill })
+                        .add(pattern);
             }, attribs;
             if (!id) {
                 this.idCounter = this.idCounter || 0;
@@ -251,14 +276,14 @@
             this.defIds.push(id);
             // Calculate pattern element attributes
             var attrs = {
-                id: id,
-                patternUnits: 'userSpaceOnUse',
-                patternContentUnits: options.patternContentUnits || 'userSpaceOnUse',
-                width: width,
-                height: height,
-                x: options._x || options.x || 0,
-                y: options._y || options.y || 0
-            };
+                    id: id,
+                    patternUnits: 'userSpaceOnUse',
+                    patternContentUnits: options.patternContentUnits || 'userSpaceOnUse',
+                    width: width,
+                    height: height,
+                    x: options._x || options.x || 0,
+                    y: options._y || options.y || 0
+                };
             if (options._inverted) {
                 attrs.patternTransform = 'scale(1, -1)'; // (#16810)
                 if (options.patternTransform) {
@@ -371,7 +396,8 @@
         });
         // Merge series color options to points
         addEvent(Point, 'afterInit', function () {
-            var point = this, colorOptions = point.options.color;
+            var point = this,
+                colorOptions = point.options.color;
             // Only do this if we have defined a specific color on this point. Otherwise
             // we will end up trying to re-add the series color for each point.
             if (colorOptions && colorOptions.pattern) {
@@ -388,8 +414,12 @@
         });
         // Add functionality to SVG renderer to handle patterns as complex colors
         addEvent(SVGRenderer, 'complexColor', function (args) {
-            var color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
-            var pattern = color.pattern, value = '#343434';
+            var color = args.args[0],
+                prop = args.args[1],
+                element = args.args[2],
+                chartIndex = (this.chartIndex || 0);
+            var pattern = color.pattern,
+                value = '#343434';
             // Handle patternIndex
             if (typeof color.patternIndex !== 'undefined' && patterns) {
                 pattern = patterns[color.patternIndex];
@@ -408,7 +438,7 @@
                 // width/heights. We don't want them to highjack the width/height for
                 // this ID if it is defined by users.
                 var forceHashId = element.parentNode &&
-                    element.parentNode.getAttribute('class');
+                        element.parentNode.getAttribute('class');
                 forceHashId = forceHashId &&
                     forceHashId.indexOf('highcharts-legend') > -1;
                 // If we don't have a width/height yet, handle it. Try faking a point
@@ -476,24 +506,25 @@
         // Add a garbage collector to delete old patterns with autogenerated hashes that
         // are no longer being referenced.
         addEvent(Chart, 'redraw', function () {
-            var usedIds = {}, renderer = this.renderer, 
-            // Get the autocomputed patterns - these are the ones we might delete
-            patterns = (renderer.defIds || []).filter(function (pattern) {
-                return (pattern.indexOf &&
-                    pattern.indexOf('highcharts-pattern-') === 0);
+            var usedIds = {},
+                renderer = this.renderer, 
+                // Get the autocomputed patterns - these are the ones we might delete
+                patterns = (renderer.defIds || []).filter(function (pattern) {
+                    return (pattern.indexOf &&
+                        pattern.indexOf('highcharts-pattern-') === 0);
             });
             if (patterns.length) {
                 // Look through the DOM for usage of the patterns. This can be points,
                 // series, tooltips etc.
                 [].forEach.call(this.renderTo.querySelectorAll('[color^="url("], [fill^="url("], [stroke^="url("]'), function (node) {
                     var id = node.getAttribute('fill') ||
-                        node.getAttribute('color') ||
-                        node.getAttribute('stroke');
+                            node.getAttribute('color') ||
+                            node.getAttribute('stroke');
                     if (id) {
                         var sanitizedId = id
-                            .replace(renderer.url, '')
-                            .replace('url(#', '')
-                            .replace(')', '');
+                                .replace(renderer.url, '')
+                                .replace('url(#', '')
+                                .replace(')', '');
                         usedIds[sanitizedId] = true;
                     }
                 });

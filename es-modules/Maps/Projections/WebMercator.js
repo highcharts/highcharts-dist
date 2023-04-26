@@ -2,10 +2,10 @@
  * Web Mercator projection, used for most online map tile services
  * */
 'use strict';
-var maxLatitude = 85.0511287798, // The latitude that defines a square
+const maxLatitude = 85.0511287798, // The latitude that defines a square
 r = 63.78137, deg2rad = Math.PI / 180;
-var WebMercator = /** @class */ (function () {
-    function WebMercator() {
+class WebMercator {
+    constructor() {
         this.bounds = {
             x1: -200.37508342789243,
             x2: 200.37508342789243,
@@ -14,9 +14,9 @@ var WebMercator = /** @class */ (function () {
         };
         this.maxLatitude = maxLatitude;
     }
-    WebMercator.prototype.forward = function (lonLat) {
-        var sinLat = Math.sin(lonLat[1] * deg2rad);
-        var xy = [
+    forward(lonLat) {
+        const sinLat = Math.sin(lonLat[1] * deg2rad);
+        const xy = [
             r * lonLat[0] * deg2rad,
             r * Math.log((1 + sinLat) / (1 - sinLat)) / 2
         ];
@@ -24,13 +24,12 @@ var WebMercator = /** @class */ (function () {
             xy.outside = true;
         }
         return xy;
-    };
-    WebMercator.prototype.inverse = function (xy) {
+    }
+    inverse(xy) {
         return [
             xy[0] / (r * deg2rad),
             (2 * Math.atan(Math.exp(xy[1] / r)) - (Math.PI / 2)) / deg2rad
         ];
-    };
-    return WebMercator;
-}());
+    }
+}
 export default WebMercator;

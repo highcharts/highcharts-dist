@@ -5,10 +5,10 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined;
+const { addEvent, defined } = U;
 /* *
  *
  *  Composition
@@ -31,7 +31,7 @@ var DerivedComposition;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     DerivedComposition.hasDerivedData = true;
     /**
      * Method to be implemented - inside the method the series has already
@@ -51,9 +51,8 @@ var DerivedComposition;
      * @private
      */
     function compose(SeriesClass) {
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
-            var seriesProto = SeriesClass.prototype;
+        if (U.pushUnique(composedMembers, SeriesClass)) {
+            const seriesProto = SeriesClass.prototype;
             seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
             seriesProto.addEvents = addEvents;
             seriesProto.destroy = destroy;
@@ -80,7 +79,7 @@ var DerivedComposition;
      * @private
      */
     function setBaseSeries() {
-        var chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
+        const chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
             (chart.series[baseSeriesOptions] ||
                 chart.get(baseSeriesOptions)));
         this.baseSeries = baseSeries || null;
@@ -91,13 +90,12 @@ var DerivedComposition;
      * @private
      */
     function addEvents() {
-        var _this = this;
-        this.eventRemovers.push(addEvent(this.chart, 'afterLinkSeries', function () {
-            _this.setBaseSeries();
-            if (_this.baseSeries && !_this.initialised) {
-                _this.setDerivedData();
-                _this.addBaseSeriesEvents();
-                _this.initialised = true;
+        this.eventRemovers.push(addEvent(this.chart, 'afterLinkSeries', () => {
+            this.setBaseSeries();
+            if (this.baseSeries && !this.initialised) {
+                this.setDerivedData();
+                this.addBaseSeriesEvents();
+                this.initialised = true;
             }
         }));
     }
@@ -108,12 +106,11 @@ var DerivedComposition;
      * @private
      */
     function addBaseSeriesEvents() {
-        var _this = this;
-        this.eventRemovers.push(addEvent(this.baseSeries, 'updatedData', function () {
-            _this.setDerivedData();
-        }), addEvent(this.baseSeries, 'destroy', function () {
-            _this.baseSeries = null;
-            _this.initialised = false;
+        this.eventRemovers.push(addEvent(this.baseSeries, 'updatedData', () => {
+            this.setDerivedData();
+        }), addEvent(this.baseSeries, 'destroy', () => {
+            this.baseSeries = null;
+            this.initialised = false;
         }));
     }
     DerivedComposition.addBaseSeriesEvents = addBaseSeriesEvents;
@@ -122,7 +119,7 @@ var DerivedComposition;
      * @private
      */
     function destroy() {
-        this.eventRemovers.forEach(function (remover) {
+        this.eventRemovers.forEach((remover) => {
             remover();
         });
         Series.prototype.destroy.apply(this, arguments);

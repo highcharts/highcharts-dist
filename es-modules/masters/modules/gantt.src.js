@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.3.3 (2023-01-20)
+ * @license Highcharts Gantt JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -17,7 +17,9 @@ import RangeSelector from '../../Stock/RangeSelector/RangeSelector.js';
 import XRangeSeries from '../../Series/XRange/XRangeSeries.js';
 import '../../Series/Gantt/GanttSeries.js';
 import GanttChart from '../../Core/Chart/GanttChart.js';
-var G = Highcharts;
+import ArrowSymbols from '../../Extensions/ArrowSymbols.js';
+import CurrentDateIndication from '../../Extensions/CurrentDateIndication.js';
+const G = Highcharts;
 // Classes
 G.GanttChart = GanttChart;
 G.ganttChart = GanttChart.ganttChart;
@@ -25,6 +27,8 @@ G.Navigator = Navigator;
 G.RangeSelector = RangeSelector;
 G.Scrollbar = Scrollbar;
 // Compositions
+ArrowSymbols.compose(G.SVGRenderer);
+CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
 Navigator.compose(G.Axis, G.Chart, G.Series);
 RangeSelector.compose(G.Axis, G.Chart);
 Scrollbar.compose(G.Axis);

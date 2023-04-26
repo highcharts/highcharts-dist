@@ -19,7 +19,7 @@
  * @product      highmaps
  * @optionparent mapView
  */
-var defaultOptions = {
+const defaultOptions = {
     /**
      * The center of the map in terms of longitude and latitude. For
      * preprojected maps (like the GeoJSON files in Map Collection v1.x), the

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -47,10 +47,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined,
-            error = U.error,
-            merge = U.merge;
+        const { sma: { prototype: smaProto } } = SeriesRegistry.seriesTypes;
+        const { defined, error, merge } = U;
         /* *
          *
          *  Composition
@@ -68,7 +66,7 @@
             *  Constants
             *
             * */
-            var composedClasses = [];
+            const composedMembers = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -78,7 +76,7 @@
              * @private
              * @type {Array<string>}
              */
-            var linesApiNames = ['bottomLine'];
+            const linesApiNames = ['bottomLine'];
             /**
              * Lines ids. Required to plot appropriate amount of lines.
              * Notice that pointArrayMap should have more elements than
@@ -89,7 +87,7 @@
              * @private
              * @type {Array<string>}
              */
-            var pointArrayMap = ['top', 'bottom'];
+            const pointArrayMap = ['top', 'bottom'];
             /**
              * Names of the lines, bewteen which the area should be plotted.
              * If the drawing of the area should
@@ -99,14 +97,14 @@
              * @private
              * @type {Array<string>}
              */
-            var areaLinesNames = ['top'];
+            const areaLinesNames = ['top'];
             /**
              * Main line id.
              *
              * @private
              * @type {string}
              */
-            var pointValKey = 'top';
+            const pointValKey = 'top';
             /* *
             *
             *  Functions
@@ -123,9 +121,8 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (composedClasses.indexOf(IndicatorClass) === -1) {
-                    composedClasses.push(IndicatorClass);
-                    var proto = IndicatorClass.prototype;
+                if (U.pushUnique(composedMembers, IndicatorClass)) {
+                    const proto = IndicatorClass.prototype;
                     proto.linesApiNames = (proto.linesApiNames ||
                         linesApiNames.slice());
                     proto.pointArrayMap = (proto.pointArrayMap ||
@@ -163,8 +160,8 @@
              *         Returns translated lines names without excluded value.
              */
             function getTranslatedLinesNames(indicator, excludedValue) {
-                var translatedLines = [];
-                (indicator.pointArrayMap || []).forEach(function (propertyName) {
+                const translatedLines = [];
+                (indicator.pointArrayMap || []).forEach((propertyName) => {
                     if (propertyName !== excludedValue) {
                         translatedLines.push(getLineName(propertyName));
                     }
@@ -177,26 +174,16 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    areaLinesNames = indicator.areaLinesNames,
-                    mainLinePoints = indicator.points,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    }, 
-                    // additional lines point place holders:
-                    secondaryLines = [],
-                    secondaryLinesNames = getTranslatedLinesNames(indicator,
-                    pointValKey);
-                var pointsLength = mainLinePoints.length,
-                    point;
+                const indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
+                let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
-                secondaryLinesNames.forEach(function (plotLine, index) {
+                secondaryLinesNames.forEach((plotLine, index) => {
                     // create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
@@ -212,12 +199,9 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
-                        secondLinePoints = secondaryLines[index],
-                        firstLinePoints = areaLinesNames.length === 1 ?
-                            mainLinePoints :
-                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
-                        originalColor = indicator.color;
+                    const index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
+                        mainLinePoints :
+                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -232,7 +216,7 @@
                     indicator.color = originalColor;
                 }
                 // Modify options and generate additional lines:
-                linesApiNames.forEach(function (lineName, i) {
+                linesApiNames.forEach((lineName, i) => {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {
@@ -268,9 +252,7 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath,
-                    path = [],
-                    higherAreaPath = [];
+                let areaPath, path = [], higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -280,7 +262,7 @@
                         path = smaProto.getGraphPath.call(this, points);
                         higherAreaPath = areaPath.slice(0, path.length);
                         // Reverse points, so that the areaFill will start from the end:
-                        for (var i = higherAreaPath.length - 1; i >= 0; i--) {
+                        for (let i = higherAreaPath.length - 1; i >= 0; i--) {
                             path.push(higherAreaPath[i]);
                         }
                     }
@@ -298,8 +280,8 @@
              *         Returns point Y value for all lines
              */
             function indicatorToYData(point) {
-                var pointColl = [];
-                (this.pointArrayMap || []).forEach(function (propertyName) {
+                const pointColl = [];
+                (this.pointArrayMap || []).forEach((propertyName) => {
                     pointColl.push(point[propertyName]);
                 });
                 return pointColl;
@@ -310,22 +292,20 @@
              * @private
              */
             function indicatorTranslate() {
-                var _this = this;
-                var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [],
-                    value;
+                const pointArrayMap = this.pointArrayMap;
+                let LinesNames = [], value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
-                this.points.forEach(function (point) {
-                    pointArrayMap.forEach(function (propertyName, i) {
+                this.points.forEach((point) => {
+                    pointArrayMap.forEach((propertyName, i) => {
                         value = point[propertyName];
                         // If the modifier, like for example compare exists,
                         // modified the original value by that method, #15867.
-                        if (_this.dataModify) {
-                            value = _this.dataModify.modifyValue(value);
+                        if (this.dataModify) {
+                            value = this.dataModify.modifyValue(value);
                         }
                         if (value !== null) {
-                            point[LinesNames[i]] = _this.yAxis.toPixels(value, true);
+                            point[LinesNames[i]] = this.yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -350,27 +330,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat,
-            extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { correctFloat, extend, isArray, merge } = U;
         /* *
          *
          *  Class
@@ -385,35 +346,29 @@
          *
          * @augments Highcharts.Series
          */
-        var DMIIndicator = /** @class */ (function (_super) {
-                __extends(DMIIndicator, _super);
-            function DMIIndicator() {
+        class DMIIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.options = void 0;
-                return _this;
+                this.options = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            DMIIndicator.prototype.calculateDM = function (yVal, i, isPositiveDM) {
-                var currentHigh = yVal[i][1],
-                    currentLow = yVal[i][2],
-                    previousHigh = yVal[i - 1][1],
-                    previousLow = yVal[i - 1][2];
-                var DM;
+            calculateDM(yVal, i, isPositiveDM) {
+                const currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
+                let DM;
                 if (currentHigh - previousHigh > previousLow - currentLow) {
                     // for +DM
                     DM = isPositiveDM ? Math.max(currentHigh - previousHigh, 0) : 0;
@@ -423,17 +378,17 @@
                     DM = !isPositiveDM ? Math.max(previousLow - currentLow, 0) : 0;
                 }
                 return correctFloat(DM);
-            };
-            DMIIndicator.prototype.calculateDI = function (smoothedDM, tr) {
+            }
+            calculateDI(smoothedDM, tr) {
                 return smoothedDM / tr * 100;
-            };
-            DMIIndicator.prototype.calculateDX = function (plusDI, minusDI) {
+            }
+            calculateDX(plusDI, minusDI) {
                 return correctFloat(Math.abs(plusDI - minusDI) / Math.abs(plusDI + minusDI) * 100);
-            };
-            DMIIndicator.prototype.smoothValues = function (accumulatedValues, currentValue, period) {
+            }
+            smoothValues(accumulatedValues, currentValue, period) {
                 return correctFloat(accumulatedValues - accumulatedValues / period + currentValue);
-            };
-            DMIIndicator.prototype.getTR = function (currentPoint, prevPoint) {
+            }
+            getTR(currentPoint, prevPoint) {
                 return correctFloat(Math.max(
                 // currentHigh - currentLow
                 currentPoint[1] - currentPoint[2], 
@@ -441,15 +396,9 @@
                 !prevPoint ? 0 : Math.abs(currentPoint[1] - prevPoint[3]), 
                 // currentLow - previousClose
                 !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
-            };
-            DMIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    DMI = [],
-                    xData = [],
-                    yData = [];
+            }
+            getValues(series, params) {
+                const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DMI = [], xData = [], yData = [];
                 if (
                 // Check period, if bigger than points length, skip
                 (xVal.length <= period) ||
@@ -458,24 +407,13 @@
                     yVal[0].length !== 4) {
                     return;
                 }
-                var prevSmoothedPlusDM = 0,
-                    prevSmoothedMinusDM = 0,
-                    prevSmoothedTR = 0,
-                    i;
+                let prevSmoothedPlusDM = 0, prevSmoothedMinusDM = 0, prevSmoothedTR = 0, i;
                 for (i = 1; i < yValLen; i++) {
-                    var smoothedPlusDM = void 0,
-                        smoothedMinusDM = void 0,
-                        smoothedTR = void 0,
-                        plusDM = // +DM
-                         void 0, // +DM
-                        minusDM = // -DM
-                         void 0, // -DM
-                        TR = void 0,
-                        plusDI = // +DI
-                         void 0, // +DI
-                        minusDI = // -DI
-                         void 0, // -DI
-                        DX = void 0;
+                    let smoothedPlusDM, smoothedMinusDM, smoothedTR, plusDM, // +DM
+                    minusDM, // -DM
+                    TR, plusDI, // +DI
+                    minusDI, // -DI
+                    DX;
                     if (i <= period) {
                         plusDM = this.calculateDM(yVal, i, true);
                         minusDM = this.calculateDM(yVal, i);
@@ -521,92 +459,91 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
+        }
+        /**
+         * Directional Movement Index (DMI).
+         * This series requires the `linkedTo` option to be set and should
+         * be loaded after the `stock/indicators/indicators.js` file.
+         *
+         * @sample stock/indicators/dmi
+         *         DMI indicator
+         *
+         * @extends      plotOptions.sma
+         * @since 9.1.0
+         * @product      highstock
+         * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
+         *               pointInterval, pointIntervalUnit, pointPlacement,
+         *               pointRange, pointStart, showInNavigator, stacking
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/dmi
+         * @optionparent plotOptions.dmi
+         */
+        DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Directional Movement Index (DMI).
-             * This series requires the `linkedTo` option to be set and should
-             * be loaded after the `stock/indicators/indicators.js` file.
-             *
-             * @sample stock/indicators/dmi
-             *         DMI indicator
-             *
-             * @extends      plotOptions.sma
-             * @since 9.1.0
-             * @product      highstock
-             * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
-             *               pointInterval, pointIntervalUnit, pointPlacement,
-             *               pointRange, pointStart, showInNavigator, stacking
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/dmi
-             * @optionparent plotOptions.dmi
+             * @excluding index
              */
-            DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                index: void 0 // unused index, do not inherit (#15362)
+            },
+            marker: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: '<span style="color: {point.color}">' +
+                    '\u25CF</span><b> {series.name}</b><br/>' +
+                    '<span style="color: {point.color}">DX</span>: {point.y}<br/>' +
+                    '<span style="color: ' +
+                    '{point.series.options.plusDILine.styles.lineColor}">' +
+                    '+DI</span>: {point.plusDI}<br/>' +
+                    '<span style="color: ' +
+                    '{point.series.options.minusDILine.styles.lineColor}">' +
+                    '-DI</span>: {point.minusDI}<br/>'
+            },
+            /**
+             * +DI line options.
+             */
+            plusDILine: {
                 /**
-                 * @excluding index
+                 * Styles for the +DI line.
                  */
-                params: {
-                    index: void 0 // unused index, do not inherit (#15362)
-                },
-                marker: {
-                    enabled: false
-                },
-                tooltip: {
-                    pointFormat: '<span style="color: {point.color}">' +
-                        '\u25CF</span><b> {series.name}</b><br/>' +
-                        '<span style="color: {point.color}">DX</span>: {point.y}<br/>' +
-                        '<span style="color: ' +
-                        '{point.series.options.plusDILine.styles.lineColor}">' +
-                        '+DI</span>: {point.plusDI}<br/>' +
-                        '<span style="color: ' +
-                        '{point.series.options.minusDILine.styles.lineColor}">' +
-                        '-DI</span>: {point.minusDI}<br/>'
-                },
-                /**
-                 * +DI line options.
-                 */
-                plusDILine: {
+                styles: {
                     /**
-                     * Styles for the +DI line.
+                     * Pixel width of the line.
                      */
-                    styles: {
-                        /**
-                         * Pixel width of the line.
-                         */
-                        lineWidth: 1,
-                        /**
-                         * Color of the line.
-                         *
-                         * @type {Highcharts.ColorString}
-                         */
-                        lineColor: "#06b535" /* Palette.positiveColor */ // green-ish
-                    }
-                },
-                /**
-                 * -DI line options.
-                 */
-                minusDILine: {
+                    lineWidth: 1,
                     /**
-                     * Styles for the -DI line.
+                     * Color of the line.
+                     *
+                     * @type {Highcharts.ColorString}
                      */
-                    styles: {
-                        /**
-                         * Pixel width of the line.
-                         */
-                        lineWidth: 1,
-                        /**
-                         * Color of the line.
-                         *
-                         * @type {Highcharts.ColorString}
-                         */
-                        lineColor: "#f21313" /* Palette.negativeColor */ // red-ish
-                    }
-                },
-                dataGrouping: {
-                    approximation: 'averages'
+                    lineColor: "#06b535" /* Palette.positiveColor */ // green-ish
                 }
-            });
-            return DMIIndicator;
-        }(SMAIndicator));
+            },
+            /**
+             * -DI line options.
+             */
+            minusDILine: {
+                /**
+                 * Styles for the -DI line.
+                 */
+                styles: {
+                    /**
+                     * Pixel width of the line.
+                     */
+                    lineWidth: 1,
+                    /**
+                     * Color of the line.
+                     *
+                     * @type {Highcharts.ColorString}
+                     */
+                    lineColor: "#f21313" /* Palette.negativeColor */ // red-ish
+                }
+            },
+            dataGrouping: {
+                approximation: 'averages'
+            }
+        });
         extend(DMIIndicator.prototype, {
             areaLinesNames: [],
             nameBase: 'DMI',

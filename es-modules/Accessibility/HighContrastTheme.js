@@ -15,7 +15,7 @@
  *  Theme
  *
  * */
-var theme = {
+const theme = {
     chart: {
         backgroundColor: 'window'
     },
@@ -129,11 +129,6 @@ var theme = {
         }
     },
     credits: {
-        style: {
-            color: 'windowText'
-        }
-    },
-    labels: {
         style: {
             color: 'windowText'
         }

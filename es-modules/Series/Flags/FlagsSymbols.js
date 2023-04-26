@@ -16,7 +16,7 @@ var FlagsSymbols;
      *  Constants
      *
      * */
-    var modifiedMembers = [];
+    const modifiedMembers = [];
     /* *
      *
      *  Functions
@@ -29,21 +29,16 @@ var FlagsSymbols;
     function compose(SVGRendererClass) {
         if (modifiedMembers.indexOf(SVGRendererClass) === -1) {
             modifiedMembers.push(SVGRendererClass);
-            var symbols = SVGRendererClass.prototype.symbols;
+            const symbols = SVGRendererClass.prototype.symbols;
             symbols.flag = flag;
             createPinSymbol(symbols, 'circle');
             createPinSymbol(symbols, 'square');
         }
-        var RendererClass = RendererRegistry.getRendererType();
+        const RendererClass = RendererRegistry.getRendererType();
         // The symbol callbacks are generated on the SVGRenderer object in all
-        // browsers. Even VML browsers need this in order to generate shapes in
-        // export. Now share them with the VMLRenderer.
+        // browsers.
         if (modifiedMembers.indexOf(RendererClass)) {
             modifiedMembers.push(RendererClass);
-            var symbols = SVGRendererClass.prototype.symbols, vmlSymbols = RendererClass.prototype.symbols;
-            vmlSymbols.circlepin = symbols.circlepin;
-            vmlSymbols.flag = symbols.flag.bind(symbols);
-            vmlSymbols.squarepin = symbols.squarepin;
         }
     }
     FlagsSymbols.compose = compose;
@@ -52,10 +47,10 @@ var FlagsSymbols;
      * @private
      */
     function flag(x, y, w, h, options) {
-        var anchorX = (options && options.anchorX) || x, anchorY = (options && options.anchorY) || y;
+        const anchorX = (options && options.anchorX) || x, anchorY = (options && options.anchorY) || y;
         // To do: unwanted any cast because symbols.circle has wrong type, it
         // actually returns an SVGPathArray
-        var path = this.circle(anchorX - 1, anchorY - 1, 2, 2);
+        const path = this.circle(anchorX - 1, anchorY - 1, 2, 2);
         path.push(['M', anchorX, anchorY], ['L', x, y + h], ['L', x, y], ['L', x + w, y], ['L', x + w, y + h], ['L', x, y + h], ['Z']);
         return path;
     }
@@ -65,8 +60,8 @@ var FlagsSymbols;
      */
     function createPinSymbol(symbols, shape) {
         symbols[(shape + 'pin')] = function (x, y, w, h, options) {
-            var anchorX = options && options.anchorX, anchorY = options && options.anchorY;
-            var path;
+            const anchorX = options && options.anchorX, anchorY = options && options.anchorY;
+            let path;
             // For single-letter flags, make sure circular flags are not taller
             // than their width
             if (shape === 'circle' && h > w) {
@@ -80,18 +75,18 @@ var FlagsSymbols;
                  * from the top edge of the label, otherwise start drawing from
                  * the bottom edge
                  */
-                var labelX = anchorX;
+                let labelX = anchorX;
                 if (shape === 'circle') {
                     labelX = x + w / 2;
                 }
                 else {
-                    var startSeg = path[0];
-                    var endSeg = path[1];
+                    const startSeg = path[0];
+                    const endSeg = path[1];
                     if (startSeg[0] === 'M' && endSeg[0] === 'L') {
                         labelX = (startSeg[1] + endSeg[1]) / 2;
                     }
                 }
-                var labelY = (y > anchorY) ? y : y + h;
+                const labelY = (y > anchorY) ? y : y + h;
                 path.push([
                     'M',
                     labelX,

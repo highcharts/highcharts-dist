@@ -11,7 +11,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 /* *
  *
  *  Theme
@@ -102,11 +102,6 @@ var SkiesTheme;
             },
             itemHiddenStyle: {
                 color: 'silver'
-            }
-        },
-        labels: {
-            style: {
-                color: '#3E576F'
             }
         }
     };

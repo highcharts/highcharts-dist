@@ -24,7 +24,7 @@
  *
  * @private
  */
-var ApproximationRegistry = {
+const ApproximationRegistry = {
 // approximations added programmatically
 };
 /* *

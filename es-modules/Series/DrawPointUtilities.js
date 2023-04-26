@@ -5,7 +5,7 @@
  * */
 'use strict';
 import U from '../Core/Utilities.js';
-var isNumber = U.isNumber;
+const { isNumber } = U;
 /* *
  *
  *  Functions
@@ -22,18 +22,15 @@ var isNumber = U.isNumber;
  * @todo export this function to enable usage
  */
 function draw(point, params) {
-    var animatableAttribs = params.animatableAttribs, onComplete = params.onComplete, css = params.css, renderer = params.renderer;
-    var animation = (point.series && point.series.chart.hasRendered) ?
+    const { animatableAttribs, onComplete, css, renderer } = params;
+    const animation = (point.series && point.series.chart.hasRendered) ?
         // Chart-level animation on updates
         void 0 :
         // Series-level animation on new points
         (point.series &&
             point.series.options.animation);
-    var graphic = point.graphic;
-    params.attribs = params.attribs || {};
-    // Assigning class in dot notation does go well in IE8
-    // eslint-disable-next-line dot-notation
-    params.attribs['class'] = point.getClassName();
+    let graphic = point.graphic;
+    params.attribs = Object.assign(Object.assign({}, params.attribs), { 'class': point.getClassName() }) || {};
     if ((point.shouldDraw())) {
         if (!graphic) {
             point.graphic = graphic = params.shapeType === 'text' ?
@@ -49,7 +46,7 @@ function draw(point, params) {
             .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
     }
     else if (graphic) {
-        var destroy_1 = function () {
+        const destroy = () => {
             point.graphic = graphic = (graphic && graphic.destroy());
             if (typeof onComplete === 'function') {
                 onComplete();
@@ -57,10 +54,10 @@ function draw(point, params) {
         };
         // animate only runs complete callback if something was animated.
         if (Object.keys(animatableAttribs).length) {
-            graphic.animate(animatableAttribs, void 0, function () { return destroy_1(); });
+            graphic.animate(animatableAttribs, void 0, () => destroy());
         }
         else {
-            destroy_1();
+            destroy();
         }
     }
 }
@@ -69,7 +66,7 @@ function draw(point, params) {
  *  Default Export
  *
  * */
-var DrawPointUtilities = {
-    draw: draw
+const DrawPointUtilities = {
+    draw
 };
 export default DrawPointUtilities;

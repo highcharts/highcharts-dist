@@ -12,9 +12,9 @@
  * */
 'use strict';
 import F from '../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import U from '../Core/Utilities.js';
-var getNestedProperty = U.getNestedProperty, pick = U.pick;
+const { getNestedProperty, pick } = U;
 /* *
  *
  *  Composition
@@ -32,7 +32,7 @@ var A11yI18nComposition;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -43,9 +43,8 @@ var A11yI18nComposition;
      * @private
      */
     function compose(ChartClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.langFormat = langFormat;
         }
         return ChartClass;
@@ -64,12 +63,12 @@ var A11yI18nComposition;
      * Context to apply to the format string.
      */
     function formatExtendedStatement(statement, ctx) {
-        var eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
-        var arr, result;
+        const eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
+        let arr, result;
         // Dealing with an each-function?
         if (eachStart > -1) {
-            var eachEnd = statement.slice(eachStart).indexOf(')') + eachStart, preEach = statement.substring(0, eachStart), postEach = statement.substring(eachEnd + 1), eachStatement = statement.substring(eachStart + 6, eachEnd), eachArguments = eachStatement.split(',');
-            var lenArg = Number(eachArguments[1]), len = void 0;
+            const eachEnd = statement.slice(eachStart).indexOf(')') + eachStart, preEach = statement.substring(0, eachStart), postEach = statement.substring(eachEnd + 1), eachStatement = statement.substring(eachStart + 6, eachEnd), eachArguments = eachStatement.split(',');
+            let lenArg = Number(eachArguments[1]), len;
             result = '';
             arr = getNestedProperty(eachArguments[0], ctx);
             if (arr) {
@@ -78,7 +77,7 @@ var A11yI18nComposition;
                     arr.length + lenArg :
                     Math.min(lenArg, arr.length); // Overshoot
                 // Run through the array for the specified length
-                for (var i = 0; i < len; ++i) {
+                for (let i = 0; i < len; ++i) {
                     result += preEach + arr[i] + postEach;
                 }
             }
@@ -86,7 +85,7 @@ var A11yI18nComposition;
         }
         // Dealing with a plural-function?
         if (pluralStart > -1) {
-            var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
+            const pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
             switch (num) {
                 case 0:
                     result = pick(pluralArguments[4], pluralArguments[1]);
@@ -104,8 +103,8 @@ var A11yI18nComposition;
         }
         // Array index
         if (indexStart > -1) {
-            var arrayName = statement.substring(0, indexStart), ix = Number(statement.substring(indexStart + 1, indexEnd));
-            var val = void 0;
+            const arrayName = statement.substring(0, indexStart), ix = Number(statement.substring(indexStart + 1, indexEnd));
+            let val;
             arr = getNestedProperty(arrayName, ctx);
             if (!isNaN(ix) && arr) {
                 if (ix < 0) {
@@ -205,8 +204,8 @@ var A11yI18nComposition;
      * The formatted string.
      */
     function i18nFormat(formatString, context, chart) {
-        var getFirstBracketStatement = function (sourceStr, offset) {
-            var str = sourceStr.slice(offset || 0), startBracket = str.indexOf('{'), endBracket = str.indexOf('}');
+        const getFirstBracketStatement = (sourceStr, offset) => {
+            const str = sourceStr.slice(offset || 0), startBracket = str.indexOf('{'), endBracket = str.indexOf('}');
             if (startBracket > -1 && endBracket > startBracket) {
                 return {
                     statement: str.substring(startBracket + 1, endBracket),
@@ -215,7 +214,7 @@ var A11yI18nComposition;
                 };
             }
         }, tokens = [];
-        var bracketRes, constRes, cursor = 0;
+        let bracketRes, constRes, cursor = 0;
         // Tokenize format string into bracket statements and constants
         do {
             bracketRes = getFirstBracketStatement(formatString, cursor);
@@ -239,14 +238,14 @@ var A11yI18nComposition;
         // Perform the formatting.  The formatArrayStatement function returns
         // the statement in brackets if it is not an array statement, which
         // means it gets picked up by format below.
-        tokens.forEach(function (token) {
+        tokens.forEach((token) => {
             if (token.type === 'statement') {
                 token.value = formatExtendedStatement(token.value, context);
             }
         });
         // Join string back together and pass to format to pick up non-array
         // statements.
-        return format(tokens.reduce(function (acc, cur) { return acc + cur.value; }, ''), context, chart);
+        return format(tokens.reduce((acc, cur) => acc + cur.value, ''), context, chart);
     }
     A11yI18nComposition.i18nFormat = i18nFormat;
     /* eslint-enable max-len */
@@ -267,8 +266,8 @@ var A11yI18nComposition;
      * The formatted string.
      */
     function langFormat(langKey, context) {
-        var keys = langKey.split('.');
-        var formatString = this.options.lang, i = 0;
+        const keys = langKey.split('.');
+        let formatString = this.options.lang, i = 0;
         for (; i < keys.length; ++i) {
             formatString = formatString && formatString[keys[i]];
         }
@@ -276,8 +275,6 @@ var A11yI18nComposition;
             i18nFormat(formatString, context, this) : '';
     }
     /**
-     * String trim that works for IE6-8 as well.
-     *
      * @private
      * @function stringTrim
      *

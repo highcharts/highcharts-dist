@@ -6,32 +6,20 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, ATRIndicator = _a.atr, SMAIndicator = _a.sma;
+const { atr: ATRIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
 import StockChart from '../../../Core/Chart/StockChart.js';
-var addEvent = U.addEvent, correctFloat = U.correctFloat, isArray = U.isArray, extend = U.extend, merge = U.merge, objectEach = U.objectEach;
+const { addEvent, correctFloat, isArray, extend, merge, objectEach } = U;
 /* *
  *
  *  Functions
  *
  * */
 // Utils:
+/**
+ * @private
+ */
 function createPointObj(mainSeries, index, close) {
     return {
         index: index,
@@ -53,59 +41,55 @@ function createPointObj(mainSeries, index, close) {
  *
  * @augments Highcharts.Series
  */
-var SupertrendIndicator = /** @class */ (function (_super) {
-    __extends(SupertrendIndicator, _super);
-    function SupertrendIndicator() {
+class SupertrendIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.linkedParent = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.linkedParent = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    SupertrendIndicator.prototype.init = function () {
-        var options, parentOptions;
-        SMAIndicator.prototype.init.apply(this, arguments);
-        var indicator = this;
+    init() {
+        const indicator = this;
+        super.init.apply(indicator, arguments);
         // Only after series are linked add some additional logic/properties.
-        var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+        const unbinder = addEvent(StockChart, 'afterLinkSeries', () => {
             // Protection for a case where the indicator is being updated,
             // for a brief moment the indicator is deleted.
             if (indicator.options) {
-                var options_1 = indicator.options;
-                parentOptions = indicator.linkedParent.options;
+                const options = indicator.options, parentOptions = indicator.linkedParent.options;
                 // Indicator cropThreshold has to be equal linked series one
                 // reduced by period due to points comparison in drawGraph
                 // (#9787)
-                options_1.cropThreshold = (parentOptions.cropThreshold -
-                    (options_1.params.period - 1));
+                options.cropThreshold = (parentOptions.cropThreshold -
+                    (options.params.period - 1));
             }
             unbinder();
         }, {
             order: 1
         });
-    };
-    SupertrendIndicator.prototype.drawGraph = function () {
-        var indicator = this, indicOptions = indicator.options, 
+    }
+    drawGraph() {
+        const indicator = this, indicOptions = indicator.options, 
         // Series that indicator is linked to
-        mainSeries = indicator.linkedParent, mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, indicPointsLen = indicPoints.length, 
+        mainSeries = indicator.linkedParent, mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, 
         // Points offset between lines
-        tempOffset = mainLinePoints.length - indicPointsLen, offset = tempOffset > 0 ? tempOffset : 0, 
+        tempOffset = mainLinePoints.length - indicPoints.length, offset = tempOffset > 0 ? tempOffset : 0, 
         // @todo: fix when ichi-moku indicator is merged to master.
         gappedExtend = {
             options: {
@@ -137,8 +121,8 @@ var SupertrendIndicator = /** @class */ (function (_super) {
                 }
             },
             intersect: indicOptions.changeTrendLine
-        }, close = 3, 
-        // Supertrend line point
+        }, close = 3;
+        let // Supertrend line point
         point, 
         // Supertrend line next point (has smaller x pos than point)
         nextPoint, 
@@ -150,7 +134,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
         // Used when particular point color is set
         pointColor, 
         // Temporary points that fill groupedPoitns array
-        newPoint, newNextPoint;
+        newPoint, newNextPoint, indicPointsLen = indicPoints.length;
         // Loop which sort supertrend points
         while (indicPointsLen--) {
             point = indicPoints[indicPointsLen];
@@ -285,7 +269,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
         indicator.points = indicPoints;
         indicator.options = indicOptions;
         indicator.graph = indicPath;
-    };
+    }
     // Supertrend (Multiplier, Period) Formula:
     // BASIC UPPERBAND = (HIGH + LOW) / 2 + Multiplier * ATR(Period)
     // BASIC LOWERBAND = (HIGH + LOW) / 2 - Multiplier * ATR(Period)
@@ -318,19 +302,20 @@ var SupertrendIndicator = /** @class */ (function (_super) {
     //      Previous Supertrend == Previous FINAL LOWERBAND AND
     //      Current Close > Current FINAL LOWERBAND
     //     ) THAN Current FINAL LOWERBAND
-    SupertrendIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, ATRData = [], 
+    getValues(series, params) {
+        const period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, 
         // 0- date, 1- Supertrend indicator
-        ST = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, basicUp, basicDown, finalUp = [], finalDown = [], supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
+        st = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, finalUp = [], finalDown = [];
+        let atrData = [], basicUp, basicDown, supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
         prevY, y, i;
         if ((xVal.length <= period) || !isArray(yVal[0]) ||
             yVal[0].length !== 4 || period < 0) {
             return;
         }
-        ATRData = ATRIndicator.prototype.getValues.call(this, series, {
+        atrData = ATRIndicator.prototype.getValues.call(this, series, {
             period: period
         }).yData;
-        for (i = 0; i < ATRData.length; i++) {
+        for (i = 0; i < atrData.length; i++) {
             y = yVal[periodsOffset + i];
             prevY = yVal[periodsOffset + i - 1] || [];
             prevFinalUp = finalUp[i - 1];
@@ -339,8 +324,8 @@ var SupertrendIndicator = /** @class */ (function (_super) {
             if (i === 0) {
                 prevFinalUp = prevFinalDown = prevST = 0;
             }
-            basicUp = correctFloat((y[high] + y[low]) / 2 + multiplier * ATRData[i]);
-            basicDown = correctFloat((y[high] + y[low]) / 2 - multiplier * ATRData[i]);
+            basicUp = correctFloat((y[high] + y[low]) / 2 + multiplier * atrData[i]);
+            basicDown = correctFloat((y[high] + y[low]) / 2 - multiplier * atrData[i]);
             if ((basicUp < prevFinalUp) ||
                 (prevY[close] > prevFinalUp)) {
                 finalUp[i] = basicUp;
@@ -363,109 +348,108 @@ var SupertrendIndicator = /** @class */ (function (_super) {
                 prevST === prevFinalDown && y[close] > finalDown[i]) {
                 supertrend = finalDown[i];
             }
-            ST.push([xVal[periodsOffset + i], supertrend]);
+            st.push([xVal[periodsOffset + i], supertrend]);
             xData.push(xVal[periodsOffset + i]);
             yData.push(supertrend);
         }
         return {
-            values: ST,
+            values: st,
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Supertrend indicator. This series requires the `linkedTo` option to be
+ * set and should be loaded after the `stock/indicators/indicators.js` and
+ * `stock/indicators/sma.js`.
+ *
+ * @sample {highstock} stock/indicators/supertrend
+ *         Supertrend indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        7.0.0
+ * @product      highstock
+ * @excluding    allAreas, cropThreshold, negativeColor, colorAxis, joinBy,
+ *               keys, navigatorOptions, pointInterval, pointIntervalUnit,
+ *               pointPlacement, pointRange, pointStart, showInNavigator,
+ *               stacking, threshold
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/supertrend
+ * @optionparent plotOptions.supertrend
+ */
+SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Supertrend indicator. This series requires the `linkedTo` option to be
-     * set and should be loaded after the `stock/indicators/indicators.js` and
-     * `stock/indicators/sma.js`.
+     * Paramters used in calculation of Supertrend indicator series points.
      *
-     * @sample {highstock} stock/indicators/supertrend
-     *         Supertrend indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        7.0.0
-     * @product      highstock
-     * @excluding    allAreas, cropThreshold, negativeColor, colorAxis, joinBy,
-     *               keys, navigatorOptions, pointInterval, pointIntervalUnit,
-     *               pointPlacement, pointRange, pointStart, showInNavigator,
-     *               stacking, threshold
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/supertrend
-     * @optionparent plotOptions.supertrend
+     * @excluding index
      */
-    SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        index: void 0,
         /**
-         * Paramters used in calculation of Supertrend indicator series points.
-         *
-         * @excluding index
+         * Multiplier for Supertrend Indicator.
          */
-        params: {
-            index: void 0,
+        multiplier: 3,
+        /**
+         * The base period for indicator Supertrend Indicator calculations.
+         * This is the number of data points which are taken into account
+         * for the indicator calculations.
+         */
+        period: 10
+    },
+    /**
+     * Color of the Supertrend series line that is beneath the main series.
+     *
+     * @sample {highstock} stock/indicators/supertrend/
+     *         Example with risingTrendColor
+     *
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     */
+    risingTrendColor: "#06b535" /* Palette.positiveColor */,
+    /**
+     * Color of the Supertrend series line that is above the main series.
+     *
+     * @sample {highstock} stock/indicators/supertrend/
+     *         Example with fallingTrendColor
+     *
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     */
+    fallingTrendColor: "#f21313" /* Palette.negativeColor */,
+    /**
+     * The styles for the Supertrend line that intersect main series.
+     *
+     * @sample {highstock} stock/indicators/supertrend/
+     *         Example with changeTrendLine
+     */
+    changeTrendLine: {
+        styles: {
             /**
-             * Multiplier for Supertrend Indicator.
+             * Pixel width of the line.
              */
-            multiplier: 3,
+            lineWidth: 1,
             /**
-             * The base period for indicator Supertrend Indicator calculations.
-             * This is the number of data points which are taken into account
-             * for the indicator calculations.
+             * Color of the line.
+             *
+             * @type {Highcharts.ColorString}
              */
-            period: 10
-        },
-        /**
-         * Color of the Supertrend series line that is beneath the main series.
-         *
-         * @sample {highstock} stock/indicators/supertrend/
-         *         Example with risingTrendColor
-         *
-         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         */
-        risingTrendColor: "#06b535" /* Palette.positiveColor */,
-        /**
-         * Color of the Supertrend series line that is above the main series.
-         *
-         * @sample {highstock} stock/indicators/supertrend/
-         *         Example with fallingTrendColor
-         *
-         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         */
-        fallingTrendColor: "#f21313" /* Palette.negativeColor */,
-        /**
-         * The styles for the Supertrend line that intersect main series.
-         *
-         * @sample {highstock} stock/indicators/supertrend/
-         *         Example with changeTrendLine
-         */
-        changeTrendLine: {
-            styles: {
-                /**
-                 * Pixel width of the line.
-                 */
-                lineWidth: 1,
-                /**
-                 * Color of the line.
-                 *
-                 * @type {Highcharts.ColorString}
-                 */
-                lineColor: "#333333" /* Palette.neutralColor80 */,
-                /**
-                 * The dash or dot style of the grid lines. For possible
-                 * values, see
-                 * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
-                 *
-                 * @sample {highcharts} highcharts/yaxis/gridlinedashstyle/
-                 *         Long dashes
-                 * @sample {highstock} stock/xaxis/gridlinedashstyle/
-                 *         Long dashes
-                 *
-                 * @type  {Highcharts.DashStyleValue}
-                 * @since 7.0.0
-                 */
-                dashStyle: 'LongDash'
-            }
+            lineColor: "#333333" /* Palette.neutralColor80 */,
+            /**
+             * The dash or dot style of the grid lines. For possible
+             * values, see
+             * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
+             *
+             * @sample {highcharts} highcharts/yaxis/gridlinedashstyle/
+             *         Long dashes
+             * @sample {highstock} stock/xaxis/gridlinedashstyle/
+             *         Long dashes
+             *
+             * @type  {Highcharts.DashStyleValue}
+             * @since 7.0.0
+             */
+            dashStyle: 'LongDash'
         }
-    });
-    return SupertrendIndicator;
-}(SMAIndicator));
+    }
+});
 extend(SupertrendIndicator.prototype, {
     nameBase: 'Supertrend',
     nameComponents: ['multiplier', 'period']

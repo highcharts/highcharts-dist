@@ -8,27 +8,12 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Chart from './Chart.js';
 import D from '../Defaults.js';
-var getOptions = D.getOptions;
+const { getOptions } = D;
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import U from '../Utilities.js';
-var merge = U.merge, pick = U.pick;
+const { merge, pick } = U;
 import '../../Maps/MapSymbols.js';
 /**
  * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
@@ -39,11 +24,7 @@ import '../../Maps/MapSymbols.js';
  * @name Highcharts.MapChart
  * @extends Highcharts.Chart
  */
-var MapChart = /** @class */ (function (_super) {
-    __extends(MapChart, _super);
-    function MapChart() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class MapChart extends Chart {
     /**
      * Initializes the chart. The constructor's arguments are passed on
      * directly.
@@ -61,9 +42,9 @@ var MapChart = /** @class */ (function (_super) {
      * @emits Highcharts.MapChart#event:init
      * @emits Highcharts.MapChart#event:afterInit
      */
-    MapChart.prototype.init = function (userOptions, callback) {
-        var defaultCreditsOptions = getOptions().credits;
-        var options = merge({
+    init(userOptions, callback) {
+        const defaultCreditsOptions = getOptions().credits;
+        const options = merge({
             chart: {
                 panning: {
                     enabled: true,
@@ -82,10 +63,9 @@ var MapChart = /** @class */ (function (_super) {
             }
         }, userOptions // user's options
         );
-        _super.prototype.init.call(this, options, callback);
-    };
-    return MapChart;
-}(Chart));
+        super.init(options, callback);
+    }
+}
 /* eslint-disable valid-jsdoc */
 (function (MapChart) {
     /**
@@ -107,21 +87,18 @@ var MapChart = /** @class */ (function (_super) {
      * @function Highcharts.mapChart
      *
      * @param {string|Highcharts.HTMLDOMElement} [renderTo]
-     * The DOM element to render to, or its id.
+     *        The DOM element to render to, or its id.
      *
      * @param {Highcharts.Options} options
-     * The chart options structure as described in the
-     * [options reference](https://api.highcharts.com/highstock).
+     *        The chart options structure as described in the
+     *        [options reference](https://api.highcharts.com/highstock).
      *
      * @param {Highcharts.ChartCallbackFunction} [callback]
-     * A function to execute when the chart object is finished loading and
-     * rendering. In most cases the chart is built in one thread, but in
-     * Internet Explorer version 8 or less the chart is sometimes initialized
-     * before the document is ready, and in these cases the chart object will
-     * not be finished synchronously. As a consequence, code that relies on the
-     * newly built Chart object should always run in the callback. Defining a
-     * [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
-     * handler is equivalent.
+     *        A function to execute when the chart object is finished
+     *        rendering and all external image files (`chart.backgroundImage`,
+     *        `chart.plotBackgroundImage` etc) are loaded.  Defining a
+     *        [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
+     *        handler is equivalent.
      *
      * @return {Highcharts.MapChart}
      * The chart object.
@@ -143,7 +120,7 @@ var MapChart = /** @class */ (function (_super) {
      * Splitted SVG path
      */
     function splitPath(path) {
-        var arr;
+        let arr;
         if (typeof path === 'string') {
             path = path
                 // Move letters apart
@@ -153,8 +130,8 @@ var MapChart = /** @class */ (function (_super) {
             // Split on spaces and commas. The semicolon is bogus, designed to
             // circumvent string replacement in the pre-v7 assembler that built
             // specific styled mode files.
-            var split = path.split(/[ ,;]+/);
-            arr = split.map(function (item) {
+            const split = path.split(/[ ,;]+/);
+            arr = split.map((item) => {
                 if (!/[A-za-z]/.test(item)) {
                     return parseFloat(item);
                 }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -125,11 +125,6 @@
                                 }
                             }
                         }
-                    }
-                },
-                labels: {
-                    style: {
-                        color: '#46465C'
                     }
                 },
                 credits: {

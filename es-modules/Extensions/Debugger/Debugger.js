@@ -11,16 +11,16 @@
 import ErrorMessages from './ErrorMessages.js';
 import H from '../../Core/Globals.js';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, find = U.find, isNumber = U.isNumber;
+const { addEvent, find, isNumber } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
-var defaultOptions = {
+const composedMembers = [];
+const defaultOptions = {
     /**
      * @optionparent chart
      */
@@ -47,16 +47,13 @@ var defaultOptions = {
  * @private
  */
 function compose(ChartClass) {
-    if (composedClasses.indexOf(ChartClass) === -1) {
-        composedClasses.push(ChartClass);
+    if (U.pushUnique(composedMembers, ChartClass)) {
         addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
     }
-    if (composedClasses.indexOf(H) === -1) {
-        composedClasses.push(H);
+    if (U.pushUnique(composedMembers, H)) {
         addEvent(H, 'displayError', onHighchartsDisplayError);
     }
-    if (composedClasses.indexOf(setOptions) === -1) {
-        composedClasses.push(setOptions);
+    if (U.pushUnique(composedMembers, setOptions)) {
         setOptions(defaultOptions);
     }
 }
@@ -64,10 +61,9 @@ function compose(ChartClass) {
  * @private
  */
 function onChartBeforeRedraw() {
-    var errorElements = this.errorElements;
+    const errorElements = this.errorElements;
     if (errorElements && errorElements.length) {
-        for (var _i = 0, errorElements_1 = errorElements; _i < errorElements_1.length; _i++) {
-            var el = errorElements_1[_i];
+        for (const el of errorElements) {
             el.destroy();
         }
     }
@@ -78,16 +74,15 @@ function onChartBeforeRedraw() {
  */
 function onHighchartsDisplayError(e) {
     // Display error on the chart causing the error or the last created chart.
-    var chart = (e.chart ||
-        find(this.charts.slice().reverse(), function (c) { return !!c; }));
+    const chart = (e.chart ||
+        find(this.charts.slice().reverse(), (c) => !!c));
     if (!chart) {
         return;
     }
-    var code = e.code, options = chart.options.chart, renderer = chart.renderer;
-    var msg, chartWidth, chartHeight;
+    const code = e.code, options = chart.options.chart, renderer = chart.renderer;
+    let msg, chartWidth, chartHeight;
     if (chart.errorElements) {
-        for (var _i = 0, _a = chart.errorElements; _i < _a.length; _i++) {
-            var el = _a[_i];
+        for (const el of chart.errorElements) {
             if (el) {
                 el.destroy();
             }
@@ -103,7 +98,7 @@ function onHighchartsDisplayError(e) {
         chartHeight = chart.chartHeight;
         // Format msg so SVGRenderer can handle it
         msg = msg
-            .replace(/<h1>(.*)<\/h1>/g, '<br><span style="font-size: 24px">$1</span><br>')
+            .replace(/<h1>(.*)<\/h1>/g, '<br><span style="font-size: 2em">$1</span><br>')
             .replace(/<p>/g, '')
             .replace(/<\/p>/g, '<br>');
         // Render red chart frame.
@@ -115,6 +110,7 @@ function onHighchartsDisplayError(e) {
         // Render error message
         chart.errorElements[1] = renderer.label(msg, 0, 0, 'rect', void 0, void 0, void 0, void 0, 'debugger').css({
             color: '#ffffff',
+            fontSize: '0.8em',
             width: (chartWidth - 16) + 'px',
             padding: 0
         }).attr({
@@ -133,7 +129,7 @@ function onHighchartsDisplayError(e) {
  *  Default Export
  *
  * */
-var Debugger = {
-    compose: compose
+const Debugger = {
+    compose
 };
 export default Debugger;

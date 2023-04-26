@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Variable Pie module for Highcharts
  *
@@ -50,22 +50,29 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var PieSeries = SeriesRegistry.seriesTypes.pie;
-        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, pick = U.pick;
+        var arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            clamp = U.clamp,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            merge = U.merge,
+            pick = U.pick;
         /* *
          *
          *  Class
@@ -81,14 +88,15 @@
          * @augments Highcharts.Series
          */
         var VariablePieSeries = /** @class */ (function (_super) {
-            __extends(VariablePieSeries, _super);
+                __extends(VariablePieSeries, _super);
             function VariablePieSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -113,14 +121,25 @@
              * @private
              */
             VariablePieSeries.prototype.calculateExtremes = function () {
-                var series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zMin, zMax, zData = series.zData, smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
-                // Min and max size of pie slice:
-                extremes = {}, 
-                // In pie charts size of a pie is changed to make space for
-                // dataLabels, then series.center is changing.
-                positions = series.center || series.getCenter();
+                var series = this,
+                    chart = series.chart,
+                    plotWidth = chart.plotWidth,
+                    plotHeight = chart.plotHeight,
+                    seriesOptions = series.options,
+                    slicingRoom = 2 * (seriesOptions.slicedOffset || 0),
+                    zMin,
+                    zMax,
+                    zData = series.zData,
+                    smallestSize = Math.min(plotWidth,
+                    plotHeight) - slicingRoom, 
+                    // Min and max size of pie slice:
+                    extremes = {}, 
+                    // In pie charts size of a pie is changed to make space for
+                    // dataLabels, then series.center is changing.
+                    positions = series.center || series.getCenter();
                 ['minPointSize', 'maxPointSize'].forEach(function (prop) {
-                    var length = seriesOptions[prop], isPercent = /%$/.test(length);
+                    var length = seriesOptions[prop],
+                        isPercent = /%$/.test(length);
                     length = parseInt(length, 10);
                     extremes[prop] = isPercent ?
                         smallestSize * length / 100 :
@@ -156,7 +175,16 @@
              * Minimal pixel size possible for radius.
              */
             VariablePieSeries.prototype.getRadii = function (zMin, zMax, minSize, maxSize) {
-                var i = 0, pos, zData = this.zData, len = zData.length, radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin, value, radius;
+                var i = 0,
+                    pos,
+                    zData = this.zData,
+                    len = zData.length,
+                    radii = [],
+                    options = this.options,
+                    sizeByArea = options.sizeBy !== 'radius',
+                    zRange = zMax - zMin,
+                    value,
+                    radius;
                 // Calculate radius for all pie slice's based on their Z values
                 for (i; i < len; i++) {
                     // if zData[i] is null/undefined/string we need to take zMin for
@@ -196,11 +224,33 @@
              */
             VariablePieSeries.prototype.translate = function (positions) {
                 this.generatePoints();
-                var series = this, cumulative = 0, precision = 1000, // issue #172
-                options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), finalConnectorOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
-                points = series.points, 
-                // the x component of the radius vector for a given point
-                radiusX, radiusY, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii, pointRadiusX, pointRadiusY;
+                var series = this,
+                    cumulative = 0,
+                    precision = 1000, // issue #172
+                    options = series.options,
+                    slicedOffset = options.slicedOffset,
+                    connectorOffset = slicedOffset + (options.borderWidth || 0),
+                    finalConnectorOffset,
+                    start,
+                    end,
+                    angle,
+                    startAngle = options.startAngle || 0,
+                    startAngleRad = Math.PI / 180 * (startAngle - 90),
+                    endAngleRad = Math.PI / 180 * (pick(options.endAngle,
+                    startAngle + 360) - 90),
+                    circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                    points = series.points, 
+                    // the x component of the radius vector for a given point
+                    radiusX,
+                    radiusY,
+                    labelDistance = options.dataLabels.distance,
+                    ignoreHiddenPoint = options.ignoreHiddenPoint,
+                    i,
+                    len = points.length,
+                    point,
+                    pointRadii,
+                    pointRadiusX,
+                    pointRadiusY;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
                 // Use calculateExtremes to get series.radii array.
@@ -275,7 +325,7 @@
                             y: positions[1] + pointRadiusY +
                                 Math.sin(angle) * point.labelDistance
                         },
-                        'final': {
+                        computed: {
                         // used for generating connector path -
                         // initialized later in drawDataLabels function
                         // x: undefined,

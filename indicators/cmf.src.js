@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -50,24 +50,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { merge } = U;
         /* *
          *
          *  Class
@@ -82,29 +66,26 @@
          *
          * @augments Highcharts.Series
          */
-        var CMFIndicator = /** @class */ (function (_super) {
-                __extends(CMFIndicator, _super);
-            function CMFIndicator() {
+        class CMFIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                _this.volumeSeries = void 0;
-                _this.linkedParent = void 0;
-                _this.yData = void 0;
-                _this.nameBase = 'Chaikin Money Flow';
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.volumeSeries = void 0;
+                this.linkedParent = void 0;
+                this.yData = void 0;
+                this.nameBase = 'Chaikin Money Flow';
             }
             /* *
              *
@@ -119,16 +100,12 @@
              * @return {boolean} True if series is valid and can be computed,
              * otherwise false.
              */
-            CMFIndicator.prototype.isValid = function () {
-                var chart = this.chart,
-                    options = this.options,
-                    series = this.linkedParent,
-                    volumeSeries = (this.volumeSeries ||
-                        (this.volumeSeries =
-                            chart.get(options.params.volumeSeriesID))),
-                    isSeriesOHLC = (series &&
-                        series.yData &&
-                        series.yData[0].length === 4);
+            isValid() {
+                const chart = this.chart, options = this.options, series = this.linkedParent, volumeSeries = (this.volumeSeries ||
+                    (this.volumeSeries =
+                        chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series &&
+                    series.yData &&
+                    series.yData[0].length === 4);
                 /**
                  * @private
                  * @param {Highcharts.Series} serie to check length validity on.
@@ -142,7 +119,7 @@
                     volumeSeries &&
                     isLengthValid(series) &&
                     isLengthValid(volumeSeries) && isSeriesOHLC);
-            };
+            }
             /**
              * Returns indicator's data.
              * @private
@@ -152,12 +129,12 @@
              * @return {boolean|Highcharts.IndicatorNullableValuesObject} Returns false if the
              * indicator is not valid, otherwise returns Values object.
              */
-            CMFIndicator.prototype.getValues = function (series, params) {
+            getValues(series, params) {
                 if (!this.isValid()) {
                     return;
                 }
                 return this.getMoneyFlow(series.xData, series.yData, this.volumeSeries.yData, params.period);
-            };
+            }
             /**
              * @private
              *
@@ -176,17 +153,9 @@
              * @return {Highcharts.IndicatorNullableValuesObject}
              * object containing computed money flow data
              */
-            CMFIndicator.prototype.getMoneyFlow = function (xData, seriesYData, volumeSeriesYData, period) {
-                var len = seriesYData.length,
-                    moneyFlowVolume = [],
-                    sumVolume = 0,
-                    sumMoneyFlowVolume = 0,
-                    moneyFlowXData = [],
-                    moneyFlowYData = [],
-                    values = [],
-                    i,
-                    point,
-                    nullIndex = -1;
+            getMoneyFlow(xData, seriesYData, volumeSeriesYData, period) {
+                const len = seriesYData.length, moneyFlowVolume = [], moneyFlowXData = [], moneyFlowYData = [], values = [];
+                let i, point, nullIndex = -1, sumVolume = 0, sumMoneyFlowVolume = 0;
                 /**
                  * Calculates money flow volume, changes i, nullIndex vars from
                  * upper scope!
@@ -203,14 +172,11 @@
                  * Volume * moneyFlowMultiplier
                  */
                 function getMoneyFlowVolume(ohlc, volume) {
-                    var high = ohlc[1],
-                        low = ohlc[2],
-                        close = ohlc[3],
-                        isValid = volume !== null &&
-                            high !== null &&
-                            low !== null &&
-                            close !== null &&
-                            high !== low;
+                    const high = ohlc[1], low = ohlc[2], close = ohlc[3], isValid = volume !== null &&
+                        high !== null &&
+                        low !== null &&
+                        close !== null &&
+                        high !== low;
                     /**
                      * @private
                      * @param {number} h
@@ -262,36 +228,35 @@
                     xData: moneyFlowXData,
                     yData: moneyFlowYData
                 };
-            };
+            }
+        }
+        /**
+         * Chaikin Money Flow indicator (cmf).
+         *
+         * @sample stock/indicators/cmf/
+         *         Chaikin Money Flow indicator
+         *
+         * @extends      plotOptions.sma
+         * @since        6.0.0
+         * @excluding    animationLimit
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/cmf
+         * @optionparent plotOptions.cmf
+         */
+        CMFIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Chaikin Money Flow indicator (cmf).
-             *
-             * @sample stock/indicators/cmf/
-             *         Chaikin Money Flow indicator
-             *
-             * @extends      plotOptions.sma
-             * @since        6.0.0
-             * @excluding    animationLimit
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/cmf
-             * @optionparent plotOptions.cmf
+             * @excluding index
              */
-            CMFIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                index: void 0,
                 /**
-                 * @excluding index
+                 * The id of another series to use its data as volume data for the
+                 * indiator calculation.
                  */
-                params: {
-                    index: void 0,
-                    /**
-                     * The id of another series to use its data as volume data for the
-                     * indiator calculation.
-                     */
-                    volumeSeriesID: 'volume'
-                }
-            });
-            return CMFIndicator;
-        }(SMAIndicator));
+                volumeSeriesID: 'volume'
+            }
+        });
         SeriesRegistry.registerSeriesType('cmf', CMFIndicator);
         /* *
          *

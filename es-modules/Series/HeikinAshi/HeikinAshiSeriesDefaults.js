@@ -26,7 +26,7 @@
  * @requires     modules/heikinashi
  * @optionparent plotOptions.heikinashi
  */
-var HeikinAshiDefaults = {
+const HeikinAshiDefaults = {
     dataGrouping: {
         groupAll: true
     }

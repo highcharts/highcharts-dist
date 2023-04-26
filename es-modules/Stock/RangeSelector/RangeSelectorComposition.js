@@ -9,23 +9,23 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var defaultOptions = D.defaultOptions, setOptions = D.setOptions;
+const { defaultOptions, setOptions } = D;
 import RangeSelectorDefaults from './RangeSelectorDefaults.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, find = U.find, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
+const { addEvent, defined, extend, find, isNumber, merge, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var chartDestroyEvents = [];
-var composedMembers = [];
+const chartDestroyEvents = [];
+const composedMembers = [];
 /* *
  *
  *  Variables
  *
  * */
-var RangeSelectorConstructor;
+let RangeSelectorConstructor;
 /* *
  *
  *  Functions
@@ -43,20 +43,20 @@ var RangeSelectorConstructor;
  *         The new minimum value.
  */
 function axisMinFromRange() {
-    var rangeOptions = this.range, type = rangeOptions.type, max = this.max, time = this.chart.time, 
+    const rangeOptions = this.range, type = rangeOptions.type, max = this.max, time = this.chart.time, 
     // Get the true range from a start date
     getTrueRange = function (base, count) {
-        var timeName = type === 'year' ?
+        const timeName = type === 'year' ?
             'FullYear' : 'Month';
-        var date = new time.Date(base);
-        var basePeriod = time.get(timeName, date);
+        const date = new time.Date(base);
+        const basePeriod = time.get(timeName, date);
         time.set(timeName, date, basePeriod + count);
         if (basePeriod === time.get(timeName, date)) {
             time.set('Date', date, 0); // #6537
         }
         return date.getTime() - base;
     };
-    var min, range;
+    let min, range;
     if (isNumber(rangeOptions)) {
         min = max - rangeOptions;
         range = rangeOptions;
@@ -68,7 +68,7 @@ function axisMinFromRange() {
             this.chart.fixedRange = max - min;
         }
     }
-    var dataMin = pick(this.dataMin, Number.MIN_VALUE);
+    const dataMin = pick(this.dataMin, Number.MIN_VALUE);
     if (!isNumber(min)) {
         min = dataMin;
     }
@@ -94,22 +94,20 @@ function axisMinFromRange() {
  */
 function compose(AxisClass, ChartClass, RangeSelectorClass) {
     RangeSelectorConstructor = RangeSelectorClass;
-    if (composedMembers.indexOf(AxisClass) === -1) {
-        composedMembers.push(AxisClass);
+    if (U.pushUnique(composedMembers, AxisClass)) {
         AxisClass.prototype.minFromRange = axisMinFromRange;
     }
-    if (composedMembers.indexOf(ChartClass) === -1) {
-        composedMembers.push(ChartClass);
+    if (U.pushUnique(composedMembers, ChartClass)) {
         addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
         addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         addEvent(ChartClass, 'destroy', onChartDestroy);
         addEvent(ChartClass, 'getMargins', onChartGetMargins);
         addEvent(ChartClass, 'render', onChartRender);
         addEvent(ChartClass, 'update', onChartUpdate);
-        var chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
         chartProto.callbacks.push(onChartCallback);
     }
-    if (composedMembers.indexOf(setOptions) === -1) {
+    if (U.pushUnique(composedMembers, setOptions)) {
         extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
         extend(defaultOptions.lang, RangeSelectorDefaults.lang);
     }
@@ -128,19 +126,19 @@ function onChartAfterGetContainer() {
  * @private
  */
 function onChartBeforeRender() {
-    var chart = this, axes = chart.axes, rangeSelector = chart.rangeSelector;
+    const chart = this, axes = chart.axes, rangeSelector = chart.rangeSelector;
     if (rangeSelector) {
         if (isNumber(rangeSelector.deferredYTDClick)) {
             rangeSelector.clickButton(rangeSelector.deferredYTDClick);
             delete rangeSelector.deferredYTDClick;
         }
-        axes.forEach(function (axis) {
+        axes.forEach((axis) => {
             axis.updateNames();
             axis.setScale();
         });
         chart.getAxisMargins();
         rangeSelector.render();
-        var verticalAlign = rangeSelector.options.verticalAlign;
+        const verticalAlign = rangeSelector.options.verticalAlign;
         if (!rangeSelector.options.floating) {
             if (verticalAlign === 'bottom') {
                 this.extraBottomMargin = true;
@@ -155,8 +153,8 @@ function onChartBeforeRender() {
  * @private
  */
 function onChartCallback(chart) {
-    var extremes, legend, alignTo, verticalAlign;
-    var rangeSelector = chart.rangeSelector, redraw = function () {
+    let extremes, legend, alignTo, verticalAlign;
+    const rangeSelector = chart.rangeSelector, redraw = () => {
         if (rangeSelector) {
             extremes = chart.xAxis[0].getExtremes();
             legend = chart.legend;
@@ -183,7 +181,7 @@ function onChartCallback(chart) {
         }
     };
     if (rangeSelector) {
-        var events = find(chartDestroyEvents, function (e) { return e[0] === chart; });
+        const events = find(chartDestroyEvents, (e) => e[0] === chart);
         if (!events) {
             chartDestroyEvents.push([chart, [
                     // redraw the scroller on setExtremes
@@ -205,19 +203,19 @@ function onChartCallback(chart) {
  * @private
  */
 function onChartDestroy() {
-    for (var i = 0, iEnd = chartDestroyEvents.length; i < iEnd; ++i) {
-        var events = chartDestroyEvents[i];
+    for (let i = 0, iEnd = chartDestroyEvents.length; i < iEnd; ++i) {
+        const events = chartDestroyEvents[i];
         if (events[0] === this) {
-            events[1].forEach(function (unbind) { return unbind(); });
+            events[1].forEach((unbind) => unbind());
             chartDestroyEvents.splice(i, 1);
             return;
         }
     }
 }
 function onChartGetMargins() {
-    var rangeSelector = this.rangeSelector;
+    const rangeSelector = this.rangeSelector;
     if (rangeSelector) {
-        var rangeSelectorHeight = rangeSelector.getHeight();
+        const rangeSelectorHeight = rangeSelector.getHeight();
         if (this.extraTopMargin) {
             this.plotTop += rangeSelectorHeight;
         }
@@ -230,10 +228,10 @@ function onChartGetMargins() {
  * @private
  */
 function onChartRender() {
-    var chart = this, rangeSelector = chart.rangeSelector;
+    const chart = this, rangeSelector = chart.rangeSelector;
     if (rangeSelector && !rangeSelector.options.floating) {
         rangeSelector.render();
-        var verticalAlign = rangeSelector.options.verticalAlign;
+        const verticalAlign = rangeSelector.options.verticalAlign;
         if (verticalAlign === 'bottom') {
             this.extraBottomMargin = true;
         }
@@ -246,8 +244,8 @@ function onChartRender() {
  * @private
  */
 function onChartUpdate(e) {
-    var chart = this, options = e.options, optionsRangeSelector = options.rangeSelector, extraBottomMarginWas = this.extraBottomMargin, extraTopMarginWas = this.extraTopMargin;
-    var rangeSelector = chart.rangeSelector;
+    const chart = this, options = e.options, optionsRangeSelector = options.rangeSelector, extraBottomMarginWas = this.extraBottomMargin, extraTopMarginWas = this.extraTopMargin;
+    let rangeSelector = chart.rangeSelector;
     if (optionsRangeSelector &&
         optionsRangeSelector.enabled &&
         !defined(rangeSelector) &&
@@ -259,7 +257,7 @@ function onChartUpdate(e) {
     this.extraTopMargin = false;
     if (rangeSelector) {
         onChartCallback(this);
-        var verticalAlign = (optionsRangeSelector &&
+        const verticalAlign = (optionsRangeSelector &&
             optionsRangeSelector.verticalAlign) || (rangeSelector.options && rangeSelector.options.verticalAlign);
         if (!rangeSelector.options.floating) {
             if (verticalAlign === 'bottom') {
@@ -280,7 +278,7 @@ function onChartUpdate(e) {
  *  Default Export
  *
  * */
-var RangeSelectorComposition = {
-    compose: compose
+const RangeSelectorComposition = {
+    compose
 };
 export default RangeSelectorComposition;

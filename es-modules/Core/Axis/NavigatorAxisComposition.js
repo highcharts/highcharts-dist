@@ -9,15 +9,15 @@
  * */
 'use strict';
 import H from '../Globals.js';
-var isTouchDevice = H.isTouchDevice;
+const { isTouchDevice } = H;
 import U from '../Utilities.js';
-var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, isNumber = U.isNumber, pick = U.pick;
+const { addEvent, correctFloat, defined, isNumber, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -27,7 +27,7 @@ var composedClasses = [];
  * @private
  */
 function onAxisInit() {
-    var axis = this;
+    const axis = this;
     if (!axis.navigatorAxis) {
         axis.navigatorAxis = new NavigatorAxisAdditions(axis);
     }
@@ -39,7 +39,7 @@ function onAxisInit() {
  * @private
  */
 function onAxisZoom(e) {
-    var axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chartOptions.chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chartOptions.chart.zooming.type;
+    const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chartOptions.chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chartOptions.chart.zooming.type;
     if (axis.isXAxis && ((navigator && navigator.enabled) ||
         (rangeSelector && rangeSelector.enabled))) {
         // For y only zooming, ignore the X axis completely
@@ -54,7 +54,7 @@ function onAxisZoom(e) {
         else if (((!isTouchDevice && zoomType === 'xy') ||
             (isTouchDevice && pinchType === 'xy')) &&
             axis.options.range) {
-            var previousZoom = navigatorAxis.previousZoom;
+            const previousZoom = navigatorAxis.previousZoom;
             if (defined(e.newMin)) {
                 navigatorAxis.previousZoom = [axis.min, axis.max];
             }
@@ -78,15 +78,7 @@ function onAxisZoom(e) {
  * @private
  * @class
  */
-var NavigatorAxisAdditions = /** @class */ (function () {
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    function NavigatorAxisAdditions(axis) {
-        this.axis = axis;
-    }
+class NavigatorAxisAdditions {
     /* *
      *
      *  Static Functions
@@ -95,14 +87,21 @@ var NavigatorAxisAdditions = /** @class */ (function () {
     /**
      * @private
      */
-    NavigatorAxisAdditions.compose = function (AxisClass) {
-        if (composedClasses.indexOf(AxisClass) === -1) {
-            composedClasses.push(AxisClass);
+    static compose(AxisClass) {
+        if (U.pushUnique(composedMembers, AxisClass)) {
             AxisClass.keepProps.push('navigatorAxis');
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'zoom', onAxisZoom);
         }
-    };
+    }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
+    constructor(axis) {
+        this.axis = axis;
+    }
     /* *
      *
      *  Functions
@@ -111,9 +110,9 @@ var NavigatorAxisAdditions = /** @class */ (function () {
     /**
      * @private
      */
-    NavigatorAxisAdditions.prototype.destroy = function () {
+    destroy() {
         this.axis = void 0;
-    };
+    }
     /**
      * Add logic to normalize the zoomed range in order to preserve the pressed
      * state of range selector buttons
@@ -121,10 +120,10 @@ var NavigatorAxisAdditions = /** @class */ (function () {
      * @private
      * @function Highcharts.Axis#toFixedRange
      */
-    NavigatorAxisAdditions.prototype.toFixedRange = function (pxMin, pxMax, fixedMin, fixedMax) {
-        var axis = this.axis, chart = axis.chart;
-        var newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
-        var fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2, changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+    toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
+        const axis = this.axis, chart = axis.chart;
+        let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
+        const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2, changeRatio = fixedRange && (newMax - newMin) / fixedRange;
         // Add/remove half point range to/from the extremes (#1172)
         if (!defined(fixedMin)) {
             newMin = correctFloat(newMin + halfPointRange);
@@ -150,9 +149,8 @@ var NavigatorAxisAdditions = /** @class */ (function () {
             min: newMin,
             max: newMax
         };
-    };
-    return NavigatorAxisAdditions;
-}());
+    }
+}
 /* *
  *
  *  Default Export

@@ -12,26 +12,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import CylinderPoint from './CylinderPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var ColumnSeries = SeriesRegistry.seriesTypes.column;
+const { seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 import './CylinderComposition.js';
 /* *
  *
@@ -50,43 +35,40 @@ import './CylinderComposition.js';
  *
  * @augments Highcharts.Series
  */
-var CylinderSeries = /** @class */ (function (_super) {
-    __extends(CylinderSeries, _super);
-    function CylinderSeries() {
+class CylinderSeries extends ColumnSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
-    /**
-     * A cylinder graph is a variation of a 3d column graph. The cylinder graph
-     * features cylindrical points.
-     *
-     * @sample {highcharts} highcharts/demo/cylinder/
-     *         Cylinder graph
-     *
-     * @extends      plotOptions.column
-     * @since        7.0.0
-     * @product      highcharts
-     * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
-     *               dragDrop, boostBlending
-     * @requires     modules/cylinder
-     * @optionparent plotOptions.cylinder
-     */
-    CylinderSeries.defaultOptions = merge(ColumnSeries.defaultOptions);
-    return CylinderSeries;
-}(ColumnSeries));
+}
+/**
+ * A cylinder graph is a variation of a 3d column graph. The cylinder graph
+ * features cylindrical points.
+ *
+ * @sample {highcharts} highcharts/demo/cylinder/
+ *         Cylinder graph
+ *
+ * @extends      plotOptions.column
+ * @since        7.0.0
+ * @product      highcharts
+ * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
+ *               dragDrop, boostBlending
+ * @requires     modules/cylinder
+ * @optionparent plotOptions.cylinder
+ */
+CylinderSeries.defaultOptions = merge(ColumnSeries.defaultOptions);
 extend(CylinderSeries.prototype, {
     pointClass: CylinderPoint
 });

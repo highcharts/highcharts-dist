@@ -15,13 +15,13 @@
  *  Class
  *
  * */
-var TreemapAlgorithmGroup = /** @class */ (function () {
+class TreemapAlgorithmGroup {
     /* *
      *
      *  Constructor
      *
      * */
-    function TreemapAlgorithmGroup(h, w, d, p) {
+    constructor(h, w, d, p) {
         this.height = h;
         this.width = w;
         this.plot = p;
@@ -52,7 +52,7 @@ var TreemapAlgorithmGroup = /** @class */ (function () {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    TreemapAlgorithmGroup.prototype.addElement = function (el) {
+    addElement(el) {
         this.lP.total = this.elArr[this.elArr.length - 1];
         this.total = this.total + el;
         if (this.direction === 0) {
@@ -76,15 +76,14 @@ var TreemapAlgorithmGroup = /** @class */ (function () {
             this.lP.nR = this.lP.aspectRatio(this.lP.nW, this.nH);
         }
         this.elArr.push(el);
-    };
-    TreemapAlgorithmGroup.prototype.reset = function () {
+    }
+    reset() {
         this.nW = 0;
         this.lW = 0;
         this.elArr = [];
         this.total = 0;
-    };
-    return TreemapAlgorithmGroup;
-}());
+    }
+}
 /* *
  *
  *  Default Export

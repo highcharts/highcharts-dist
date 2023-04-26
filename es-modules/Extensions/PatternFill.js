@@ -12,19 +12,19 @@
  * */
 'use strict';
 import A from '../Core/Animation/AnimationUtilities.js';
-var animObject = A.animObject;
+const { animObject } = A;
 import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
 import D from '../Core/Defaults.js';
-var getOptions = D.getOptions;
+const { getOptions } = D;
 import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, erase = U.erase, merge = U.merge, pick = U.pick, removeEvent = U.removeEvent, wrap = U.wrap;
+const { addEvent, defined, erase, merge, pick, removeEvent, wrap } = U;
 // Add the predefined patterns
-var patterns = H.patterns = (function () {
-    var patterns = [], colors = getOptions().colors;
+const patterns = H.patterns = (() => {
+    const patterns = [], colors = getOptions().colors;
     // Start with subtle patterns
     [
         'M 0 0 L 5 5 M 4.5 -0.5 L 5.5 0.5 M -0.5 4.5 L 0.5 5.5',
@@ -32,7 +32,7 @@ var patterns = H.patterns = (function () {
         'M 2 0 L 2 5 M 4 0 L 4 5',
         'M 0 2 L 5 2 M 0 4 L 5 4',
         'M 0 1.5 L 2.5 1.5 L 2.5 0 M 2.5 5 L 2.5 3.5 L 5 3.5'
-    ].forEach(function (pattern, i) {
+    ].forEach((pattern, i) => {
         patterns.push({
             path: pattern,
             color: colors[i],
@@ -48,7 +48,7 @@ var patterns = H.patterns = (function () {
         'M 5 5 m -4 0 a 4 4 0 1 1 8 0 a 4 4 0 1 1 -8 0',
         'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
         'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9'
-    ].forEach(function (pattern, i) {
+    ].forEach((pattern, i) => {
         patterns.push({
             path: pattern,
             color: colors[i + 5],
@@ -76,11 +76,11 @@ var patterns = H.patterns = (function () {
  *         The computed hash.
  */
 function hashFromObject(obj, preSeed) {
-    var str = JSON.stringify(obj), strLen = str.length || 0;
-    var hash = 0, i = 0, char, seedStep;
+    const str = JSON.stringify(obj), strLen = str.length || 0;
+    let hash = 0, i = 0, char, seedStep;
     if (preSeed) {
         seedStep = Math.max(Math.floor(strLen / 500), 1);
-        for (var a = 0; a < strLen; a += seedStep) {
+        for (let a = 0; a < strLen; a += seedStep) {
             hash += str.charCodeAt(a);
         }
         hash = hash & hash;
@@ -114,7 +114,7 @@ Point.prototype.calculatePatternDimensions = function (pattern) {
     if (pattern.width && pattern.height) {
         return;
     }
-    var bBox = this.graphic && (this.graphic.getBBox &&
+    const bBox = this.graphic && (this.graphic.getBBox &&
         this.graphic.getBBox(true) ||
         this.graphic.element &&
             this.graphic.element.getBBox()) || {}, shapeArgs = this.shapeArgs;
@@ -134,7 +134,7 @@ Point.prototype.calculatePatternDimensions = function (pattern) {
             pattern._width = 'defer';
             pattern._height = 'defer';
             // Mark the pattern to be flipped later if upside down (#16810)
-            var scaleY = this.series.chart.mapView &&
+            const scaleY = this.series.chart.mapView &&
                 this.series.chart.mapView.getSVGTransform().scaleY;
             if (defined(scaleY) && scaleY < 0) {
                 pattern._inverted = true;
@@ -194,9 +194,9 @@ Point.prototype.calculatePatternDimensions = function (pattern) {
  * @requires modules/pattern-fill
  */
 SVGRenderer.prototype.addPattern = function (options, animation) {
-    var pattern, animate = pick(animation, true), animationOptions = animObject(animate), path, defaultSize = 32, width = options.width || options._width || defaultSize, height = (options.height || options._height || defaultSize), color = options.color || '#343434', id = options.id, ren = this, rect = function (fill) {
+    let pattern, animate = pick(animation, true), animationOptions = animObject(animate), path, defaultSize = 32, width = options.width || options._width || defaultSize, height = (options.height || options._height || defaultSize), color = options.color || '#343434', id = options.id, ren = this, rect = function (fill) {
         ren.rect(0, 0, width, height)
-            .attr({ fill: fill })
+            .attr({ fill })
             .add(pattern);
     }, attribs;
     if (!id) {
@@ -218,7 +218,7 @@ SVGRenderer.prototype.addPattern = function (options, animation) {
     // Store ID in list to avoid duplicates
     this.defIds.push(id);
     // Calculate pattern element attributes
-    var attrs = {
+    const attrs = {
         id: id,
         patternUnits: 'userSpaceOnUse',
         patternContentUnits: options.patternContentUnits || 'userSpaceOnUse',
@@ -291,7 +291,7 @@ SVGRenderer.prototype.addPattern = function (options, animation) {
 };
 // Make sure we have a series color
 wrap(Series.prototype, 'getColor', function (proceed) {
-    var oldColor = this.options.color;
+    const oldColor = this.options.color;
     // Temporarely remove color options to get defaults
     if (oldColor &&
         oldColor.pattern &&
@@ -311,10 +311,10 @@ wrap(Series.prototype, 'getColor', function (proceed) {
 });
 // Calculate pattern dimensions on points that have their own pattern.
 addEvent(Series, 'render', function () {
-    var isResizing = this.chart.isResizing;
+    const isResizing = this.chart.isResizing;
     if (this.isDirtyData || isResizing || !this.chart.hasRendered) {
         (this.points || []).forEach(function (point) {
-            var colorOptions = point.options && point.options.color;
+            const colorOptions = point.options && point.options.color;
             if (colorOptions &&
                 colorOptions.pattern) {
                 // For most points we want to recalculate the dimensions on
@@ -339,7 +339,7 @@ addEvent(Series, 'render', function () {
 });
 // Merge series color options to points
 addEvent(Point, 'afterInit', function () {
-    var point = this, colorOptions = point.options.color;
+    const point = this, colorOptions = point.options.color;
     // Only do this if we have defined a specific color on this point. Otherwise
     // we will end up trying to re-add the series color for each point.
     if (colorOptions && colorOptions.pattern) {
@@ -356,8 +356,8 @@ addEvent(Point, 'afterInit', function () {
 });
 // Add functionality to SVG renderer to handle patterns as complex colors
 addEvent(SVGRenderer, 'complexColor', function (args) {
-    var color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
-    var pattern = color.pattern, value = '#343434';
+    const color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
+    let pattern = color.pattern, value = '#343434';
     // Handle patternIndex
     if (typeof color.patternIndex !== 'undefined' && patterns) {
         pattern = patterns[color.patternIndex];
@@ -375,7 +375,7 @@ addEvent(SVGRenderer, 'complexColor', function (args) {
         // point render, meaning they are drawn before autocalculated image
         // width/heights. We don't want them to highjack the width/height for
         // this ID if it is defined by users.
-        var forceHashId = element.parentNode &&
+        let forceHashId = element.parentNode &&
             element.parentNode.getAttribute('class');
         forceHashId = forceHashId &&
             forceHashId.indexOf('highcharts-legend') > -1;
@@ -398,7 +398,7 @@ addEvent(SVGRenderer, 'complexColor', function (args) {
         // Add it. This function does nothing if an element with this ID
         // already exists.
         this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
-        value = "url(".concat(this.url, "#").concat(pattern.id + (this.forExport ? '-export' : ''), ")");
+        value = `url(${this.url}#${pattern.id + (this.forExport ? '-export' : '')})`;
     }
     else {
         // Not a full pattern definition, just add color
@@ -426,7 +426,7 @@ addEvent(Chart, 'endResize', function () {
         this.series.forEach(function (series) {
             if (series.visible) {
                 series.points.forEach(function (point) {
-                    var colorOptions = point.options && point.options.color;
+                    const colorOptions = point.options && point.options.color;
                     if (colorOptions &&
                         colorOptions.pattern) {
                         colorOptions.pattern
@@ -444,7 +444,7 @@ addEvent(Chart, 'endResize', function () {
 // Add a garbage collector to delete old patterns with autogenerated hashes that
 // are no longer being referenced.
 addEvent(Chart, 'redraw', function () {
-    var usedIds = {}, renderer = this.renderer, 
+    const usedIds = {}, renderer = this.renderer, 
     // Get the autocomputed patterns - these are the ones we might delete
     patterns = (renderer.defIds || []).filter(function (pattern) {
         return (pattern.indexOf &&
@@ -454,11 +454,11 @@ addEvent(Chart, 'redraw', function () {
         // Look through the DOM for usage of the patterns. This can be points,
         // series, tooltips etc.
         [].forEach.call(this.renderTo.querySelectorAll('[color^="url("], [fill^="url("], [stroke^="url("]'), function (node) {
-            var id = node.getAttribute('fill') ||
+            const id = node.getAttribute('fill') ||
                 node.getAttribute('color') ||
                 node.getAttribute('stroke');
             if (id) {
-                var sanitizedId = id
+                const sanitizedId = id
                     .replace(renderer.url, '')
                     .replace('url(#', '')
                     .replace(')', '');

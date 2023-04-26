@@ -4,25 +4,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Controllable from './Controllable.js';
 import ControllablePath from './ControllablePath.js';
 import U from '../../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
@@ -41,23 +26,21 @@ var merge = U.merge;
  * @param {Highcharts.AnnotationsShapeOptions} options a shape's options
  * @param {number} index of the circle
  */
-var ControllableCircle = /** @class */ (function (_super) {
-    __extends(ControllableCircle, _super);
+class ControllableCircle extends Controllable {
     /* *
      *
      *  Constructors
      *
      * */
-    function ControllableCircle(annotation, options, index) {
-        var _this = _super.call(this, annotation, options, index, 'shape') || this;
+    constructor(annotation, options, index) {
+        super(annotation, options, index, 'shape');
         /* *
          *
          *  Properties
          *
          * */
-        _this.type = 'circle';
-        _this.translate = _super.prototype.translateShape;
-        return _this;
+        this.type = 'circle';
+        this.translate = super.translateShape;
     }
     /* *
      *
@@ -67,9 +50,9 @@ var ControllableCircle = /** @class */ (function (_super) {
     /**
      * @private
      */
-    ControllableCircle.prototype.redraw = function (animation) {
+    redraw(animation) {
         if (this.graphic) {
-            var position = this.anchor(this.points[0]).absolutePosition;
+            const position = this.anchor(this.points[0]).absolutePosition;
             if (position) {
                 this.graphic[animation ? 'animate' : 'attr']({
                     x: position.x,
@@ -85,43 +68,42 @@ var ControllableCircle = /** @class */ (function (_super) {
             }
             this.graphic.placed = !!position;
         }
-        _super.prototype.redraw.call(this, animation);
-    };
+        super.redraw.call(this, animation);
+    }
     /**
      * @private
      */
-    ControllableCircle.prototype.render = function (parent) {
-        var attrs = this.attrsFromOptions(this.options);
+    render(parent) {
+        const attrs = this.attrsFromOptions(this.options);
         this.graphic = this.annotation.chart.renderer
             .circle(0, -9e9, 0)
             .attr(attrs)
             .add(parent);
-        _super.prototype.render.call(this);
-    };
+        super.render();
+    }
     /**
      * Set the radius.
      * @private
      * @param {number} r
      *        A radius to be set
      */
-    ControllableCircle.prototype.setRadius = function (r) {
+    setRadius(r) {
         this.options.r = r;
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    /**
-     * A map object which allows to map options attributes to element
-     * attributes.
-     *
-     * @name Highcharts.AnnotationControllableCircle.attrsMap
-     * @type {Highcharts.Dictionary<string>}
-     */
-    ControllableCircle.attrsMap = merge(ControllablePath.attrsMap, { r: 'r' });
-    return ControllableCircle;
-}(Controllable));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+/**
+ * A map object which allows to map options attributes to element
+ * attributes.
+ *
+ * @name Highcharts.AnnotationControllableCircle.attrsMap
+ * @type {Highcharts.Dictionary<string>}
+ */
+ControllableCircle.attrsMap = merge(ControllablePath.attrsMap, { r: 'r' });
 /* *
  *
  *  Default Export

@@ -6,25 +6,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
+const { correctFloat, isArray, merge } = U;
 /* *
  *
  *  Class
@@ -39,50 +24,48 @@ var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var EMAIndicator = /** @class */ (function (_super) {
-    __extends(EMAIndicator, _super);
-    function EMAIndicator() {
+class EMAIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    EMAIndicator.prototype.accumulatePeriodPoints = function (period, index, yVal) {
-        var sum = 0, i = 0, y = 0;
+    accumulatePeriodPoints(period, index, yVal) {
+        let sum = 0, i = 0, y = 0;
         while (i < period) {
             y = index < 0 ? yVal[i] : yVal[i][index];
             sum = sum + y;
             i++;
         }
         return sum;
-    };
-    EMAIndicator.prototype.calculateEma = function (xVal, yVal, i, EMApercent, calEMA, index, SMA) {
-        var x = xVal[i - 1], yValue = index < 0 ?
+    }
+    calculateEma(xVal, yVal, i, EMApercent, calEMA, index, SMA) {
+        const x = xVal[i - 1], yValue = index < 0 ?
             yVal[i - 1] :
             yVal[i - 1][index], y = typeof calEMA === 'undefined' ?
             SMA : correctFloat((yValue * EMApercent) +
             (calEMA * (1 - EMApercent)));
         return [x, y];
-    };
-    EMAIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
-        var calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
+    }
+    getValues(series, params) {
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
+        let calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
         // Check period, if bigger than points length, skip
         if (yValLen < period) {
             return;
@@ -108,38 +91,37 @@ var EMAIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
-    /**
-     * Exponential moving average indicator (EMA). This series requires the
-     * `linkedTo` option to be set.
-     *
-     * @sample stock/indicators/ema
-     * Exponential moving average indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @optionparent plotOptions.ema
-     */
-    EMAIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        params: {
-            /**
-             * The point index which indicator calculations will base. For
-             * example using OHLC data, index=2 means the indicator will be
-             * calculated using Low values.
-             *
-             * By default index value used to be set to 0. Since
-             * Highcharts Stock 7 by default index is set to 3
-             * which means that the ema indicator will be
-             * calculated using Close values.
-             */
-            index: 3,
-            period: 9 // @merge 14 in v6.2
-        }
-    });
-    return EMAIndicator;
-}(SMAIndicator));
+    }
+}
+/**
+ * Exponential moving average indicator (EMA). This series requires the
+ * `linkedTo` option to be set.
+ *
+ * @sample stock/indicators/ema
+ * Exponential moving average indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @optionparent plotOptions.ema
+ */
+EMAIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        /**
+         * The point index which indicator calculations will base. For
+         * example using OHLC data, index=2 means the indicator will be
+         * calculated using Low values.
+         *
+         * By default index value used to be set to 0. Since
+         * Highcharts Stock 7 by default index is set to 3
+         * which means that the ema indicator will be
+         * calculated using Close values.
+         */
+        index: 3,
+        period: 9 // @merge 14 in v6.2
+    }
+});
 SeriesRegistry.registerSeriesType('ema', EMAIndicator);
 /* *
  *

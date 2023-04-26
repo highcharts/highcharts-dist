@@ -93,19 +93,6 @@ declare module "../highcharts" {
          */
         transformToLatLon(point: (Point|ProjectedXY), transform: any): (MapLonLatObject|undefined);
     }
-    /**
-     * A latitude/longitude object.
-     */
-    interface MapLonLatObject {
-        /**
-         * The latitude.
-         */
-        lat: number;
-        /**
-         * The longitude.
-         */
-        lon: number;
-    }
     interface Point {
         pointPadding?: number;
         /**
@@ -141,6 +128,11 @@ declare module "../highcharts" {
      */
     class MapChart extends Chart {
         /**
+         * The map view handles zooming and centering on the map, and various
+         * client-side projection capabilities.
+         */
+        mapView?: MapView;
+        /**
          * Initializes the chart. The constructor's arguments are passed on
          * directly.
          *
@@ -160,22 +152,24 @@ declare module "../highcharts" {
      * The map view handles zooming and centering on the map, and various
      * client-side projection capabilities.
      *
-     * On a chart instance, the map view is available as `chart.mapView`.
+     * On a chart instance of `MapChart`, the map view is available as
+     * `chart.mapView`.
      */
     class MapView {
         /**
          * The map view handles zooming and centering on the map, and various
          * client-side projection capabilities.
          *
-         * On a chart instance, the map view is available as `chart.mapView`.
+         * On a chart instance of `MapChart`, the map view is available as
+         * `chart.mapView`.
          *
          * @param chart
-         *        The Chart instance
+         *        The MapChart instance
          *
          * @param options
          *        MapView options
          */
-        constructor(chart: Chart, options: MapViewOptions);
+        constructor(chart: MapChart, options: MapViewOptions);
         /**
          * The current center of the view in terms of `[longitude, latitude]`.
          */
@@ -341,14 +335,10 @@ declare module "../highcharts" {
      *        The chart options structure as described in the options reference.
      *
      * @param callback
-     *        A function to execute when the chart object is finished loading
-     *        and rendering. In most cases the chart is built in one thread, but
-     *        in Internet Explorer version 8 or less the chart is sometimes
-     *        initialized before the document is ready, and in these cases the
-     *        chart object will not be finished synchronously. As a consequence,
-     *        code that relies on the newly built Chart object should always run
-     *        in the callback. Defining a chart.events.load handler is
-     *        equivalent.
+     *        A function to execute when the chart object is finished rendering
+     *        and all external image files (`chart.backgroundImage`,
+     *        `chart.plotBackgroundImage` etc) are loaded. Defining a
+     *        chart.events.load handler is equivalent.
      *
      * @return The chart object.
      */
@@ -364,14 +354,10 @@ declare module "../highcharts" {
      *        The chart options structure as described in the options reference.
      *
      * @param callback
-     *        A function to execute when the chart object is finished loading
-     *        and rendering. In most cases the chart is built in one thread, but
-     *        in Internet Explorer version 8 or less the chart is sometimes
-     *        initialized before the document is ready, and in these cases the
-     *        chart object will not be finished synchronously. As a consequence,
-     *        code that relies on the newly built Chart object should always run
-     *        in the callback. Defining a chart.events.load handler is
-     *        equivalent.
+     *        A function to execute when the chart object is finished rendering
+     *        and all external image files (`chart.backgroundImage`,
+     *        `chart.plotBackgroundImage` etc) are loaded. Defining a
+     *        chart.events.load handler is equivalent.
      *
      * @return The chart object.
      */

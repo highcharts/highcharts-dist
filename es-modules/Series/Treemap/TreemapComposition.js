@@ -16,19 +16,19 @@
  *
  * */
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Series = SeriesRegistry.series;
+const { series: Series } = SeriesRegistry;
 import TreemapUtilities from './TreemapUtilities.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend;
+const { addEvent, extend } = U;
 /* *
  *
  *  Composition
  *
  * */
-var treemapAxisDefaultValues = false;
+let treemapAxisDefaultValues = false;
 addEvent(Series, 'afterBindAxes', function () {
     // eslint-disable-next-line no-invalid-this
-    var series = this, xAxis = series.xAxis, yAxis = series.yAxis, treeAxis;
+    let series = this, xAxis = series.xAxis, yAxis = series.yAxis, treeAxis;
     if (xAxis && yAxis) {
         if (series.is('treemap')) {
             treeAxis = {

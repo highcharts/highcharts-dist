@@ -8,28 +8,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import CandlestickSeriesDefaults from './CandlestickSeriesDefaults.js';
 import D from '../../Core/Defaults.js';
-var defaultOptions = D.defaultOptions;
+const { defaultOptions } = D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, OHLCSeries = _a.ohlc;
+const { column: ColumnSeries, ohlc: OHLCSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
@@ -44,24 +29,22 @@ var merge = U.merge;
  *
  * @augments Highcharts.seriesTypes.ohlc
  */
-var CandlestickSeries = /** @class */ (function (_super) {
-    __extends(CandlestickSeries, _super);
-    function CandlestickSeries() {
+class CandlestickSeries extends OHLCSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
@@ -74,8 +57,8 @@ var CandlestickSeries = /** @class */ (function (_super) {
      * @private
      * @function Highcharts.seriesTypes.candlestick#pointAttribs
      */
-    CandlestickSeries.prototype.pointAttribs = function (point, state) {
-        var attribs = ColumnSeries.prototype.pointAttribs.call(this, point, state), options = this.options, isUp = point.open < point.close, stroke = options.lineColor || this.color, color = point.color || this.color; // (#14826)
+    pointAttribs(point, state) {
+        const attribs = ColumnSeries.prototype.pointAttribs.call(this, point, state), options = this.options, isUp = point.open < point.close, stroke = options.lineColor || this.color, color = point.color || this.color; // (#14826)
         attribs['stroke-width'] = options.lineWidth;
         attribs.fill = point.options.color ||
             (isUp ? (options.upColor || color) : color);
@@ -83,26 +66,25 @@ var CandlestickSeries = /** @class */ (function (_super) {
             (isUp ? (options.upLineColor || stroke) : stroke);
         // Select or hover states
         if (state) {
-            var stateOptions = options.states[state];
+            const stateOptions = options.states[state];
             attribs.fill = stateOptions.color || attribs.fill;
             attribs.stroke = stateOptions.lineColor || attribs.stroke;
             attribs['stroke-width'] =
                 stateOptions.lineWidth || attribs['stroke-width'];
         }
         return attribs;
-    };
+    }
     /**
      * Draw the data points.
      *
      * @private
      * @function Highcharts.seriesTypes.candlestick#drawPoints
      */
-    CandlestickSeries.prototype.drawPoints = function () {
-        var series = this, points = series.points, chart = series.chart, reversedYAxis = series.yAxis.reversed;
-        for (var _i = 0, points_1 = points; _i < points_1.length; _i++) {
-            var point = points_1[_i];
-            var graphic = point.graphic, plotOpen = void 0, plotClose = void 0, topBox = void 0, bottomBox = void 0, hasTopWhisker = void 0, hasBottomWhisker = void 0, crispCorr = void 0, crispX = void 0, path = void 0, halfWidth = void 0;
-            var isNew = !graphic;
+    drawPoints() {
+        const series = this, points = series.points, chart = series.chart, reversedYAxis = series.yAxis.reversed;
+        for (const point of points) {
+            let graphic = point.graphic, plotOpen, plotClose, topBox, bottomBox, hasTopWhisker, hasBottomWhisker, crispCorr, crispX, path, halfWidth;
+            const isNew = !graphic;
             if (typeof point.plotY !== 'undefined') {
                 if (!graphic) {
                     point.graphic = graphic = chart.renderer.path()
@@ -162,10 +144,9 @@ var CandlestickSeries = /** @class */ (function (_super) {
                     .addClass(point.getClassName(), true);
             }
         }
-    };
-    CandlestickSeries.defaultOptions = merge(OHLCSeries.defaultOptions, defaultOptions.plotOptions, { tooltip: OHLCSeries.defaultOptions.tooltip }, CandlestickSeriesDefaults);
-    return CandlestickSeries;
-}(OHLCSeries));
+    }
+}
+CandlestickSeries.defaultOptions = merge(OHLCSeries.defaultOptions, defaultOptions.plotOptions, { tooltip: OHLCSeries.defaultOptions.tooltip }, CandlestickSeriesDefaults);
 SeriesRegistry.registerSeriesType('candlestick', CandlestickSeries);
 /* *
  *

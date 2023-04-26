@@ -14,7 +14,7 @@
  *
  * */
 import U from '../Utilities.js';
-var clamp = U.clamp, pick = U.pick, stableSort = U.stableSort;
+const { clamp, pick, stableSort } = U;
 /* *
  *
  *  Namespace
@@ -43,12 +43,8 @@ var RendererUtilities;
      */
     function distribute(boxes, len, maxDistance) {
         // Original array will be altered with added .pos
-        var origBoxes = boxes, reducedLen = origBoxes.reducedLen || len, sortByRank = function (a, b) {
-            return (b.rank || 0) - (a.rank || 0);
-        }, sortByTarget = function (a, b) {
-            return a.target - b.target;
-        };
-        var i, overlapping = true, restBoxes = [], // The outranked overshoot
+        const origBoxes = boxes, reducedLen = origBoxes.reducedLen || len, sortByRank = (a, b) => (b.rank || 0) - (a.rank || 0), sortByTarget = (a, b) => a.target - b.target;
+        let i, overlapping = true, restBoxes = [], // The outranked overshoot
         box, target, total = 0;
         // If the total size exceeds the len, remove those boxes with the lowest
         // rank
@@ -71,11 +67,11 @@ var RendererUtilities;
         stableSort(boxes, sortByTarget);
         // So far we have been mutating the original array. Now
         // create a copy with target arrays
-        boxes = boxes.map(function (box) { return ({
+        boxes = boxes.map((box) => ({
             size: box.size,
             targets: [box.target],
             align: pick(box.align, 0.5)
-        }); });
+        }));
         while (overlapping) {
             // Initial positions: target centered in box
             i = boxes.length;
@@ -114,10 +110,10 @@ var RendererUtilities;
         // Now the composite boxes are placed, we need to put the original boxes
         // within them
         i = 0;
-        boxes.some(function (box) {
-            var posInCompositeBox = 0;
+        boxes.some((box) => {
+            let posInCompositeBox = 0;
             // Exceeded maxDistance => abort
-            return (box.targets || []).some(function () {
+            return (box.targets || []).some(() => {
                 origBoxes[i].pos = box.pos + posInCompositeBox;
                 // If the distance between the position and the target exceeds
                 // maxDistance, abort the loop and decrease the length in
@@ -129,7 +125,7 @@ var RendererUtilities;
                     // Reset the positions that are already set
                     origBoxes
                         .slice(0, i + 1)
-                        .forEach(function (box) { return delete box.pos; });
+                        .forEach((box) => delete box.pos);
                     // Try with a smaller length
                     origBoxes.reducedLen =
                         (origBoxes.reducedLen || len) - (len * 0.1);

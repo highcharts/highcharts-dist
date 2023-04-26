@@ -19,7 +19,7 @@
  * @optionparent exporting
  * @private
  */
-var exporting = {
+const exporting = {
     /**
      * Caption for the data table. Same as chart title by default. Set to
      * `false` to disable.
@@ -183,7 +183,7 @@ var exporting = {
  * @optionparent lang
  * @private
  */
-var lang = {
+const lang = {
     /**
      * The text for the menu item.
      *
@@ -238,9 +238,9 @@ var lang = {
  *  Default Export
  *
  * */
-var ExportDataDefaults = {
-    exporting: exporting,
-    lang: lang
+const ExportDataDefaults = {
+    exporting,
+    lang
 };
 export default ExportDataDefaults;
 /* *

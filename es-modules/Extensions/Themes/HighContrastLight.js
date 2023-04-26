@@ -15,7 +15,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 /* *
  *
  *  Theme

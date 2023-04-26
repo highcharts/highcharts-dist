@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * @module highcharts/highcharts
  *
  * (c) 2009-2021 Torstein Honsi
@@ -27,7 +27,6 @@ import Tick from '../Core/Axis/Tick.js';
 import Tooltip from '../Core/Tooltip.js';
 import Point from '../Core/Series/Point.js';
 import Pointer from '../Core/Pointer.js';
-import MSPointer from '../Core/MSPointer.js';
 import Legend from '../Core/Legend/Legend.js';
 import Chart from '../Core/Chart/Chart.js';
 import '../Extensions/ScrollablePlotArea.js';
@@ -47,10 +46,11 @@ import PieSeries from '../Series/Pie/PieSeries.js';
 import PieDataLabel from '../Series/Pie/PieDataLabel.js';
 import DataLabel from '../Core/Series/DataLabel.js';
 import '../Extensions/OverlappingDataLabels.js';
+import '../Extensions/BorderRadius.js';
 import Responsive from '../Core/Responsive.js';
 import Color from '../Core/Color/Color.js';
 import Time from '../Core/Time.js';
-var G = Highcharts;
+const G = Highcharts;
 // Animation
 G.animate = Animation.animate;
 G.animObject = Animation.animObject;
@@ -67,7 +67,7 @@ G.Fx = Fx;
 G.Legend = Legend;
 G.PlotLineOrBand = PlotLineOrBand;
 G.Point = Point;
-G.Pointer = (MSPointer.isRequired() ? MSPointer : Pointer);
+G.Pointer = Pointer;
 G.Series = Series;
 G.StackItem = StackItem;
 G.SVGElement = SVGElement;
@@ -81,6 +81,8 @@ G.color = Color.parse;
 // Compositions
 HTMLRenderer.compose(SVGRenderer);
 HTMLElement.compose(SVGElement);
+Pointer.compose(Chart);
+Legend.compose(Chart);
 // DefaultOptions
 G.defaultOptions = Defaults.defaultOptions;
 G.getOptions = Defaults.getOptions;
@@ -146,5 +148,6 @@ PieDataLabel.compose(PieSeries);
 PlotLineOrBand.compose(Axis);
 Responsive.compose(Chart);
 StackingAxis.compose(Axis, Chart, Series);
+Tooltip.compose(Pointer);
 // Default Export
 export default G;

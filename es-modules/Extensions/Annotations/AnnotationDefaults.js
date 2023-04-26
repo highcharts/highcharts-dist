@@ -4,7 +4,7 @@
  *
  * */
 import U from '../../Core/Utilities.js';
-var defined = U.defined;
+const { defined } = U;
 /* *
  *
  *  API Options
@@ -31,7 +31,7 @@ var defined = U.defined;
  * @requires     modules/annotations
  * @optionparent annotations
  */
-var AnnotationDefaults = {
+const AnnotationDefaults = {
     /**
      * Sets an ID for an annotation. Can be user later when
      * removing an annotation in [Chart#removeAnnotation(id)](
@@ -280,7 +280,7 @@ var AnnotationDefaults = {
          */
         style: {
             /** @ignore */
-            fontSize: '11px',
+            fontSize: '0.7em',
             /** @ignore */
             fontWeight: 'normal',
             /** @ignore */
@@ -620,7 +620,7 @@ var AnnotationDefaults = {
      * The Z index of the annotation.
      */
     zIndex: 6
-};
+}; // typeOptions are expected but not set
 /* *
  *
  *  Default Export

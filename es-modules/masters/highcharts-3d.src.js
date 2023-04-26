@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -18,7 +18,7 @@ import Area3DSeries from '../Series/Area3D/Area3DSeries.js';
 import '../Series/Column3D/Column3DComposition.js';
 import '../Series/Pie3D/Pie3DComposition.js';
 import '../Series/Scatter3D/Scatter3DSeries.js';
-var G = Highcharts;
+const G = Highcharts;
 // Compositions
 SVGRenderer3D.compose(G.SVGRenderer);
 Chart3D.compose(G.Chart, G.Fx);

@@ -30,7 +30,7 @@
  *        Distance between two nodes e.g. `{x, y}`
  */
 function attractive(link, force, distanceXY) {
-    var massFactor = link.getMass(), translatedX = -distanceXY.x * force * this.diffTemperature, translatedY = -distanceXY.y * force * this.diffTemperature;
+    const massFactor = link.getMass(), translatedX = -distanceXY.x * force * this.diffTemperature, translatedY = -distanceXY.y * force * this.diffTemperature;
     if (!link.fromNode.fixedPosition) {
         link.fromNode.plotX -=
             translatedX * massFactor.fromNode / link.fromNode.degree;
@@ -67,7 +67,7 @@ function attractiveForceFunction(d, k) {
  * @private
  */
 function barycenter() {
-    var gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
+    let gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
     // To consider:
     xFactor = (xFactor - (this.box.left + this.box.width) / 2) *
         gravitationalConstant;
@@ -122,7 +122,7 @@ function getK(layout) {
  * @param {Highcharts.Point} node node that should be translated
  */
 function integrate(layout, node) {
-    var friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
+    let friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
     // Apply friciton:
     diffX = ((node.plotX + node.dispX -
         prevX) * friction), diffY = ((node.plotY + node.dispY -
@@ -157,7 +157,7 @@ function integrate(layout, node) {
  *        Distance between two nodes e.g. `{x, y}`
  */
 function repulsive(node, force, distanceXY) {
-    var factor = force * this.diffTemperature / node.mass / node.degree;
+    const factor = force * this.diffTemperature / node.mass / node.degree;
     if (!node.fixedPosition) {
         node.plotX += distanceXY.x * factor;
         node.plotY += distanceXY.y * factor;
@@ -181,13 +181,13 @@ function repulsiveForceFunction(d, k) {
  *  Default Export
  *
  * */
-var VerletIntegration = {
-    attractive: attractive,
-    attractiveForceFunction: attractiveForceFunction,
-    barycenter: barycenter,
-    getK: getK,
-    integrate: integrate,
-    repulsive: repulsive,
-    repulsiveForceFunction: repulsiveForceFunction
+const VerletIntegration = {
+    attractive,
+    attractiveForceFunction,
+    barycenter,
+    getK,
+    integrate,
+    repulsive,
+    repulsiveForceFunction
 };
 export default VerletIntegration;

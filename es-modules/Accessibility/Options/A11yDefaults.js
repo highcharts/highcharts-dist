@@ -81,7 +81,7 @@
  * @return {string}
  *         Formatted string for the screen reader module.
  */
-var Options = {
+const Options = {
     /**
      * Options for configuring accessibility for the chart. Requires the
      * [accessibility module](https://code.highcharts.com/modules/accessibility.js)
@@ -551,7 +551,7 @@ var Options = {
                  */
                 style: {
                     /** @internal */
-                    color: "#335cad" /* Palette.highlightColor80 */,
+                    color: "#334eff" /* Palette.highlightColor80 */,
                     /** @internal */
                     lineWidth: 2,
                     /** @internal */
@@ -743,6 +743,15 @@ var Options = {
      * @type       {string}
      * @since      7.1.0
      * @apioption  plotOptions.series.accessibility.description
+     */
+    /**
+     * Format to use for describing the data series group to assistive
+     * technology - including screen readers.
+     *
+     * @see [series.descriptionFormat](#accessibility.series.descriptionFormat)
+     * @type       {string}
+     * @since 11.0.0
+     * @apioption  plotOptions.series.accessibility.descriptionFormat
      */
     /**
      * Expose only the series element to screen readers, not its points.

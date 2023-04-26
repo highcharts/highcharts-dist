@@ -12,7 +12,7 @@
 'use strict';
 import Color from '../Core/Color/Color.js';
 import U from '../Core/Utilities.js';
-var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, pick = U.pick;
+const { extend, isArray, isNumber, isObject, merge, pick } = U;
 /* *
  *
  *  Functions
@@ -23,13 +23,13 @@ var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.
  * @private
  */
 function getColor(node, options) {
-    var index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
-    var getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
+    const index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
+    let getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
     /**
      * @private
      */
-    var variateColor = function (color) {
-        var colorVariation = level && level.colorVariation;
+    const variateColor = (color) => {
+        const colorVariation = level && level.colorVariation;
         if (colorVariation &&
             colorVariation.key === 'brightness' &&
             index &&
@@ -77,15 +77,15 @@ function getColor(node, options) {
  * Returns a map from level number to its given options.
  */
 function getLevelOptions(params) {
-    var result = {}, defaults, converted, i, from, to, levels;
+    let result = {}, defaults, converted, i, from, to, levels;
     if (isObject(params)) {
         from = isNumber(params.from) ? params.from : 1;
         levels = params.levels;
         converted = {};
         defaults = isObject(params.defaults) ? params.defaults : {};
         if (isArray(levels)) {
-            converted = levels.reduce(function (obj, item) {
-                var level, levelIsConstant, options;
+            converted = levels.reduce((obj, item) => {
+                let level, levelIsConstant, options;
                 if (isObject(item) && isNumber(item.level)) {
                     options = merge({}, item);
                     levelIsConstant = pick(options.levelIsConstant, defaults.levelIsConstant);
@@ -117,8 +117,8 @@ function getLevelOptions(params) {
  * @todo Remove logic from Treemap and make it utilize this mixin.
  */
 function setTreeValues(tree, options) {
-    var before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
-    var childrenTotal = 0;
+    const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
+    let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
     tree.name = pick(point && point.name, '');
     tree.visible = (idRoot === tree.id ||
@@ -127,8 +127,8 @@ function setTreeValues(tree, options) {
         tree = before(tree, options);
     }
     // First give the children some values
-    tree.children.forEach(function (child, i) {
-        var newOptions = extend({}, options);
+    tree.children.forEach((child, i) => {
+        const newOptions = extend({}, options);
         extend(newOptions, {
             index: i,
             siblings: tree.children.length,
@@ -141,7 +141,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    var value = pick(optionsPoint.value, childrenTotal);
+    const value = pick(optionsPoint.value, childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -162,7 +162,7 @@ function setTreeValues(tree, options) {
  * Returns the resulting rootId after update.
  */
 function updateRootId(series) {
-    var rootId, options;
+    let rootId, options;
     if (isObject(series)) {
         // Get the series options.
         options = isObject(series.options) ? series.options : {};
@@ -182,10 +182,10 @@ function updateRootId(series) {
  *  Default Export
  *
  * */
-var TreeUtilities = {
-    getColor: getColor,
-    getLevelOptions: getLevelOptions,
-    setTreeValues: setTreeValues,
-    updateRootId: updateRootId
+const TreeUtilities = {
+    getColor,
+    getLevelOptions,
+    setTreeValues,
+    updateRootId
 };
 export default TreeUtilities;

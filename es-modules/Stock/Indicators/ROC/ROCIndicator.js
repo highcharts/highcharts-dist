@@ -8,25 +8,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var isArray = U.isArray, merge = U.merge, extend = U.extend;
+const { isArray, merge, extend } = U;
 /* *
  *
  *  Functions
@@ -40,7 +25,7 @@ function populateAverage(xVal, yVal, i, period, index) {
         Closing Price [n days ago] * 100
 
        Return y as null when avoiding division by zero */
-    var nDaysAgoY, rocY;
+    let nDaysAgoY, rocY;
     if (index < 0) {
         // y data given as an array of values
         nDaysAgoY = yVal[i - period];
@@ -71,32 +56,31 @@ function populateAverage(xVal, yVal, i, period, index) {
  *
  * @augments Highcharts.Series
  */
-var ROCIndicator = /** @class */ (function (_super) {
-    __extends(ROCIndicator, _super);
-    function ROCIndicator() {
+class ROCIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    ROCIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, ROC = [], xData = [], yData = [], i, index = -1, ROCPoint;
+    getValues(series, params) {
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, ROC = [], xData = [], yData = [];
+        let i, index = -1, ROCPoint;
         // Period is used as a number of time periods ago, so we need more
         // (at least 1 more) data than the period value
         if (xVal.length <= period) {
@@ -119,37 +103,36 @@ var ROCIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
-    /**
-     * Rate of change indicator (ROC). The indicator value for each point
-     * is defined as:
-     *
-     * `(C - Cn) / Cn * 100`
-     *
-     * where: `C` is the close value of the point of the same x in the
-     * linked series and `Cn` is the close value of the point `n` periods
-     * ago. `n` is set through [period](#plotOptions.roc.params.period).
-     *
-     * This series requires `linkedTo` option to be set.
-     *
-     * @sample stock/indicators/roc
-     *         Rate of change indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/roc
-     * @optionparent plotOptions.roc
-     */
-    ROCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        params: {
-            index: 3,
-            period: 9
-        }
-    });
-    return ROCIndicator;
-}(SMAIndicator));
+    }
+}
+/**
+ * Rate of change indicator (ROC). The indicator value for each point
+ * is defined as:
+ *
+ * `(C - Cn) / Cn * 100`
+ *
+ * where: `C` is the close value of the point of the same x in the
+ * linked series and `Cn` is the close value of the point `n` periods
+ * ago. `n` is set through [period](#plotOptions.roc.params.period).
+ *
+ * This series requires `linkedTo` option to be set.
+ *
+ * @sample stock/indicators/roc
+ *         Rate of change indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/roc
+ * @optionparent plotOptions.roc
+ */
+ROCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        index: 3,
+        period: 9
+    }
+});
 extend(ROCIndicator.prototype, {
     nameBase: 'Rate of Change'
 });

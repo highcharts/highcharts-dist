@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Wind barb series module
  *
@@ -63,9 +63,9 @@
          *
          * @private
          */
-        var ApproximationRegistry = {
-            // approximations added programmatically
-            };
+        const ApproximationRegistry = {
+        // approximations added programmatically
+        };
         /* *
          *
          *  Default Export
@@ -84,10 +84,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var columnProto = ColumnSeries.prototype;
-        var seriesProto = Series.prototype;
-        var defined = U.defined,
-            stableSort = U.stableSort;
+        const { prototype: columnProto } = ColumnSeries;
+        const { prototype: seriesProto } = Series;
+        const { defined, stableSort } = U;
         /* *
          *
          *  Composition
@@ -105,7 +104,7 @@
              *  Properties
              *
              * */
-            var composedClasses = [];
+            const composedMembers = [];
             /* *
              *
              *  Functions
@@ -116,11 +115,10 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
-                    var seriesProto_1 = SeriesClass.prototype;
-                    seriesProto_1.getPlotBox = getPlotBox;
-                    seriesProto_1.translate = translate;
+                if (U.pushUnique(composedMembers, SeriesClass)) {
+                    const seriesProto = SeriesClass.prototype;
+                    seriesProto.getPlotBox = getPlotBox;
+                    seriesProto.translate = translate;
                 }
                 return SeriesClass;
             }
@@ -143,29 +141,9 @@
              */
             function translate() {
                 columnProto.translate.apply(this);
-                var series = this,
-                    options = series.options,
-                    chart = series.chart,
-                    points = series.points,
-                    optionsOnSeries = options.onSeries,
-                    onSeries = (optionsOnSeries &&
-                        chart.get(optionsOnSeries)),
-                    step = onSeries && onSeries.options.step,
-                    onData = (onSeries && onSeries.points),
-                    inverted = chart.inverted,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis;
-                var cursor = points.length - 1,
-                    point,
-                    lastPoint,
-                    onKey = options.onKey || 'y',
-                    i = onData && onData.length,
-                    xOffset = 0,
-                    leftPoint,
-                    lastX,
-                    rightPoint,
-                    currentDataGrouping,
-                    distanceRatio;
+                const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
+                    chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
+                let cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
@@ -173,7 +151,7 @@
                     lastX = (onData[i - 1].x +
                         (currentDataGrouping ? currentDataGrouping.totalRange : 0)); // #2374
                     // sort the data points
-                    stableSort(points, function (a, b) { return (a.x - b.x); });
+                    stableSort(points, (a, b) => (a.x - b.x));
                     onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
                     while (i-- && points[cursor]) {
                         leftPoint = onData[i];
@@ -212,8 +190,8 @@
                     }
                 }
                 // Add plotY position and handle stacking
-                points.forEach(function (point, i) {
-                    var stackIndex;
+                points.forEach((point, i) => {
+                    let stackIndex;
                     point.plotX += xOffset; // #2049
                     // Undefined plotY means the point is either on axis, outside series
                     // range or hidden series. If the series is outside the range of the
@@ -274,55 +252,35 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var isNumber = U.isNumber;
+        const { isNumber } = U;
         /* *
          *
          * Class
          *
          * */
-        var WindbarbPoint = /** @class */ (function (_super) {
-                __extends(WindbarbPoint, _super);
-            function WindbarbPoint() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+        class WindbarbPoint extends ColumnSeries.prototype.pointClass {
+            constructor() {
+                super(...arguments);
                 /* *
                  *
                  * Properties
                  *
                  * */
-                _this.beaufort = void 0;
-                _this.beaufortLevel = void 0;
-                _this.direction = void 0;
-                _this.options = void 0;
-                _this.series = void 0;
-                return _this;
+                this.beaufort = void 0;
+                this.beaufortLevel = void 0;
+                this.direction = void 0;
+                this.options = void 0;
+                this.series = void 0;
             }
             /* *
              *
              * Functions
              *
              * */
-            WindbarbPoint.prototype.isValid = function () {
+            isValid() {
                 return isNumber(this.value) && this.value >= 0;
-            };
-            return WindbarbPoint;
-        }(ColumnSeries.prototype.pointClass));
+            }
+        }
         /* *
          *
          * Default export
@@ -343,28 +301,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var animObject = A.animObject;
-        var Series = SeriesRegistry.series,
-            ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        const { animObject } = A;
+        const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+        const { extend, merge, pick } = U;
         /**
          * @private
          * @class
@@ -372,25 +311,22 @@
          *
          * @augments Highcharts.Series
          */
-        var WindbarbSeries = /** @class */ (function (_super) {
-                __extends(WindbarbSeries, _super);
-            function WindbarbSeries() {
+        class WindbarbSeries extends ColumnSeries {
+            constructor() {
                 /* *
                  *
                  * Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  * Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
             }
             /* *
              *
@@ -405,13 +341,10 @@
              * wind barb series uses it.
              * @private
              */
-            WindbarbSeries.registerApproximation = function () {
+            static registerApproximation() {
                 if (!ApproximationRegistry.windbarb) {
                     ApproximationRegistry.windbarb = function (values, directions) {
-                        var vectorX = 0,
-                            vectorY = 0,
-                            i,
-                            len = values.length;
+                        let vectorX = 0, vectorY = 0, i, len = values.length;
                         for (i = 0; i < len; i++) {
                             vectorX += values[i] * Math.cos(directions[i] * H.deg2rad);
                             vectorY += values[i] * Math.sin(directions[i] * H.deg2rad);
@@ -426,21 +359,19 @@
                         ];
                     };
                 }
-            };
+            }
             /* *
              *
              * Functions
              *
              * */
-            WindbarbSeries.prototype.init = function (chart, options) {
+            init(chart, options) {
                 WindbarbSeries.registerApproximation();
                 Series.prototype.init.call(this, chart, options);
-            };
+            }
             // Get presentational attributes.
-            WindbarbSeries.prototype.pointAttribs = function (point, state) {
-                var options = this.options,
-                    stroke = point.color || this.color,
-                    strokeWidth = this.options.lineWidth;
+            pointAttribs(point, state) {
+                let options = this.options, stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
                 if (state) {
                     stroke = options.states[state].color || stroke;
                     strokeWidth =
@@ -451,16 +382,11 @@
                     'stroke': stroke,
                     'stroke-width': strokeWidth
                 };
-            };
+            }
             // Create a single wind arrow. It is later rotated around the zero
             // centerpoint.
-            WindbarbSeries.prototype.windArrow = function (point) {
-                var knots = point.value * 1.943844,
-                    level = point.beaufortLevel,
-                    path,
-                    barbs,
-                    u = this.options.vectorLength / 20,
-                    pos = -10;
+            windArrow(point) {
+                let knots = point.value * 1.943844, level = point.beaufortLevel, path, barbs, u = this.options.vectorLength / 20, pos = -10;
                 if (point.isNull) {
                     return [];
                 }
@@ -505,15 +431,11 @@
                     }
                 }
                 return path;
-            };
-            WindbarbSeries.prototype.drawPoints = function () {
-                var chart = this.chart,
-                    yAxis = this.yAxis,
-                    inverted = chart.inverted,
-                    shapeOffset = this.options.vectorLength / 2;
+            }
+            drawPoints() {
+                const chart = this.chart, yAxis = this.yAxis, inverted = chart.inverted, shapeOffset = this.options.vectorLength / 2;
                 this.points.forEach(function (point) {
-                    var plotX = point.plotX,
-                        plotY = point.plotY;
+                    const plotX = point.plotX, plotY = point.plotY;
                     // Check if it's inside the plot area, but only for the X
                     // dimension.
                     if (this.options.clip === false ||
@@ -553,9 +475,9 @@
                                 shapeOffset + yAxis.pos - chart.plotTop)
                     ]; // #6327
                 }, this);
-            };
+            }
             // Fade in the arrows on initializing series.
-            WindbarbSeries.prototype.animate = function (init) {
+            animate(init) {
                 if (init) {
                     this.markerGroup.attr({
                         opacity: 0.01
@@ -566,127 +488,125 @@
                         opacity: 1
                     }, animObject(this.options.animation));
                 }
-            };
-            WindbarbSeries.prototype.markerAttribs = function (point, state) {
+            }
+            markerAttribs(point, state) {
                 return {};
-            };
-            WindbarbSeries.prototype.getExtremes = function () {
+            }
+            getExtremes() {
                 return {};
-            };
-            WindbarbSeries.prototype.shouldShowTooltip = function (plotX, plotY, options) {
-                if (options === void 0) { options = {}; }
+            }
+            shouldShowTooltip(plotX, plotY, options = {}) {
                 options.ignoreX = this.chart.inverted;
                 options.ignoreY = !options.ignoreX;
-                return _super.prototype.shouldShowTooltip.call(this, plotX, plotY, options);
-            };
+                return super.shouldShowTooltip(plotX, plotY, options);
+            }
+        }
+        /**
+         * Wind barbs are a convenient way to represent wind speed and direction in
+         * one graphical form. Wind direction is given by the stem direction, and
+         * wind speed by the number and shape of barbs.
+         *
+         * @sample {highcharts|highstock} highcharts/demo/windbarb-series/
+         *         Wind barb series
+         *
+         * @extends      plotOptions.column
+         * @excluding    boostThreshold, marker, connectEnds, connectNulls,
+         *               cropThreshold, dashStyle, dragDrop, gapSize, gapUnit,
+         *               linecap, shadow, stacking, step, boostBlending
+         * @since        6.0.0
+         * @product      highcharts highstock
+         * @requires     modules/windbarb
+         * @optionparent plotOptions.windbarb
+         */
+        WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
             /**
-             * Wind barbs are a convenient way to represent wind speed and direction in
-             * one graphical form. Wind direction is given by the stem direction, and
-             * wind speed by the number and shape of barbs.
+             * Data grouping options for the wind barbs. In Highcharts, this
+             * requires the `modules/datagrouping.js` module to be loaded. In
+             * Highcharts Stock, data grouping is included.
              *
-             * @sample {highcharts|highstock} highcharts/demo/windbarb-series/
-             *         Wind barb series
+             * @sample  highcharts/plotoptions/windbarb-datagrouping
+             *          Wind barb with data grouping
              *
-             * @extends      plotOptions.column
-             * @excluding    boostThreshold, marker, connectEnds, connectNulls,
-             *               cropThreshold, dashStyle, dragDrop, gapSize, gapUnit,
-             *               linecap, shadow, stacking, step, boostBlending
-             * @since        6.0.0
-             * @product      highcharts highstock
-             * @requires     modules/windbarb
-             * @optionparent plotOptions.windbarb
+             * @since   7.1.0
+             * @product highcharts highstock
              */
-            WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+            dataGrouping: {
                 /**
-                 * Data grouping options for the wind barbs. In Highcharts, this
-                 * requires the `modules/datagrouping.js` module to be loaded. In
-                 * Highcharts Stock, data grouping is included.
+                 * Whether to enable data grouping.
                  *
-                 * @sample  highcharts/plotoptions/windbarb-datagrouping
-                 *          Wind barb with data grouping
-                 *
-                 * @since   7.1.0
                  * @product highcharts highstock
                  */
-                dataGrouping: {
-                    /**
-                     * Whether to enable data grouping.
-                     *
-                     * @product highcharts highstock
-                     */
-                    enabled: true,
-                    /**
-                     * Approximation function for the data grouping. The default
-                     * returns an average of wind speed and a vector average direction
-                     * weighted by wind speed.
-                     *
-                     * @product highcharts highstock
-                     *
-                     * @type {string|Function}
-                     */
-                    approximation: 'windbarb',
-                    /**
-                     * The approximate data group width.
-                     *
-                     * @product highcharts highstock
-                     */
-                    groupPixelWidth: 30
-                },
+                enabled: true,
                 /**
-                 * The line width of the wind barb symbols.
-                 */
-                lineWidth: 2,
-                /**
-                 * The id of another series in the chart that the wind barbs are
-                 * projected on. When `null`, the wind symbols are drawn on the X axis,
-                 * but offset up or down by the `yOffset` setting.
+                 * Approximation function for the data grouping. The default
+                 * returns an average of wind speed and a vector average direction
+                 * weighted by wind speed.
                  *
-                 * @sample {highcharts|highstock} highcharts/plotoptions/windbarb-onseries
-                 *         Projected on area series
+                 * @product highcharts highstock
                  *
-                 * @type {string|null}
+                 * @type {string|Function}
                  */
-                onSeries: null,
-                states: {
-                    hover: {
-                        lineWidthPlus: 0
-                    }
-                },
-                tooltip: {
-                    /**
-                     * The default point format for the wind barb tooltip. Note the
-                     * `point.beaufort` property that refers to the Beaufort wind scale.
-                     * The names can be internationalized by modifying
-                     * `Highcharts.seriesTypes.windbarb.prototype.beaufortNames`.
-                     */
-                    pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.value}</b> ({point.beaufort})<br/>'
-                },
+                approximation: 'windbarb',
                 /**
-                 * Pixel length of the stems.
-                 */
-                vectorLength: 20,
-                /**
-                 * @default   value
-                 */
-                colorKey: 'value',
-                /**
-                 * Vertical offset from the cartesian position, in pixels. The default
-                 * value makes sure the symbols don't overlap the X axis when `onSeries`
-                 * is `null`, and that they don't overlap the linked series when
-                 * `onSeries` is given.
-                 */
-                yOffset: -20,
-                /**
-                 * Horizontal offset from the cartesian position, in pixels. When the
-                 * chart is inverted, this option allows translation like
-                 * [yOffset](#plotOptions.windbarb.yOffset) in non inverted charts.
+                 * The approximate data group width.
                  *
-                 * @since 6.1.0
+                 * @product highcharts highstock
                  */
-                xOffset: 0
-            });
-            return WindbarbSeries;
-        }(ColumnSeries));
+                groupPixelWidth: 30
+            },
+            /**
+             * The line width of the wind barb symbols.
+             */
+            lineWidth: 2,
+            /**
+             * The id of another series in the chart that the wind barbs are
+             * projected on. When `null`, the wind symbols are drawn on the X axis,
+             * but offset up or down by the `yOffset` setting.
+             *
+             * @sample {highcharts|highstock} highcharts/plotoptions/windbarb-onseries
+             *         Projected on area series
+             *
+             * @type {string|null}
+             */
+            onSeries: null,
+            states: {
+                hover: {
+                    lineWidthPlus: 0
+                }
+            },
+            tooltip: {
+                /**
+                 * The default point format for the wind barb tooltip. Note the
+                 * `point.beaufort` property that refers to the Beaufort wind scale.
+                 * The names can be internationalized by modifying
+                 * `Highcharts.seriesTypes.windbarb.prototype.beaufortNames`.
+                 */
+                pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.value}</b> ({point.beaufort})<br/>'
+            },
+            /**
+             * Pixel length of the stems.
+             */
+            vectorLength: 20,
+            /**
+             * @default   value
+             */
+            colorKey: 'value',
+            /**
+             * Vertical offset from the cartesian position, in pixels. The default
+             * value makes sure the symbols don't overlap the X axis when `onSeries`
+             * is `null`, and that they don't overlap the linked series when
+             * `onSeries` is given.
+             */
+            yOffset: -20,
+            /**
+             * Horizontal offset from the cartesian position, in pixels. When the
+             * chart is inverted, this option allows translation like
+             * [yOffset](#plotOptions.windbarb.yOffset) in non inverted charts.
+             *
+             * @since 6.1.0
+             */
+            xOffset: 0
+        });
         OnSeriesComposition.compose(WindbarbSeries);
         extend(WindbarbSeries.prototype, {
             beaufortFloor: [0, 0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8,
@@ -701,11 +621,10 @@
             pointClass: WindbarbPoint,
             trackerGroups: ['markerGroup'],
             translate: function () {
-                var beaufortFloor = this.beaufortFloor,
-                    beaufortName = this.beaufortName;
+                const beaufortFloor = this.beaufortFloor, beaufortName = this.beaufortName;
                 OnSeriesComposition.translate.call(this);
                 this.points.forEach(function (point) {
-                    var level = 0;
+                    let level = 0;
                     // Find the beaufort level (zero based)
                     for (; level < beaufortFloor.length; level++) {
                         if (beaufortFloor[level] > point.value) {

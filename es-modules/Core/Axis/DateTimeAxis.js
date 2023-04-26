@@ -9,7 +9,7 @@
  * */
 'use strict';
 import U from '../Utilities.js';
-var addEvent = U.addEvent, getMagnitude = U.getMagnitude, normalizeTickInterval = U.normalizeTickInterval, timeUnits = U.timeUnits;
+const { addEvent, getMagnitude, normalizeTickInterval, timeUnits } = U;
 /* *
  *
  *  Composition
@@ -28,7 +28,7 @@ var DateTimeAxis;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -39,10 +39,9 @@ var DateTimeAxis;
      * @private
      */
     function compose(AxisClass) {
-        if (composedClasses.indexOf(AxisClass) === -1) {
-            composedClasses.push(AxisClass);
+        if (U.pushUnique(composedMembers, AxisClass)) {
             AxisClass.keepProps.push('dateTime');
-            var axisProto = AxisClass.prototype;
+            const axisProto = AxisClass.prototype;
             axisProto.getTimeTicks = getTimeTicks;
             addEvent(AxisClass, 'init', onInit);
         }
@@ -71,8 +70,8 @@ var DateTimeAxis;
      * @private
      */
     function onInit(e) {
-        var axis = this;
-        var options = e.userOptions;
+        const axis = this;
+        const options = e.userOptions;
         if (options.type !== 'datetime') {
             axis.dateTime = void 0;
             return;
@@ -86,13 +85,13 @@ var DateTimeAxis;
      *  Classes
      *
      * */
-    var Additions = /** @class */ (function () {
+    class Additions {
         /* *
          *
          *  Constructors
          *
          * */
-        function Additions(axis) {
+        constructor(axis) {
             this.axis = axis;
         }
         /* *
@@ -110,8 +109,8 @@ var DateTimeAxis;
          * #662, #697.
          * @private
          */
-        Additions.prototype.normalizeTimeTickInterval = function (tickInterval, unitsOption) {
-            var units = (unitsOption || [[
+        normalizeTimeTickInterval(tickInterval, unitsOption) {
+            const units = (unitsOption || [[
                     // unit name
                     'millisecond',
                     // allowed multiples
@@ -138,7 +137,7 @@ var DateTimeAxis;
                     'year',
                     null
                 ]]);
-            var unit = units[units.length - 1], // default unit is years
+            let unit = units[units.length - 1], // default unit is years
             interval = timeUnits[unit[0]], multiples = unit[1], i;
             // loop through the units to find the one that best fits the
             // tickInterval
@@ -149,7 +148,7 @@ var DateTimeAxis;
                 if (units[i + 1]) {
                     // lessThan is in the middle between the highest multiple
                     // and the next unit.
-                    var lessThan = (interval *
+                    const lessThan = (interval *
                         multiples[multiples.length - 1] +
                         timeUnits[units[i + 1][0]]) / 2;
                     // break and keep the current unit
@@ -163,7 +162,7 @@ var DateTimeAxis;
                 multiples = [1, 2, 5];
             }
             // get the count
-            var count = normalizeTickInterval(tickInterval / interval, multiples, unit[0] === 'year' ? // #1913, #2360
+            const count = normalizeTickInterval(tickInterval / interval, multiples, unit[0] === 'year' ? // #1913, #2360
                 Math.max(getMagnitude(tickInterval / interval), 1) :
                 1);
             return {
@@ -171,23 +170,22 @@ var DateTimeAxis;
                 count: count,
                 unitName: unit[0]
             };
-        };
+        }
         /**
          * Get the best date format for a specific X value based on the closest
          * point range on the axis.
          *
          * @private
          */
-        Additions.prototype.getXDateFormat = function (x, dateTimeLabelFormats) {
-            var axis = this.axis, time = axis.chart.time;
+        getXDateFormat(x, dateTimeLabelFormats) {
+            const { axis } = this, time = axis.chart.time;
             return axis.closestPointRange ?
                 time.getDateFormat(axis.closestPointRange, x, axis.options.startOfWeek, dateTimeLabelFormats) ||
                     // #2546, 2581
                     time.resolveDTLFormat(dateTimeLabelFormats.year).main :
                 time.resolveDTLFormat(dateTimeLabelFormats.day).main;
-        };
-        return Additions;
-    }());
+        }
+    }
     DateTimeAxis.Additions = Additions;
 })(DateTimeAxis || (DateTimeAxis = {}));
 /* *

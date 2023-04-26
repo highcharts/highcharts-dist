@@ -13,650 +13,651 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
+    /**
+     * Callback function for sonification events on chart.
+     *
+     * @param e
+     *        Sonification chart event context
+     */
+    type SonificationChartEventCallback = (e: SonificationChartEventCallbackContext) => void;
+    /**
+     * Callback function for sonification events on series.
+     *
+     * @param e
+     *        Sonification series event context
+     */
+    type SonificationSeriesEventCallback = (e: SonificationSeriesEventCallbackContext) => void;
+    type SonificationSynthPreset = ("basic1"|"basic2"|"chop"|"chord"|"flute"|"kick"|"lead"|"noise"|"piano"|"plucked"|"sawsynth"|"sawtooth"|"saxophone"|"shaker"|"shortnote"|"sine"|"square"|"step"|
+"triangle"|"trumpet"|"vibraphone"|"wind"|"wobble"|"filteredNoise"|"sineGlide");
+    /**
+     * Filter callback for filtering timeline events on a SonificationTimeline.
+     *
+     * @param e
+     *        TimelineEvent being filtered
+     *
+     * @param ix
+     *        Index of TimelineEvent in current event array
+     *
+     * @param arr
+     *        The current event array
+     *
+     * @return The function should return true if the TimelineEvent should be
+     *         included, false otherwise.
+     */
+    type SonificationTimelineFilterCallback = (e: SonificationTimelineEvent, ix: number, arr: Array<SonificationTimelineEvent>) => boolean;
     interface Chart {
         /**
-         * Cancel current sonification and reset cursor.
-         *
-         * @param fadeOut
-         *        Fade out as we pause to avoid clicks.
+         * Sonification capabilities for the chart.
          */
-        cancelSonify(fadeOut?: boolean): void;
+        sonification?: Sonification;
         /**
-         * Get a list of the points currently under cursor.
-         *
-         * @return The points currently under the cursor.
-         */
-        getCurrentSonifyPoints(): Array<Point>;
-        /**
-         * Pause the running sonification.
-         *
-         * @param fadeOut
-         *        Fade out as we pause to avoid clicks.
-         */
-        pauseSonify(fadeOut?: boolean): void;
-        /**
-         * Reset cursor to start. Requires series.sonify or chart.sonify to have
-         * been played at some point earlier.
-         */
-        resetSonifyCursor(): void;
-        /**
-         * Reset cursor to end. Requires series.sonify or chart.sonify to have
-         * been played at some point earlier.
-         */
-        resetSonifyCursorEnd(): void;
-        /**
-         * Resume the currently running sonification. Requires series.sonify or
-         * chart.sonify to have been played at some point earlier.
+         * Play a sonification of a chart.
          *
          * @param onEnd
-         *        Callback to call when play finished.
+         *        Callback to call after play completed
          */
-        resumeSonify(onEnd: Function): void;
+        sonify(onEnd?: SonificationChartEventCallback): void;
         /**
-         * Play backwards from cursor. Requires series.sonify or chart.sonify to
-         * have been played at some point earlier.
+         * Play/pause sonification of a chart.
+         *
+         * @param reset
+         *        Reset the playing cursor after play completed. Defaults to
+         *        `true`.
          *
          * @param onEnd
-         *        Callback to call when play finished.
+         *        Callback to call after play completed
          */
-        rewindSonify(onEnd: Function): void;
+        toggleSonify(reset?: boolean, onEnd?: SonificationChartEventCallback): void;
+    }
+    interface Point {
         /**
-         * Set the cursor to a point or set of points in different series.
+         * Play a sonification of a point.
          *
-         * @param points
-         *        The point or points to set the cursor to. If setting multiple
-         *        points under the cursor, the points have to be in different
-         *        series that are being played simultaneously.
+         * @param onEnd
+         *        Callback to call after play completed
          */
-        setSonifyCursor(points: (Point|Array<Point>)): void;
+        sonify(onEnd?: SonificationChartEventCallback): void;
+    }
+    interface Series {
         /**
-         * Sonify a chart.
+         * Play a sonification of a series.
          *
-         * @param options
-         *        The options for sonifying this chart. If not provided, uses
-         *        options set on chart and series.
+         * @param onEnd
+         *        Callback to call after play completed
          */
-        sonify(options?: SonificationOptions): void;
+        sonify(onEnd?: SonificationChartEventCallback): void;
     }
     /**
-     * An Earcon configuration, specifying an Earcon and when to play it.
+     * Event context object sent to sonification chart events.
      */
-    interface EarconConfiguration {
+    interface SonificationChartEventCallbackContext {
         /**
-         * A function to determine whether or not to play this earcon on a
-         * point. The function is called for every point, receiving that point
-         * as parameter. It should return either a boolean indicating whether or
-         * not to play the earcon, or a new Earcon instance - in which case the
-         * new Earcon will be played.
+         * The relevant chart
          */
-        condition?: Function;
+        chart?: Chart;
         /**
-         * An Earcon instance.
+         * The points that were played, if any
          */
-        earcon: Earcon;
+        pointsPlayed?: Array<Point>;
         /**
-         * The ID of the point to play the Earcon on.
+         * The playing timeline object with advanced and internal content
          */
-        onPoint?: string;
+        timeline?: object;
     }
     /**
-     * Define an Instrument and the options for playing it.
+     * Collection of Sonification classes and objects.
      */
-    interface EarconInstrument {
+    interface SonificationGlobalObject {
         /**
-         * An instrument instance or the name of the instrument in the
-         * Highcharts.sonification.instruments map.
+         * SynthPatch presets
          */
-        instrument: (string|Instrument);
+        InstrumentPresets?: Record<SonificationSynthPreset, SynthPatchOptionsObject>;
         /**
-         * The options to pass to Instrument.play.
+         * Musical scale presets
          */
-        playOptions: InstrumentPlayOptionsObject;
+        Scales?: SonificationScalePresetsObject;
+        /**
+         * SonificationInstrument class
+         */
+        SonificationInstrument?: SonificationInstrument;
+        /**
+         * SonificationSpeaker class
+         */
+        SonificationSpeaker?: SonificationSpeaker;
+        /**
+         * SynthPatch class
+         */
+        SynthPatch?: SynthPatch;
     }
     /**
-     * Options for an Earcon.
+     * Capabilities configuration for a SonificationInstrument.
      */
-    interface EarconOptionsObject {
+    interface SonificationInstrumentCapabilitiesOptionsObject {
         /**
-         * The unique ID of the Earcon. Generated if not supplied.
+         * Whether or not instrument should be able to use filter effects.
+         * Defaults to `false`.
          */
-        id?: string;
+        filters?: boolean;
         /**
-         * The instruments and their options defining this earcon.
+         * Whether or not instrument should be able to pan. Defaults to `true`.
          */
-        instruments: Array<EarconInstrument>;
+        pan?: boolean;
         /**
-         * Callback function to call when earcon has finished playing.
+         * Whether or not instrument should be able to use tremolo effects.
+         * Defaults to `false`.
          */
-        onEnd?: Function;
+        tremolo?: boolean;
+    }
+    /**
+     * Configuration for a SonificationInstrument.
+     */
+    interface SonificationInstrumentOptionsObject {
         /**
-         * Global panning of all instruments. Overrides all panning on
-         * individual instruments. Can be a number between -1 and 1.
+         * Define additional capabilities for the instrument, such as panning,
+         * filters, and tremolo effects.
+         */
+        capabilities?: SonificationInstrumentCapabilitiesOptionsObject;
+        /**
+         * A track name to use for this instrument in MIDI export.
+         */
+        midiTrackName?: string;
+        /**
+         * The synth configuration for the instrument. Can be either a string,
+         * referencing the instrument presets, or an actual SynthPatch
+         * configuration.
+         */
+        synthPatch: (SonificationSynthPreset|SynthPatchOptionsObject);
+    }
+    /**
+     * Options for a scheduled event for a SonificationInstrument
+     */
+    interface SonificationInstrumentScheduledEventOptionsObject {
+        /**
+         * Note frequency in Hertz. Overrides note, if both are given.
+         */
+        frequency?: number;
+        /**
+         * Frequency of the highpass filter, in Hertz.
+         */
+        highpassFreq?: number;
+        /**
+         * Resonance of the highpass filter, in dB. Can be negative for a dip,
+         * or positive for a bump.
+         */
+        highpassResonance?: number;
+        /**
+         * Frequency of the lowpass filter, in Hertz.
+         */
+        lowpassFreq?: number;
+        /**
+         * Resonance of the lowpass filter, in dB. Can be negative for a dip, or
+         * positive for a bump.
+         */
+        lowpassResonance?: number;
+        /**
+         * Number of semitones from c0, or a note string - such as "c4" or
+         * "F#6".
+         */
+        note?: (number|string);
+        /**
+         * Duration to play the note in milliseconds. If not given, the note
+         * keeps playing indefinitely
+         */
+        noteDuration?: number;
+        /**
+         * Stereo panning value, from -1 (left) to 1 (right).
          */
         pan?: number;
         /**
-         * Master volume for all instruments. Volume settings on individual
-         * instruments can still be used for relative volume between the
-         * instruments. This setting does not affect volumes set by functions in
-         * individual instruments. Can be a number between 0 and 1. Defaults to
-         * 1.
+         * Depth/intensity of the tremolo effect - which is a periodic change in
+         * volume. From 0 to 1.
+         */
+        tremoloDepth?: number;
+        /**
+         * Speed of the tremolo effect, from 0 to 1.
+         */
+        tremoloSpeed?: number;
+        /**
+         * Volume of the instrument, from 0 to 1. Can be set independent of the
+         * master/overall volume.
          */
         volume?: number;
     }
     /**
-     * A set of options for the Instrument class.
+     * Preset scales for pitch mapping.
      */
-    interface InstrumentOptionsObject {
+    interface SonificationScalePresetsObject {
         /**
-         * A list of allowed frequencies for this instrument. If trying to play
-         * a frequency not on this list, the closest frequency will be used. Set
-         * to `null` to allow all frequencies to be used. Defaults to `null`.
+         * Dorian scale
          */
-        allowedFrequencies?: Array<number>;
+        dorian: Array<number>;
         /**
-         * The unique ID of the instrument. Generated if not supplied.
+         * Harmonic minor scale
          */
-        id?: string;
+        harmonicMinor: Array<number>;
         /**
-         * Options specific to oscillator instruments.
+         * Lydian scale
          */
-        oscillator?: OscillatorOptionsObject;
+        lydian: Array<number>;
         /**
-         * When using functions to determine frequency or other parameters
-         * during playback, this options specifies how often to call the
-         * callback functions. Number given in milliseconds. Defaults to 20.
+         * Major (ionian) scale
          */
-        playCallbackInterval?: number;
+        major: Array<number>;
         /**
-         * The type of instrument. Currently only `oscillator` is supported.
-         * Defaults to `oscillator`.
+         * Major pentatonic scale
          */
-        type?: string;
+        majorPentatonic: Array<number>;
+        /**
+         * Minor scale (aeolian)
+         */
+        minor: Array<number>;
+        /**
+         * Minor pentatonic scale
+         */
+        minorPentatonic: Array<number>;
+        /**
+         * Mixolydian scale
+         */
+        mixolydian: Array<number>;
+        /**
+         * Phrygian scale
+         */
+        phrygian: Array<number>;
     }
     /**
-     * Options for playing an instrument.
+     * Event context object sent to sonification series events.
      */
-    interface InstrumentPlayOptionsObject {
+    interface SonificationSeriesEventCallbackContext {
         /**
-         * The duration of the note in milliseconds.
+         * The relevant series
          */
-        duration: number;
+        series?: Series;
         /**
-         * The frequency of the note to play. Can be a fixed number, or a
-         * function. The function receives one argument: the relative time of
-         * the note playing (0 being the start, and 1 being the end of the
-         * note). It should return the frequency number for each point in time.
-         * The poll interval of this function is specified by the
-         * Instrument.playCallbackInterval option.
+         * The playing timeline object with advanced and internal content
          */
-        frequency: (number|Function);
-        /**
-         * The master volume multiplier to apply to the instrument, regardless
-         * of other volume changes. Defaults to 1.
-         */
-        masterVolume?: number;
-        /**
-         * The maximum frequency to allow. If the instrument has a set of
-         * allowed frequencies, the closest frequency is used by default. Use
-         * this option to stop too high frequencies from being used.
-         */
-        maxFrequency?: number;
-        /**
-         * The minimum frequency to allow. If the instrument has a set of
-         * allowed frequencies, the closest frequency is used by default. Use
-         * this option to stop too low frequencies from being used.
-         */
-        minFrequency?: number;
-        /**
-         * Callback function to be called when the play is completed.
-         */
-        onEnd?: Function;
-        /**
-         * The panning of the instrument. Can be a fixed number between -1 and
-         * 1, or a function. The function receives one argument: the relative
-         * time of the note playing (0 being the start, and 1 being the end of
-         * the note). It should return the panning value for each point in time.
-         * The poll interval of this function is specified by the
-         * Instrument.playCallbackInterval option. Defaults to 0.
-         */
-        pan?: (number|Function);
-        /**
-         * The volume of the instrument. Can be a fixed number between 0 and 1,
-         * or a function. The function receives one argument: the relative time
-         * of the note playing (0 being the start, and 1 being the end of the
-         * note). It should return the volume for each point in time. The poll
-         * interval of this function is specified by the
-         * Instrument.playCallbackInterval option. Defaults to 1.
-         */
-        volume?: (number|Function);
+        timeline?: object;
     }
-    interface OscillatorOptionsObject {
+    /**
+     * Configuration for a SonificationSpeaker.
+     */
+    interface SonificationSpeakerOptionsObject {
         /**
-         * The waveform shape to use for oscillator instruments. Defaults to
-         * `sine`.
+         * The language of the voice synthesis. Defaults to `"en-US"`.
          */
-        waveformShape?: string;
-    }
-    interface Point {
+        language?: string;
         /**
-         * Cancel sonification of a point. Calls onEnd functions.
+         * Name of the voice synthesis to use. If not found, reverts to the
+         * default voice for the language chosen.
+         */
+        name?: string;
+        /**
+         * The pitch modifier of the voice. Defaults to `1`. Set higher for a
+         * higher voice pitch.
+         */
+        pitch?: number;
+        /**
+         * The speech rate modifier. Defaults to `1`.
+         */
+        rate?: number;
+        /**
+         * The speech volume, from 0 to 1. Defaults to `1`.
+         */
+        volume?: number;
+    }
+    /**
+     * A TimelineEvent object represents a scheduled audio event to play for a
+     * SonificationTimeline.
+     */
+    interface SonificationTimelineEvent {
+        /**
+         * Callback to call when playing the event.
+         */
+        callback?: Function;
+        /**
+         * Options for an instrument event to be played.
+         */
+        instrumentEventOptions?: SonificationInstrumentScheduledEventOptionsObject;
+        /**
+         * The message to speak for speech events.
+         */
+        message?: string;
+        /**
+         * A reference to a data point related to the TimelineEvent. Populated
+         * when sonifying points.
+         */
+        relatedPoint?: Point;
+        /**
+         * Options for a speech event to be played.
+         */
+        speechOptions?: SonificationSpeakerOptionsObject;
+        /**
+         * Time is given in milliseconds, where 0 is now.
+         */
+        time: number;
+    }
+    /**
+     * The Sonification class. This class represents a chart's sonification
+     * capabilities. A chart automatically gets an instance of this class when
+     * applicable.
+     */
+    class Sonification {
+        /**
+         * The Sonification class. This class represents a chart's sonification
+         * capabilities. A chart automatically gets an instance of this class
+         * when applicable.
          *
-         * @param fadeOut
-         *        Whether or not to fade out as we stop. If false, the points
-         *        are cancelled synchronously.
+         * @param chart
+         *        The chart to tie the sonification to
          */
-        cancelSonify(fadeOut?: boolean): void;
+        constructor(chart: Chart);
         /**
-         * Sonify a single point.
+         * Cancel current playing audio and reset the timeline.
+         */
+        cancel(): void;
+        /**
+         * Start download of a MIDI file export of the timeline.
+         */
+        downloadMIDI(): void;
+        /**
+         * Get last played point
          *
-         * @param options
-         *        Options for the sonification of the point.
+         * @return The point, or null if none
          */
-        sonify(options: PointSonifyOptionsObject): void;
-    }
-    /**
-     * Define the parameter mapping for an instrument.
-     */
-    interface PointInstrumentMappingObject {
+        getLastPlayedPoint(): (Point|null);
         /**
-         * Define the duration of the notes for this instrument. This can be a
-         * string with a data property name, e.g. `'y'`, in which case this data
-         * property is used to define the duration relative to the `y`-values of
-         * the other points. A higher `y` value would then result in a longer
-         * duration. Alternatively, `'-y'` can be used, in which case the
-         * polarity is inverted, and a higher `y` value would result in a
-         * shorter duration. This option can also be a fixed number or a
-         * function. If it is a function, this function is called once before
-         * the note starts playing, and should return the duration in
-         * milliseconds. It receives two arguments: The point, and the
-         * dataExtremes.
+         * Check if sonification is playing currently
+         *
+         * @return `true` if currently playing, `false` if not
          */
-        duration: (number|string|Function);
+        isPlaying(): boolean;
         /**
-         * Define the frequency of the instrument. This can be a string with a
-         * data property name, e.g. `'y'`, in which case this data property is
-         * used to define the frequency relative to the `y`-values of the other
-         * points. A higher `y` value would then result in a higher frequency.
-         * Alternatively, `'-y'` can be used, in which case the polarity is
-         * inverted, and a higher `y` value would result in a lower frequency.
-         * This option can also be a fixed number or a function. If it is a
-         * function, this function is called in regular intervals while the note
-         * is playing. It receives three arguments: The point, the dataExtremes,
-         * and the current relative time - where 0 is the beginning of the note
-         * and 1 is the end. The function should return the frequency of the
-         * note as a number (in Hz).
+         * Play point(s)/event(s) adjacent to current timeline cursor location.
+         *
+         * @param next
+         *        Pass `true` to play next point, `false` for previous
+         *
+         * @param onEnd
+         *        Callback to call after play completed
+         *
+         * @param eventFilter
+         *        Filter to apply to the events before finding adjacent to play
          */
-        frequency: (number|string|Function);
+        playAdjacent(next: number, onEnd?: SonificationChartEventCallback, eventFilter?: SonificationTimelineFilterCallback): void;
         /**
-         * Define the panning of the instrument. This can be a string with a
-         * data property name, e.g. `'x'`, in which case this data property is
-         * used to define the panning relative to the `x`-values of the other
-         * points. A higher `x` value would then result in a higher panning
-         * value (panned further to the right). Alternatively, `'-x'` can be
-         * used, in which case the polarity is inverted, and a higher `x` value
-         * would result in a lower panning value (panned further to the left).
-         * This option can also be a fixed number or a function. If it is a
-         * function, this function is called in regular intervals while the note
-         * is playing. It receives three arguments: The point, the dataExtremes,
-         * and the current relative time - where 0 is the beginning of the note
-         * and 1 is the end. The function should return the panning of the note
-         * as a number between -1 and 1.
+         * Play next/previous series, picking the point closest to a prop value
+         * from last played point. By default picks the point in the adjacent
+         * series with the closest x value as the last played point.
+         *
+         * @param next
+         *        Pass `true` to play next series, `false` for previous
+         *
+         * @param prop
+         *        Prop to find closest value of, defaults to `x`.
+         *
+         * @param onEnd
+         *        Callback to call after play completed
+         *
+         * @return The played series, or `null` if none found
          */
-        pan?: (number|string|Function);
+        playAdjacentSeries(next: number, prop?: string, onEnd?: SonificationChartEventCallback): (Series|null);
         /**
-         * Define the volume of the instrument. This can be a string with a data
-         * property name, e.g. `'y'`, in which case this data property is used
-         * to define the volume relative to the `y`-values of the other points.
-         * A higher `y` value would then result in a higher volume.
-         * Alternatively, `'-y'` can be used, which inverts the polarity, so
-         * that a higher `y` value results in a lower volume. This option can
-         * also be a fixed number or a function. If it is a function, this
-         * function is called in regular intervals while the note is playing. It
-         * receives three arguments: The point, the dataExtremes, and the
-         * current relative time - where 0 is the beginning of the note and 1 is
-         * the end. The function should return the volume of the note as a
-         * number between 0 and 1.
+         * Play point(s)/event(s) closest to a prop relative to a reference
+         * value.
+         *
+         * @param prop
+         *        Prop to compare.
+         *
+         * @param targetValue
+         *        Target value to find closest value of.
+         *
+         * @param targetFilter
+         *        Filter to apply to the events before finding closest point(s)
+         *
+         * @param onEnd
+         *        Callback to call after play completed
          */
-        volume: (number|string|Function);
-    }
-    /**
-     * An instrument definition for a point, specifying the instrument to play
-     * and how to play it.
-     */
-    interface PointInstrumentObject {
+        playClosestToProp(prop: string, targetValue: number, targetFilter?: SonificationTimelineFilterCallback, onEnd?: SonificationChartEventCallback): void;
         /**
-         * An Instrument instance or the name of the instrument in the
-         * Highcharts.sonification.instruments map.
-         */
-        instrument: (string|Instrument);
-        /**
-         * Mapping of instrument parameters for this instrument.
-         */
-        instrumentMapping: PointInstrumentMappingObject;
-        /**
-         * Options for this instrument.
-         */
-        instrumentOptions?: PointInstrumentOptionsObject;
-        /**
-         * Callback to call when the instrument has stopped playing.
-         */
-        onEnd?: Function;
-    }
-    interface PointInstrumentOptionsObject {
-        /**
-         * The maximum duration for a note when using a data property for
-         * duration. Can be overridden by using either a fixed number or a
-         * function for instrumentMapping.duration. Defaults to 2000.
-         */
-        maxDuration?: number;
-        /**
-         * The maximum frequency for a note when using a data property for
-         * frequency. Can be overridden by using either a fixed number or a
-         * function for instrumentMapping.frequency. Defaults to 2200.
-         */
-        maxFrequency?: number;
-        /**
-         * The maximum pan value for a note when using a data property for
-         * panning. Can be overridden by using either a fixed number or a
-         * function for instrumentMapping.pan. Defaults to 1 (fully right).
-         */
-        maxPan?: number;
-        /**
-         * The maximum volume for a note when using a data property for volume.
-         * Can be overridden by using either a fixed number or a function for
-         * instrumentMapping.volume. Defaults to 1.
-         */
-        maxVolume?: number;
-        /**
-         * The minimum duration for a note when using a data property for
-         * duration. Can be overridden by using either a fixed number or a
-         * function for instrumentMapping.duration. Defaults to 20.
-         */
-        minDuration?: number;
-        /**
-         * The minimum frequency for a note when using a data property for
-         * frequency. Can be overridden by using either a fixed number or a
-         * function for instrumentMapping.frequency. Defaults to 220.
-         */
-        minFrequency?: number;
-        /**
-         * The minimum pan value for a note when using a data property for
-         * panning. Can be overridden by using either a fixed number or a
-         * function for instrumentMapping.pan. Defaults to -1 (fully left).
-         */
-        minPan?: number;
-        /**
-         * The minimum volume for a note when using a data property for volume.
-         * Can be overridden by using either a fixed number or a function for
-         * instrumentMapping.volume. Defaults to 0.1.
-         */
-        minVolume?: number;
-    }
-    /**
-     * Options for sonifying a point.
-     */
-    interface PointSonifyOptionsObject {
-        /**
-         * Optionally provide the minimum/maximum values for the points. If this
-         * is not supplied, it is calculated from the points in the chart on
-         * demand. This option is supplied in the following format, as a map of
-         * point data properties to objects with min/max values: (see online
-         * documentation for example)
-         */
-        dataExtremes?: object;
-        /**
-         * The instrument definitions for this point.
-         */
-        instruments: Array<PointInstrumentObject>;
-        /**
-         * Callback called when the sonification has finished.
-         */
-        onEnd?: Function;
-    }
-    interface Series {
-        /**
-         * Sonify a series.
+         * Play a note with a specific instrument, and optionally a time offset.
+         *
+         * @param instrument
+         *        The instrument to play. Can be either a string referencing the
+         *        instrument presets, or an actual SynthPatch configuration.
          *
          * @param options
-         *        The options for sonifying this series. If not provided, uses
-         *        options set on chart and series.
+         *        Configuration for the instrument event to play.
+         *
+         * @param delayMs
+         *        Time offset from now, in milliseconds. Defaults to 0.
          */
-        sonify(options?: SonifySeriesOptionsObject): void;
+        playNote(instrument: (SonificationSynthPreset|SynthPatchOptionsObject), options: SonificationInstrumentScheduledEventOptionsObject, delayMs?: number): void;
+        /**
+         * Divide timeline into 100 parts of equal time, and play one of them.
+         * Can be used for scrubbing navigation.
+         *
+         * @param segment
+         *        The segment to play, from 0 to 100
+         *
+         * @param onEnd
+         *        Callback to call after play completed
+         */
+        playSegment(segment: number, onEnd?: SonificationChartEventCallback): void;
+        /**
+         * Set the audio destination node to something other than the default
+         * output. This allows for inserting custom WebAudio chains after the
+         * sonification.
+         *
+         * @param audioDestination
+         *        The destination node
+         */
+        setAudioDestination(audioDestination: AudioDestinationNode): void;
+        /**
+         * Speak a text string, optionally with a custom speaker configuration
+         *
+         * @param text
+         *        Text to announce
+         *
+         * @param speakerOptions
+         *        Options for the announcement
+         *
+         * @param delayMs
+         *        Time offset from now, in milliseconds. Defaults to 0.
+         */
+        speak(text: string, speakerOptions?: SonificationSpeakerOptionsObject, delayMs?: number): void;
     }
     /**
-     * Global classes and objects related to sonification.
+     * The SonificationInstrument class. This class represents an instrument
+     * with mapping capabilities. The instrument wraps a SynthPatch object, and
+     * extends it with functionality such as panning, tremolo, and global
+     * low/highpass filters.
      */
-    interface SonificationObject {
+    class SonificationInstrument {
         /**
-         * The Earcon class.
-         */
-        Earcon: Function;
-        /**
-         * Note fade-out-time in milliseconds. Most notes are faded out quickly
-         * by default if there is time. This is to avoid abrupt stops which will
-         * cause perceived clicks.
-         */
-        fadeOutDuration: number;
-        /**
-         * The Instrument class.
-         */
-        Instrument: Function;
-        /**
-         * Predefined instruments, given as an object with a map between the
-         * instrument name and the Highcharts.Instrument object.
-         */
-        instruments: object;
-    }
-    /**
-     * Options for sonifying a chart.
-     */
-    interface SonificationOptions {
-        /**
-         * Milliseconds of silent waiting to add between series. Note that
-         * waiting time is considered part of the sonify duration.
-         */
-        afterSeriesWait?: number;
-        /**
-         * Optionally provide the minimum/maximum data values for the points. If
-         * this is not supplied, it is calculated from all points in the chart
-         * on demand. This option is supplied in the following format, as a map
-         * of point data properties to objects with min/max values: (see online
-         * documentation for example)
-         */
-        dataExtremes?: Dictionary<RangeObject>;
-        /**
-         * Duration for sonifying the entire chart. The duration is distributed
-         * across the different series intelligently, but does not take earcons
-         * into account. It is also possible to set the duration explicitly per
-         * series, using `seriesOptions`. Note that points may continue to play
-         * after the duration has passed, but no new points will start playing.
-         */
-        duration: number;
-        /**
-         * Earcons to add to the chart. Note that earcons can also be added per
-         * series using `seriesOptions`.
-         */
-        earcons?: Array<EarconConfiguration>;
-        /**
-         * The instrument definitions for the points in this chart.
-         */
-        instruments?: Array<PointInstrumentObject>;
-        /**
-         * Callback after the chart has played.
-         */
-        onEnd?: Function;
-        /**
-         * Callback after a series has finished playing.
-         */
-        onSeriesEnd?: Function;
-        /**
-         * Callback before a series is played.
-         */
-        onSeriesStart?: Function;
-        /**
-         * Define the order to play the series in. This can be given as a
-         * string, or an array specifying a custom ordering. If given as a
-         * string, valid values are `sequential` - where each series is played
-         * in order - or `simultaneous`, where all series are played at once.
-         * For custom ordering, supply an array as the order. Each element in
-         * the array can be either a string with a series ID, an Earcon object,
-         * or an object with a numeric `silentWait` property designating a
-         * number of milliseconds to wait before continuing. Each element of the
-         * array will be played in order. To play elements simultaneously, group
-         * the elements in an array.
-         */
-        order: (string|Array<(string|Earcon|Array<(string|Earcon)>)>);
-        /**
-         * The axis to use for when to play the points. Can be a string with a
-         * data property (e.g. `x`), or a function. If it is a function, this
-         * function receives the point as argument, and should return a numeric
-         * value. The points with the lowest numeric values are then played
-         * first, and the time between points will be proportional to the
-         * distance between the numeric values. This option cannot be overridden
-         * per series.
-         */
-        pointPlayTime: (string|Function);
-        /**
-         * Options as given to `series.sonify` to override options per series.
-         * If the option is supplied as an array of options objects, the `id`
-         * property of the object should correspond to the series' id. If the
-         * option is supplied as a single object, the options apply to all
-         * series.
-         */
-        seriesOptions?: (object|Array<object>);
-    }
-    /**
-     * Options for sonifying a series.
-     */
-    interface SonifySeriesOptionsObject {
-        /**
-         * Optionally provide the minimum/maximum data values for the points. If
-         * this is not supplied, it is calculated from all points in the chart
-         * on demand. This option is supplied in the following format, as a map
-         * of point data properties to objects with min/max values: (see online
-         * documentation for example)
-         */
-        dataExtremes?: Dictionary<RangeObject>;
-        /**
-         * The duration for playing the points. Note that points might continue
-         * to play after the duration has passed, but no new points will start
-         * playing.
-         */
-        duration: number;
-        /**
-         * Earcons to add to the series.
-         */
-        earcons?: Array<EarconConfiguration>;
-        /**
-         * The instrument definitions for the points in this series.
-         */
-        instruments: Array<PointInstrumentObject>;
-        /**
-         * Callback after the series has played.
-         */
-        onEnd?: Function;
-        /**
-         * Callback after a point has finished playing.
-         */
-        onPointEnd?: Function;
-        /**
-         * Callback before a point is played.
-         */
-        onPointStart?: Function;
-        /**
-         * The axis to use for when to play the points. Can be a string with a
-         * data property (e.g. `x`), or a function. If it is a function, this
-         * function receives the point as argument, and should return a numeric
-         * value. The points with the lowest numeric values are then played
-         * first, and the time between points will be proportional to the
-         * distance between the numeric values.
-         */
-        pointPlayTime: (string|Function);
-    }
-    /**
-     * The Earcon class. Earcon objects represent a certain sound consisting of
-     * one or more instruments playing a predefined sound.
-     */
-    class Earcon {
-        /**
-         * The Earcon class. Earcon objects represent a certain sound consisting
-         * of one or more instruments playing a predefined sound.
+         * The SonificationInstrument class. This class represents an instrument
+         * with mapping capabilities. The instrument wraps a SynthPatch object,
+         * and extends it with functionality such as panning, tremolo, and
+         * global low/highpass filters.
+         *
+         * @param audioContext
+         *        The AudioContext to use.
+         *
+         * @param outputNode
+         *        The destination node to connect to.
          *
          * @param options
-         *        Options for the Earcon instance.
+         *        Configuration for the instrument.
          */
-        constructor(options: EarconOptionsObject);
+        constructor(audioContext: AudioContext, outputNode: AudioNode, options: SonificationInstrumentOptionsObject);
         /**
-         * Cancel any current sonification of the Earcon. Calls onEnd functions.
-         *
-         * @param fadeOut
-         *        Whether or not to fade out as we stop. If false, the earcon is
-         *        cancelled synchronously.
+         * Cancel currently playing sounds and any scheduled actions.
          */
-        cancelSonify(fadeOut?: boolean): void;
+        cancel(): void;
         /**
-         * Play the earcon, optionally overriding init options.
-         *
-         * @param options
-         *        Override existing options.
+         * Stop instrument and destroy it, cleaning up used resources.
          */
-        sonify(options: EarconOptionsObject): void;
+        destroy(): void;
+        /**
+         * Convert a note value to a frequency.
+         *
+         * @param note
+         *        Note to convert. Can be a string 'c0' to 'b8' or a number of
+         *        semitones from c0.
+         *
+         * @return The converted frequency
+         */
+        musicalNoteToFrequency(note: (number|string)): number;
+        /**
+         * Schedule an instrument event at a given time offset, whether it is
+         * playing a note or changing the parameters of the instrument.
+         *
+         * @param time
+         *        Time is given in seconds, where 0 is now.
+         *
+         * @param params
+         *        Parameters for the instrument event.
+         */
+        scheduleEventAtTime(time: number, params: SonificationInstrumentScheduledEventOptionsObject): void;
+        /**
+         * Set the overall volume.
+         *
+         * @param volume
+         *        The volume to set, from 0 to 1.
+         */
+        setMasterVolume(volume: number): void;
+        /**
+         * Schedule silencing the instrument at a given time offset.
+         *
+         * @param time
+         *        Time is given in seconds, where 0 is now.
+         */
+        silenceAtTime(time: number): void;
     }
     /**
-     * The Instrument class. Instrument objects represent an instrument capable
-     * of playing a certain pitch for a specified duration.
+     * The SonificationSpeaker class. This class represents an announcer using
+     * speech synthesis. It allows for scheduling speech announcements, as well
+     * as speech parameter changes - including rate, volume and pitch.
      */
-    class Instrument {
+    class SonificationSpeaker {
         /**
-         * The Instrument class. Instrument objects represent an instrument
-         * capable of playing a certain pitch for a specified duration.
+         * The SonificationSpeaker class. This class represents an announcer
+         * using speech synthesis. It allows for scheduling speech
+         * announcements, as well as speech parameter changes - including rate,
+         * volume and pitch.
          *
          * @param options
-         *        Options for the instrument instance.
+         *        Configuration for the speaker
          */
-        constructor(options: InstrumentOptionsObject);
+        constructor(options: SonificationSpeakerOptionsObject);
         /**
-         * Return a copy of an instrument. Only one instrument instance can play
-         * at a time, so use this to get a new copy of the instrument that can
-         * play alongside it. The new instrument copy will receive a new ID
-         * unless one is supplied in options.
+         * Clear scheduled announcements, and stop current speech.
+         */
+        cancel(): void;
+        /**
+         * Say a message using the speaker voice. Interrupts other currently
+         * speaking announcements from this speaker.
+         *
+         * @param message
+         *        The message to speak.
          *
          * @param options
-         *        Options to merge in for the copy.
-         *
-         * @return A new Instrument instance with the same options.
+         *        Optionally override spaker configuration.
          */
-        copy(options?: InstrumentOptionsObject): Instrument;
+        say(message: string, options?: SonificationSpeakerOptionsObject): void;
         /**
-         * Mute an instrument that is playing. If the instrument is not
-         * currently playing, this function does nothing.
+         * Schedule a message using the speaker voice.
+         *
+         * @param time
+         *        The time offset to speak at, in milliseconds from now.
+         *
+         * @param message
+         *        The message to speak.
+         *
+         * @param options
+         *        Optionally override spaker configuration.
+         */
+        sayAtTime(time: number, message: string, options?: SonificationSpeakerOptionsObject): void;
+        /**
+         * Set speaker overall/master volume modifier. This affects all
+         * announcements, and applies in addition to the individual announcement
+         * volume.
+         *
+         * @param vol
+         *        Volume from 0 to 1.
+         */
+        setMasterVolume(vol: number): void;
+    }
+    /**
+     * The SynthPatch class. This class represents an instance and configuration
+     * of the built-in Highcharts synthesizer. It can be used to play various
+     * generated sounds.
+     */
+    class SynthPatch {
+        /**
+         * The SynthPatch class. This class represents an instance and
+         * configuration of the built-in Highcharts synthesizer. It can be used
+         * to play various generated sounds.
+         *
+         * @param audioContext
+         *        The AudioContext to use.
+         *
+         * @param options
+         *        Configuration for the synth.
+         */
+        constructor(audioContext: AudioContext, options: SynthPatchOptionsObject);
+        /**
+         * Cancel any scheduled actions
+         */
+        cancelScheduled(): void;
+        /**
+         * Connect the SynthPatch output to an audio node / destination.
+         *
+         * @param destinationNode
+         *        The node to connect to.
+         *
+         * @return The destination node, to allow chaining.
+         */
+        connect(destinationNode: AudioNode): AudioNode;
+        /**
+         * Mute sound immediately.
          */
         mute(): void;
         /**
-         * Play the instrument according to options.
+         * Mute sound at time (in seconds). Will still run release envelope.
+         * Note: If scheduled multiple times in succession, the release envelope
+         * will run, and that could make sound.
          *
-         * @param options
-         *        Options for the playback of the instrument.
+         * @param time
+         *        Time offset from now, in seconds
          */
-        play(options: InstrumentPlayOptionsObject): void;
+        silenceAtTime(time: number): void;
         /**
-         * Stop the instrument playing.
+         * Play a frequency at time (in seconds). Time denotes when the attack
+         * ramp starts. Note duration is given in milliseconds. If note duration
+         * is not given, the note plays indefinitely.
          *
-         * @param immediately
-         *        Whether to do the stop immediately or fade out.
+         * @param time
+         *        Time offset from now, in seconds
          *
-         * @param onStopped
-         *        Callback function to be called when the stop is completed.
+         * @param frequency
+         *        The frequency to play at
          *
-         * @param callbackData
-         *        Data to send to the onEnd callback functions.
+         * @param noteDuration
+         *        Duration to play, in milliseconds
          */
-        stop(immediately: boolean, onStopped?: Function, callbackData?: any): void;
+        silenceAtTime(time: number, frequency: number, noteDuration: (number|undefined)): void;
+        /**
+         * Start the oscillators, but don't output sound.
+         */
+        startSilently(): void;
+        /**
+         * Stop the synth. It can't be started again.
+         */
+        stop(): void;
     }
     /**
-     * Global classes and objects related to sonification.
+     * Global Sonification classes and objects.
      */
-    let sonification: SonificationObject;
+    let sonification: SonificationGlobalObject;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

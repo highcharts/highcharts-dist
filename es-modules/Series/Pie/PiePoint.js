@@ -8,44 +8,27 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import A from '../../Core/Animation/AnimationUtilities.js';
-var setAnimation = A.setAnimation;
+const { setAnimation } = A;
 import Point from '../../Core/Series/Point.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, isNumber = U.isNumber, pick = U.pick, relativeLength = U.relativeLength;
+const { addEvent, defined, extend, isNumber, pick, relativeLength } = U;
 /* *
  *
  *  Class
  *
  * */
-var PiePoint = /** @class */ (function (_super) {
-    __extends(PiePoint, _super);
-    function PiePoint() {
+class PiePoint extends Point {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.labelDistance = void 0;
-        _this.options = void 0;
-        _this.series = void 0;
-        return _this;
+        super(...arguments);
+        this.labelDistance = void 0;
+        this.options = void 0;
+        this.series = void 0;
     }
     /* *
      *
@@ -58,34 +41,34 @@ var PiePoint = /** @class */ (function (_super) {
      * data label and the pie slice.
      * @private
      */
-    PiePoint.prototype.getConnectorPath = function () {
-        var labelPosition = this.labelPosition, options = this.series.options.dataLabels, predefinedShapes = this.connectorShapes;
-        var connectorShape = options.connectorShape;
+    getConnectorPath() {
+        const labelPosition = this.labelPosition, options = this.series.options.dataLabels, predefinedShapes = this.connectorShapes;
+        let connectorShape = options.connectorShape;
         // find out whether to use the predefined shape
         if (predefinedShapes[connectorShape]) {
             connectorShape = predefinedShapes[connectorShape];
         }
         return connectorShape.call(this, {
             // pass simplified label position object for user's convenience
-            x: labelPosition.final.x,
-            y: labelPosition.final.y,
+            x: labelPosition.computed.x,
+            y: labelPosition.computed.y,
             alignment: labelPosition.alignment
         }, labelPosition.connectorPosition, options);
-    };
+    }
     /**
      * @private
      */
-    PiePoint.prototype.getTranslate = function () {
+    getTranslate() {
         return this.sliced ? this.slicedTranslation : {
             translateX: 0,
             translateY: 0
         };
-    };
+    }
     /**
      * @private
      */
-    PiePoint.prototype.haloPath = function (size) {
-        var shapeArgs = this.shapeArgs;
+    haloPath(size) {
+        const shapeArgs = this.shapeArgs;
         return this.sliced || !this.visible ?
             [] :
             this.series.chart.renderer.symbols.arc(shapeArgs.x, shapeArgs.y, shapeArgs.r + size, shapeArgs.r + size, {
@@ -93,32 +76,32 @@ var PiePoint = /** @class */ (function (_super) {
                 // through between the halo and the slice (#7495).
                 innerR: shapeArgs.r - 1,
                 start: shapeArgs.start,
-                end: shapeArgs.end
+                end: shapeArgs.end,
+                borderRadius: shapeArgs.borderRadius
             });
-    };
+    }
     /**
      * Initialize the pie slice.
      * @private
      */
-    PiePoint.prototype.init = function () {
-        var _this = this;
-        _super.prototype.init.apply(this, arguments);
+    init() {
+        super.init.apply(this, arguments);
         this.name = pick(this.name, 'Slice');
         // add event listener for select
-        var toggleSlice = function (e) {
-            _this.slice(e.type === 'select');
+        const toggleSlice = (e) => {
+            this.slice(e.type === 'select');
         };
         addEvent(this, 'select', toggleSlice);
         addEvent(this, 'unselect', toggleSlice);
         return this;
-    };
+    }
     /**
      * Negative points are not valid (#1530, #3623, #5322)
      * @private
      */
-    PiePoint.prototype.isValid = function () {
+    isValid() {
         return isNumber(this.y) && this.y >= 0;
-    };
+    }
     /**
      * Toggle the visibility of a pie slice or other data point. Note that this
      * method is available only for some series, like pie, treemap and sunburst.
@@ -134,9 +117,8 @@ var PiePoint = /** @class */ (function (_super) {
      * redraw to false and call {@link Chart#redraw|chart.redraw()} after.
      *
      */
-    PiePoint.prototype.setVisible = function (vis, redraw) {
-        var _this = this;
-        var series = this.series, chart = series.chart, ignoreHiddenPoint = series.options.ignoreHiddenPoint;
+    setVisible(vis, redraw) {
+        const series = this.series, chart = series.chart, ignoreHiddenPoint = series.options.ignoreHiddenPoint;
         redraw = pick(redraw, ignoreHiddenPoint);
         if (vis !== this.visible) {
             // If called without an argument, toggle visibility
@@ -148,9 +130,9 @@ var PiePoint = /** @class */ (function (_super) {
             // Show and hide associated elements. This is performed
             // regardless of redraw or not, because chart.redraw only
             // handles full series.
-            ['graphic', 'dataLabel', 'connector', 'shadowGroup'].forEach(function (key) {
-                if (_this[key]) {
-                    _this[key][vis ? 'show' : 'hide'](vis);
+            ['graphic', 'dataLabel', 'connector'].forEach((key) => {
+                if (this[key]) {
+                    this[key][vis ? 'show' : 'hide'](vis);
                 }
             });
             if (this.legendItem) {
@@ -168,7 +150,7 @@ var PiePoint = /** @class */ (function (_super) {
                 chart.redraw();
             }
         }
-    };
+    }
     /**
      * Set or toggle whether the slice is cut out from the pie.
      * @private
@@ -182,8 +164,8 @@ var PiePoint = /** @class */ (function (_super) {
      * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
      * Animation options.
      */
-    PiePoint.prototype.slice = function (sliced, redraw, animation) {
-        var series = this.series, chart = series.chart;
+    slice(sliced, redraw, animation) {
+        const series = this.series, chart = series.chart;
         setAnimation(animation, chart);
         // redraw is true by default
         redraw = pick(redraw, true);
@@ -202,17 +184,13 @@ var PiePoint = /** @class */ (function (_super) {
         if (this.graphic) {
             this.graphic.animate(this.getTranslate());
         }
-        if (this.shadowGroup) {
-            this.shadowGroup.animate(this.getTranslate());
-        }
-    };
-    return PiePoint;
-}(Point));
+    }
+}
 extend(PiePoint.prototype, {
     connectorShapes: {
         // only one available before v7.0.0
         fixedOffset: function (labelPosition, connectorPosition, options) {
-            var breakAt = connectorPosition.breakAt, touchingSliceAt = connectorPosition.touchingSliceAt, lineSegment = options.softConnector ? [
+            const breakAt = connectorPosition.breakAt, touchingSliceAt = connectorPosition.touchingSliceAt, lineSegment = options.softConnector ? [
                 'C',
                 // 1st control point (of the curve)
                 labelPosition.x +
@@ -236,7 +214,7 @@ extend(PiePoint.prototype, {
             ]);
         },
         straight: function (labelPosition, connectorPosition) {
-            var touchingSliceAt = connectorPosition.touchingSliceAt;
+            const touchingSliceAt = connectorPosition.touchingSliceAt;
             // direct line to the slice
             return [
                 ['M', labelPosition.x, labelPosition.y],
@@ -244,29 +222,32 @@ extend(PiePoint.prototype, {
             ];
         },
         crookedLine: function (labelPosition, connectorPosition, options) {
-            var touchingSliceAt = connectorPosition.touchingSliceAt, series = this.series, pieCenterX = series.center[0], plotWidth = series.chart.plotWidth, plotLeft = series.chart.plotLeft, alignment = labelPosition.alignment, radius = this.shapeArgs.r, crookDistance = relativeLength(// % to fraction
-            options.crookDistance, 1), crookX = alignment === 'left' ?
-                pieCenterX + radius + (plotWidth + plotLeft -
-                    pieCenterX - radius) * (1 - crookDistance) :
-                plotLeft + (pieCenterX - radius) * crookDistance, segmentWithCrook = [
-                'L',
-                crookX,
-                labelPosition.y
-            ];
-            var useCrook = true;
-            // crookedLine formula doesn't make sense if the path overlaps
+            const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, plotWidth = series.chart.plotWidth, plotLeft = series.chart.plotLeft, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
+            let crookX = breakAt.x;
+            if (options.crookDistance) {
+                const crookDistance = relativeLength(// % to fraction
+                options.crookDistance, 1);
+                crookX = leftAligned ?
+                    cx +
+                        r +
+                        (plotWidth + plotLeft - cx - r) * (1 - crookDistance) :
+                    plotLeft + (cx - r) * crookDistance;
+                // When the crookDistance option is undefined, make the bend in the
+                // intersection between the radial line in the middle of the slice,
+                // and the extension of the label position.
+            }
+            else {
+                crookX = cx + (cy - y) * Math.tan((this.angle || 0) - Math.PI / 2);
+            }
+            const path = [['M', x, y]];
+            // The crookedLine formula doesn't make sense if the path overlaps
             // the label - use straight line instead in that case
-            if (alignment === 'left' ?
-                (crookX > labelPosition.x || crookX < touchingSliceAt.x) :
-                (crookX < labelPosition.x || crookX > touchingSliceAt.x)) {
-                useCrook = false;
+            if (leftAligned ?
+                (crookX <= x && crookX >= breakAt.x) :
+                (crookX >= x && crookX <= breakAt.x)) {
+                path.push(['L', crookX, y]);
             }
-            // assemble the path
-            var path = [['M', labelPosition.x, labelPosition.y]];
-            if (useCrook) {
-                path.push(segmentWithCrook);
-            }
-            path.push(['L', touchingSliceAt.x, touchingSliceAt.y]);
+            path.push(['L', breakAt.x, breakAt.y], ['L', touchingSliceAt.x, touchingSliceAt.y]);
             return path;
         }
     }

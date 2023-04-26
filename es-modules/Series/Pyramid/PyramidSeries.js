@@ -10,25 +10,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import FunnelSeries from '../Funnel/FunnelSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
@@ -43,62 +28,59 @@ var merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var PyramidSeries = /** @class */ (function (_super) {
-    __extends(PyramidSeries, _super);
-    function PyramidSeries() {
+class PyramidSeries extends FunnelSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
+}
+/**
+ * A pyramid series is a special type of funnel, without neck and reversed
+ * by default.
+ *
+ * @sample highcharts/demo/pyramid/
+ *         Pyramid chart
+ *
+ * @extends      plotOptions.funnel
+ * @product      highcharts
+ * @requires     modules/funnel
+ * @optionparent plotOptions.pyramid
+ */
+PyramidSeries.defaultOptions = merge(FunnelSeries.defaultOptions, {
     /**
-     * A pyramid series is a special type of funnel, without neck and reversed
-     * by default.
+     * The pyramid neck width is zero by default, as opposed to the funnel,
+     * which shares the same layout logic.
      *
-     * @sample highcharts/demo/pyramid/
-     *         Pyramid chart
-     *
-     * @extends      plotOptions.funnel
-     * @product      highcharts
-     * @requires     modules/funnel
-     * @optionparent plotOptions.pyramid
+     * @since 3.0.10
      */
-    PyramidSeries.defaultOptions = merge(FunnelSeries.defaultOptions, {
-        /**
-         * The pyramid neck width is zero by default, as opposed to the funnel,
-         * which shares the same layout logic.
-         *
-         * @since 3.0.10
-         */
-        neckWidth: '0%',
-        /**
-         * The pyramid neck width is zero by default, as opposed to the funnel,
-         * which shares the same layout logic.
-         *
-         * @since 3.0.10
-         */
-        neckHeight: '0%',
-        /**
-         * The pyramid is reversed by default, as opposed to the funnel, which
-         * shares the layout engine, and is not reversed.
-         *
-         * @since 3.0.10
-         */
-        reversed: true
-    });
-    return PyramidSeries;
-}(FunnelSeries));
+    neckWidth: '0%',
+    /**
+     * The pyramid neck width is zero by default, as opposed to the funnel,
+     * which shares the same layout logic.
+     *
+     * @since 3.0.10
+     */
+    neckHeight: '0%',
+    /**
+     * The pyramid is reversed by default, as opposed to the funnel, which
+     * shares the layout engine, and is not reversed.
+     *
+     * @since 3.0.10
+     */
+    reversed: true
+});
 SeriesRegistry.registerSeriesType('pyramid', PyramidSeries);
 /* *
  *

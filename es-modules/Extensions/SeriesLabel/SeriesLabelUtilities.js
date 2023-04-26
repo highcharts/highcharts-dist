@@ -20,7 +20,7 @@
  * @function ccw
  */
 function ccw(x1, y1, x2, y2, x3, y3) {
-    var cw = ((y3 - y1) * (x2 - x1)) - ((y2 - y1) * (x3 - x1));
+    const cw = ((y3 - y1) * (x2 - x1)) - ((y2 - y1) * (x3 - x1));
     return cw > 0 ? true : !(cw < 0);
 }
 /**
@@ -60,8 +60,8 @@ function intersectRect(r1, r2) {
  *  Default Export
  *
  * */
-var SeriesLabelUtilities = {
-    boxIntersectLine: boxIntersectLine,
-    intersectRect: intersectRect
+const SeriesLabelUtilities = {
+    boxIntersectLine,
+    intersectRect
 };
 export default SeriesLabelUtilities;

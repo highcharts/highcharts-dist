@@ -8,28 +8,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import BoxPlotSeries from '../BoxPlot/BoxPlotSeries.js';
 import ColumnSeries from '../Column/ColumnSeries.js';
 import ErrorBarSeriesDefaults from './ErrorBarSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var AreaRangeSeries = SeriesRegistry.seriesTypes.arearange;
+const { arearange: AreaRangeSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, merge = U.merge, extend = U.extend;
+const { addEvent, merge, extend } = U;
 /* *
  *
  *  Class
@@ -45,38 +30,36 @@ var addEvent = U.addEvent, merge = U.merge, extend = U.extend;
  * @augments Highcharts.Series
  *
  */
-var ErrorBarSeries = /** @class */ (function (_super) {
-    __extends(ErrorBarSeries, _super);
-    function ErrorBarSeries() {
+class ErrorBarSeries extends BoxPlotSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    ErrorBarSeries.prototype.getColumnMetrics = function () {
+    getColumnMetrics() {
         // Get the width and X offset, either on top of the linked series
         // column or standalone
         return ((this.linkedParent && this.linkedParent.columnMetrics) ||
             ColumnSeries.prototype.getColumnMetrics.call(this));
-    };
-    ErrorBarSeries.prototype.drawDataLabels = function () {
-        var valKey = this.pointValKey;
+    }
+    drawDataLabels() {
+        const valKey = this.pointValKey;
         if (AreaRangeSeries) {
             AreaRangeSeries.prototype.drawDataLabels.call(this);
             // Arearange drawDataLabels does not reset point.y to high,
@@ -85,16 +68,15 @@ var ErrorBarSeries = /** @class */ (function (_super) {
                 point.y = point[valKey];
             });
         }
-    };
-    ErrorBarSeries.prototype.toYData = function (point) {
+    }
+    toYData(point) {
         // return a plain array for speedy calculation
         return [point.low, point.high];
-    };
-    ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults);
-    return ErrorBarSeries;
-}(BoxPlotSeries));
+    }
+}
+ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults);
 addEvent(ErrorBarSeries, 'afterTranslate', function () {
-    this.points.forEach(function (point) {
+    this.points.forEach((point) => {
         point.plotLow = point.plotY;
     });
 }, { order: 0 });

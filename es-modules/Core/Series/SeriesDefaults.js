@@ -18,7 +18,7 @@
  *
  * @optionparent plotOptions.series
  */
-var seriesDefaults = {
+const seriesDefaults = {
     // base series options
     /**
      * The SVG value used for the `stroke-linecap` and `stroke-linejoin`
@@ -42,10 +42,8 @@ var seriesDefaults = {
      *         On one single series
      *
      * @product highcharts highstock
-     *
-     * @private
      */
-    lineWidth: 2,
+    lineWidth: 1,
     /**
      * For some series, there is a limit that shuts down animation
      * by default when the total number of points in the chart is too high.
@@ -233,8 +231,11 @@ var seriesDefaults = {
      * Styled mode only. A specific color index to use for the series, so its
      * graphic representations are given the class name `highcharts-color-{n}`.
      *
-     * @sample    {highcharts} highcharts/css/colorindex/
-     *            Series and point color index
+     * Since v11, CSS variables on the form `--highcharts-color-{n}` make
+     * changing the color scheme very convenient.
+     *
+     * @sample    {highcharts} highcharts/css/colorindex/ Series and point color
+     *            index
      *
      * @type      {number}
      * @since     5.0.0
@@ -651,6 +652,11 @@ var seriesDefaults = {
      * Whether to apply a drop shadow to the graph line. Since 2.3 the
      * shadow can be an object configuration containing `color`, `offsetX`,
      * `offsetY`, `opacity` and `width`.
+     *
+     * Note that in some cases, like stacked columns or other dense layouts, the
+     * series may cast shadows on each other. In that case, the
+     * `chart.seriesGroupShadow` allows applying a common drop shadow to the
+     * whole series group.
      *
      * @sample {highcharts} highcharts/plotoptions/series-shadow/
      *         Shadow enabled
@@ -1083,7 +1089,7 @@ var seriesDefaults = {
                  */
                 animation: {
                     /** @internal */
-                    duration: 50
+                    duration: 150
                 },
                 /**
                  * Enable or disable the point marker.
@@ -1534,13 +1540,9 @@ var seriesDefaults = {
          * series animation has finished. Setting to `false` renders the
          * data label immediately. If set to `true` inherits the defer
          * time set in [plotOptions.series.animation](#plotOptions.series.animation).
-         * If set to a number, a defer time is specified in milliseconds.
-         *
-         * @sample highcharts/plotoptions/animation-defer
-         *         Set defer time
          *
          * @since     4.0.0
-         * @type      {boolean|number}
+         * @type      {boolean}
          * @product   highcharts highstock gantt
          */
         defer: true,
@@ -1630,7 +1632,7 @@ var seriesDefaults = {
          * @type {Highcharts.DataLabelsFormatterCallbackFunction}
          */
         formatter: function () {
-            var numberFormatter = this.series.chart.numberFormatter;
+            const { numberFormatter } = this.series.chart;
             return typeof this.y !== 'number' ?
                 '' : numberFormatter(this.y, -1);
         },
@@ -1781,7 +1783,7 @@ var seriesDefaults = {
          */
         style: {
             /** @internal */
-            fontSize: '11px',
+            fontSize: '0.7em',
             /** @internal */
             fontWeight: 'bold',
             /** @internal */
@@ -1975,7 +1977,7 @@ var seriesDefaults = {
                  *
                  * @internal
                  */
-                duration: 50
+                duration: 150
             },
             /**
              * Pixel width of the graph line. By default this property is
@@ -2116,7 +2118,7 @@ var seriesDefaults = {
              */
             animation: {
                 /** @internal */
-                duration: 50
+                duration: 150
             },
             /**
              * Opacity of series elements (dataLabels, line, area).

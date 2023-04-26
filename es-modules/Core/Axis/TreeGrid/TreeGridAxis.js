@@ -14,21 +14,21 @@ import GridAxis from '../GridAxis.js';
 import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
-var getLevelOptions = TU.getLevelOptions;
+const { getLevelOptions } = TU;
 import U from '../../Utilities.js';
-var addEvent = U.addEvent, find = U.find, fireEvent = U.fireEvent, isArray = U.isArray, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, wrap = U.wrap;
+const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Variables
  *
  * */
-var TickConstructor;
+let TickConstructor;
 /* *
  *
  *  Functions
@@ -38,8 +38,8 @@ var TickConstructor;
  * @private
  */
 function getBreakFromNode(node, max) {
-    var to = node.collapseEnd || 0;
-    var from = node.collapseStart || 0;
+    const to = node.collapseEnd || 0;
+    let from = node.collapseStart || 0;
     // In broken-axis, the axis.max is minimized until it is not within a
     // break. Therefore, if break.to is larger than axis.max, the axis.to
     // should not add the 0.5 axis.tickMarkOffset, to avoid adding a break
@@ -80,15 +80,15 @@ function getBreakFromNode(node, max) {
  * @todo Add unit-tests.
  */
 function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
-    var categories = [], collapsedNodes = [], mapOfIdToNode = {}, uniqueNamesEnabled = typeof uniqueNames === 'boolean' ?
+    const categories = [], collapsedNodes = [], mapOfIdToNode = {}, uniqueNamesEnabled = typeof uniqueNames === 'boolean' ?
         uniqueNames : false;
-    var mapOfPosToGridNode = {}, posIterator = -1;
+    let mapOfPosToGridNode = {}, posIterator = -1;
     // Build the tree from the series data.
-    var treeParams = {
+    const treeParams = {
         // After the children has been created.
         after: function (node) {
-            var gridNode = mapOfPosToGridNode[node.pos];
-            var height = 0, descendants = 0;
+            const gridNode = mapOfPosToGridNode[node.pos];
+            let height = 0, descendants = 0;
             gridNode.children.forEach(function (child) {
                 descendants += (child.descendants || 0) + 1;
                 height = Math.max((child.height || 0) + 1, height);
@@ -101,14 +101,14 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
         },
         // Before the children has been created.
         before: function (node) {
-            var data = isObject(node.data, true) ?
+            const data = isObject(node.data, true) ?
                 node.data :
                 {}, name = isString(data.name) ? data.name : '', parentNode = mapOfIdToNode[node.parent], parentGridNode = (isObject(parentNode, true) ?
                 mapOfPosToGridNode[parentNode.pos] :
                 null), hasSameName = function (x) {
                 return x.name === name;
             };
-            var gridNode, pos;
+            let gridNode, pos;
             // If not unique names, look for sibling node with the same name
             if (uniqueNamesEnabled &&
                 isObject(parentGridNode, true) &&
@@ -155,13 +155,13 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
             node.pos = pos;
         }
     };
-    var updateYValuesAndTickPos = function (map, numberOfSeries) {
-        var setValues = function (gridNode, start, result) {
-            var nodes = gridNode.nodes, padding = 0.5;
-            var end = start + (start === -1 ? 0 : numberOfSeries - 1);
-            var diff = (end - start) / 2, pos = start + diff;
+    const updateYValuesAndTickPos = function (map, numberOfSeries) {
+        const setValues = function (gridNode, start, result) {
+            const nodes = gridNode.nodes, padding = 0.5;
+            let end = start + (start === -1 ? 0 : numberOfSeries - 1);
+            const diff = (end - start) / 2, pos = start + diff;
             nodes.forEach(function (node) {
-                var data = node.data;
+                const data = node.data;
                 if (isObject(data, true)) {
                     // Update point
                     data.y = start + (data.seriesIndex || 0);
@@ -185,7 +185,7 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
         return setValues(map['-1'], -1, {});
     };
     // Create tree from data
-    var tree = Tree.getTree(data, treeParams);
+    const tree = Tree.getTree(data, treeParams);
     // Update y values of data, and set calculate tick positions.
     mapOfPosToGridNode = updateYValuesAndTickPos(mapOfPosToGridNode, numberOfSeries);
     // Return the resulting data.
@@ -205,11 +205,11 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
  * @param {object[]} e.target.axes The axes of the chart.
  */
 function onBeforeRender(e) {
-    var chart = e.target, axes = chart.axes;
+    const chart = e.target, axes = chart.axes;
     axes.filter(function (axis) {
         return axis.options.type === 'treegrid';
     }).forEach(function (axis) {
-        var options = axis.options || {}, labelOptions = options.labels, uniqueNames = options.uniqueNames, max = options.max, 
+        const options = axis.options || {}, labelOptions = options.labels, uniqueNames = options.uniqueNames, max = options.max, 
         // Check whether any of series is rendering for the first
         // time, visibility has changed, or its data is dirty, and
         // only then update. #10570, #10580. Also check if
@@ -220,7 +220,7 @@ function onBeforeRender(e) {
                     series.isDirtyData ||
                     series.isDirty;
             }));
-        var numberOfSeries = 0, data, treeGrid;
+        let numberOfSeries = 0, data, treeGrid;
         if (isDirty) {
             // Concatenate data from all series assigned to this axis.
             data = axis.series.reduce(function (arr, s) {
@@ -251,7 +251,7 @@ function onBeforeRender(e) {
             // If max is higher than set data - add a
             // dummy data to render categories #10779
             if (max && data.length < max) {
-                for (var i = data.length; i <= max; i++) {
+                for (let i = data.length; i <= max; i++) {
                     data.push({
                         // Use the zero-width character
                         // to avoid conflict with uniqueNames
@@ -269,7 +269,7 @@ function onBeforeRender(e) {
             axis.treeGrid.tree = treeGrid.tree;
             // Update yData now that we have calculated the y values
             axis.series.forEach(function (series) {
-                var axisData = (series.options.data || []).map(function (d) {
+                const axisData = (series.options.data || []).map(function (d) {
                     if (isArray(d) &&
                         series.options.keys &&
                         series.options.keys.length) {
@@ -317,8 +317,8 @@ function onBeforeRender(e) {
  * The tick position in axis values.
  */
 function wrapGenerateTick(proceed, pos) {
-    var axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.options.type === 'treegrid', ticks = axis.ticks;
-    var tick = ticks[pos], levelOptions, options, gridNode;
+    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.options.type === 'treegrid', ticks = axis.ticks;
+    let tick = ticks[pos], levelOptions, options, gridNode;
     if (isTreeGrid &&
         axis.treeGrid.mapOfPosToGridNode) {
         gridNode = axis.treeGrid.mapOfPosToGridNode[pos];
@@ -352,7 +352,7 @@ function wrapGenerateTick(proceed, pos) {
  * @private
  */
 function wrapInit(proceed, chart, userOptions) {
-    var axis = this, isTreeGrid = userOptions.type === 'treegrid';
+    const axis = this, isTreeGrid = userOptions.type === 'treegrid';
     if (!axis.treeGrid) {
         axis.treeGrid = new TreeGridAxisAdditions(axis);
     }
@@ -365,7 +365,7 @@ function wrapInit(proceed, chart, userOptions) {
         // Add new collapsed nodes on addseries
         addEvent(chart, 'addSeries', function (e) {
             if (e.options.data) {
-                var treeGrid = getTreeGridFromData(e.options.data, userOptions.uniqueNames || false, 1);
+                const treeGrid = getTreeGridFromData(e.options.data, userOptions.uniqueNames || false, 1);
                 axis.treeGrid.collapsedNodes = (axis.treeGrid.collapsedNodes || []).concat(treeGrid.collapsedNodes);
             }
         });
@@ -374,16 +374,16 @@ function wrapInit(proceed, chart, userOptions) {
         addEvent(axis, 'foundExtremes', function () {
             if (axis.treeGrid.collapsedNodes) {
                 axis.treeGrid.collapsedNodes.forEach(function (node) {
-                    var breaks = axis.treeGrid.collapse(node);
+                    const breaks = axis.treeGrid.collapse(node);
                     if (axis.brokenAxis) {
                         axis.brokenAxis.setBreaks(breaks, false);
                         // remove the node from the axis collapsedNodes
                         if (axis.treeGrid.collapsedNodes) {
                             axis.treeGrid.collapsedNodes = axis.treeGrid
                                 .collapsedNodes
-                                .filter(function (n) { return ((node.collapseStart !==
+                                .filter((n) => ((node.collapseStart !==
                                 n.collapseStart) ||
-                                node.collapseEnd !== n.collapseEnd); });
+                                node.collapseEnd !== n.collapseEnd));
                         }
                     }
                 });
@@ -500,7 +500,7 @@ function wrapInit(proceed, chart, userOptions) {
  * The original setTickInterval function.
  */
 function wrapSetTickInterval(proceed) {
-    var axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+    const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
     if (isTreeGrid) {
         axis.min = pick(axis.userMin, options.min, axis.dataMin);
         axis.max = pick(axis.userMax, options.max, axis.dataMax);
@@ -527,18 +527,7 @@ function wrapSetTickInterval(proceed) {
  * @private
  * @class
  */
-var TreeGridAxisAdditions = /** @class */ (function () {
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    /**
-     * @private
-     */
-    function TreeGridAxisAdditions(axis) {
-        this.axis = axis;
-    }
+class TreeGridAxisAdditions {
     /* *
      *
      *  Static Functions
@@ -547,13 +536,12 @@ var TreeGridAxisAdditions = /** @class */ (function () {
     /**
      * @private
      */
-    TreeGridAxisAdditions.compose = function (AxisClass, ChartClass, SeriesClass, TickClass) {
-        if (composedClasses.indexOf(AxisClass) === -1) {
-            composedClasses.push(AxisClass);
+    static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
+        if (U.pushUnique(composedMembers, AxisClass)) {
             if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
                 AxisClass.keepProps.push('treeGrid');
             }
-            var axisProps = AxisClass.prototype;
+            const axisProps = AxisClass.prototype;
             wrap(axisProps, 'generateTick', wrapGenerateTick);
             wrap(axisProps, 'init', wrapInit);
             wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
@@ -562,8 +550,7 @@ var TreeGridAxisAdditions = /** @class */ (function () {
                 getNode: Tree.getNode
             };
         }
-        if (composedClasses.indexOf(TickClass) === -1) {
-            composedClasses.push(TickClass);
+        if (U.pushUnique(composedMembers, TickClass)) {
             if (!TickConstructor) {
                 TickConstructor = TickClass;
             }
@@ -572,7 +559,18 @@ var TreeGridAxisAdditions = /** @class */ (function () {
         BrokenAxis.compose(AxisClass, SeriesClass);
         TreeGridTick.compose(TickClass);
         return AxisClass;
-    };
+    }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
+    /**
+     * @private
+     */
+    constructor(axis) {
+        this.axis = axis;
+    }
     /* *
      *
      *  Functions
@@ -589,19 +587,19 @@ var TreeGridAxisAdditions = /** @class */ (function () {
      * @param {Highcharts.GridNode} node
      * The node to collapse.
      */
-    TreeGridAxisAdditions.prototype.setCollapsedStatus = function (node) {
-        var axis = this.axis, chart = axis.chart;
+    setCollapsedStatus(node) {
+        const axis = this.axis, chart = axis.chart;
         axis.series.forEach(function (series) {
-            var data = series.options.data;
+            const data = series.options.data;
             if (node.id && data) {
-                var point = chart.get(node.id), dataPoint = data[series.data.indexOf(point)];
+                const point = chart.get(node.id), dataPoint = data[series.data.indexOf(point)];
                 if (point && dataPoint) {
                     point.collapsed = node.collapsed;
                     dataPoint.collapsed = node.collapsed;
                 }
             }
         });
-    };
+    }
     /**
      * Calculates the new axis breaks to collapse a node.
      *
@@ -619,14 +617,14 @@ var TreeGridAxisAdditions = /** @class */ (function () {
      * @return {Array<object>}
      * Returns an array of the new breaks for the axis.
      */
-    TreeGridAxisAdditions.prototype.collapse = function (node) {
-        var axis = this.axis, breaks = (axis.options.breaks || []), obj = getBreakFromNode(node, axis.max);
+    collapse(node) {
+        const axis = this.axis, breaks = (axis.options.breaks || []), obj = getBreakFromNode(node, axis.max);
         breaks.push(obj);
         // Change the collapsed flag #13838
         node.collapsed = true;
         axis.treeGrid.setCollapsedStatus(node);
         return breaks;
-    };
+    }
     /**
      * Calculates the new axis breaks to expand a node.
      *
@@ -644,8 +642,8 @@ var TreeGridAxisAdditions = /** @class */ (function () {
      * @return {Array<object>}
      * Returns an array of the new breaks for the axis.
      */
-    TreeGridAxisAdditions.prototype.expand = function (node) {
-        var axis = this.axis, breaks = (axis.options.breaks || []), obj = getBreakFromNode(node, axis.max);
+    expand(node) {
+        const axis = this.axis, breaks = (axis.options.breaks || []), obj = getBreakFromNode(node, axis.max);
         // Change the collapsed flag #13838
         node.collapsed = false;
         axis.treeGrid.setCollapsedStatus(node);
@@ -656,7 +654,7 @@ var TreeGridAxisAdditions = /** @class */ (function () {
             }
             return arr;
         }, []);
-    };
+    }
     /**
      * Creates a list of positions for the ticks on the axis. Filters out
      * positions that are outside min and max, or is inside an axis break.
@@ -666,10 +664,10 @@ var TreeGridAxisAdditions = /** @class */ (function () {
      * @return {Array<number>}
      * List of positions.
      */
-    TreeGridAxisAdditions.prototype.getTickPositions = function () {
-        var axis = this.axis, roundedMin = Math.floor(axis.min / axis.tickInterval) * axis.tickInterval, roundedMax = Math.ceil(axis.max / axis.tickInterval) * axis.tickInterval;
+    getTickPositions() {
+        const axis = this.axis, roundedMin = Math.floor(axis.min / axis.tickInterval) * axis.tickInterval, roundedMax = Math.ceil(axis.max / axis.tickInterval) * axis.tickInterval;
         return Object.keys(axis.treeGrid.mapOfPosToGridNode || {}).reduce(function (arr, key) {
-            var pos = +key;
+            const pos = +key;
             if (pos >= roundedMin &&
                 pos <= roundedMax &&
                 !(axis.brokenAxis && axis.brokenAxis.isInAnyBreak(pos))) {
@@ -677,7 +675,7 @@ var TreeGridAxisAdditions = /** @class */ (function () {
             }
             return arr;
         }, []);
-    };
+    }
     /**
      * Check if a node is collapsed.
      *
@@ -695,12 +693,12 @@ var TreeGridAxisAdditions = /** @class */ (function () {
      * @return {boolean}
      * Returns true if collapsed, false if expanded.
      */
-    TreeGridAxisAdditions.prototype.isCollapsed = function (node) {
-        var axis = this.axis, breaks = (axis.options.breaks || []), obj = getBreakFromNode(node, axis.max);
+    isCollapsed(node) {
+        const axis = this.axis, breaks = (axis.options.breaks || []), obj = getBreakFromNode(node, axis.max);
         return breaks.some(function (b) {
             return b.from === obj.from && b.to === obj.to;
         });
-    };
+    }
     /**
      * Calculates the new axis breaks after toggling the collapse/expand
      * state of a node. If it is collapsed it will be expanded, and if it is
@@ -717,13 +715,12 @@ var TreeGridAxisAdditions = /** @class */ (function () {
      * @return {Array<object>}
      * Returns an array of the new breaks for the axis.
      */
-    TreeGridAxisAdditions.prototype.toggleCollapse = function (node) {
+    toggleCollapse(node) {
         return (this.isCollapsed(node) ?
             this.expand(node) :
             this.collapse(node));
-    };
-    return TreeGridAxisAdditions;
-}());
+    }
+}
 /* *
  *
  *  Default Export

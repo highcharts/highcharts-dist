@@ -38,7 +38,7 @@
  * @since        6.0.0
  * @optionparent defs
  */
-var defaultMarkers = {
+const defaultMarkers = {
     /**
      * @type {Highcharts.ASTNode}
      */
@@ -89,7 +89,7 @@ var defaultMarkers = {
  *  Default Export
  *
  * */
-var ControllableDefaults = {
-    defaultMarkers: defaultMarkers
+const ControllableDefaults = {
+    defaultMarkers
 };
 export default ControllableDefaults;

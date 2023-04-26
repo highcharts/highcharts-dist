@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -70,19 +70,19 @@
          * Returns array with min and max value.
          */
         function getArrayExtremes(arr, minIndex, maxIndex) {
-            return arr.reduce(function (prev, target) { return [
+            return arr.reduce((prev, target) => [
                 Math.min(prev[0], target[minIndex]),
                 Math.max(prev[1], target[maxIndex])
-            ]; }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
+            ], [Number.MAX_VALUE, -Number.MAX_VALUE]);
         }
         /* *
          *
          *  Default Export
          *
          * */
-        var ArrayUtilities = {
-                getArrayExtremes: getArrayExtremes
-            };
+        const ArrayUtilities = {
+            getArrayExtremes
+        };
 
         return ArrayUtilities;
     });
@@ -94,26 +94,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { extend, isArray, merge } = U;
         /* *
          *
          *  Class
@@ -128,34 +110,35 @@
          *
          * @augments Highcharts.Series
          */
-        var WilliamsRIndicator = /** @class */ (function (_super) {
-                __extends(WilliamsRIndicator, _super);
-            function WilliamsRIndicator() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+        class WilliamsRIndicator extends SMAIndicator {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
             }
-            WilliamsRIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    WR = [], // 0- date, 1- Williams %R
-                    xData = [],
-                    yData = [],
-                    slicedY,
-                    close = 3,
-                    low = 2,
-                    high = 1,
-                    extremes,
-                    R,
-                    HH, // Highest high value in period
-                    LL, // Lowest low value in period
-                    CC, // Current close value
-                    i;
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            getValues(series, params) {
+                const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, WR = [], // 0- date, 1- Williams %R
+                xData = [], yData = [], close = 3, low = 2, high = 1;
+                let slicedY, extremes, R, HH, // Highest high value in period
+                LL, // Lowest low value in period
+                CC, // Current close value
+                i;
                 // Williams %R requires close value
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
@@ -183,39 +166,38 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
+        }
+        /**
+         * Williams %R. This series requires the `linkedTo` option to be
+         * set and should be loaded after the `stock/indicators/indicators.js`.
+         *
+         * @sample {highstock} stock/indicators/williams-r
+         *         Williams %R
+         *
+         * @extends      plotOptions.sma
+         * @since        7.0.0
+         * @product      highstock
+         * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
+         *               pointInterval, pointIntervalUnit, pointPlacement,
+         *               pointRange, pointStart, showInNavigator, stacking
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/williams-r
+         * @optionparent plotOptions.williamsr
+         */
+        WilliamsRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Williams %R. This series requires the `linkedTo` option to be
-             * set and should be loaded after the `stock/indicators/indicators.js`.
-             *
-             * @sample {highstock} stock/indicators/williams-r
-             *         Williams %R
-             *
-             * @extends      plotOptions.sma
-             * @since        7.0.0
-             * @product      highstock
-             * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
-             *               pointInterval, pointIntervalUnit, pointPlacement,
-             *               pointRange, pointStart, showInNavigator, stacking
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/williams-r
-             * @optionparent plotOptions.williamsr
+             * Paramters used in calculation of Williams %R series points.
+             * @excluding index
              */
-            WilliamsRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                index: void 0,
                 /**
-                 * Paramters used in calculation of Williams %R series points.
-                 * @excluding index
+                 * Period for Williams %R oscillator
                  */
-                params: {
-                    index: void 0,
-                    /**
-                     * Period for Williams %R oscillator
-                     */
-                    period: 14
-                }
-            });
-            return WilliamsRIndicator;
-        }(SMAIndicator));
+                period: 14
+            }
+        });
         extend(WilliamsRIndicator.prototype, {
             nameBase: 'Williams %R'
         });

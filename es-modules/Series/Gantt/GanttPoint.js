@@ -10,49 +10,32 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var XRangePoint = SeriesRegistry.seriesTypes.xrange.prototype.pointClass;
+const { seriesTypes: { xrange: { prototype: { pointClass: XRangePoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var pick = U.pick;
+const { pick } = U;
 /* *
  *
  *  Class
  *
  * */
-var GanttPoint = /** @class */ (function (_super) {
-    __extends(GanttPoint, _super);
-    function GanttPoint() {
+class GanttPoint extends XRangePoint {
+    constructor() {
         /* *
          *
          *  Static Functions
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.options = void 0;
-        _this.series = void 0;
-        return _this;
+        super(...arguments);
+        this.options = void 0;
+        this.series = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
-    GanttPoint.setGanttPointAliases = function (options) {
+    static setGanttPointAliases(options) {
         /**
          * Add a value to options if the value exists.
          * @private
@@ -65,7 +48,7 @@ var GanttPoint = /** @class */ (function (_super) {
         addIfExists('x', pick(options.start, options.x));
         addIfExists('x2', pick(options.end, options.x2));
         addIfExists('partialFill', pick(options.completed, options.partialFill));
-    };
+    }
     /* *
      *
      *  Functions
@@ -88,21 +71,20 @@ var GanttPoint = /** @class */ (function (_super) {
      * @return {Highcharts.Point}
      *         The Point instance
      */
-    GanttPoint.prototype.applyOptions = function (options, x) {
-        var point = this, ganttPoint;
-        ganttPoint = _super.prototype.applyOptions.call(point, options, x);
+    applyOptions(options, x) {
+        let point = this, ganttPoint;
+        ganttPoint = super.applyOptions.call(point, options, x);
         GanttPoint.setGanttPointAliases(ganttPoint);
         return ganttPoint;
-    };
-    GanttPoint.prototype.isValid = function () {
+    }
+    isValid() {
         return ((typeof this.start === 'number' ||
             typeof this.x === 'number') &&
             (typeof this.end === 'number' ||
                 typeof this.x2 === 'number' ||
                 this.milestone));
-    };
-    return GanttPoint;
-}(XRangePoint));
+    }
+}
 /* *
  *
  *  Default Export

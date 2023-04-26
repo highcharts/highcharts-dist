@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Stock JS v10.3.3 (2023-01-20)
+ * @license Highcharts Stock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -48,7 +48,9 @@
          *
          * */
         var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined, error = U.error, merge = U.merge;
+        var defined = U.defined,
+            error = U.error,
+            merge = U.merge;
         /* *
          *
          *  Composition
@@ -66,7 +68,7 @@
             *  Constants
             *
             * */
-            var composedClasses = [];
+            var composedMembers = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -121,8 +123,7 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (composedClasses.indexOf(IndicatorClass) === -1) {
-                    composedClasses.push(IndicatorClass);
+                if (U.pushUnique(composedMembers, IndicatorClass)) {
                     var proto = IndicatorClass.prototype;
                     proto.linesApiNames = (proto.linesApiNames ||
                         linesApiNames.slice());
@@ -175,14 +176,24 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, 
-                // additional lines point place holders:
-                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
-                var pointsLength = mainLinePoints.length, point;
+                var indicator = this,
+                    pointValKey = indicator.pointValKey,
+                    linesApiNames = indicator.linesApiNames,
+                    areaLinesNames = indicator.areaLinesNames,
+                    mainLinePoints = indicator.points,
+                    mainLineOptions = indicator.options,
+                    mainLinePath = indicator.graph,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    }, 
+                    // additional lines point place holders:
+                    secondaryLines = [],
+                    secondaryLinesNames = getTranslatedLinesNames(indicator,
+                    pointValKey);
+                var pointsLength = mainLinePoints.length,
+                    point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach(function (plotLine, index) {
                     // create additional lines point place holders
@@ -200,9 +211,12 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
-                        mainLinePoints :
-                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
+                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
+                        secondLinePoints = secondaryLines[index],
+                        firstLinePoints = areaLinesNames.length === 1 ?
+                            mainLinePoints :
+                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
+                        originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -253,7 +267,9 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath, path = [], higherAreaPath = [];
+                var areaPath,
+                    path = [],
+                    higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -295,7 +311,8 @@
             function indicatorTranslate() {
                 var _this = this;
                 var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [], value;
+                var LinesNames = [],
+                    value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
                 this.points.forEach(function (point) {
@@ -330,22 +347,29 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes, EMAIndicator = _a.ema, SMAIndicator = _a.sma;
-        var correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            EMAIndicator = _a.ema,
+            SMAIndicator = _a.sma;
+        var correctFloat = U.correctFloat,
+            error = U.error,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -361,14 +385,15 @@
          * @augments Highcharts.Series
          */
         var KlingerIndicator = /** @class */ (function (_super) {
-            __extends(KlingerIndicator, _super);
+                __extends(KlingerIndicator, _super);
             function KlingerIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -387,24 +412,29 @@
              * */
             KlingerIndicator.prototype.calculateTrend = function (yVal, i) {
                 var isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
-                    yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
+                        yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
                 return isUpward ? 1 : -1;
             };
             // Checks if the series and volumeSeries are accessible, number of
             // points.x is longer than period, is series has OHLC data
             KlingerIndicator.prototype.isValidData = function (firstYVal) {
-                var chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = isArray(firstYVal) &&
-                    firstYVal.length === 4, volumeSeries = this.volumeSeries ||
-                    (this.volumeSeries =
-                        chart.get(options.params.volumeSeriesID));
+                var chart = this.chart,
+                    options = this.options,
+                    series = this.linkedParent,
+                    isSeriesOHLC = isArray(firstYVal) &&
+                        firstYVal.length === 4,
+                    volumeSeries = this.volumeSeries ||
+                        (this.volumeSeries =
+                            chart.get(options.params.volumeSeriesID));
                 if (!volumeSeries) {
                     error('Series ' +
                         options.params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                 }
-                var isLengthValid = [series, volumeSeries].every(function (series) {
-                    return series && series.xData && series.xData.length >=
-                        options.params.slowAvgPeriod;
+                var isLengthValid = [series,
+                    volumeSeries].every(function (series) {
+                        return series && series.xData && series.xData.length >=
+                            options.params.slowAvgPeriod;
                 });
                 return !!(isLengthValid && isSeriesOHLC);
             };
@@ -417,10 +447,13 @@
             KlingerIndicator.prototype.getVolumeForce = function (yVal) {
                 var volumeForce = [];
                 var CM = 0, // cumulative measurement
-                DM, // daily measurement
-                force, i = 1, // start from second point
-                previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // initial DM
-                previousTrend = 0, trend;
+                    DM, // daily measurement
+                    force,
+                    i = 1, // start from second point
+                    previousCM = 0,
+                    previousDM = yVal[0][1] - yVal[0][2], // initial DM
+                    previousTrend = 0,
+                    trend;
                 for (i; i < yVal.length; i++) {
                     trend = this.calculateTrend(yVal, i);
                     DM = this.getDM(yVal[i][1], yVal[i][2]);
@@ -447,10 +480,20 @@
                     .accumulatePeriodPoints(period, index, values) / period;
             };
             KlingerIndicator.prototype.getValues = function (series, params) {
-                var Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
-                var KO, i = 0, fastEMA = 0, slowEMA, 
-                // signalEMA: number|undefined = void 0,
-                previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
+                var Klinger = [],
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    xData = [],
+                    yData = [],
+                    calcSingal = [];
+                var KO,
+                    i = 0,
+                    fastEMA = 0,
+                    slowEMA, 
+                    // signalEMA: number|undefined = void 0,
+                    previousFastEMA = void 0,
+                    previousSlowEMA = void 0,
+                    signal = null;
                 // If the necessary conditions are not fulfilled, don't proceed.
                 if (!this.isValidData(yVal[0])) {
                     return;
@@ -458,9 +501,13 @@
                 // Calculate the Volume Force array.
                 var volumeForce = this.getVolumeForce(yVal);
                 // Calculate SMA for the first points.
-                var SMAFast = this.getSMA(params.fastAvgPeriod, 0, volumeForce), SMASlow = this.getSMA(params.slowAvgPeriod, 0, volumeForce);
+                var SMAFast = this.getSMA(params.fastAvgPeriod, 0,
+                    volumeForce),
+                    SMASlow = this.getSMA(params.slowAvgPeriod, 0,
+                    volumeForce);
                 // Calculate EMApercent for the first points.
-                var fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
+                var fastEMApercent = 2 / (params.fastAvgPeriod + 1),
+                    slowEMApercent = 2 / (params.slowAvgPeriod + 1);
                 // Calculate KO
                 for (i; i < yVal.length; i++) {
                     // Get EMA for fast period.

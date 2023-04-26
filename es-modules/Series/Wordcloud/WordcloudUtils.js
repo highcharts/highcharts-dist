@@ -11,9 +11,9 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-var deg2rad = H.deg2rad;
+const { deg2rad } = H;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, find = U.find, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge;
+const { extend, find, isNumber, isObject, merge } = U;
 /* *
  *
  * Functions
@@ -54,7 +54,7 @@ function isRectanglesIntersecting(r1, r2) {
  *         Returns the two normals in an array.
  */
 function getNormals(p1, p2) {
-    var dx = p2[0] - p1[0], // x2 - x1
+    const dx = p2[0] - p1[0], // x2 - x1
     dy = p2[1] - p1[1]; // y2 - y1
     return [
         [-dy, dx],
@@ -65,17 +65,15 @@ function getNormals(p1, p2) {
  * @private
  */
 function getAxesFromPolygon(polygon) {
-    var points, axes = polygon.axes || [];
+    let points, axes = polygon.axes || [];
     if (!axes.length) {
         axes = [];
         points = points = polygon.concat([polygon[0]]);
         points.reduce(function findAxis(p1, p2) {
-            var normals = getNormals(p1, p2), axis = normals[0]; // Use the left normal as axis.
+            const normals = getNormals(p1, p2), axis = normals[0]; // Use the left normal as axis.
             // Check that the axis is unique.
-            if (!find(axes, function (existing) {
-                return existing[0] === axis[0] &&
-                    existing[1] === axis[1];
-            })) {
+            if (!find(axes, (existing) => existing[0] === axis[0] &&
+                existing[1] === axis[1])) {
                 axes.push(axis);
             }
             // Return p2 to be used as p1 in next iteration.
@@ -96,8 +94,8 @@ function getAxesFromPolygon(polygon) {
  * The coordinate of pr
  */
 function project(polygon, target) {
-    var products = polygon.map(function (point) {
-        var ax = point[0], ay = point[1], bx = target[0], by = target[1];
+    const products = polygon.map((point) => {
+        const ax = point[0], ay = point[1], bx = target[0], by = target[1];
         return ax * bx + ay * by;
     });
     return {
@@ -109,7 +107,7 @@ function project(polygon, target) {
  * @private
  */
 function isPolygonsOverlappingOnAxis(axis, polygon1, polygon2) {
-    var projection1 = project(polygon1, axis), projection2 = project(polygon2, axis), isOverlapping = !(projection2.min > projection1.max ||
+    const projection1 = project(polygon1, axis), projection2 = project(polygon2, axis), isOverlapping = !(projection2.min > projection1.max ||
         projection2.max < projection1.min);
     return !isOverlapping;
 }
@@ -130,7 +128,7 @@ function isPolygonsOverlappingOnAxis(axis, polygon1, polygon2) {
  */
 function isPolygonsColliding(polygon1, polygon2) {
     // Get the axis from both polygons.
-    var axes1 = getAxesFromPolygon(polygon1), axes2 = getAxesFromPolygon(polygon2), axes = axes1.concat(axes2), overlappingOnAllAxes = !find(axes, function (axis) { return isPolygonsOverlappingOnAxis(axis, polygon1, polygon2); });
+    const axes1 = getAxesFromPolygon(polygon1), axes2 = getAxesFromPolygon(polygon2), axes = axes1.concat(axes2), overlappingOnAllAxes = !find(axes, (axis) => isPolygonsOverlappingOnAxis(axis, polygon1, polygon2));
     return overlappingOnAllAxes;
 }
 /**
@@ -149,8 +147,8 @@ function isPolygonsColliding(polygon1, polygon2) {
  * Returns true if there is collision.
  */
 function intersectsAnyWord(point, points) {
-    var intersects = false, rect = point.rect, polygon = point.polygon, lastCollidedWith = point.lastCollidedWith, isIntersecting = function (p) {
-        var result = isRectanglesIntersecting(rect, p.rect);
+    let intersects = false, rect = point.rect, polygon = point.polygon, lastCollidedWith = point.lastCollidedWith, isIntersecting = function (p) {
+        let result = isRectanglesIntersecting(rect, p.rect);
         if (result &&
             (point.rotation % 90 || p.rotation % 90)) {
             result = isPolygonsColliding(polygon, p.polygon);
@@ -171,7 +169,7 @@ function intersectsAnyWord(point, points) {
     // intersecting.
     if (!intersects) {
         intersects = !!find(points, function (p) {
-            var result = isIntersecting(p);
+            const result = isIntersecting(p);
             if (result) {
                 point.lastCollidedWith = p;
             }
@@ -197,7 +195,7 @@ function intersectsAnyWord(point, points) {
  * the visualization.
  */
 function archimedeanSpiral(attempt, params) {
-    var field = params.field, result = false, maxDelta = (field.width * field.width) + (field.height * field.height), t = attempt * 0.8; // 0.2 * 4 = 0.8. Enlarging the spiral.
+    let field = params.field, result = false, maxDelta = (field.width * field.width) + (field.height * field.height), t = attempt * 0.8; // 0.2 * 4 = 0.8. Enlarging the spiral.
     // Emergency brake. TODO make spiralling logic more foolproof.
     if (attempt <= 10000) {
         result = {
@@ -227,7 +225,7 @@ function archimedeanSpiral(attempt, params) {
  * the visualization.
  */
 function squareSpiral(attempt, params) {
-    var a = attempt * 4, k = Math.ceil((Math.sqrt(a) - 1) / 2), t = 2 * k + 1, m = Math.pow(t, 2), isBoolean = function (x) {
+    let a = attempt * 4, k = Math.ceil((Math.sqrt(a) - 1) / 2), t = 2 * k + 1, m = Math.pow(t, 2), isBoolean = function (x) {
         return typeof x === 'boolean';
     }, result = false;
     t -= 1;
@@ -282,7 +280,7 @@ function squareSpiral(attempt, params) {
  * the visualization.
  */
 function rectangularSpiral(attempt, params) {
-    var result = squareSpiral(attempt, params), field = params.field;
+    const result = squareSpiral(attempt, params), field = params.field;
     if (result) {
         result.x *= field.ratioX;
         result.y *= field.ratioY;
@@ -325,7 +323,7 @@ function getRandomPosition(size) {
  * area.
  */
 function getScale(targetWidth, targetHeight, field) {
-    var height = Math.max(Math.abs(field.top), Math.abs(field.bottom)) * 2, width = Math.max(Math.abs(field.left), Math.abs(field.right)) * 2, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1;
+    const height = Math.max(Math.abs(field.top), Math.abs(field.bottom)) * 2, width = Math.max(Math.abs(field.left), Math.abs(field.right)) * 2, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1;
     return Math.min(scaleX, scaleY);
 }
 /**
@@ -352,8 +350,8 @@ function getScale(targetWidth, targetHeight, field) {
  * The width and height of the playing field.
  */
 function getPlayingField(targetWidth, targetHeight, data) {
-    var info = data.reduce(function (obj, point) {
-        var dimensions = point.dimensions, x = Math.max(dimensions.width, dimensions.height);
+    const info = data.reduce(function (obj, point) {
+        const dimensions = point.dimensions, x = Math.max(dimensions.width, dimensions.height);
         // Find largest height.
         obj.maxHeight = Math.max(obj.maxHeight, dimensions.height);
         // Find largest width.
@@ -405,7 +403,7 @@ function getPlayingField(targetWidth, targetHeight, data) {
  * input parameters.
  */
 function getRotation(orientations, index, from, to) {
-    var result = false, // Default to false
+    let result = false, // Default to false
     range, intervals, orientation;
     // Check if we have valid input parameters.
     if (isNumber(orientations) &&
@@ -438,7 +436,7 @@ function getRotation(orientations, index, from, to) {
  * Function with access to spiral positions.
  */
 function getSpiral(fn, params) {
-    var length = 10000, i, arr = [];
+    let length = 10000, i, arr = [];
     for (i = 1; i < length; i++) {
         // @todo unnecessary amount of precaclulation
         arr.push(fn(i, params));
@@ -463,7 +461,7 @@ function getSpiral(fn, params) {
  * Returns true if the word is placed outside the field.
  */
 function outsidePlayingField(rect, field) {
-    var playingField = {
+    const playingField = {
         left: -(field.width / 2),
         right: field.width / 2,
         top: -(field.height / 2),
@@ -504,7 +502,7 @@ function movePolygon(deltaX, deltaY, polygon) {
  * if the word should not be placed at all.
  */
 function intersectionTesting(point, options) {
-    var placed = options.placed, field = options.field, rectangle = options.rectangle, polygon = options.polygon, spiral = options.spiral, attempt = 1, delta = {
+    let placed = options.placed, field = options.field, rectangle = options.rectangle, polygon = options.polygon, spiral = options.spiral, attempt = 1, delta = {
         x: 0,
         y: 0
     }, 
@@ -549,7 +547,7 @@ function intersectionTesting(point, options) {
  * Returns the extended playing field with updated height and width.
  */
 function extendPlayingField(field, rectangle) {
-    var height, width, ratioX, ratioY, x, extendWidth, extendHeight, result;
+    let height, width, ratioX, ratioY, x, extendWidth, extendHeight, result;
     if (isObject(field) && isObject(rectangle)) {
         height = (rectangle.bottom - rectangle.top);
         width = (rectangle.right - rectangle.left);
@@ -616,7 +614,7 @@ function updateFieldBoundaries(field, rectangle) {
  * @function correctFloat
  */
 function correctFloat(number, precision) {
-    var p = isNumber(precision) ? precision : 14, magnitude = Math.pow(10, p);
+    const p = isNumber(precision) ? precision : 14, magnitude = Math.pow(10, p);
     return Math.round(number * magnitude) / magnitude;
 }
 /**
@@ -624,7 +622,7 @@ function correctFloat(number, precision) {
  */
 function getBoundingBoxFromPolygon(points) {
     return points.reduce(function (obj, point) {
-        var x = point[0], y = point[1];
+        const x = point[0], y = point[1];
         obj.left = Math.min(x, obj.left);
         obj.right = Math.max(x, obj.right);
         obj.bottom = Math.max(y, obj.bottom);
@@ -641,7 +639,7 @@ function getBoundingBoxFromPolygon(points) {
  * @private
  */
 function getPolygon(x, y, width, height, rotation) {
-    var origin = [x, y], left = x - (width / 2), right = x + (width / 2), top = y - (height / 2), bottom = y + (height / 2), polygon = [
+    const origin = [x, y], left = x - (width / 2), right = x + (width / 2), top = y - (height / 2), bottom = y + (height / 2), polygon = [
         [left, top],
         [right, top],
         [right, bottom],
@@ -664,7 +662,7 @@ function getPolygon(x, y, width, height, rotation) {
  *         The x and y coordinate for the rotated point.
  */
 function rotate2DToOrigin(point, angle) {
-    var x = point[0], y = point[1], rad = deg2rad * -angle, cosAngle = Math.cos(rad), sinAngle = Math.sin(rad);
+    const x = point[0], y = point[1], rad = deg2rad * -angle, cosAngle = Math.cos(rad), sinAngle = Math.sin(rad);
     return [
         correctFloat(x * cosAngle - y * sinAngle),
         correctFloat(x * sinAngle + y * cosAngle)
@@ -685,7 +683,7 @@ function rotate2DToOrigin(point, angle) {
  *         The x and y coordinate for the rotated point.
  */
 function rotate2DToPoint(point, origin, angle) {
-    var x = point[0] - origin[0], y = point[1] - origin[1], rotated = rotate2DToOrigin([x, y], angle);
+    const x = point[0] - origin[0], y = point[1] - origin[1], rotated = rotate2DToOrigin([x, y], angle);
     return [
         rotated[0] + origin[0],
         rotated[1] + origin[1]
@@ -696,23 +694,23 @@ function rotate2DToPoint(point, origin, angle) {
  * Default export
  *
  * */
-var WordcloudUtils = {
-    archimedeanSpiral: archimedeanSpiral,
-    extendPlayingField: extendPlayingField,
-    getBoundingBoxFromPolygon: getBoundingBoxFromPolygon,
-    getPlayingField: getPlayingField,
-    getPolygon: getPolygon,
-    getRandomPosition: getRandomPosition,
-    getRotation: getRotation,
-    getScale: getScale,
-    getSpiral: getSpiral,
-    intersectionTesting: intersectionTesting,
-    isPolygonsColliding: isPolygonsColliding,
-    isRectanglesIntersecting: isRectanglesIntersecting,
-    rectangularSpiral: rectangularSpiral,
-    rotate2DToOrigin: rotate2DToOrigin,
-    rotate2DToPoint: rotate2DToPoint,
-    squareSpiral: squareSpiral,
-    updateFieldBoundaries: updateFieldBoundaries
+const WordcloudUtils = {
+    archimedeanSpiral,
+    extendPlayingField,
+    getBoundingBoxFromPolygon,
+    getPlayingField,
+    getPolygon,
+    getRandomPosition,
+    getRotation,
+    getScale,
+    getSpiral,
+    intersectionTesting,
+    isPolygonsColliding,
+    isRectanglesIntersecting,
+    rectangularSpiral,
+    rotate2DToOrigin,
+    rotate2DToPoint,
+    squareSpiral,
+    updateFieldBoundaries
 };
 export default WordcloudUtils;

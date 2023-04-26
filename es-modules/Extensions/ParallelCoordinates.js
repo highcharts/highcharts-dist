@@ -13,21 +13,21 @@
 import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
 import F from '../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import H from '../Core/Globals.js';
 import D from '../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, pick = U.pick, splat = U.splat, wrap = U.wrap;
+const { addEvent, arrayMax, arrayMin, defined, erase, extend, isArray, isNumber, merge, pick, splat, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
 // Extensions for parallel coordinates plot.
-var ChartProto = Chart.prototype;
-var defaultXAxisOptions = {
+const ChartProto = Chart.prototype;
+const defaultXAxisOptions = {
     lineWidth: 0,
     tickLength: 0,
     opposite: true,
@@ -37,7 +37,7 @@ var defaultXAxisOptions = {
 /**
  * @optionparent chart
  */
-var defaultParallelOptions = {
+const defaultParallelOptions = {
     /**
      * Flag to render charts as a parallel coordinates plot. In a parallel
      * coordinates plot (||-coords) by default all required yAxes are generated
@@ -120,8 +120,8 @@ setOptions({
 /* eslint-disable no-invalid-this */
 // Initialize parallelCoordinates
 addEvent(Chart, 'init', function (e) {
-    var options = e.args[0], defaultYAxis = splat(options.yAxis || {}), newYAxes = [];
-    var yAxisLength = defaultYAxis.length;
+    const options = e.args[0], defaultYAxis = splat(options.yAxis || {}), newYAxes = [];
+    let yAxisLength = defaultYAxis.length;
     /**
      * Flag used in parallel coordinates plot to check if chart has ||-coords
      * (parallel coords).
@@ -164,7 +164,7 @@ addEvent(Chart, 'init', function (e) {
 });
 // Initialize parallelCoordinates
 addEvent(Chart, 'update', function (e) {
-    var options = e.options;
+    const options = e.options;
     if (options.chart) {
         if (defined(options.chart.parallelCoordinates)) {
             this.hasParallelCoordinates = options.chart.parallelCoordinates;
@@ -201,7 +201,7 @@ extend(ChartProto, /** @lends Highcharts.Chart.prototype */ {
      * @requires modules/parallel-coordinates
      */
     setParallelInfo: function (options) {
-        var chart = this, seriesOptions = options.series;
+        const chart = this, seriesOptions = options.series;
         chart.parallelInfo = {
             counter: 0
         };
@@ -216,19 +216,19 @@ extend(ChartProto, /** @lends Highcharts.Chart.prototype */ {
 // calculate extremes.
 addEvent(Series, 'bindAxes', function (e) {
     if (this.chart.hasParallelCoordinates) {
-        var series_1 = this;
+        const series = this;
         this.chart.axes.forEach(function (axis) {
-            series_1.insert(axis.series);
+            series.insert(axis.series);
             axis.isDirty = true;
         });
-        series_1.xAxis = this.chart.xAxis[0];
-        series_1.yAxis = this.chart.yAxis[0];
+        series.xAxis = this.chart.xAxis[0];
+        series.yAxis = this.chart.yAxis[0];
         e.preventDefault();
     }
 });
 // Translate each point using corresponding yAxis.
 addEvent(Series, 'afterTranslate', function () {
-    var series = this, chart = this.chart, points = series.points, dataLength = points && points.length, closestPointRangePx = Number.MAX_VALUE, lastPlotX, point, i;
+    let series = this, chart = this.chart, points = series.points, dataLength = points && points.length, closestPointRangePx = Number.MAX_VALUE, lastPlotX, point, i;
     if (this.chart.hasParallelCoordinates) {
         for (i = 0; i < dataLength; i++) {
             point = points[i];
@@ -279,7 +279,7 @@ addEvent(Series, 'destroy', function () {
  * @private
  */
 function addFormattedValue(proceed) {
-    var chart = this.series && this.series.chart, config = proceed.apply(this, Array.prototype.slice.call(arguments, 1)), formattedValue, yAxisOptions, labelFormat, yAxis;
+    let chart = this.series && this.series.chart, config = proceed.apply(this, Array.prototype.slice.call(arguments, 1)), formattedValue, yAxisOptions, labelFormat, yAxis;
     if (chart &&
         chart.hasParallelCoordinates &&
         !defined(config.formattedValue)) {
@@ -339,13 +339,13 @@ function addFormattedValue(proceed) {
  * @private
  * @class
  */
-var ParallelAxisAdditions = /** @class */ (function () {
+class ParallelAxisAdditions {
     /* *
      *
      *  Constructors
      *
      * */
-    function ParallelAxisAdditions(axis) {
+    constructor(axis) {
         this.axis = axis;
     }
     /* *
@@ -366,8 +366,8 @@ var ParallelAxisAdditions = /** @class */ (function () {
      * @param  {Highcharts.AxisOptions} options
      * Axis options.
      */
-    ParallelAxisAdditions.prototype.setPosition = function (axisPosition, options) {
-        var parallel = this, axis = parallel.axis, chart = axis.chart, fraction = ((parallel.position || 0) + 0.5) /
+    setPosition(axisPosition, options) {
+        const parallel = this, axis = parallel.axis, chart = axis.chart, fraction = ((parallel.position || 0) + 0.5) /
             (chart.parallelInfo.counter + 1);
         if (chart.polar) {
             options.angle = 360 * fraction;
@@ -379,9 +379,8 @@ var ParallelAxisAdditions = /** @class */ (function () {
             axis[axisPosition[2]] = options[axisPosition[2]] = null;
             axis[axisPosition[3]] = options[axisPosition[3]] = null;
         }
-    };
-    return ParallelAxisAdditions;
-}());
+    }
+}
 /**
  * Axis with parallel support.
  * @private
@@ -406,8 +405,8 @@ var ParallelAxis;
      * @private
      */
     function onAfterSetOptions(e) {
-        var axis = this, chart = axis.chart, parallelCoordinates = axis.parallelCoordinates;
-        var axisPosition = [
+        const axis = this, chart = axis.chart, parallelCoordinates = axis.parallelCoordinates;
+        let axisPosition = [
             'left', 'width', 'height', 'top'
         ];
         if (chart.hasParallelCoordinates) {
@@ -418,7 +417,7 @@ var ParallelAxis;
                 axis.options = merge(axis.options, defaultXAxisOptions, e.userOptions);
             }
             else {
-                var axisIndex = chart.yAxis.indexOf(axis); // #13608
+                const axisIndex = chart.yAxis.indexOf(axis); // #13608
                 axis.options = merge(axis.options, axis.chart.options.chart.parallelAxes, e.userOptions);
                 parallelCoordinates.position = pick(parallelCoordinates.position, axisIndex >= 0 ? axisIndex : chart.yAxis.length);
                 parallelCoordinates.setPosition(axisPosition, axis.options);
@@ -433,27 +432,27 @@ var ParallelAxis;
      * @private
      */
     function onGetSeriesExtremes(e) {
-        var axis = this;
-        var chart = axis.chart;
-        var parallelCoordinates = axis.parallelCoordinates;
+        const axis = this;
+        const chart = axis.chart;
+        const parallelCoordinates = axis.parallelCoordinates;
         if (!parallelCoordinates) {
             return;
         }
         if (chart && chart.hasParallelCoordinates && !axis.isXAxis) {
-            var index_1 = parallelCoordinates.position;
-            var currentPoints_1 = [];
+            const index = parallelCoordinates.position;
+            let currentPoints = [];
             axis.series.forEach(function (series) {
                 if (series.yData &&
                     series.visible &&
-                    isNumber(index_1)) {
-                    var y = series.yData[index_1];
+                    isNumber(index)) {
+                    const y = series.yData[index];
                     // Take into account range series points as well (#15752)
-                    currentPoints_1.push.apply(currentPoints_1, splat(y));
+                    currentPoints.push.apply(currentPoints, splat(y));
                 }
             });
-            currentPoints_1 = currentPoints_1.filter(isNumber);
-            axis.dataMin = arrayMin(currentPoints_1);
-            axis.dataMax = arrayMax(currentPoints_1);
+            currentPoints = currentPoints.filter(isNumber);
+            axis.dataMin = arrayMin(currentPoints);
+            axis.dataMax = arrayMax(currentPoints);
             e.preventDefault();
         }
     }
@@ -462,7 +461,7 @@ var ParallelAxis;
      * @private
      */
     function onInit() {
-        var axis = this;
+        const axis = this;
         if (!axis.parallelCoordinates) {
             axis.parallelCoordinates = new ParallelAxisAdditions(axis);
         }

@@ -183,6 +183,11 @@ declare module "../highcharts.src" {
      *        `Highcharts.ajax` function instead.
      */
     function getJSON(url: string, success: Function): void;
+    /**
+     * Form the `values` field after range settings, unless the
+     * googleSpreadsheetRange option is set.
+     */
+    function getRange(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

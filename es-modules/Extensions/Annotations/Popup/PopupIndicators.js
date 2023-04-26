@@ -12,13 +12,13 @@
 'use strict';
 import AST from '../../../Core/Renderer/HTML/AST.js';
 import H from '../../../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import NU from '../NavigationBindingsUtilities.js';
-var annotationsFieldsTypes = NU.annotationsFieldsTypes;
+const { annotationsFieldsTypes } = NU;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var seriesTypes = SeriesRegistry.seriesTypes;
+const { seriesTypes } = SeriesRegistry;
 import U from '../../../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, defined = U.defined, isArray = U.isArray, isObject = U.isObject, objectEach = U.objectEach, stableSort = U.stableSort;
+const { addEvent, createElement, defined, isArray, isObject, objectEach, stableSort } = U;
 /* *
  *
  *  Enums
@@ -37,7 +37,7 @@ var DropdownProperties;
  * List of available algorithms for the specific indicator.
  * @private
  */
-var dropdownParameters = {
+const dropdownParameters = {
     'algorithm-pivotpoints': ['standard', 'fibonacci', 'camarilla'],
     'average-disparityindex': ['sma', 'ema', 'dema', 'tema', 'wma']
 };
@@ -56,11 +56,11 @@ var dropdownParameters = {
  */
 function addColsContainer(container) {
     // left column
-    var lhsCol = createElement('div', {
+    const lhsCol = createElement('div', {
         className: 'highcharts-popup-lhs-col'
     }, void 0, container);
     // right column
-    var rhsCol = createElement('div', {
+    const rhsCol = createElement('div', {
         className: 'highcharts-popup-rhs-col'
     }, void 0, container);
     // wrapper content
@@ -78,15 +78,15 @@ function addColsContainer(container) {
  * @private
  */
 function addForm(chart, _options, callback) {
-    var lang = this.lang;
-    var buttonParentDiv;
+    const lang = this.lang;
+    let buttonParentDiv;
     if (!chart) {
         return;
     }
     // add tabs
     this.tabs.init.call(this, chart);
     // get all tabs content divs
-    var tabsContainers = this.container
+    const tabsContainers = this.container
         .querySelectorAll('.highcharts-tab-item-content');
     // ADD tab
     addColsContainer(tabsContainers[0]);
@@ -120,7 +120,7 @@ function addForm(chart, _options, callback) {
  * Element where created HTML list is added
  */
 function addFormFields(chart, series, seriesType, rhsColWrapper) {
-    var fields = series.params || series.options.params;
+    const fields = series.params || series.options.params;
     // reset current content
     rhsColWrapper.innerHTML = AST.emptyHTML;
     // create title (indicator name in the right column)
@@ -165,14 +165,14 @@ function addFormFields(chart, series, seriesType, rhsColWrapper) {
  *        For the first iteration, it's an empty string.
  */
 function addIndicatorList(chart, parentDiv, listType, filter) {
-    var popup = this, lang = popup.lang, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], rhsCol = parentDiv.querySelectorAll('.highcharts-popup-rhs-col')[0], isEdit = listType === 'edit', series = (isEdit ?
+    const popup = this, lang = popup.lang, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], rhsCol = parentDiv.querySelectorAll('.highcharts-popup-rhs-col')[0], isEdit = listType === 'edit', series = (isEdit ?
         chart.series : // EDIT mode
         chart.options.plotOptions || {} // ADD mode
     );
     if (!chart && series) {
         return;
     }
-    var item, filteredSeriesArray = [];
+    let item, filteredSeriesArray = [];
     // Filter and sort the series.
     if (!isEdit && !isArray(series)) {
         // Apply filters only for the 'add' indicator list.
@@ -182,8 +182,8 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         filteredSeriesArray = filterSeriesArray.call(this, series);
     }
     // Sort indicators alphabeticaly.
-    stableSort(filteredSeriesArray, function (a, b) {
-        var seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
+    stableSort(filteredSeriesArray, (a, b) => {
+        const seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
         return (seriesAName < seriesBName) ?
             -1 : (seriesAName > seriesBName) ? 1 : 0;
     });
@@ -193,19 +193,19 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         lhsCol.children[1].remove();
     }
     // Create wrapper for list.
-    var indicatorList = createElement('ul', {
+    const indicatorList = createElement('ul', {
         className: 'highcharts-indicator-list'
     }, void 0, lhsCol);
-    var rhsColWrapper = rhsCol.querySelectorAll('.highcharts-popup-rhs-col-wrapper')[0];
-    filteredSeriesArray.forEach(function (seriesSet) {
-        var indicatorFullName = seriesSet.indicatorFullName, indicatorType = seriesSet.indicatorType, series = seriesSet.series;
+    const rhsColWrapper = rhsCol.querySelectorAll('.highcharts-popup-rhs-col-wrapper')[0];
+    filteredSeriesArray.forEach((seriesSet) => {
+        const { indicatorFullName, indicatorType, series } = seriesSet;
         item = createElement('li', {
             className: 'highcharts-indicator-list'
         }, void 0, indicatorList);
         item.appendChild(doc.createTextNode(indicatorFullName));
-        ['click', 'touchstart'].forEach(function (eventName) {
+        ['click', 'touchstart'].forEach((eventName) => {
             addEvent(item, eventName, function () {
-                var button = rhsColWrapper.parentNode
+                const button = rhsColWrapper.parentNode
                     .children[1];
                 addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
                 if (button) {
@@ -249,41 +249,40 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
  * Element where created HTML list is added
  */
 function addParamInputs(chart, parentNode, fields, type, parentDiv) {
-    var _this = this;
     if (!chart) {
         return;
     }
-    var addInput = this.addInput;
-    objectEach(fields, function (value, fieldName) {
-        var predefinedType = annotationsFieldsTypes[fieldName];
-        var fieldType = type;
+    const addInput = this.addInput;
+    objectEach(fields, (value, fieldName) => {
+        const predefinedType = annotationsFieldsTypes[fieldName];
+        let fieldType = type;
         if (predefinedType) {
             fieldType = predefinedType;
         }
         // create name like params.styles.fontSize
-        var parentFullName = parentNode + '.' + fieldName;
+        const parentFullName = parentNode + '.' + fieldName;
         if (defined(value) && // skip if field is unnecessary, #15362
             parentFullName) {
             if (isObject(value)) {
                 // (15733) 'Periods' has an arrayed value. Label must be
                 // created here.
-                addInput.call(_this, parentFullName, type, parentDiv, {});
-                addParamInputs.call(_this, chart, parentFullName, value, type, parentDiv);
+                addInput.call(this, parentFullName, type, parentDiv, {});
+                addParamInputs.call(this, chart, parentFullName, value, type, parentDiv);
             }
             // If the option is listed in dropdown enum,
             // add the selection box for it.
             if (parentFullName in DropdownProperties) {
                 // Add selection boxes.
-                var selectBox = addSelection.call(_this, type, parentFullName, parentDiv);
+                const selectBox = addSelection.call(this, type, parentFullName, parentDiv);
                 // Add possible dropdown options.
-                addSelectionOptions.call(_this, chart, parentNode, selectBox, type, fieldName, value);
+                addSelectionOptions.call(this, chart, parentNode, selectBox, type, fieldName, value);
             }
             else if (
             // Skip volume field which is created by addFormFields.
             parentFullName !== 'params.volumeSeriesID' &&
                 !isArray(value) // Skip params declared in array.
             ) {
-                addInput.call(_this, parentFullName, type, parentDiv, {
+                addInput.call(this, parentFullName, type, parentDiv, {
                     value: value,
                     type: 'number'
                 } // all inputs are text type
@@ -304,7 +303,7 @@ function addParamInputs(chart, parentNode, fields, type, parentDiv) {
  *        HTML parent element.
  */
 function addSearchBox(chart, parentDiv) {
-    var popup = this, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], options = 'searchIndicators', inputAttributes = {
+    const popup = this, lhsCol = parentDiv.querySelectorAll('.highcharts-popup-lhs-col')[0], options = 'searchIndicators', inputAttributes = {
         value: '',
         type: 'text',
         htmlFor: 'search-indicators',
@@ -312,12 +311,12 @@ function addSearchBox(chart, parentDiv) {
     }, clearFilterText = this.lang.clearFilter, inputWrapper = createElement('div', {
         className: 'highcharts-input-wrapper'
     }, void 0, lhsCol);
-    var handleInputChange = function (inputText) {
+    const handleInputChange = function (inputText) {
         // Apply some filters.
         addIndicatorList.call(popup, chart, popup.container, 'add', inputText);
     };
     // Add input field with the label and button.
-    var input = this.addInput(options, 'input', inputWrapper, inputAttributes), button = createElement('a', {
+    const input = this.addInput(options, 'input', inputWrapper, inputAttributes), button = createElement('a', {
         textContent: clearFilterText
     }, void 0, inputWrapper);
     input.classList.add('highcharts-input-search-indicators');
@@ -334,7 +333,7 @@ function addSearchBox(chart, parentDiv) {
         }
     });
     // Add clear filter click event.
-    ['click', 'touchstart'].forEach(function (eventName) {
+    ['click', 'touchstart'].forEach((eventName) => {
         addEvent(button, eventName, function () {
             // Clear the input.
             input.value = '';
@@ -359,13 +358,13 @@ function addSearchBox(chart, parentDiv) {
  * HTML parent element.
  */
 function addSelection(indicatorType, optionName, parentDiv) {
-    var optionParamList = optionName.split('.'), labelText = optionParamList[optionParamList.length - 1], selectName = 'highcharts-' + optionName + '-type-' + indicatorType, lang = this.lang;
+    const optionParamList = optionName.split('.'), labelText = optionParamList[optionParamList.length - 1], selectName = 'highcharts-' + optionName + '-type-' + indicatorType, lang = this.lang;
     // Add a label for the selection box.
     createElement('label', {
         htmlFor: selectName
     }, null, parentDiv).appendChild(doc.createTextNode(lang[labelText] || optionName));
     // Create a selection box.
-    var selectBox = createElement('select', {
+    const selectBox = createElement('select', {
         name: selectName,
         className: 'highcharts-popup-field',
         id: 'highcharts-select-' + optionName
@@ -400,8 +399,8 @@ function addSelectionOptions(chart, optionName, selectBox, indicatorType, parame
     // Get and apply selection options for the possible series.
     if (optionName === 'series' || optionName === 'volume') {
         // List all series which have id - mandatory for indicator.
-        chart.series.forEach(function (series) {
-            var seriesOptions = series.options, seriesName = seriesOptions.name ||
+        chart.series.forEach((series) => {
+            const seriesOptions = series.options, seriesName = seriesOptions.name ||
                 seriesOptions.params ?
                 series.name :
                 seriesOptions.id || '';
@@ -422,8 +421,8 @@ function addSelectionOptions(chart, optionName, selectBox, indicatorType, parame
     }
     else if (indicatorType && parameterName) {
         // Get and apply options for the possible parameters.
-        var dropdownKey = parameterName + '-' + indicatorType, parameterOption = dropdownParameters[dropdownKey];
-        parameterOption.forEach(function (element) {
+        const dropdownKey = parameterName + '-' + indicatorType, parameterOption = dropdownParameters[dropdownKey];
+        parameterOption.forEach((element) => {
             createElement('option', {
                 value: element
             }, void 0, selectBox).appendChild(doc.createTextNode(element));
@@ -451,28 +450,28 @@ function addSelectionOptions(chart, optionName, selectBox, indicatorType, parame
  *         Returns array of filtered series based on filter string.
  */
 function filterSeries(series, filter) {
-    var popup = this, indicators = popup.indicators, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
+    const popup = this, indicators = popup.indicators, lang = popup.chart && popup.chart.options.lang, indicatorAliases = lang &&
         lang.navigation &&
         lang.navigation.popup &&
         lang.navigation.popup.indicatorAliases, filteredSeriesArray = [];
-    var filteredSeries;
-    objectEach(series, function (series, value) {
-        var seriesOptions = series && series.options;
+    let filteredSeries;
+    objectEach(series, (series, value) => {
+        const seriesOptions = series && series.options;
         // Allow only indicators.
         if (series.params || seriesOptions &&
             seriesOptions.params) {
-            var _a = getNameType(series, value), indicatorFullName = _a.indicatorFullName, indicatorType = _a.indicatorType;
+            const { indicatorFullName, indicatorType } = getNameType(series, value);
             if (filter) {
                 // Replace invalid characters.
-                var validFilter = filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                var regex = new RegExp(validFilter, 'i'), alias = indicatorAliases &&
+                const validFilter = filter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(validFilter, 'i'), alias = indicatorAliases &&
                     indicatorAliases[indicatorType] &&
                     indicatorAliases[indicatorType].join(' ') || '';
                 if (indicatorFullName.match(regex) ||
                     alias.match(regex)) {
                     filteredSeries = {
-                        indicatorFullName: indicatorFullName,
-                        indicatorType: indicatorType,
+                        indicatorFullName,
+                        indicatorType,
                         series: series
                     };
                     filteredSeriesArray.push(filteredSeries);
@@ -480,8 +479,8 @@ function filterSeries(series, filter) {
             }
             else {
                 filteredSeries = {
-                    indicatorFullName: indicatorFullName,
-                    indicatorType: indicatorType,
+                    indicatorFullName,
+                    indicatorType,
                     series: series
                 };
                 filteredSeriesArray.push(filteredSeries);
@@ -502,9 +501,9 @@ function filterSeries(series, filter) {
  *         Returns array of filtered series based on filter string.
  */
 function filterSeriesArray(series) {
-    var filteredSeriesArray = [];
+    const filteredSeriesArray = [];
     // Allow only indicators.
-    series.forEach(function (series) {
+    series.forEach((series) => {
         if (series.is('sma')) {
             filteredSeriesArray.push({
                 indicatorFullName: series.name,
@@ -521,8 +520,8 @@ function filterSeriesArray(series) {
  * @return {number} - Amount of indicators
  */
 function getAmount() {
-    var counter = 0;
-    this.series.forEach(function (serie) {
+    let counter = 0;
+    this.series.forEach((serie) => {
         if (serie.params ||
             serie.options.params) {
             counter++;
@@ -546,9 +545,9 @@ function getAmount() {
  * Full name and series type.
  */
 function getNameType(series, indicatorType) {
-    var options = series.options;
+    const options = series.options;
     // add mode
-    var seriesName = (seriesTypes[indicatorType] &&
+    let seriesName = (seriesTypes[indicatorType] &&
         seriesTypes[indicatorType].prototype.nameBase) ||
         indicatorType.toUpperCase(), seriesType = indicatorType;
     // edit
@@ -583,13 +582,13 @@ function getNameType(series, indicatorType) {
  *        Default value in dropdown.
  */
 function listAllSeries(indicatorType, optionName, chart, parentDiv, currentSeries, selectedOption) {
-    var popup = this, indicators = popup.indicators;
+    const popup = this, indicators = popup.indicators;
     // Won't work without the chart.
     if (!chart) {
         return;
     }
     // Add selection boxes.
-    var selectBox = addSelection.call(popup, indicatorType, optionName, parentDiv);
+    const selectBox = addSelection.call(popup, indicatorType, optionName, parentDiv);
     // Add possible dropdown options.
     addSelectionOptions.call(popup, chart, optionName, selectBox, void 0, void 0, void 0, currentSeries);
     // Add the default dropdown value if defined.
@@ -602,8 +601,8 @@ function listAllSeries(indicatorType, optionName, chart, parentDiv, currentSerie
  *  Default Export
  *
  * */
-var PopupIndicators = {
-    addForm: addForm,
-    getAmount: getAmount
+const PopupIndicators = {
+    addForm,
+    getAmount
 };
 export default PopupIndicators;

@@ -39,7 +39,7 @@
  * @requires     modules/timeline
  * @optionparent plotOptions.timeline
  */
-var TimelineSeriesDefaults = {
+const TimelineSeriesDefaults = {
     colorByPoint: true,
     stickyTracking: false,
     ignoreHiddenPoint: true,
@@ -53,7 +53,7 @@ var TimelineSeriesDefaults = {
     lineWidth: 4,
     tooltip: {
         headerFormat: '<span style="color:{point.color}">\u25CF</span> ' +
-            '<span style="font-size: 10px"> {point.key}</span><br/>',
+            '<span style="font-size: 0.8em"> {point.key}</span><br/>',
         pointFormat: '{point.description}'
     },
     states: {
@@ -120,7 +120,8 @@ var TimelineSeriesDefaults = {
          *       format = '<span style="color:' + this.point.color +
          *           '">● </span>';
          *   } else {
-         *       format = '<span>● </span>';
+         *       format = '<span class="highcharts-color-' +
+         *          this.point.colorIndex + '">● </span>';
          *   }
          *   format += '<span>' + (this.key || '') + '</span><br/>' +
          *       (this.point.label || '');
@@ -128,13 +129,14 @@ var TimelineSeriesDefaults = {
          * }
          */
         formatter: function () {
-            var format;
+            let format;
             if (!this.series.chart.styledMode) {
                 format = '<span style="color:' + this.point.color +
                     '">● </span>';
             }
             else {
-                format = '<span>● </span>';
+                format = '<span class="highcharts-color-' +
+                    this.point.colorIndex + '">● </span>';
             }
             format += '<span class="highcharts-strong">' +
                 (this.key || '') + '</span><br/>' +
@@ -147,7 +149,7 @@ var TimelineSeriesDefaults = {
             /** @internal */
             fontWeight: 'normal',
             /** @internal */
-            fontSize: '12px'
+            fontSize: '0.8em'
         },
         /**
          * Shadow options for the data label.

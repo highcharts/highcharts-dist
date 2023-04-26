@@ -11,17 +11,17 @@
  * */
 'use strict';
 import A from '../Core/Animation/AnimationUtilities.js';
-var setAnimation = A.setAnimation;
+const { setAnimation } = A;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent;
+const { addEvent } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
-var integrations = {};
-var layouts = {};
+const composedMembers = [];
+const integrations = {};
+const layouts = {};
 /* *
  *
  *  Functions
@@ -31,8 +31,7 @@ var layouts = {};
  * @private
  */
 function compose(ChartClass) {
-    if (composedClasses.indexOf(ChartClass)) {
-        composedClasses.push(ChartClass);
+    if (U.pushUnique(composedMembers, ChartClass)) {
         addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
         addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
         addEvent(ChartClass, 'predraw', onChartPredraw);
@@ -45,7 +44,7 @@ function compose(ChartClass) {
  */
 function onChartAfterPrint() {
     if (this.graphLayoutsLookup) {
-        this.graphLayoutsLookup.forEach(function (layout) {
+        this.graphLayoutsLookup.forEach((layout) => {
             // return to default simulation
             layout.updateSimulation();
         });
@@ -58,7 +57,7 @@ function onChartAfterPrint() {
  */
 function onChartBeforePrint() {
     if (this.graphLayoutsLookup) {
-        this.graphLayoutsLookup.forEach(function (layout) {
+        this.graphLayoutsLookup.forEach((layout) => {
             layout.updateSimulation(false);
         });
         this.redraw();
@@ -70,7 +69,7 @@ function onChartBeforePrint() {
  */
 function onChartPredraw() {
     if (this.graphLayoutsLookup) {
-        this.graphLayoutsLookup.forEach(function (layout) {
+        this.graphLayoutsLookup.forEach((layout) => {
             layout.stop();
         });
     }
@@ -79,8 +78,8 @@ function onChartPredraw() {
  * @private
  */
 function onChartRender() {
-    var systemsStable, afterRender = false;
-    var layoutStep = function (layout) {
+    let systemsStable, afterRender = false;
+    const layoutStep = (layout) => {
         if (layout.maxIterations-- &&
             isFinite(layout.temperature) &&
             !layout.isStable() &&
@@ -101,7 +100,7 @@ function onChartRender() {
     if (this.graphLayoutsLookup) {
         setAnimation(false, this);
         // Start simulation
-        this.graphLayoutsLookup.forEach(function (layout) { return layout.start(); });
+        this.graphLayoutsLookup.forEach((layout) => layout.start());
         // Just one sync step, to run different layouts similar to
         // async mode.
         while (!systemsStable) {
@@ -109,7 +108,7 @@ function onChartRender() {
             this.graphLayoutsLookup.forEach(layoutStep);
         }
         if (afterRender) {
-            this.series.forEach(function (series) {
+            this.series.forEach((series) => {
                 if (series && series.layout) {
                     series.render();
                 }
@@ -122,9 +121,9 @@ function onChartRender() {
  *  Default Export
  *
  * */
-var GraphLayoutComposition = {
-    compose: compose,
-    integrations: integrations,
-    layouts: layouts
+const GraphLayoutComposition = {
+    compose,
+    integrations,
+    layouts
 };
 export default GraphLayoutComposition;

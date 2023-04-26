@@ -14,43 +14,43 @@
  * */
 'use strict';
 import BoostChart from './Boost/BoostChart.js';
-var getBoostClipRect = BoostChart.getBoostClipRect, isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
+const { getBoostClipRect, isChartSeriesBoosting } = BoostChart;
 import BoostSeries from './Boost/BoostSeries.js';
-var destroyGraphics = BoostSeries.destroyGraphics;
+const { destroyGraphics } = BoostSeries;
 import Chart from '../Core/Chart/Chart.js';
 import Color from '../Core/Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import H from '../Core/Globals.js';
-var doc = H.doc, noop = H.noop;
+const { doc, noop } = H;
 import Series from '../Core/Series/Series.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
-var seriesTypes = SeriesRegistry.seriesTypes;
+const { seriesTypes } = SeriesRegistry;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, wrap = U.wrap;
+const { addEvent, extend, fireEvent, isNumber, merge, pick, wrap } = U;
 // Use a blank pixel for clearing canvas (#17182)
-var b64BlankPixel = (
+const b64BlankPixel = (
 /* eslint-disable-next-line max-len */
 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
-var CHUNK_SIZE = 50000, destroyLoadingDiv;
+let CHUNK_SIZE = 50000, destroyLoadingDiv;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * Initialize the canvas boost.
  *
  * @function Highcharts.initCanvasBoost
  */
-var initCanvasBoost = function () {
+const initCanvasBoost = function () {
     if (H.seriesTypes.heatmap) {
         wrap(H.seriesTypes.heatmap.prototype, 'drawPoints', function () {
-            var chart = this.chart, ctx = this.getContext(), inverted = this.chart.inverted, xAxis = this.xAxis, yAxis = this.yAxis;
+            const chart = this.chart, ctx = this.getContext(), inverted = this.chart.inverted, xAxis = this.xAxis, yAxis = this.yAxis;
             if (ctx) {
                 // draw the columns
                 this.points.forEach(function (point) {
-                    var plotY = point.plotY, pointAttr;
+                    let plotY = point.plotY, pointAttr;
                     if (typeof plotY !== 'undefined' &&
                         !isNaN(plotY) &&
                         point.y !== null &&
                         ctx) {
-                        var _a = point.shapeArgs || {}, _b = _a.x, x = _b === void 0 ? 0 : _b, _c = _a.y, y = _c === void 0 ? 0 : _c, _d = _a.width, width = _d === void 0 ? 0 : _d, _e = _a.height, height = _e === void 0 ? 0 : _e;
+                        const { x = 0, y = 0, width = 0, height = 0 } = point.shapeArgs || {};
                         if (!chart.styledMode) {
                             pointAttr = point.series.pointAttribs(point);
                         }
@@ -71,10 +71,6 @@ var initCanvasBoost = function () {
             else {
                 this.chart.showLoading('Your browser doesn\'t support HTML5 canvas, <br>' +
                     'please use a modern browser');
-                // Uncomment this to provide low-level (slow) support in oldIE.
-                // It will cause script errors on charts with more than a few
-                // thousand points.
-                // arguments[0].call(this);
             }
         });
     }
@@ -87,13 +83,13 @@ var initCanvasBoost = function () {
          * @function Highcharts.Series#getContext
          */
         getContext: function () {
-            var chart = this.chart, target = isChartSeriesBoosting(chart) ? chart : this, targetGroup = (target === chart ?
+            const chart = this.chart, target = isChartSeriesBoosting(chart) ? chart : this, targetGroup = (target === chart ?
                 chart.seriesGroup :
                 chart.seriesGroup || this.group);
-            var width = chart.chartWidth, height = chart.chartHeight, ctx, swapXY = function (proceed, x, y, a, b, c, d) {
+            let width = chart.chartWidth, height = chart.chartHeight, ctx, swapXY = function (proceed, x, y, a, b, c, d) {
                 proceed.call(this, y, x, a, b, c, d);
             };
-            var boost = target.boost =
+            const boost = target.boost =
                 target.boost ||
                     {};
             ctx = boost.targetCtx;
@@ -106,7 +102,7 @@ var initCanvasBoost = function () {
                 ctx = boost.targetCtx =
                     boost.canvas.getContext('2d');
                 if (chart.inverted) {
-                    ['moveTo', 'lineTo', 'rect', 'arc'].forEach(function (fn) {
+                    ['moveTo', 'lineTo', 'rect', 'arc'].forEach((fn) => {
                         wrap(ctx, fn, swapXY);
                     });
                 }
@@ -171,7 +167,7 @@ var initCanvasBoost = function () {
             ctx.lineTo(clientX, plotY);
         },
         renderCanvas: function () {
-            var series = this, options = series.options, chart = series.chart, xAxis = this.xAxis, yAxis = this.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
+            let series = this, options = series.options, chart = series.chart, xAxis = this.xAxis, yAxis = this.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
                 timeRendering: activeBoostSettings.timeRendering || false,
                 timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
                 timeSetup: activeBoostSettings.timeSetup || false
@@ -328,7 +324,7 @@ var initCanvasBoost = function () {
             }
             // Loop over the points
             H.eachAsync(sdata, function (d, i) {
-                var x, y, clientX, plotY, isNull, low, isNextInside = false, isPrevInside = false, nx = false, px = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
+                let x, y, clientX, plotY, isNull, low, isNextInside = false, isPrevInside = false, nx = false, px = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
                 if (!chartDestroyed) {
                     if (useRaw) {
                         x = d[0];
@@ -432,7 +428,7 @@ var initCanvasBoost = function () {
                 }
                 return !chartDestroyed;
             }, function () {
-                var loadingDiv = chart.loadingDiv, loadingShown = chart.loadingShown;
+                const loadingDiv = chart.loadingDiv, loadingShown = chart.loadingShown;
                 stroke();
                 // if (series.boostCopy || series.chart.boostCopy) {
                 //     (series.boostCopy || series.chart.boostCopy)();
@@ -516,7 +512,7 @@ var initCanvasBoost = function () {
          * @private
          */
         function clear() {
-            var boost = this.boost || {};
+            const boost = this.boost || {};
             if (boost.target) {
                 boost.target.attr({ href: b64BlankPixel });
             }

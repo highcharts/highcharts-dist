@@ -11,7 +11,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 /* *
  *
  *  Theme
@@ -143,11 +143,6 @@ var DarkBlueTheme;
         credits: {
             style: {
                 color: '#666'
-            }
-        },
-        labels: {
-            style: {
-                color: '#CCC'
             }
         },
         navigation: {

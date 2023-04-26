@@ -10,26 +10,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import DerivedComposition from '../DerivedComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var AreaSplineSeries = SeriesRegistry.seriesTypes.areaspline;
+const { seriesTypes: { areaspline: AreaSplineSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber, merge = U.merge;
+const { correctFloat, extend, isNumber, merge } = U;
 /**
  * Bell curve class
  *
@@ -39,25 +24,23 @@ var correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber, mer
  *
  * @augments Highcharts.Series
  */
-var BellcurveSeries = /** @class */ (function (_super) {
-    __extends(BellcurveSeries, _super);
-    function BellcurveSeries() {
+class BellcurveSeries extends AreaSplineSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* eslint-enable valid-jsdoc */
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -69,121 +52,120 @@ var BellcurveSeries = /** @class */ (function (_super) {
     /**
      * @private
      */
-    BellcurveSeries.mean = function (data) {
-        var length = data.length, sum = data.reduce(function (sum, value) {
+    static mean(data) {
+        const length = data.length, sum = data.reduce(function (sum, value) {
             return (sum += value);
         }, 0);
         return length > 0 && sum / length;
-    };
+    }
     /**
      * @private
      */
-    BellcurveSeries.standardDeviation = function (data, average) {
-        var len = data.length, sum;
+    static standardDeviation(data, average) {
+        let len = data.length, sum;
         average = isNumber(average) ?
             average : BellcurveSeries.mean(data);
         sum = data.reduce(function (sum, value) {
-            var diff = value - average;
+            const diff = value - average;
             return (sum += diff * diff);
         }, 0);
         return len > 1 && Math.sqrt(sum / (len - 1));
-    };
+    }
     /**
      * @private
      */
-    BellcurveSeries.normalDensity = function (x, mean, standardDeviation) {
-        var translation = x - mean;
+    static normalDensity(x, mean, standardDeviation) {
+        const translation = x - mean;
         return Math.exp(-(translation * translation) /
             (2 * standardDeviation * standardDeviation)) / (standardDeviation * Math.sqrt(2 * Math.PI));
-    };
+    }
     /* *
      *
      *  Functions
      *
      * */
     /* eslint-disable valid-jsdoc */
-    BellcurveSeries.prototype.derivedData = function (mean, standardDeviation) {
-        var intervals = this.options.intervals, pointsInInterval = this.options.pointsInInterval, x = mean - intervals * standardDeviation, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [], i;
+    derivedData(mean, standardDeviation) {
+        let intervals = this.options.intervals, pointsInInterval = this.options.pointsInInterval, x = mean - intervals * standardDeviation, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [], i;
         for (i = 0; i < stop; i++) {
             data.push([x, BellcurveSeries.normalDensity(x, mean, standardDeviation)]);
             x += increment;
         }
         return data;
-    };
-    BellcurveSeries.prototype.setDerivedData = function () {
+    }
+    setDerivedData() {
         if (this.baseSeries.yData.length > 1) {
             this.setMean();
             this.setStandardDeviation();
             this.setData(this.derivedData(this.mean, this.standardDeviation), false);
         }
         return (void 0);
-    };
-    BellcurveSeries.prototype.setMean = function () {
+    }
+    setMean() {
         this.mean = correctFloat(BellcurveSeries.mean(this.baseSeries.yData));
-    };
-    BellcurveSeries.prototype.setStandardDeviation = function () {
+    }
+    setStandardDeviation() {
         this.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(this.baseSeries.yData, this.mean));
-    };
+    }
+}
+/**
+ * A bell curve is an areaspline series which represents the probability
+ * density function of the normal distribution. It calculates mean and
+ * standard deviation of the base series data and plots the curve according
+ * to the calculated parameters.
+ *
+ * @sample {highcharts} highcharts/demo/bellcurve/
+ *         Bell curve
+ *
+ * @extends      plotOptions.areaspline
+ * @since        6.0.0
+ * @product      highcharts
+ * @excluding    boostThreshold, connectNulls, dragDrop, stacking,
+ *               pointInterval, pointIntervalUnit
+ * @requires     modules/bellcurve
+ * @optionparent plotOptions.bellcurve
+ */
+BellcurveSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, {
     /**
-     * A bell curve is an areaspline series which represents the probability
-     * density function of the normal distribution. It calculates mean and
-     * standard deviation of the base series data and plots the curve according
-     * to the calculated parameters.
+     * @see [fillColor](#plotOptions.bellcurve.fillColor)
+     * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
      *
-     * @sample {highcharts} highcharts/demo/bellcurve/
-     *         Bell curve
-     *
-     * @extends      plotOptions.areaspline
-     * @since        6.0.0
-     * @product      highcharts
-     * @excluding    boostThreshold, connectNulls, dragDrop, stacking,
-     *               pointInterval, pointIntervalUnit
-     * @requires     modules/bellcurve
-     * @optionparent plotOptions.bellcurve
+     * @apioption plotOptions.bellcurve.color
      */
-    BellcurveSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, {
-        /**
-         * @see [fillColor](#plotOptions.bellcurve.fillColor)
-         * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
-         *
-         * @apioption plotOptions.bellcurve.color
-         */
-        /**
-         * @see [color](#plotOptions.bellcurve.color)
-         * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
-         *
-         * @apioption plotOptions.bellcurve.fillColor
-         */
-        /**
-         * @see [color](#plotOptions.bellcurve.color)
-         * @see [fillColor](#plotOptions.bellcurve.fillColor)
-         *
-         * @default   {highcharts} 0.75
-         * @default   {highstock} 0.75
-         * @apioption plotOptions.bellcurve.fillOpacity
-         */
-        /**
-         * This option allows to define the length of the bell curve. A unit of
-         * the length of the bell curve is standard deviation.
-         *
-         * @sample highcharts/plotoptions/bellcurve-intervals-pointsininterval
-         *         Intervals and points in interval
-         */
-        intervals: 3,
-        /**
-         * Defines how many points should be plotted within 1 interval. See
-         * `plotOptions.bellcurve.intervals`.
-         *
-         * @sample highcharts/plotoptions/bellcurve-intervals-pointsininterval
-         *         Intervals and points in interval
-         */
-        pointsInInterval: 3,
-        marker: {
-            enabled: false
-        }
-    });
-    return BellcurveSeries;
-}(AreaSplineSeries));
+    /**
+     * @see [color](#plotOptions.bellcurve.color)
+     * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
+     *
+     * @apioption plotOptions.bellcurve.fillColor
+     */
+    /**
+     * @see [color](#plotOptions.bellcurve.color)
+     * @see [fillColor](#plotOptions.bellcurve.fillColor)
+     *
+     * @default   {highcharts} 0.75
+     * @default   {highstock} 0.75
+     * @apioption plotOptions.bellcurve.fillOpacity
+     */
+    /**
+     * This option allows to define the length of the bell curve. A unit of
+     * the length of the bell curve is standard deviation.
+     *
+     * @sample highcharts/plotoptions/bellcurve-intervals-pointsininterval
+     *         Intervals and points in interval
+     */
+    intervals: 3,
+    /**
+     * Defines how many points should be plotted within 1 interval. See
+     * `plotOptions.bellcurve.intervals`.
+     *
+     * @sample highcharts/plotoptions/bellcurve-intervals-pointsininterval
+     *         Intervals and points in interval
+     */
+    pointsInInterval: 3,
+    marker: {
+        enabled: false
+    }
+});
 DerivedComposition.compose(BellcurveSeries);
 SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
 /* *

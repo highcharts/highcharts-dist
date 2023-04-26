@@ -46,13 +46,13 @@ var ChartNavigationComposition;
      * to all other common classes (used in exporting and navigationBindings).
      * @private
      */
-    var Additions = /** @class */ (function () {
+    class Additions {
         /* *
          *
          *  Constructor
          *
          * */
-        function Additions(chart) {
+        constructor(chart) {
             this.updates = [];
             this.chart = chart;
         }
@@ -68,20 +68,18 @@ var ChartNavigationComposition;
          * @param {UpdateFunction} updateFn
          * The `update()` method that will be called in `chart.update()`.
          */
-        Additions.prototype.addUpdate = function (updateFn) {
+        addUpdate(updateFn) {
             this.chart.navigation.updates.push(updateFn);
-        };
+        }
         /**
          * @private
          */
-        Additions.prototype.update = function (options, redraw) {
-            var _this = this;
-            this.updates.forEach(function (updateFn) {
-                updateFn.call(_this.chart, options, redraw);
+        update(options, redraw) {
+            this.updates.forEach((updateFn) => {
+                updateFn.call(this.chart, options, redraw);
             });
-        };
-        return Additions;
-    }());
+        }
+    }
     ChartNavigationComposition.Additions = Additions;
 })(ChartNavigationComposition || (ChartNavigationComposition = {}));
 /* *

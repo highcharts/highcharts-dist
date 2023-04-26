@@ -8,34 +8,19 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import H from './Globals.js';
-var charts = H.charts, doc = H.doc, noop = H.noop, win = H.win;
+const { charts, doc, noop, win } = H;
 import Pointer from './Pointer.js';
 import U from './Utilities.js';
-var addEvent = U.addEvent, css = U.css, objectEach = U.objectEach, pick = U.pick, removeEvent = U.removeEvent;
+const { addEvent, css, objectEach, pick, removeEvent } = U;
 /* *
  *
  *  Constants
  *
  * */
 // The touches object keeps track of the points being touched at all times
-var touches = {};
-var hasPointerEvent = !!win.PointerEvent;
+const touches = {};
+const hasPointerEvent = !!win.PointerEvent;
 /* *
  *
  *  Functions
@@ -44,7 +29,7 @@ var hasPointerEvent = !!win.PointerEvent;
 /* eslint-disable valid-jsdoc */
 /** @private */
 function getWebkitTouches() {
-    var fake = [];
+    const fake = [];
     fake.item = function (i) {
         return this[i];
     };
@@ -59,10 +44,10 @@ function getWebkitTouches() {
 }
 /** @private */
 function translateMSPointer(e, method, wktype, func) {
-    var chart = charts[Pointer.hoverChartIndex || NaN];
+    const chart = charts[Pointer.hoverChartIndex || NaN];
     if ((e.pointerType === 'touch' ||
         e.pointerType === e.MSPOINTER_TYPE_TOUCH) && chart) {
-        var p = chart.pointer;
+        const p = chart.pointer;
         func(e);
         p[method]({
             type: wktype,
@@ -78,19 +63,15 @@ function translateMSPointer(e, method, wktype, func) {
  *
  * */
 /** @private */
-var MSPointer = /** @class */ (function (_super) {
-    __extends(MSPointer, _super);
-    function MSPointer() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class MSPointer extends Pointer {
     /* *
      *
      *  Static Functions
      *
      * */
-    MSPointer.isRequired = function () {
+    static isRequired() {
         return !!(!H.hasTouch && (win.PointerEvent || win.MSPointerEvent));
-    };
+    }
     /* *
      *
      *  Functions
@@ -101,31 +82,31 @@ var MSPointer = /** @class */ (function (_super) {
      * @private
      * @function Highcharts.Pointer#batchMSEvents
      */
-    MSPointer.prototype.batchMSEvents = function (fn) {
+    batchMSEvents(fn) {
         fn(this.chart.container, hasPointerEvent ? 'pointerdown' : 'MSPointerDown', this.onContainerPointerDown);
         fn(this.chart.container, hasPointerEvent ? 'pointermove' : 'MSPointerMove', this.onContainerPointerMove);
         fn(doc, hasPointerEvent ? 'pointerup' : 'MSPointerUp', this.onDocumentPointerUp);
-    };
+    }
     // Destroy MS events also
-    MSPointer.prototype.destroy = function () {
+    destroy() {
         this.batchMSEvents(removeEvent);
-        _super.prototype.destroy.call(this);
-    };
+        super.destroy();
+    }
     // Disable default IE actions for pinch and such on chart element
-    MSPointer.prototype.init = function (chart, options) {
-        _super.prototype.init.call(this, chart, options);
+    init(chart, options) {
+        super.init(chart, options);
         if (this.hasZoom) { // #4014
             css(chart.container, {
                 '-ms-touch-action': 'none',
                 'touch-action': 'none'
             });
         }
-    };
+    }
     /**
      * @private
      * @function Highcharts.Pointer#onContainerPointerDown
      */
-    MSPointer.prototype.onContainerPointerDown = function (e) {
+    onContainerPointerDown(e) {
         translateMSPointer(e, 'onContainerTouchStart', 'touchstart', function (e) {
             touches[e.pointerId] = {
                 pageX: e.pageX,
@@ -133,39 +114,67 @@ var MSPointer = /** @class */ (function (_super) {
                 target: e.currentTarget
             };
         });
-    };
+    }
     /**
      * @private
      * @function Highcharts.Pointer#onContainerPointerMove
      */
-    MSPointer.prototype.onContainerPointerMove = function (e) {
+    onContainerPointerMove(e) {
         translateMSPointer(e, 'onContainerTouchMove', 'touchmove', function (e) {
             touches[e.pointerId] = ({ pageX: e.pageX, pageY: e.pageY });
             if (!touches[e.pointerId].target) {
                 touches[e.pointerId].target = e.currentTarget;
             }
         });
-    };
+    }
     /**
      * @private
      * @function Highcharts.Pointer#onDocumentPointerUp
      */
-    MSPointer.prototype.onDocumentPointerUp = function (e) {
+    onDocumentPointerUp(e) {
         translateMSPointer(e, 'onDocumentTouchEnd', 'touchend', function (e) {
             delete touches[e.pointerId];
         });
-    };
+    }
     // Add IE specific touch events to chart
-    MSPointer.prototype.setDOMEvents = function () {
-        var tooltip = this.chart.tooltip;
-        _super.prototype.setDOMEvents.call(this);
+    setDOMEvents() {
+        const tooltip = this.chart.tooltip;
+        super.setDOMEvents();
         if (this.hasZoom ||
             pick((tooltip && tooltip.options.followTouchMove), true)) {
             this.batchMSEvents(addEvent);
         }
-    };
-    return MSPointer;
-}(Pointer));
+    }
+}
+/* *
+ *
+ *  Class Namespace
+ *
+ * */
+(function (MSPointer) {
+    /* *
+     *
+     *  Constants
+     *
+     * */
+    const composedMembers = [];
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * @private
+     */
+    function compose(ChartClass) {
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            addEvent(ChartClass, 'beforeRender', function () {
+                this.pointer = new MSPointer(this, this.options);
+            });
+        }
+    }
+    MSPointer.compose = compose;
+})(MSPointer || (MSPointer = {}));
 /* *
  *
  *  Default Export

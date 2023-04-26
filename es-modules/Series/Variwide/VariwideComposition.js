@@ -11,13 +11,13 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, wrap = U.wrap;
+const { addEvent, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedMembers = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -27,15 +27,13 @@ var composedMembers = [];
  * @private
  */
 function compose(AxisClass, TickClass) {
-    if (composedMembers.indexOf(AxisClass) === -1) {
-        composedMembers.push(AxisClass);
+    if (U.pushUnique(composedMembers, AxisClass)) {
         addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
         addEvent(AxisClass, 'afterRender', onAxisAfterRender);
     }
-    if (composedMembers.indexOf(TickClass) === -1) {
-        composedMembers.push(TickClass);
+    if (U.pushUnique(composedMembers, TickClass)) {
         addEvent(TickClass, 'afterGetPosition', onTickAfterGetPosition);
-        var tickProto = TickClass.prototype;
+        const tickProto = TickClass.prototype;
         tickProto.postTranslate = tickPostTranslate;
         wrap(tickProto, 'getLabelPosition', wrapTickGetLabelPosition);
     }
@@ -54,7 +52,7 @@ function onAxisAfterDrawCrosshair(e) {
  * @private
  */
 function onAxisAfterRender() {
-    var axis = this;
+    const axis = this;
     if (!this.horiz && this.variwide) {
         this.chart.labelCollectors.push(function () {
             return axis.tickPositions
@@ -62,7 +60,7 @@ function onAxisAfterRender() {
                 return axis.ticks[pos].label;
             })
                 .map(function (pos, i) {
-                var label = axis.ticks[pos].label;
+                const label = axis.ticks[pos].label;
                 label.labelrank = axis.zData[i];
                 return label;
             });
@@ -73,7 +71,7 @@ function onAxisAfterRender() {
  * @private
  */
 function onTickAfterGetPosition(e) {
-    var axis = this.axis, xOrY = axis.horiz ? 'x' : 'y';
+    const axis = this.axis, xOrY = axis.horiz ? 'x' : 'y';
     if (axis.variwide) {
         this[xOrY + 'Orig'] = e.pos[xOrY];
         this.postTranslate(e.pos, xOrY, this.pos);
@@ -83,8 +81,8 @@ function onTickAfterGetPosition(e) {
  * @private
  */
 function tickPostTranslate(xy, xOrY, index) {
-    var axis = this.axis;
-    var pos = xy[xOrY] - axis.pos;
+    const axis = this.axis;
+    let pos = xy[xOrY] - axis.pos;
     if (!axis.horiz) {
         pos = axis.len - pos;
     }
@@ -98,13 +96,13 @@ function tickPostTranslate(xy, xOrY, index) {
  * @private
  */
 function wrapTickGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index) {
-    var args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
+    const args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
     // Replace the x with the original x
     if (this.axis.variwide &&
         typeof this[xOrY + 'Orig'] === 'number') {
         args[horiz ? 0 : 1] = this[xOrY + 'Orig'];
     }
-    var xy = proceed.apply(this, args);
+    const xy = proceed.apply(this, args);
     // Post-translate
     if (this.axis.variwide && this.axis.categories) {
         this.postTranslate(xy, xOrY, this.pos);
@@ -116,7 +114,7 @@ function wrapTickGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tic
  *  Default Export
  *
  * */
-var VariwideComposition = {
-    compose: compose
+const VariwideComposition = {
+    compose
 };
 export default VariwideComposition;

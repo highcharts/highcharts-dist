@@ -12,11 +12,11 @@
 import Connection from './Connection.js';
 import Chart from '../Core/Chart/Chart.js';
 import D from '../Core/Defaults.js';
-var defaultOptions = D.defaultOptions;
+const { defaultOptions } = D;
 import H from '../Core/Globals.js';
 import Point from '../Core/Series/Point.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, error = U.error, extend = U.extend, merge = U.merge, pick = U.pick, splat = U.splat;
+const { addEvent, defined, error, extend, merge, pick, splat } = U;
 /**
  * The default pathfinder algorithm to use for a chart. It is possible to define
  * your own algorithms by adding them to the
@@ -41,8 +41,7 @@ var addEvent = U.addEvent, defined = U.defined, error = U.error, extend = U.exte
  */
 ''; // detach doclets above
 import pathfinderAlgorithms from './PathfinderAlgorithms.js';
-import '../Extensions/ArrowSymbols.js';
-var max = Math.max, min = Math.min;
+const max = Math.max, min = Math.min;
 /*
  @todo:
      - Document how to write your own algorithms
@@ -308,7 +307,7 @@ extend(defaultOptions, {
  *         Result xMax, xMin, yMax, yMin.
  */
 function getPointBB(point) {
-    var shapeArgs = point.shapeArgs, bb;
+    let shapeArgs = point.shapeArgs, bb;
     // Prefer using shapeArgs (columns)
     if (shapeArgs) {
         return {
@@ -341,11 +340,11 @@ function getPointBB(point) {
  *         The calculated margin in pixels. At least 1.
  */
 function calculateObstacleMargin(obstacles) {
-    var len = obstacles.length, i = 0, j, obstacleDistance, distances = [], 
+    let len = obstacles.length, i = 0, j, obstacleDistance, distances = [], 
     // Compute smallest distance between two rectangles
     distance = function (a, b, bbMargin) {
         // Count the distance even if we are slightly off
-        var margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
+        const margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
             a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
             a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
         // If the rectangles collide, try recomputing with smaller margin.
@@ -391,8 +390,8 @@ function calculateObstacleMargin(obstacles) {
  * @param {Highcharts.Chart} chart
  *        The chart to operate on.
  */
-var Pathfinder = /** @class */ (function () {
-    function Pathfinder(chart) {
+class Pathfinder {
+    constructor(chart) {
         /* *
          *
          * Properties
@@ -418,7 +417,7 @@ var Pathfinder = /** @class */ (function () {
      * @param {Highcharts.Chart} chart
      *        The chart context.
      */
-    Pathfinder.prototype.init = function (chart) {
+    init(chart) {
         // Initialize pathfinder with chart context
         this.chart = chart;
         // Init connection reference list
@@ -427,7 +426,7 @@ var Pathfinder = /** @class */ (function () {
         addEvent(chart, 'redraw', function () {
             this.pathfinder.update();
         });
-    };
+    }
     /**
      * Update Pathfinder connections from scratch.
      *
@@ -437,21 +436,21 @@ var Pathfinder = /** @class */ (function () {
      *        Whether or not to defer rendering of connections until
      *        series.afterAnimate event has fired. Used on first render.
      */
-    Pathfinder.prototype.update = function (deferRender) {
-        var chart = this.chart, pathfinder = this, oldConnections = pathfinder.connections;
+    update(deferRender) {
+        const chart = this.chart, pathfinder = this, oldConnections = pathfinder.connections;
         // Rebuild pathfinder connections from options
         pathfinder.connections = [];
         chart.series.forEach(function (series) {
             if (series.visible && !series.options.isInternal) {
                 series.points.forEach(function (point) {
-                    var ganttPointOptions = point.options;
+                    const ganttPointOptions = point.options;
                     // For Gantt series the connect could be
                     // defined as a dependency
                     if (ganttPointOptions && ganttPointOptions.dependency) {
                         ganttPointOptions.connect = ganttPointOptions
                             .dependency;
                     }
-                    var to, connects = (point.options &&
+                    let to, connects = (point.options &&
                         point.options.connect &&
                         splat(point.options.connect));
                     if (point.visible && point.isInside !== false && connects) {
@@ -475,11 +474,11 @@ var Pathfinder = /** @class */ (function () {
         });
         // Clear connections that should not be updated, and move old info over
         // to new connections.
-        for (var j = 0, k = void 0, found = void 0, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
+        for (let j = 0, k, found, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
             found = false;
-            var oldCon = oldConnections[j];
+            const oldCon = oldConnections[j];
             for (k = 0; k < lenNew; ++k) {
-                var newCon = pathfinder.connections[k];
+                const newCon = pathfinder.connections[k];
                 if ((oldCon.options && oldCon.options.type) ===
                     (newCon.options && newCon.options.type) &&
                     oldCon.fromPoint === newCon.fromPoint &&
@@ -500,7 +499,7 @@ var Pathfinder = /** @class */ (function () {
         delete this.lineObstacles;
         // Draw the pending connections
         pathfinder.renderConnections(deferRender);
-    };
+    }
     /**
      * Draw the chart's connecting paths.
      *
@@ -510,14 +509,14 @@ var Pathfinder = /** @class */ (function () {
      *        Whether or not to defer render until series animation is finished.
      *        Used on first render.
      */
-    Pathfinder.prototype.renderConnections = function (deferRender) {
+    renderConnections(deferRender) {
         if (deferRender) {
             // Render after series are done animating
             this.chart.series.forEach(function (series) {
-                var render = function () {
+                const render = function () {
                     // Find pathfinder connections belonging to this series
                     // that haven't rendered, and render them now.
-                    var pathfinder = series.chart.pathfinder, conns = pathfinder && pathfinder.connections || [];
+                    const pathfinder = series.chart.pathfinder, conns = pathfinder && pathfinder.connections || [];
                     conns.forEach(function (connection) {
                         if (connection.fromPoint &&
                             connection.fromPoint.series === series) {
@@ -543,7 +542,7 @@ var Pathfinder = /** @class */ (function () {
                 connection.render();
             });
         }
-    };
+    }
     /**
      * Get obstacles for the points in the chart. Does not include connecting
      * lines from Pathfinder. Applies algorithmMargin to the obstacles.
@@ -558,11 +557,11 @@ var Pathfinder = /** @class */ (function () {
      *         An array of calculated obstacles. Each obstacle is defined as an
      *         object with xMin, xMax, yMin and yMax properties.
      */
-    Pathfinder.prototype.getChartObstacles = function (options) {
-        var obstacles = [], series = this.chart.series, margin = pick(options.algorithmMargin, 0), calculatedMargin;
-        for (var i = 0, sLen = series.length; i < sLen; ++i) {
+    getChartObstacles(options) {
+        let obstacles = [], series = this.chart.series, margin = pick(options.algorithmMargin, 0), calculatedMargin;
+        for (let i = 0, sLen = series.length; i < sLen; ++i) {
             if (series[i].visible && !series[i].options.isInternal) {
-                for (var j = 0, pLen = series[i].points.length, bb = void 0, point = void 0; j < pLen; ++j) {
+                for (let j = 0, pLen = series[i].points.length, bb, point; j < pLen; ++j) {
                     point = series[i].points[j];
                     if (point.visible) {
                         bb = getPointBB(point);
@@ -595,7 +594,7 @@ var Pathfinder = /** @class */ (function () {
             });
         }
         return obstacles;
-    };
+    }
     /**
      * Utility function to get metrics for obstacles:
      * - Widest obstacle width
@@ -610,8 +609,8 @@ var Pathfinder = /** @class */ (function () {
      *         The calculated metrics, as an object with maxHeight and maxWidth
      *         properties.
      */
-    Pathfinder.prototype.getObstacleMetrics = function (obstacles) {
-        var maxWidth = 0, maxHeight = 0, width, height, i = obstacles.length;
+    getObstacleMetrics(obstacles) {
+        let maxWidth = 0, maxHeight = 0, width, height, i = obstacles.length;
         while (i--) {
             width = obstacles[i].xMax - obstacles[i].xMin;
             height = obstacles[i].yMax - obstacles[i].yMin;
@@ -626,7 +625,7 @@ var Pathfinder = /** @class */ (function () {
             maxHeight: maxHeight,
             maxWidth: maxWidth
         };
-    };
+    }
     /**
      * Utility to get which direction to start the pathfinding algorithm
      * (X vs Y), calculated from a set of marker options.
@@ -639,16 +638,15 @@ var Pathfinder = /** @class */ (function () {
      * @return {boolean}
      *         Returns true for X, false for Y, and undefined for autocalculate.
      */
-    Pathfinder.prototype.getAlgorithmStartDirection = function (markerOptions) {
-        var xCenter = markerOptions.align !== 'left' &&
+    getAlgorithmStartDirection(markerOptions) {
+        let xCenter = markerOptions.align !== 'left' &&
             markerOptions.align !== 'right', yCenter = markerOptions.verticalAlign !== 'top' &&
             markerOptions.verticalAlign !== 'bottom', undef;
         return xCenter ?
             (yCenter ? undef : false) : // x is centered
             (yCenter ? true : undef); // x is off-center
-    };
-    return Pathfinder;
-}());
+    }
+}
 Pathfinder.prototype.algorithms = pathfinderAlgorithms;
 // Add to Highcharts namespace
 H.Pathfinder = Pathfinder;
@@ -668,7 +666,7 @@ extend(Point.prototype, /** @lends Point.prototype */ {
      *         in plot values, not relative to point.
      */
     getPathfinderAnchorPoint: function (markerOptions) {
-        var bb = getPointBB(this), x, y;
+        let bb = getPointBB(this), x, y;
         switch (markerOptions.align) { // eslint-disable-line default-case
             case 'right':
                 x = 'xMax';
@@ -704,7 +702,7 @@ extend(Point.prototype, /** @lends Point.prototype */ {
      *         The angle in degrees
      */
     getRadiansToVector: function (v1, v2) {
-        var box;
+        let box;
         if (!defined(v2)) {
             box = getPointBB(this);
             if (box) {
@@ -738,7 +736,7 @@ extend(Point.prototype, /** @lends Point.prototype */ {
      *         The marker vector as an object with x/y properties.
      */
     getMarkerVector: function (radians, markerRadius, anchor) {
-        var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
+        let twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
             x: rectHorizontalCenter,
             y: rectVerticalCenter
         }, xFactor = 1, yFactor = 1;
@@ -809,7 +807,7 @@ function warnLegacy(chart) {
 }
 // Initialize Pathfinder for charts
 Chart.prototype.callbacks.push(function (chart) {
-    var options = chart.options;
+    const options = chart.options;
     if (options.connectors.enabled !== false) {
         warnLegacy(chart);
         this.pathfinder = new Pathfinder(this);

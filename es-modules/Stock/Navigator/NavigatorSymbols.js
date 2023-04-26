@@ -17,9 +17,8 @@
  * Draw one of the handles on the side of the zoomed range in the navigator.
  * @private
  */
-function navigatorHandle(_x, _y, width, height, options) {
-    if (options === void 0) { options = {}; }
-    var halfWidth = options.width ? options.width / 2 : width, markerPosition = Math.round(halfWidth / 3) + 0.5;
+function navigatorHandle(_x, _y, width, height, options = {}) {
+    const halfWidth = options.width ? options.width / 2 : width, markerPosition = Math.round(halfWidth / 3) + 0.5;
     height = options.height || height;
     return [
         ['M', -halfWidth - 1, 0.5],
@@ -38,7 +37,7 @@ function navigatorHandle(_x, _y, width, height, options) {
  *  Default Export
  *
  * */
-var NavigatorSymbols = {
+const NavigatorSymbols = {
     'navigator-handle': navigatorHandle
 };
 export default NavigatorSymbols;

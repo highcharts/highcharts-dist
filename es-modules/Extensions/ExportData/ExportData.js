@@ -13,33 +13,24 @@
 // - Set up systematic tests for all series types, paired with tests of the data
 //   module importing the same data.
 'use strict';
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 import AST from '../../Core/Renderer/HTML/AST.js';
 import ExportDataDefaults from './ExportDataDefaults.js';
 import H from '../../Core/Globals.js';
-var doc = H.doc, win = H.win;
+const { doc, win } = H;
 import D from '../../Core/Defaults.js';
-var getOptions = D.getOptions, setOptions = D.setOptions;
+const { getOptions, setOptions } = D;
 import DownloadURL from '../DownloadURL.js';
-var downloadURL = DownloadURL.downloadURL;
+const { downloadURL } = DownloadURL;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var SeriesClass = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, GanttSeries = _a.gantt, MapSeries = _a.map, MapBubbleSeries = _a.mapbubble, TreemapSeries = _a.treemap;
+const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick;
+const { addEvent, defined, extend, find, fireEvent, isNumber, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -56,7 +47,7 @@ var composedClasses = [];
  * @requires modules/exporting
  */
 function chartDownloadCSV() {
-    var csv = this.getCSV(true);
+    const csv = this.getCSV(true);
     downloadURL(getBlobFromContent(csv, 'text/csv') ||
         'data:text/csv,\uFEFF' + encodeURIComponent(csv), this.getFilename() + '.csv');
 }
@@ -71,7 +62,7 @@ function chartDownloadCSV() {
  * @requires modules/exporting
  */
 function chartDownloadXLS() {
-    var uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+    const uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
         'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
         'xmlns="http://www.w3.org/TR/REC-html40">' +
         '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
@@ -107,8 +98,8 @@ function chartDownloadXLS() {
  *         CSV representation of the data
  */
 function chartGetCSV(useLocalDecimalPoint) {
-    var csv = '';
-    var rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
+    let csv = '';
+    const rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
         (1.1).toLocaleString()[1] :
         '.'), 
     // use ';' for direct to Excel
@@ -116,8 +107,8 @@ function chartGetCSV(useLocalDecimalPoint) {
     // '\n' isn't working with the js csv data extraction
     lineDelimiter = csvOptions.lineDelimiter;
     // Transform the rows to CSV
-    rows.forEach(function (row, i) {
-        var val = '', j = row.length;
+    rows.forEach((row, i) => {
+        let val = '', j = row.length;
         while (j--) {
             val = row[j];
             if (typeof val === 'string') {
@@ -162,11 +153,11 @@ function chartGetCSV(useLocalDecimalPoint) {
  * @emits Highcharts.Chart#event:exportData
  */
 function chartGetDataRows(multiLevelHeaders) {
-    var hasParallelCoords = this.hasParallelCoordinates, time = this.time, csvOptions = ((this.options.exporting && this.options.exporting.csv) || {}), xAxes = this.xAxis, rows = {}, rowArr = [], topLevelColumnTitles = [], columnTitles = [], langOptions = this.options.lang, exportDataOptions = langOptions.exportData, categoryHeader = exportDataOptions.categoryHeader, categoryDatetimeHeader = exportDataOptions.categoryDatetimeHeader, 
+    const hasParallelCoords = this.hasParallelCoordinates, time = this.time, csvOptions = ((this.options.exporting && this.options.exporting.csv) || {}), xAxes = this.xAxis, rows = {}, rowArr = [], topLevelColumnTitles = [], columnTitles = [], langOptions = this.options.lang, exportDataOptions = langOptions.exportData, categoryHeader = exportDataOptions.categoryHeader, categoryDatetimeHeader = exportDataOptions.categoryDatetimeHeader, 
     // Options
     columnHeaderFormatter = function (item, key, keyLength) {
         if (csvOptions.columnHeaderFormatter) {
-            var s = csvOptions.columnHeaderFormatter(item, key, keyLength);
+            const s = csvOptions.columnHeaderFormatter(item, key, keyLength);
             if (s !== false) {
                 return s;
             }
@@ -190,9 +181,9 @@ function chartGetDataRows(multiLevelHeaders) {
     }, 
     // Map the categories for value axes
     getCategoryAndDateTimeMap = function (series, pointArrayMap, pIdx) {
-        var categoryMap = {}, dateTimeValueAxisMap = {};
+        const categoryMap = {}, dateTimeValueAxisMap = {};
         pointArrayMap.forEach(function (prop) {
-            var axisName = ((series.keyToAxis && series.keyToAxis[prop]) ||
+            const axisName = ((series.keyToAxis && series.keyToAxis[prop]) ||
                 prop) + 'Axis', 
             // Points in parallel coordinates refers to all yAxis
             // not only `series.yAxis`
@@ -210,16 +201,14 @@ function chartGetDataRows(multiLevelHeaders) {
     // Create point array depends if xAxis is category
     // or point.name is defined #13293
     getPointArray = function (series, xAxis) {
-        var namedPoints = series.data.filter(function (d) {
-            return (typeof d.y !== 'undefined') && d.name;
-        });
+        const namedPoints = series.data.filter((d) => (typeof d.y !== 'undefined') && d.name);
         if (namedPoints.length &&
             xAxis &&
             !xAxis.categories &&
             !series.keyToAxis) {
             if (series.pointArrayMap) {
-                var pointArrayMapCheck = series.pointArrayMap
-                    .filter(function (p) { return p === 'x'; });
+                const pointArrayMapCheck = series.pointArrayMap
+                    .filter((p) => p === 'x');
                 if (pointArrayMapCheck.length) {
                     series.pointArrayMap.unshift('x');
                     return series.pointArrayMap;
@@ -229,11 +218,11 @@ function chartGetDataRows(multiLevelHeaders) {
         }
         return series.pointArrayMap || ['y'];
     }, xAxisIndices = [];
-    var xAxis, dataRows, columnTitleObj, i = 0, // Loop the series and index values
+    let xAxis, dataRows, columnTitleObj, i = 0, // Loop the series and index values
     x, xTitle;
     this.series.forEach(function (series) {
-        var keys = series.options.keys, xAxis = series.xAxis, pointArrayMap = keys || getPointArray(series, xAxis), valueCount = pointArrayMap.length, xTaken = !series.requireSorting && {}, xAxisIndex = xAxes.indexOf(xAxis);
-        var categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap), mockSeries, j;
+        const keys = series.options.keys, xAxis = series.xAxis, pointArrayMap = keys || getPointArray(series, xAxis), valueCount = pointArrayMap.length, xTaken = !series.requireSorting && {}, xAxisIndex = xAxes.indexOf(xAxis);
+        let categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap), mockSeries, j;
         if (series.options.includeInDataExport !== false &&
             !series.options.isInternal &&
             series.visible !== false // #55
@@ -268,8 +257,8 @@ function chartGetDataRows(multiLevelHeaders) {
             // Export directly from options.data because we need the uncropped
             // data (#7913), and we need to support Boost (#7026).
             series.options.data.forEach(function eachData(options, pIdx) {
-                var mockPoint = { series: mockSeries };
-                var key, prop, val;
+                const mockPoint = { series: mockSeries };
+                let key, prop, val;
                 // In parallel coordinates chart, each data point is connected
                 // to a separate yAxis, conform this
                 if (hasParallelCoords) {
@@ -280,18 +269,14 @@ function chartGetDataRows(multiLevelHeaders) {
                 if (defined(rows[key]) &&
                     rows[key].seriesIndices.includes(mockSeries.index)) {
                     // find keys, which belong to actual series
-                    var keysFromActualSeries = Object.keys(rows).filter(function (i) {
-                        return rows[i].seriesIndices.includes(mockSeries.index) &&
-                            key;
-                    }), 
+                    const keysFromActualSeries = Object.keys(rows).filter((i) => rows[i].seriesIndices.includes(mockSeries.index) &&
+                        key), 
                     // find all properties, which start with actual key
                     existingKeys = keysFromActualSeries
-                        .filter(function (propertyName) {
-                        return propertyName.indexOf(String(key)) === 0;
-                    });
+                        .filter((propertyName) => propertyName.indexOf(String(key)) === 0);
                     key = key.toString() + ',' + existingKeys.length;
                 }
-                var name = series.data[pIdx] && series.data[pIdx].name;
+                const name = series.data[pIdx] && series.data[pIdx].name;
                 j = 0;
                 // Pies, funnels, geo maps etc. use point name in X row
                 if (!xAxis ||
@@ -317,9 +302,9 @@ function chartGetDataRows(multiLevelHeaders) {
                 if (!defined(rows[key].seriesIndices)) {
                     rows[key].seriesIndices = [];
                 }
-                rows[key].seriesIndices = __spreadArray(__spreadArray([], rows[key].seriesIndices, true), [
-                    mockSeries.index
-                ], false);
+                rows[key].seriesIndices = [
+                    ...rows[key].seriesIndices, mockSeries.index
+                ];
                 while (j < valueCount) {
                     prop = pointArrayMap[j]; // y, z etc
                     val = mockPoint[prop];
@@ -344,7 +329,7 @@ function chartGetDataRows(multiLevelHeaders) {
             rowArr.push(rows[x]);
         }
     }
-    var xAxisIndex, column;
+    let xAxisIndex, column;
     // Add computed column headers and top level headers to final row set
     dataRows = multiLevelHeaders ? [topLevelColumnTitles, columnTitles] :
         [columnTitles];
@@ -369,7 +354,7 @@ function chartGetDataRows(multiLevelHeaders) {
         // Add the category column
         rowArr.forEach(function (// eslint-disable-line no-loop-func
         row) {
-            var category = row.name;
+            let category = row.name;
             if (xAxis && !defined(category)) {
                 if (xAxis.dateTime) {
                     if (row.x instanceof Date) {
@@ -412,29 +397,29 @@ function chartGetDataRows(multiLevelHeaders) {
  * @emits Highcharts.Chart#event:afterGetTable
  */
 function chartGetTable(useLocalDecimalPoint) {
-    var serialize = function (node) {
+    const serialize = (node) => {
         if (!node.tagName || node.tagName === '#text') {
             // Text node
             return node.textContent || '';
         }
-        var attributes = node.attributes;
-        var html = "<".concat(node.tagName);
+        const attributes = node.attributes;
+        let html = `<${node.tagName}`;
         if (attributes) {
             Object.keys(attributes)
-                .forEach(function (key) {
-                var value = attributes[key];
-                html += " ".concat(key, "=\"").concat(value, "\"");
+                .forEach((key) => {
+                const value = attributes[key];
+                html += ` ${key}="${value}"`;
             });
         }
         html += '>';
         html += node.textContent || '';
-        (node.children || []).forEach(function (child) {
+        (node.children || []).forEach((child) => {
             html += serialize(child);
         });
-        html += "</".concat(node.tagName, ">");
+        html += `</${node.tagName}>`;
         return html;
     };
-    var tree = this.getTableAST(useLocalDecimalPoint);
+    const tree = this.getTableAST(useLocalDecimalPoint);
     return serialize(tree);
 }
 /**
@@ -453,12 +438,12 @@ function chartGetTable(useLocalDecimalPoint) {
  *         The abstract syntax tree
  */
 function chartGetTableAST(useLocalDecimalPoint) {
-    var rowLength = 0;
-    var treeChildren = [];
-    var options = this.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', useMultiLevelHeaders = pick(options.exporting.useMultiLevelHeaders, true), rows = this.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
+    let rowLength = 0;
+    const treeChildren = [];
+    const options = this.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', useMultiLevelHeaders = pick(options.exporting.useMultiLevelHeaders, true), rows = this.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
     // Compare two rows for equality
     isRowEqual = function (row1, row2) {
-        var i = row1.length;
+        let i = row1.length;
         if (row2.length === i) {
             while (i--) {
                 if (row1[i] !== row2[i]) {
@@ -473,7 +458,7 @@ function chartGetTableAST(useLocalDecimalPoint) {
     }, 
     // Get table cell HTML from value
     getCellHTMLFromValue = function (tagName, classes, attributes, value) {
-        var textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
+        let textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
         // Convert to string if number
         if (typeof textContent === 'number') {
             textContent = textContent.toString();
@@ -487,15 +472,15 @@ function chartGetTableAST(useLocalDecimalPoint) {
         }
         attributes = extend({ 'class': className }, attributes);
         return {
-            tagName: tagName,
-            attributes: attributes,
-            textContent: textContent
+            tagName,
+            attributes,
+            textContent
         };
     }, 
     // Get table header markup from row data
     getTableHeaderHTML = function (topheaders, subheaders, rowLength) {
-        var theadChildren = [];
-        var i = 0, len = rowLength || subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
+        const theadChildren = [];
+        let i = 0, len = rowLength || subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
         // Clean up multiple table headers. Chart.getDataRows() returns two
         // levels of headers when using multilevel, not merged. We need to
         // merge identical headers, remove redundant headers, and keep it
@@ -504,7 +489,7 @@ function chartGetTableAST(useLocalDecimalPoint) {
             topheaders &&
             subheaders &&
             !isRowEqual(topheaders, subheaders)) {
-            var trChildren = [];
+            const trChildren = [];
             for (; i < len; ++i) {
                 cur = topheaders[i];
                 next = topheaders[i + 1];
@@ -536,7 +521,7 @@ function chartGetTableAST(useLocalDecimalPoint) {
                     else {
                         rowspan = 1;
                     }
-                    var cell = getCellHTMLFromValue('th', 'highcharts-table-topheading', { scope: 'col' }, cur);
+                    const cell = getCellHTMLFromValue('th', 'highcharts-table-topheading', { scope: 'col' }, cur);
                     if (rowspan > 1 && cell.attributes) {
                         cell.attributes.valign = 'top';
                         cell.attributes.rowspan = rowspan;
@@ -551,7 +536,7 @@ function chartGetTableAST(useLocalDecimalPoint) {
         }
         // Add the subheaders (the only headers if not using multilevels)
         if (subheaders) {
-            var trChildren = [];
+            const trChildren = [];
             for (i = 0, len = subheaders.length; i < len; ++i) {
                 if (typeof subheaders[i] !== 'undefined') {
                     trChildren.push(getCellHTMLFromValue('th', null, { scope: 'col' }, subheaders[i]));
@@ -580,7 +565,7 @@ function chartGetTableAST(useLocalDecimalPoint) {
         });
     }
     // Find longest row
-    for (var i = 0, len = rows.length; i < len; ++i) {
+    for (let i = 0, len = rows.length; i < len; ++i) {
         if (rows[i].length > rowLength) {
             rowLength = rows[i].length;
         }
@@ -588,10 +573,10 @@ function chartGetTableAST(useLocalDecimalPoint) {
     // Add header
     treeChildren.push(getTableHeaderHTML(topHeaders, subHeaders, Math.max(rowLength, subHeaders.length)));
     // Transform the rows to HTML
-    var trs = [];
+    const trs = [];
     rows.forEach(function (row) {
-        var trChildren = [];
-        for (var j = 0; j < rowLength; j++) {
+        const trChildren = [];
+        for (let j = 0; j < rowLength; j++) {
             // Make first column a header too. Especially important for
             // category axes, but also might make sense for datetime? Should
             // await user feedback on this.
@@ -606,10 +591,10 @@ function chartGetTableAST(useLocalDecimalPoint) {
         tagName: 'tbody',
         children: trs
     });
-    var e = {
+    const e = {
         tree: {
             tagName: 'table',
-            id: "highcharts-data-table-".concat(this.index),
+            id: `highcharts-data-table-${this.index}`,
             children: treeChildren
         }
     };
@@ -630,7 +615,7 @@ function chartHideData() {
 function chartToggleDataTable(show) {
     show = pick(show, !this.isDataTableVisible);
     // Create the div
-    var createContainer = show && !this.dataTableDiv;
+    const createContainer = show && !this.dataTableDiv;
     if (createContainer) {
         this.dataTableDiv = doc.createElement('div');
         this.dataTableDiv.className = 'highcharts-data-table';
@@ -639,12 +624,12 @@ function chartToggleDataTable(show) {
     }
     // Toggle the visibility
     if (this.dataTableDiv) {
-        var style = this.dataTableDiv.style, oldDisplay = style.display;
+        const style = this.dataTableDiv.style, oldDisplay = style.display;
         style.display = show ? 'block' : 'none';
         // Generate the data table
         if (show) {
             this.dataTableDiv.innerHTML = AST.emptyHTML;
-            var ast = new AST([this.getTableAST()]);
+            const ast = new AST([this.getTableAST()]);
             ast.addToDOM(this.dataTableDiv);
             fireEvent(this, 'afterViewData', {
                 element: this.dataTableDiv,
@@ -655,7 +640,7 @@ function chartToggleDataTable(show) {
     // Set the flag
     this.isDataTableVisible = show;
     // Change the menu item text
-    var exportDivElements = this.exportDivElements, options = this.options.exporting, menuItems = options &&
+    const exportDivElements = this.exportDivElements, options = this.options.exporting, menuItems = options &&
         options.buttons &&
         options.buttons.contextButton.menuItems, lang = this.options.lang;
     if (options &&
@@ -665,7 +650,7 @@ function chartToggleDataTable(show) {
         lang.hideData &&
         menuItems &&
         exportDivElements) {
-        var exportDivElement = exportDivElements[menuItems.indexOf('viewData')];
+        const exportDivElement = exportDivElements[menuItems.indexOf('viewData')];
         if (exportDivElement) {
             AST.setElementHTML(exportDivElement, this.isDataTableVisible ? lang.hideData : lang.viewData);
         }
@@ -685,12 +670,11 @@ function chartViewData() {
  * @private
  */
 function compose(ChartClass) {
-    if (composedClasses.indexOf(ChartClass) === -1) {
-        composedClasses.push(ChartClass);
+    if (U.pushUnique(composedMembers, ChartClass)) {
         // Add an event listener to handle the showTable option
         addEvent(ChartClass, 'afterViewData', onChartAfterViewData);
         addEvent(ChartClass, 'render', onChartRenderer);
-        var chartProto = ChartClass.prototype;
+        const chartProto = ChartClass.prototype;
         chartProto.downloadCSV = chartDownloadCSV;
         chartProto.downloadXLS = chartDownloadXLS;
         chartProto.getCSV = chartGetCSV;
@@ -701,9 +685,8 @@ function compose(ChartClass) {
         chartProto.toggleDataTable = chartToggleDataTable;
         chartProto.viewData = chartViewData;
     }
-    if (composedClasses.indexOf(setOptions) === -1) {
-        composedClasses.push(setOptions);
-        var exportingOptions = getOptions().exporting;
+    if (U.pushUnique(composedMembers, setOptions)) {
+        const exportingOptions = getOptions().exporting;
         // Add "Download CSV" to the exporting menu.
         // @todo consider move to defaults
         if (exportingOptions) {
@@ -734,30 +717,25 @@ function compose(ChartClass) {
         }
         setOptions(ExportDataDefaults);
     }
-    if (AreaRangeSeries && composedClasses.indexOf(AreaRangeSeries) === -1) {
-        composedClasses.push(AreaRangeSeries);
+    if (AreaRangeSeries && U.pushUnique(composedMembers, AreaRangeSeries)) {
         AreaRangeSeries.prototype.keyToAxis = {
             low: 'y',
             high: 'y'
         };
     }
-    if (GanttSeries && composedClasses.indexOf(GanttSeries) === -1) {
-        composedClasses.push(GanttSeries);
+    if (GanttSeries && U.pushUnique(composedMembers, GanttSeries)) {
         GanttSeries.prototype.keyToAxis = {
             start: 'x',
             end: 'x'
         };
     }
-    if (MapSeries && composedClasses.indexOf(MapSeries) === -1) {
-        composedClasses.push(MapSeries);
+    if (MapSeries && U.pushUnique(composedMembers, MapSeries)) {
         MapSeries.prototype.exportKey = 'name';
     }
-    if (MapBubbleSeries && composedClasses.indexOf(MapBubbleSeries) === -1) {
-        composedClasses.push(MapBubbleSeries);
+    if (MapBubbleSeries && U.pushUnique(composedMembers, MapBubbleSeries)) {
         MapBubbleSeries.prototype.exportKey = 'name';
     }
-    if (TreemapSeries && composedClasses.indexOf(TreemapSeries) === -1) {
-        composedClasses.push(TreemapSeries);
+    if (TreemapSeries && U.pushUnique(composedMembers, TreemapSeries)) {
         TreemapSeries.prototype.exportKey = 'name';
     }
 }
@@ -773,12 +751,12 @@ function compose(ChartClass) {
  *         The blob object, or undefined if not supported.
  */
 function getBlobFromContent(content, type) {
-    var nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
+    const nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
         nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
     try {
         // MS specific
         if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
-            var blob = new win.MSBlobBuilder();
+            const blob = new win.MSBlobBuilder();
             blob.append(content);
             return blob.getBlob('image/svg+xml');
         }
@@ -797,34 +775,30 @@ function getBlobFromContent(content, type) {
  * @private
  */
 function onChartAfterViewData() {
-    var chart = this, dataTableDiv = chart.dataTableDiv, getCellValue = function (tr, index) {
-        return tr.children[index].textContent;
-    }, comparer = function (index, ascending) {
-        return function (a, b) {
-            var sort = function (v1, v2) { return (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
-                v1 - v2 :
-                v1.toString().localeCompare(v2)); };
-            return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
-        };
+    const chart = this, dataTableDiv = chart.dataTableDiv, getCellValue = (tr, index) => tr.children[index].textContent, comparer = (index, ascending) => (a, b) => {
+        const sort = (v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
+            v1 - v2 :
+            v1.toString().localeCompare(v2));
+        return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
     };
     if (dataTableDiv &&
         chart.options.exporting &&
         chart.options.exporting.allowTableSorting) {
-        var row = dataTableDiv.querySelector('thead tr');
+        const row = dataTableDiv.querySelector('thead tr');
         if (row) {
-            row.childNodes.forEach(function (th) {
-                var table = th.closest('table');
+            row.childNodes.forEach((th) => {
+                const table = th.closest('table');
                 th.addEventListener('click', function () {
-                    var rows = __spreadArray([], dataTableDiv.querySelectorAll('tr:not(thead tr)'), true), headers = __spreadArray([], th.parentNode.children, true);
+                    const rows = [...dataTableDiv.querySelectorAll('tr:not(thead tr)')], headers = [...th.parentNode.children];
                     rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
-                        !chart.ascendingOrderInTable)).forEach(function (tr) {
+                        !chart.ascendingOrderInTable)).forEach((tr) => {
                         table.appendChild(tr);
                     });
-                    headers.forEach(function (th) {
+                    headers.forEach((th) => {
                         [
                             'highcharts-sort-ascending',
                             'highcharts-sort-descending'
-                        ].forEach(function (className) {
+                        ].forEach((className) => {
                             if (th.classList.contains(className)) {
                                 th.classList.remove(className);
                             }
@@ -855,8 +829,8 @@ function onChartRenderer() {
  *  Default Export
  *
  * */
-var ExportData = {
-    compose: compose
+const ExportData = {
+    compose
 };
 export default ExportData;
 /* *

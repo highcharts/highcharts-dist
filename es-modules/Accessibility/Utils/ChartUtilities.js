@@ -11,11 +11,11 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import HU from './HTMLUtilities.js';
-var stripHTMLTags = HU.stripHTMLTagsFromString;
+const { stripHTMLTagsFromString: stripHTMLTags } = HU;
 import U from '../../Core/Utilities.js';
-var defined = U.defined, find = U.find, fireEvent = U.fireEvent;
+const { defined, find, fireEvent } = U;
 /* *
  *
  *  Functions
@@ -28,8 +28,8 @@ var defined = U.defined, find = U.find, fireEvent = U.fireEvent;
  * @private
  */
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
-    var type = eventObject.type;
-    var hcEvents = el.hcEvents;
+    const type = eventObject.type;
+    const hcEvents = el.hcEvents;
     if ((doc.createEvent) &&
         (el.dispatchEvent || el.fireEvent)) {
         if (el.dispatchEvent) {
@@ -75,7 +75,7 @@ function getAxisDescription(axis) {
  * A string with the range description for the axis.
  */
 function getAxisRangeDescription(axis) {
-    var axisOptions = axis.options || {};
+    const axisOptions = axis.options || {};
     // Handle overridden range description
     if (axisOptions.accessibility &&
         typeof axisOptions.accessibility.rangeDescription !== 'undefined') {
@@ -98,7 +98,7 @@ function getAxisRangeDescription(axis) {
  * @private
  */
 function getCategoryAxisRangeDesc(axis) {
-    var chart = axis.chart;
+    const chart = axis.chart;
     if (axis.dataMax && axis.dataMin) {
         return chart.langFormat('accessibility.axis.rangeCategories', {
             chart: chart,
@@ -113,8 +113,8 @@ function getCategoryAxisRangeDesc(axis) {
  * @private
  */
 function getAxisTimeLengthDesc(axis) {
-    var chart = axis.chart, range = {}, min = axis.dataMin || axis.min || 0, max = axis.dataMax || axis.max || 0;
-    var rangeUnit = 'Seconds';
+    const chart = axis.chart, range = {}, min = axis.dataMin || axis.min || 0, max = axis.dataMax || axis.max || 0;
+    let rangeUnit = 'Seconds';
     range.Seconds = (max - min) / 1000;
     range.Minutes = range.Seconds / 60;
     range.Hours = range.Minutes / 60;
@@ -124,7 +124,7 @@ function getAxisTimeLengthDesc(axis) {
             rangeUnit = unit;
         }
     });
-    var rangeValue = range[rangeUnit].toFixed(rangeUnit !== 'Seconds' &&
+    const rangeValue = range[rangeUnit].toFixed(rangeUnit !== 'Seconds' &&
         rangeUnit !== 'Minutes' ? 1 : 0 // Use decimals for days/hours
     );
     // We have the range and the unit to use, find the desc format
@@ -139,7 +139,7 @@ function getAxisTimeLengthDesc(axis) {
  * @private
  */
 function getAxisFromToDescription(axis) {
-    var chart = axis.chart, options = chart.options, dateRangeFormat = (options &&
+    const chart = axis.chart, options = chart.options, dateRangeFormat = (options &&
         options.accessibility &&
         options.accessibility.screenReaderSection.axisRangeDateFormat ||
         ''), extremes = {
@@ -167,7 +167,7 @@ function getAxisFromToDescription(axis) {
  */
 function getSeriesFirstPointElement(series) {
     if (series.points && series.points.length) {
-        var firstPointWithGraphic = find(series.points, function (p) { return !!p.graphic; });
+        const firstPointWithGraphic = find(series.points, (p) => !!p.graphic);
         return (firstPointWithGraphic &&
             firstPointWithGraphic.graphic &&
             firstPointWithGraphic.graphic.element);
@@ -182,7 +182,7 @@ function getSeriesFirstPointElement(series) {
  * The DOM element for the series
  */
 function getSeriesA11yElement(series) {
-    var firstPointEl = getSeriesFirstPointElement(series);
+    const firstPointEl = getSeriesFirstPointElement(series);
     return (firstPointEl &&
         firstPointEl.parentNode || series.graph &&
         series.graph.element || series.group &&
@@ -215,7 +215,7 @@ function unhideChartElementFromAT(chart, element) {
  * @private
  */
 function hideSeriesFromAT(series) {
-    var seriesEl = getSeriesA11yElement(series);
+    const seriesEl = getSeriesA11yElement(series);
     if (seriesEl) {
         seriesEl.setAttribute('aria-hidden', true);
     }
@@ -237,7 +237,7 @@ function getSeriesFromName(chart, name) {
  * @private
  */
 function getPointFromXY(series, x, y) {
-    var i = series.length, res;
+    let i = series.length, res;
     while (i--) {
         res = find(series[i].points || [], function (p) {
             return p.x === x && p.y === y;
@@ -255,7 +255,7 @@ function getRelativePointAxisPosition(axis, point) {
     if (!defined(axis.dataMin) || !defined(axis.dataMax)) {
         return 0;
     }
-    var axisStart = axis.toPixels(axis.dataMin), axisEnd = axis.toPixels(axis.dataMax), 
+    const axisStart = axis.toPixels(axis.dataMin), axisEnd = axis.toPixels(axis.dataMax), 
     // We have to use pixel position because of axis breaks, log axis etc.
     positionProp = axis.coll === 'xAxis' ? 'x' : 'y', pointPos = axis.toPixels(point[positionProp] || 0);
     return (pointPos - axisStart) / (axisEnd - axisStart);
@@ -265,10 +265,10 @@ function getRelativePointAxisPosition(axis, point) {
  * @private
  */
 function scrollToPoint(point) {
-    var xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);
+    const xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);
     if (scrollbar && defined(scrollbar.to) && defined(scrollbar.from)) {
-        var range = scrollbar.to - scrollbar.from;
-        var pos = getRelativePointAxisPosition(axis, point);
+        const range = scrollbar.to - scrollbar.from;
+        const pos = getRelativePointAxisPosition(axis, point);
         scrollbar.updatePosition(pos - range / 2, pos + range / 2);
         fireEvent(scrollbar, 'changed', {
             from: scrollbar.from,
@@ -283,17 +283,17 @@ function scrollToPoint(point) {
  *  Default Export
  *
  * */
-var ChartUtilities = {
-    fireEventOnWrappedOrUnwrappedElement: fireEventOnWrappedOrUnwrappedElement,
-    getChartTitle: getChartTitle,
-    getAxisDescription: getAxisDescription,
-    getAxisRangeDescription: getAxisRangeDescription,
-    getPointFromXY: getPointFromXY,
-    getSeriesFirstPointElement: getSeriesFirstPointElement,
-    getSeriesFromName: getSeriesFromName,
-    getSeriesA11yElement: getSeriesA11yElement,
-    unhideChartElementFromAT: unhideChartElementFromAT,
-    hideSeriesFromAT: hideSeriesFromAT,
-    scrollToPoint: scrollToPoint
+const ChartUtilities = {
+    fireEventOnWrappedOrUnwrappedElement,
+    getChartTitle,
+    getAxisDescription,
+    getAxisRangeDescription,
+    getPointFromXY,
+    getSeriesFirstPointElement,
+    getSeriesFromName,
+    getSeriesA11yElement,
+    unhideChartElementFromAT,
+    hideSeriesFromAT,
+    scrollToPoint
 };
 export default ChartUtilities;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -73,90 +73,104 @@
          * @optionparent plotOptions.series.label
          */
         var SeriesLabelDefaults = {
-            /**
-             * Enable the series label per series.
-             */
-            enabled: true,
-            /**
-             * Allow labels to be placed distant to the graph if necessary,
-             * and draw a connector line to the graph. Setting this option
-             * to true may decrease the performance significantly, since the
-             * algorithm with systematically search for open spaces in the
-             * whole plot area. Visually, it may also result in a more
-             * cluttered chart, though more of the series will be labeled.
-             */
-            connectorAllowed: false,
-            /**
-             * If the label is closer than this to a neighbour graph, draw a
-             * connector.
-             */
-            connectorNeighbourDistance: 24,
-            /**
-             * A format string for the label, with support for a subset of
-             * HTML. Variables are enclosed by curly brackets. Available
-             * variables are `name`, `options.xxx`, `color` and other
-             * members from the `series` object. Use this option also to set
-             * a static text for the label.
-             *
-             * @type string
-             * @since 8.1.0
-             */
-            format: void 0,
-            /**
-             * Callback function to format each of the series' labels. The
-             * `this` keyword refers to the series object. By default the
-             * `formatter` is undefined and the `series.name` is rendered.
-             *
-             * @type {Highcharts.FormatterCallbackFunction<Series>}
-             * @since 8.1.0
-             */
-            formatter: void 0,
-            /**
-             * For area-like series, allow the font size to vary so that
-             * small areas get a smaller font size. The default applies this
-             * effect to area-like series but not line-like series.
-             *
-             * @type {number|null}
-             */
-            minFontSize: null,
-            /**
-             * For area-like series, allow the font size to vary so that
-             * small areas get a smaller font size. The default applies this
-             * effect to area-like series but not line-like series.
-             *
-             * @type {number|null}
-             */
-            maxFontSize: null,
-            /**
-             * Draw the label on the area of an area series. By default it
-             * is drawn on the area. Set it to `false` to draw it next to
-             * the graph instead.
-             *
-             * @type {boolean|null}
-             */
-            onArea: null,
-            /**
-             * Styles for the series label. The color defaults to the series
-             * color, or a contrast color if `onArea`.
-             *
-             * @type {Highcharts.CSSObject}
-             */
-            style: {
-                /** @internal */
-                fontWeight: 'bold'
-            },
-            /**
-             * Whether to use HTML to render the series label.
-             */
-            useHTML: false,
-            /**
-             * An array of boxes to avoid when laying out the labels. Each
-             * item has a `left`, `right`, `top` and `bottom` property.
-             *
-             * @type {Array<Highcharts.LabelIntersectBoxObject>}
-             */
-            boxesToAvoid: []
-        };
+                /**
+                 * Enable the series label per series.
+                 */
+                enabled: true,
+                /**
+                 * Allow labels to be placed distant to the graph if necessary,
+                 * and draw a connector line to the graph. Setting this option
+                 * to true may decrease the performance significantly,
+            since the
+                 * algorithm with systematically search for open spaces in the
+                 * whole plot area. Visually,
+            it may also result in a more
+                 * cluttered chart,
+            though more of the series will be labeled.
+                 */
+                connectorAllowed: false,
+                /**
+                 * If the label is closer than this to a neighbour graph,
+            draw a
+                 * connector.
+                 */
+                connectorNeighbourDistance: 24,
+                /**
+                 * A format string for the label,
+            with support for a subset of
+                 * HTML. Variables are enclosed by curly brackets. Available
+                 * variables are `name`,
+            `options.xxx`,
+            `color` and other
+                 * members from the `series` object. Use this option also to set
+                 * a static text for the label.
+                 *
+                 * @type string
+                 * @since 8.1.0
+                 */
+                format: void 0,
+                /**
+                 * Callback function to format each of the series' labels. The
+                 * `this` keyword refers to the series object. By default the
+                 * `formatter` is undefined and the `series.name` is rendered.
+                 *
+                 * @type {Highcharts.FormatterCallbackFunction<Series>}
+                 * @since 8.1.0
+                 */
+                formatter: void 0,
+                /**
+                 * For area-like series,
+            allow the font size to vary so that
+                 * small areas get a smaller font size. The default applies this
+                 * effect to area-like series but not line-like series.
+                 *
+                 * @type {number|null}
+                 */
+                minFontSize: null,
+                /**
+                 * For area-like series,
+            allow the font size to vary so that
+                 * small areas get a smaller font size. The default applies this
+                 * effect to area-like series but not line-like series.
+                 *
+                 * @type {number|null}
+                 */
+                maxFontSize: null,
+                /**
+                 * Draw the label on the area of an area series. By default it
+                 * is drawn on the area. Set it to `false` to draw it next to
+                 * the graph instead.
+                 *
+                 * @type {boolean|null}
+                 */
+                onArea: null,
+                /**
+                 * Styles for the series label. The color defaults to the series
+                 * color,
+            or a contrast color if `onArea`.
+                 *
+                 * @type {Highcharts.CSSObject}
+                 */
+                style: {
+                    /** @internal */
+                    fontSize: '0.8em',
+                    /** @internal */
+                    fontWeight: 'bold'
+                },
+                /**
+                 * Whether to use HTML to render the series label.
+                 */
+                useHTML: false,
+                /**
+                 * An array of boxes to avoid when laying out the labels. Each
+                 * item has a `left`,
+            `right`,
+            `top` and `bottom` property.
+                 *
+                 * @type {Array<Highcharts.LabelIntersectBoxObject>}
+                 */
+                boxesToAvoid: []
+            };
         /* *
          *
          *  Default Export
@@ -228,9 +242,9 @@
          *
          * */
         var SeriesLabelUtilities = {
-            boxIntersectLine: boxIntersectLine,
-            intersectRect: intersectRect
-        };
+                boxIntersectLine: boxIntersectLine,
+                intersectRect: intersectRect
+            };
 
         return SeriesLabelUtilities;
     });
@@ -256,10 +270,15 @@
          * https://jsfiddle.net/highcharts/264Nm/
          * https://jsfiddle.net/highcharts/y5A37/
          */
-        var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-            if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-                if (ar || !(i in from)) {
-                    if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+        var __spreadArray = (this && this.__spreadArray) || function (to,
+            from,
+            pack) {
+                if (pack || arguments.length === 2) for (var i = 0,
+            l = from.length,
+            ar; i < l; i++) {
+                    if (ar || !(i in from)) {
+                        if (!ar) ar = Array.prototype.slice.call(from, 0,
+            i);
                     ar[i] = from[i];
                 }
             }
@@ -268,14 +287,20 @@
         var animObject = A.animObject;
         var format = FU.format;
         var setOptions = D.setOptions;
-        var boxIntersectLine = SLU.boxIntersectLine, intersectRect = SLU.intersectRect;
-        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick, syncTimeout = U.syncTimeout;
+        var boxIntersectLine = SLU.boxIntersectLine,
+            intersectRect = SLU.intersectRect;
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            pick = U.pick,
+            syncTimeout = U.syncTimeout;
         /* *
          *
          *  Constants
          *
          * */
-        var composedClasses = [];
+        var composedMembers = [];
         var labelDistance = 3;
         /* *
          *
@@ -287,9 +312,21 @@
          * @private
          */
         function checkClearPoint(series, x, y, bBox, checkDistance) {
-            var chart = series.chart, seriesLabelOptions = series.options.label || {}, onArea = pick(seriesLabelOptions.onArea, !!series.area), findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed), leastDistance = 16, boxesToAvoid = chart.boxesToAvoid;
+            var chart = series.chart,
+                seriesLabelOptions = series.options.label || {},
+                onArea = pick(seriesLabelOptions.onArea, !!series.area),
+                findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed),
+                leastDistance = 16,
+                boxesToAvoid = chart.boxesToAvoid;
             var distToOthersSquared = Number.MAX_VALUE, // distance to other graphs
-            distToPointSquared = Number.MAX_VALUE, dist, connectorPoint, withinRange, xDist, yDist, i, j;
+                distToPointSquared = Number.MAX_VALUE,
+                dist,
+                connectorPoint,
+                withinRange,
+                xDist,
+                yDist,
+                i,
+                j;
             /**
              * Get the weight in order to determine the ideal position. Larger distance
              * to other series gives more weight. Smaller distance to the actual point
@@ -313,7 +350,10 @@
             // For each position, check if the lines around the label intersect with any
             // of the graphs.
             for (i = 0; i < chart.series.length; i += 1) {
-                var serie = chart.series[i], points = serie.interpolatedPoints && __spreadArray([], serie.interpolatedPoints, true);
+                var serie = chart.series[i],
+                    points = serie.interpolatedPoints && __spreadArray([],
+                    serie.interpolatedPoints,
+                    true);
                 if (serie.visible && points) {
                     // Avoid the sides of the plot area
                     var stepY = chart.plotHeight / 10;
@@ -395,18 +435,15 @@
          * @private
          */
         function compose(ChartClass, SVGRendererClass) {
-            if (composedClasses.indexOf(ChartClass) === -1) {
-                composedClasses.push(ChartClass);
+            if (U.pushUnique(composedMembers, ChartClass)) {
                 // Leave both events, we handle animation differently (#9815)
                 addEvent(Chart, 'load', onChartRedraw);
                 addEvent(Chart, 'redraw', onChartRedraw);
             }
-            if (composedClasses.indexOf(SVGRendererClass) === -1) {
-                composedClasses.push(SVGRendererClass);
+            if (U.pushUnique(composedMembers, SVGRendererClass)) {
                 SVGRendererClass.prototype.symbols.connector = symbolConnector;
             }
-            if (composedClasses.indexOf(setOptions) === -1) {
-                composedClasses.push(setOptions);
+            if (U.pushUnique(composedMembers, setOptions)) {
                 setOptions({ plotOptions: { series: { label: SeriesLabelDefaults } } });
             }
         }
@@ -421,12 +458,17 @@
         function drawSeriesLabels(chart) {
             // console.time('drawSeriesLabels');
             chart.boxesToAvoid = [];
-            var labelSeries = chart.labelSeries || [], boxesToAvoid = chart.boxesToAvoid;
+            var labelSeries = chart.labelSeries || [],
+                boxesToAvoid = chart.boxesToAvoid;
             // Avoid data labels
             chart.series.forEach(function (s) {
                 return (s.points || []).forEach(function (p) {
                     return (p.dataLabels || []).forEach(function (label) {
-                        var _a = label.getBBox(), width = _a.width, height = _a.height, left = label.translateX + (s.xAxis ? s.xAxis.pos : s.chart.plotLeft), top = label.translateY + (s.yAxis ? s.yAxis.pos : s.chart.plotTop);
+                        var _a = label.getBBox(),
+                            width = _a.width,
+                            height = _a.height,
+                            left = label.translateX + (s.xAxis ? s.xAxis.pos : s.chart.plotLeft),
+                            top = label.translateY + (s.yAxis ? s.yAxis.pos : s.chart.plotTop);
                         boxesToAvoid.push({
                             left: left,
                             top: top,
@@ -448,7 +490,16 @@
                     return;
                 }
                 var colorClass = ('highcharts-color-' + pick(series.colorIndex, 'none')), isNew = !series.labelBySeries, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = pick(labelOptions.onArea, !!series.area), results = [], xData = series.xData || [];
-                var bBox, x, y, clearPoint, i, best, label = series.labelBySeries, dataExtremes, areaMin, areaMax;
+                var bBox,
+                    x,
+                    y,
+                    clearPoint,
+                    i,
+                    best,
+                    label = series.labelBySeries,
+                    dataExtremes,
+                    areaMin,
+                    areaMax;
                 // Stay within the area data bounds (#10038)
                 if (onArea && !inverted) {
                     dataExtremes = [
@@ -462,7 +513,11 @@
                  * @private
                  */
                 function insidePane(x, y, bBox) {
-                    var leftBound = Math.max(paneLeft, pick(areaMin, -Infinity)), rightBound = Math.min(paneLeft + paneWidth, pick(areaMax, Infinity));
+                    var leftBound = Math.max(paneLeft,
+                        pick(areaMin, -Infinity)),
+                        rightBound = Math.min(paneLeft + paneWidth,
+                        pick(areaMax,
+                        Infinity));
                     return (x > leftBound &&
                         x <= rightBound - bBox.width &&
                         y >= paneTop &&
@@ -493,7 +548,7 @@
                             colorClass);
                         if (!chart.renderer.styledMode) {
                             var color = typeof series.color === 'string' ?
-                                series.color : "#666666" /* Palette.neutralColor60 */;
+                                    series.color : "#666666" /* Palette.neutralColor60 */;
                             label.css(extend({
                                 color: onArea ?
                                     chart.renderer.getContrast(color) :
@@ -595,17 +650,18 @@
                         });
                         // Move it if needed
                         var dist = Math.sqrt(Math.pow(Math.abs(best.x - (label.x || 0)), 2) +
-                            Math.pow(Math.abs(best.y - (label.y || 0)), 2));
+                                Math.pow(Math.abs(best.y - (label.y || 0)), 2));
                         if (dist && series.labelBySeries) {
                             // Move fast and fade in - pure animation movement is
                             // distractive...
                             var attr = {
-                                opacity: chart.renderer.forExport ? 1 : 0,
-                                x: best.x,
-                                y: best.y
-                            }, anim = {
-                                opacity: 1
-                            };
+                                    opacity: chart.renderer.forExport ? 1 : 0,
+                                    x: best.x,
+                                    y: best.y
+                                },
+                                anim = {
+                                    opacity: 1
+                                };
                             // ... unless we're just moving a short distance
                             if (dist <= 10) {
                                 anim = {
@@ -633,9 +689,10 @@
                             series.options.kdNow = true;
                             series.buildKDTree();
                             var closest = series.searchPoint({
-                                chartX: best.x,
-                                chartY: best.y
-                            }, true);
+                                    chartX: best.x,
+                                    chartY: best.y
+                                },
+                                true);
                             if (closest) {
                                 label.closest = [
                                     closest,
@@ -667,8 +724,27 @@
             if (!series.xAxis && !series.yAxis) {
                 return;
             }
-            var distance = 16, points = series.points, interpolated = [], graph = series.graph || series.area, node = graph && graph.element, inverted = series.chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis, paneLeft = inverted ? yAxis.pos : xAxis.pos, paneTop = inverted ? xAxis.pos : yAxis.pos, seriesLabelOptions = series.options.label || {}, onArea = pick(seriesLabelOptions.onArea, !!series.area), translatedThreshold = yAxis.getThreshold(series.options.threshold), grid = {};
-            var i, deltaX, deltaY, delta, len, n, j;
+            var distance = 16,
+                points = series.points,
+                interpolated = [],
+                graph = series.graph || series.area,
+                node = graph && graph.element,
+                inverted = series.chart.inverted,
+                xAxis = series.xAxis,
+                yAxis = series.yAxis,
+                paneLeft = inverted ? yAxis.pos : xAxis.pos,
+                paneTop = inverted ? xAxis.pos : yAxis.pos,
+                seriesLabelOptions = series.options.label || {},
+                onArea = pick(seriesLabelOptions.onArea, !!series.area),
+                translatedThreshold = yAxis.getThreshold(series.options.threshold),
+                grid = {};
+            var i,
+                deltaX,
+                deltaY,
+                delta,
+                len,
+                n,
+                j;
             /**
              * Push the point to the interpolated points, but only if that position in
              * the grid has not been occupied. As a performance optimization, we divide
@@ -677,7 +753,7 @@
              */
             function pushDiscrete(point) {
                 var cellSize = 8, key = Math.round((point.plotX || 0) / cellSize) + ',' +
-                    Math.round((point.plotY || 0) / cellSize);
+                        Math.round((point.plotY || 0) / cellSize);
                 if (!grid[key]) {
                     grid[key] = 1;
                     interpolated.push(point);
@@ -723,15 +799,17 @@
                 len = points.length;
                 var last = void 0;
                 for (i = 0; i < len; i += 1) {
-                    var point = points[i], plotX = point.plotX, plotY = point.plotY;
+                    var point = points[i],
+                        plotX = point.plotX,
+                        plotY = point.plotY;
                     if (isNumber(plotX) && isNumber(plotY)) {
                         var ctlPoint = {
-                            plotX: plotX,
-                            plotY: plotY,
-                            // Absolute coordinates so we can compare different panes
-                            chartX: paneLeft + plotX,
-                            chartY: paneTop + plotY
-                        };
+                                plotX: plotX,
+                                plotY: plotY,
+                                // Absolute coordinates so we can compare different panes
+                                chartX: paneLeft + plotX,
+                                chartY: paneTop + plotY
+                            };
                         if (onArea) {
                             // Vertically centered inside area
                             ctlPoint.chartCenterY = paneTop + (plotY + pick(point.yBottom, translatedThreshold)) / 2;
@@ -801,7 +879,9 @@
                 }
                 // Which series should have labels
                 chart_1.series.forEach(function (series) {
-                    var seriesLabelOptions = series.options.label || {}, label = series.labelBySeries, closest = label && label.closest;
+                    var seriesLabelOptions = series.options.label || {},
+                        label = series.labelBySeries,
+                        closest = label && label.closest;
                     if (seriesLabelOptions.enabled &&
                         series.visible &&
                         (series.graph || series.area) &&
@@ -845,8 +925,11 @@
          * @private
          */
         function symbolConnector(x, y, w, h, options) {
-            var anchorX = options && options.anchorX, anchorY = options && options.anchorY;
-            var path, yOffset, lateral = w / 2;
+            var anchorX = options && options.anchorX,
+                anchorY = options && options.anchorY;
+            var path,
+                yOffset,
+                lateral = w / 2;
             if (isNumber(anchorX) && isNumber(anchorY)) {
                 path = [['M', anchorX, anchorY]];
                 // Prefer 45 deg connectors
@@ -882,8 +965,8 @@
          *
          * */
         var SeriesLabel = {
-            compose: compose
-        };
+                compose: compose
+            };
         /* *
          *
          *  API Declarations

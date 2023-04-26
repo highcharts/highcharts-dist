@@ -8,46 +8,31 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import ColorMapComposition from '../ColorMapComposition.js';
 import MapUtilities from '../../Maps/MapUtilities.js';
-var boundsFromPath = MapUtilities.boundsFromPath;
+const { boundsFromPath } = MapUtilities;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
+const { 
+// indirect dependency to keep product size low
+seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+const { extend, isNumber, pick } = U;
 /* *
  *
  *  Class
  *
  * */
-var MapPoint = /** @class */ (function (_super) {
-    __extends(MapPoint, _super);
-    function MapPoint() {
+class MapPoint extends ScatterSeries.prototype.pointClass {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.options = void 0;
-        _this.path = void 0;
-        _this.series = void 0;
-        return _this;
+        super(...arguments);
+        this.options = void 0;
+        this.path = void 0;
+        this.series = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -58,7 +43,7 @@ var MapPoint = /** @class */ (function (_super) {
     /* eslint-disable valid-jsdoc */
     // Get the projected path based on the geometry. May also be called on
     // mapData options (not point instances), hence static.
-    MapPoint.getProjectedPath = function (point, projection) {
+    static getProjectedPath(point, projection) {
         if (!point.projectedPath) {
             if (projection && point.geometry) {
                 // Always true when given GeoJSON coordinates
@@ -71,15 +56,15 @@ var MapPoint = /** @class */ (function (_super) {
             }
         }
         return point.projectedPath || [];
-    };
+    }
     /**
      * Extend the Point object to split paths.
      * @private
      */
-    MapPoint.prototype.applyOptions = function (options, x) {
-        var series = this.series, point = _super.prototype.applyOptions.call(this, options, x), joinBy = series.joinBy;
+    applyOptions(options, x) {
+        const series = this.series, point = super.applyOptions.call(this, options, x), joinBy = series.joinBy;
         if (series.mapData && series.mapMap) {
-            var joinKey = joinBy[1], mapKey = _super.prototype.getNestedProperty.call(point, joinKey), mapPoint = typeof mapKey !== 'undefined' &&
+            const joinKey = joinBy[1], mapKey = super.getNestedProperty.call(point, joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                 series.mapMap[mapKey];
             if (mapPoint) {
                 extend(point, mapPoint); // copy over properties
@@ -89,48 +74,62 @@ var MapPoint = /** @class */ (function (_super) {
             }
         }
         return point;
-    };
+    }
     /*
      * Get the bounds in terms of projected units
      * @param projection
      * @return MapBounds|undefined The computed bounds
      */
-    MapPoint.prototype.getProjectedBounds = function (projection) {
-        var path = MapPoint.getProjectedPath(this, projection), bounds = boundsFromPath(path), properties = this.properties;
+    getProjectedBounds(projection) {
+        const path = MapPoint.getProjectedPath(this, projection), bounds = boundsFromPath(path), properties = this.properties, mapView = this.series.chart.mapView;
         if (bounds) {
             // Cache point bounding box for use to position data labels, bubbles
             // etc
-            var propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
-            bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
-            var middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
-            // No geographic geometry, only path given => flip
-            if (!this.geometry) {
-                middleYFraction = 1 - middleYFraction;
+            const propMiddleLon = properties && properties['hc-middle-lon'], propMiddleLat = properties && properties['hc-middle-lat'];
+            if (mapView && isNumber(propMiddleLon) && isNumber(propMiddleLat)) {
+                const newPos = mapView.lonLatToProjectedUnits({
+                    lon: propMiddleLon,
+                    lat: propMiddleLat
+                });
+                if (newPos) {
+                    bounds.midX = newPos.x;
+                    bounds.midY = newPos.y;
+                }
             }
-            bounds.midY = bounds.y2 - (bounds.y2 - bounds.y1) * middleYFraction;
+            else {
+                const propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
+                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
+                let middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
+                // No geographic geometry, only path given => flip
+                if (!this.geometry) {
+                    middleYFraction = 1 - middleYFraction;
+                }
+                bounds.midY =
+                    bounds.y2 - (bounds.y2 - bounds.y1) * middleYFraction;
+            }
             return bounds;
         }
-    };
+    }
     /**
      * Stop the fade-out
      * @private
      */
-    MapPoint.prototype.onMouseOver = function (e) {
+    onMouseOver(e) {
         U.clearTimeout(this.colorInterval);
         if (
         // Valid...
         (!this.isNull && this.visible) ||
             // ... or interact anyway
             this.series.options.nullInteraction) {
-            _super.prototype.onMouseOver.call(this, e);
+            super.onMouseOver.call(this, e);
         }
         else {
             // #3401 Tooltip doesn't hide when hovering over null points
             this.series.onMouseOut(e);
         }
-    };
-    MapPoint.prototype.setVisible = function (vis) {
-        var method = vis ? 'show' : 'hide';
+    }
+    setVisible(vis) {
+        const method = vis ? 'show' : 'hide';
         this.visible = this.options.visible = !!vis;
         // Show and hide associated elements
         if (this.dataLabel) {
@@ -142,7 +141,7 @@ var MapPoint = /** @class */ (function (_super) {
         if (this.graphic) {
             this.graphic.attr(this.series.pointAttribs(this));
         }
-    };
+    }
     /**
      * Highmaps only. Zoom in on the point using the global animation.
      *
@@ -153,15 +152,15 @@ var MapPoint = /** @class */ (function (_super) {
      *
      * @function Highcharts.Point#zoomTo
      */
-    MapPoint.prototype.zoomTo = function () {
-        var point = this, chart = point.series.chart, mapView = chart.mapView;
-        var bounds = point.bounds;
+    zoomTo(animOptions) {
+        const point = this, chart = point.series.chart, mapView = chart.mapView;
+        let bounds = point.bounds;
         if (mapView && bounds) {
-            var inset = isNumber(point.insetIndex) &&
+            const inset = isNumber(point.insetIndex) &&
                 mapView.insets[point.insetIndex];
             if (inset) {
                 // If in an inset, translate the bounds to pixels ...
-                var px1 = inset.projectedUnitsToPixels({
+                const px1 = inset.projectedUnitsToPixels({
                     x: bounds.x1,
                     y: bounds.y1
                 }), px2 = inset.projectedUnitsToPixels({
@@ -185,11 +184,10 @@ var MapPoint = /** @class */ (function (_super) {
             }
             mapView.fitToBounds(bounds, void 0, false);
             point.series.isDirty = true;
-            chart.redraw();
+            chart.redraw(animOptions);
         }
-    };
-    return MapPoint;
-}(ScatterSeries.prototype.pointClass));
+    }
+}
 extend(MapPoint.prototype, {
     dataLabelOnNull: ColorMapComposition.pointMembers.dataLabelOnNull,
     moveToTopOnHover: ColorMapComposition.pointMembers.moveToTopOnHover,

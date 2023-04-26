@@ -6,26 +6,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, EMAIndicator = _a.ema, SMAIndicator = _a.sma;
+const { ema: EMAIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+const { correctFloat, error, extend, isArray, merge } = U;
 /* *
  *
  *  Class
@@ -40,40 +25,38 @@ var correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray =
  *
  * @augments Highcharts.Series
  */
-var KlingerIndicator = /** @class */ (function (_super) {
-    __extends(KlingerIndicator, _super);
-    function KlingerIndicator() {
+class KlingerIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        _this.volumeSeries = void 0;
-        return _this;
+        this.data = void 0;
+        this.points = void 0;
+        this.options = void 0;
+        this.volumeSeries = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    KlingerIndicator.prototype.calculateTrend = function (yVal, i) {
-        var isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
+    calculateTrend(yVal, i) {
+        const isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
             yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
         return isUpward ? 1 : -1;
-    };
+    }
     // Checks if the series and volumeSeries are accessible, number of
     // points.x is longer than period, is series has OHLC data
-    KlingerIndicator.prototype.isValidData = function (firstYVal) {
-        var chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = isArray(firstYVal) &&
+    isValidData(firstYVal) {
+        const chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = isArray(firstYVal) &&
             firstYVal.length === 4, volumeSeries = this.volumeSeries ||
             (this.volumeSeries =
                 chart.get(options.params.volumeSeriesID));
@@ -82,21 +65,21 @@ var KlingerIndicator = /** @class */ (function (_super) {
                 options.params.volumeSeriesID +
                 ' not found! Check `volumeSeriesID`.', true, series.chart);
         }
-        var isLengthValid = [series, volumeSeries].every(function (series) {
+        const isLengthValid = [series, volumeSeries].every(function (series) {
             return series && series.xData && series.xData.length >=
                 options.params.slowAvgPeriod;
         });
         return !!(isLengthValid && isSeriesOHLC);
-    };
-    KlingerIndicator.prototype.getCM = function (previousCM, DM, trend, previousTrend, prevoiusDM) {
+    }
+    getCM(previousCM, DM, trend, previousTrend, prevoiusDM) {
         return correctFloat(DM + (trend === previousTrend ? previousCM : prevoiusDM));
-    };
-    KlingerIndicator.prototype.getDM = function (high, low) {
+    }
+    getDM(high, low) {
         return correctFloat(high - low);
-    };
-    KlingerIndicator.prototype.getVolumeForce = function (yVal) {
-        var volumeForce = [];
-        var CM = 0, // cumulative measurement
+    }
+    getVolumeForce(yVal) {
+        const volumeForce = [];
+        let CM = 0, // cumulative measurement
         DM, // daily measurement
         force, i = 1, // start from second point
         previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // initial DM
@@ -118,17 +101,17 @@ var KlingerIndicator = /** @class */ (function (_super) {
             previousDM = DM;
         }
         return volumeForce;
-    };
-    KlingerIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
+    }
+    getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
         return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
-    };
-    KlingerIndicator.prototype.getSMA = function (period, index, values) {
+    }
+    getSMA(period, index, values) {
         return EMAIndicator.prototype
             .accumulatePeriodPoints(period, index, values) / period;
-    };
-    KlingerIndicator.prototype.getValues = function (series, params) {
-        var Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
-        var KO, i = 0, fastEMA = 0, slowEMA, 
+    }
+    getValues(series, params) {
+        const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
+        let KO, i = 0, fastEMA = 0, slowEMA, 
         // signalEMA: number|undefined = void 0,
         previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
         // If the necessary conditions are not fulfilled, don't proceed.
@@ -136,11 +119,11 @@ var KlingerIndicator = /** @class */ (function (_super) {
             return;
         }
         // Calculate the Volume Force array.
-        var volumeForce = this.getVolumeForce(yVal);
+        const volumeForce = this.getVolumeForce(yVal);
         // Calculate SMA for the first points.
-        var SMAFast = this.getSMA(params.fastAvgPeriod, 0, volumeForce), SMASlow = this.getSMA(params.slowAvgPeriod, 0, volumeForce);
+        const SMAFast = this.getSMA(params.fastAvgPeriod, 0, volumeForce), SMASlow = this.getSMA(params.slowAvgPeriod, 0, volumeForce);
         // Calculate EMApercent for the first points.
-        var fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
+        const fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
         // Calculate KO
         for (i; i < yVal.length; i++) {
             // Get EMA for fast period.
@@ -157,9 +140,7 @@ var KlingerIndicator = /** @class */ (function (_super) {
                 // Calculate signal SMA
                 if (calcSingal.length >= params.signalPeriod) {
                     signal = calcSingal.slice(-params.signalPeriod)
-                        .reduce(function (prev, curr) {
-                        return prev + curr;
-                    }) / params.signalPeriod;
+                        .reduce((prev, curr) => prev + curr) / params.signalPeriod;
                 }
                 Klinger.push([xVal[i], KO, signal]);
                 xData.push(xVal[i]);
@@ -171,81 +152,80 @@ var KlingerIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Klinger oscillator. This series requires the `linkedTo` option to be set
+ * and should be loaded after the `stock/indicators/indicators.js` file.
+ *
+ * @sample stock/indicators/klinger
+ *         Klinger oscillator
+ *
+ * @extends      plotOptions.sma
+ * @since 9.1.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/klinger
+ * @optionparent plotOptions.klinger
+ */
+KlingerIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Klinger oscillator. This series requires the `linkedTo` option to be set
-     * and should be loaded after the `stock/indicators/indicators.js` file.
+     * Paramters used in calculation of Klinger Oscillator.
      *
-     * @sample stock/indicators/klinger
-     *         Klinger oscillator
-     *
-     * @extends      plotOptions.sma
-     * @since 9.1.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/klinger
-     * @optionparent plotOptions.klinger
+     * @excluding index, period
      */
-    KlingerIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
         /**
-         * Paramters used in calculation of Klinger Oscillator.
-         *
-         * @excluding index, period
+         * The fast period for indicator calculations.
          */
-        params: {
+        fastAvgPeriod: 34,
+        /**
+         * The slow period for indicator calculations.
+         */
+        slowAvgPeriod: 55,
+        /**
+         * The base period for signal calculations.
+         */
+        signalPeriod: 13,
+        /**
+         * The id of another series to use its data as volume data for the
+         * indiator calculation.
+         */
+        volumeSeriesID: 'volume'
+    },
+    signalLine: {
+        /**
+         * Styles for a signal line.
+         */
+        styles: {
             /**
-             * The fast period for indicator calculations.
+             * Pixel width of the line.
              */
-            fastAvgPeriod: 34,
+            lineWidth: 1,
             /**
-             * The slow period for indicator calculations.
+             * Color of the line. If not set, it's inherited from
+             * [plotOptions.klinger.color
+             * ](#plotOptions.klinger.color).
+             *
+             * @type {Highcharts.ColorString}
              */
-            slowAvgPeriod: 55,
-            /**
-             * The base period for signal calculations.
-             */
-            signalPeriod: 13,
-            /**
-             * The id of another series to use its data as volume data for the
-             * indiator calculation.
-             */
-            volumeSeriesID: 'volume'
-        },
-        signalLine: {
-            /**
-             * Styles for a signal line.
-             */
-            styles: {
-                /**
-                 * Pixel width of the line.
-                 */
-                lineWidth: 1,
-                /**
-                 * Color of the line. If not set, it's inherited from
-                 * [plotOptions.klinger.color
-                 * ](#plotOptions.klinger.color).
-                 *
-                 * @type {Highcharts.ColorString}
-                 */
-                lineColor: '#ff0000'
-            }
-        },
-        dataGrouping: {
-            approximation: 'averages'
-        },
-        tooltip: {
-            pointFormat: '<span style="color: {point.color}">\u25CF</span>' +
-                '<b> {series.name}</b><br/>' +
-                '<span style="color: {point.color}">Klinger</span>: ' +
-                '{point.y}<br/>' +
-                '<span style="color: ' +
-                '{point.series.options.signalLine.styles.lineColor}">' +
-                'Signal</span>' +
-                ': {point.signal}<br/>'
+            lineColor: '#ff0000'
         }
-    });
-    return KlingerIndicator;
-}(SMAIndicator));
+    },
+    dataGrouping: {
+        approximation: 'averages'
+    },
+    tooltip: {
+        pointFormat: '<span style="color: {point.color}">\u25CF</span>' +
+            '<b> {series.name}</b><br/>' +
+            '<span style="color: {point.color}">Klinger</span>: ' +
+            '{point.y}<br/>' +
+            '<span style="color: ' +
+            '{point.series.options.signalLine.styles.lineColor}">' +
+            'Signal</span>' +
+            ': {point.signal}<br/>'
+    }
+});
 extend(KlingerIndicator.prototype, {
     areaLinesNames: [],
     linesApiNames: ['signalLine'],

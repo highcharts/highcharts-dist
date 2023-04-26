@@ -10,22 +10,22 @@
 'use strict';
 import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 import F from '../../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import H from '../../Core/Globals.js';
-var doc = H.doc, win = H.win;
+const { doc, win } = H;
 import NavigationBindingDefaults from './NavigationBindingsDefaults.js';
 import NBU from './NavigationBindingsUtilities.js';
-var getFieldType = NBU.getFieldType;
+const { getFieldType } = NBU;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, attr = U.attr, defined = U.defined, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -36,10 +36,10 @@ var composedClasses = [];
  * @private
  */
 function closestPolyfill(el, s) {
-    var ElementProto = win.Element.prototype, elementMatches = ElementProto.matches ||
+    const ElementProto = win.Element.prototype, elementMatches = ElementProto.matches ||
         ElementProto.msMatchesSelector ||
         ElementProto.webkitMatchesSelector;
-    var ret = null;
+    let ret = null;
     if (ElementProto.closest) {
         ret = ElementProto.closest.call(el, s);
     }
@@ -73,7 +73,7 @@ function onChartDestroy() {
  * @private
  */
 function onChartLoad() {
-    var options = this.options;
+    const options = this.options;
     if (options && options.navigation && options.navigation.bindings) {
         this.navigationBindings = new NavigationBindings(this, options.navigation);
         this.navigationBindings.initEvents();
@@ -84,27 +84,27 @@ function onChartLoad() {
  * @private
  */
 function onChartRender() {
-    var navigationBindings = this.navigationBindings, disabledClassName = 'highcharts-disabled-btn';
+    const navigationBindings = this.navigationBindings, disabledClassName = 'highcharts-disabled-btn';
     if (this && navigationBindings) {
         // Check if the buttons should be enabled/disabled based on
         // visible series.
-        var buttonsEnabled_1 = false;
-        this.series.forEach(function (series) {
+        let buttonsEnabled = false;
+        this.series.forEach((series) => {
             if (!series.options.isInternal && series.visible) {
-                buttonsEnabled_1 = true;
+                buttonsEnabled = true;
             }
         });
         if (this.navigationBindings &&
             this.navigationBindings.container &&
             this.navigationBindings.container[0]) {
-            var container_1 = this.navigationBindings.container[0];
-            objectEach(navigationBindings.boundClassNames, function (value, key) {
+            const container = this.navigationBindings.container[0];
+            objectEach(navigationBindings.boundClassNames, (value, key) => {
                 // Get the HTML element coresponding to the className taken
                 // from StockToolsBindings.
-                var buttonNode = container_1.querySelectorAll('.' + key);
+                const buttonNode = container.querySelectorAll('.' + key);
                 if (buttonNode) {
-                    for (var i = 0; i < buttonNode.length; i++) {
-                        var button = buttonNode[i], cls = button.className;
+                    for (let i = 0; i < buttonNode.length; i++) {
+                        const button = buttonNode[i], cls = button.className;
                         if (value.noDataState === 'normal') {
                             // If button has noDataState: 'normal', and has
                             // disabledClassName, remove this className.
@@ -112,7 +112,7 @@ function onChartRender() {
                                 button.classList.remove(disabledClassName);
                             }
                         }
-                        else if (!buttonsEnabled_1) {
+                        else if (!buttonsEnabled) {
                             if (cls.indexOf(disabledClassName) === -1) {
                                 button.className += ' ' + disabledClassName;
                             }
@@ -146,14 +146,14 @@ function onNavigationBindingsDeselectButton() {
  * @private
  */
 function selectableAnnotation(annotationType) {
-    var originalClick = annotationType.prototype.defaultOptions.events &&
+    const originalClick = annotationType.prototype.defaultOptions.events &&
         annotationType.prototype.defaultOptions.events.click;
     /**
      * Select and show popup
      * @private
      */
     function selectAndShowPopup(eventArguments) {
-        var annotation = this, navigation = annotation.chart.navigationBindings, prevAnnotation = navigation.activeAnnotation;
+        const annotation = this, navigation = annotation.chart.navigationBindings, prevAnnotation = navigation.activeAnnotation;
         if (originalClick) {
             originalClick.call(annotation, eventArguments);
         }
@@ -172,10 +172,10 @@ function selectableAnnotation(annotationType) {
                         navigation.chart.removeAnnotation(annotation);
                     }
                     else {
-                        var config = {};
+                        const config = {};
                         navigation.fieldsToOptions(data.fields, config);
                         navigation.deselectAnnotation();
-                        var typeOptions = config.typeOptions;
+                        const typeOptions = config.typeOptions;
                         if (annotation.options.type === 'measure') {
                             // Manually disable crooshars according to
                             // stroke width of the shape:
@@ -196,8 +196,23 @@ function selectableAnnotation(annotationType) {
         // Let bubble event to chart.click:
         eventArguments.activeAnnotation = true;
     }
+    // #18276, show popup on touchend, but not on touchmove
+    let touchStartX, touchStartY;
+    function saveCoords(e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }
+    function checkForTouchmove(e) {
+        const hasMoved = touchStartX ? Math.sqrt(Math.pow(touchStartX - e.changedTouches[0].clientX, 2) +
+            Math.pow(touchStartY - e.changedTouches[0].clientY, 2)) >= 4 : false;
+        if (!hasMoved) {
+            selectAndShowPopup.call(this, e);
+        }
+    }
     merge(true, annotationType.prototype.defaultOptions.events, {
-        click: selectAndShowPopup
+        click: selectAndShowPopup,
+        touchstart: saveCoords,
+        touchend: checkForTouchmove
     });
 }
 /* *
@@ -208,13 +223,41 @@ function selectableAnnotation(annotationType) {
 /**
  * @private
  */
-var NavigationBindings = /** @class */ (function () {
+class NavigationBindings {
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
+    static compose(AnnotationClass, ChartClass) {
+        if (U.pushUnique(composedMembers, AnnotationClass)) {
+            addEvent(AnnotationClass, 'remove', onAnnotationRemove);
+            // Basic shapes:
+            selectableAnnotation(AnnotationClass);
+            // Advanced annotations:
+            objectEach(AnnotationClass.types, (annotationType) => {
+                selectableAnnotation(annotationType);
+            });
+        }
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            addEvent(ChartClass, 'destroy', onChartDestroy);
+            addEvent(ChartClass, 'load', onChartLoad);
+            addEvent(ChartClass, 'render', onChartRender);
+        }
+        if (U.pushUnique(composedMembers, NavigationBindings)) {
+            addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
+            addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
+        }
+        if (U.pushUnique(composedMembers, setOptions)) {
+            setOptions(NavigationBindingDefaults);
+        }
+    }
     /* *
      *
      *  Constructor
      *
      * */
-    function NavigationBindings(chart, options) {
+    constructor(chart, options) {
         this.boundClassNames = void 0;
         this.selectedButton = void 0;
         this.chart = chart;
@@ -228,38 +271,6 @@ var NavigationBindings = /** @class */ (function () {
     }
     /* *
      *
-     *  Static Functions
-     *
-     * */
-    NavigationBindings.compose = function (AnnotationClass, ChartClass) {
-        if (composedClasses.indexOf(AnnotationClass) === -1) {
-            composedClasses.push(AnnotationClass);
-            addEvent(AnnotationClass, 'remove', onAnnotationRemove);
-            // Basic shapes:
-            selectableAnnotation(AnnotationClass);
-            // Advanced annotations:
-            objectEach(AnnotationClass.types, function (annotationType) {
-                selectableAnnotation(annotationType);
-            });
-        }
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            addEvent(ChartClass, 'destroy', onChartDestroy);
-            addEvent(ChartClass, 'load', onChartLoad);
-            addEvent(ChartClass, 'render', onChartRender);
-        }
-        if (composedClasses.indexOf(NavigationBindings) === -1) {
-            composedClasses.push(NavigationBindings);
-            addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
-            addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
-        }
-        if (composedClasses.indexOf(setOptions) === -1) {
-            composedClasses.push(setOptions);
-            setOptions(NavigationBindingDefaults);
-        }
-    };
-    /* *
-     *
      *  Functions
      *
      * */
@@ -269,25 +280,25 @@ var NavigationBindings = /** @class */ (function () {
      * @private
      * @function Highcharts.NavigationBindings#initEvents
      */
-    NavigationBindings.prototype.initEvents = function () {
-        var navigation = this, chart = navigation.chart, bindingsContainer = navigation.container, options = navigation.options;
+    initEvents() {
+        const navigation = this, chart = navigation.chart, bindingsContainer = navigation.container, options = navigation.options;
         // Shorthand object for getting events for buttons:
         navigation.boundClassNames = {};
-        objectEach((options.bindings || {}), function (value) {
+        objectEach((options.bindings || {}), (value) => {
             navigation.boundClassNames[value.className] = value;
         });
         // Handle multiple containers with the same class names:
-        [].forEach.call(bindingsContainer, function (subContainer) {
-            navigation.eventsToUnbind.push(addEvent(subContainer, 'click', function (event) {
-                var bindings = navigation.getButtonEvents(subContainer, event);
+        [].forEach.call(bindingsContainer, (subContainer) => {
+            navigation.eventsToUnbind.push(addEvent(subContainer, 'click', (event) => {
+                const bindings = navigation.getButtonEvents(subContainer, event);
                 if (bindings &&
-                    bindings.button.className
-                        .indexOf('highcharts-disabled-btn') === -1) {
+                    (!bindings.button.classList
+                        .contains('highcharts-disabled-btn'))) {
                     navigation.bindingsButtonClick(bindings.button, bindings.events, event);
                 }
             }));
         });
-        objectEach((options.events || {}), function (callback, eventName) {
+        objectEach((options.events || {}), (callback, eventName) => {
             if (isFunction(callback)) {
                 navigation.eventsToUnbind.push(addEvent(navigation, eventName, callback, { passive: false }));
             }
@@ -303,21 +314,21 @@ var NavigationBindings = /** @class */ (function () {
         navigation.eventsToUnbind.push(addEvent(chart.container, H.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
             navigation.bindingsContainerMouseMove(this, e);
         }, H.isTouchDevice ? { passive: false } : void 0));
-    };
+    }
     /**
      * Common chart.update() delegation, shared between bindings and exporting.
      *
      * @private
      * @function Highcharts.NavigationBindings#initUpdate
      */
-    NavigationBindings.prototype.initUpdate = function () {
-        var navigation = this;
+    initUpdate() {
+        const navigation = this;
         ChartNavigationComposition
             .compose(this.chart).navigation
-            .addUpdate(function (options) {
+            .addUpdate((options) => {
             navigation.update(options);
         });
-    };
+    }
     /**
      * Hook for click on a button, method selcts/unselects buttons,
      * then calls `bindings.init` callback.
@@ -334,9 +345,9 @@ var NavigationBindings = /** @class */ (function () {
      * @param {Highcharts.PointerEventObject} clickEvent
      *        Browser's click event
      */
-    NavigationBindings.prototype.bindingsButtonClick = function (button, events, clickEvent) {
-        var navigation = this, chart = navigation.chart, svgContainer = chart.renderer.boxWrapper;
-        var shouldEventBeFired = true;
+    bindingsButtonClick(button, events, clickEvent) {
+        const navigation = this, chart = navigation.chart, svgContainer = chart.renderer.boxWrapper;
+        let shouldEventBeFired = true;
         if (navigation.selectedButtonElement) {
             if (navigation.selectedButtonElement.classList === button.classList) {
                 shouldEventBeFired = false;
@@ -371,7 +382,7 @@ var NavigationBindings = /** @class */ (function () {
             navigation.mouseMoveEvent = false;
             navigation.selectedButton = null;
         }
-    };
+    }
     /**
      * Hook for click on a chart, first click on a chart calls `start` event,
      * then on all subsequent clicks iterate over `steps` array.
@@ -386,9 +397,9 @@ var NavigationBindings = /** @class */ (function () {
      * @param {Highcharts.PointerEventObject} clickEvent
      *        Browser's click event.
      */
-    NavigationBindings.prototype.bindingsChartClick = function (chart, clickEvent) {
+    bindingsChartClick(chart, clickEvent) {
         chart = this.chart;
-        var navigation = this, activeAnnotation = navigation.activeAnnotation, selectedButton = navigation.selectedButton, svgContainer = chart.renderer.boxWrapper;
+        const navigation = this, activeAnnotation = navigation.activeAnnotation, selectedButton = navigation.selectedButton, svgContainer = chart.renderer.boxWrapper;
         if (activeAnnotation) {
             // Click outside popups, should close them and deselect the
             // annotation
@@ -402,7 +413,7 @@ var NavigationBindings = /** @class */ (function () {
             }
             else if (activeAnnotation.cancelClick) {
                 // Reset cancelClick after the other event handlers have run
-                setTimeout(function () {
+                setTimeout(() => {
                     activeAnnotation.cancelClick = false;
                 }, 0);
             }
@@ -452,7 +463,7 @@ var NavigationBindings = /** @class */ (function () {
                 }
             }
         }
-    };
+    }
     /**
      * Hook for mouse move on a chart's container. It calls current step.
      *
@@ -465,11 +476,11 @@ var NavigationBindings = /** @class */ (function () {
      * @param {global.Event} moveEvent
      *        Browser's move event.
      */
-    NavigationBindings.prototype.bindingsContainerMouseMove = function (_container, moveEvent) {
+    bindingsContainerMouseMove(_container, moveEvent) {
         if (this.mouseMoveEvent) {
             this.mouseMoveEvent(moveEvent, this.currentUserDetails);
         }
-    };
+    }
     /**
      * Translate fields (e.g. `params.period` or `marker.styles.color`) to
      * Highcharts options object (e.g. `{ params: { period } }`).
@@ -486,9 +497,9 @@ var NavigationBindings = /** @class */ (function () {
      * @return {T}
      *         Modified config
      */
-    NavigationBindings.prototype.fieldsToOptions = function (fields, config) {
-        objectEach(fields, function (value, field) {
-            var parsedValue = parseFloat(value), path = field.split('.'), pathLength = path.length - 1;
+    fieldsToOptions(fields, config) {
+        objectEach(fields, (value, field) => {
+            const parsedValue = parseFloat(value), path = field.split('.'), pathLength = path.length - 1;
             // If it's a number (not "format" options), parse it:
             if (isNumber(parsedValue) &&
                 !value.match(/px/g) &&
@@ -497,38 +508,38 @@ var NavigationBindings = /** @class */ (function () {
             }
             // Remove values like 0
             if (value !== 'undefined') {
-                var parent_1 = config;
-                path.forEach(function (name, index) {
-                    var nextName = pick(path[index + 1], '');
+                let parent = config;
+                path.forEach((name, index) => {
+                    const nextName = pick(path[index + 1], '');
                     if (pathLength === index) {
                         // Last index, put value:
-                        parent_1[name] = value;
+                        parent[name] = value;
                     }
-                    else if (!parent_1[name]) {
+                    else if (!parent[name]) {
                         // Create middle property:
-                        parent_1[name] = nextName.match(/\d/g) ? [] : {};
-                        parent_1 = parent_1[name];
+                        parent[name] = nextName.match(/\d/g) ? [] : {};
+                        parent = parent[name];
                     }
                     else {
                         // Jump into next property
-                        parent_1 = parent_1[name];
+                        parent = parent[name];
                     }
                 });
             }
         });
         return config;
-    };
+    }
     /**
      * Shorthand method to deselect an annotation.
      *
      * @function Highcharts.NavigationBindings#deselectAnnotation
      */
-    NavigationBindings.prototype.deselectAnnotation = function () {
+    deselectAnnotation() {
         if (this.activeAnnotation) {
             this.activeAnnotation.setControlPointsVisibility(false);
             this.activeAnnotation = false;
         }
-    };
+    }
     /**
      * Generates API config for popup in the same format as options for
      * Annotation object.
@@ -541,8 +552,8 @@ var NavigationBindings = /** @class */ (function () {
      * @return {Highcharts.Dictionary<string>}
      *         Annotation options to be displayed in popup box
      */
-    NavigationBindings.prototype.annotationToFields = function (annotation) {
-        var options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = pick(options.type, options.shapes && options.shapes[0] &&
+    annotationToFields(annotation) {
+        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = pick(options.type, options.shapes && options.shapes[0] &&
             options.shapes[0].type, options.labels && options.labels[0] &&
             options.labels[0].type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
             langKey: options.langKey,
@@ -568,7 +579,7 @@ var NavigationBindings = /** @class */ (function () {
          *        Where new options will be assigned
          */
         function traverse(option, key, parentEditables, parent, parentKey) {
-            var nextParent;
+            let nextParent;
             if (parentEditables &&
                 option &&
                 nonEditables.indexOf(key) === -1 &&
@@ -580,7 +591,7 @@ var NavigationBindings = /** @class */ (function () {
                 // Roots:
                 if (isArray(option)) {
                     parent[key] = [];
-                    option.forEach(function (arrayOption, i) {
+                    option.forEach((arrayOption, i) => {
                         if (!isObject(arrayOption)) {
                             // Simple arrays, e.g. [String, Number, Boolean]
                             traverse(arrayOption, 0, nestedEditables[key], parent[key], key);
@@ -588,7 +599,7 @@ var NavigationBindings = /** @class */ (function () {
                         else {
                             // Advanced arrays, e.g. [Object, Object]
                             parent[key][i] = {};
-                            objectEach(arrayOption, function (nestedOption, nestedKey) {
+                            objectEach(arrayOption, (nestedOption, nestedKey) => {
                                 traverse(nestedOption, nestedKey, nestedEditables[key], parent[key][i], key);
                             });
                         }
@@ -604,7 +615,7 @@ var NavigationBindings = /** @class */ (function () {
                     else {
                         parent[key] = nextParent;
                     }
-                    objectEach(option, function (nestedOption, nestedKey) {
+                    objectEach(option, (nestedOption, nestedKey) => {
                         traverse(nestedOption, nestedKey, key === 0 ?
                             parentEditables :
                             nestedEditables[key], nextParent, key);
@@ -627,10 +638,10 @@ var NavigationBindings = /** @class */ (function () {
                 }
             }
         }
-        objectEach(options, function (option, key) {
+        objectEach(options, (option, key) => {
             if (key === 'typeOptions') {
                 visualOptions[key] = {};
-                objectEach(options[key], function (typeOption, typeKey) {
+                objectEach(options[key], (typeOption, typeKey) => {
                     traverse(typeOption, typeKey, nestedEditables, visualOptions[key], typeKey);
                 });
             }
@@ -639,7 +650,7 @@ var NavigationBindings = /** @class */ (function () {
             }
         });
         return visualOptions;
-    };
+    }
     /**
      * Get all class names for all parents in the element. Iterates until finds
      * main container.
@@ -656,15 +667,15 @@ var NavigationBindings = /** @class */ (function () {
      * @return {Array<Array<string, Highcharts.HTMLDOMElement>>}
      * Array of class names with corresponding elements
      */
-    NavigationBindings.prototype.getClickedClassNames = function (container, event) {
-        var element = event.target, classNames = [], elemClassName;
-        while (element) {
+    getClickedClassNames(container, event) {
+        let element = event.target, classNames = [], elemClassName;
+        while (element && element.tagName) {
             elemClassName = attr(element, 'class');
             if (elemClassName) {
                 classNames = classNames.concat(elemClassName
                     .split(' ')
                     // eslint-disable-next-line no-loop-func
-                    .map(function (name) { return ([name, element]); }));
+                    .map((name) => ([name, element])));
             }
             element = element.parentNode;
             if (element === container) {
@@ -672,7 +683,7 @@ var NavigationBindings = /** @class */ (function () {
             }
         }
         return classNames;
-    };
+    }
     /**
      * Get events bound to a button. It's a custom event delegation to find all
      * events connected to the element.
@@ -689,10 +700,10 @@ var NavigationBindings = /** @class */ (function () {
      * @return {Object}
      *         Object with events (init, start, steps, and end)
      */
-    NavigationBindings.prototype.getButtonEvents = function (container, event) {
-        var navigation = this, classNames = this.getClickedClassNames(container, event);
-        var bindings;
-        classNames.forEach(function (className) {
+    getButtonEvents(container, event) {
+        const navigation = this, classNames = this.getClickedClassNames(container, event);
+        let bindings;
+        classNames.forEach((className) => {
             if (navigation.boundClassNames[className[0]] && !bindings) {
                 bindings = {
                     events: navigation.boundClassNames[className[0]],
@@ -701,7 +712,7 @@ var NavigationBindings = /** @class */ (function () {
             }
         });
         return bindings;
-    };
+    }
     /**
      * Bindings are just events, so the whole update process is simply
      * removing old events and adding new ones.
@@ -709,77 +720,76 @@ var NavigationBindings = /** @class */ (function () {
      * @private
      * @function Highcharts.NavigationBindings#update
      */
-    NavigationBindings.prototype.update = function (options) {
+    update(options) {
         this.options = merge(true, this.options, options);
         this.removeEvents();
         this.initEvents();
-    };
+    }
     /**
      * Remove all events created in the navigation.
      *
      * @private
      * @function Highcharts.NavigationBindings#removeEvents
      */
-    NavigationBindings.prototype.removeEvents = function () {
-        this.eventsToUnbind.forEach(function (unbinder) { return unbinder(); });
-    };
+    removeEvents() {
+        this.eventsToUnbind.forEach((unbinder) => unbinder());
+    }
     /**
      * @private
      * @function Highcharts.NavigationBindings#destroy
      */
-    NavigationBindings.prototype.destroy = function () {
+    destroy() {
         this.removeEvents();
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    // Define which options from annotations should show up in edit box:
-    NavigationBindings.annotationsEditable = {
-        // `typeOptions` are always available
-        // Nested and shared options:
-        nestedOptions: {
-            labelOptions: ['style', 'format', 'backgroundColor'],
-            labels: ['style'],
-            label: ['style'],
-            style: ['fontSize', 'color'],
-            background: ['fill', 'strokeWidth', 'stroke'],
-            innerBackground: ['fill', 'strokeWidth', 'stroke'],
-            outerBackground: ['fill', 'strokeWidth', 'stroke'],
-            shapeOptions: ['fill', 'strokeWidth', 'stroke'],
-            shapes: ['fill', 'strokeWidth', 'stroke'],
-            line: ['strokeWidth', 'stroke'],
-            backgroundColors: [true],
-            connector: ['fill', 'strokeWidth', 'stroke'],
-            crosshairX: ['strokeWidth', 'stroke'],
-            crosshairY: ['strokeWidth', 'stroke']
-        },
-        // Simple shapes:
-        circle: ['shapes'],
-        ellipse: ['shapes'],
-        verticalLine: [],
-        label: ['labelOptions'],
-        // Measure
-        measure: ['background', 'crosshairY', 'crosshairX'],
-        // Others:
-        fibonacci: [],
-        tunnel: ['background', 'line', 'height'],
-        pitchfork: ['innerBackground', 'outerBackground'],
-        rect: ['shapes'],
-        // Crooked lines, elliots, arrows etc:
-        crookedLine: [],
-        basicAnnotation: ['shapes', 'labelOptions']
-    };
-    // Define non editable fields per annotation, for example Rectangle inherits
-    // options from Measure, but crosshairs are not available
-    NavigationBindings.annotationsNonEditable = {
-        rectangle: ['crosshairX', 'crosshairY', 'labelOptions'],
-        ellipse: ['labelOptions'],
-        circle: ['labelOptions']
-    };
-    return NavigationBindings;
-}());
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+// Define which options from annotations should show up in edit box:
+NavigationBindings.annotationsEditable = {
+    // `typeOptions` are always available
+    // Nested and shared options:
+    nestedOptions: {
+        labelOptions: ['style', 'format', 'backgroundColor'],
+        labels: ['style'],
+        label: ['style'],
+        style: ['fontSize', 'color'],
+        background: ['fill', 'strokeWidth', 'stroke'],
+        innerBackground: ['fill', 'strokeWidth', 'stroke'],
+        outerBackground: ['fill', 'strokeWidth', 'stroke'],
+        shapeOptions: ['fill', 'strokeWidth', 'stroke'],
+        shapes: ['fill', 'strokeWidth', 'stroke'],
+        line: ['strokeWidth', 'stroke'],
+        backgroundColors: [true],
+        connector: ['fill', 'strokeWidth', 'stroke'],
+        crosshairX: ['strokeWidth', 'stroke'],
+        crosshairY: ['strokeWidth', 'stroke']
+    },
+    // Simple shapes:
+    circle: ['shapes'],
+    ellipse: ['shapes'],
+    verticalLine: [],
+    label: ['labelOptions'],
+    // Measure
+    measure: ['background', 'crosshairY', 'crosshairX'],
+    // Others:
+    fibonacci: [],
+    tunnel: ['background', 'line', 'height'],
+    pitchfork: ['innerBackground', 'outerBackground'],
+    rect: ['shapes'],
+    // Crooked lines, elliots, arrows etc:
+    crookedLine: [],
+    basicAnnotation: ['shapes', 'labelOptions']
+};
+// Define non editable fields per annotation, for example Rectangle inherits
+// options from Measure, but crosshairs are not available
+NavigationBindings.annotationsNonEditable = {
+    rectangle: ['crosshairX', 'crosshairY', 'labelOptions'],
+    ellipse: ['labelOptions'],
+    circle: ['labelOptions']
+};
 /* *
  *
  *  Default Export

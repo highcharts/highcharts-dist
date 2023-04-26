@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -47,10 +47,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined,
-            error = U.error,
-            merge = U.merge;
+        const { sma: { prototype: smaProto } } = SeriesRegistry.seriesTypes;
+        const { defined, error, merge } = U;
         /* *
          *
          *  Composition
@@ -68,7 +66,7 @@
             *  Constants
             *
             * */
-            var composedClasses = [];
+            const composedMembers = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -78,7 +76,7 @@
              * @private
              * @type {Array<string>}
              */
-            var linesApiNames = ['bottomLine'];
+            const linesApiNames = ['bottomLine'];
             /**
              * Lines ids. Required to plot appropriate amount of lines.
              * Notice that pointArrayMap should have more elements than
@@ -89,7 +87,7 @@
              * @private
              * @type {Array<string>}
              */
-            var pointArrayMap = ['top', 'bottom'];
+            const pointArrayMap = ['top', 'bottom'];
             /**
              * Names of the lines, bewteen which the area should be plotted.
              * If the drawing of the area should
@@ -99,14 +97,14 @@
              * @private
              * @type {Array<string>}
              */
-            var areaLinesNames = ['top'];
+            const areaLinesNames = ['top'];
             /**
              * Main line id.
              *
              * @private
              * @type {string}
              */
-            var pointValKey = 'top';
+            const pointValKey = 'top';
             /* *
             *
             *  Functions
@@ -123,9 +121,8 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (composedClasses.indexOf(IndicatorClass) === -1) {
-                    composedClasses.push(IndicatorClass);
-                    var proto = IndicatorClass.prototype;
+                if (U.pushUnique(composedMembers, IndicatorClass)) {
+                    const proto = IndicatorClass.prototype;
                     proto.linesApiNames = (proto.linesApiNames ||
                         linesApiNames.slice());
                     proto.pointArrayMap = (proto.pointArrayMap ||
@@ -163,8 +160,8 @@
              *         Returns translated lines names without excluded value.
              */
             function getTranslatedLinesNames(indicator, excludedValue) {
-                var translatedLines = [];
-                (indicator.pointArrayMap || []).forEach(function (propertyName) {
+                const translatedLines = [];
+                (indicator.pointArrayMap || []).forEach((propertyName) => {
                     if (propertyName !== excludedValue) {
                         translatedLines.push(getLineName(propertyName));
                     }
@@ -177,26 +174,16 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    areaLinesNames = indicator.areaLinesNames,
-                    mainLinePoints = indicator.points,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    }, 
-                    // additional lines point place holders:
-                    secondaryLines = [],
-                    secondaryLinesNames = getTranslatedLinesNames(indicator,
-                    pointValKey);
-                var pointsLength = mainLinePoints.length,
-                    point;
+                const indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
+                let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
-                secondaryLinesNames.forEach(function (plotLine, index) {
+                secondaryLinesNames.forEach((plotLine, index) => {
                     // create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
@@ -212,12 +199,9 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
-                        secondLinePoints = secondaryLines[index],
-                        firstLinePoints = areaLinesNames.length === 1 ?
-                            mainLinePoints :
-                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
-                        originalColor = indicator.color;
+                    const index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
+                        mainLinePoints :
+                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -232,7 +216,7 @@
                     indicator.color = originalColor;
                 }
                 // Modify options and generate additional lines:
-                linesApiNames.forEach(function (lineName, i) {
+                linesApiNames.forEach((lineName, i) => {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {
@@ -268,9 +252,7 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath,
-                    path = [],
-                    higherAreaPath = [];
+                let areaPath, path = [], higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -280,7 +262,7 @@
                         path = smaProto.getGraphPath.call(this, points);
                         higherAreaPath = areaPath.slice(0, path.length);
                         // Reverse points, so that the areaFill will start from the end:
-                        for (var i = higherAreaPath.length - 1; i >= 0; i--) {
+                        for (let i = higherAreaPath.length - 1; i >= 0; i--) {
                             path.push(higherAreaPath[i]);
                         }
                     }
@@ -298,8 +280,8 @@
              *         Returns point Y value for all lines
              */
             function indicatorToYData(point) {
-                var pointColl = [];
-                (this.pointArrayMap || []).forEach(function (propertyName) {
+                const pointColl = [];
+                (this.pointArrayMap || []).forEach((propertyName) => {
                     pointColl.push(point[propertyName]);
                 });
                 return pointColl;
@@ -310,22 +292,20 @@
              * @private
              */
             function indicatorTranslate() {
-                var _this = this;
-                var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [],
-                    value;
+                const pointArrayMap = this.pointArrayMap;
+                let LinesNames = [], value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
-                this.points.forEach(function (point) {
-                    pointArrayMap.forEach(function (propertyName, i) {
+                this.points.forEach((point) => {
+                    pointArrayMap.forEach((propertyName, i) => {
                         value = point[propertyName];
                         // If the modifier, like for example compare exists,
                         // modified the original value by that method, #15867.
-                        if (_this.dataModify) {
-                            value = _this.dataModify.modifyValue(value);
+                        if (this.dataModify) {
+                            value = this.dataModify.modifyValue(value);
                         }
                         if (value !== null) {
-                            point[LinesNames[i]] = _this.yAxis.toPixels(value, true);
+                            point[LinesNames[i]] = this.yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -347,26 +327,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat,
-            extend = U.extend,
-            merge = U.merge;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { correctFloat, extend, merge } = U;
         /* *
          *
          *  Functions
@@ -405,61 +367,39 @@
          *
          * @augments Highcharts.Series
          */
-        var ABandsIndicator = /** @class */ (function (_super) {
-                __extends(ABandsIndicator, _super);
-            function ABandsIndicator() {
+        class ABandsIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            ABandsIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    factor = params.factor,
-                    index = params.index,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0, 
-                    // Upperbands
-                    UB = [], 
-                    // Lowerbands
-                    LB = [], 
-                    // ABANDS array structure:
-                    // 0-date, 1-top line, 2-middle line, 3-bottom line
-                    ABANDS = [], 
-                    // middle line, top line and bottom line
-                    ML,
-                    TL,
-                    BL,
-                    date,
-                    bandBase,
-                    pointSMA,
-                    ubSMA,
-                    lbSMA,
-                    low = 2,
-                    high = 1,
-                    xData = [],
-                    yData = [],
-                    slicedX,
-                    slicedY,
-                    i;
+            getValues(series, params) {
+                const period = params.period, factor = params.factor, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
+                // Upperbands
+                UB = [], 
+                // Lowerbands
+                LB = [], 
+                // ABANDS array structure:
+                // 0-date, 1-top line, 2-middle line, 3-bottom line
+                ABANDS = [], low = 2, high = 1, xData = [], yData = [];
+                // middle line, top line and bottom line
+                let ML, TL, BL, date, bandBase, pointSMA, ubSMA, lbSMA, slicedX, slicedY, i;
                 if (yValLen < period) {
                     return;
                 }
@@ -476,19 +416,19 @@
                     if (i >= period) {
                         slicedX = xVal.slice(i - period, i);
                         slicedY = yVal.slice(i - period, i);
-                        ubSMA = _super.prototype.getValues.call(this, {
+                        ubSMA = super.getValues.call(this, {
                             xData: slicedX,
                             yData: UB.slice(i - period, i)
                         }, {
                             period: period
                         });
-                        lbSMA = _super.prototype.getValues.call(this, {
+                        lbSMA = super.getValues.call(this, {
                             xData: slicedX,
                             yData: LB.slice(i - period, i)
                         }, {
                             period: period
                         });
-                        pointSMA = _super.prototype.getValues.call(this, {
+                        pointSMA = super.getValues.call(this, {
                             xData: slicedX,
                             yData: slicedY
                         }, {
@@ -509,72 +449,71 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
+        }
+        /**
+         * Acceleration bands (ABANDS). This series requires the `linkedTo` option
+         * to be set and should be loaded after the
+         * `stock/indicators/indicators.js`.
+         *
+         * @sample {highstock} stock/indicators/acceleration-bands
+         *         Acceleration Bands
+         *
+         * @extends      plotOptions.sma
+         * @mixes        Highcharts.MultipleLinesMixin
+         * @since        7.0.0
+         * @product      highstock
+         * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+         *               navigatorOptions, pointInterval, pointIntervalUnit,
+         *               pointPlacement, pointRange, pointStart, showInNavigator,
+         *               stacking,
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/acceleration-bands
+         * @optionparent plotOptions.abands
+         */
+        ABandsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Acceleration bands (ABANDS). This series requires the `linkedTo` option
-             * to be set and should be loaded after the
-             * `stock/indicators/indicators.js`.
+             * Option for fill color between lines in Accelleration bands Indicator.
              *
-             * @sample {highstock} stock/indicators/acceleration-bands
-             *         Acceleration Bands
+             * @sample {highstock} stock/indicators/indicator-area-fill
+             *      Background fill between lines.
              *
-             * @extends      plotOptions.sma
-             * @mixes        Highcharts.MultipleLinesMixin
-             * @since        7.0.0
-             * @product      highstock
-             * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-             *               navigatorOptions, pointInterval, pointIntervalUnit,
-             *               pointPlacement, pointRange, pointStart, showInNavigator,
-             *               stacking,
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/acceleration-bands
-             * @optionparent plotOptions.abands
+             * @type {Highcharts.Color}
+             * @since 9.3.2
+             * @apioption plotOptions.abands.fillColor
+             *
              */
-            ABandsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                period: 20,
                 /**
-                 * Option for fill color between lines in Accelleration bands Indicator.
+                 * The algorithms factor value used to calculate bands.
                  *
-                 * @sample {highstock} stock/indicators/indicator-area-fill
-                 *      Background fill between lines.
-                 *
-                 * @type {Highcharts.Color}
-                 * @since 9.3.2
-                 * @apioption plotOptions.abands.fillColor
-                 *
+                 * @product highstock
                  */
-                params: {
-                    period: 20,
+                factor: 0.001,
+                index: 3
+            },
+            lineWidth: 1,
+            topLine: {
+                styles: {
                     /**
-                     * The algorithms factor value used to calculate bands.
-                     *
-                     * @product highstock
+                     * Pixel width of the line.
                      */
-                    factor: 0.001,
-                    index: 3
-                },
-                lineWidth: 1,
-                topLine: {
-                    styles: {
-                        /**
-                         * Pixel width of the line.
-                         */
-                        lineWidth: 1
-                    }
-                },
-                bottomLine: {
-                    styles: {
-                        /**
-                         * Pixel width of the line.
-                         */
-                        lineWidth: 1
-                    }
-                },
-                dataGrouping: {
-                    approximation: 'averages'
+                    lineWidth: 1
                 }
-            });
-            return ABandsIndicator;
-        }(SMAIndicator));
+            },
+            bottomLine: {
+                styles: {
+                    /**
+                     * Pixel width of the line.
+                     */
+                    lineWidth: 1
+                }
+            },
+            dataGrouping: {
+                approximation: 'averages'
+            }
+        });
         extend(ABandsIndicator.prototype, {
             areaLinesNames: ['top', 'bottom'],
             linesApiNames: ['topLine', 'bottomLine'],

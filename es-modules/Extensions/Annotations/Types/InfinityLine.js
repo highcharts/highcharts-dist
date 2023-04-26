@@ -4,45 +4,26 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Annotation from '../Annotation.js';
 import CrookedLine from './CrookedLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
  *
  * */
-var InfinityLine = /** @class */ (function (_super) {
-    __extends(InfinityLine, _super);
-    function InfinityLine() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class InfinityLine extends CrookedLine {
     /* *
      *
      *  Static Functions
      *
      * */
-    InfinityLine.edgePoint = function (startIndex, endIndex) {
+    static edgePoint(startIndex, endIndex) {
         return function (target) {
-            var annotation = target.annotation, type = annotation.options.typeOptions.type;
-            var points = annotation.points;
+            const annotation = target.annotation, type = annotation.options.typeOptions.type;
+            let points = annotation.points;
             if (type === 'horizontalLine' || type === 'verticalLine') {
                 // Horizontal and vertical lines have only one point,
                 // make a copy of it:
@@ -59,22 +40,22 @@ var InfinityLine = /** @class */ (function (_super) {
             }
             return InfinityLine.findEdgePoint(points[startIndex], points[endIndex]);
         };
-    };
-    InfinityLine.findEdgeCoordinate = function (firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
-        var xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
+    }
+    static findEdgeCoordinate(firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
+        const xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
         // solves equation for x or y
         // y - y1 = (y2 - y1) / (x2 - x1) * (x - x1)
         return ((secondPoint[xOrY] - firstPoint[xOrY]) *
             (edgePointFirstCoordinate - firstPoint[xOrYOpposite]) /
             (secondPoint[xOrYOpposite] - firstPoint[xOrYOpposite]) +
             firstPoint[xOrY]);
-    };
-    InfinityLine.findEdgePoint = function (firstPoint, secondPoint) {
-        var chart = firstPoint.series.chart, xAxis = firstPoint.series.xAxis, yAxis = secondPoint.series.yAxis, firstPointPixels = MockPoint.pointToPixels(firstPoint), secondPointPixels = MockPoint.pointToPixels(secondPoint), deltaX = secondPointPixels.x - firstPointPixels.x, deltaY = secondPointPixels.y - firstPointPixels.y, xAxisMin = xAxis.left, xAxisMax = xAxisMin + xAxis.width, yAxisMin = yAxis.top, yAxisMax = yAxisMin + yAxis.height, xLimit = deltaX < 0 ? xAxisMin : xAxisMax, yLimit = deltaY < 0 ? yAxisMin : yAxisMax, edgePoint = {
+    }
+    static findEdgePoint(firstPoint, secondPoint) {
+        const chart = firstPoint.series.chart, xAxis = firstPoint.series.xAxis, yAxis = secondPoint.series.yAxis, firstPointPixels = MockPoint.pointToPixels(firstPoint), secondPointPixels = MockPoint.pointToPixels(secondPoint), deltaX = secondPointPixels.x - firstPointPixels.x, deltaY = secondPointPixels.y - firstPointPixels.y, xAxisMin = xAxis.left, xAxisMax = xAxisMin + xAxis.width, yAxisMin = yAxis.top, yAxisMax = yAxisMin + yAxis.height, xLimit = deltaX < 0 ? xAxisMin : xAxisMax, yLimit = deltaY < 0 ? yAxisMin : yAxisMax, edgePoint = {
             x: deltaX === 0 ? firstPointPixels.x : xLimit,
             y: deltaY === 0 ? firstPointPixels.y : yLimit
         };
-        var edgePointX, edgePointY, swap;
+        let edgePointX, edgePointY, swap;
         if (deltaX !== 0 && deltaY !== 0) {
             edgePointY = InfinityLine.findEdgeCoordinate(firstPointPixels, secondPointPixels, 'y', xLimit);
             edgePointX = InfinityLine.findEdgeCoordinate(firstPointPixels, secondPointPixels, 'x', yLimit);
@@ -95,14 +76,14 @@ var InfinityLine = /** @class */ (function (_super) {
             edgePoint.y = swap;
         }
         return edgePoint;
-    };
+    }
     /* *
      *
      *  Functions
      *
      * */
-    InfinityLine.prototype.addShapes = function () {
-        var typeOptions = this.options.typeOptions, points = [
+    addShapes() {
+        const typeOptions = this.options.typeOptions, points = [
             this.points[0],
             InfinityLine.endEdgePoint
         ];
@@ -113,21 +94,20 @@ var InfinityLine = /** @class */ (function (_super) {
         if (typeOptions.type.match(/line/gi)) {
             points[0] = InfinityLine.startEdgePoint;
         }
-        var line = this.initShape(merge(typeOptions.line, {
+        const line = this.initShape(merge(typeOptions.line, {
             type: 'path',
             points: points
         }), 0);
         typeOptions.line = line.options;
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    InfinityLine.endEdgePoint = InfinityLine.edgePoint(0, 1);
-    InfinityLine.startEdgePoint = InfinityLine.edgePoint(1, 0);
-    return InfinityLine;
-}(CrookedLine));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+InfinityLine.endEdgePoint = InfinityLine.edgePoint(0, 1);
+InfinityLine.startEdgePoint = InfinityLine.edgePoint(1, 0);
 InfinityLine.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, {});
 Annotation.types.infinityLine = InfinityLine;
 /* *

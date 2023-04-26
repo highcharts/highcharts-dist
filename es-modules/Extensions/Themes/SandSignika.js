@@ -11,10 +11,10 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 import H from '../../Core/Globals.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement;
+const { addEvent, createElement } = U;
 /* *
  *
  *  Theme
@@ -50,11 +50,6 @@ var SandSignikaTheme;
         },
         tooltip: {
             borderWidth: 0
-        },
-        labels: {
-            style: {
-                color: '#6e6e70'
-            }
         },
         legend: {
             backgroundColor: '#E0E0E8',

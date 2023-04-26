@@ -10,32 +10,21 @@
  *
  * */
 'use strict';
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 import BoostChart from './BoostChart.js';
 import BoostSeries from './BoostSeries.js';
 import H from '../../Core/Globals.js';
-var win = H.win, doc = H.doc;
+const { win, doc } = H;
 import initCanvasBoost from '../../Extensions/BoostCanvas.js';
 import NamedColors from './NamedColors.js';
 import U from '../../Core/Utilities.js';
-var error = U.error;
+const { error } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
-var contexts = [
+const composedClasses = [];
+const contexts = [
     'webgl',
     'experimental-webgl',
     'moz-webgl',
@@ -50,7 +39,7 @@ var contexts = [
  * @private
  */
 function compose(ChartClass, SeriesClass, seriesTypes, ColorClass) {
-    var wglMode = hasWebGLSupport();
+    const wglMode = hasWebGLSupport();
     if (!wglMode) {
         if (typeof initCanvasBoost !== 'undefined') {
             // Fallback to canvas boost
@@ -60,9 +49,8 @@ function compose(ChartClass, SeriesClass, seriesTypes, ColorClass) {
             error(26);
         }
     }
-    if (ColorClass && composedClasses.indexOf(ColorClass) === -1) {
-        composedClasses.push(ColorClass);
-        ColorClass.names = __assign(__assign({}, ColorClass.names), NamedColors.defaultHTMLColorMap);
+    if (ColorClass && U.pushUnique(composedClasses, ColorClass)) {
+        ColorClass.names = Object.assign(Object.assign({}, ColorClass.names), NamedColors.defaultHTMLColorMap);
     }
     // WebGL support is alright, and we're good to go.
     BoostChart.compose(ChartClass, wglMode);
@@ -73,10 +61,10 @@ function compose(ChartClass, SeriesClass, seriesTypes, ColorClass) {
  * @private
  */
 function hasWebGLSupport() {
-    var canvas, gl = false;
+    let canvas, gl = false;
     if (typeof win.WebGLRenderingContext !== 'undefined') {
         canvas = doc.createElement('canvas');
-        for (var i = 0; i < contexts.length; ++i) {
+        for (let i = 0; i < contexts.length; ++i) {
             try {
                 gl = canvas.getContext(contexts[i]);
                 if (typeof gl !== 'undefined' && gl !== null) {
@@ -95,9 +83,9 @@ function hasWebGLSupport() {
  *  Default Export
  *
  * */
-var Boost = {
-    compose: compose,
-    hasWebGLSupport: hasWebGLSupport
+const Boost = {
+    compose,
+    hasWebGLSupport
 };
 export default Boost;
 /* *

@@ -17,7 +17,7 @@
  * */
 // Register color names since GL can't render those directly.
 // TODO: When supporting modern syntax, make this a named export
-var defaultHTMLColorMap = {
+const defaultHTMLColorMap = {
     aliceblue: '#f0f8ff',
     antiquewhite: '#faebd7',
     aqua: '#00ffff',
@@ -166,7 +166,7 @@ var defaultHTMLColorMap = {
  *  Default Export
  *
  * */
-var namedColors = {
-    defaultHTMLColorMap: defaultHTMLColorMap
+const namedColors = {
+    defaultHTMLColorMap
 };
 export default namedColors;

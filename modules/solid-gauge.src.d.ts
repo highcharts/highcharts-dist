@@ -12,13 +12,6 @@ import * as _Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {
-    interface SymbolOptionsObject {
-        /**
-         * Whether to draw rounded edges.
-         */
-        rounded?: boolean;
-    }
-}
+declare module "../highcharts.src" {}
 export default factory;
 export let Highcharts: typeof _Highcharts;

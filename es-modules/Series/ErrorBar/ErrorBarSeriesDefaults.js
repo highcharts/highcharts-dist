@@ -31,7 +31,7 @@
  * @requires     highcharts-more
  * @optionparent plotOptions.errorbar
  */
-var ErrorBarSeriesDefaults = {
+const ErrorBarSeriesDefaults = {
     /**
      * The main color of the bars. This can be overridden by
      * [stemColor](#plotOptions.errorbar.stemColor) and

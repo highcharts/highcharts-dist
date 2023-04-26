@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -48,26 +48,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SankeyPointClass = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
-        var defined = U.defined,
-            find = U.find,
-            pick = U.pick;
+        const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPointClass } } } } = SeriesRegistry;
+        const { defined, find, pick } = U;
         /**
          * Get columns offset including all sibiling and cousins etc.
          *
@@ -75,8 +57,8 @@
          * @param node Point
          */
         function getOffset(node) {
-            var offset = node.linksFrom.length;
-            node.linksFrom.forEach(function (link) {
+            let offset = node.linksFrom.length;
+            node.linksFrom.forEach((link) => {
                 if (link.id === link.toNode.linksTo[0].id) {
                     // Node has children, that hangs directly from it:
                     offset += getOffset(link.toNode);
@@ -94,44 +76,48 @@
          *  Class
          *
          * */
-        var OrganizationPoint = /** @class */ (function (_super) {
-                __extends(OrganizationPoint, _super);
-            function OrganizationPoint() {
+        class OrganizationPoint extends SankeyPointClass {
+            constructor() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
-                _this.fromNode = void 0;
-                _this.linksFrom = void 0;
-                _this.linksTo = void 0;
-                _this.options = void 0;
-                _this.series = void 0;
-                _this.toNode = void 0;
-                return _this;
+                super(...arguments);
+                this.fromNode = void 0;
+                this.linksFrom = void 0;
+                this.linksTo = void 0;
+                this.options = void 0;
+                this.series = void 0;
+                this.toNode = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
+            init() {
+                SankeyPointClass.prototype.init.apply(this, arguments);
+                if (!this.isNode) {
+                    this.dataLabelOnNull = true;
+                    this.formatPrefix = 'link';
+                }
+                return this;
+            }
             /**
              * All nodes in an org chart are equal width.
              * @private
              */
-            OrganizationPoint.prototype.getSum = function () {
+            getSum() {
                 return 1;
-            };
+            }
             /**
              * Set node.column for hanging layout
              * @private
              */
-            OrganizationPoint.prototype.setNodeColumn = function () {
-                _super.prototype.setNodeColumn.call(this);
-                var node = this,
-                    fromNode = node.getFromNode().fromNode;
+            setNodeColumn() {
+                super.setNodeColumn();
+                const node = this, fromNode = node.getFromNode().fromNode;
                 // Hanging layout
                 if (
                 // Not defined by user
@@ -145,31 +131,30 @@
                     // to have hanging layout
                     node.options.layout = pick(node.options.layout, 'hanging');
                     node.hangsFrom = fromNode;
-                    var i_1 = -1;
+                    let i = -1;
                     find(fromNode.linksFrom, function (link, index) {
-                        var found = link.toNode === node;
+                        const found = link.toNode === node;
                         if (found) {
-                            i_1 = index;
+                            i = index;
                         }
                         return found;
                     });
                     // For all siblings' children (recursively)
                     // increase the column offset to prevent overlapping
-                    for (var j = 0; j < fromNode.linksFrom.length; j++) {
-                        var link = fromNode.linksFrom[j];
+                    for (let j = 0; j < fromNode.linksFrom.length; j++) {
+                        let link = fromNode.linksFrom[j];
                         if (link.toNode.id === node.id) {
                             // Break
                             j = fromNode.linksFrom.length;
                         }
                         else {
-                            i_1 += getOffset(link.toNode);
+                            i += getOffset(link.toNode);
                         }
                     }
-                    node.column = (node.column || 0) + i_1;
+                    node.column = (node.column || 0) + i;
                 }
-            };
-            return OrganizationPoint;
-        }(SankeyPointClass));
+            }
+        }
         /* *
          *
          *  Default Export
@@ -216,142 +201,130 @@
          * @requires     modules/organization
          * @optionparent plotOptions.organization
          */
-        var OrganizationSeriesDefaults = {
+        const OrganizationSeriesDefaults = {
+            /**
+             * The border color of the node cards.
+             *
+             * @type {Highcharts.ColorString}
+             */
+            borderColor: "#666666" /* Palette.neutralColor60 */,
+            /**
+             * The border radius of the node cards.
+             *
+             * @private
+             */
+            borderRadius: 3,
+            /**
+             * Radius for the rounded corners of the links between nodes. This
+             * option is now deprecated, and moved to
+             * [link.radius](#plotOptions.organization.link.radius).
+             *
+             * @sample   highcharts/series-organization/link-options
+             *           Square links
+             *
+             * @deprecated
+             * @apioption series.organization.linkRadius
+             */
+            /**
+             * Link Styling options
+             * @since 10.3.0
+             * @product highcharts
+             */
+            link: {
                 /**
-                 * The border color of the node cards.
+                 * Modifier of the shape of the curved link. Works best for values
+                 * between 0 and 1, where 0 is a straight line, and 1 is a shape
+                 * close to the default one.
+                 *
+                 * @default 0.5
+                 * @type {number}
+                 * @since 10.3.0
+                 * @product highcharts
+                 * @apioption series.organization.link.offset
+                 */
+                /**
+                 * The color of the links between nodes.
                  *
                  * @type {Highcharts.ColorString}
                  */
-                borderColor: "#666666" /* Palette.neutralColor60 */,
+                color: "#666666" /* Palette.neutralColor60 */,
                 /**
-                 * The border radius of the node cards.
-                 *
-                 * @private
-                 */
-                borderRadius: 3,
-                /**
-                 * Radius for the rounded corners of the links between nodes. This
-                 * option is now deprecated,
-            and moved to
-                 * [link.radius](#plotOptions.organization.link.radius).
+                 * The line width of the links connecting nodes, in pixels.
                  *
                  * @sample   highcharts/series-organization/link-options
                  *           Square links
-                 *
-                 * @deprecated
-                 * @apioption series.organization.linkRadius
                  */
+                lineWidth: 1,
                 /**
-                 * Link Styling options
-                 * @since 10.3.0
+                 * Radius for the rounded corners of the links between nodes.
+                 * Works for `default` link type.
+                 *
+                 * @sample   highcharts/series-organization/link-options
+                 *           Square links
+                 */
+                radius: 10,
+                /**
+                 * Type of the link shape.
+                 *
+                 * @sample   highcharts/series-organization/different-link-types
+                 *           Different link types
+                 *
+                 * @declare Highcharts.OrganizationLinkTypeValue
+                 * @type {'default' | 'curved' | 'straight'}
+                 * @default 'default'
                  * @product highcharts
                  */
-                link: {
-                    /**
-                     * Modifier of the shape of the curved link. Works best for values
-                     * between 0 and 1,
-            where 0 is a straight line,
-            and 1 is a shape
-                     * close to the default one.
-                     *
-                     * @default 0.5
-                     * @type {number}
-                     * @since 10.3.0
-                     * @product highcharts
-                     * @apioption series.organization.link.offset
-                     */
-                    /**
-                     * The color of the links between nodes.
-                     *
-                     * @type {Highcharts.ColorString}
-                     */
-                    color: "#666666" /* Palette.neutralColor60 */,
-                    /**
-                     * The line width of the links connecting nodes,
-            in pixels.
-                     *
-                     * @sample   highcharts/series-organization/link-options
-                     *           Square links
-                     */
-                    lineWidth: 1,
-                    /**
-                     * Radius for the rounded corners of the links between nodes.
-                     * Works for `default` link type.
-                     *
-                     * @sample   highcharts/series-organization/link-options
-                     *           Square links
-                     */
-                    radius: 10,
-                    /**
-                     * Type of the link shape.
-                     *
-                     * @sample   highcharts/series-organization/different-link-types
-                     *           Different link types
-                     *
-                     * @declare Highcharts.OrganizationLinkTypeValue
-                     * @type {'default' | 'curved' | 'straight'}
-                     * @default 'default'
-                     * @product highcharts
-                     */
-                    type: 'default'
-                },
-                borderWidth: 1,
+                type: 'default'
+            },
+            borderWidth: 1,
+            /**
+             * @declare Highcharts.SeriesOrganizationDataLabelsOptionsObject
+             *
+             * @private
+             */
+            dataLabels: {
+                /* eslint-disable valid-jsdoc */
                 /**
-                 * @declare Highcharts.SeriesOrganizationDataLabelsOptionsObject
+                 * A callback for defining the format for _nodes_ in the
+                 * organization chart. The `nodeFormat` option takes precedence
+                 * over `nodeFormatter`.
                  *
-                 * @private
+                 * In an organization chart, the `nodeFormatter` is a quite complex
+                 * function of the available options, striving for a good default
+                 * layout of cards with or without images. In organization chart,
+                 * the data labels come with `useHTML` set to true, meaning they
+                 * will be rendered as true HTML above the SVG.
+                 *
+                 * @sample highcharts/series-organization/datalabels-nodeformatter
+                 *         Modify the default label format output
+                 *
+                 * @type  {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
+                 * @since 6.0.2
                  */
-                dataLabels: {
-                    /* eslint-disable valid-jsdoc */
-                    /**
-                     * A callback for defining the format for _nodes_ in the
-                     * organization chart. The `nodeFormat` option takes precedence
-                     * over `nodeFormatter`.
-                     *
-                     * In an organization chart,
-            the `nodeFormatter` is a quite complex
-                     * function of the available options,
-            striving for a good default
-                     * layout of cards with or without images. In organization chart,
-                     * the data labels come with `useHTML` set to true,
-            meaning they
-                     * will be rendered as true HTML above the SVG.
-                     *
-                     * @sample highcharts/series-organization/datalabels-nodeformatter
-                     *         Modify the default label format output
-                     *
-                     * @type  {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
-                     * @since 6.0.2
-                     */
-                    nodeFormatter: function () {
-                        var outerStyle = {
-                            width: '100%',
-                            height: '100%',
-                            display: 'flex',
-                            'flex-direction': 'row',
-                            'align-items': 'center',
-                            'justify-content': 'center'
-                        },
-            imageStyle = {
-                            'max-height': '100%',
-                            'border-radius': '50%'
-                        },
-            innerStyle = {
-                            width: '100%',
-                            padding: 0,
-                            'text-align': 'center',
-                            'white-space': 'normal'
-                        },
-            nameStyle = {
-                            margin: 0
-                        },
-            titleStyle = {
-                            margin: 0
-                        },
-            descriptionStyle = {
-                            opacity: 0.75,
-                            margin: '5px'
-                        };
+                nodeFormatter: function () {
+                    const outerStyle = {
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        'flex-direction': 'row',
+                        'align-items': 'center',
+                        'justify-content': 'center'
+                    }, imageStyle = {
+                        'max-height': '100%',
+                        'border-radius': '50%'
+                    }, innerStyle = {
+                        width: '100%',
+                        padding: 0,
+                        'text-align': 'center',
+                        'white-space': 'normal'
+                    }, nameStyle = {
+                        margin: 0
+                    }, titleStyle = {
+                        margin: 0
+                    }, descriptionStyle = {
+                        opacity: 0.75,
+                        margin: '5px'
+                    };
                     // eslint-disable-next-line valid-jsdoc
                     /**
                      * @private
@@ -361,10 +334,7 @@
                             return str + key + ':' + style[key] + ';';
                         }, 'style="') + '"';
                     }
-                    var _a = this.point,
-                        description = _a.description,
-                        image = _a.image,
-                        title = _a.title;
+                    const { description, image, title } = this.point;
                     if (image) {
                         imageStyle['max-width'] = '30%';
                         innerStyle.width = '70%';
@@ -378,7 +348,7 @@
                         innerStyle.left = image ? '30%' : 0;
                         innerStyle.top = 0;
                     }
-                    var html = '<div ' + styleAttr(outerStyle) + '>';
+                    let html = '<div ' + styleAttr(outerStyle) + '>';
                     if (image) {
                         html += '<img src="' + image + '" ' +
                             styleAttr(imageStyle) + '>';
@@ -405,9 +375,15 @@
                     /** @internal */
                     fontWeight: 'normal',
                     /** @internal */
-                    fontSize: '13px'
+                    fontSize: '0.9em'
                 },
-                useHTML: true
+                useHTML: true,
+                linkTextPath: {
+                    attributes: {
+                        startOffset: '95%',
+                        textAnchor: 'end'
+                    }
+                }
             },
             /**
              * The indentation in pixels of hanging nodes, nodes which parent has
@@ -550,6 +526,42 @@
          * @apioption series.organization.nodes.image
          */
         /**
+         * The format string specifying what to show for *links* in the
+         * organization chart.
+         *
+         * Best to use with [`linkTextPath`](#series.organization.dataLabels.linkTextPath) enabled.
+         *
+         * @sample highcharts/series-organization/link-labels
+         *         Organization chart with link labels
+         *
+         * @type      {string}
+         * @product   highcharts
+         * @apioption series.organization.dataLabels.linkFormat
+         * @since 11.0.0
+         */
+        /**
+         * Callback to format data labels for _links_ in the
+         * organization chart. The `linkFormat` option takes
+         * precedence over the `linkFormatter`.
+         *
+         * @type      {OrganizationDataLabelsFormatterCallbackFunction}
+         * @product   highcharts
+         * @apioption series.organization.dataLabels.linkFormatter
+         * @since 11.0.0
+         */
+        /**
+         * Options for a _link_ label text which should follow link
+         * connection.
+         *
+         * @sample highcharts/series-organization/link-labels
+         *         Organization chart with link labels
+         *
+         * @type { DataLabelTextPathOptions }
+         * @product highcharts
+         * @apioption series.organization.dataLabels.linkTextPath
+         * @since 11.0.0
+         */
+        /**
          * Layout for the node's children. If `hanging`, this node's children will hang
          * below their parent, allowing a tighter packing of nodes in the diagram.
          *
@@ -620,20 +632,73 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* *
-         *
-         *  Functions
-         *
-         * */
+        const getLinkPath = {
+            'default': getDefaultPath,
+            straight: getStraightPath,
+            curved: getCurvedPath
+        };
+        function getDefaultPath(pathParams) {
+            const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
+            const path = [
+                ['M', x1, y1],
+                ['L', x1, y1],
+                ['C', x1, y1, x1, y2, x1, y2],
+                ['L', x1, y2],
+                ['C', x1, y1, x1, y2, x1, y2],
+                ['L', x1, y2]
+            ];
+            return parentVisible ?
+                applyRadius([
+                    ['M', x1, y1],
+                    ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
+                    ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
+                    ['L', x2, y2]
+                ], radius) :
+                path;
+        }
+        function getStraightPath(pathParams) {
+            const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
+            return parentVisible ? [
+                ['M', x1, y1],
+                ['L', x1 + width * (inverted ? -1 : 1), y2],
+                ['L', x2, y2]
+            ] : [
+                ['M', x1, y1],
+                ['L', x1, y2],
+                ['L', x1, y2]
+            ];
+        }
+        function getCurvedPath(pathParams) {
+            const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
+            return parentVisible ?
+                [
+                    ['M', x1, y1],
+                    [
+                        'C',
+                        x1 + offset,
+                        y1,
+                        x1 - offset + width * (inverted ? -1 : 1),
+                        y2,
+                        x1 + width * (inverted ? -1 : 1),
+                        y2
+                    ],
+                    ['L', x2, y2]
+                ] :
+                [
+                    ['M', x1, y1],
+                    ['C', x1, y1, x1, y2, x1, y2],
+                    ['L', x2, y2]
+                ];
+        }
         /**
          * General function to apply corner radius to a path
          * @private
          */
-        function curvedPath(path, r) {
-            var d = [];
-            for (var i = 0; i < path.length; i++) {
-                var x = path[i][1];
-                var y = path[i][2];
+        function applyRadius(path, r) {
+            const d = [];
+            for (let i = 0; i < path.length; i++) {
+                const x = path[i][1];
+                const y = path[i][2];
                 if (typeof x === 'number' && typeof y === 'number') {
                     // moveTo
                     if (i === 0) {
@@ -644,13 +709,10 @@
                         // curveTo
                     }
                     else if (r) {
-                        var prevSeg = path[i - 1];
-                        var nextSeg = path[i + 1];
+                        const prevSeg = path[i - 1];
+                        const nextSeg = path[i + 1];
                         if (prevSeg && nextSeg) {
-                            var x1 = prevSeg[1],
-                                y1 = prevSeg[2],
-                                x2 = nextSeg[1],
-                                y2 = nextSeg[2];
+                            const x1 = prevSeg[1], y1 = prevSeg[2], x2 = nextSeg[1], y2 = nextSeg[2];
                             // Only apply to breaks
                             if (typeof x1 === 'number' &&
                                 typeof x2 === 'number' &&
@@ -658,8 +720,7 @@
                                 typeof y2 === 'number' &&
                                 x1 !== x2 &&
                                 y1 !== y2) {
-                                var directionX = x1 < x2 ? 1 : -1,
-                                    directionY = y1 < y2 ? 1 : -1;
+                                const directionX = x1 < x2 ? 1 : -1, directionY = y1 < y2 ? 1 : -1;
                                 d.push([
                                     'L',
                                     x - directionX * Math.min(Math.abs(x - x1), r),
@@ -684,9 +745,10 @@
             }
             return d;
         }
-        var PathUtilities = {
-                curvedPath: curvedPath
-            };
+        const PathUtilities = {
+            applyRadius,
+            getLinkPath
+        };
 
         return PathUtilities;
     });
@@ -702,27 +764,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SankeySeries = SeriesRegistry.seriesTypes.sankey;
-        var css = U.css,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        const { seriesTypes: { sankey: SankeySeries } } = SeriesRegistry;
+        const { css, extend, isNumber, merge, pick } = U;
         /* *
          *
          *  Class
@@ -735,16 +778,14 @@
          *
          * @augments Highcharts.seriesTypes.sankey
          */
-        var OrganizationSeries = /** @class */ (function (_super) {
-                __extends(OrganizationSeries, _super);
-            function OrganizationSeries() {
+        class OrganizationSeries extends SankeySeries {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Static Functions
@@ -755,10 +796,9 @@
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -767,26 +807,24 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            OrganizationSeries.prototype.alignDataLabel = function (point, dataLabel, options) {
+            alignDataLabel(point, dataLabel, options) {
                 // Align the data label to the point graphic
-                var shapeArgs = point.shapeArgs;
+                const shapeArgs = point.shapeArgs;
                 if (options.useHTML && shapeArgs) {
-                    var width_1 = shapeArgs.width || 0,
-                        height_1 = shapeArgs.height || 0,
-                        padjust = (this.options.borderWidth +
-                            2 * this.options.dataLabels.padding);
+                    let width = shapeArgs.width || 0, height = shapeArgs.height || 0, padjust = (this.options.borderWidth +
+                        2 * this.options.dataLabels.padding);
                     if (this.chart.inverted) {
-                        width_1 = height_1;
-                        height_1 = shapeArgs.width || 0;
+                        width = height;
+                        height = shapeArgs.width || 0;
                     }
-                    height_1 -= padjust;
-                    width_1 -= padjust;
+                    height -= padjust;
+                    width -= padjust;
                     // Set the size of the surrounding div emulating `g`
-                    var text = dataLabel.text;
+                    const text = dataLabel.text;
                     if (text) {
                         css(text.element.parentNode, {
-                            width: width_1 + 'px',
-                            height: height_1 + 'px'
+                            width: width + 'px',
+                            height: height + 'px'
                         });
                         // Set properties for the span emulating `text`
                         css(text.element, {
@@ -799,59 +837,23 @@
                     }
                     // The getBBox function is used in `alignDataLabel` to align
                     // inside the box
-                    dataLabel.getBBox = function () { return ({ width: width_1, height: height_1, x: 0, y: 0 }); };
+                    dataLabel.getBBox = () => ({ width, height, x: 0, y: 0 });
                     // Overwrite dataLabel dimensions (#13100).
-                    dataLabel.width = width_1;
-                    dataLabel.height = height_1;
+                    dataLabel.width = width;
+                    dataLabel.height = height;
                 }
-                _super.prototype.alignDataLabel.apply(this, arguments);
-            };
-            OrganizationSeries.prototype.createNode = function (id) {
-                var node = _super.prototype.createNode.call(this,
-                    id);
+                super.alignDataLabel.apply(this, arguments);
+            }
+            createNode(id) {
+                const node = super.createNode.call(this, id);
                 // All nodes in an org chart are equal width
-                node.getSum = function () { return 1; };
+                node.getSum = () => 1;
                 return node;
-            };
-            OrganizationSeries.prototype.pointAttribs = function (point, state) {
-                var series = this,
-                    attribs = SankeySeries.prototype.pointAttribs.call(series,
-                    point,
-                    state),
-                    level = point.isNode ? point.level : point.fromNode.level,
-                    levelOptions = series.mapOptionsToLevel[level || 0] || {},
-                    options = point.options,
-                    stateOptions = (levelOptions.states &&
-                        levelOptions.states[state]) ||
-                        {},
-                    borderRadius = pick(stateOptions.borderRadius,
-                    options.borderRadius,
-                    levelOptions.borderRadius,
-                    series.options.borderRadius),
-                    linkColor = pick(stateOptions.linkColor,
-                    options.linkColor,
-                    levelOptions.linkColor,
-                    series.options.linkColor,
-                    stateOptions.link && stateOptions.link.color,
-                    options.link && options.link.color,
-                    levelOptions.link && levelOptions.link.color,
-                    series.options.link && series.options.link.color),
-                    linkLineWidth = pick(stateOptions.linkLineWidth,
-                    options.linkLineWidth,
-                    levelOptions.linkLineWidth,
-                    series.options.linkLineWidth,
-                    stateOptions.link && stateOptions.link.lineWidth,
-                    options.link && options.link.lineWidth,
-                    levelOptions.link && levelOptions.link.lineWidth,
-                    series.options.link && series.options.link.lineWidth),
-                    linkOpacity = pick(stateOptions.linkOpacity,
-                    options.linkOpacity,
-                    levelOptions.linkOpacity,
-                    series.options.linkOpacity,
-                    stateOptions.link && stateOptions.link.linkOpacity,
-                    options.link && options.link.linkOpacity,
-                    levelOptions.link && levelOptions.link.linkOpacity,
-                    series.options.link && series.options.link.linkOpacity);
+            }
+            pointAttribs(point, state) {
+                const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
+                    levelOptions.states[state]) ||
+                    {}, borderRadius = pick(stateOptions.borderRadius, options.borderRadius, levelOptions.borderRadius, series.options.borderRadius), linkColor = pick(stateOptions.linkColor, options.linkColor, levelOptions.linkColor, series.options.linkColor, stateOptions.link && stateOptions.link.color, options.link && options.link.color, levelOptions.link && levelOptions.link.color, series.options.link && series.options.link.color), linkLineWidth = pick(stateOptions.linkLineWidth, options.linkLineWidth, levelOptions.linkLineWidth, series.options.linkLineWidth, stateOptions.link && stateOptions.link.lineWidth, options.link && options.link.lineWidth, levelOptions.link && levelOptions.link.lineWidth, series.options.link && series.options.link.lineWidth), linkOpacity = pick(stateOptions.linkOpacity, options.linkOpacity, levelOptions.linkOpacity, series.options.linkOpacity, stateOptions.link && stateOptions.link.linkOpacity, options.link && options.link.linkOpacity, levelOptions.link && levelOptions.link.linkOpacity, series.options.link && series.options.link.linkOpacity);
                 if (!point.isNode) {
                     attribs.stroke = linkColor;
                     attribs['stroke-width'] = linkLineWidth;
@@ -859,34 +861,19 @@
                     delete attribs.fill;
                 }
                 else {
-                    if (borderRadius) {
+                    if (isNumber(borderRadius)) {
                         attribs.r = borderRadius;
                     }
                 }
                 return attribs;
-            };
-            OrganizationSeries.prototype.translateLink = function (point) {
-                var fromNode = point.fromNode,
-                    toNode = point.toNode,
-                    linkWidth = pick(this.options.linkLineWidth,
-                    this.options.link.lineWidth),
-                    crisp = (Math.round(linkWidth) % 2) / 2,
-                    factor = pick(this.options.link.offset, 0.5),
-                    type = pick(point.options.link && point.options.link.type,
-                    this.options.link.type);
+            }
+            translateLink(point) {
+                let fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(this.options.linkLineWidth, this.options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, this.options.link.type);
                 if (fromNode.shapeArgs && toNode.shapeArgs) {
-                    var x1 = Math.floor((fromNode.shapeArgs.x || 0) +
-                            (fromNode.shapeArgs.width || 0)) + crisp,
-                        y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                            (fromNode.shapeArgs.height || 0) / 2) + crisp,
-                        x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp,
-                        y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                            (toNode.shapeArgs.height || 0) / 2) + crisp,
-                        xMiddle = void 0,
-                        hangingIndent = this.options.hangingIndent,
-                        toOffset = toNode.options.offset,
-                        percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10),
-                        inverted = this.chart.inverted;
+                    let x1 = Math.floor((fromNode.shapeArgs.x || 0) +
+                        (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
+                        (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
+                        (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle, hangingIndent = this.options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = this.chart.inverted;
                     if (inverted) {
                         x1 -= (fromNode.shapeArgs.width || 0);
                         x2 += (toNode.shapeArgs.width || 0);
@@ -935,7 +922,7 @@
                         };
                     }
                     else if (type === 'curved') {
-                        var offset = Math.abs(x2 - x1) * factor * (inverted ? -1 : 1);
+                        const offset = Math.abs(x2 - x1) * factor * (inverted ? -1 : 1);
                         point.shapeArgs = {
                             d: [
                                 ['M', x1, y1],
@@ -945,7 +932,7 @@
                     }
                     else {
                         point.shapeArgs = {
-                            d: PathUtilities.curvedPath([
+                            d: PathUtilities.applyRadius([
                                 ['M', x1, y1],
                                 ['L', xMiddle, y1],
                                 ['L', xMiddle, y2],
@@ -960,15 +947,10 @@
                         width: 0
                     };
                 }
-            };
-            OrganizationSeries.prototype.translateNode = function (node, column) {
+            }
+            translateNode(node, column) {
                 SankeySeries.prototype.translateNode.call(this, node, column);
-                var parentNode = node.hangsFrom,
-                    indent = this.options.hangingIndent || 0,
-                    sign = this.chart.inverted ? -1 : 1,
-                    shapeArgs = node.shapeArgs,
-                    indentLogic = this.options.hangingIndentTranslation,
-                    minLength = this.options.minNodeLength || 10;
+                let parentNode = node.hangsFrom, indent = this.options.hangingIndent || 0, sign = this.chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = this.options.hangingIndentTranslation, minLength = this.options.minNodeLength || 10;
                 if (parentNode) {
                     if (indentLogic === 'cumulative') {
                         // Move to the right:
@@ -999,10 +981,18 @@
                 node.nodeHeight = this.chart.inverted ?
                     shapeArgs.width :
                     shapeArgs.height;
-            };
-            OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
-            return OrganizationSeries;
-        }(SankeySeries));
+            }
+            drawDataLabels() {
+                const dlOptions = this.options.dataLabels;
+                if (dlOptions.linkTextPath && dlOptions.linkTextPath.enabled) {
+                    for (const link of this.points) {
+                        link.options.dataLabels = merge(link.options.dataLabels, { useHTML: false });
+                    }
+                }
+                super.drawDataLabels();
+            }
+        }
+        OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
         extend(OrganizationSeries.prototype, {
             pointClass: OrganizationPoint
         });

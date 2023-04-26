@@ -9,9 +9,9 @@
  * */
 'use strict';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
-var columnProto = SeriesRegistry.seriesTypes.column.prototype;
+const { column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined;
+const { addEvent, defined } = U;
 /* *
  *
  *  Composition
@@ -24,7 +24,7 @@ var ColorMapComposition;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
@@ -48,9 +48,8 @@ var ColorMapComposition;
      * @private
      */
     function compose(SeriesClass) {
-        var PointClass = SeriesClass.prototype.pointClass;
-        if (composedClasses.indexOf(PointClass) === -1) {
-            composedClasses.push(PointClass);
+        const PointClass = SeriesClass.prototype.pointClass;
+        if (U.pushUnique(composedMembers, PointClass)) {
             addEvent(PointClass, 'afterSetState', onPointAfterSetState);
         }
         return SeriesClass;
@@ -61,7 +60,7 @@ var ColorMapComposition;
      * @private
      */
     function onPointAfterSetState(e) {
-        var point = this;
+        const point = this;
         if (point.moveToTopOnHover && point.graphic) {
             point.graphic.attr({
                 zIndex: e && e.state === 'hover' ? 1 : 0
@@ -89,7 +88,7 @@ var ColorMapComposition;
      *         The SVG attributes
      */
     function seriesColorAttribs(point) {
-        var ret = {};
+        const ret = {};
         if (defined(point.color) &&
             (!point.state || point.state === 'normal') // #15746
         ) {

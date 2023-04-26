@@ -12,13 +12,13 @@
 'use strict';
 import H from '../../../Core/Globals.js';
 import U from '../../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined;
+const { addEvent, defined } = U;
 import Announcer from '../../Utils/Announcer.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
-var getChartTitle = ChartUtilities.getChartTitle;
+const { getChartTitle } = ChartUtilities;
 import EventProvider from '../../Utils/EventProvider.js';
 import SeriesDescriber from './SeriesDescriber.js';
-var defaultPointDescriptionFormatter = SeriesDescriber.defaultPointDescriptionFormatter, defaultSeriesDescriptionFormatter = SeriesDescriber.defaultSeriesDescriptionFormatter;
+const { defaultPointDescriptionFormatter, defaultSeriesDescriptionFormatter } = SeriesDescriber;
 /* *
  *
  *  Functions
@@ -35,7 +35,7 @@ function chartHasAnnounceEnabled(chart) {
  * @private
  */
 function findPointInDataArray(point) {
-    var candidates = point.series.data.filter(function (candidate) { return (point.x === candidate.x && point.y === candidate.y); });
+    const candidates = point.series.data.filter((candidate) => (point.x === candidate.x && point.y === candidate.y));
     return candidates.length === 1 ? candidates[0] : point;
 }
 /**
@@ -43,13 +43,13 @@ function findPointInDataArray(point) {
  * @private
  */
 function getUniqueSeries(arrayA, arrayB) {
-    var uniqueSeries = (arrayA || []).concat(arrayB || []).reduce(function (acc, cur) {
+    const uniqueSeries = (arrayA || []).concat(arrayB || []).reduce((acc, cur) => {
         acc[cur.name + cur.index] = cur;
         return acc;
     }, {});
     return Object
         .keys(uniqueSeries)
-        .map(function (ix) { return uniqueSeries[ix]; });
+        .map((ix) => uniqueSeries[ix]);
 }
 /* *
  *
@@ -60,13 +60,13 @@ function getUniqueSeries(arrayA, arrayB) {
  * @private
  * @class
  */
-var NewDataAnnouncer = /** @class */ (function () {
+class NewDataAnnouncer {
     /* *
      *
      *  Constructor
      *
      * */
-    function NewDataAnnouncer(chart) {
+    constructor(chart) {
         /* *
          *
          *  Public
@@ -90,10 +90,10 @@ var NewDataAnnouncer = /** @class */ (function () {
      * Initialize the new data announcer.
      * @private
      */
-    NewDataAnnouncer.prototype.init = function () {
-        var chart = this.chart;
-        var announceOptions = (chart.options.accessibility.announceNewData);
-        var announceType = announceOptions.interruptUser ?
+    init() {
+        const chart = this.chart;
+        const announceOptions = (chart.options.accessibility.announceNewData);
+        const announceType = announceOptions.interruptUser ?
             'assertive' : 'polite';
         this.lastAnnouncementTime = 0;
         this.dirty = {
@@ -102,21 +102,21 @@ var NewDataAnnouncer = /** @class */ (function () {
         this.eventProvider = new EventProvider();
         this.announcer = new Announcer(chart, announceType);
         this.addEventListeners();
-    };
+    }
     /**
      * Remove traces of announcer.
      * @private
      */
-    NewDataAnnouncer.prototype.destroy = function () {
+    destroy() {
         this.eventProvider.removeAddedEvents();
         this.announcer.destroy();
-    };
+    }
     /**
      * Add event listeners for the announcer
      * @private
      */
-    NewDataAnnouncer.prototype.addEventListeners = function () {
-        var announcer = this, chart = this.chart, e = this.eventProvider;
+    addEventListeners() {
+        const announcer = this, chart = this.chart, e = this.eventProvider;
         e.addEvent(chart, 'afterApplyDrilldown', function () {
             announcer.lastAnnouncementTime = 0;
         });
@@ -126,13 +126,13 @@ var NewDataAnnouncer = /** @class */ (function () {
         e.addEvent(chart, 'redraw', function () {
             announcer.announceDirtyData();
         });
-    };
+    }
     /**
      * On new data series added, update dirty list.
      * @private
      * @param {Highcharts.Series} series
      */
-    NewDataAnnouncer.prototype.onSeriesAdded = function (series) {
+    onSeriesAdded(series) {
         if (chartHasAnnounceEnabled(this.chart)) {
             this.dirty.hasDirty = true;
             this.dirty.allSeries[series.name + series.index] = series;
@@ -140,16 +140,16 @@ var NewDataAnnouncer = /** @class */ (function () {
             this.dirty.newSeries = defined(this.dirty.newSeries) ?
                 void 0 : series;
         }
-    };
+    }
     /**
      * Gather what we know and announce the data to user.
      * @private
      */
-    NewDataAnnouncer.prototype.announceDirtyData = function () {
-        var chart = this.chart, announcer = this;
+    announceDirtyData() {
+        const chart = this.chart, announcer = this;
         if (chart.options.accessibility.announceNewData &&
             this.dirty.hasDirty) {
-            var newPoint = this.dirty.newPoint;
+            let newPoint = this.dirty.newPoint;
             // If we have a single new point, see if we can find it in the
             // data array. Otherwise we can only pass through options to
             // the description builder, and it is a bit sparse in info.
@@ -158,15 +158,13 @@ var NewDataAnnouncer = /** @class */ (function () {
             }
             this.queueAnnouncement(Object
                 .keys(this.dirty.allSeries)
-                .map(function (ix) {
-                return announcer.dirty.allSeries[ix];
-            }), this.dirty.newSeries, newPoint);
+                .map((ix) => announcer.dirty.allSeries[ix]), this.dirty.newSeries, newPoint);
             // Reset
             this.dirty = {
                 allSeries: {}
             };
         }
-    };
+    }
     /**
      * Announce to user that there is new data.
      * @private
@@ -177,18 +175,17 @@ var NewDataAnnouncer = /** @class */ (function () {
      * @param {Highcharts.Point} [newPoint]
      *          If a single point was added, a reference to this point.
      */
-    NewDataAnnouncer.prototype.queueAnnouncement = function (dirtySeries, newSeries, newPoint) {
-        var _this = this;
-        var chart = this.chart;
-        var annOptions = chart.options.accessibility.announceNewData;
+    queueAnnouncement(dirtySeries, newSeries, newPoint) {
+        const chart = this.chart;
+        const annOptions = chart.options.accessibility.announceNewData;
         if (annOptions.enabled) {
-            var now = +new Date();
-            var dTime = now - this.lastAnnouncementTime;
-            var time = Math.max(0, annOptions.minAnnounceInterval - dTime);
+            const now = +new Date();
+            const dTime = now - this.lastAnnouncementTime;
+            const time = Math.max(0, annOptions.minAnnounceInterval - dTime);
             // Add series from previously queued announcement.
-            var allSeries = getUniqueSeries(this.queuedAnnouncement && this.queuedAnnouncement.series, dirtySeries);
+            const allSeries = getUniqueSeries(this.queuedAnnouncement && this.queuedAnnouncement.series, dirtySeries);
             // Build message and announce
-            var message = this.buildAnnouncementMessage(allSeries, newSeries, newPoint);
+            const message = this.buildAnnouncementMessage(allSeries, newSeries, newPoint);
             if (message) {
                 // Is there already one queued?
                 if (this.queuedAnnouncement) {
@@ -201,17 +198,17 @@ var NewDataAnnouncer = /** @class */ (function () {
                     series: allSeries
                 };
                 // Queue the announcement
-                this.queuedAnnouncementTimer = setTimeout(function () {
-                    if (_this && _this.announcer) {
-                        _this.lastAnnouncementTime = +new Date();
-                        _this.announcer.announce(_this.queuedAnnouncement.message);
-                        delete _this.queuedAnnouncement;
-                        delete _this.queuedAnnouncementTimer;
+                this.queuedAnnouncementTimer = setTimeout(() => {
+                    if (this && this.announcer) {
+                        this.lastAnnouncementTime = +new Date();
+                        this.announcer.announce(this.queuedAnnouncement.message);
+                        delete this.queuedAnnouncement;
+                        delete this.queuedAnnouncementTimer;
                     }
                 }, time);
             }
         }
-    };
+    }
     /**
      * Get announcement message for new data.
      * @private
@@ -225,17 +222,17 @@ var NewDataAnnouncer = /** @class */ (function () {
      * @return {string|null}
      * The announcement message to give to user.
      */
-    NewDataAnnouncer.prototype.buildAnnouncementMessage = function (dirtySeries, newSeries, newPoint) {
-        var chart = this.chart, annOptions = chart.options.accessibility.announceNewData;
+    buildAnnouncementMessage(dirtySeries, newSeries, newPoint) {
+        const chart = this.chart, annOptions = chart.options.accessibility.announceNewData;
         // User supplied formatter?
         if (annOptions.announcementFormatter) {
-            var formatterRes = annOptions.announcementFormatter(dirtySeries, newSeries, newPoint);
+            const formatterRes = annOptions.announcementFormatter(dirtySeries, newSeries, newPoint);
             if (formatterRes !== false) {
                 return formatterRes.length ? formatterRes : null;
             }
         }
         // Default formatter - use lang options
-        var multiple = H.charts && H.charts.length > 1 ?
+        const multiple = H.charts && H.charts.length > 1 ?
             'Multiple' : 'Single', langKey = newSeries ? 'newSeriesAnnounce' + multiple :
             newPoint ? 'newPointAnnounce' + multiple : 'newDataAnnounce', chartTitle = getChartTitle(chart);
         return chart.langFormat('accessibility.announceNewData.' + langKey, {
@@ -249,9 +246,8 @@ var NewDataAnnouncer = /** @class */ (function () {
             point: newPoint,
             series: newSeries
         });
-    };
-    return NewDataAnnouncer;
-}());
+    }
+}
 /* *
  *
  *  Class Namespace
@@ -268,7 +264,7 @@ var NewDataAnnouncer = /** @class */ (function () {
      *  Static Properties
      *
      * */
-    NewDataAnnouncer.composedClasses = [];
+    NewDataAnnouncer.composedMembers = [];
     /* *
      *
      *  Static Functions
@@ -278,8 +274,7 @@ var NewDataAnnouncer = /** @class */ (function () {
      * @private
      */
     function compose(SeriesClass) {
-        if (NewDataAnnouncer.composedClasses.indexOf(SeriesClass) === -1) {
-            NewDataAnnouncer.composedClasses.push(SeriesClass);
+        if (U.pushUnique(NewDataAnnouncer.composedMembers, SeriesClass)) {
             addEvent(SeriesClass, 'addPoint', seriesOnAddPoint);
             addEvent(SeriesClass, 'updatedData', seriesOnUpdatedData);
         }
@@ -291,7 +286,7 @@ var NewDataAnnouncer = /** @class */ (function () {
      * @param {Highcharts.Point} point
      */
     function seriesOnAddPoint(e) {
-        var chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
+        const chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
         if (newDataAnnouncer &&
             newDataAnnouncer.chart === chart &&
             chartHasAnnounceEnabled(chart)) {
@@ -307,7 +302,7 @@ var NewDataAnnouncer = /** @class */ (function () {
      * @param {Highcharts.Series} series
      */
     function seriesOnUpdatedData() {
-        var chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
+        const chart = this.chart, newDataAnnouncer = this.newDataAnnouncer;
         if (newDataAnnouncer &&
             newDataAnnouncer.chart === chart &&
             chartHasAnnounceEnabled(chart)) {

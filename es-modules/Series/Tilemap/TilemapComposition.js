@@ -18,7 +18,7 @@
  * */
 import Axis from '../../Core/Axis/Axis.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent;
+const { addEvent } = U;
 /* *
  *
  *  Composition
@@ -32,7 +32,7 @@ addEvent(Axis, 'afterSetAxisTranslation', function () {
     if (this.recomputingForTilemap || this.coll === 'colorAxis') {
         return;
     }
-    var axis = this, 
+    const axis = this, 
     // Find which series' padding to use
     seriesPadding = axis.series
         .map(function (series) {

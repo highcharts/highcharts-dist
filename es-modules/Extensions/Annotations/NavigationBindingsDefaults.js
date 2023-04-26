@@ -9,9 +9,9 @@
  * */
 'use strict';
 import NBU from './NavigationBindingsUtilities.js';
-var getAssignedAxis = NBU.getAssignedAxis;
+const { getAssignedAxis } = NBU;
 import U from '../../Core/Utilities.js';
-var isNumber = U.isNumber, merge = U.merge;
+const { isNumber, merge } = U;
 /* *
  *
  *  Constants
@@ -20,7 +20,7 @@ var isNumber = U.isNumber, merge = U.merge;
 /**
  * @optionparent lang
  */
-var lang = {
+const lang = {
     /**
      * Configure the Popup strings in the chart. Requires the
      * `annotations.js` or `annotations-advanced.src.js` module to be
@@ -69,7 +69,7 @@ var lang = {
  * @optionparent navigation
  * @product      highcharts highstock
  */
-var navigation = {
+const navigation = {
     /**
      * A CSS class name where all bindings will be attached to. Multiple
      * charts on the same page should have separate class names to prevent
@@ -122,7 +122,7 @@ var navigation = {
             className: 'highcharts-circle-annotation',
             /** @ignore-option */
             start: function (e) {
-                var coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 // Exit if clicked out of axes area
                 if (!coordsX || !coordsY) {
                     return;
@@ -146,12 +146,12 @@ var navigation = {
             /** @ignore-option */
             steps: [
                 function (e, annotation) {
-                    var shapes = annotation.options.shapes, mockPointOpts = ((shapes && shapes[0] && shapes[0].point) ||
+                    const shapes = annotation.options.shapes, mockPointOpts = ((shapes && shapes[0] && shapes[0].point) ||
                         {});
-                    var distance;
+                    let distance;
                     if (isNumber(mockPointOpts.xAxis) &&
                         isNumber(mockPointOpts.yAxis)) {
-                        var inverted = this.chart.inverted, x = this.chart.xAxis[mockPointOpts.xAxis]
+                        const inverted = this.chart.inverted, x = this.chart.xAxis[mockPointOpts.xAxis]
                             .toPixels(mockPointOpts.x), y = this.chart.yAxis[mockPointOpts.yAxis]
                             .toPixels(mockPointOpts.y);
                         distance = Math.max(Math.sqrt(Math.pow(inverted ? y - e.chartX : x - e.chartX, 2) +
@@ -176,7 +176,7 @@ var navigation = {
         ellipseAnnotation: {
             className: 'highcharts-ellipse-annotation',
             start: function (e) {
-                var coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 if (!coordsX || !coordsY) {
                     return;
                 }
@@ -203,12 +203,12 @@ var navigation = {
             },
             steps: [
                 function (e, annotation) {
-                    var target = annotation.shapes[0], position = target.getAbsolutePosition(target.points[1]);
+                    const target = annotation.shapes[0], position = target.getAbsolutePosition(target.points[1]);
                     target.translatePoint(e.chartX - position.x, e.chartY - position.y, 1);
                     target.redraw(false);
                 },
                 function (e, annotation) {
-                    var target = annotation.shapes[0], position = target.getAbsolutePosition(target.points[0]), position2 = target.getAbsolutePosition(target.points[1]), newR = target.getDistanceFromLine(position, position2, e.chartX, e.chartY), yAxis = target.getYAxis(), newRY = Math.abs(yAxis.toValue(0) - yAxis.toValue(newR));
+                    const target = annotation.shapes[0], position = target.getAbsolutePosition(target.points[0]), position2 = target.getAbsolutePosition(target.points[1]), newR = target.getDistanceFromLine(position, position2, e.chartX, e.chartY), yAxis = target.getYAxis(), newRY = Math.abs(yAxis.toValue(0) - yAxis.toValue(newR));
                     target.setYRadius(newRY);
                     target.redraw(false);
                 }
@@ -226,22 +226,22 @@ var navigation = {
             className: 'highcharts-rectangle-annotation',
             /** @ignore-option */
             start: function (e) {
-                var coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
+                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
                 // Exit if clicked out of axes area
                 if (!coordsX || !coordsY) {
                     return;
                 }
-                var x = coordsX.value, y = coordsY.value, xAxis = coordsX.axis.options.index, yAxis = coordsY.axis.options.index, navigation = this.chart.options.navigation;
+                const x = coordsX.value, y = coordsY.value, xAxis = coordsX.axis.options.index, yAxis = coordsY.axis.options.index, navigation = this.chart.options.navigation;
                 return this.chart.addAnnotation(merge({
                     langKey: 'rectangle',
                     type: 'basicAnnotation',
                     shapes: [{
                             type: 'path',
                             points: [
-                                { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
-                                { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
-                                { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
-                                { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
+                                { xAxis, yAxis, x, y },
+                                { xAxis, yAxis, x, y },
+                                { xAxis, yAxis, x, y },
+                                { xAxis, yAxis, x, y },
                                 { command: 'Z' }
                             ]
                         }]
@@ -254,10 +254,10 @@ var navigation = {
             /** @ignore-option */
             steps: [
                 function (e, annotation) {
-                    var shapes = annotation.options.shapes, points = ((shapes && shapes[0] && shapes[0].points) ||
+                    const shapes = annotation.options.shapes, points = ((shapes && shapes[0] && shapes[0].points) ||
                         []), coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
                     if (coordsX && coordsY) {
-                        var x = coordsX.value, y = coordsY.value;
+                        const x = coordsX.value, y = coordsY.value;
                         // Top right point
                         points[1].x = x;
                         // Bottom right point (cursor position)
@@ -285,7 +285,7 @@ var navigation = {
             className: 'highcharts-label-annotation',
             /** @ignore-option */
             start: function (e) {
-                var coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                const coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
                 // Exit if clicked out of axes area
                 if (!coordsX || !coordsY) {
                     return;
@@ -319,7 +319,7 @@ var navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/10.3.3/gfx/stock-icons/
+     * @default   https://code.highcharts.com/11.0.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */
@@ -389,8 +389,8 @@ var navigation = {
  *  Default Export
  *
  * */
-var NavigationBindingDefaults = {
-    lang: lang,
-    navigation: navigation
+const NavigationBindingDefaults = {
+    lang,
+    navigation
 };
 export default NavigationBindingDefaults;

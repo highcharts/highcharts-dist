@@ -1,40 +1,33 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
  * Sonification module
  *
- * (c) 2012-2021 Øystein Moseng
+ * (c) 2010-2022 Highsoft AS
+ * Author: Øystein Moseng
  *
  * License: www.highcharts.com/license
  */
 'use strict';
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 import Highcharts from '../../Core/Globals.js';
-import ChartSonify from '../../Extensions/Sonification/ChartSonify.js';
-import Earcon from '../../Extensions/Sonification/Earcon.js';
-import Instrument from '../../Extensions/Sonification/Instrument.js';
-import PointSonify from '../../Extensions/Sonification/PointSonify.js';
-import SeriesSonify from '../../Extensions/Sonification/SeriesSonify.js';
 import Sonification from '../../Extensions/Sonification/Sonification.js';
-import Timeline from '../../Extensions/Sonification/Timeline.js';
-import TimelineEvent from '../../Extensions/Sonification/TimelineEvent.js';
-import TimelinePath from '../../Extensions/Sonification/TimelinePath.js';
-var G = Highcharts;
-G.sonification = __assign(__assign({}, Sonification), { instruments: Instrument.definitions, Earcon: Earcon, Instrument: Instrument, Timeline: Timeline, TimelineEvent: TimelineEvent, TimelinePath: TimelinePath });
-G.Earcon = Earcon;
-G.Instrument = Instrument;
-ChartSonify.compose(G.Chart);
-SeriesSonify.compose(G.Series);
-PointSonify.compose(G.Point);
+import SynthPatch from '../../Extensions/Sonification/SynthPatch.js';
+import InstrumentPresets from '../../Extensions/Sonification/InstrumentPresets.js';
+import Scales from '../../Extensions/Sonification/Scales.js';
+import SonificationInstrument from '../../Extensions/Sonification/SonificationInstrument.js';
+import SonificationSpeaker from '../../Extensions/Sonification/SonificationSpeaker.js';
+import SonificationTimeline from '../../Extensions/Sonification/SonificationTimeline.js';
+const G = Highcharts;
+// Global objects
+G.sonification = {
+    InstrumentPresets,
+    Scales,
+    SynthPatch,
+    SonificationInstrument,
+    SonificationSpeaker,
+    SonificationTimeline,
+    Sonification
+};
+Sonification.compose(G.Chart, G.Series, G.Point);

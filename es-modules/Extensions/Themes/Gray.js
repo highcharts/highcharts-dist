@@ -11,7 +11,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 /* *
  *
  *  Theme
@@ -109,11 +109,6 @@ var GrayTheme;
                 style: {
                     color: '#E0E0E0'
                 }
-            }
-        },
-        labels: {
-            style: {
-                color: '#CCC'
             }
         },
         tooltip: {

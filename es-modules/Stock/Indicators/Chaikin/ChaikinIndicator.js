@@ -6,26 +6,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import AD from '../AD/ADIndicator.js'; // For historic reasons, AD is built into Chaikin
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var EMAIndicator = SeriesRegistry.seriesTypes.ema;
+const { ema: EMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U.error;
+const { correctFloat, extend, merge, error } = U;
 /* *
  *
  *  Class
@@ -40,47 +25,41 @@ var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U
  *
  * @augments Highcharts.Series
  */
-var ChaikinIndicator = /** @class */ (function (_super) {
-    __extends(ChaikinIndicator, _super);
-    function ChaikinIndicator() {
+class ChaikinIndicator extends EMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    ChaikinIndicator.prototype.getValues = function (series, params) {
-        var periods = params.periods, period = params.period, 
-        // Accumulation Distribution Line data
-        ADL, 
+    getValues(series, params) {
+        const periods = params.periods, period = params.period, 
         // 0- date, 1- Chaikin Oscillator
-        CHA = [], xData = [], yData = [], periodsOffset, 
-        // Shorter Period EMA
-        SPE, 
-        // Longer Period EMA
-        LPE, oscillator, i;
+        CHA = [], xData = [], yData = [];
+        let oscillator, i;
         // Check if periods are correct
         if (periods.length !== 2 || periods[1] <= periods[0]) {
             error('Error: "Chaikin requires two periods. Notice, first ' +
                 'period should be lower than the second one."');
             return;
         }
-        ADL = AD.prototype.getValues.call(this, series, {
+        // Accumulation Distribution Line data
+        const ADL = AD.prototype.getValues.call(this, series, {
             volumeSeriesID: params.volumeSeriesID,
             period: period
         });
@@ -88,17 +67,19 @@ var ChaikinIndicator = /** @class */ (function (_super) {
         if (!ADL) {
             return;
         }
-        SPE = EMAIndicator.prototype.getValues.call(this, ADL, {
+        // Shorter Period EMA
+        const SPE = super.getValues.call(this, ADL, {
             period: periods[0]
         });
-        LPE = EMAIndicator.prototype.getValues.call(this, ADL, {
+        // Longer Period EMA
+        const LPE = super.getValues.call(this, ADL, {
             period: periods[1]
         });
         // Check if ema is calculated properly, if not skip
         if (!SPE || !LPE) {
             return;
         }
-        periodsOffset = periods[1] - periods[0];
+        const periodsOffset = periods[1] - periods[0];
         for (i = 0; i < LPE.yData.length; i++) {
             oscillator = correctFloat(SPE.yData[i + periodsOffset] -
                 LPE.yData[i]);
@@ -111,56 +92,55 @@ var ChaikinIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Chaikin Oscillator. This series requires the `linkedTo` option to
+ * be set and should be loaded after the `stock/indicators/indicators.js`.
+ *
+ * @sample {highstock} stock/indicators/chaikin
+ *         Chaikin Oscillator
+ *
+ * @extends      plotOptions.ema
+ * @since        7.0.0
+ * @product      highstock
+ * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *               pointInterval, pointIntervalUnit, pointPlacement,
+ *               pointRange, pointStart, showInNavigator, stacking
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/chaikin
+ * @optionparent plotOptions.chaikin
+ */
+ChaikinIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
-     * Chaikin Oscillator. This series requires the `linkedTo` option to
-     * be set and should be loaded after the `stock/indicators/indicators.js`.
+     * Paramters used in calculation of Chaikin Oscillator
+     * series points.
      *
-     * @sample {highstock} stock/indicators/chaikin
-     *         Chaikin Oscillator
-     *
-     * @extends      plotOptions.ema
-     * @since        7.0.0
-     * @product      highstock
-     * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
-     *               pointInterval, pointIntervalUnit, pointPlacement,
-     *               pointRange, pointStart, showInNavigator, stacking
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/chaikin
-     * @optionparent plotOptions.chaikin
+     * @excluding index
      */
-    ChaikinIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
+    params: {
+        index: void 0,
         /**
-         * Paramters used in calculation of Chaikin Oscillator
-         * series points.
-         *
-         * @excluding index
+         * The id of volume series which is mandatory.
+         * For example using OHLC data, volumeSeriesID='volume' means
+         * the indicator will be calculated using OHLC and volume values.
          */
-        params: {
-            index: void 0,
-            /**
-             * The id of volume series which is mandatory.
-             * For example using OHLC data, volumeSeriesID='volume' means
-             * the indicator will be calculated using OHLC and volume values.
-             */
-            volumeSeriesID: 'volume',
-            /**
-             * Parameter used indirectly for calculating the `AD` indicator.
-             * Decides about the number of data points that are taken
-             * into account for the indicator calculations.
-             */
-            period: 9,
-            /**
-             * Periods for Chaikin Oscillator calculations.
-             *
-             * @type    {Array<number>}
-             * @default [3, 10]
-             */
-            periods: [3, 10]
-        }
-    });
-    return ChaikinIndicator;
-}(EMAIndicator));
+        volumeSeriesID: 'volume',
+        /**
+         * Parameter used indirectly for calculating the `AD` indicator.
+         * Decides about the number of data points that are taken
+         * into account for the indicator calculations.
+         */
+        period: 9,
+        /**
+         * Periods for Chaikin Oscillator calculations.
+         *
+         * @type    {Array<number>}
+         * @default [3, 10]
+         */
+        periods: [3, 10]
+    }
+});
 extend(ChaikinIndicator.prototype, {
     nameBase: 'Chaikin Osc',
     nameComponents: ['periods']

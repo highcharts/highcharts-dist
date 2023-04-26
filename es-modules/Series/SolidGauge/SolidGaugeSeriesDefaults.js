@@ -28,7 +28,7 @@
  * @requires     modules/solid-gauge
  * @optionparent plotOptions.solidgauge
  */
-var SolidGaugeSeriesDefaults = {
+const SolidGaugeSeriesDefaults = {
     /**
      * The inner radius for points in a solid gauge. Can be given only in
      * percentage, either as a number or a string like `"50%"`.
@@ -81,7 +81,11 @@ var SolidGaugeSeriesDefaults = {
      * @apioption plotOptions.solidgauge.radius
      */
     /**
-     * Whether to draw rounded edges on the gauge.
+     * Whether to draw rounded edges on the gauge. This options adds the radius
+     * of the rounding to the ends of the arc, so it extends past the actual
+     * values. When `borderRadius` is set, it takes precedence over `rounded`. A
+     * `borderRadius` of 50% behaves like `rounded`, except the shape is not
+     * extended past its value.
      *
      * @sample {highcharts} highcharts/demo/gauge-activity/
      *         Activity Gauge

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Data module
  *
@@ -48,7 +48,10 @@
          *
          * */
         var doc = G.doc;
-        var createElement = U.createElement, discardElement = U.discardElement, merge = U.merge, objectEach = U.objectEach;
+        var createElement = U.createElement,
+            discardElement = U.discardElement,
+            merge = U.merge,
+            objectEach = U.objectEach;
         /* *
          *
          *  Functions
@@ -67,11 +70,12 @@
          */
         function ajax(settings) {
             var headers = {
-                json: 'application/json',
-                xml: 'application/xml',
-                text: 'text/plain',
-                octet: 'application/octet-stream'
-            }, r = new XMLHttpRequest();
+                    json: 'application/json',
+                    xml: 'application/xml',
+                    text: 'text/plain',
+                    octet: 'application/octet-stream'
+                },
+                r = new XMLHttpRequest();
             /**
              * Private error handler.
              * @private
@@ -168,13 +172,16 @@
          */
         function post(url, data, formAttributes) {
             // create the form
-            var form = createElement('form', merge({
-                method: 'post',
-                action: url,
-                enctype: 'multipart/form-data'
-            }, formAttributes), {
-                display: 'none'
-            }, doc.body);
+            var form = createElement('form',
+                merge({
+                    method: 'post',
+                    action: url,
+                    enctype: 'multipart/form-data'
+                },
+                formAttributes), {
+                    display: 'none'
+                },
+                doc.body);
             // add the data
             objectEach(data, function (val, name) {
                 createElement('input', {
@@ -194,10 +201,10 @@
          *
          * */
         var HttpUtilities = {
-            ajax: ajax,
-            getJSON: getJSON,
-            post: post
-        };
+                ajax: ajax,
+                getJSON: getJSON,
+                post: post
+            };
         /* *
          *
          *  API Declarations
@@ -255,7 +262,15 @@
         var doc = G.doc;
         var ajax = HU.ajax;
         var seriesTypes = SeriesRegistry.seriesTypes;
-        var addEvent = U.addEvent, defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            splat = U.splat;
         /* *
          *
          *  Functions
@@ -265,8 +280,11 @@
          * @private
          */
         function getFreeIndexes(numberOfColumns, seriesBuilders) {
-            var freeIndexes = [], freeIndexValues = [];
-            var s, i, referencedIndexes;
+            var freeIndexes = [],
+                freeIndexValues = [];
+            var s,
+                i,
+                referencedIndexes;
             // Add all columns as free
             for (i = 0; i < numberOfColumns; i = i + 1) {
                 freeIndexes.push(true);
@@ -310,28 +328,28 @@
          * @param {Highcharts.Chart} [chart]
          */
         var Data = /** @class */ (function () {
-            /* *
-             *
-             *  Constructors
-             *
-             * */
-            function Data(dataOptions, chartOptions, chart) {
-                if (chartOptions === void 0) { chartOptions = {}; }
-                this.rowsToColumns = Data.rowsToColumns; // backwards compatibility
-                /**
-                 * A collection of available date formats, extendable from the outside to
-                 * support custom date formats.
+                /* *
                  *
-                 * @name Highcharts.Data#dateFormats
-                 * @type {Highcharts.Dictionary<Highcharts.DataDateFormatObject>}
-                 */
-                this.dateFormats = {
-                    'YYYY/mm/dd': {
-                        regex: /^([0-9]{4})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{1,2})$/,
-                        parser: function (match) {
-                            return (match ?
-                                Date.UTC(+match[1], match[2] - 1, +match[3]) :
-                                NaN);
+                 *  Constructors
+                 *
+                 * */
+                function Data(dataOptions, chartOptions, chart) {
+                    if (chartOptions === void 0) { chartOptions = {}; }
+                    this.rowsToColumns = Data.rowsToColumns; // backwards compatibility
+                    /**
+                     * A collection of available date formats, extendable from the outside to
+                     * support custom date formats.
+                     *
+                     * @name Highcharts.Data#dateFormats
+                     * @type {Highcharts.Dictionary<Highcharts.DataDateFormatObject>}
+                     */
+                    this.dateFormats = {
+                        'YYYY/mm/dd': {
+                            regex: /^([0-9]{4})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{1,2})$/,
+                            parser: function (match) {
+                                return (match ?
+                                    Date.UTC(+match[1], match[2] - 1, +match[3]) :
+                                    NaN);
                         }
                     },
                     'dd/mm/YYYY': {
@@ -404,7 +422,11 @@
              * @function Highcharts.Data.rowsToColumns
              */
             Data.rowsToColumns = function (rows) {
-                var row, rowsLength, col, colsLength, columns;
+                var row,
+                    rowsLength,
+                    col,
+                    colsLength,
+                    columns;
                 if (rows) {
                     columns = [];
                     rowsLength = rows.length;
@@ -432,7 +454,8 @@
              * @function Highcharts.Data#init
              */
             Data.prototype.init = function (dataOptions, chartOptions, chart) {
-                var decimalPoint = dataOptions.decimalPoint, hasData;
+                var decimalPoint = dataOptions.decimalPoint,
+                    hasData;
                 if (chartOptions) {
                     this.chartOptions = chartOptions;
                 }
@@ -492,8 +515,11 @@
              * @function Highcharts.Data#getColumnDistribution
              */
             Data.prototype.getColumnDistribution = function () {
-                var chartOptions = this.chartOptions, options = this.options, xColumns = [], getValueCount = function (type) {
-                    return (seriesTypes[type || 'line'].prototype.pointArrayMap || [0]).length;
+                var chartOptions = this.chartOptions,
+                    options = this.options,
+                    xColumns = [],
+                    getValueCount = function (type) {
+                        return (seriesTypes[type || 'line'].prototype.pointArrayMap || [0]).length;
                 }, getPointArrayMap = function (type) {
                     return seriesTypes[type || 'line'].prototype.pointArrayMap;
                 }, globalType = (chartOptions &&
@@ -508,7 +534,8 @@
                             return { x: 0 };
                         })) ||
                     []);
-                var seriesIndex = 0, i;
+                var seriesIndex = 0,
+                    i;
                 ((chartOptions && chartOptions.series) || []).forEach(function (series) {
                     individualCounts.push(getValueCount(series.type || globalType));
                 });
@@ -524,8 +551,13 @@
                 // Loop all seriesMappings and constructs SeriesBuilders from
                 // the mapping options.
                 seriesMapping.forEach(function (mapping) {
-                    var builder = new SeriesBuilder(), numberOfValueColumnsNeeded = individualCounts[seriesIndex] ||
-                        getValueCount(globalType), seriesArr = (chartOptions && chartOptions.series) || [], series = seriesArr[seriesIndex] || {}, defaultPointArrayMap = getPointArrayMap(series.type || globalType), pointArrayMap = defaultPointArrayMap || ['y'];
+                    var builder = new SeriesBuilder(),
+                        numberOfValueColumnsNeeded = individualCounts[seriesIndex] ||
+                            getValueCount(globalType),
+                        seriesArr = (chartOptions && chartOptions.series) || [],
+                        series = seriesArr[seriesIndex] || {},
+                        defaultPointArrayMap = getPointArrayMap(series.type || globalType),
+                        pointArrayMap = defaultPointArrayMap || ['y'];
                     if (
                     // User-defined x.mapping
                     defined(mapping.x) ||
@@ -595,19 +627,23 @@
              */
             Data.prototype.parseCSV = function (inOptions) {
                 var self = this, columns = this.columns = [], options = inOptions || this.options, startColumn = (typeof options.startColumn !== 'undefined' &&
-                    options.startColumn) ? options.startColumn : 0, endColumn = options.endColumn || Number.MAX_VALUE, dataTypes = [], 
-                // We count potential delimiters in the prepass, and use the
-                // result as the basis of half-intelligent guesses.
-                potDelimiters = {
-                    ',': 0,
-                    ';': 0,
-                    '\t': 0
-                };
-                var csv = options.csv, startRow = (typeof options.startRow !== 'undefined' && options.startRow ?
-                    options.startRow :
-                    0), endRow = options.endRow || Number.MAX_VALUE, itemDelimiter, lines, 
-                // activeRowNo = 0,
-                rowIt = 0;
+                        options.startColumn) ? options.startColumn : 0, endColumn = options.endColumn || Number.MAX_VALUE, dataTypes = [], 
+                    // We count potential delimiters in the prepass, and use the
+                    // result as the basis of half-intelligent guesses.
+                    potDelimiters = {
+                        ',': 0,
+                        ';': 0,
+                        '\t': 0
+                    };
+                var csv = options.csv,
+                    startRow = (typeof options.startRow !== 'undefined' && options.startRow ?
+                        options.startRow :
+                        0),
+                    endRow = options.endRow || Number.MAX_VALUE,
+                    itemDelimiter,
+                    lines, 
+                    // activeRowNo = 0,
+                    rowIt = 0;
                 /*
                     This implementation is quite verbose. It will be shortened once
                     it's stable and passes all the test.
@@ -747,9 +783,15 @@
                  * @private
                  */
                 function guessDelimiter(lines) {
-                    var points = 0, commas = 0, guessed = false;
+                    var points = 0,
+                        commas = 0,
+                        guessed = false;
                     lines.some(function (columnStr, i) {
-                        var inStr = false, c, cn, cl, token = '';
+                        var inStr = false,
+                            c,
+                            cn,
+                            cl,
+                            token = '';
                         // We should be able to detect dateformats within 13 rows
                         if (i > 13) {
                             return true;
@@ -842,10 +884,16 @@
                  * @private
                  */
                 function deduceDateFormat(data, limit) {
-                    var format = 'YYYY/mm/dd', stable = [], max = [];
-                    var thing, guessedFormat = [], calculatedFormat, i = 0, madeDeduction = false, 
-                    // candidates = {},
-                    j;
+                    var format = 'YYYY/mm/dd',
+                        stable = [],
+                        max = [];
+                    var thing,
+                        guessedFormat = [],
+                        calculatedFormat,
+                        i = 0,
+                        madeDeduction = false, 
+                        // candidates = {},
+                        j;
                     if (!limit || limit > data.length) {
                         limit = data.length;
                     }
@@ -1017,7 +1065,12 @@
              * @function Highcharts.Data#parseTable
              */
             Data.prototype.parseTable = function () {
-                var options = this.options, columns = this.columns || [], startRow = options.startRow || 0, endRow = options.endRow || Number.MAX_VALUE, startColumn = options.startColumn || 0, endColumn = options.endColumn || Number.MAX_VALUE;
+                var options = this.options,
+                    columns = this.columns || [],
+                    startRow = options.startRow || 0,
+                    endRow = options.endRow || Number.MAX_VALUE,
+                    startColumn = options.startColumn || 0,
+                    endColumn = options.endColumn || Number.MAX_VALUE;
                 if (options.table) {
                     var table = options.table;
                     if (typeof table === 'string') {
@@ -1060,8 +1113,14 @@
              *         The URLs that were tried can be found in the options
              */
             Data.prototype.fetchLiveData = function () {
-                var data = this, chart = this.chart, options = this.options, maxRetries = 3, pollingEnabled = options.enablePolling, originalOptions = merge(options);
-                var currentRetries = 0, updateIntervalMs = (options.dataRefreshRate || 2) * 1000;
+                var data = this,
+                    chart = this.chart,
+                    options = this.options,
+                    maxRetries = 3,
+                    pollingEnabled = options.enablePolling,
+                    originalOptions = merge(options);
+                var currentRetries = 0,
+                    updateIntervalMs = (options.dataRefreshRate || 2) * 1000;
                 if (!hasURLOption(options)) {
                     return false;
                 }
@@ -1157,23 +1216,27 @@
              *         Always returns false, because it is an intermediate fetch.
              */
             Data.prototype.parseGoogleSpreadsheet = function () {
-                var data = this, options = this.options, googleSpreadsheetKey = options.googleSpreadsheetKey, chart = this.chart, refreshRate = Math.max((options.dataRefreshRate || 2) * 1000, 4000);
+                var data = this,
+                    options = this.options,
+                    googleSpreadsheetKey = options.googleSpreadsheetKey,
+                    chart = this.chart,
+                    refreshRate = Math.max((options.dataRefreshRate || 2) * 1000, 4000);
                 /**
                  * Form the `values` field after range settings, unless the
                  * googleSpreadsheetRange option is set.
                  */
                 var getRange = function () {
-                    if (options.googleSpreadsheetRange) {
-                        return options.googleSpreadsheetRange;
+                        if (options.googleSpreadsheetRange) {
+                            return options.googleSpreadsheetRange;
                     }
                     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
                     var start = (alphabet.charAt(options.startColumn || 0) || 'A') +
-                        ((options.startRow || 0) + 1);
+                            ((options.startRow || 0) + 1);
                     var end = alphabet.charAt(pick(options.endColumn, -1)) || 'ZZ';
                     if (defined(options.endRow)) {
                         end += options.endRow + 1;
                     }
-                    return "".concat(start, ":").concat(end);
+                    return "" + start + ":".concat(end);
                 };
                 /**
                  * Fetch the actual spreadsheet using XMLHttpRequest.
@@ -1181,16 +1244,16 @@
                  */
                 function fetchSheet(fn) {
                     var url = [
-                        'https://sheets.googleapis.com/v4/spreadsheets',
-                        googleSpreadsheetKey,
-                        'values',
-                        getRange(),
-                        '?alt=json&' +
-                            'majorDimension=COLUMNS&' +
-                            'valueRenderOption=UNFORMATTED_VALUE&' +
-                            'dateTimeRenderOption=FORMATTED_STRING&' +
-                            'key=' + options.googleAPIKey
-                    ].join('/');
+                            'https://sheets.googleapis.com/v4/spreadsheets',
+                            googleSpreadsheetKey,
+                            'values',
+                            getRange(),
+                            '?alt=json&' +
+                                'majorDimension=COLUMNS&' +
+                                'valueRenderOption=UNFORMATTED_VALUE&' +
+                                'dateTimeRenderOption=FORMATTED_STRING&' +
+                                'key=' + options.googleAPIKey
+                        ].join('/');
                     ajax({
                         url: url,
                         dataType: 'json',
@@ -1216,7 +1279,9 @@
                             return false;
                         }
                         // Find the maximum row count in order to extend shorter columns
-                        var rowCount = columns.reduce(function (rowCount, column) { return Math.max(rowCount, column.length); }, 0);
+                        var rowCount = columns.reduce(function (rowCount,
+                            column) { return Math.max(rowCount,
+                            column.length); }, 0);
                         // Insert null for empty spreadsheet cells (#5298)
                         columns.forEach(function (column) {
                             for (var i = 0; i < rowCount; i++) {
@@ -1292,10 +1357,26 @@
              *        Column index
              */
             Data.prototype.parseColumn = function (column, col) {
-                var rawColumns = this.rawColumns, columns = this.columns, firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount.xColumns.indexOf(col) !== -1, backup = [], chartOptions = this.chartOptions, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = isXColumn && ((chartOptions &&
-                    chartOptions.xAxis &&
-                    splat(chartOptions.xAxis)[0].type === 'category') || columnType === 'string'), columnHasName = defined(column.name);
-                var row = column.length, val, floatVal, trimVal, trimInsideVal, dateVal, diff, descending;
+                var rawColumns = this.rawColumns,
+                    columns = this.columns,
+                    firstRowAsNames = this.firstRowAsNames,
+                    isXColumn = this.valueCount.xColumns.indexOf(col) !== -1,
+                    backup = [],
+                    chartOptions = this.chartOptions,
+                    columnTypes = this.options.columnTypes || [],
+                    columnType = columnTypes[col],
+                    forceCategory = isXColumn && ((chartOptions &&
+                        chartOptions.xAxis &&
+                        splat(chartOptions.xAxis)[0].type === 'category') || columnType === 'string'),
+                    columnHasName = defined(column.name);
+                var row = column.length,
+                    val,
+                    floatVal,
+                    trimVal,
+                    trimInsideVal,
+                    dateVal,
+                    diff,
+                    descending;
                 if (!rawColumns[col]) {
                     rawColumns[col] = [];
                 }
@@ -1398,7 +1479,11 @@
              */
             Data.prototype.parseDate = function (val) {
                 var parseDate = this.options.parseDate;
-                var ret, key, format, dateFormat = this.options.dateFormat || this.dateFormat, match;
+                var ret,
+                    key,
+                    format,
+                    dateFormat = this.options.dateFormat || this.dateFormat,
+                    match;
                 if (parseDate) {
                     ret = parseDate(val);
                 }
@@ -1490,8 +1575,22 @@
              * @function Highcharts.Data#complete
              */
             Data.prototype.complete = function () {
-                var columns = this.columns, xColumns = [], options = this.options, allSeriesBuilders = [];
-                var type, series, data, i, j, r, seriesIndex, chartOptions, builder, freeIndexes, typeCol, index;
+                var columns = this.columns,
+                    xColumns = [],
+                    options = this.options,
+                    allSeriesBuilders = [];
+                var type,
+                    series,
+                    data,
+                    i,
+                    j,
+                    r,
+                    seriesIndex,
+                    chartOptions,
+                    builder,
+                    freeIndexes,
+                    typeCol,
+                    index;
                 xColumns.length = columns.length;
                 if (options.complete || options.afterComplete) {
                     // Get the names and shift the top row
@@ -1612,7 +1711,8 @@
              * @param {boolean} [redraw=true]
              */
             Data.prototype.update = function (options, redraw) {
-                var chart = this.chart, chartOptions = chart.options;
+                var chart = this.chart,
+                    chartOptions = chart.options;
                 if (options) {
                     // Set the complete handler
                     options.afterComplete = function (dataOptions) {
@@ -1645,7 +1745,9 @@
         // Extend Chart.init so that the Chart constructor accepts a new configuration
         // option group, data.
         addEvent(Chart, 'init', function (e) {
-            var chart = this, callback = e.args[1], defaultDataOptions = getOptions().data;
+            var chart = this,
+                callback = e.args[1],
+                defaultDataOptions = getOptions().data;
             var userOptions = (e.args[0] || {});
             if ((defaultDataOptions || userOptions && userOptions.data) &&
                 !chart.hasDataDef) {
@@ -1656,10 +1758,12 @@
                  * @name Highcharts.Chart#data
                  * @type {Highcharts.Data|undefined}
                  */
-                var dataOptions = merge(defaultDataOptions, userOptions.data);
+                var dataOptions = merge(defaultDataOptions,
+                    userOptions.data);
                 chart.data = new Data(extend(dataOptions, {
                     afterComplete: function (dataOptions) {
-                        var i, series;
+                        var i,
+                            series;
                         // Merge series configs
                         if (Object.hasOwnProperty.call(userOptions, 'series')) {
                             if (typeof userOptions.series === 'object') {
@@ -1701,9 +1805,9 @@
          * @name SeriesBuilder
          */
         var SeriesBuilder = /** @class */ (function () {
-            function SeriesBuilder() {
-                /* eslint-disable no-invalid-this */
-                this.readers = [];
+                function SeriesBuilder() {
+                    /* eslint-disable no-invalid-this */
+                    this.readers = [];
                 this.pointIsArray = true;
             }
             /**
@@ -1741,8 +1845,9 @@
              * @function SeriesBuilder#read<T>
              */
             SeriesBuilder.prototype.read = function (columns, rowIndex) {
-                var builder = this, pointIsArray = builder.pointIsArray, point = pointIsArray ? [] : {};
-                var columnIndexes;
+                var builder = this,
+                    pointIsArray = builder.pointIsArray,
+                    point = pointIsArray ? [] : {};
                 // Loop each reader and ask it to read its value.
                 // Then, build an array or point based on the readers names.
                 builder.readers.forEach(function (reader) {
@@ -1762,16 +1867,25 @@
                 });
                 // The name comes from the first column (excluding the x column)
                 if (typeof this.name === 'undefined' && builder.readers.length >= 2) {
-                    columnIndexes = builder.getReferencedColumnIndexes();
-                    if (columnIndexes.length >= 2) {
+                    var columnIndexes_1 = [];
+                    builder.readers.forEach(function (reader) {
+                        if (reader.configName === 'x' ||
+                            reader.configName === 'name' ||
+                            reader.configName === 'y') {
+                            if (typeof reader.columnIndex !== 'undefined') {
+                                columnIndexes_1.push(reader.columnIndex);
+                            }
+                        }
+                    });
+                    if (columnIndexes_1.length >= 2) {
                         // remove the first one (x col)
-                        columnIndexes.shift();
+                        columnIndexes_1.shift();
                         // Sort the remaining
-                        columnIndexes.sort(function (a, b) {
+                        columnIndexes_1.sort(function (a, b) {
                             return a - b;
                         });
                         // Now use the lowest index as name column
-                        this.name = columns[columnIndexes.shift()].name;
+                        this.name = columns[columnIndexes_1.shift()].name;
                     }
                 }
                 return point;
@@ -1802,7 +1916,8 @@
              */
             SeriesBuilder.prototype.getReferencedColumnIndexes = function () {
                 var referencedColumnIndexes = [];
-                var i, columnReader;
+                var i,
+                    columnReader;
                 for (i = 0; i < this.readers.length; i = i + 1) {
                     columnReader = this.readers[i];
                     if (typeof columnReader.columnIndex !== 'undefined') {
@@ -1817,7 +1932,8 @@
              * @function SeriesBuider#hasReader
              */
             SeriesBuilder.prototype.hasReader = function (configName) {
-                var i, columnReader;
+                var i,
+                    columnReader;
                 for (i = 0; i < this.readers.length; i = i + 1) {
                     columnReader = this.readers[i];
                     if (columnReader.configName === configName) {

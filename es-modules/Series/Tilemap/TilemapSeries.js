@@ -11,29 +11,14 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, HeatmapSeries = _a.heatmap, ScatterSeries = _a.scatter;
+const { seriesTypes: { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import TilemapPoint from './TilemapPoint.js';
 import TilemapShapes from './TilemapShapes.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 import './TilemapComposition.js';
 /* *
  *
@@ -47,25 +32,23 @@ import './TilemapComposition.js';
  *
  * @augments Highcharts.Series
  */
-var TilemapSeries = /** @class */ (function (_super) {
-    __extends(TilemapSeries, _super);
-    function TilemapSeries() {
+class TilemapSeries extends HeatmapSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.tileShape = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
+        this.tileShape = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -78,25 +61,24 @@ var TilemapSeries = /** @class */ (function (_super) {
      * Use the shape's defined data label alignment function.
      * @private
      */
-    TilemapSeries.prototype.alignDataLabel = function () {
+    alignDataLabel() {
         return this.tileShape.alignDataLabel.apply(this, Array.prototype.slice.call(arguments));
-    };
-    TilemapSeries.prototype.drawPoints = function () {
-        var _this = this;
+    }
+    drawPoints() {
         // In styled mode, use CSS, otherwise the fill used in the style
         // sheet will take precedence over the fill attribute.
         ColumnSeries.prototype.drawPoints.call(this);
-        this.points.forEach(function (point) {
+        this.points.forEach((point) => {
             point.graphic &&
-                point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
+                point.graphic[this.chart.styledMode ? 'css' : 'animate'](this.colorAttribs(point));
         });
-    };
+    }
     /**
      * Get metrics for padding of axis for this series.
      * @private
      */
-    TilemapSeries.prototype.getSeriesPixelPadding = function (axis) {
-        var isX = axis.isXAxis, padding = this.tileShape.getSeriesPadding(this), coord1, coord2;
+    getSeriesPixelPadding(axis) {
+        let isX = axis.isXAxis, padding = this.tileShape.getSeriesPadding(this), coord1, coord2;
         // If the shape type does not require padding, return no-op padding
         if (!padding) {
             return {
@@ -111,7 +93,9 @@ var TilemapSeries = /** @class */ (function (_super) {
             padding.yPad, 0, 1, 0, 1));
         coord2 = Math.round(axis.translate(isX ? padding.xPad : 0, 0, 1, 0, 1));
         return {
-            padding: Math.abs(coord1 - coord2) || 0,
+            padding: (axis.single ? // if there is only one tick adjust padding #18647
+                Math.abs(coord1 - coord2) / 2 :
+                Math.abs(coord1 - coord2)) || 0,
             // Offset the yAxis length to compensate for shift. Setting the
             // length factor to 2 would add the same margin to max as min.
             // Now we only add a slight bit of the min margin to max, as we
@@ -120,115 +104,114 @@ var TilemapSeries = /** @class */ (function (_super) {
             // and max.
             axisLengthFactor: isX ? 2 : 1.1
         };
-    };
+    }
     /**
      * Set tile shape object on series.
      * @private
      */
-    TilemapSeries.prototype.setOptions = function () {
+    setOptions() {
         // Call original function
-        var ret = _super.prototype.setOptions.apply(this, Array.prototype.slice.call(arguments));
+        const ret = super.setOptions.apply(this, Array.prototype.slice.call(arguments));
         this.tileShape = TilemapShapes[ret.tileShape];
         return ret;
-    };
+    }
     /**
      * Use translate from tileShape.
      * @private
      */
-    TilemapSeries.prototype.translate = function () {
+    translate() {
         return this.tileShape.translate.apply(this, Array.prototype.slice.call(arguments));
-    };
-    /**
-     * A tilemap series is a type of heatmap where the tile shapes are
-     * configurable.
-     *
-     * @sample highcharts/demo/honeycomb-usa/
-     *         Honeycomb tilemap, USA
-     * @sample maps/plotoptions/honeycomb-brazil/
-     *         Honeycomb tilemap, Brazil
-     * @sample maps/plotoptions/honeycomb-china/
-     *         Honeycomb tilemap, China
-     * @sample maps/plotoptions/honeycomb-europe/
-     *         Honeycomb tilemap, Europe
-     * @sample maps/demo/circlemap-africa/
-     *         Circlemap tilemap, Africa
-     * @sample maps/demo/diamondmap
-     *         Diamondmap tilemap
-     *
-     * @extends      plotOptions.heatmap
-     * @since        6.0.0
-     * @excluding    jitter, joinBy, shadow, allAreas, mapData, marker, data,
-     *               dataSorting, boostThreshold, boostBlending
-     * @product      highcharts highmaps
-     * @requires     modules/tilemap.js
-     * @optionparent plotOptions.tilemap
-     */
-    TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, {
-        // Remove marker from tilemap default options, as it was before
-        // heatmap refactoring.
-        marker: null,
-        states: {
-            hover: {
-                halo: {
-                    enabled: true,
-                    size: 2,
-                    opacity: 0.5,
-                    attributes: {
-                        zIndex: 3
-                    }
+    }
+}
+/**
+ * A tilemap series is a type of heatmap where the tile shapes are
+ * configurable.
+ *
+ * @sample highcharts/demo/honeycomb-usa/
+ *         Honeycomb tilemap, USA
+ * @sample maps/plotoptions/honeycomb-brazil/
+ *         Honeycomb tilemap, Brazil
+ * @sample maps/plotoptions/honeycomb-china/
+ *         Honeycomb tilemap, China
+ * @sample maps/plotoptions/honeycomb-europe/
+ *         Honeycomb tilemap, Europe
+ * @sample maps/demo/circlemap-africa/
+ *         Circlemap tilemap, Africa
+ * @sample maps/demo/diamondmap
+ *         Diamondmap tilemap
+ *
+ * @extends      plotOptions.heatmap
+ * @since        6.0.0
+ * @excluding    jitter, joinBy, shadow, allAreas, mapData, marker, data,
+ *               dataSorting, boostThreshold, boostBlending
+ * @product      highcharts highmaps
+ * @requires     modules/tilemap.js
+ * @optionparent plotOptions.tilemap
+ */
+TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, {
+    // Remove marker from tilemap default options, as it was before
+    // heatmap refactoring.
+    marker: null,
+    states: {
+        hover: {
+            halo: {
+                enabled: true,
+                size: 2,
+                opacity: 0.5,
+                attributes: {
+                    zIndex: 3
                 }
             }
-        },
-        /**
-         * The padding between points in the tilemap.
-         *
-         * @sample maps/plotoptions/tilemap-pointpadding
-         *         Point padding on tiles
-         */
-        pointPadding: 2,
-        /**
-         * The column size - how many X axis units each column in the tilemap
-         * should span. Works as in [Heatmaps](#plotOptions.heatmap.colsize).
-         *
-         * @sample {highcharts} maps/demo/heatmap/
-         *         One day
-         * @sample {highmaps} maps/demo/heatmap/
-         *         One day
-         *
-         * @type      {number}
-         * @default   1
-         * @product   highcharts highmaps
-         * @apioption plotOptions.tilemap.colsize
-         */
-        /**
-         * The row size - how many Y axis units each tilemap row should span.
-         * Analogous to [colsize](#plotOptions.tilemap.colsize).
-         *
-         * @sample {highcharts} maps/demo/heatmap/
-         *         1 by default
-         * @sample {highmaps} maps/demo/heatmap/
-         *         1 by default
-         *
-         * @type      {number}
-         * @default   1
-         * @product   highcharts highmaps
-         * @apioption plotOptions.tilemap.rowsize
-         */
-        /**
-         * The shape of the tiles in the tilemap. Possible values are `hexagon`,
-         * `circle`, `diamond`, and `square`.
-         *
-         * @sample maps/demo/circlemap-africa
-         *         Circular tile shapes
-         * @sample maps/demo/diamondmap
-         *         Diamond tile shapes
-         *
-         * @type {Highcharts.TilemapShapeValue}
-         */
-        tileShape: 'hexagon'
-    });
-    return TilemapSeries;
-}(HeatmapSeries));
+        }
+    },
+    /**
+     * The padding between points in the tilemap.
+     *
+     * @sample maps/plotoptions/tilemap-pointpadding
+     *         Point padding on tiles
+     */
+    pointPadding: 2,
+    /**
+     * The column size - how many X axis units each column in the tilemap
+     * should span. Works as in [Heatmaps](#plotOptions.heatmap.colsize).
+     *
+     * @sample {highcharts} maps/demo/heatmap/
+     *         One day
+     * @sample {highmaps} maps/demo/heatmap/
+     *         One day
+     *
+     * @type      {number}
+     * @default   1
+     * @product   highcharts highmaps
+     * @apioption plotOptions.tilemap.colsize
+     */
+    /**
+     * The row size - how many Y axis units each tilemap row should span.
+     * Analogous to [colsize](#plotOptions.tilemap.colsize).
+     *
+     * @sample {highcharts} maps/demo/heatmap/
+     *         1 by default
+     * @sample {highmaps} maps/demo/heatmap/
+     *         1 by default
+     *
+     * @type      {number}
+     * @default   1
+     * @product   highcharts highmaps
+     * @apioption plotOptions.tilemap.rowsize
+     */
+    /**
+     * The shape of the tiles in the tilemap. Possible values are `hexagon`,
+     * `circle`, `diamond`, and `square`.
+     *
+     * @sample maps/demo/circlemap-africa
+     *         Circular tile shapes
+     * @sample maps/demo/diamondmap
+     *         Diamond tile shapes
+     *
+     * @type {Highcharts.TilemapShapeValue}
+     */
+    tileShape: 'hexagon'
+});
 extend(TilemapSeries.prototype, {
     // Revert the noop on getSymbol.
     getSymbol: noop,

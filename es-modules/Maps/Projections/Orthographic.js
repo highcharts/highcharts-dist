@@ -2,9 +2,9 @@
  * Orthographic projection
  * */
 'use strict';
-var deg2rad = Math.PI / 180, scale = 63.78460826781007;
-var Orthographic = /** @class */ (function () {
-    function Orthographic() {
+const deg2rad = Math.PI / 180, scale = 63.78460826781007;
+class Orthographic {
+    constructor() {
         this.antimeridianCutting = false;
         this.bounds = {
             x1: -scale,
@@ -13,10 +13,10 @@ var Orthographic = /** @class */ (function () {
             y2: scale
         };
     }
-    Orthographic.prototype.forward = function (lonLat) {
-        var lonDeg = lonLat[0], latDeg = lonLat[1];
-        var lat = latDeg * deg2rad;
-        var xy = [
+    forward(lonLat) {
+        const lonDeg = lonLat[0], latDeg = lonLat[1];
+        const lat = latDeg * deg2rad;
+        const xy = [
             Math.cos(lat) * Math.sin(lonDeg * deg2rad) * scale,
             Math.sin(lat) * scale
         ];
@@ -24,14 +24,13 @@ var Orthographic = /** @class */ (function () {
             xy.outside = true;
         }
         return xy;
-    };
-    Orthographic.prototype.inverse = function (xy) {
-        var x = xy[0] / scale, y = xy[1] / scale, z = Math.sqrt(x * x + y * y), c = Math.asin(z), cSin = Math.sin(c), cCos = Math.cos(c);
+    }
+    inverse(xy) {
+        const x = xy[0] / scale, y = xy[1] / scale, z = Math.sqrt(x * x + y * y), c = Math.asin(z), cSin = Math.sin(c), cCos = Math.cos(c);
         return [
             Math.atan2(x * cSin, z * cCos) / deg2rad,
             Math.asin(z && y * cSin / z) / deg2rad
         ];
-    };
-    return Orthographic;
-}());
+    }
+}
 export default Orthographic;

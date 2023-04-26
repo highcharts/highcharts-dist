@@ -10,10 +10,14 @@
  *
  * */
 'use strict';
-import Axis from '../Core/Axis/Axis.js';
-import PlotLineOrBand from '../Core/Axis/PlotLineOrBand/PlotLineOrBand.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, merge = U.merge, wrap = U.wrap;
+const { addEvent, merge, wrap } = U;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const composedMembers = [];
 /**
  * Show an indicator on the axis for the current date and time. Can be a
  * boolean or a configuration object similar to
@@ -32,8 +36,8 @@ var addEvent = U.addEvent, merge = U.merge, wrap = U.wrap;
  * @product   gantt
  * @apioption xAxis.currentDateIndicator
  */
-var defaultOptions = {
-    color: "#ccd6eb" /* Palette.highlightColor20 */,
+const defaultOptions = {
+    color: "#ccd3ff" /* Palette.highlightColor20 */,
     width: 2,
     /**
      * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
@@ -58,15 +62,34 @@ var defaultOptions = {
          */
         style: {
             /** @internal */
-            fontSize: '10px'
+            fontSize: '0.7em'
         }
     }
 };
-/* eslint-disable no-invalid-this */
-addEvent(Axis, 'afterSetOptions', function () {
-    var options = this.options, cdiOptions = options.currentDateIndicator;
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * @private
+ */
+function compose(AxisClass, PlotLineOrBandClass) {
+    if (U.pushUnique(composedMembers, AxisClass)) {
+        addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+    }
+    if (U.pushUnique(composedMembers, PlotLineOrBandClass)) {
+        addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
+        wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
+    }
+}
+/**
+ * @private
+ */
+function onAxisAfterSetOptions() {
+    const options = this.options, cdiOptions = options.currentDateIndicator;
     if (cdiOptions) {
-        var plotLineOptions = typeof cdiOptions === 'object' ?
+        const plotLineOptions = typeof cdiOptions === 'object' ?
             merge(defaultOptions, cdiOptions) :
             merge(defaultOptions);
         plotLineOptions.value = Date.now();
@@ -76,17 +99,23 @@ addEvent(Axis, 'afterSetOptions', function () {
         }
         options.plotLines.push(plotLineOptions);
     }
-});
-addEvent(PlotLineOrBand, 'render', function () {
+}
+/**
+ * @private
+ */
+function onPlotLineOrBandRender() {
     // If the label already exists, update its text
     if (this.label) {
         this.label.attr({
             text: this.getLabelText(this.options.label)
         });
     }
-});
-wrap(PlotLineOrBand.prototype, 'getLabelText', function (defaultMethod, defaultLabelOptions) {
-    var options = this.options;
+}
+/**
+ * @private
+ */
+function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
+    const options = this.options;
     if (options &&
         options.className &&
         options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
@@ -97,4 +126,13 @@ wrap(PlotLineOrBand.prototype, 'getLabelText', function (defaultMethod, defaultL
             .call(this, options.value, options.label.format);
     }
     return defaultMethod.call(this, defaultLabelOptions);
-});
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const CurrentDateIndication = {
+    compose
+};
+export default CurrentDateIndication;

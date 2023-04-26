@@ -11,7 +11,7 @@
  * */
 'use strict';
 import U from '../../../Core/Utilities.js';
-var addEvent = U.addEvent, merge = U.merge;
+const { addEvent, merge } = U;
 /* *
  *
  *  Composition
@@ -29,7 +29,7 @@ var ForcedMarkersComposition;
      *  Compositions
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -40,8 +40,7 @@ var ForcedMarkersComposition;
      * @private
      */
     function compose(SeriesClass) {
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
+        if (U.pushUnique(composedMembers, SeriesClass)) {
             addEvent(SeriesClass, 'afterSetOptions', seriesOnAfterSetOptions);
             addEvent(SeriesClass, 'render', seriesOnRender);
             addEvent(SeriesClass, 'afterRender', seriesOnAfterRender);
@@ -75,14 +74,14 @@ var ForcedMarkersComposition;
      * @private
      */
     function handleForcePointMarkers(series) {
-        var i = series.points.length;
+        let i = series.points.length;
         while (i--) {
-            var point = series.points[i];
-            var pointOptions = point.options;
-            var hadForcedMarker = point.hasForcedA11yMarker;
+            const point = series.points[i];
+            const pointOptions = point.options;
+            const hadForcedMarker = point.hasForcedA11yMarker;
             delete point.hasForcedA11yMarker;
             if (pointOptions.marker) {
-                var isStillForcedMarker = hadForcedMarker &&
+                const isStillForcedMarker = hadForcedMarker &&
                     getPointMarkerOpacity(pointOptions) === 0;
                 if (pointOptions.marker.enabled && !isStillForcedMarker) {
                     unforcePointMarkerOptions(pointOptions);
@@ -107,7 +106,7 @@ var ForcedMarkersComposition;
      * @private
      */
     function isWithinDescriptionThreshold(series) {
-        var a11yOptions = series.chart.options.accessibility;
+        const a11yOptions = series.chart.options.accessibility;
         return series.points.length <
             a11yOptions.series.pointDescriptionEnabledThreshold ||
             a11yOptions.series
@@ -118,7 +117,7 @@ var ForcedMarkersComposition;
      * @private
      */
     function seriesOnAfterRender() {
-        var series = this;
+        const series = this;
         // For styled mode the rendered graphic does not reflect the style
         // options, and we need to add/remove classes to achieve the same.
         if (series.chart.styledMode) {
@@ -127,7 +126,7 @@ var ForcedMarkersComposition;
             }
             // Do we need to handle individual points?
             if (hasIndividualPointMarkerOptions(series)) {
-                series.points.forEach(function (point) {
+                series.points.forEach((point) => {
                     if (point.graphic) {
                         point.graphic[point.hasForcedA11yMarker ?
                             'addClass' : 'removeClass']('highcharts-a11y-marker-hidden');
@@ -151,7 +150,7 @@ var ForcedMarkersComposition;
      * @private
      */
     function seriesOnRender() {
-        var series = this, options = series.options;
+        const series = this, options = series.options;
         if (shouldForceMarkers(series)) {
             if (options.marker && options.marker.enabled === false) {
                 series.a11yMarkersForced = true;
@@ -171,7 +170,7 @@ var ForcedMarkersComposition;
      * @private
      */
     function shouldForceMarkers(series) {
-        var chart = series.chart, chartA11yEnabled = chart.options.accessibility.enabled, seriesA11yEnabled = (series.options.accessibility &&
+        const chart = series.chart, chartA11yEnabled = chart.options.accessibility.enabled, seriesA11yEnabled = (series.options.accessibility &&
             series.options.accessibility.enabled) !== false;
         return (chartA11yEnabled &&
             seriesA11yEnabled &&
@@ -194,9 +193,9 @@ var ForcedMarkersComposition;
      * @private
      */
     function unforceSeriesMarkerOptions(series) {
-        var resetMarkerOptions = series.resetA11yMarkerOptions;
+        const resetMarkerOptions = series.resetA11yMarkerOptions;
         if (resetMarkerOptions) {
-            var originalOpactiy = resetMarkerOptions.states &&
+            const originalOpactiy = resetMarkerOptions.states &&
                 resetMarkerOptions.states.normal &&
                 resetMarkerOptions.states.normal.opacity;
             series.update({

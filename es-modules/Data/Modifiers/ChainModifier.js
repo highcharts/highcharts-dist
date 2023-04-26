@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2020-2022 Highsoft AS
+ *  (c) 2009-2023 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -11,24 +11,9 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import DataModifier from './DataModifier.js';
 import U from '../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
@@ -39,11 +24,10 @@ var merge = U.merge;
  *
  * @private
  */
-var ChainModifier = /** @class */ (function (_super) {
-    __extends(ChainModifier, _super);
+class ChainModifier extends DataModifier {
     /* *
      *
-     *  Constructors
+     *  Constructor
      *
      * */
     /**
@@ -52,18 +36,20 @@ var ChainModifier = /** @class */ (function (_super) {
      * @param {DeepPartial<ChainModifier.Options>} [options]
      * Options to configure the modifier chain.
      *
-     * @param {...DataModifier} [modifiers]
-     * Modifiers in order for the modifier chain.
+     * @param {...DataModifier} [chain]
+     * Ordered chain of modifiers.
      */
-    function ChainModifier(options) {
-        var modifiers = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            modifiers[_i - 1] = arguments[_i];
+    constructor(options, ...chain) {
+        super();
+        this.chain = chain;
+        this.options = merge(ChainModifier.defaultOptions, options);
+        const optionsChain = this.options.chain || [];
+        for (let i = 0, iEnd = optionsChain.length, ModifierClass; i < iEnd; ++i) {
+            ModifierClass = DataModifier.types[optionsChain[i].modifier];
+            if (ModifierClass) {
+                chain.unshift(new ModifierClass(optionsChain[i]));
+            }
         }
-        var _this = _super.call(this) || this;
-        _this.modifiers = modifiers;
-        _this.options = merge(ChainModifier.defaultOptions, options);
-        return _this;
     }
     /* *
      *
@@ -77,39 +63,75 @@ var ChainModifier = /** @class */ (function (_super) {
      * @param {DataModifier} modifier
      * Configured modifier to add.
      *
-     * @param {DataEventEmitter.EventDetail} [eventDetail]
+     * @param {DataEvent.Detail} [eventDetail]
      * Custom information for pending events.
      */
-    ChainModifier.prototype.add = function (modifier, eventDetail) {
+    add(modifier, eventDetail) {
         this.emit({
             type: 'addModifier',
             detail: eventDetail,
-            modifier: modifier
+            modifier
         });
-        this.modifiers.push(modifier);
+        this.chain.push(modifier);
         this.emit({
             type: 'addModifier',
             detail: eventDetail,
-            modifier: modifier
+            modifier
         });
-    };
+    }
     /**
      * Clears all modifiers from the chain.
      *
-     * @param {DataEventEmitter.EventDetail} [eventDetail]
+     * @param {DataEvent.Detail} [eventDetail]
      * Custom information for pending events.
      */
-    ChainModifier.prototype.clear = function (eventDetail) {
+    clear(eventDetail) {
         this.emit({
             type: 'clearChain',
             detail: eventDetail
         });
-        this.modifiers.length = 0;
+        this.chain.length = 0;
         this.emit({
             type: 'afterClearChain',
             detail: eventDetail
         });
-    };
+    }
+    /**
+     * Applies several modifications to the table and returns a modified copy of
+     * the given table.
+     *
+     * @param {Highcharts.DataTable} table
+     * Table to modify.
+     *
+     * @param {DataEvent.Detail} [eventDetail]
+     * Custom information for pending events.
+     *
+     * @return {Promise<Highcharts.DataTable>}
+     * Table with `modified` property as a reference.
+     */
+    modify(table, eventDetail) {
+        const modifiers = (this.options.reverse ?
+            this.chain.slice().reverse() :
+            this.chain.slice());
+        let promiseChain = Promise.resolve(table);
+        for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
+            const modifier = modifiers[i];
+            promiseChain = promiseChain.then((chainTable) => modifier.modify(chainTable.modified, eventDetail));
+        }
+        promiseChain = promiseChain.then((chainTable) => {
+            table.modified = chainTable.modified;
+            return table;
+        });
+        promiseChain = promiseChain['catch']((error) => {
+            this.emit({
+                type: 'error',
+                detail: eventDetail,
+                table
+            });
+            throw error;
+        });
+        return promiseChain;
+    }
     /**
      * Applies partial modifications of a cell change to the property `modified`
      * of the given modified table.
@@ -134,20 +156,20 @@ var ChainModifier = /** @class */ (function (_super) {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    ChainModifier.prototype.modifyCell = function (table, columnName, rowIndex, cellValue, eventDetail) {
-        var modifiers = (this.options.reverse ?
-            this.modifiers.reverse() :
-            this.modifiers);
+    modifyCell(table, columnName, rowIndex, cellValue, eventDetail) {
+        const modifiers = (this.options.reverse ?
+            this.chain.reverse() :
+            this.chain);
         if (modifiers.length) {
-            var clone = table.clone();
-            for (var i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
+            let clone = table.clone();
+            for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
                 modifiers[i].modifyCell(clone, columnName, rowIndex, cellValue, eventDetail);
                 clone = clone.modified;
             }
             table.modified = clone;
         }
         return table;
-    };
+    }
     /**
      * Applies partial modifications of column changes to the property
      * `modified` of the given table.
@@ -169,20 +191,20 @@ var ChainModifier = /** @class */ (function (_super) {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    ChainModifier.prototype.modifyColumns = function (table, columns, rowIndex, eventDetail) {
-        var modifiers = (this.options.reverse ?
-            this.modifiers.reverse() :
-            this.modifiers.slice());
+    modifyColumns(table, columns, rowIndex, eventDetail) {
+        const modifiers = (this.options.reverse ?
+            this.chain.reverse() :
+            this.chain.slice());
         if (modifiers.length) {
-            var clone = table.clone();
-            for (var i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
+            let clone = table.clone();
+            for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
                 modifiers[i].modifyColumns(clone, columns, rowIndex, eventDetail);
                 clone = clone.modified;
             }
             table.modified = clone;
         }
         return table;
-    };
+    }
     /**
      * Applies partial modifications of row changes to the property `modified`
      * of the given table.
@@ -204,20 +226,20 @@ var ChainModifier = /** @class */ (function (_super) {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    ChainModifier.prototype.modifyRows = function (table, rows, rowIndex, eventDetail) {
-        var modifiers = (this.options.reverse ?
-            this.modifiers.reverse() :
-            this.modifiers.slice());
+    modifyRows(table, rows, rowIndex, eventDetail) {
+        const modifiers = (this.options.reverse ?
+            this.chain.reverse() :
+            this.chain.slice());
         if (modifiers.length) {
-            var clone = table.clone();
-            for (var i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
+            let clone = table.clone();
+            for (let i = 0, iEnd = modifiers.length; i < iEnd; ++i) {
                 modifiers[i].modifyRows(clone, rows, rowIndex, eventDetail);
                 clone = clone.modified;
             }
             table.modified = clone;
         }
         return table;
-    };
+    }
     /**
      * Applies several modifications to the table.
      *
@@ -226,7 +248,7 @@ var ChainModifier = /** @class */ (function (_super) {
      * @param {DataTable} table
      * Table to modify.
      *
-     * @param {DataEventEmitter.EventDetail} [eventDetail]
+     * @param {DataEvent.Detail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
@@ -235,67 +257,68 @@ var ChainModifier = /** @class */ (function (_super) {
      * @emits ChainDataModifier#execute
      * @emits ChainDataModifier#afterExecute
      */
-    ChainModifier.prototype.modifyTable = function (table, eventDetail) {
-        var chain = this;
-        chain.emit({ type: 'modify', detail: eventDetail, table: table });
-        var modifiers = (chain.options.reverse ?
-            chain.modifiers.reverse() :
-            chain.modifiers.slice());
-        var modified = table.modified;
-        for (var i = 0, iEnd = modifiers.length, modifier = void 0; i < iEnd; ++i) {
+    modifyTable(table, eventDetail) {
+        const chain = this;
+        chain.emit({
+            type: 'modify',
+            detail: eventDetail,
+            table
+        });
+        const modifiers = (chain.options.reverse ?
+            chain.chain.reverse() :
+            chain.chain.slice());
+        let modified = table.modified;
+        for (let i = 0, iEnd = modifiers.length, modifier; i < iEnd; ++i) {
             modifier = modifiers[i];
-            modified = modifier.modifyTable(modified).modified;
+            modified = modifier.modifyTable(modified, eventDetail).modified;
         }
         table.modified = modified;
-        chain.emit({ type: 'afterModify', detail: eventDetail, table: table });
+        chain.emit({
+            type: 'afterModify',
+            detail: eventDetail,
+            table
+        });
         return table;
-    };
+    }
     /**
-     * Removes a configured modifier from all positions of the modifier chain.
+     * Removes a configured modifier from all positions in the modifier chain.
      *
      * @param {DataModifier} modifier
      * Configured modifier to remove.
      *
-     * @param {DataEventEmitter.EventDetail} [eventDetail]
+     * @param {DataEvent.Detail} [eventDetail]
      * Custom information for pending events.
      */
-    ChainModifier.prototype.remove = function (modifier, eventDetail) {
-        var modifiers = this.modifiers;
+    remove(modifier, eventDetail) {
+        const modifiers = this.chain;
         this.emit({
             type: 'removeModifier',
             detail: eventDetail,
-            modifier: modifier
+            modifier
         });
         modifiers.splice(modifiers.indexOf(modifier), 1);
         this.emit({
             type: 'afterRemoveModifier',
             detail: eventDetail,
-            modifier: modifier
+            modifier
         });
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    /**
-     * Default option for the ordered modifier chain.
-     */
-    ChainModifier.defaultOptions = {
-        modifier: 'Chain',
-        reverse: false
-    };
-    return ChainModifier;
-}(DataModifier));
+    }
+}
 /* *
  *
- *  Register
+ *  Static Properties
  *
  * */
-DataModifier.addModifier(ChainModifier);
+/**
+ * Default option for the ordered modifier chain.
+ */
+ChainModifier.defaultOptions = {
+    modifier: 'Chain'
+};
+DataModifier.registerType('Chain', ChainModifier);
 /* *
  *
- *  Export
+ *  Default Export
  *
  * */
 export default ChainModifier;

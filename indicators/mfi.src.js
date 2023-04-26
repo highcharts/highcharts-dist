@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Money Flow Index indicator for Highcharts Stock
  *
@@ -49,27 +49,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend,
-            merge = U.merge,
-            error = U.error,
-            isArray = U.isArray;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { extend, merge, error, isArray } = U;
         /* *
          *
          *  Functions
@@ -104,56 +85,34 @@
          *
          * @augments Highcharts.Series
          */
-        var MFIIndicator = /** @class */ (function (_super) {
-                __extends(MFIIndicator, _super);
-            function MFIIndicator() {
+        class MFIIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            MFIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    decimals = params.decimals, 
-                    // MFI starts calculations from the second point
-                    // Cause we need to calculate change between two points
-                    range = 1,
-                    volumeSeries = series.chart.get(params.volumeSeriesID),
-                    yValVolume = (volumeSeries && volumeSeries.yData),
-                    MFI = [],
-                    isUp = false,
-                    xData = [],
-                    yData = [],
-                    positiveMoneyFlow = [],
-                    negativeMoneyFlow = [],
-                    newTypicalPrice,
-                    oldTypicalPrice,
-                    rawMoneyFlow,
-                    negativeMoneyFlowSum,
-                    positiveMoneyFlowSum,
-                    moneyFlowRatio,
-                    MFIPoint,
-                    i;
+            getValues(series, params) {
+                const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = (volumeSeries && volumeSeries.yData), MFI = [], xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [];
+                let newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i, isUp = false, 
+                // MFI starts calculations from the second point
+                // Cause we need to calculate change between two points
+                range = 1;
                 if (!volumeSeries) {
                     error('Series ' +
                         params.volumeSeriesID +
@@ -210,41 +169,40 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
+        }
+        /**
+         * Money Flow Index. This series requires `linkedTo` option to be set and
+         * should be loaded after the `stock/indicators/indicators.js` file.
+         *
+         * @sample stock/indicators/mfi
+         *         Money Flow Index Indicator
+         *
+         * @extends      plotOptions.sma
+         * @since        6.0.0
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/mfi
+         * @optionparent plotOptions.mfi
+         */
+        MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Money Flow Index. This series requires `linkedTo` option to be set and
-             * should be loaded after the `stock/indicators/indicators.js` file.
-             *
-             * @sample stock/indicators/mfi
-             *         Money Flow Index Indicator
-             *
-             * @extends      plotOptions.sma
-             * @since        6.0.0
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/mfi
-             * @optionparent plotOptions.mfi
+             * @excluding index
              */
-            MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                index: void 0,
                 /**
-                 * @excluding index
+                 * The id of volume series which is mandatory.
+                 * For example using OHLC data, volumeSeriesID='volume' means
+                 * the indicator will be calculated using OHLC and volume values.
                  */
-                params: {
-                    index: void 0,
-                    /**
-                     * The id of volume series which is mandatory.
-                     * For example using OHLC data, volumeSeriesID='volume' means
-                     * the indicator will be calculated using OHLC and volume values.
-                     */
-                    volumeSeriesID: 'volume',
-                    /**
-                     * Number of maximum decimals that are used in MFI calculations.
-                     */
-                    decimals: 4
-                }
-            });
-            return MFIIndicator;
-        }(SMAIndicator));
+                volumeSeriesID: 'volume',
+                /**
+                 * Number of maximum decimals that are used in MFI calculations.
+                 */
+                decimals: 4
+            }
+        });
         extend(MFIIndicator.prototype, {
             nameBase: 'Money Flow Index'
         });

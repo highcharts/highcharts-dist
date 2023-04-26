@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -46,9 +46,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var columnProto = SeriesRegistry.seriesTypes.column.prototype;
-        var addEvent = U.addEvent,
-            defined = U.defined;
+        const { column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
+        const { addEvent, defined } = U;
         /* *
          *
          *  Composition
@@ -61,7 +60,7 @@
              *  Constants
              *
              * */
-            var composedClasses = [];
+            const composedMembers = [];
             ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
@@ -85,9 +84,8 @@
              * @private
              */
             function compose(SeriesClass) {
-                var PointClass = SeriesClass.prototype.pointClass;
-                if (composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
+                const PointClass = SeriesClass.prototype.pointClass;
+                if (U.pushUnique(composedMembers, PointClass)) {
                     addEvent(PointClass, 'afterSetState', onPointAfterSetState);
                 }
                 return SeriesClass;
@@ -98,7 +96,7 @@
              * @private
              */
             function onPointAfterSetState(e) {
-                var point = this;
+                const point = this;
                 if (point.moveToTopOnHover && point.graphic) {
                     point.graphic.attr({
                         zIndex: e && e.state === 'hover' ? 1 : 0
@@ -126,7 +124,7 @@
              *         The SVG attributes
              */
             function seriesColorAttribs(point) {
-                var ret = {};
+                const ret = {};
                 if (defined(point.color) &&
                     (!point.state || point.state === 'normal') // #15746
                 ) {
@@ -160,14 +158,14 @@
          *  Class
          *
          * */
-        var TreemapAlgorithmGroup = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructor
-                 *
-                 * */
-                function TreemapAlgorithmGroup(h, w, d, p) {
-                    this.height = h;
+        class TreemapAlgorithmGroup {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(h, w, d, p) {
+                this.height = h;
                 this.width = w;
                 this.plot = p;
                 this.direction = d;
@@ -197,7 +195,7 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            TreemapAlgorithmGroup.prototype.addElement = function (el) {
+            addElement(el) {
                 this.lP.total = this.elArr[this.elArr.length - 1];
                 this.total = this.total + el;
                 if (this.direction === 0) {
@@ -221,15 +219,14 @@
                     this.lP.nR = this.lP.aspectRatio(this.lP.nW, this.nH);
                 }
                 this.elArr.push(el);
-            };
-            TreemapAlgorithmGroup.prototype.reset = function () {
+            }
+            reset() {
                 this.nW = 0;
                 this.lW = 0;
                 this.elArr = [];
                 this.total = 0;
-            };
-            return TreemapAlgorithmGroup;
-        }());
+            }
+        }
         /* *
          *
          *  Default Export
@@ -244,7 +241,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber;
+        const { isNumber } = U;
         /* *
          *
          *  Functions
@@ -261,21 +258,15 @@
          * @todo export this function to enable usage
          */
         function draw(point, params) {
-            var animatableAttribs = params.animatableAttribs,
-                onComplete = params.onComplete,
-                css = params.css,
-                renderer = params.renderer;
-            var animation = (point.series && point.series.chart.hasRendered) ?
-                    // Chart-level animation on updates
-                    void 0 :
-                    // Series-level animation on new points
-                    (point.series &&
-                        point.series.options.animation);
-            var graphic = point.graphic;
-            params.attribs = params.attribs || {};
-            // Assigning class in dot notation does go well in IE8
-            // eslint-disable-next-line dot-notation
-            params.attribs['class'] = point.getClassName();
+            const { animatableAttribs, onComplete, css, renderer } = params;
+            const animation = (point.series && point.series.chart.hasRendered) ?
+                // Chart-level animation on updates
+                void 0 :
+                // Series-level animation on new points
+                (point.series &&
+                    point.series.options.animation);
+            let graphic = point.graphic;
+            params.attribs = Object.assign(Object.assign({}, params.attribs), { 'class': point.getClassName() }) || {};
             if ((point.shouldDraw())) {
                 if (!graphic) {
                     point.graphic = graphic = params.shapeType === 'text' ?
@@ -291,18 +282,18 @@
                     .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
             else if (graphic) {
-                var destroy_1 = function () {
-                        point.graphic = graphic = (graphic && graphic.destroy());
+                const destroy = () => {
+                    point.graphic = graphic = (graphic && graphic.destroy());
                     if (typeof onComplete === 'function') {
                         onComplete();
                     }
                 };
                 // animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
-                    graphic.animate(animatableAttribs, void 0, function () { return destroy_1(); });
+                    graphic.animate(animatableAttribs, void 0, () => destroy());
                 }
                 else {
-                    destroy_1();
+                    destroy();
                 }
             }
         }
@@ -311,9 +302,9 @@
          *  Default Export
          *
          * */
-        var DrawPointUtilities = {
-                draw: draw
-            };
+        const DrawPointUtilities = {
+            draw
+        };
 
         return DrawPointUtilities;
     });
@@ -329,51 +320,27 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var Point = SeriesRegistry.series.prototype.pointClass,
-            _a = SeriesRegistry.seriesTypes,
-            PiePoint = _a.pie.prototype.pointClass,
-            ScatterPoint = _a.scatter.prototype.pointClass;
-        var extend = U.extend,
-            isNumber = U.isNumber,
-            pick = U.pick;
+        const { series: { prototype: { pointClass: Point } }, seriesTypes: { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } } = SeriesRegistry;
+        const { extend, isNumber, pick } = U;
         /* *
          *
          *  Class
          *
          * */
-        var TreemapPoint = /** @class */ (function (_super) {
-                __extends(TreemapPoint, _super);
-            function TreemapPoint() {
+        class TreemapPoint extends ScatterPoint {
+            constructor() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
-                _this.name = void 0;
-                _this.node = void 0;
-                _this.options = void 0;
-                _this.series = void 0;
-                _this.shapeType = 'rect';
-                _this.value = void 0;
-                return _this;
+                super(...arguments);
+                this.name = void 0;
+                this.node = void 0;
+                this.options = void 0;
+                this.series = void 0;
+                this.shapeType = 'rect';
+                this.value = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -382,13 +349,11 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            TreemapPoint.prototype.draw = function (params) {
+            draw(params) {
                 DPU.draw(this, params);
-            };
-            TreemapPoint.prototype.getClassName = function () {
-                var className = Point.prototype.getClassName.call(this),
-                    series = this.series,
-                    options = series.options;
+            }
+            getClassName() {
+                let className = Point.prototype.getClassName.call(this), series = this.series, options = series.options;
                 // Above the current level
                 if (this.node.level <= series.nodeMap[series.rootNode].level) {
                     className += ' highcharts-above-level';
@@ -401,7 +366,7 @@
                     className += ' highcharts-internal-node';
                 }
                 return className;
-            };
+            }
             /**
              * A tree point is valid if it has han id too, assume it may be a parent
              * item.
@@ -409,10 +374,10 @@
              * @private
              * @function Highcharts.Point#isValid
              */
-            TreemapPoint.prototype.isValid = function () {
+            isValid() {
                 return Boolean(this.id || isNumber(this.value));
-            };
-            TreemapPoint.prototype.setState = function (state) {
+            }
+            setState(state) {
                 Point.prototype.setState.call(this, state);
                 // Graphic does not exist when point is not visible.
                 if (this.graphic) {
@@ -420,12 +385,11 @@
                         zIndex: state === 'hover' ? 1 : 0
                     });
                 }
-            };
-            TreemapPoint.prototype.shouldDraw = function () {
+            }
+            shouldDraw() {
                 return isNumber(this.plotY) && this.y !== null;
-            };
-            return TreemapPoint;
-        }(ScatterPoint));
+            }
+        }
         extend(TreemapPoint.prototype, {
             setVisible: PiePoint.prototype.setVisible
         });
@@ -454,7 +418,7 @@
          *  Imports
          *
          * */
-        var objectEach = U.objectEach;
+        const { objectEach } = U;
         /* *
          *
          *  Namespace
@@ -485,9 +449,8 @@
              * @todo find correct name for this function.
              * @todo Similar to reduce, this function is likely redundant
              */
-            function recursive(item, func, context) {
-                if (context === void 0) { context = this; }
-                var next;
+            function recursive(item, func, context = this) {
+                let next;
                 next = func.call(context, item);
                 if (next !== false) {
                     recursive(next, func, context);
@@ -515,12 +478,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            merge = U.merge,
-            pick = U.pick;
+        const { extend, isArray, isNumber, isObject, merge, pick } = U;
         /* *
          *
          *  Functions
@@ -531,27 +489,13 @@
          * @private
          */
         function getColor(node, options) {
-            var index = options.index,
-                mapOptionsToLevel = options.mapOptionsToLevel,
-                parentColor = options.parentColor,
-                parentColorIndex = options.parentColorIndex,
-                series = options.series,
-                colors = options.colors,
-                siblings = options.siblings,
-                points = series.points,
-                chartOptionsChart = series.chart.options.chart;
-            var getColorByPoint,
-                point,
-                level,
-                colorByPoint,
-                colorIndexByPoint,
-                color,
-                colorIndex;
+            const index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
+            let getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
             /**
              * @private
              */
-            var variateColor = function (color) {
-                    var colorVariation = level && level.colorVariation;
+            const variateColor = (color) => {
+                const colorVariation = level && level.colorVariation;
                 if (colorVariation &&
                     colorVariation.key === 'brightness' &&
                     index &&
@@ -599,23 +543,15 @@
          * Returns a map from level number to its given options.
          */
         function getLevelOptions(params) {
-            var result = {},
-                defaults,
-                converted,
-                i,
-                from,
-                to,
-                levels;
+            let result = {}, defaults, converted, i, from, to, levels;
             if (isObject(params)) {
                 from = isNumber(params.from) ? params.from : 1;
                 levels = params.levels;
                 converted = {};
                 defaults = isObject(params.defaults) ? params.defaults : {};
                 if (isArray(levels)) {
-                    converted = levels.reduce(function (obj, item) {
-                        var level,
-                            levelIsConstant,
-                            options;
+                    converted = levels.reduce((obj, item) => {
+                        let level, levelIsConstant, options;
                         if (isObject(item) && isNumber(item.level)) {
                             options = merge({}, item);
                             levelIsConstant = pick(options.levelIsConstant, defaults.levelIsConstant);
@@ -647,16 +583,8 @@
          * @todo Remove logic from Treemap and make it utilize this mixin.
          */
         function setTreeValues(tree, options) {
-            var before = options.before,
-                idRoot = options.idRoot,
-                mapIdToNode = options.mapIdToNode,
-                nodeRoot = mapIdToNode[idRoot],
-                levelIsConstant = (options.levelIsConstant !== false),
-                points = options.points,
-                point = points[tree.i],
-                optionsPoint = point && point.options || {},
-                children = [];
-            var childrenTotal = 0;
+            const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
+            let childrenTotal = 0;
             tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
             tree.name = pick(point && point.name, '');
             tree.visible = (idRoot === tree.id ||
@@ -665,9 +593,8 @@
                 tree = before(tree, options);
             }
             // First give the children some values
-            tree.children.forEach(function (child, i) {
-                var newOptions = extend({},
-                    options);
+            tree.children.forEach((child, i) => {
+                const newOptions = extend({}, options);
                 extend(newOptions, {
                     index: i,
                     siblings: tree.children.length,
@@ -680,8 +607,7 @@
                 }
             });
             // Set the values
-            var value = pick(optionsPoint.value,
-                childrenTotal);
+            const value = pick(optionsPoint.value, childrenTotal);
             tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
@@ -702,8 +628,7 @@
          * Returns the resulting rootId after update.
          */
         function updateRootId(series) {
-            var rootId,
-                options;
+            let rootId, options;
             if (isObject(series)) {
                 // Get the series options.
                 options = isObject(series.options) ? series.options : {};
@@ -723,16 +648,16 @@
          *  Default Export
          *
          * */
-        var TreeUtilities = {
-                getColor: getColor,
-                getLevelOptions: getLevelOptions,
-                setTreeValues: setTreeValues,
-                updateRootId: updateRootId
-            };
+        const TreeUtilities = {
+            getColor,
+            getLevelOptions,
+            setTreeValues,
+            updateRootId
+        };
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/FormatUtilities.js']], function (Chart, D, H, U, F) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/BreadcrumbsDefaults.js', [], function () {
         /* *
          *
          *  Highcharts Breadcrumbs module
@@ -744,32 +669,360 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defaultOptions = D.defaultOptions;
-        var format = F.format;
-        var addEvent = U.addEvent,
-            objectEach = U.objectEach,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            merge = U.merge,
-            pick = U.pick,
-            defined = U.defined,
-            isString = U.isString;
-        // Add language support.
-        extend(defaultOptions.lang, 
+        /* *
+         *
+         *  Constants
+         *
+         * */
         /**
          * @optionparent lang
-         *
-         * @private
          */
-        {
+        const lang = {
             /**
-             * @since 10.0.0
-             * @product  highcharts
+             * @since   10.0.0
+             * @product highcharts
              *
              * @private
              */
             mainBreadcrumb: 'Main'
-        });
+        };
+        /**
+         * Options for breadcrumbs. Breadcrumbs general options are defined in
+         * `navigation.breadcrumbs`. Specific options for drilldown are set in
+         * `drilldown.breadcrumbs` and for tree-like series traversing, in
+         * `plotOptions[series].breadcrumbs`.
+         *
+         * @since        10.0.0
+         * @product      highcharts
+         * @optionparent navigation.breadcrumbs
+         */
+        const options = {
+            /**
+             * A collection of attributes for the buttons. The object takes SVG
+             * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
+             * a collection of CSS properties for the text.
+             *
+             * The object can also be extended with states, so you can set
+             * presentational options for `hover`, `select` or `disabled` button
+             * states.
+             *
+             * @sample {highcharts} highcharts/breadcrumbs/single-button
+             *         Themed, single button
+             *
+             * @type    {Highcharts.SVGAttributes}
+             * @since   10.0.0
+             * @product highcharts
+             */
+            buttonTheme: {
+                /** @ignore */
+                fill: 'none',
+                /** @ignore */
+                height: 18,
+                /** @ignore */
+                padding: 2,
+                /** @ignore */
+                'stroke-width': 0,
+                /** @ignore */
+                zIndex: 7,
+                /** @ignore */
+                states: {
+                    select: {
+                        fill: 'none'
+                    }
+                },
+                style: {
+                    color: "#334eff" /* Palette.highlightColor80 */
+                }
+            },
+            /**
+             * The default padding for each button and separator in each direction.
+             *
+             * @type  {number}
+             * @since 10.0.0
+             */
+            buttonSpacing: 5,
+            /**
+             * Fires when clicking on the breadcrumbs button. Two arguments are
+             * passed to the function. First breadcrumb button as an SVG element.
+             * Second is the breadcrumbs class, containing reference to the chart,
+             * series etc.
+             *
+             * ```js
+             * click: function(button, breadcrumbs) {
+             *   console.log(button);
+             * }
+             * ```
+             *
+             * Return false to stop default buttons click action.
+             *
+             * @type      {Highcharts.BreadcrumbsClickCallbackFunction}
+             * @since     10.0.0
+             * @apioption navigation.breadcrumbs.events.click
+             */
+            /**
+             * When the breadcrumbs are floating, the plot area will not move to
+             * make space for it. By default, the chart will not make space for the
+             * buttons. This property won't work when positioned in the middle.
+             *
+             * @sample highcharts/breadcrumbs/single-button
+             *         Floating button
+             *
+             * @type  {boolean}
+             * @since 10.0.0
+             */
+            floating: false,
+            /**
+             * A format string for the breadcrumbs button. Variables are enclosed by
+             * curly brackets. Available values are passed in the declared point
+             * options.
+             *
+             * @type      {string|undefined}
+             * @since 10.0.0
+             * @default   undefined
+             * @sample {highcharts} highcharts/breadcrumbs/format Display custom
+             *          values in breadcrumb button.
+             */
+            format: void 0,
+            /**
+             * Callback function to format the breadcrumb text from scratch.
+             *
+             * @type      {Highcharts.BreadcrumbsFormatterCallbackFunction}
+             * @since     10.0.0
+             * @default   undefined
+             * @apioption navigation.breadcrumbs.formatter
+             */
+            /**
+             * What box to align the button to. Can be either `plotBox` or
+             * `spacingBox`.
+             *
+             * @type    {Highcharts.ButtonRelativeToValue}
+             * @default plotBox
+             * @since   10.0.0
+             * @product highcharts highmaps
+             */
+            relativeTo: 'plotBox',
+            /**
+             * Whether to reverse the order of buttons. This is common in Arabic
+             * and Hebrew.
+             *
+             * @sample {highcharts} highcharts/breadcrumbs/rtl
+             *         Breadcrumbs in RTL
+             *
+             * @type  {boolean}
+             * @since 10.2.0
+             */
+            rtl: false,
+            /**
+             * Positioning for the button row. The breadcrumbs buttons will be
+             * aligned properly for the default chart layout (title,  subtitle,
+             * legend, range selector) for the custom chart layout set the position
+             * properties.
+             *
+             * @sample  {highcharts} highcharts/breadcrumbs/single-button
+             *          Single, right aligned button
+             *
+             * @type    {Highcharts.BreadcrumbsAlignOptions}
+             * @since   10.0.0
+             * @product highcharts highmaps
+             */
+            position: {
+                /**
+                 * Horizontal alignment of the breadcrumbs buttons.
+                 *
+                 * @type {Highcharts.AlignValue}
+                 */
+                align: 'left',
+                /**
+                 * Vertical alignment of the breadcrumbs buttons.
+                 *
+                 * @type {Highcharts.VerticalAlignValue}
+                 */
+                verticalAlign: 'top',
+                /**
+                 * The X offset of the breadcrumbs button group.
+                 *
+                 * @type {number}
+                 */
+                x: 0,
+                /**
+                 * The Y offset of the breadcrumbs button group. When `undefined`,
+                 * and `floating` is `false`, the `y` position is adapted so that
+                 * the breadcrumbs are rendered outside the target area.
+                 *
+                 * @type {number|undefined}
+                 */
+                y: void 0
+            },
+            /**
+             * Options object for Breadcrumbs separator.
+             *
+             * @since 10.0.0
+             */
+            separator: {
+                /**
+                 * @type    {string}
+                 * @since   10.0.0
+                 * @product highcharts
+                 */
+                text: '/',
+                /**
+                 * CSS styles for the breadcrumbs separator.
+                 *
+                 * In styled mode, the breadcrumbs separators are styled by the
+                 * `.highcharts-separator` rule with its different states.
+                 *  @type  {Highcharts.CSSObject}
+                 *  @since 10.0.0
+                 */
+                style: {
+                    color: "#666666" /* Palette.neutralColor60 */,
+                    fontSize: '0.8em'
+                }
+            },
+            /**
+             * Show full path or only a single button.
+             *
+             * @sample {highcharts} highcharts/breadcrumbs/single-button
+             *         Single, styled button
+             *
+             * @type  {boolean}
+             * @since 10.0.0
+             */
+            showFullPath: true,
+            /**
+             * CSS styles for all breadcrumbs.
+             *
+             * In styled mode, the breadcrumbs buttons are styled by the
+             * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
+             * different states.
+             *
+             * @type  {Highcharts.SVGAttributes}
+             * @since 10.0.0
+             */
+            style: {},
+            /**
+             * Whether to use HTML to render the breadcrumbs items texts.
+             *
+             * @type  {boolean}
+             * @since 10.0.0
+             */
+            useHTML: false,
+            /**
+             * The z index of the breadcrumbs group.
+             *
+             * @type  {number}
+             * @since 10.0.0
+             */
+            zIndex: 7
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const BreadcrumbsDefaults = {
+            lang,
+            options
+        };
+
+        return BreadcrumbsDefaults;
+    });
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+        /* *
+         *
+         *  Highcharts Breadcrumbs module
+         *
+         *  Authors: Grzegorz Blachlinski, Karol Kolodziej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { format } = F;
+        const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Shift the drillUpButton to make the space for resetZoomButton, #8095.
+         * @private
+         */
+        function onChartAfterShowResetZoom() {
+            const chart = this;
+            if (chart.breadcrumbs) {
+                const bbox = chart.resetZoomButton &&
+                    chart.resetZoomButton.getBBox(), breadcrumbsOptions = chart.breadcrumbs.options;
+                if (bbox &&
+                    breadcrumbsOptions.position.align === 'right' &&
+                    breadcrumbsOptions.relativeTo === 'plotBox') {
+                    chart.breadcrumbs.alignBreadcrumbsGroup(-bbox.width - breadcrumbsOptions.buttonSpacing);
+                }
+            }
+        }
+        /**
+         * Remove resize/afterSetExtremes at chart destroy.
+         * @private
+         */
+        function onChartDestroy() {
+            if (this.breadcrumbs) {
+                this.breadcrumbs.destroy();
+                this.breadcrumbs = void 0;
+            }
+        }
+        /**
+         * Logic for making space for the buttons above the plot area
+         * @private
+         */
+        function onChartGetMargins() {
+            const breadcrumbs = this.breadcrumbs;
+            if (breadcrumbs &&
+                !breadcrumbs.options.floating &&
+                breadcrumbs.level) {
+                const breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, breadcrumbsHeight = ((buttonTheme.height || 0) +
+                    2 * (buttonTheme.padding || 0) +
+                    breadcrumbsOptions.buttonSpacing), verticalAlign = breadcrumbsOptions.position.verticalAlign;
+                if (verticalAlign === 'bottom') {
+                    this.marginBottom = (this.marginBottom || 0) + breadcrumbsHeight;
+                    breadcrumbs.yOffset = breadcrumbsHeight;
+                }
+                else if (verticalAlign !== 'middle') {
+                    this.plotTop += breadcrumbsHeight;
+                    breadcrumbs.yOffset = -breadcrumbsHeight;
+                }
+                else {
+                    breadcrumbs.yOffset = void 0;
+                }
+            }
+        }
+        /**
+         * @private
+         */
+        function onChartRedraw() {
+            this.breadcrumbs && this.breadcrumbs.redraw();
+        }
+        /**
+         * After zooming out, shift the drillUpButton to the previous position, #8095.
+         * @private
+         */
+        function onChartSelection(event) {
+            if (event.resetSelection === true &&
+                this.breadcrumbs) {
+                this.breadcrumbs.alignBreadcrumbsGroup();
+            }
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Breadcrumbs class
          *
@@ -782,27 +1035,45 @@
          * @param {Highcharts.Options} userOptions
          *        User options
          */
-        var Breadcrumbs = /** @class */ (function () {
-                function Breadcrumbs(chart, userOptions) {
-                    /* *
-                     *
-                     * Properties
-                     *
-                     * */
-                    this.group = void 0;
-                this.list = [];
+        class Breadcrumbs {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            static compose(ChartClass, highchartsDefaultOptions) {
+                if (U.pushUnique(composedMembers, ChartClass)) {
+                    addEvent(Chart, 'destroy', onChartDestroy);
+                    addEvent(Chart, 'afterShowResetZoom', onChartAfterShowResetZoom);
+                    addEvent(Chart, 'getMargins', onChartGetMargins);
+                    addEvent(Chart, 'redraw', onChartRedraw);
+                    addEvent(Chart, 'selection', onChartSelection);
+                }
+                if (U.pushUnique(composedMembers, highchartsDefaultOptions)) {
+                    // Add language support.
+                    extend(highchartsDefaultOptions.lang, BreadcrumbsDefaults.lang);
+                }
+            }
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(chart, userOptions) {
                 this.elementList = {};
                 this.isDirty = true;
                 this.level = 0;
-                this.options = void 0;
-                var chartOptions = merge(chart.options.drilldown &&
-                        chart.options.drilldown.drillUpButton,
-                    Breadcrumbs.defaultBreadcrumbsOptions,
-                    chart.options.navigation && chart.options.navigation.breadcrumbs,
-                    userOptions);
+                this.list = [];
+                const chartOptions = merge(chart.options.drilldown &&
+                    chart.options.drilldown.drillUpButton, Breadcrumbs.defaultOptions, chart.options.navigation && chart.options.navigation.breadcrumbs, userOptions);
                 this.chart = chart;
                 this.options = chartOptions || {};
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Update Breadcrumbs properties, like level and list.
              *
@@ -812,11 +1083,11 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.updateProperties = function (list) {
+            updateProperties(list) {
                 this.setList(list);
                 this.setLevel();
                 this.isDirty = true;
-            };
+            }
             /**
              * Set breadcrumbs list.
              * @function Highcharts.Breadcrumbs#setList
@@ -828,9 +1099,9 @@
              * @param {Highcharts.BreadcrumbsOptions} list
              *        Breadcrumbs list.
              */
-            Breadcrumbs.prototype.setList = function (list) {
+            setList(list) {
                 this.list = list;
-            };
+            }
             /**
              * Calcule level on which chart currently is.
              *
@@ -840,9 +1111,9 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.setLevel = function () {
+            setLevel() {
                 this.level = this.list.length && this.list.length - 1;
-            };
+            }
             /**
              * Get Breadcrumbs level
              *
@@ -852,9 +1123,9 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.getLevel = function () {
+            getLevel() {
                 return this.level;
-            };
+            }
             /**
              * Default button text formatter.
              *
@@ -868,20 +1139,12 @@
              * @return {string}
              *         Formatted text.
              */
-            Breadcrumbs.prototype.getButtonText = function (breadcrumb) {
-                var breadcrumbs = this,
-                    chart = breadcrumbs.chart,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    lang = chart.options.lang,
-                    textFormat = pick(breadcrumbsOptions.format,
-                    breadcrumbsOptions.showFullPath ?
-                        '{level.name}' : '← {level.name}'),
-                    defaultText = lang && pick(lang.drillUpText,
-                    lang.mainBreadcrumb);
-                var returnText = breadcrumbsOptions.formatter &&
-                        breadcrumbsOptions.formatter(breadcrumb) ||
-                        format(textFormat, { level: breadcrumb.levelOptions },
-                    chart) || '';
+            getButtonText(breadcrumb) {
+                const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = pick(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
+                    '{level.name}' : '← {level.name}'), defaultText = lang && pick(lang.drillUpText, lang.mainBreadcrumb);
+                let returnText = breadcrumbsOptions.formatter &&
+                    breadcrumbsOptions.formatter(breadcrumb) ||
+                    format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
                 if (((isString(returnText) &&
                     !returnText.length) ||
                     returnText === '← ') &&
@@ -891,7 +1154,7 @@
                         defaultText;
                 }
                 return returnText;
-            };
+            }
             /**
              * Redraw.
              *
@@ -901,7 +1164,7 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.redraw = function () {
+            redraw() {
                 if (this.isDirty) {
                     this.render();
                 }
@@ -909,7 +1172,7 @@
                     this.group.align();
                 }
                 this.isDirty = false;
-            };
+            }
             /**
              * Create a group, then draw breadcrumbs together with the separators.
              *
@@ -919,10 +1182,8 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.render = function () {
-                var breadcrumbs = this,
-                    chart = breadcrumbs.chart,
-                    breadcrumbsOptions = breadcrumbs.options;
+            render() {
+                const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options;
                 // A main group for the breadcrumbs.
                 if (!breadcrumbs.group && breadcrumbsOptions) {
                     breadcrumbs.group = chart.renderer
@@ -941,7 +1202,7 @@
                     this.renderSingleButton();
                 }
                 this.alignBreadcrumbsGroup();
-            };
+            }
             /**
              * Draw breadcrumbs together with the separators.
              *
@@ -951,13 +1212,13 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.renderFullPathButtons = function () {
+            renderFullPathButtons() {
                 // Make sure that only one type of button is visible.
                 this.destroySingleButton();
                 this.resetElementListState();
                 this.updateListElements();
                 this.destroyListElements();
-            };
+            }
             /**
              * Render Single button - when showFullPath is not used. The button is
              * similar to the old drillUpButton
@@ -967,21 +1228,16 @@
              * @function Highcharts.Breadcrumbs#renderSingleButton
              * @param {Highcharts.Breadcrumbs} this Breadcrumbs class.
              */
-            Breadcrumbs.prototype.renderSingleButton = function () {
-                var breadcrumbs = this,
-                    chart = breadcrumbs.chart,
-                    list = breadcrumbs.list,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    buttonSpacing = breadcrumbsOptions.buttonSpacing;
+            renderSingleButton() {
+                const breadcrumbs = this, chart = breadcrumbs.chart, list = breadcrumbs.list, breadcrumbsOptions = breadcrumbs.options, buttonSpacing = breadcrumbsOptions.buttonSpacing;
                 // Make sure that only one type of button is visible.
                 this.destroyListElements();
                 // Draw breadcrumbs. Inital position for calculating the breadcrumbs
                 // group.
-                var posX = breadcrumbs.group ?
-                        breadcrumbs.group.getBBox().width :
-                        buttonSpacing,
-                    posY = buttonSpacing;
-                var previousBreadcrumb = list[list.length - 2];
+                const posX = breadcrumbs.group ?
+                    breadcrumbs.group.getBBox().width :
+                    buttonSpacing, posY = buttonSpacing;
+                const previousBreadcrumb = list[list.length - 2];
                 if (!chart.drillUpButton && (this.level > 0)) {
                     chart.drillUpButton = breadcrumbs.renderButton(previousBreadcrumb, posX, posY);
                 }
@@ -994,7 +1250,7 @@
                         this.destroySingleButton();
                     }
                 }
-            };
+            }
             /**
              * Update group position based on align and it's width.
              *
@@ -1004,23 +1260,18 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.alignBreadcrumbsGroup = function (xOffset) {
-                var breadcrumbs = this;
+            alignBreadcrumbsGroup(xOffset) {
+                const breadcrumbs = this;
                 if (breadcrumbs.group) {
-                    var breadcrumbsOptions = breadcrumbs.options,
-                        buttonTheme = breadcrumbsOptions.buttonTheme,
-                        positionOptions = breadcrumbsOptions.position,
-                        alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
-                            breadcrumbsOptions.relativeTo === 'spacingBox' ?
-                            void 0 :
-                            'scrollablePlotBox'),
-                        bBox = breadcrumbs.group.getBBox(),
-                        additionalSpace = 2 * (buttonTheme.padding || 0) +
-                            breadcrumbsOptions.buttonSpacing;
+                    const breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, positionOptions = breadcrumbsOptions.position, alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
+                        breadcrumbsOptions.relativeTo === 'spacingBox' ?
+                        void 0 :
+                        'scrollablePlotBox'), bBox = breadcrumbs.group.getBBox(), additionalSpace = 2 * (buttonTheme.padding || 0) +
+                        breadcrumbsOptions.buttonSpacing;
                     // Store positionOptions
                     positionOptions.width = bBox.width + additionalSpace;
                     positionOptions.height = bBox.height + additionalSpace;
-                    var newPositions = merge(positionOptions);
+                    const newPositions = merge(positionOptions);
                     // Add x offset if specified.
                     if (xOffset) {
                         newPositions.x += xOffset;
@@ -1031,7 +1282,7 @@
                     newPositions.y = pick(newPositions.y, this.yOffset, 0);
                     breadcrumbs.group.align(newPositions, true, alignTo);
                 }
-            };
+            }
             /**
              * Render a button.
              *
@@ -1049,20 +1300,14 @@
              * @return {SVGElement|void}
              *        Returns the SVG button
              */
-            Breadcrumbs.prototype.renderButton = function (breadcrumb, posX, posY) {
-                var breadcrumbs = this,
-                    chart = this.chart,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    buttonTheme = merge(breadcrumbsOptions.buttonTheme);
-                var button = chart.renderer
-                        .button(breadcrumbs.getButtonText(breadcrumb),
-                    posX,
-                    posY,
-                    function (e) {
-                        // Extract events from button object and call
-                        var buttonEvents = breadcrumbsOptions.events &&
-                            breadcrumbsOptions.events.click;
-                    var callDefaultEvent;
+            renderButton(breadcrumb, posX, posY) {
+                const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
+                const button = chart.renderer
+                    .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
+                    // Extract events from button object and call
+                    const buttonEvents = breadcrumbsOptions.events &&
+                        breadcrumbsOptions.events.click;
+                    let callDefaultEvent;
                     if (buttonEvents) {
                         callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb);
                     }
@@ -1085,7 +1330,7 @@
                     button.attr(breadcrumbsOptions.style);
                 }
                 return button;
-            };
+            }
             /**
              * Render a separator.
              *
@@ -1101,26 +1346,17 @@
              * @return {Highcharts.SVGElement}
              *        Returns the SVG button
              */
-            Breadcrumbs.prototype.renderSeparator = function (posX, posY) {
-                var breadcrumbs = this,
-                    chart = this.chart,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    separatorOptions = breadcrumbsOptions.separator;
-                var separator = chart.renderer
-                        .label(separatorOptions.text,
-                    posX,
-                    posY,
-                    void 0,
-                    void 0,
-                    void 0,
-                    false)
-                        .addClass('highcharts-breadcrumbs-separator')
-                        .add(breadcrumbs.group);
+            renderSeparator(posX, posY) {
+                const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, separatorOptions = breadcrumbsOptions.separator;
+                const separator = chart.renderer
+                    .label(separatorOptions.text, posX, posY, void 0, void 0, void 0, false)
+                    .addClass('highcharts-breadcrumbs-separator')
+                    .add(breadcrumbs.group);
                 if (!chart.styledMode) {
                     separator.css(separatorOptions.style);
                 }
                 return separator;
-            };
+            }
             /**
              * Update.
              * @function Highcharts.Breadcrumbs#update
@@ -1134,11 +1370,11 @@
              * @param {boolean} redraw
              *        Redraw flag
              */
-            Breadcrumbs.prototype.update = function (options) {
+            update(options) {
                 merge(true, this.options, options);
                 this.destroy();
                 this.isDirty = true;
-            };
+            }
             /**
              * Update button text when the showFullPath set to false.
              * @function Highcharts.Breadcrumbs#updateSingleButton
@@ -1148,15 +1384,14 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.updateSingleButton = function () {
-                var chart = this.chart,
-                    currentBreadcrumb = this.list[this.level - 1];
+            updateSingleButton() {
+                const chart = this.chart, currentBreadcrumb = this.list[this.level - 1];
                 if (chart.drillUpButton) {
                     chart.drillUpButton.attr({
                         text: this.getButtonText(currentBreadcrumb)
                     });
                 }
-            };
+            }
             /**
              * Destroy the chosen breadcrumbs group
              *
@@ -1166,7 +1401,7 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.destroy = function () {
+            destroy() {
                 this.destroySingleButton();
                 // Destroy elements one by one. It's necessary beacause
                 // g().destroy() does not remove added HTML
@@ -1176,7 +1411,7 @@
                     this.group.destroy();
                 }
                 this.group = void 0;
-            };
+            }
             /**
              * Destroy the elements' buttons and separators.
              *
@@ -1186,9 +1421,9 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.destroyListElements = function (force) {
-                var elementList = this.elementList;
-                objectEach(elementList, function (element, level) {
+            destroyListElements(force) {
+                const elementList = this.elementList;
+                objectEach(elementList, (element, level) => {
                     if (force ||
                         !elementList[level].updated) {
                         element = elementList[level];
@@ -1202,7 +1437,7 @@
                 if (force) {
                     this.elementList = {};
                 }
-            };
+            }
             /**
              * Destroy the single button if exists.
              *
@@ -1212,12 +1447,12 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.destroySingleButton = function () {
+            destroySingleButton() {
                 if (this.chart.drillUpButton) {
                     this.chart.drillUpButton.destroy();
                     this.chart.drillUpButton = void 0;
                 }
-            };
+            }
             /**
              * Reset state for all buttons in elementList.
              *
@@ -1227,45 +1462,36 @@
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.resetElementListState = function () {
-                objectEach(this.elementList, function (element) {
+            resetElementListState() {
+                objectEach(this.elementList, (element) => {
                     element.updated = false;
                 });
-            };
+            }
             /**
              * Update rendered elements inside the elementList.
              *
              * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#updateListElements
+             *
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
-            Breadcrumbs.prototype.updateListElements = function () {
-                var breadcrumbs = this,
-                    elementList = breadcrumbs.elementList,
-                    buttonSpacing = breadcrumbs.options.buttonSpacing,
-                    list = breadcrumbs.list,
-                    rtl = breadcrumbs.options.rtl,
-                    rtlFactor = rtl ? -1 : 1,
-                    updateXPosition = function (element,
-                    spacing) {
-                        return rtlFactor * element.getBBox().width +
-                            rtlFactor * spacing;
+            updateListElements() {
+                const breadcrumbs = this, elementList = breadcrumbs.elementList, buttonSpacing = breadcrumbs.options.buttonSpacing, posY = buttonSpacing, list = breadcrumbs.list, rtl = breadcrumbs.options.rtl, rtlFactor = rtl ? -1 : 1, updateXPosition = function (element, spacing) {
+                    return rtlFactor * element.getBBox().width +
+                        rtlFactor * spacing;
                 }, adjustToRTL = function (element, posX, posY) {
                     element.translate(posX - element.getBBox().width, posY);
                 };
                 // Inital position for calculating the breadcrumbs group.
-                var posX = breadcrumbs.group ?
-                        updateXPosition(breadcrumbs.group,
-                    buttonSpacing) :
-                        buttonSpacing,
-                    posY = buttonSpacing,
-                    currentBreadcrumb;
-                list.forEach(function (breadcrumb, index) {
-                    var isLast = index === list.length - 1;
-                    var button,
-                        separator;
+                let posX = breadcrumbs.group ?
+                    updateXPosition(breadcrumbs.group, buttonSpacing) :
+                    buttonSpacing, currentBreadcrumb, breadcrumb;
+                for (let i = 0, iEnd = list.length; i < iEnd; ++i) {
+                    const isLast = i === iEnd - 1;
+                    let button, separator;
+                    breadcrumb = list[i];
                     if (elementList[breadcrumb.level]) {
                         currentBreadcrumb = elementList[breadcrumb.level];
                         button = currentBreadcrumb.button;
@@ -1304,300 +1530,23 @@
                             posX += updateXPosition(separator, buttonSpacing);
                         }
                         elementList[breadcrumb.level] = {
-                            button: button,
-                            separator: separator,
+                            button,
+                            separator,
                             updated: true
                         };
                     }
                     if (button) {
                         button.setState(isLast ? 2 : 0);
                     }
-                });
-            };
-            /**
-             * Options for breadcrumbs. Breadcrumbs general options are defined in
-             * `navigation.breadcrumbs`. Specific options for drilldown are set in
-             * `drilldown.breadcrumbs` and for tree-like series traversing, in
-             * `plotOptions[series].breadcrumbs`.
-             *
-             * @since 10.0.0
-             * @product highcharts
-             * @optionparent navigation.breadcrumbs
-             */
-            Breadcrumbs.defaultBreadcrumbsOptions = {
-                /**
-                 * A collection of attributes for the buttons. The object takes SVG
-                 * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
-                 * a collection of CSS properties for the text.
-                 *
-                 * The object can also be extended with states, so you can set
-                 * presentational options for `hover`, `select` or `disabled` button
-                 * states.
-                 *
-                 * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *         Themed, single button
-                 *
-                 * @type       {Highcharts.SVGAttributes}
-                 * @since 10.0.0
-                 * @product    highcharts
-                 */
-                buttonTheme: {
-                    /** @ignore */
-                    fill: 'none',
-                    /** @ignore */
-                    height: 18,
-                    /** @ignore */
-                    padding: 2,
-                    /** @ignore */
-                    'stroke-width': 0,
-                    /** @ignore */
-                    zIndex: 7,
-                    /** @ignore */
-                    states: {
-                        select: {
-                            fill: 'none'
-                        }
-                    },
-                    style: {
-                        color: "#335cad" /* Palette.highlightColor80 */
-                    }
-                },
-                /**
-                 * The default padding for each button and separator in each direction.
-                 *
-                 * @type      {number}
-                 * @since 10.0.0
-                 */
-                buttonSpacing: 5,
-                /**
-                 * Fires when clicking on the breadcrumbs button. Two arguments are
-                 * passed to the function. First breadcrumb button as an SVG element.
-                 * Second is the breadcrumbs class, containing reference to the chart,
-                 * series etc.
-                 *
-                 * ```js
-                 * click: function(button, breadcrumbs) {
-                 *   console.log(button);
-                 * }
-                 * ```
-                 *
-                 * Return false to stop default buttons click action.
-                 *
-                 * @type      {Highcharts.BreadcrumbsClickCallbackFunction}
-                 * @since 10.0.0
-                 * @apioption navigation.breadcrumbs.events.click
-                 */
-                /**
-                 * When the breadcrumbs are floating, the plot area will not move to
-                 * make space for it. By default, the chart will not make space for the
-                 * buttons. This property won't work when positioned in the middle.
-                 *
-                 * @sample highcharts/breadcrumbs/single-button
-                 *         Floating button
-                 * @type      {boolean}
-                 * @since 10.0.0
-                 */
-                floating: false,
-                /**
-                 * A format string for the breadcrumbs button. Variables are enclosed by
-                 * curly brackets. Available values are passed in the declared point
-                 * options.
-                 *
-                 * @type      {string|undefined}
-                 * @since 10.0.0
-                 * @default   undefined
-                 * @sample {highcharts} highcharts/breadcrumbs/format Display custom
-                 *          values in breadcrumb button.
-                 */
-                format: void 0,
-                /**
-                 * Callback function to format the breadcrumb text from scratch.
-                 *
-                 * @type      {Highcharts.BreadcrumbsFormatterCallbackFunction}
-                 * @since 10.0.0
-                 * @default   undefined
-                 * @apioption navigation.breadcrumbs.formatter
-                 */
-                /**
-                 * What box to align the button to. Can be either `plotBox` or
-                 * `spacingBox`.
-                 *
-                 * @type       {Highcharts.ButtonRelativeToValue}
-                 * @default    plotBox
-                 * @since 10.0.0
-                 * @product    highcharts highmaps
-                 */
-                relativeTo: 'plotBox',
-                /**
-                 * Whether to reverse the order of buttons. This is common in Arabic
-                 * and Hebrew.
-                 *
-                 * @type       {boolean}
-                 * @since 10.2.0
-                 * @sample     {highcharts} highcharts/breadcrumbs/rtl
-                 *             Breadcrumbs in RTL
-                 */
-                rtl: false,
-                /**
-                 * Positioning for the button row. The breadcrumbs buttons will be
-                 * aligned properly for the default chart layout (title,  subtitle,
-                 * legend, range selector) for the custom chart layout set the position
-                 * properties.
-                 * @type       {Highcharts.BreadcrumbsAlignOptions}
-                 * @since 10.0.0
-                 * @product    highcharts highmaps
-                 * @sample     {highcharts} highcharts/breadcrumbs/single-button
-                 *             Single, right aligned button
-                 */
-                position: {
-                    /**
-                     * Horizontal alignment of the breadcrumbs buttons.
-                     *
-                     * @type {Highcharts.AlignValue}
-                     */
-                    align: 'left',
-                    /**
-                     * Vertical alignment of the breadcrumbs buttons.
-                     *
-                     * @type {Highcharts.VerticalAlignValue}
-                     */
-                    verticalAlign: 'top',
-                    /**
-                     * The X offset of the breadcrumbs button group.
-                     *
-                     * @type {number}
-                     */
-                    x: 0,
-                    /**
-                     * The Y offset of the breadcrumbs button group. When `undefined`,
-                     * and `floating` is `false`, the `y` position is adapted so that
-                     * the breadcrumbs are rendered outside the target area.
-                     *
-                     * @type {number|undefined}
-                     */
-                    y: void 0
-                },
-                /**
-                 * Options object for Breadcrumbs separator.
-                 *
-                 * @since 10.0.0
-                 */
-                separator: {
-                    /**
-                     * @type {string}
-                     * @since 10.0.0
-                     * @product highcharts
-                     */
-                    text: '/',
-                    /**
-                     * CSS styles for the breadcrumbs separator.
-                     *
-                     * In styled mode, the breadcrumbs separators are styled by the
-                     * `.highcharts-separator` rule with its different states.
-                     *  @type {Highcharts.CSSObject}
-                     *  @since 10.0.0
-                     */
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
-                    }
-                },
-                /**
-                 * Show full path or only a single button.
-                 *
-                 * @type      {boolean}
-                 * @since 10.0.0
-                 * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *          Single, styled button
-                 */
-                showFullPath: true,
-                /**
-                 * CSS styles for all breadcrumbs.
-                 *
-                 * In styled mode, the breadcrumbs buttons are styled by the
-                 * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
-                 * different states.
-                 *  @type {Highcharts.SVGAttributes}
-                 *  @since 10.0.0
-                 */
-                style: {},
-                /**
-                 * Whether to use HTML to render the breadcrumbs items texts.
-                 *
-                 * @type      {boolean}
-                 * @since 10.0.0
-                 */
-                useHTML: false,
-                /**
-                 * The z index of the breadcrumbs group.
-                 *
-                 * @type      {number}
-                 * @since 10.0.0
-                 */
-                zIndex: 7
-            };
-            return Breadcrumbs;
-        }());
-        /* eslint-disable no-invalid-this */
-        if (!H.Breadcrumbs) {
-            H.Breadcrumbs = Breadcrumbs;
-            // Logic for making space for the buttons above the plot area
-            addEvent(Chart, 'getMargins', function () {
-                var breadcrumbs = this.breadcrumbs;
-                if (breadcrumbs &&
-                    !breadcrumbs.options.floating &&
-                    breadcrumbs.level) {
-                    var breadcrumbsOptions = breadcrumbs.options,
-                        buttonTheme = breadcrumbsOptions.buttonTheme,
-                        breadcrumbsHeight = ((buttonTheme.height || 0) +
-                            2 * (buttonTheme.padding || 0) +
-                            breadcrumbsOptions.buttonSpacing),
-                        verticalAlign = breadcrumbsOptions.position.verticalAlign;
-                    if (verticalAlign === 'bottom') {
-                        this.marginBottom = (this.marginBottom || 0) + breadcrumbsHeight;
-                        breadcrumbs.yOffset = breadcrumbsHeight;
-                    }
-                    else if (verticalAlign !== 'middle') {
-                        this.plotTop += breadcrumbsHeight;
-                        breadcrumbs.yOffset = -breadcrumbsHeight;
-                    }
-                    else {
-                        breadcrumbs.yOffset = void 0;
-                    }
                 }
-            });
-            addEvent(Chart, 'redraw', function () {
-                this.breadcrumbs && this.breadcrumbs.redraw();
-            });
-            // Remove resize/afterSetExtremes at chart destroy
-            addEvent(Chart, 'destroy', function destroyEvents() {
-                if (this.breadcrumbs) {
-                    this.breadcrumbs.destroy();
-                    this.breadcrumbs = void 0;
-                }
-            });
-            // Shift the drillUpButton to make the space for resetZoomButton, #8095.
-            addEvent(Chart, 'afterShowResetZoom', function () {
-                var chart = this;
-                if (chart.breadcrumbs) {
-                    var bbox = chart.resetZoomButton &&
-                            chart.resetZoomButton.getBBox(),
-                        breadcrumbsOptions = chart.breadcrumbs.options;
-                    if (bbox &&
-                        breadcrumbsOptions.position.align === 'right' &&
-                        breadcrumbsOptions.relativeTo === 'plotBox') {
-                        chart.breadcrumbs.alignBreadcrumbsGroup(-bbox.width - breadcrumbsOptions.buttonSpacing);
-                    }
-                }
-            });
-            // After zooming out, shift the drillUpButton
-            // to the previous position, #8095.
-            addEvent(Chart, 'selection', function (event) {
-                if (event.resetSelection === true &&
-                    this.breadcrumbs) {
-                    this.breadcrumbs.alignBreadcrumbsGroup();
-                }
-            });
+            }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        Breadcrumbs.defaultOptions = BreadcrumbsDefaults.options;
         /* *
          *
          *  Default Export
@@ -1709,21 +1658,17 @@
          *  Imports
          *
          * */
-        var Series = SeriesRegistry.series;
-        var addEvent = U.addEvent,
-            extend = U.extend;
+        const { series: Series } = SeriesRegistry;
+        const { addEvent, extend } = U;
         /* *
          *
          *  Composition
          *
          * */
-        var treemapAxisDefaultValues = false;
+        let treemapAxisDefaultValues = false;
         addEvent(Series, 'afterBindAxes', function () {
             // eslint-disable-next-line no-invalid-this
-            var series = this,
-                xAxis = series.xAxis,
-                yAxis = series.yAxis,
-                treeAxis;
+            let series = this, xAxis = series.xAxis, yAxis = series.yAxis, treeAxis;
             if (xAxis && yAxis) {
                 if (series.is('treemap')) {
                     treeAxis = {
@@ -1768,14 +1713,14 @@
         *  Class
         *
         * */
-        var TreemapNode = /** @class */ (function () {
-                function TreemapNode() {
-                    /* *
-                    *
-                    *  Properties
-                    *
-                    * */
-                    this.childrenTotal = 0;
+        class TreemapNode {
+            constructor() {
+                /* *
+                *
+                *  Properties
+                *
+                * */
+                this.childrenTotal = 0;
                 this.visible = false;
             }
             /* *
@@ -1783,7 +1728,7 @@
             *  Functions
             *
             * */
-            TreemapNode.prototype.init = function (id, i, children, height, level, series, parent) {
+            init(id, i, children, height, level, series, parent) {
                 this.id = id;
                 this.i = i;
                 this.children = children;
@@ -1792,9 +1737,8 @@
                 this.series = series;
                 this.parent = parent;
                 return this;
-            };
-            return TreemapNode;
-        }());
+            }
+        }
         /* *
         *
         *  Default Export
@@ -1803,7 +1747,7 @@
 
         return TreemapNode;
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs.js'], _modules['Core/Utilities.js'], _modules['Series/Treemap/TreemapNode.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U, TreemapNode) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js'], _modules['Core/Utilities.js'], _modules['Series/Treemap/TreemapNode.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U, TreemapNode) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -1815,45 +1759,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var color = Color.parse;
-        var noop = H.noop;
-        var Series = SeriesRegistry.series,
-            _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
-            HeatmapSeries = _a.heatmap,
-            ScatterSeries = _a.scatter;
-        var getColor = TU.getColor,
-            getLevelOptions = TU.getLevelOptions,
-            updateRootId = TU.updateRootId;
-        var addEvent = U.addEvent,
-            correctFloat = U.correctFloat,
-            defined = U.defined,
-            error = U.error,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            isString = U.isString,
-            merge = U.merge,
-            pick = U.pick,
-            stableSort = U.stableSort;
+        const { parse: color } = Color;
+        const { noop } = H;
+        const { series: Series, seriesTypes: { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } } = SeriesRegistry;
+        const { getColor, getLevelOptions, updateRootId } = TU;
+        const { addEvent, correctFloat, defined, error, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, stableSort } = U;
         /* *
          *
          *  Class
@@ -1866,32 +1776,29 @@
          *
          * @augments Highcharts.Series
          */
-        var TreemapSeries = /** @class */ (function (_super) {
-                __extends(TreemapSeries, _super);
-            function TreemapSeries() {
+        class TreemapSeries extends ScatterSeries {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.axisRatio = void 0;
-                _this.data = void 0;
-                _this.mapOptionsToLevel = void 0;
-                _this.nodeMap = void 0;
-                _this.nodeList = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                _this.rootNode = void 0;
-                _this.tree = void 0;
-                _this.level = void 0;
-                return _this;
+                this.axisRatio = void 0;
+                this.data = void 0;
+                this.mapOptionsToLevel = void 0;
+                this.nodeMap = void 0;
+                this.nodeList = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.rootNode = void 0;
+                this.tree = void 0;
+                this.level = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -1900,17 +1807,8 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            TreemapSeries.prototype.algorithmCalcPoints = function (directionChange, last, group, childrenArea) {
-                var pX,
-                    pY,
-                    pW,
-                    pH,
-                    gW = group.lW,
-                    gH = group.lH,
-                    plot = group.plot,
-                    keep,
-                    i = 0,
-                    end = group.elArr.length - 1;
+            algorithmCalcPoints(directionChange, last, group, childrenArea) {
+                let pX, pY, pW, pH, gW = group.lW, gH = group.lH, plot = group.plot, keep, i = 0, end = group.elArr.length - 1;
                 if (last) {
                     gW = group.nW;
                     gH = group.nH;
@@ -1964,19 +1862,9 @@
                 if (!last) {
                     group.addElement(keep);
                 }
-            };
-            TreemapSeries.prototype.algorithmFill = function (directionChange, parent, children) {
-                var childrenArea = [],
-                    pTot,
-                    direction = parent.direction,
-                    x = parent.x,
-                    y = parent.y,
-                    width = parent.width,
-                    height = parent.height,
-                    pX,
-                    pY,
-                    pW,
-                    pH;
+            }
+            algorithmFill(directionChange, parent, children) {
+                let childrenArea = [], pTot, direction = parent.direction, x = parent.x, y = parent.y, width = parent.width, height = parent.height, pX, pY, pW, pH;
                 children.forEach(function (child) {
                     pTot =
                         (parent.width * parent.height) * (child.val / parent.val);
@@ -2005,23 +1893,13 @@
                     }
                 });
                 return childrenArea;
-            };
-            TreemapSeries.prototype.algorithmLowAspectRatio = function (directionChange, parent, children) {
-                var childrenArea = [],
-                    series = this,
-                    pTot,
-                    plot = {
-                        x: parent.x,
-                        y: parent.y,
-                        parent: parent
-                    },
-                    direction = parent.direction,
-                    i = 0,
-                    end = children.length - 1,
-                    group = new TreemapAlgorithmGroup(parent.height,
-                    parent.width,
-                    direction,
-                    plot);
+            }
+            algorithmLowAspectRatio(directionChange, parent, children) {
+                let childrenArea = [], series = this, pTot, plot = {
+                    x: parent.x,
+                    y: parent.y,
+                    parent: parent
+                }, direction = parent.direction, i = 0, end = children.length - 1, group = new TreemapAlgorithmGroup(parent.height, parent.width, direction, plot);
                 // Loop through and calculate all areas
                 children.forEach(function (child) {
                     pTot =
@@ -2039,13 +1917,13 @@
                     i = i + 1;
                 });
                 return childrenArea;
-            };
+            }
             /**
              * Over the alignment method by setting z index.
              * @private
              */
-            TreemapSeries.prototype.alignDataLabel = function (point, dataLabel, labelOptions) {
-                var style = labelOptions.style;
+            alignDataLabel(point, dataLabel, labelOptions) {
+                const style = labelOptions.style;
                 // #8160: Prevent the label from exceeding the point's
                 // boundaries in treemaps by applying ellipsis overflow.
                 // The issue was happening when datalabel's text contained a
@@ -2065,7 +1943,7 @@
                     // point.node.zIndex could be undefined (#6956)
                     point.dataLabel.attr({ zIndex: (point.node.zIndex || 0) + 1 });
                 }
-            };
+            }
             /**
              * Recursive function which calculates the area for all children of a
              * node.
@@ -2079,17 +1957,9 @@
              * @param {Object} area
              * The rectangular area of the parent.
              */
-            TreemapSeries.prototype.calculateChildrenAreas = function (parent, area) {
-                var series = this,
-                    options = series.options,
-                    mapOptionsToLevel = series.mapOptionsToLevel,
-                    level = mapOptionsToLevel[parent.level + 1],
-                    algorithm = pick((series[(level && level.layoutAlgorithm)] &&
-                        level.layoutAlgorithm),
-                    options.layoutAlgorithm),
-                    alternate = options.alternateStartingDirection,
-                    childrenValues = [],
-                    children;
+            calculateChildrenAreas(parent, area) {
+                let series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = pick((series[(level && level.layoutAlgorithm)] &&
+                    level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, childrenValues = [], children;
                 // Collect all children which should be included
                 children = parent.children.filter(function (n) {
                     return !n.ignore;
@@ -2101,7 +1971,7 @@
                 }
                 childrenValues = series[algorithm](area, children);
                 children.forEach(function (child, index) {
-                    var values = childrenValues[index];
+                    const values = childrenValues[index];
                     child.values = merge(values, {
                         val: child.childrenTotal,
                         direction: (alternate ? 1 - area.direction : area.direction)
@@ -2118,7 +1988,7 @@
                         series.calculateChildrenAreas(child, child.values);
                     }
                 });
-            };
+            }
             /**
             * Create level list.
             *
@@ -2128,18 +1998,16 @@
             * @param {TreemapSeries} this
             *        Treemap Series class.
             */
-            TreemapSeries.prototype.createList = function (e) {
-                var chart = this.chart,
-                    breadcrumbs = chart.breadcrumbs,
-                    list = [];
+            createList(e) {
+                const chart = this.chart, breadcrumbs = chart.breadcrumbs, list = [];
                 if (breadcrumbs) {
-                    var currentLevelNumber_1 = 0;
+                    let currentLevelNumber = 0;
                     list.push({
-                        level: currentLevelNumber_1,
+                        level: currentLevelNumber,
                         levelOptions: chart.series[0]
                     });
-                    var node = e.target.nodeMap[e.newRootId];
-                    var extraNodes = [];
+                    let node = e.target.nodeMap[e.newRootId];
+                    const extraNodes = [];
                     // When the root node is set and has parent,
                     // recreate the path from the node tree.
                     while (node.parent || node.parent === '') {
@@ -2148,7 +2016,7 @@
                     }
                     extraNodes.reverse().forEach(function (node) {
                         list.push({
-                            level: ++currentLevelNumber_1,
+                            level: ++currentLevelNumber,
                             levelOptions: node
                         });
                     });
@@ -2158,7 +2026,7 @@
                     }
                 }
                 return list;
-            };
+            }
             /**
              * Extend drawDataLabels with logic to handle custom options related to
              * the treemap series:
@@ -2173,11 +2041,9 @@
              *
              * @private
              */
-            TreemapSeries.prototype.drawDataLabels = function () {
-                var series = this,
-                    mapOptionsToLevel = series.mapOptionsToLevel,
-                    points = series.points.filter(function (n) {
-                        return n.node.visible;
+            drawDataLabels() {
+                let series = this, mapOptionsToLevel = series.mapOptionsToLevel, points = series.points.filter(function (n) {
+                    return n.node.visible;
                 }), options, level;
                 points.forEach(function (point) {
                     level = mapOptionsToLevel[point.node.level];
@@ -2205,31 +2071,15 @@
                     point.dlOptions = merge(options, point.options.dataLabels);
                 });
                 Series.prototype.drawDataLabels.call(this);
-            };
+            }
             /**
              * Override drawPoints
              * @private
              */
-            TreemapSeries.prototype.drawPoints = function (points) {
-                if (points === void 0) { points = this.points; }
-                var series = this,
-                    chart = series.chart,
-                    renderer = chart.renderer,
-                    styledMode = chart.styledMode,
-                    options = series.options,
-                    shadow = styledMode ? {} : options.shadow,
-                    borderRadius = options.borderRadius,
-                    withinAnimationLimit = chart.pointCount < options.animationLimit,
-                    allowTraversingTree = options.allowTraversingTree;
+            drawPoints(points = this.points) {
+                const series = this, chart = series.chart, renderer = chart.renderer, styledMode = chart.styledMode, options = series.options, shadow = styledMode ? {} : options.shadow, borderRadius = options.borderRadius, withinAnimationLimit = chart.pointCount < options.animationLimit, allowTraversingTree = options.allowTraversingTree;
                 points.forEach(function (point) {
-                    var levelDynamic = point.node.levelDynamic,
-                        animatableAttribs = {},
-                        attribs = {},
-                        css = {},
-                        groupKey = 'level-group-' + point.node.level,
-                        hasGraphic = !!point.graphic,
-                        shouldAnimate = withinAnimationLimit && hasGraphic,
-                        shapeArgs = point.shapeArgs;
+                    const levelDynamic = point.node.levelDynamic, animatableAttribs = {}, attribs = {}, css = {}, groupKey = 'level-group-' + point.node.level, hasGraphic = !!point.graphic, shouldAnimate = withinAnimationLimit && hasGraphic, shapeArgs = point.shapeArgs;
                     // Don't bother with calculate styling if the point is not drawn
                     if (point.shouldDraw()) {
                         point.isInside = true;
@@ -2265,13 +2115,13 @@
                     }
                     // Draw the point
                     point.draw({
-                        animatableAttribs: animatableAttribs,
-                        attribs: attribs,
-                        css: css,
+                        animatableAttribs,
+                        attribs,
+                        css,
                         group: series[groupKey],
-                        renderer: renderer,
-                        shadow: shadow,
-                        shapeArgs: shapeArgs,
+                        renderer,
+                        shadow,
+                        shapeArgs,
                         shapeType: point.shapeType
                     });
                     // If setRootNode is allowed, set a point cursor on clickables &
@@ -2282,31 +2132,28 @@
                             series.drillToByGroup(point);
                     }
                 });
-            };
+            }
             /**
              * Finds the drill id for a parent node. Returns false if point should
              * not have a click event.
              * @private
              */
-            TreemapSeries.prototype.drillToByGroup = function (point) {
-                var series = this,
-                    drillId = false;
+            drillToByGroup(point) {
+                let series = this, drillId = false;
                 if ((point.node.level - series.nodeMap[series.rootNode].level) ===
                     1 &&
                     !point.node.isLeaf) {
                     drillId = point.id;
                 }
                 return drillId;
-            };
+            }
             /**
              * Finds the drill id for a leaf node. Returns false if point should not
              * have a click event
              * @private
              */
-            TreemapSeries.prototype.drillToByLeaf = function (point) {
-                var series = this,
-                    drillId = false,
-                    nodeParent;
+            drillToByLeaf(point) {
+                let series = this, drillId = false, nodeParent;
                 if ((point.node.parent !== series.rootNode) &&
                     point.node.isLeaf) {
                     nodeParent = point.node;
@@ -2318,34 +2165,30 @@
                     }
                 }
                 return drillId;
-            };
+            }
             /**
              * @todo remove this function at a suitable version.
              * @private
              */
-            TreemapSeries.prototype.drillToNode = function (id, redraw) {
+            drillToNode(id, redraw) {
                 error(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
                 this.setRootNode(id, redraw);
-            };
-            TreemapSeries.prototype.drillUp = function () {
-                var series = this,
-                    node = series.nodeMap[series.rootNode];
+            }
+            drillUp() {
+                const series = this, node = series.nodeMap[series.rootNode];
                 if (node && isString(node.parent)) {
                     series.setRootNode(node.parent, true, { trigger: 'traverseUpButton' });
                 }
-            };
-            TreemapSeries.prototype.getExtremes = function () {
+            }
+            getExtremes() {
                 // Get the extremes from the value data
-                var _a = Series.prototype.getExtremes
-                        .call(this,
-                    this.colorValueData),
-                    dataMin = _a.dataMin,
-                    dataMax = _a.dataMax;
+                const { dataMin, dataMax } = Series.prototype.getExtremes
+                    .call(this, this.colorValueData);
                 this.valueMin = dataMin;
                 this.valueMax = dataMax;
                 // Get the extremes from the y data
                 return Series.prototype.getExtremes.call(this);
-            };
+            }
             /**
              * Creates an object map from parent id to childrens index.
              *
@@ -2361,13 +2204,9 @@
              * @return {Object}
              *         Map from parent id to children index in data.
              */
-            TreemapSeries.prototype.getListOfParents = function (data, existingIds) {
-                var arr = isArray(data) ? data : [],
-                    ids = isArray(existingIds) ? existingIds : [],
-                    listOfParents = arr.reduce(function (prev,
-                    curr,
-                    i) {
-                        var parent = pick(curr.parent, '');
+            getListOfParents(data, existingIds) {
+                const arr = isArray(data) ? data : [], ids = isArray(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
+                    const parent = pick(curr.parent, '');
                     if (typeof prev[parent] === 'undefined') {
                         prev[parent] = [];
                     }
@@ -2386,27 +2225,21 @@
                     }
                 });
                 return listOfParents;
-            };
+            }
             /**
              * Creates a tree structured object from the series points.
              * @private
              */
-            TreemapSeries.prototype.getTree = function () {
-                var series = this,
-                    allIds = this.data.map(function (d) {
-                        return d.id;
+            getTree() {
+                const series = this, allIds = this.data.map(function (d) {
+                    return d.id;
                 }), parentList = series.getListOfParents(this.data, allIds);
                 series.nodeMap = {};
                 series.nodeList = [];
                 return series.buildTree('', -1, 0, parentList);
-            };
-            TreemapSeries.prototype.buildTree = function (id, index, level, list, parent) {
-                var series = this,
-                    children = [],
-                    point = series.points[index],
-                    height = 0,
-                    node,
-                    child;
+            }
+            buildTree(id, index, level, list, parent) {
+                let series = this, children = [], point = series.points[index], height = 0, node, child;
                 // Actions
                 (list[id] || []).forEach(function (i) {
                     child = series.buildTree(series.points[i].id, i, level + 1, list, id);
@@ -2414,7 +2247,7 @@
                     children.push(child);
                 });
                 node = new series.NodeClass().init(id, index, children, height, level, series, parent);
-                children.forEach(function (child) {
+                children.forEach((child) => {
                     child.parentNode = node;
                 });
                 series.nodeMap[node.id] = node;
@@ -2424,22 +2257,20 @@
                     node.point = point;
                 }
                 return node;
-            };
+            }
             /**
              * Define hasData function for non-cartesian series. Returns true if the
              * series has points at all.
              * @private
              */
-            TreemapSeries.prototype.hasData = function () {
+            hasData() {
                 return !!this.processedXData.length; // != 0
-            };
-            TreemapSeries.prototype.init = function (chart, options) {
-                var series = this,
-                    breadcrumbsOptions = merge(options.drillUpButton,
-                    options.breadcrumbs);
-                var setOptionsEvent;
+            }
+            init(chart, options) {
+                const series = this, breadcrumbsOptions = merge(options.drillUpButton, options.breadcrumbs);
+                let setOptionsEvent;
                 setOptionsEvent = addEvent(series, 'setOptions', function (event) {
-                    var options = event.userOptions;
+                    const options = event.userOptions;
                     if (defined(options.allowDrillToNode) &&
                         !defined(options.allowTraversingTree)) {
                         options.allowTraversingTree = options.allowDrillToNode;
@@ -2459,20 +2290,20 @@
                 if (series.options.allowTraversingTree) {
                     series.eventsToUnbind.push(addEvent(series, 'click', series.onClickDrillToNode));
                     series.eventsToUnbind.push(addEvent(series, 'setRootNode', function (e) {
-                        var chart = series.chart;
+                        const chart = series.chart;
                         if (chart.breadcrumbs) {
                             // Create a list using the event after drilldown.
                             chart.breadcrumbs.updateProperties(series.createList(e));
                         }
                     }));
                     series.eventsToUnbind.push(addEvent(series, 'update', function (e, redraw) {
-                        var breadcrumbs = this.chart.breadcrumbs;
+                        const breadcrumbs = this.chart.breadcrumbs;
                         if (breadcrumbs && e.options.breadcrumbs) {
                             breadcrumbs.update(e.options.breadcrumbs);
                         }
                     }));
                     series.eventsToUnbind.push(addEvent(series, 'destroy', function destroyEvents(e) {
-                        var chart = this.chart;
+                        const chart = this.chart;
                         if (chart.breadcrumbs) {
                             chart.breadcrumbs.destroy();
                             if (!e.keepEventsForUpdate) {
@@ -2485,41 +2316,32 @@
                     chart.breadcrumbs = new Breadcrumbs(chart, breadcrumbsOptions);
                 }
                 series.eventsToUnbind.push(addEvent(chart.breadcrumbs, 'up', function (e) {
-                    var drillUpsNumber = this.level - e.newLevel;
-                    for (var i = 0; i < drillUpsNumber; i++) {
+                    const drillUpsNumber = this.level - e.newLevel;
+                    for (let i = 0; i < drillUpsNumber; i++) {
                         series.drillUp();
                     }
                 }));
-            };
+            }
             /**
              * Add drilling on the suitable points.
              * @private
              */
-            TreemapSeries.prototype.onClickDrillToNode = function (event) {
-                var series = this,
-                    point = event.point,
-                    drillId = point && point.drillId;
+            onClickDrillToNode(event) {
+                const series = this, point = event.point, drillId = point && point.drillId;
                 // If a drill id is returned, add click event and cursor.
                 if (isString(drillId)) {
                     point.setState(''); // Remove hover
                     series.setRootNode(drillId, true, { trigger: 'click' });
                 }
-            };
+            }
             /**
              * Get presentational attributes
              * @private
              */
-            TreemapSeries.prototype.pointAttribs = function (point, state) {
-                var series = this,
-                    mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
-                        series.mapOptionsToLevel :
-                        {}),
-                    level = point && mapOptionsToLevel[point.node.level] || {},
-                    options = this.options,
-                    attr,
-                    stateOptions = state && options.states && options.states[state] || {},
-                    className = (point && point.getClassName()) || '',
-                    opacity;
+            pointAttribs(point, state) {
+                let series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
+                    series.mapOptionsToLevel :
+                    {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, attr, stateOptions = state && options.states && options.states[state] || {}, className = (point && point.getClassName()) || '', opacity;
                 // Set attributes by precedence. Point trumps level trumps series.
                 // Stroke width uses pick because it can be 0.
                 attr = {
@@ -2556,17 +2378,13 @@
                         .get();
                 }
                 return attr;
-            };
+            }
             /**
              * Set the node's color recursively, from the parent down.
              * @private
              */
-            TreemapSeries.prototype.setColorRecursive = function (node, parentColor, colorIndex, index, siblings) {
-                var series = this,
-                    chart = series && series.chart,
-                    colors = chart && chart.options && chart.options.colors,
-                    colorInfo,
-                    point;
+            setColorRecursive(node, parentColor, colorIndex, index, siblings) {
+                let series = this, chart = series && series.chart, colors = chart && chart.options && chart.options.colors, colorInfo, point;
                 if (node) {
                     colorInfo = getColor(node, {
                         colors: colors,
@@ -2587,50 +2405,37 @@
                         series.setColorRecursive(child, colorInfo.color, colorInfo.colorIndex, i, node.children.length);
                     });
                 }
-            };
-            TreemapSeries.prototype.setPointValues = function () {
-                var series = this;
-                var points = series.points,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis;
-                var styledMode = series.chart.styledMode;
+            }
+            setPointValues() {
+                const series = this;
+                const { points, xAxis, yAxis } = series;
+                const styledMode = series.chart.styledMode;
                 // Get the crisp correction in classic mode. For this to work in
                 // styled mode, we would need to first add the shape (without x,
                 // y, width and height), then read the rendered stroke width
                 // using point.graphic.strokeWidth(), then modify and apply the
                 // shapeArgs. This applies also to column series, but the
                 // downside is performance and code complexity.
-                var getCrispCorrection = function (point) { return (styledMode ?
-                        0 :
-                        ((series.pointAttribs(point)['stroke-width'] || 0) % 2) / 2); };
+                const getCrispCorrection = (point) => (styledMode ?
+                    0 :
+                    ((series.pointAttribs(point)['stroke-width'] || 0) % 2) / 2);
                 points.forEach(function (point) {
-                    var _a = point.node,
-                        values = _a.pointValues,
-                        visible = _a.visible;
+                    const { pointValues: values, visible } = point.node;
                     // Points which is ignored, have no values.
                     if (values && visible) {
-                        var height = values.height,
-                            width = values.width,
-                            x = values.x,
-                            y = values.y;
-                        var crispCorr = getCrispCorrection(point);
-                        var x1 = Math.round(xAxis.toPixels(x,
-                            true)) - crispCorr;
-                        var x2 = Math.round(xAxis.toPixels(x + width,
-                            true)) - crispCorr;
-                        var y1 = Math.round(yAxis.toPixels(y,
-                            true)) - crispCorr;
-                        var y2 = Math.round(yAxis.toPixels(y + height,
-                            true)) - crispCorr;
+                        const { height, width, x, y } = values;
+                        const crispCorr = getCrispCorrection(point);
+                        const x1 = Math.round(xAxis.toPixels(x, true)) - crispCorr;
+                        const x2 = Math.round(xAxis.toPixels(x + width, true)) - crispCorr;
+                        const y1 = Math.round(yAxis.toPixels(y, true)) - crispCorr;
+                        const y2 = Math.round(yAxis.toPixels(y + height, true)) - crispCorr;
                         // Set point values
-                        var shapeArgs = {
-                                x: Math.min(x1,
-                            x2),
-                                y: Math.min(y1,
-                            y2),
-                                width: Math.abs(x2 - x1),
-                                height: Math.abs(y2 - y1)
-                            };
+                        const shapeArgs = {
+                            x: Math.min(x1, x2),
+                            y: Math.min(y1, y2),
+                            width: Math.abs(x2 - x1),
+                            height: Math.abs(y2 - y1)
+                        };
                         point.plotX = shapeArgs.x + (shapeArgs.width / 2);
                         point.plotY = shapeArgs.y + (shapeArgs.height / 2);
                         point.shapeArgs = shapeArgs;
@@ -2641,7 +2446,7 @@
                         delete point.plotY;
                     }
                 });
-            };
+            }
             /**
              * Sets a new root node for the series.
              *
@@ -2675,16 +2480,13 @@
              *
              * @emits Highcharts.Series#event:setRootNode
              */
-            TreemapSeries.prototype.setRootNode = function (id, redraw, eventArguments) {
-                var series = this,
-                    eventArgs = extend({
-                        newRootId: id,
-                        previousRootId: series.rootNode,
-                        redraw: pick(redraw,
-                    true),
-                        series: series
-                    },
-                    eventArguments);
+            setRootNode(id, redraw, eventArguments) {
+                const series = this, eventArgs = extend({
+                    newRootId: id,
+                    previousRootId: series.rootNode,
+                    redraw: pick(redraw, true),
+                    series: series
+                }, eventArguments);
                 /**
                  * The default functionality of the setRootNode event.
                  *
@@ -2698,8 +2500,8 @@
                  * triggered the event. Undefined if the setRootNode is called
                  * directly.
                      */
-                var defaultFn = function (args) {
-                        var series = args.series;
+                const defaultFn = function (args) {
+                    const series = args.series;
                     // Store previous and new root ids on the series.
                     series.idPreviousRoot = args.previousRootId;
                     series.rootNode = args.newRootId;
@@ -2711,31 +2513,22 @@
                 };
                 // Fire setRootNode event.
                 fireEvent(series, 'setRootNode', eventArgs, defaultFn);
-            };
+            }
             /**
              * Workaround for `inactive` state. Since `series.opacity` option is
              * already reserved, don't use that state at all by disabling
              * `inactiveOtherPoints` and not inheriting states by points.
              * @private
              */
-            TreemapSeries.prototype.setState = function (state) {
+            setState(state) {
                 this.options.inactiveOtherPoints = true;
                 Series.prototype.setState.call(this, state, false);
                 this.options.inactiveOtherPoints = false;
-            };
-            TreemapSeries.prototype.setTreeValues = function (tree) {
-                var series = this,
-                    options = series.options,
-                    idRoot = series.rootNode,
-                    mapIdToNode = series.nodeMap,
-                    nodeRoot = mapIdToNode[idRoot],
-                    levelIsConstant = (TreemapUtilities.isBoolean(options.levelIsConstant) ?
-                        options.levelIsConstant :
-                        true),
-                    childrenTotal = 0,
-                    children = [],
-                    val,
-                    point = series.points[tree.i];
+            }
+            setTreeValues(tree) {
+                let series = this, options = series.options, idRoot = series.rootNode, mapIdToNode = series.nodeMap, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (TreemapUtilities.isBoolean(options.levelIsConstant) ?
+                    options.levelIsConstant :
+                    true), childrenTotal = 0, children = [], val, point = series.points[tree.i];
                 // First give the children some values
                 tree.children.forEach(function (child) {
                     child = series.setTreeValues(child);
@@ -2765,29 +2558,23 @@
                     val: val
                 });
                 return tree;
-            };
-            TreemapSeries.prototype.sliceAndDice = function (parent, children) {
+            }
+            sliceAndDice(parent, children) {
                 return this.algorithmFill(true, parent, children);
-            };
-            TreemapSeries.prototype.squarified = function (parent, children) {
+            }
+            squarified(parent, children) {
                 return this.algorithmLowAspectRatio(true, parent, children);
-            };
-            TreemapSeries.prototype.strip = function (parent, children) {
+            }
+            strip(parent, children) {
                 return this.algorithmLowAspectRatio(false, parent, children);
-            };
-            TreemapSeries.prototype.stripes = function (parent, children) {
+            }
+            stripes(parent, children) {
                 return this.algorithmFill(false, parent, children);
-            };
-            TreemapSeries.prototype.translate = function () {
-                var series = this,
-                    options = series.options, 
-                    // NOTE: updateRootId modifies series.
-                    rootId = updateRootId(series),
-                    rootNode,
-                    pointValues,
-                    seriesArea,
-                    tree,
-                    val;
+            }
+            translate() {
+                let series = this, options = series.options, 
+                // NOTE: updateRootId modifies series.
+                rootId = updateRootId(series), rootNode, pointValues, seriesArea, tree, val;
                 // Call prototype function
                 Series.prototype.translate.call(series);
                 // @todo Only if series.isDirtyData is true
@@ -2810,8 +2597,7 @@
                 });
                 // Parents of the root node is by default visible
                 TreemapUtilities.recursive(series.nodeMap[series.rootNode], function (node) {
-                    var next = false,
-                        p = node.parent;
+                    let next = false, p = node.parent;
                     node.visible = true;
                     if (p || p === '') {
                         next = series.nodeMap[p];
@@ -2820,7 +2606,7 @@
                 });
                 // Children of the root node is by default visible
                 TreemapUtilities.recursive(series.nodeMap[series.rootNode].children, function (children) {
-                    var next = false;
+                    let next = false;
                     children.forEach(function (child) {
                         child.visible = true;
                         if (child.children.length) {
@@ -2859,449 +2645,450 @@
                 }
                 // Assign values to points.
                 series.setPointValues();
-            };
+            }
+        }
+        /**
+         * A treemap displays hierarchical data using nested rectangles. The data
+         * can be laid out in varying ways depending on options.
+         *
+         * @sample highcharts/demo/treemap-large-dataset/
+         *         Treemap
+         *
+         * @extends      plotOptions.scatter
+         * @excluding    cluster, connectEnds, connectNulls, dataSorting, dragDrop, jitter, marker
+         * @product      highcharts
+         * @requires     modules/treemap
+         * @optionparent plotOptions.treemap
+         */
+        TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
             /**
-             * A treemap displays hierarchical data using nested rectangles. The data
-             * can be laid out in varying ways depending on options.
+             * When enabled the user can click on a point which is a parent and
+             * zoom in on its children. Deprecated and replaced by
+             * [allowTraversingTree](#plotOptions.treemap.allowTraversingTree).
              *
-             * @sample highcharts/demo/treemap-large-dataset/
-             *         Treemap
+             * @sample {highcharts} highcharts/plotoptions/treemap-allowdrilltonode/
+             *         Enabled
              *
-             * @extends      plotOptions.scatter
-             * @excluding    cluster, connectEnds, connectNulls, dataSorting, dragDrop, jitter, marker
-             * @product      highcharts
-             * @requires     modules/treemap
-             * @optionparent plotOptions.treemap
+             * @deprecated
+             * @type      {boolean}
+             * @default   false
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.allowDrillToNode
              */
-            TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-                /**
-                 * When enabled the user can click on a point which is a parent and
-                 * zoom in on its children. Deprecated and replaced by
-                 * [allowTraversingTree](#plotOptions.treemap.allowTraversingTree).
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-allowdrilltonode/
-                 *         Enabled
-                 *
-                 * @deprecated
-                 * @type      {boolean}
-                 * @default   false
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.allowDrillToNode
-                 */
-                /**
-                 * When enabled the user can click on a point which is a parent and
-                 * zoom in on its children.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-allowtraversingtree/
-                 *         Enabled
-                 *
-                 * @since     7.0.3
-                 * @product   highcharts
-                 */
-                allowTraversingTree: false,
-                animationLimit: 250,
-                /**
-                 * The border radius for each treemap item.
-                 */
-                borderRadius: 0,
-                /**
-                 * Options for the breadcrumbs, the navigation at the top leading the
-                 * way up through the traversed levels.
-                 *
-                 *
-                 * @since 10.0.0
-                 * @product   highcharts
-                 * @extends   navigation.breadcrumbs
-                 * @optionparent plotOptions.treemap.breadcrumbs
-                 */
-                /**
-                 * When the series contains less points than the crop threshold, all
-                 * points are drawn, event if the points fall outside the visible plot
-                 * area at the current zoom. The advantage of drawing all points
-                 * (including markers and columns), is that animation is performed on
-                 * updates. On the other hand, when the series contains more points than
-                 * the crop threshold, the series data is cropped to only contain points
-                 * that fall within the plot area. The advantage of cropping away
-                 * invisible points is to increase performance on large series.
-                 *
-                 * @type      {number}
-                 * @default   300
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.cropThreshold
-                 */
-                /**
-                 * Fires on a request for change of root node for the tree, before the
-                 * update is made. An event object is passed to the function, containing
-                 * additional properties `newRootId`, `previousRootId`, `redraw` and
-                 * `trigger`.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-events-setrootnode/
-                 *         Alert update information on setRootNode event.
-                 *
-                 * @type {Function}
-                 * @default undefined
-                 * @since 7.0.3
-                 * @product highcharts
-                 * @apioption plotOptions.treemap.events.setRootNode
-                 */
-                /**
-                 * This option decides if the user can interact with the parent nodes
-                 * or just the leaf nodes. When this option is undefined, it will be
-                 * true by default. However when allowTraversingTree is true, then it
-                 * will be false by default.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-interactbyleaf-false/
-                 *         False
-                 * @sample {highcharts} highcharts/plotoptions/treemap-interactbyleaf-true-and-allowtraversingtree/
-                 *         InteractByLeaf and allowTraversingTree is true
-                 *
-                 * @type      {boolean}
-                 * @since     4.1.2
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.interactByLeaf
-                 */
-                /**
-                 * The sort index of the point inside the treemap level.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-sortindex/
-                 *         Sort by years
-                 *
-                 * @type      {number}
-                 * @since     4.1.10
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.sortIndex
-                 */
-                /**
-                 * A series specific or series type specific color set to apply instead
-                 * of the global [colors](#colors) when
-                 * [colorByPoint](#plotOptions.treemap.colorByPoint) is true.
-                 *
-                 * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
-                 * @since     3.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.colors
-                 */
-                /**
-                 * Whether to display this series type or specific series item in the
-                 * legend.
-                 */
-                showInLegend: false,
-                /**
-                 * @ignore-option
-                 */
-                marker: void 0,
-                /**
-                 * When using automatic point colors pulled from the `options.colors`
-                 * collection, this option determines whether the chart should receive
-                 * one color per series or one color per point.
-                 *
-                 * @see [series colors](#plotOptions.treemap.colors)
-                 *
-                 * @since     2.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.colorByPoint
-                 */
-                colorByPoint: false,
-                /**
-                 * @since 4.1.0
-                 */
-                dataLabels: {
-                    defer: false,
-                    enabled: true,
-                    formatter: function () {
-                        var point = this && this.point ?
-                                this.point :
-                                {},
-                            name = isString(point.name) ? point.name : '';
-                        return name;
-                    },
-                    inside: true,
-                    verticalAlign: 'middle'
+            /**
+             * When enabled the user can click on a point which is a parent and
+             * zoom in on its children.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-allowtraversingtree/
+             *         Enabled
+             *
+             * @since     7.0.3
+             * @product   highcharts
+             */
+            allowTraversingTree: false,
+            animationLimit: 250,
+            /**
+             * The border radius for each treemap item.
+             */
+            borderRadius: 0,
+            /**
+             * Options for the breadcrumbs, the navigation at the top leading the
+             * way up through the traversed levels.
+             *
+             *
+             * @since 10.0.0
+             * @product   highcharts
+             * @extends   navigation.breadcrumbs
+             * @optionparent plotOptions.treemap.breadcrumbs
+             */
+            /**
+             * When the series contains less points than the crop threshold, all
+             * points are drawn, event if the points fall outside the visible plot
+             * area at the current zoom. The advantage of drawing all points
+             * (including markers and columns), is that animation is performed on
+             * updates. On the other hand, when the series contains more points than
+             * the crop threshold, the series data is cropped to only contain points
+             * that fall within the plot area. The advantage of cropping away
+             * invisible points is to increase performance on large series.
+             *
+             * @type      {number}
+             * @default   300
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.cropThreshold
+             */
+            /**
+             * Fires on a request for change of root node for the tree, before the
+             * update is made. An event object is passed to the function, containing
+             * additional properties `newRootId`, `previousRootId`, `redraw` and
+             * `trigger`.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-events-setrootnode/
+             *         Alert update information on setRootNode event.
+             *
+             * @type {Function}
+             * @default undefined
+             * @since 7.0.3
+             * @product highcharts
+             * @apioption plotOptions.treemap.events.setRootNode
+             */
+            /**
+             * This option decides if the user can interact with the parent nodes
+             * or just the leaf nodes. When this option is undefined, it will be
+             * true by default. However when allowTraversingTree is true, then it
+             * will be false by default.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-interactbyleaf-false/
+             *         False
+             * @sample {highcharts} highcharts/plotoptions/treemap-interactbyleaf-true-and-allowtraversingtree/
+             *         InteractByLeaf and allowTraversingTree is true
+             *
+             * @type      {boolean}
+             * @since     4.1.2
+             * @product   highcharts
+             * @apioption plotOptions.treemap.interactByLeaf
+             */
+            /**
+             * The sort index of the point inside the treemap level.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-sortindex/
+             *         Sort by years
+             *
+             * @type      {number}
+             * @since     4.1.10
+             * @product   highcharts
+             * @apioption plotOptions.treemap.sortIndex
+             */
+            /**
+             * A series specific or series type specific color set to apply instead
+             * of the global [colors](#colors) when
+             * [colorByPoint](#plotOptions.treemap.colorByPoint) is true.
+             *
+             * @type      {Array<Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject>}
+             * @since     3.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.colors
+             */
+            /**
+             * Whether to display this series type or specific series item in the
+             * legend.
+             */
+            showInLegend: false,
+            /**
+             * @ignore-option
+             */
+            marker: void 0,
+            /**
+             * When using automatic point colors pulled from the `options.colors`
+             * collection, this option determines whether the chart should receive
+             * one color per series or one color per point.
+             *
+             * @see [series colors](#plotOptions.treemap.colors)
+             *
+             * @since     2.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.colorByPoint
+             */
+            colorByPoint: false,
+            /**
+             * @since 4.1.0
+             */
+            dataLabels: {
+                defer: false,
+                enabled: true,
+                formatter: function () {
+                    const point = this && this.point ?
+                        this.point :
+                        {}, name = isString(point.name) ? point.name : '';
+                    return name;
                 },
-                tooltip: {
-                    headerFormat: '',
-                    pointFormat: '<b>{point.name}</b>: {point.value}<br/>'
-                },
+                inside: true,
+                verticalAlign: 'middle'
+            },
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '<b>{point.name}</b>: {point.value}<br/>'
+            },
+            /**
+             * Whether to ignore hidden points when the layout algorithm runs.
+             * If `false`, hidden points will leave open spaces.
+             *
+             * @since 5.0.8
+             */
+            ignoreHiddenPoint: true,
+            /**
+             * This option decides which algorithm is used for setting position
+             * and dimensions of the points.
+             *
+             * @see [How to write your own algorithm](https://www.highcharts.com/docs/chart-and-series-types/treemap)
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-sliceanddice/
+             *         SliceAndDice by default
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-stripes/
+             *         Stripes
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-squarified/
+             *         Squarified
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-strip/
+             *         Strip
+             *
+             * @since      4.1.0
+             * @validvalue ["sliceAndDice", "stripes", "squarified", "strip"]
+             */
+            layoutAlgorithm: 'sliceAndDice',
+            /**
+             * Defines which direction the layout algorithm will start drawing.
+             *
+             * @since       4.1.0
+             * @validvalue ["vertical", "horizontal"]
+             */
+            layoutStartingDirection: 'vertical',
+            /**
+             * Enabling this option will make the treemap alternate the drawing
+             * direction between vertical and horizontal. The next levels starting
+             * direction will always be the opposite of the previous.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-alternatestartingdirection-true/
+             *         Enabled
+             *
+             * @since 4.1.0
+             */
+            alternateStartingDirection: false,
+            /**
+             * Used together with the levels and allowTraversingTree options. When
+             * set to false the first level visible to be level one, which is
+             * dynamic when traversing the tree. Otherwise the level will be the
+             * same as the tree structure.
+             *
+             * @since 4.1.0
+             */
+            levelIsConstant: true,
+            /**
+             * Options for the button appearing when traversing down in a treemap.
+             *
+             * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
+             *
+             * @deprecated
+             */
+            traverseUpButton: {
                 /**
-                 * Whether to ignore hidden points when the layout algorithm runs.
-                 * If `false`, hidden points will leave open spaces.
-                 *
-                 * @since 5.0.8
+                 * The position of the button.
                  */
-                ignoreHiddenPoint: true,
-                /**
-                 * This option decides which algorithm is used for setting position
-                 * and dimensions of the points.
-                 *
-                 * @see [How to write your own algorithm](https://www.highcharts.com/docs/chart-and-series-types/treemap)
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-sliceanddice/
-                 *         SliceAndDice by default
-                 * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-stripes/
-                 *         Stripes
-                 * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-squarified/
-                 *         Squarified
-                 * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-strip/
-                 *         Strip
-                 *
-                 * @since      4.1.0
-                 * @validvalue ["sliceAndDice", "stripes", "squarified", "strip"]
-                 */
-                layoutAlgorithm: 'sliceAndDice',
-                /**
-                 * Defines which direction the layout algorithm will start drawing.
-                 *
-                 * @since       4.1.0
-                 * @validvalue ["vertical", "horizontal"]
-                 */
-                layoutStartingDirection: 'vertical',
-                /**
-                 * Enabling this option will make the treemap alternate the drawing
-                 * direction between vertical and horizontal. The next levels starting
-                 * direction will always be the opposite of the previous.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-alternatestartingdirection-true/
-                 *         Enabled
-                 *
-                 * @since 4.1.0
-                 */
-                alternateStartingDirection: false,
-                /**
-                 * Used together with the levels and allowTraversingTree options. When
-                 * set to false the first level visible to be level one, which is
-                 * dynamic when traversing the tree. Otherwise the level will be the
-                 * same as the tree structure.
-                 *
-                 * @since 4.1.0
-                 */
-                levelIsConstant: true,
-                /**
-                 * Options for the button appearing when traversing down in a treemap.
-                 *
-                 * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
-                 *
-                 * @deprecated
-                 */
-                traverseUpButton: {
+                position: {
                     /**
-                     * The position of the button.
-                     */
-                    position: {
-                        /**
-                         * Vertical alignment of the button.
-                         *
-                         * @type      {Highcharts.VerticalAlignValue}
-                         * @default   top
-                         * @product   highcharts
-                         * @apioption plotOptions.treemap.traverseUpButton.position.verticalAlign
-                         */
-                        /**
-                         * Horizontal alignment of the button.
-                         *
-                         * @type {Highcharts.AlignValue}
-                         */
-                        align: 'right',
-                        /**
-                         * Horizontal offset of the button.
-                         */
-                        x: -10,
-                        /**
-                         * Vertical offset of the button.
-                         */
-                        y: 10
-                    }
-                },
-                /**
-                 * Set options on specific levels. Takes precedence over series options,
-                 * but not point options.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-levels/
-                 *         Styling dataLabels and borders
-                 * @sample {highcharts} highcharts/demo/treemap-with-levels/
-                 *         Different layoutAlgorithm
-                 *
-                 * @type      {Array<*>}
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels
-                 */
-                /**
-                 * Can set a `borderColor` on all points which lies on the same level.
-                 *
-                 * @type      {Highcharts.ColorString}
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.borderColor
-                 */
-                /**
-                 * Set the dash style of the border of all the point which lies on the
-                 * level. See
-                 * [plotOptions.scatter.dashStyle](#plotoptions.scatter.dashstyle)
-                 * for possible options.
-                 *
-                 * @type      {Highcharts.DashStyleValue}
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.borderDashStyle
-                 */
-                /**
-                 * Can set the borderWidth on all points which lies on the same level.
-                 *
-                 * @type      {number}
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.borderWidth
-                 */
-                /**
-                 * Can set a color on all points which lies on the same level.
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.color
-                 */
-                /**
-                 * A configuration object to define how the color of a child varies from
-                 * the parent's color. The variation is distributed among the children
-                 * of node. For example when setting brightness, the brightness change
-                 * will range from the parent's original brightness on the first child,
-                 * to the amount set in the `to` setting on the last node. This allows a
-                 * gradient-like color scheme that sets children out from each other
-                 * while highlighting the grouping on treemaps and sectors on sunburst
-                 * charts.
-                 *
-                 * @sample highcharts/demo/sunburst/
-                 *         Sunburst with color variation
-                 *
-                 * @since     6.0.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.colorVariation
-                 */
-                /**
-                 * The key of a color variation. Currently supports `brightness` only.
-                 *
-                 * @type       {string}
-                 * @since      6.0.0
-                 * @product    highcharts
-                 * @validvalue ["brightness"]
-                 * @apioption  plotOptions.treemap.levels.colorVariation.key
-                 */
-                /**
-                 * The ending value of a color variation. The last sibling will receive
-                 * this value.
-                 *
-                 * @type      {number}
-                 * @since     6.0.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.colorVariation.to
-                 */
-                /**
-                 * Can set the options of dataLabels on each point which lies on the
-                 * level.
-                 * [plotOptions.treemap.dataLabels](#plotOptions.treemap.dataLabels) for
-                 * possible values.
-                 *
-                 * @extends   plotOptions.treemap.dataLabels
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.dataLabels
-                 */
-                /**
-                 * Can set the layoutAlgorithm option on a specific level.
-                 *
-                 * @type       {string}
-                 * @since      4.1.0
-                 * @product    highcharts
-                 * @validvalue ["sliceAndDice", "stripes", "squarified", "strip"]
-                 * @apioption  plotOptions.treemap.levels.layoutAlgorithm
-                 */
-                /**
-                 * Can set the layoutStartingDirection option on a specific level.
-                 *
-                 * @type       {string}
-                 * @since      4.1.0
-                 * @product    highcharts
-                 * @validvalue ["vertical", "horizontal"]
-                 * @apioption  plotOptions.treemap.levels.layoutStartingDirection
-                 */
-                /**
-                 * Decides which level takes effect from the options set in the levels
-                 * object.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/treemap-levels/
-                 *         Styling of both levels
-                 *
-                 * @type      {number}
-                 * @since     4.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.levels.level
-                 */
-                // Presentational options
-                /**
-                 * The color of the border surrounding each tree map item.
-                 *
-                 * @type {Highcharts.ColorString}
-                 */
-                borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
-                /**
-                 * The width of the border surrounding each tree map item.
-                 */
-                borderWidth: 1,
-                colorKey: 'colorValue',
-                /**
-                 * The opacity of a point in treemap. When a point has children, the
-                 * visibility of the children is determined by the opacity.
-                 *
-                 * @since 4.2.4
-                 */
-                opacity: 0.15,
-                /**
-                 * A wrapper object for all the series options in specific states.
-                 *
-                 * @extends plotOptions.heatmap.states
-                 */
-                states: {
-                    /**
-                     * Options for the hovered series
+                     * Vertical alignment of the button.
                      *
-                     * @extends   plotOptions.heatmap.states.hover
-                     * @excluding halo
+                     * @type      {Highcharts.VerticalAlignValue}
+                     * @default   top
+                     * @product   highcharts
+                     * @apioption plotOptions.treemap.traverseUpButton.position.verticalAlign
                      */
-                    hover: {
-                        /**
-                         * The border color for the hovered state.
-                         */
-                        borderColor: "#999999" /* Palette.neutralColor40 */,
-                        /**
-                         * Brightness for the hovered point. Defaults to 0 if the
-                         * heatmap series is loaded first, otherwise 0.1.
-                         *
-                         * @type    {number}
-                         * @default undefined
-                         */
-                        brightness: HeatmapSeries ? 0 : 0.1,
-                        /**
-                         * @extends plotOptions.heatmap.states.hover.halo
-                         */
-                        halo: false,
-                        /**
-                         * The opacity of a point in treemap. When a point has children,
-                         * the visibility of the children is determined by the opacity.
-                         *
-                         * @since 4.2.4
-                         */
-                        opacity: 0.75,
-                        /**
-                         * The shadow option for hovered state.
-                         */
-                        shadow: false
-                    }
+                    /**
+                     * Horizontal alignment of the button.
+                     *
+                     * @type {Highcharts.AlignValue}
+                     */
+                    align: 'right',
+                    /**
+                     * Horizontal offset of the button.
+                     */
+                    x: -10,
+                    /**
+                     * Vertical offset of the button.
+                     */
+                    y: 10
                 }
-            });
-            return TreemapSeries;
-        }(ScatterSeries));
+            },
+            /**
+             * Set options on specific levels. Takes precedence over series options,
+             * but not point options.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-levels/
+             *         Styling dataLabels and borders
+             * @sample {highcharts} highcharts/demo/treemap-with-levels/
+             *         Different layoutAlgorithm
+             *
+             * @type      {Array<*>}
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels
+             */
+            /**
+             * Can set a `borderColor` on all points which lies on the same level.
+             *
+             * @type      {Highcharts.ColorString}
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.borderColor
+             */
+            /**
+             * Set the dash style of the border of all the point which lies on the
+             * level. See
+             * [plotOptions.scatter.dashStyle](#plotoptions.scatter.dashstyle)
+             * for possible options.
+             *
+             * @type      {Highcharts.DashStyleValue}
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.borderDashStyle
+             */
+            /**
+             * Can set the borderWidth on all points which lies on the same level.
+             *
+             * @type      {number}
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.borderWidth
+             */
+            /**
+             * Can set a color on all points which lies on the same level.
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.color
+             */
+            /**
+             * A configuration object to define how the color of a child varies from
+             * the parent's color. The variation is distributed among the children
+             * of node. For example when setting brightness, the brightness change
+             * will range from the parent's original brightness on the first child,
+             * to the amount set in the `to` setting on the last node. This allows a
+             * gradient-like color scheme that sets children out from each other
+             * while highlighting the grouping on treemaps and sectors on sunburst
+             * charts.
+             *
+             * @sample highcharts/demo/sunburst/
+             *         Sunburst with color variation
+             *
+             * @sample highcharts/series-treegraph/color-variation
+             *         Treegraph nodes with color variation
+             *
+             * @since     6.0.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.colorVariation
+             */
+            /**
+             * The key of a color variation. Currently supports `brightness` only.
+             *
+             * @type       {string}
+             * @since      6.0.0
+             * @product    highcharts
+             * @validvalue ["brightness"]
+             * @apioption  plotOptions.treemap.levels.colorVariation.key
+             */
+            /**
+             * The ending value of a color variation. The last sibling will receive
+             * this value.
+             *
+             * @type      {number}
+             * @since     6.0.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.colorVariation.to
+             */
+            /**
+             * Can set the options of dataLabels on each point which lies on the
+             * level.
+             * [plotOptions.treemap.dataLabels](#plotOptions.treemap.dataLabels) for
+             * possible values.
+             *
+             * @extends   plotOptions.treemap.dataLabels
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.dataLabels
+             */
+            /**
+             * Can set the layoutAlgorithm option on a specific level.
+             *
+             * @type       {string}
+             * @since      4.1.0
+             * @product    highcharts
+             * @validvalue ["sliceAndDice", "stripes", "squarified", "strip"]
+             * @apioption  plotOptions.treemap.levels.layoutAlgorithm
+             */
+            /**
+             * Can set the layoutStartingDirection option on a specific level.
+             *
+             * @type       {string}
+             * @since      4.1.0
+             * @product    highcharts
+             * @validvalue ["vertical", "horizontal"]
+             * @apioption  plotOptions.treemap.levels.layoutStartingDirection
+             */
+            /**
+             * Decides which level takes effect from the options set in the levels
+             * object.
+             *
+             * @sample {highcharts} highcharts/plotoptions/treemap-levels/
+             *         Styling of both levels
+             *
+             * @type      {number}
+             * @since     4.1.0
+             * @product   highcharts
+             * @apioption plotOptions.treemap.levels.level
+             */
+            // Presentational options
+            /**
+             * The color of the border surrounding each tree map item.
+             *
+             * @type {Highcharts.ColorString}
+             */
+            borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+            /**
+             * The width of the border surrounding each tree map item.
+             */
+            borderWidth: 1,
+            colorKey: 'colorValue',
+            /**
+             * The opacity of a point in treemap. When a point has children, the
+             * visibility of the children is determined by the opacity.
+             *
+             * @since 4.2.4
+             */
+            opacity: 0.15,
+            /**
+             * A wrapper object for all the series options in specific states.
+             *
+             * @extends plotOptions.heatmap.states
+             */
+            states: {
+                /**
+                 * Options for the hovered series
+                 *
+                 * @extends   plotOptions.heatmap.states.hover
+                 * @excluding halo
+                 */
+                hover: {
+                    /**
+                     * The border color for the hovered state.
+                     */
+                    borderColor: "#999999" /* Palette.neutralColor40 */,
+                    /**
+                     * Brightness for the hovered point. Defaults to 0 if the
+                     * heatmap series is loaded first, otherwise 0.1.
+                     *
+                     * @type    {number}
+                     * @default undefined
+                     */
+                    brightness: HeatmapSeries ? 0 : 0.1,
+                    /**
+                     * @extends plotOptions.heatmap.states.hover.halo
+                     */
+                    halo: false,
+                    /**
+                     * The opacity of a point in treemap. When a point has children,
+                     * the visibility of the children is determined by the opacity.
+                     *
+                     * @since 4.2.4
+                     */
+                    opacity: 0.75,
+                    /**
+                     * The shadow option for hovered state.
+                     */
+                    shadow: false
+                }
+            }
+        });
         extend(TreemapSeries.prototype, {
             buildKDTree: noop,
             colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
@@ -3432,47 +3219,26 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var Point = SeriesRegistry.series.prototype.pointClass,
-            TreemapPoint = SeriesRegistry.seriesTypes.treemap.prototype.pointClass;
-        var correctFloat = U.correctFloat,
-            extend = U.extend;
+        const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
+        const { correctFloat, extend } = U;
         /* *
          *
          *  Class
          *
          * */
-        var SunburstPoint = /** @class */ (function (_super) {
-                __extends(SunburstPoint, _super);
-            function SunburstPoint() {
+        class SunburstPoint extends TreemapPoint {
+            constructor() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
-                _this.node = void 0;
-                _this.options = void 0;
-                _this.series = void 0;
-                _this.shapeExisting = void 0;
-                _this.shapeType = void 0;
-                return _this;
+                super(...arguments);
+                this.node = void 0;
+                this.options = void 0;
+                this.series = void 0;
+                this.shapeExisting = void 0;
+                this.shapeType = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -3481,17 +3247,11 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            SunburstPoint.prototype.getDataLabelPath = function (label) {
-                var renderer = this.series.chart.renderer,
-                    shapeArgs = this.shapeExisting,
-                    start = shapeArgs.start,
-                    end = shapeArgs.end,
-                    angle = start + (end - start) / 2, // arc middle value
-                    upperHalf = angle < 0 &&
-                        angle > -Math.PI ||
-                        angle > Math.PI,
-                    r = (shapeArgs.r + (label.options.distance || 0)),
-                    moreThanHalf;
+            getDataLabelPath(label) {
+                let renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, start = shapeArgs.start, end = shapeArgs.end, angle = start + (end - start) / 2, // arc middle value
+                upperHalf = angle < 0 &&
+                    angle > -Math.PI ||
+                    angle > Math.PI, r = (shapeArgs.r + (label.options.distance || 0)), moreThanHalf;
                 // Check if point is a full circle
                 if (start === -Math.PI / 2 &&
                     correctFloat(end) === correctFloat(Math.PI * 1.5)) {
@@ -3524,12 +3284,11 @@
                 })
                     .add(renderer.defs);
                 return this.dataLabelPath;
-            };
-            SunburstPoint.prototype.isValid = function () {
+            }
+            isValid() {
                 return true;
-            };
-            return SunburstPoint;
-        }(TreemapPoint));
+            }
+        }
         extend(SunburstPoint.prototype, {
             getClassName: Point.prototype.getClassName,
             haloPath: Point.prototype.haloPath,
@@ -3557,10 +3316,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var TreemapSeries = SeriesRegistry.seriesTypes.treemap;
-        var isNumber = U.isNumber,
-            isObject = U.isObject,
-            merge = U.merge;
+        const { seriesTypes: { treemap: TreemapSeries } } = SeriesRegistry;
+        const { isNumber, isObject, merge } = U;
         /* *
          *
          *  Namespace
@@ -3594,15 +3351,7 @@
              * Returns the modified options, or undefined.
              */
             function calculateLevelSizes(levelOptions, params) {
-                var result,
-                    p = isObject(params) ? params : {},
-                    totalWeight = 0,
-                    diffRadius,
-                    levels,
-                    levelsNotIncluded,
-                    remainingSize,
-                    from,
-                    to;
+                let result, p = isObject(params) ? params : {}, totalWeight = 0, diffRadius, levels, levelsNotIncluded, remainingSize, from, to;
                 if (isObject(levelOptions)) {
                     result = merge({}, levelOptions);
                     from = isNumber(p.from) ? p.from : 0;
@@ -3618,9 +3367,7 @@
                     // Calculate total weight to use in convertion from weight to
                     // pixels.
                     levels.forEach(function (level) {
-                        var options = result[level],
-                            unit = options.levelSize.unit,
-                            value = options.levelSize.value;
+                        const options = result[level], unit = options.levelSize.unit, value = options.levelSize.value;
                         if (unit === 'weight') {
                             totalWeight += value;
                         }
@@ -3637,8 +3384,7 @@
                     });
                     // Convert weight to pixels.
                     levels.forEach(function (level) {
-                        var options = result[level],
-                            weight;
+                        let options = result[level], weight;
                         if (options.levelSize.unit === 'weight') {
                             weight = options.levelSize.value;
                             result[level].levelSize = {
@@ -3662,13 +3408,11 @@
             /**
              * @private
              */
-            function getLevelFromAndTo(_a) {
-                var level = _a.level,
-                    height = _a.height;
+            function getLevelFromAndTo({ level, height }) {
                 //  Never displays level below 1
-                var from = level > 0 ? level : 1;
-                var to = level + height;
-                return { from: from, to: to };
+                const from = level > 0 ? level : 1;
+                const to = level + height;
+                return { from, to };
             }
             SunburstUtilities.getLevelFromAndTo = getLevelFromAndTo;
             /**
@@ -3676,8 +3420,7 @@
              * @private
              */
             function range(from, to) {
-                var result = [],
-                    i;
+                let result = [], i;
                 if (isNumber(from) && isNumber(to) && from <= to) {
                     for (i = from; i <= to; i++) {
                         result.push(i);
@@ -3706,29 +3449,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SunburstNode = /** @class */ (function (_super) {
-                __extends(SunburstNode, _super);
-            function SunburstNode() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
-            return SunburstNode;
-        }(TreemapNode));
+        class SunburstNode extends TreemapNode {
+        }
 
         return SunburstNode;
     });
@@ -3746,47 +3468,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var getCenter = CU.getCenter,
-            getStartAndEndRadians = CU.getStartAndEndRadians;
-        var noop = H.noop;
-        var Series = SeriesRegistry.series,
-            _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
-            TreemapSeries = _a.treemap;
-        var getColor = TU.getColor,
-            getLevelOptions = TU.getLevelOptions,
-            setTreeValues = TU.setTreeValues,
-            updateRootId = TU.updateRootId;
-        var defined = U.defined,
-            error = U.error,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            isString = U.isString,
-            merge = U.merge,
-            splat = U.splat;
+        const { getCenter, getStartAndEndRadians } = CU;
+        const { noop } = H;
+        const { series: Series, seriesTypes: { column: ColumnSeries, treemap: TreemapSeries } } = SeriesRegistry;
+        const { getColor, getLevelOptions, setTreeValues, updateRootId } = TU;
+        const { defined, error, extend, fireEvent, isNumber, isObject, isString, merge, splat } = U;
         /* *
          *
          *  Constants
          *
          * */
-        var rad2deg = 180 / Math.PI;
+        const rad2deg = 180 / Math.PI;
         /* *
          *
          *  Functions
@@ -3818,36 +3510,25 @@
          * @return {Highcharts.SVGAttributes}
          *         Returns the end coordinates, x and y.
          */
-        var getEndPoint = function getEndPoint(x,
-            y,
-            angle,
-            distance) {
-                return {
-                    x: x + (Math.cos(angle) * distance),
-                    y: y + (Math.sin(angle) * distance)
-                };
+        const getEndPoint = function getEndPoint(x, y, angle, distance) {
+            return {
+                x: x + (Math.cos(angle) * distance),
+                y: y + (Math.sin(angle) * distance)
+            };
         };
         // eslint-disable-next-line require-jsdoc
         function getDlOptions(params) {
             // Set options to new object to avoid problems with scope
-            var point = params.point,
-                shape = isObject(params.shapeArgs) ? params.shapeArgs : {},
-                optionsPoint = (isObject(params.optionsPoint) ?
-                    params.optionsPoint.dataLabels :
-                    {}), 
-                // The splat was used because levels dataLabels
-                // options doesn't work as an array
-                optionsLevel = splat(isObject(params.level) ?
-                    params.level.dataLabels :
-                    {})[0],
-                options = merge({
-                    style: {}
-                },
-                optionsLevel,
-                optionsPoint),
-                rotationRad,
-                rotation,
-                rotationMode = options.rotationMode;
+            let point = params.point, shape = isObject(params.shapeArgs) ? params.shapeArgs : {}, optionsPoint = (isObject(params.optionsPoint) ?
+                params.optionsPoint.dataLabels :
+                {}), 
+            // The splat was used because levels dataLabels
+            // options doesn't work as an array
+            optionsLevel = splat(isObject(params.level) ?
+                params.level.dataLabels :
+                {})[0], options = merge({
+                style: {}
+            }, optionsLevel, optionsPoint), rotationRad, rotation, rotationMode = options.rotationMode;
             if (!isNumber(options.rotation)) {
                 if (rotationMode === 'auto' || rotationMode === 'circular') {
                     if (point.innerArcLength < 1 &&
@@ -3887,6 +3568,11 @@
                     }
                 }
                 if (rotationMode !== 'auto' && rotationMode !== 'circular') {
+                    if (point.dataLabel && point.dataLabel.textPath) {
+                        options.textPath = {
+                            enabled: false
+                        };
+                    }
                     rotationRad = (shape.end -
                         (shape.end - shape.start) / 2);
                 }
@@ -3902,7 +3588,11 @@
                     }
                 }
                 if (rotationMode === 'perpendicular' &&
-                    point.series.chart.renderer.fontMetrics(options.style.fontSize).h > point.outerArcLength) {
+                    // 16 is the inferred line height. We don't know the real line
+                    // yet because the label is not rendered. A better approach for this
+                    // would be to hide the label from the `alignDataLabel` function
+                    // when the actual line height is known.
+                    point.outerArcLength < 16) {
                     options.style.width = 1;
                 }
                 // Apply padding (#8515)
@@ -3956,24 +3646,14 @@
         }
         // eslint-disable-next-line require-jsdoc
         function getAnimation(shape, params) {
-            var point = params.point,
-                radians = params.radians,
-                innerR = params.innerR,
-                idRoot = params.idRoot,
-                idPreviousRoot = params.idPreviousRoot,
-                shapeExisting = params.shapeExisting,
-                shapeRoot = params.shapeRoot,
-                shapePreviousRoot = params.shapePreviousRoot,
-                visible = params.visible,
-                from = {},
-                to = {
-                    end: shape.end,
-                    start: shape.start,
-                    innerR: shape.innerR,
-                    r: shape.r,
-                    x: shape.x,
-                    y: shape.y
-                };
+            let point = params.point, radians = params.radians, innerR = params.innerR, idRoot = params.idRoot, idPreviousRoot = params.idPreviousRoot, shapeExisting = params.shapeExisting, shapeRoot = params.shapeRoot, shapePreviousRoot = params.shapePreviousRoot, visible = params.visible, from = {}, to = {
+                end: shape.end,
+                start: shape.start,
+                innerR: shape.innerR,
+                r: shape.r,
+                x: shape.x,
+                y: shape.y
+            };
             if (visible) {
                 // Animate points in
                 if (!point.graphic && shapePreviousRoot) {
@@ -4028,9 +3708,7 @@
         }
         // eslint-disable-next-line require-jsdoc
         function getDrillId(point, idRoot, mapIdToNode) {
-            var drillId,
-                node = point.node,
-                nodeRoot;
+            let drillId, node = point.node, nodeRoot;
             if (!node.isLeaf) {
                 // When it is the root node, the drillId should be set to parent.
                 if (idRoot === point.id) {
@@ -4045,24 +3723,16 @@
         }
         // eslint-disable-next-line require-jsdoc
         function cbSetTreeValuesBefore(node, options) {
-            var mapIdToNode = options.mapIdToNode,
-                parent = node.parent,
-                nodeParent = parent ? mapIdToNode[parent] : void 0,
-                series = options.series,
-                chart = series.chart,
-                points = series.points,
-                point = points[node.i],
-                colors = series.options.colors || chart && chart.options.colors,
-                colorInfo = getColor(node, {
-                    colors: colors,
-                    colorIndex: series.colorIndex,
-                    index: options.index,
-                    mapOptionsToLevel: options.mapOptionsToLevel,
-                    parentColor: nodeParent && nodeParent.color,
-                    parentColorIndex: nodeParent && nodeParent.colorIndex,
-                    series: options.series,
-                    siblings: options.siblings
-                });
+            const mapIdToNode = options.mapIdToNode, parent = node.parent, nodeParent = parent ? mapIdToNode[parent] : void 0, series = options.series, chart = series.chart, points = series.points, point = points[node.i], colors = series.options.colors || chart && chart.options.colors, colorInfo = getColor(node, {
+                colors: colors,
+                colorIndex: series.colorIndex,
+                index: options.index,
+                mapOptionsToLevel: options.mapOptionsToLevel,
+                parentColor: nodeParent && nodeParent.color,
+                parentColorIndex: nodeParent && nodeParent.colorIndex,
+                series: options.series,
+                siblings: options.siblings
+            });
             node.color = colorInfo.color;
             node.colorIndex = colorInfo.colorIndex;
             if (point) {
@@ -4078,31 +3748,28 @@
          *  Class
          *
          * */
-        var SunburstSeries = /** @class */ (function (_super) {
-                __extends(SunburstSeries, _super);
-            function SunburstSeries() {
+        class SunburstSeries extends TreemapSeries {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.center = void 0;
-                _this.data = void 0;
-                _this.mapOptionsToLevel = void 0;
-                _this.nodeMap = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                _this.shapeRoot = void 0;
-                _this.startAndEndRadians = void 0;
-                _this.tree = void 0;
-                return _this;
+                this.center = void 0;
+                this.data = void 0;
+                this.mapOptionsToLevel = void 0;
+                this.nodeMap = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.shapeRoot = void 0;
+                this.startAndEndRadians = void 0;
+                this.tree = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -4111,26 +3778,21 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            SunburstSeries.prototype.alignDataLabel = function (_point, _dataLabel, labelOptions) {
+            alignDataLabel(_point, _dataLabel, labelOptions) {
                 if (labelOptions.textPath && labelOptions.textPath.enabled) {
                     return;
                 }
-                return _super.prototype.alignDataLabel.apply(this, arguments);
-            };
+                return super.alignDataLabel.apply(this, arguments);
+            }
             /**
              * Animate the slices in. Similar to the animation of polar charts.
              * @private
              */
-            SunburstSeries.prototype.animate = function (init) {
-                var chart = this.chart,
-                    center = [
-                        chart.plotWidth / 2,
-                        chart.plotHeight / 2
-                    ],
-                    plotLeft = chart.plotLeft,
-                    plotTop = chart.plotTop,
-                    attribs,
-                    group = this.group;
+            animate(init) {
+                let chart = this.chart, center = [
+                    chart.plotWidth / 2,
+                    chart.plotHeight / 2
+                ], plotLeft = chart.plotLeft, plotTop = chart.plotTop, attribs, group = this.group;
                 // Initialize the animation
                 if (init) {
                     // Scale down the group and place it in the center
@@ -4156,43 +3818,21 @@
                     };
                     group.animate(attribs, this.options.animation);
                 }
-            };
-            SunburstSeries.prototype.drawPoints = function () {
-                var series = this,
-                    mapOptionsToLevel = series.mapOptionsToLevel,
-                    shapeRoot = series.shapeRoot,
-                    group = series.group,
-                    hasRendered = series.hasRendered,
-                    idRoot = series.rootNode,
-                    idPreviousRoot = series.idPreviousRoot,
-                    nodeMap = series.nodeMap,
-                    nodePreviousRoot = nodeMap[idPreviousRoot],
-                    shapePreviousRoot = nodePreviousRoot && nodePreviousRoot.shapeArgs,
-                    points = series.points,
-                    radians = series.startAndEndRadians,
-                    chart = series.chart,
-                    optionsChart = chart && chart.options && chart.options.chart || {},
-                    animation = (isBoolean(optionsChart.animation) ?
-                        optionsChart.animation :
-                        true),
-                    positions = series.center,
-                    center = {
-                        x: positions[0],
-                        y: positions[1]
-                    },
-                    innerR = positions[3] / 2,
-                    renderer = series.chart.renderer,
-                    animateLabels,
-                    animateLabelsCalled = false,
-                    addedHack = false,
-                    hackDataLabelAnimation = !!(animation &&
-                        hasRendered &&
-                        idRoot !== idPreviousRoot &&
-                        series.dataLabelsGroup);
+            }
+            drawPoints() {
+                let series = this, mapOptionsToLevel = series.mapOptionsToLevel, shapeRoot = series.shapeRoot, group = series.group, hasRendered = series.hasRendered, idRoot = series.rootNode, idPreviousRoot = series.idPreviousRoot, nodeMap = series.nodeMap, nodePreviousRoot = nodeMap[idPreviousRoot], shapePreviousRoot = nodePreviousRoot && nodePreviousRoot.shapeArgs, points = series.points, radians = series.startAndEndRadians, chart = series.chart, optionsChart = chart && chart.options && chart.options.chart || {}, animation = (isBoolean(optionsChart.animation) ?
+                    optionsChart.animation :
+                    true), positions = series.center, center = {
+                    x: positions[0],
+                    y: positions[1]
+                }, innerR = positions[3] / 2, renderer = series.chart.renderer, animateLabels, animateLabelsCalled = false, addedHack = false, hackDataLabelAnimation = !!(animation &&
+                    hasRendered &&
+                    idRoot !== idPreviousRoot &&
+                    series.dataLabelsGroup);
                 if (hackDataLabelAnimation) {
                     series.dataLabelsGroup.attr({ opacity: 0 });
                     animateLabels = function () {
-                        var s = series;
+                        const s = series;
                         animateLabelsCalled = true;
                         if (s.dataLabelsGroup) {
                             s.dataLabelsGroup.animate({
@@ -4203,13 +3843,13 @@
                     };
                 }
                 points.forEach(function (point) {
-                    var node = point.node,
-                        level = mapOptionsToLevel[node.level],
-                        shapeExisting = (point.shapeExisting || {}),
-                        shape = node.shapeArgs || {},
-                        animationInfo,
-                        onComplete,
-                        visible = !!(node.visible && node.shapeArgs);
+                    let node = point.node, level = mapOptionsToLevel[node.level], shapeExisting = (point.shapeExisting || {}), shape = node.shapeArgs || {}, animationInfo, onComplete, visible = !!(node.visible && node.shapeArgs);
+                    // Border radius requires the border-radius.js module. Adding it
+                    // here because the SunburstSeries is a mess and I can't find the
+                    // regular shapeArgs. Usually shapeArgs are created in the series'
+                    // `translate` function and then passed directly on to the renderer
+                    // in the `drawPoints` function.
+                    shape.borderRadius = series.options.borderRadius;
                     if (hasRendered && animation) {
                         animationInfo = getAnimation(shape, {
                             center: center,
@@ -4278,80 +3918,68 @@
                 else {
                     Series.prototype.drawDataLabels.call(series);
                 }
-            };
+                series.idPreviousRoot = idRoot;
+            }
             /**
              * The layout algorithm for the levels.
              * @private
              */
-            SunburstSeries.prototype.layoutAlgorithm = function (parent, children, options) {
-                var startAngle = parent.start,
-                    range = parent.end - startAngle,
-                    total = parent.val,
-                    x = parent.x,
-                    y = parent.y,
-                    radius = ((options &&
-                        isObject(options.levelSize) &&
-                        isNumber(options.levelSize.value)) ?
-                        options.levelSize.value :
-                        0),
-                    innerRadius = parent.r,
-                    outerRadius = innerRadius + radius,
-                    slicedOffset = options && isNumber(options.slicedOffset) ?
-                        options.slicedOffset :
-                        0;
+            layoutAlgorithm(parent, children, options) {
+                let startAngle = parent.start, range = parent.end - startAngle, total = parent.val, x = parent.x, y = parent.y, radius = ((options &&
+                    isObject(options.levelSize) &&
+                    isNumber(options.levelSize.value)) ?
+                    options.levelSize.value :
+                    0), innerRadius = parent.r, outerRadius = innerRadius + radius, slicedOffset = options && isNumber(options.slicedOffset) ?
+                    options.slicedOffset :
+                    0;
                 return (children || []).reduce(function (arr, child) {
-                    var percentage = (1 / total) * child.val,
-                        radians = percentage * range,
-                        radiansCenter = startAngle + (radians / 2),
-                        offsetPosition = getEndPoint(x,
-                        y,
-                        radiansCenter,
-                        slicedOffset),
-                        values = {
-                            x: child.sliced ? offsetPosition.x : x,
-                            y: child.sliced ? offsetPosition.y : y,
-                            innerR: innerRadius,
-                            r: outerRadius,
-                            radius: radius,
-                            start: startAngle,
-                            end: startAngle + radians
-                        };
+                    const percentage = (1 / total) * child.val, radians = percentage * range, radiansCenter = startAngle + (radians / 2), offsetPosition = getEndPoint(x, y, radiansCenter, slicedOffset), values = {
+                        x: child.sliced ? offsetPosition.x : x,
+                        y: child.sliced ? offsetPosition.y : y,
+                        innerR: innerRadius,
+                        r: outerRadius,
+                        radius: radius,
+                        start: startAngle,
+                        end: startAngle + radians
+                    };
                     arr.push(values);
                     startAngle = values.end;
                     return arr;
                 }, []);
-            };
+            }
+            setRootNode(id, redraw, eventArguments) {
+                const series = this;
+                if ( // If the target node is the only one at level 1, skip it. (#18658)
+                series.nodeMap[id].level === 1 &&
+                    series.nodeList
+                        .filter((node) => node.level === 1)
+                        .length === 1) {
+                    if (series.idPreviousRoot === '') {
+                        return;
+                    }
+                    id = '';
+                }
+                super.setRootNode(id, redraw, eventArguments);
+            }
             /**
              * Set the shape arguments on the nodes. Recursive from root down.
              * @private
              */
-            SunburstSeries.prototype.setShapeArgs = function (parent, parentValues, mapOptionsToLevel) {
-                var childrenValues = [],
-                    level = parent.level + 1,
-                    options = mapOptionsToLevel[level], 
-                    // Collect all children which should be included
-                    children = parent.children.filter(function (n) {
-                        return n.visible;
+            setShapeArgs(parent, parentValues, mapOptionsToLevel) {
+                let childrenValues = [], level = parent.level + 1, options = mapOptionsToLevel[level], 
+                // Collect all children which should be included
+                children = parent.children.filter(function (n) {
+                    return n.visible;
                 }), twoPi = 6.28; // Two times Pi.
                 childrenValues = this.layoutAlgorithm(parentValues, children, options);
                 children.forEach(function (child, index) {
-                    var values = childrenValues[index],
-                        angle = values.start + ((values.end - values.start) / 2),
-                        radius = values.innerR + ((values.r - values.innerR) / 2),
-                        radians = (values.end - values.start),
-                        isCircle = (values.innerR === 0 && radians > twoPi),
-                        center = (isCircle ?
-                            { x: values.x,
-                        y: values.y } :
-                            getEndPoint(values.x,
-                        values.y,
-                        angle,
-                        radius)),
-                        val = (child.val ?
-                            (child.childrenTotal > child.val ?
-                                child.childrenTotal :
-                                child.val) :
-                            child.childrenTotal);
+                    const values = childrenValues[index], angle = values.start + ((values.end - values.start) / 2), radius = values.innerR + ((values.r - values.innerR) / 2), radians = (values.end - values.start), isCircle = (values.innerR === 0 && radians > twoPi), center = (isCircle ?
+                        { x: values.x, y: values.y } :
+                        getEndPoint(values.x, values.y, angle, radius)), val = (child.val ?
+                        (child.childrenTotal > child.val ?
+                            child.childrenTotal :
+                            child.val) :
+                        child.childrenTotal);
                     // The inner arc length is a convenience for data label filters.
                     if (this.points[child.i]) {
                         this.points[child.i].innerArcLength = radians * values.innerR;
@@ -4369,29 +3997,17 @@
                         this.setShapeArgs(child, child.values, mapOptionsToLevel);
                     }
                 }, this);
-            };
-            SunburstSeries.prototype.translate = function () {
-                var series = this,
-                    options = series.options,
-                    positions = series.center = series.getCenter(),
-                    radians = series.startAndEndRadians = getStartAndEndRadians(options.startAngle,
-                    options.endAngle),
-                    innerRadius = positions[3] / 2,
-                    outerRadius = positions[2] / 2,
-                    diffRadius = outerRadius - innerRadius, 
-                    // NOTE: updateRootId modifies series.
-                    rootId = updateRootId(series),
-                    mapIdToNode = series.nodeMap,
-                    mapOptionsToLevel,
-                    idTop,
-                    nodeRoot = mapIdToNode && mapIdToNode[rootId],
-                    nodeTop,
-                    tree,
-                    values,
-                    nodeIds = {};
+            }
+            translate() {
+                let series = this, options = series.options, positions = series.center = series.getCenter(), radians = series.startAndEndRadians = getStartAndEndRadians(options.startAngle, options.endAngle), innerRadius = positions[3] / 2, outerRadius = positions[2] / 2, diffRadius = outerRadius - innerRadius, 
+                // NOTE: updateRootId modifies series.
+                rootId = updateRootId(series), mapIdToNode = series.nodeMap, mapOptionsToLevel, idTop, nodeRoot = mapIdToNode && mapIdToNode[rootId], nodeTop, tree, values, nodeIds = {};
                 series.shapeRoot = nodeRoot && nodeRoot.shapeArgs;
-                // Call prototype function
-                Series.prototype.translate.call(series);
+                if (!this.processedXData) { // hidden series
+                    this.processData();
+                }
+                this.generatePoints();
+                fireEvent(this, 'afterTranslate');
                 // @todo Only if series.isDirtyData is true
                 tree = series.tree = series.getTree();
                 // Render traverseUpButton, after series.nodeMap i calculated.
@@ -4399,13 +4015,11 @@
                 nodeRoot = mapIdToNode[rootId];
                 idTop = isString(nodeRoot.parent) ? nodeRoot.parent : '';
                 nodeTop = mapIdToNode[idTop];
-                var _a = SunburstUtilities.getLevelFromAndTo(nodeRoot),
-                    from = _a.from,
-                    to = _a.to;
+                const { from, to } = SunburstUtilities.getLevelFromAndTo(nodeRoot);
                 mapOptionsToLevel = getLevelOptions({
-                    from: from,
+                    from,
                     levels: series.options.levels,
-                    to: to,
+                    to,
                     defaults: {
                         colorByPoint: options.colorByPoint,
                         dataLabels: options.dataLabels,
@@ -4417,9 +4031,9 @@
                 // NOTE consider doing calculateLevelSizes in a callback to
                 // getLevelOptions
                 mapOptionsToLevel = SunburstUtilities.calculateLevelSizes(mapOptionsToLevel, {
-                    diffRadius: diffRadius,
-                    from: from,
-                    to: to
+                    diffRadius,
+                    from,
+                    to
                 });
                 // TODO Try to combine setTreeValues & setColorRecursive to avoid
                 //  unnecessary looping.
@@ -4453,278 +4067,287 @@
                 });
                 // reset object
                 nodeIds = {};
-            };
+            }
+        }
+        /**
+         * A Sunburst displays hierarchical data, where a level in the hierarchy is
+         * represented by a circle. The center represents the root node of the tree.
+         * The visualization bears a resemblance to both treemap and pie charts.
+         *
+         * @sample highcharts/demo/sunburst
+         *         Sunburst chart
+         *
+         * @extends      plotOptions.pie
+         * @excluding    allAreas, clip, colorAxis, colorKey, compare, compareBase,
+         *               dataGrouping, depth, dragDrop, endAngle, gapSize, gapUnit,
+         *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
+         *               minSize, navigatorOptions, pointRange
+         * @product      highcharts
+         * @requires     modules/sunburst.js
+         * @optionparent plotOptions.sunburst
+         *
+         * @private
+         */
+        SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, {
             /**
-             * A Sunburst displays hierarchical data, where a level in the hierarchy is
-             * represented by a circle. The center represents the root node of the tree.
-             * The visualization bears a resemblance to both treemap and pie charts.
+             * Options for the breadcrumbs, the navigation at the top leading the
+             * way up through the traversed levels.
+             *
+             * @since 10.0.0
+             * @product   highcharts
+             * @extends   navigation.breadcrumbs
+             * @optionparent plotOptions.sunburst.breadcrumbs
+             */
+            /**
+             * Set options on specific levels. Takes precedence over series options,
+             * but not point options.
              *
              * @sample highcharts/demo/sunburst
              *         Sunburst chart
              *
-             * @extends      plotOptions.pie
-             * @excluding    allAreas, clip, colorAxis, colorKey, compare, compareBase,
-             *               dataGrouping, depth, dragDrop, endAngle, gapSize, gapUnit,
-             *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
-             *               minSize, navigatorOptions, pointRange
-             * @product      highcharts
-             * @requires     modules/sunburst.js
-             * @optionparent plotOptions.sunburst
+             * @type      {Array<*>}
+             * @apioption plotOptions.sunburst.levels
+             */
+            /**
+             * Can set a `borderColor` on all points which lies on the same level.
+             *
+             * @type      {Highcharts.ColorString}
+             * @apioption plotOptions.sunburst.levels.borderColor
+             */
+            /**
+             * Can set a `borderWidth` on all points which lies on the same level.
+             *
+             * @type      {number}
+             * @apioption plotOptions.sunburst.levels.borderWidth
+             */
+            /**
+             * Can set a `borderDashStyle` on all points which lies on the same
+             * level.
+             *
+             * @type      {Highcharts.DashStyleValue}
+             * @apioption plotOptions.sunburst.levels.borderDashStyle
+             */
+            /**
+             * Can set a `color` on all points which lies on the same level.
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @apioption plotOptions.sunburst.levels.color
+             */
+            /**
+             * Determines whether the chart should receive one color per point based
+             * on this level.
+             *
+             * @type      {boolean}
+             * @apioption plotOptions.sunburst.levels.colorByPoint
+             */
+            /**
+             * Can set a `colorVariation` on all points which lies on the same
+             * level.
+             *
+             * @apioption plotOptions.sunburst.levels.colorVariation
+             */
+            /**
+             * The key of a color variation. Currently supports `brightness` only.
+             *
+             * @type      {string}
+             * @apioption plotOptions.sunburst.levels.colorVariation.key
+             */
+            /**
+             * The ending value of a color variation. The last sibling will receive
+             * this value.
+             *
+             * @type      {number}
+             * @apioption plotOptions.sunburst.levels.colorVariation.to
+             */
+            /**
+             * Can set `dataLabels` on all points which lies on the same level.
+             *
+             * @extends   plotOptions.sunburst.dataLabels
+             * @apioption plotOptions.sunburst.levels.dataLabels
+             */
+            /**
+             * Decides which level takes effect from the options set in the levels
+             * object.
+             *
+             * @sample highcharts/demo/sunburst
+             *         Sunburst chart
+             *
+             * @type      {number}
+             * @apioption plotOptions.sunburst.levels.level
+             */
+            /**
+             * Can set a `levelSize` on all points which lies on the same level.
+             *
+             * @type      {Object}
+             * @apioption plotOptions.sunburst.levels.levelSize
+             */
+            /**
+             * When enabled the user can click on a point which is a parent and
+             * zoom in on its children. Deprecated and replaced by
+             * [allowTraversingTree](#plotOptions.sunburst.allowTraversingTree).
+             *
+             * @deprecated
+             * @type      {boolean}
+             * @default   false
+             * @since     6.0.0
+             * @product   highcharts
+             * @apioption plotOptions.sunburst.allowDrillToNode
+             */
+            /**
+             * When enabled the user can click on a point which is a parent and
+             * zoom in on its children.
+             *
+             * @type      {boolean}
+             * @default   false
+             * @since     7.0.3
+             * @product   highcharts
+             * @apioption plotOptions.sunburst.allowTraversingTree
+             */
+            /**
+             * The center of the sunburst chart relative to the plot area. Can be
+             * percentages or pixel values.
+             *
+             * @sample {highcharts} highcharts/plotoptions/pie-center/
+             *         Centered at 100, 100
+             *
+             * @type    {Array<number|string>}
+             * @default ["50%", "50%"]
+             * @product highcharts
              *
              * @private
              */
-            SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, {
+            center: ['50%', '50%'],
+            /**
+             * @product highcharts
+             *
+             * @private
+             */
+            clip: false,
+            colorByPoint: false,
+            /**
+             * Disable inherited opacity from Treemap series.
+             *
+             * @ignore-option
+             *
+             * @private
+             */
+            opacity: 1,
+            /**
+             * @declare Highcharts.SeriesSunburstDataLabelsOptionsObject
+             *
+             * @private
+             */
+            dataLabels: {
+                allowOverlap: true,
+                defer: true,
                 /**
-                 * Options for the breadcrumbs, the navigation at the top leading the
-                 * way up through the traversed levels.
+                 * Decides how the data label will be rotated relative to the
+                 * perimeter of the sunburst. Valid values are `circular`, `auto`,
+                 * `parallel` and `perpendicular`. When `circular`, the best fit
+                 * will be computed for the point, so that the label is curved
+                 * around the center when there is room for it, otherwise
+                 * perpendicular. The legacy `auto` option works similiar to
+                 * `circular`, but instead of curving the labels they are tangent to
+                 * the perimiter.
                  *
-                 * @since 10.0.0
-                 * @product   highcharts
-                 * @extends   navigation.breadcrumbs
-                 * @optionparent plotOptions.sunburst.breadcrumbs
+                 * The `rotation` option takes precedence over `rotationMode`.
+                 *
+                 * @type       {string}
+                 * @sample {highcharts}
+                 *         highcharts/plotoptions/sunburst-datalabels-rotationmode-circular/
+                 *         Circular rotation mode
+                 * @validvalue ["auto", "perpendicular", "parallel", "circular"]
+                 * @since      6.0.0
                  */
+                rotationMode: 'circular',
+                style: {
+                    /** @internal */
+                    textOverflow: 'ellipsis'
+                }
+            },
+            /**
+             * Which point to use as a root in the visualization.
+             *
+             * @type {string}
+             *
+             * @private
+             */
+            rootId: void 0,
+            /**
+             * Used together with the levels and `allowDrillToNode` options. When
+             * set to false the first level visible when drilling is considered
+             * to be level one. Otherwise the level will be the same as the tree
+             * structure.
+             *
+             * @private
+             */
+            levelIsConstant: true,
+            /**
+             * Determines the width of the ring per level.
+             *
+             * @sample {highcharts} highcharts/plotoptions/sunburst-levelsize/
+             *         Sunburst with various sizes per level
+             *
+             * @since 6.0.5
+             *
+             * @private
+             */
+            levelSize: {
                 /**
-                 * Set options on specific levels. Takes precedence over series options,
-                 * but not point options.
+                 * The value used for calculating the width of the ring. Its' affect
+                 * is determined by `levelSize.unit`.
                  *
-                 * @sample highcharts/demo/sunburst
-                 *         Sunburst chart
-                 *
-                 * @type      {Array<*>}
-                 * @apioption plotOptions.sunburst.levels
+                 * @sample {highcharts} highcharts/plotoptions/sunburst-levelsize/
+                 *         Sunburst with various sizes per level
                  */
+                value: 1,
                 /**
-                 * Can set a `borderColor` on all points which lies on the same level.
+                 * How to interpret `levelSize.value`.
                  *
-                 * @type      {Highcharts.ColorString}
-                 * @apioption plotOptions.sunburst.levels.borderColor
-                 */
-                /**
-                 * Can set a `borderWidth` on all points which lies on the same level.
+                 * - `percentage` gives a width relative to result of outer radius
+                 *   minus inner radius.
                  *
-                 * @type      {number}
-                 * @apioption plotOptions.sunburst.levels.borderWidth
-                 */
-                /**
-                 * Can set a `borderDashStyle` on all points which lies on the same
-                 * level.
+                 * - `pixels` gives the ring a fixed width in pixels.
                  *
-                 * @type      {Highcharts.DashStyleValue}
-                 * @apioption plotOptions.sunburst.levels.borderDashStyle
-                 */
-                /**
-                 * Can set a `color` on all points which lies on the same level.
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @apioption plotOptions.sunburst.levels.color
-                 */
-                /**
-                 * Determines whether the chart should receive one color per point based
-                 * on this level.
-                 *
-                 * @type      {boolean}
-                 * @apioption plotOptions.sunburst.levels.colorByPoint
-                 */
-                /**
-                 * Can set a `colorVariation` on all points which lies on the same
-                 * level.
-                 *
-                 * @apioption plotOptions.sunburst.levels.colorVariation
-                 */
-                /**
-                 * The key of a color variation. Currently supports `brightness` only.
-                 *
-                 * @type      {string}
-                 * @apioption plotOptions.sunburst.levels.colorVariation.key
-                 */
-                /**
-                 * The ending value of a color variation. The last sibling will receive
-                 * this value.
-                 *
-                 * @type      {number}
-                 * @apioption plotOptions.sunburst.levels.colorVariation.to
-                 */
-                /**
-                 * Can set `dataLabels` on all points which lies on the same level.
-                 *
-                 * @extends   plotOptions.sunburst.dataLabels
-                 * @apioption plotOptions.sunburst.levels.dataLabels
-                 */
-                /**
-                 * Decides which level takes effect from the options set in the levels
-                 * object.
-                 *
-                 * @sample highcharts/demo/sunburst
-                 *         Sunburst chart
-                 *
-                 * @type      {number}
-                 * @apioption plotOptions.sunburst.levels.level
-                 */
-                /**
-                 * Can set a `levelSize` on all points which lies on the same level.
-                 *
-                 * @type      {Object}
-                 * @apioption plotOptions.sunburst.levels.levelSize
-                 */
-                /**
-                 * When enabled the user can click on a point which is a parent and
-                 * zoom in on its children. Deprecated and replaced by
-                 * [allowTraversingTree](#plotOptions.sunburst.allowTraversingTree).
-                 *
-                 * @deprecated
-                 * @type      {boolean}
-                 * @default   false
-                 * @since     6.0.0
-                 * @product   highcharts
-                 * @apioption plotOptions.sunburst.allowDrillToNode
-                 */
-                /**
-                 * When enabled the user can click on a point which is a parent and
-                 * zoom in on its children.
-                 *
-                 * @type      {boolean}
-                 * @default   false
-                 * @since     7.0.3
-                 * @product   highcharts
-                 * @apioption plotOptions.sunburst.allowTraversingTree
-                 */
-                /**
-                 * The center of the sunburst chart relative to the plot area. Can be
-                 * percentages or pixel values.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/pie-center/
-                 *         Centered at 100, 100
-                 *
-                 * @type    {Array<number|string>}
-                 * @default ["50%", "50%"]
-                 * @product highcharts
-                 *
-                 * @private
-                 */
-                center: ['50%', '50%'],
-                colorByPoint: false,
-                /**
-                 * Disable inherited opacity from Treemap series.
-                 *
-                 * @ignore-option
-                 *
-                 * @private
-                 */
-                opacity: 1,
-                /**
-                 * @declare Highcharts.SeriesSunburstDataLabelsOptionsObject
-                 *
-                 * @private
-                 */
-                dataLabels: {
-                    allowOverlap: true,
-                    defer: true,
-                    /**
-                     * Decides how the data label will be rotated relative to the
-                     * perimeter of the sunburst. Valid values are `auto`, `circular`,
-                     * `parallel` and `perpendicular`. When `auto`, the best fit will be
-                     * computed for the point. The `circular` option works similiar
-                     * to `auto`, but uses the `textPath` feature - labels are curved,
-                     * resulting in a better layout, however multiple lines and
-                     * `textOutline` are not supported.
-                     *
-                     * The `rotation` option takes precedence over `rotationMode`.
-                     *
-                     * @type       {string}
-                     * @sample {highcharts} highcharts/plotoptions/sunburst-datalabels-rotationmode-circular/
-                     *         Circular rotation mode
-                     * @validvalue ["auto", "perpendicular", "parallel", "circular"]
-                     * @since      6.0.0
-                     */
-                    rotationMode: 'auto',
-                    style: {
-                        /** @internal */
-                        textOverflow: 'ellipsis'
-                    }
-                },
-                /**
-                 * Which point to use as a root in the visualization.
-                 *
-                 * @type {string}
-                 *
-                 * @private
-                 */
-                rootId: void 0,
-                /**
-                 * Used together with the levels and `allowDrillToNode` options. When
-                 * set to false the first level visible when drilling is considered
-                 * to be level one. Otherwise the level will be the same as the tree
-                 * structure.
-                 *
-                 * @private
-                 */
-                levelIsConstant: true,
-                /**
-                 * Determines the width of the ring per level.
+                 * - `weight` takes the remaining width after percentage and pixels,
+                 *   and distributes it accross all "weighted" levels. The value
+                 *   relative to the sum of all weights determines the width.
                  *
                  * @sample {highcharts} highcharts/plotoptions/sunburst-levelsize/
                  *         Sunburst with various sizes per level
                  *
-                 * @since 6.0.5
-                 *
-                 * @private
+                 * @validvalue ["percentage", "pixels", "weight"]
                  */
-                levelSize: {
-                    /**
-                     * The value used for calculating the width of the ring. Its' affect
-                     * is determined by `levelSize.unit`.
-                     *
-                     * @sample {highcharts} highcharts/plotoptions/sunburst-levelsize/
-                     *         Sunburst with various sizes per level
-                     */
-                    value: 1,
-                    /**
-                     * How to interpret `levelSize.value`.
-                     *
-                     * - `percentage` gives a width relative to result of outer radius
-                     *   minus inner radius.
-                     *
-                     * - `pixels` gives the ring a fixed width in pixels.
-                     *
-                     * - `weight` takes the remaining width after percentage and pixels,
-                     *   and distributes it accross all "weighted" levels. The value
-                     *   relative to the sum of all weights determines the width.
-                     *
-                     * @sample {highcharts} highcharts/plotoptions/sunburst-levelsize/
-                     *         Sunburst with various sizes per level
-                     *
-                     * @validvalue ["percentage", "pixels", "weight"]
-                     */
-                    unit: 'weight'
-                },
-                /**
-                 * Options for the button appearing when traversing down in a sunburst.
-                 * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
-                 *
-                 * @extends   plotOptions.treemap.traverseUpButton
-                 * @since     6.0.0
-                 * @deprecated
-                 * @apioption plotOptions.sunburst.traverseUpButton
-                 *
-                 */
-                /**
-                 * If a point is sliced, moved out from the center, how many pixels
-                 * should it be moved?.
-                 *
-                 * @sample highcharts/plotoptions/sunburst-sliced
-                 *         Sliced sunburst
-                 *
-                 * @since 6.0.4
-                 *
-                 * @private
-                 */
-                slicedOffset: 10
-            });
-            return SunburstSeries;
-        }(TreemapSeries));
+                unit: 'weight'
+            },
+            /**
+             * Options for the button appearing when traversing down in a sunburst.
+             * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
+             *
+             * @extends   plotOptions.treemap.traverseUpButton
+             * @since     6.0.0
+             * @deprecated
+             * @apioption plotOptions.sunburst.traverseUpButton
+             *
+             */
+            /**
+             * If a point is sliced, moved out from the center, how many pixels
+             * should it be moved?.
+             *
+             * @sample highcharts/plotoptions/sunburst-sliced
+             *         Sliced sunburst
+             *
+             * @since 6.0.4
+             *
+             * @private
+             */
+            slicedOffset: 10
+        });
         extend(SunburstSeries.prototype, {
+            axisTypes: [],
             drawDataLabels: noop,
             getCenter: getCenter,
+            isCartesian: false,
             // Mark that the sunburst is supported by the series on point feature.
             onPointSupported: true,
             pointAttribs: ColumnSeries.prototype.pointAttribs,

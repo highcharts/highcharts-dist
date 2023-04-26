@@ -8,25 +8,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import ColumnSeries from '../Column/ColumnSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 /* *
  *
  *  Class
@@ -41,41 +26,38 @@ var extend = U.extend, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var BarSeries = /** @class */ (function (_super) {
-    __extends(BarSeries, _super);
-    function BarSeries() {
+class BarSeries extends ColumnSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
-    /**
-     * A bar series is a special type of column series where the columns are
-     * horizontal.
-     *
-     * @sample highcharts/demo/bar-basic/
-     *         Bar chart
-     *
-     * @extends      plotOptions.column
-     * @product      highcharts
-     * @optionparent plotOptions.bar
-     */
-    BarSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-    // nothing here yet
-    });
-    return BarSeries;
-}(ColumnSeries));
+}
+/**
+ * A bar series is a special type of column series where the columns are
+ * horizontal.
+ *
+ * @sample highcharts/demo/bar-basic/
+ *         Bar chart
+ *
+ * @extends      plotOptions.column
+ * @product      highcharts
+ * @optionparent plotOptions.bar
+ */
+BarSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+// nothing here yet
+});
 extend(BarSeries.prototype, {
     inverted: true
 });

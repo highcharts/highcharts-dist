@@ -27,7 +27,7 @@
  * @product      highstock
  * @optionparent plotOptions.flags
  */
-var FlagsSeriesDefaults = {
+const FlagsSeriesDefaults = {
     /**
      * In case the flag is placed on a series, on what point key to place
      * it. Line and columns have one key, `y`. In range or OHLC-type series,
@@ -205,7 +205,7 @@ var FlagsSeriesDefaults = {
              * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @product highstock
              */
-            fillColor: "#ccd6eb" /* Palette.highlightColor20 */
+            fillColor: "#ccd3ff" /* Palette.highlightColor20 */
         }
     },
     /**
@@ -220,7 +220,7 @@ var FlagsSeriesDefaults = {
      */
     style: {
         /** @ignore-option */
-        fontSize: '11px',
+        fontSize: '0.7em',
         /** @ignore-option */
         fontWeight: 'bold'
     }

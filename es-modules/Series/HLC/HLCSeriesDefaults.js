@@ -27,7 +27,7 @@
  * @product      highstock
  * @optionparent plotOptions.hlc
  */
-var HLCSeriesDefaults = {
+const HLCSeriesDefaults = {
     /**
      * The approximate pixel width of each group. If for example a series
      * with 30 points is displayed over a 600 pixel wide plot area, no

@@ -11,13 +11,13 @@
  * */
 'use strict';
 import D from '../Core/Defaults.js';
-var defaultOptions = D.defaultOptions;
+const { defaultOptions } = D;
 import H from '../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge;
+const { addEvent, extend, fireEvent, merge } = U;
 import HU from './Utils/HTMLUtilities.js';
-var removeElement = HU.removeElement;
+const { removeElement } = HU;
 import A11yI18n from './A11yI18n.js';
 import ContainerComponent from './Components/ContainerComponent.js';
 import FocusBorder from './FocusBorder.js';
@@ -52,13 +52,13 @@ import copyDeprecatedOptions from './Options/DeprecatedOptions.js';
  * @param {Highcharts.Chart} chart
  * Chart object
  */
-var Accessibility = /** @class */ (function () {
+class Accessibility {
     /* *
      *
      *  Constructor
      *
      * */
-    function Accessibility(chart) {
+    constructor(chart) {
         /* *
          *
          *  Properties
@@ -82,10 +82,10 @@ var Accessibility = /** @class */ (function () {
      * @param {Highcharts.Chart} chart
      *        Chart object
      */
-    Accessibility.prototype.init = function (chart) {
+    init(chart) {
         this.chart = chart;
         // Abort on old browsers
-        if (!doc.addEventListener || !chart.renderer.isSVG) {
+        if (!doc.addEventListener) {
             this.zombie = true;
             this.components = {};
             chart.renderTo.setAttribute('aria-hidden', true);
@@ -97,14 +97,14 @@ var Accessibility = /** @class */ (function () {
         this.proxyProvider = new ProxyProvider(this.chart);
         this.initComponents();
         this.keyboardNavigation = new KeyboardNavigation(chart, this.components);
-    };
+    }
     /**
      * @private
      */
-    Accessibility.prototype.initComponents = function () {
-        var chart = this.chart;
-        var proxyProvider = this.proxyProvider;
-        var a11yOptions = chart.options.accessibility;
+    initComponents() {
+        const chart = this.chart;
+        const proxyProvider = this.proxyProvider;
+        const a11yOptions = chart.options.accessibility;
         this.components = {
             container: new ContainerComponent(),
             infoRegions: new InfoRegionsComponent(),
@@ -117,40 +117,40 @@ var Accessibility = /** @class */ (function () {
         if (a11yOptions.customComponents) {
             extend(this.components, a11yOptions.customComponents);
         }
-        var components = this.components;
+        const components = this.components;
         this.getComponentOrder().forEach(function (componentName) {
             components[componentName].initBase(chart, proxyProvider);
             components[componentName].init();
         });
-    };
+    }
     /**
      * Get order to update components in.
      * @private
      */
-    Accessibility.prototype.getComponentOrder = function () {
+    getComponentOrder() {
         if (!this.components) {
             return []; // For zombie accessibility object on old browsers
         }
         if (!this.components.series) {
             return Object.keys(this.components);
         }
-        var componentsExceptSeries = Object.keys(this.components)
-            .filter(function (c) { return c !== 'series'; });
+        const componentsExceptSeries = Object.keys(this.components)
+            .filter((c) => c !== 'series');
         // Update series first, so that other components can read accessibility
         // info on points.
         return ['series'].concat(componentsExceptSeries);
-    };
+    }
     /**
      * Update all components.
      */
-    Accessibility.prototype.update = function () {
-        var components = this.components, chart = this.chart, a11yOptions = chart.options.accessibility;
+    update() {
+        const components = this.components, chart = this.chart, a11yOptions = chart.options.accessibility;
         fireEvent(chart, 'beforeA11yUpdate');
         // Update the chart type list as this is used by multiple modules
         chart.types = this.getChartTypes();
         // Update proxies. We don't update proxy positions since most likely we
         // need to recreate the proxies on update.
-        var kbdNavOrder = a11yOptions.keyboardNavigation.order;
+        const kbdNavOrder = a11yOptions.keyboardNavigation.order;
         this.proxyProvider.updateGroupOrder(kbdNavOrder);
         // Update markup
         this.getComponentOrder().forEach(function (componentName) {
@@ -170,14 +170,14 @@ var Accessibility = /** @class */ (function () {
         fireEvent(chart, 'afterA11yUpdate', {
             accessibility: this
         });
-    };
+    }
     /**
      * Destroy all elements.
      */
-    Accessibility.prototype.destroy = function () {
-        var chart = this.chart || {};
+    destroy() {
+        const chart = this.chart || {};
         // Destroy components
-        var components = this.components;
+        const components = this.components;
         Object.keys(components).forEach(function (componentName) {
             components[componentName].destroy();
             components[componentName].destroyBase();
@@ -202,20 +202,19 @@ var Accessibility = /** @class */ (function () {
         if (chart.focusElement) {
             chart.focusElement.removeFocusBorder();
         }
-    };
+    }
     /**
      * Return a list of the types of series we have in the chart.
      * @private
      */
-    Accessibility.prototype.getChartTypes = function () {
-        var types = {};
+    getChartTypes() {
+        const types = {};
         this.chart.series.forEach(function (series) {
             types[series.type] = 1;
         });
         return Object.keys(types);
-    };
-    return Accessibility;
-}());
+    }
+}
 /* *
  *
  *  Class Namespace
@@ -232,7 +231,7 @@ var Accessibility = /** @class */ (function () {
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     Accessibility.i18nFormat = A11yI18n.i18nFormat;
     /* *
      *
@@ -259,7 +258,7 @@ var Accessibility = /** @class */ (function () {
             delete this.a11yDirty;
             this.updateA11yEnabled();
         }
-        var a11y = this.accessibility;
+        const a11y = this.accessibility;
         if (a11y && !a11y.zombie) {
             a11y.proxyProvider.updateProxyElementPositions();
             a11y.getComponentOrder().forEach(function (componentName) {
@@ -273,7 +272,7 @@ var Accessibility = /** @class */ (function () {
      */
     function chartOnUpdate(e) {
         // Merge new options
-        var newOptions = e.options.accessibility;
+        const newOptions = e.options.accessibility;
         if (newOptions) {
             // Handle custom component updating specifically
             if (newOptions.customComponents) {
@@ -295,8 +294,8 @@ var Accessibility = /** @class */ (function () {
      * @private
      */
     function chartUpdateA11yEnabled() {
-        var a11y = this.accessibility;
-        var accessibilityOptions = this.options.accessibility;
+        let a11y = this.accessibility;
+        const accessibilityOptions = this.options.accessibility;
         if (accessibilityOptions && accessibilityOptions.enabled) {
             if (a11y && !a11y.zombie) {
                 a11y.update();
@@ -336,37 +335,34 @@ var Accessibility = /** @class */ (function () {
         if (RangeSelectorClass) {
             RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
         }
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.updateA11yEnabled = chartUpdateA11yEnabled;
             addEvent(ChartClass, 'destroy', chartOnDestroy);
             addEvent(ChartClass, 'render', chartOnRender);
             addEvent(ChartClass, 'update', chartOnUpdate);
             // Mark dirty for update
-            ['addSeries', 'init'].forEach(function (event) {
+            ['addSeries', 'init'].forEach((event) => {
                 addEvent(ChartClass, event, function () {
                     this.a11yDirty = true;
                 });
             });
             // Direct updates (events happen after render)
-            ['afterApplyDrilldown', 'drillupall'].forEach(function (event) {
+            ['afterApplyDrilldown', 'drillupall'].forEach((event) => {
                 addEvent(ChartClass, event, function chartOnAfterDrilldown() {
-                    var a11y = this.accessibility;
+                    const a11y = this.accessibility;
                     if (a11y && !a11y.zombie) {
                         a11y.update();
                     }
                 });
             });
         }
-        if (composedClasses.indexOf(PointClass) === -1) {
-            composedClasses.push(PointClass);
+        if (U.pushUnique(composedMembers, PointClass)) {
             addEvent(PointClass, 'update', pointOnUpdate);
         }
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
+        if (U.pushUnique(composedMembers, SeriesClass)) {
             // Mark dirty for update
-            ['update', 'updatedData', 'remove'].forEach(function (event) {
+            ['update', 'updatedData', 'remove'].forEach((event) => {
                 addEvent(SeriesClass, event, function () {
                     if (this.chart.accessibility) {
                         this.chart.a11yDirty = true;

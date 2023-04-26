@@ -9,13 +9,13 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, erase = U.erase, find = U.find, fireEvent = U.fireEvent, pick = U.pick, wrap = U.wrap;
+const { addEvent, erase, find, fireEvent, pick, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -38,7 +38,7 @@ var composedClasses = [];
  *         The newly generated annotation.
  */
 function chartAddAnnotation(userOptions, redraw) {
-    var annotation = this.initAnnotation(userOptions);
+    const annotation = this.initAnnotation(userOptions);
     this.options.annotations.push(annotation.options);
     if (pick(redraw, true)) {
         annotation.redraw();
@@ -52,20 +52,18 @@ function chartAddAnnotation(userOptions, redraw) {
  * @private
  */
 function chartCallback() {
-    var chart = this;
+    const chart = this;
     chart.plotBoxClip = this.renderer.clipRect(this.plotBox);
     chart.controlPointsGroup = chart.renderer
         .g('control-points')
         .attr({ zIndex: 99 })
         .clip(chart.plotBoxClip)
         .add();
-    chart.options.annotations.forEach(function (annotationOptions, i) {
+    chart.options.annotations.forEach((annotationOptions, i) => {
         if (
         // Verify that it has not been previously added in a responsive rule
-        !chart.annotations.some(function (annotation) {
-            return annotation.options === annotationOptions;
-        })) {
-            var annotation = chart.initAnnotation(annotationOptions);
+        !chart.annotations.some((annotation) => annotation.options === annotationOptions)) {
+            const annotation = chart.initAnnotation(annotationOptions);
             chart.options.annotations[i] = annotation.options;
         }
     });
@@ -76,7 +74,7 @@ function chartCallback() {
         chart.controlPointsGroup.destroy();
     });
     addEvent(chart, 'exportData', function (event) {
-        var annotations = chart.annotations, csvColumnHeaderFormatter = ((this.options.exporting &&
+        const annotations = chart.annotations, csvColumnHeaderFormatter = ((this.options.exporting &&
             this.options.exporting.csv) ||
             {}).columnHeaderFormatter, 
         // If second row doesn't have xValues
@@ -84,7 +82,7 @@ function chartCallback() {
         multiLevelHeaders = !event.dataRows[1].xValues, annotationHeader = (chart.options.lang &&
             chart.options.lang.exportData &&
             chart.options.lang.exportData.annotationHeader), columnHeaderFormatter = function (index) {
-            var s;
+            let s;
             if (csvColumnHeaderFormatter) {
                 s = csvColumnHeaderFormatter(index);
                 if (s !== false) {
@@ -106,25 +104,25 @@ function chartCallback() {
             chart.options.exporting.csv &&
             chart.options.exporting.csv.annotations &&
             chart.options.exporting.csv.annotations.join);
-        annotations.forEach(function (annotation) {
+        annotations.forEach((annotation) => {
             if (annotation.options.labelOptions &&
                 annotation.options.labelOptions.includeInDataExport) {
-                annotation.labels.forEach(function (label) {
+                annotation.labels.forEach((label) => {
                     if (label.options.text) {
-                        var annotationText_1 = label.options.text;
-                        label.points.forEach(function (points) {
-                            var annotationX = points.x, xAxisIndex = points.series.xAxis ?
+                        const annotationText = label.options.text;
+                        label.points.forEach((points) => {
+                            const annotationX = points.x, xAxisIndex = points.series.xAxis ?
                                 points.series.xAxis.options.index :
                                 -1;
-                            var wasAdded = false;
+                            let wasAdded = false;
                             // Annotation not connected to any xAxis -
                             // add new row.
                             if (xAxisIndex === -1) {
-                                var n = event.dataRows[0].length, newRow = new Array(n);
-                                for (var i = 0; i < n; ++i) {
+                                const n = event.dataRows[0].length, newRow = new Array(n);
+                                for (let i = 0; i < n; ++i) {
                                     newRow[i] = '';
                                 }
-                                newRow.push(annotationText_1);
+                                newRow.push(annotationText);
                                 newRow.xValues = [];
                                 newRow.xValues[xAxisIndex] = annotationX;
                                 event.dataRows.push(newRow);
@@ -133,7 +131,7 @@ function chartCallback() {
                             // Annotation placed on a exported data point
                             // - add new column
                             if (!wasAdded) {
-                                event.dataRows.forEach(function (row) {
+                                event.dataRows.forEach((row) => {
                                     if (!wasAdded &&
                                         row.xValues &&
                                         xAxisIndex !== void 0 &&
@@ -141,10 +139,10 @@ function chartCallback() {
                                         if (joinAnnotations &&
                                             row.length > startRowLength) {
                                             row[row.length - 1] += (annotationSeparator +
-                                                annotationText_1);
+                                                annotationText);
                                         }
                                         else {
-                                            row.push(annotationText_1);
+                                            row.push(annotationText);
                                         }
                                         wasAdded = true;
                                     }
@@ -153,12 +151,12 @@ function chartCallback() {
                             // Annotation not placed on any exported data point,
                             // but connected to the xAxis - add new row
                             if (!wasAdded) {
-                                var n = event.dataRows[0].length, newRow = new Array(n);
-                                for (var i = 0; i < n; ++i) {
+                                const n = event.dataRows[0].length, newRow = new Array(n);
+                                for (let i = 0; i < n; ++i) {
                                     newRow[i] = '';
                                 }
                                 newRow[0] = annotationX;
-                                newRow.push(annotationText_1);
+                                newRow.push(annotationText);
                                 newRow.xValues = [];
                                 if (xAxisIndex !== void 0) {
                                     newRow.xValues[xAxisIndex] = annotationX;
@@ -170,13 +168,13 @@ function chartCallback() {
                 });
             }
         });
-        var maxRowLen = 0;
-        event.dataRows.forEach(function (row) {
+        let maxRowLen = 0;
+        event.dataRows.forEach((row) => {
             maxRowLen = Math.max(maxRowLen, row.length);
         });
-        var newRows = maxRowLen - event.dataRows[0].length;
-        for (var i = 0; i < newRows; i++) {
-            var header = columnHeaderFormatter(i + 1);
+        const newRows = maxRowLen - event.dataRows[0].length;
+        for (let i = 0; i < newRows; i++) {
+            const header = columnHeaderFormatter(i + 1);
             if (multiLevelHeaders) {
                 event.dataRows[0].push(header.topLevelColumnTitle);
                 event.dataRows[1].push(header.columnTitle);
@@ -192,7 +190,7 @@ function chartCallback() {
  */
 function chartDrawAnnotations() {
     this.plotBoxClip.attr(this.plotBox);
-    this.annotations.forEach(function (annotation) {
+    this.annotations.forEach((annotation) => {
         annotation.redraw();
         annotation.graphic.animate({
             opacity: 1
@@ -208,7 +206,7 @@ function chartDrawAnnotations() {
  *        The annotation's id or direct annotation object.
  */
 function chartRemoveAnnotation(idOrAnnotation) {
-    var annotations = this.annotations, annotation = (idOrAnnotation.coll === 'annotations') ?
+    const annotations = this.annotations, annotation = (idOrAnnotation.coll === 'annotations') ?
         idOrAnnotation :
         find(annotations, function (annotation) {
             return annotation.options.id === idOrAnnotation;
@@ -225,7 +223,7 @@ function chartRemoveAnnotation(idOrAnnotation) {
  * @private
  */
 function onChartAfterInit() {
-    var chart = this;
+    const chart = this;
     chart.annotations = [];
     if (!this.options.annotations) {
         this.options.annotations = [];
@@ -258,10 +256,9 @@ var AnnotationChart;
      * @private
      */
     function compose(AnnotationClass, ChartClass, PointerClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
+        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'afterInit', onChartAfterInit);
-            var chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype;
             chartProto.addAnnotation = chartAddAnnotation;
             chartProto.callbacks.push(chartCallback);
             chartProto.collectionsWithInit.annotations = [chartAddAnnotation];
@@ -269,15 +266,14 @@ var AnnotationChart;
             chartProto.drawAnnotations = chartDrawAnnotations;
             chartProto.removeAnnotation = chartRemoveAnnotation;
             chartProto.initAnnotation = function chartInitAnnotation(userOptions) {
-                var Constructor = (AnnotationClass.types[userOptions.type] ||
+                const Constructor = (AnnotationClass.types[userOptions.type] ||
                     AnnotationClass), annotation = new Constructor(this, userOptions);
                 this.annotations.push(annotation);
                 return annotation;
             };
         }
-        if (composedClasses.indexOf(PointerClass) === -1) {
-            composedClasses.push(PointerClass);
-            var pointerProto = PointerClass.prototype;
+        if (U.pushUnique(composedMembers, PointerClass)) {
+            const pointerProto = PointerClass.prototype;
             wrap(pointerProto, 'onContainerMouseDown', wrapPointerOnContainerMouseDown);
         }
     }

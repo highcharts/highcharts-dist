@@ -29,7 +29,7 @@
  * @requires     modules/dependency-wheel
  * @optionparent plotOptions.dependencywheel
  */
-var DependencyWheelSeriesDefaults = {
+const DependencyWheelSeriesDefaults = {
     /**
      * Distance between the data label and the center of the node.
      *

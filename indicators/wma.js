@@ -1,5 +1,5 @@
 /*
- Highstock JS v10.3.3 (2023-01-20)
+ Highstock JS v11.0.0 (2023-04-26)
 
  Indicator series type for Highcharts Stock
 
@@ -7,8 +7,8 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/wma",["highcharts","highcharts/modules/stock"],function(f){a(f);a.Highcharts=f;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function f(a,d,f,l){a.hasOwnProperty(d)||(a[d]=l.apply(null,f),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:d,module:a[d]}})))}
-a=a?a._modules:{};f(a,"Stock/Indicators/WMA/WMAIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,d){function f(a,b){b*=(b+1)/2;return a.reduce(function(c,a,b){return[null,c[1]+a[1]*(b+1)]})[1]/b}function l(a,b,c,g){c=f(a,a.length);b=b[g-1];a.shift();return[b,c]}var q=this&&this.__extends||function(){var a=function(b,c){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,c){a.__proto__=c}||function(a,c){for(var b in c)c.hasOwnProperty(b)&&(a[b]=c[b])};
-return a(b,c)};return function(b,c){function g(){this.constructor=b}a(b,c);b.prototype=null===c?Object.create(c):(g.prototype=c.prototype,new g)}}(),k=a.seriesTypes.sma,r=d.isArray,t=d.merge;d=function(a){function b(){var c=null!==a&&a.apply(this,arguments)||this;c.data=void 0;c.options=void 0;c.points=void 0;return c}q(b,a);b.prototype.getValues=function(a,b){var c=b.period,d=a.xData,f=(a=a.yData)?a.length:0,e=1,g=d[0],k=a[0],m=[],n=[],p=[],h=-1;if(!(d.length<c)){r(a[0])&&(h=b.index,k=a[0][h]);for(b=
-[[g,k]];e!==c;)b.push([d[e],0>h?a[e]:a[e][h]]),e++;for(c=e;c<f;c++)e=l(b,d,a,c),m.push(e),n.push(e[0]),p.push(e[1]),b.push([d[c],0>h?a[c]:a[c][h]]);e=l(b,d,a,c);m.push(e);n.push(e[0]);p.push(e[1]);return{values:m,xData:n,yData:p}}};b.defaultOptions=t(k.defaultOptions,{params:{index:3,period:9}});return b}(k);a.registerSeriesType("wma",d);"";return d});f(a,"masters/indicators/wma.src.js",[],function(){})});
+'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/wma",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,f,b,l){a.hasOwnProperty(f)||(a[f]=l.apply(null,b),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:f,
+module:a[f]}})))}a=a?a._modules:{};b(a,"Stock/Indicators/WMA/WMAIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,b){function f(a,c){c*=(c+1)/2;return a.reduce(function(a,q,c){return[null,a[1]+q[1]*(c+1)]})[1]/c}function l(a,c,e,b){e=f(a,a.length);c=c[b-1];a.shift();return[c,e]}const {sma:h}=a.seriesTypes,{isArray:r,merge:t}=b;class k extends h{constructor(){super(...arguments);this.points=this.options=this.data=void 0}getValues(a,c){var e=c.period;const b=a.xData,
+f=(a=a.yData)?a.length:0,k=b[0],m=[],n=[],p=[];var d=1;let g=-1,h=a[0];if(!(b.length<e)){r(a[0])&&(g=c.index,h=a[0][g]);for(c=[[k,h]];d!==e;)c.push([b[d],0>g?a[d]:a[d][g]]),d++;for(e=d;e<f;e++)d=l(c,b,a,e),m.push(d),n.push(d[0]),p.push(d[1]),c.push([b[e],0>g?a[e]:a[e][g]]);d=l(c,b,a,e);m.push(d);n.push(d[0]);p.push(d[1]);return{values:m,xData:n,yData:p}}}}k.defaultOptions=t(h.defaultOptions,{params:{index:3,period:9}});a.registerSeriesType("wma",k);"";return k});b(a,"masters/indicators/wma.src.js",
+[],function(){})});
 //# sourceMappingURL=wma.js.map

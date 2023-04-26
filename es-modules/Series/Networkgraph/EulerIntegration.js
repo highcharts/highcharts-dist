@@ -31,7 +31,7 @@
  * @param {number} distanceR
      */
 function attractive(link, force, distanceXY, distanceR) {
-    var massFactor = link.getMass(), translatedX = (distanceXY.x / distanceR) * force, translatedY = (distanceXY.y / distanceR) * force;
+    const massFactor = link.getMass(), translatedX = (distanceXY.x / distanceR) * force, translatedY = (distanceXY.y / distanceR) * force;
     if (!link.fromNode.fixedPosition) {
         link.fromNode.dispX -=
             translatedX * massFactor.fromNode / link.fromNode.degree;
@@ -72,10 +72,10 @@ function attractiveForceFunction(d, k) {
  * @private
  */
 function barycenter() {
-    var gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
+    const gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
     this.nodes.forEach(function (node) {
         if (!node.fixedPosition) {
-            var degree = node.getDegree(), phi = degree * (1 + degree / 2);
+            const degree = node.getDegree(), phi = degree * (1 + degree / 2);
             node.dispX += ((xFactor - node.plotX) *
                 gravitationalConstant *
                 phi / node.degree);
@@ -126,7 +126,7 @@ function getK(layout) {
  *        Node that should be translated
  */
 function integrate(layout, node) {
-    var distanceR;
+    let distanceR;
     node.dispX +=
         node.dispX * layout.options.friction;
     node.dispY +=
@@ -187,13 +187,13 @@ function repulsiveForceFunction(d, k) {
  *  Default Export
  *
  * */
-var EulerIntegration = {
-    attractive: attractive,
-    attractiveForceFunction: attractiveForceFunction,
-    barycenter: barycenter,
-    getK: getK,
-    integrate: integrate,
-    repulsive: repulsive,
-    repulsiveForceFunction: repulsiveForceFunction
+const EulerIntegration = {
+    attractive,
+    attractiveForceFunction,
+    barycenter,
+    getK,
+    integrate,
+    repulsive,
+    repulsiveForceFunction
 };
 export default EulerIntegration;

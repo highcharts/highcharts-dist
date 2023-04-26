@@ -10,28 +10,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import OrganizationPoint from './OrganizationPoint.js';
 import OrganizationSeriesDefaults from './OrganizationSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
-var SankeySeries = SeriesRegistry.seriesTypes.sankey;
+const { seriesTypes: { sankey: SankeySeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var css = U.css, extend = U.extend, merge = U.merge, pick = U.pick;
+const { css, extend, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -44,15 +29,14 @@ var css = U.css, extend = U.extend, merge = U.merge, pick = U.pick;
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-var OrganizationSeries = /** @class */ (function (_super) {
-    __extends(OrganizationSeries, _super);
-    function OrganizationSeries() {
+class OrganizationSeries extends SankeySeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Static Functions
@@ -63,10 +47,9 @@ var OrganizationSeries = /** @class */ (function (_super) {
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -75,24 +58,24 @@ var OrganizationSeries = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    OrganizationSeries.prototype.alignDataLabel = function (point, dataLabel, options) {
+    alignDataLabel(point, dataLabel, options) {
         // Align the data label to the point graphic
-        var shapeArgs = point.shapeArgs;
+        const shapeArgs = point.shapeArgs;
         if (options.useHTML && shapeArgs) {
-            var width_1 = shapeArgs.width || 0, height_1 = shapeArgs.height || 0, padjust = (this.options.borderWidth +
+            let width = shapeArgs.width || 0, height = shapeArgs.height || 0, padjust = (this.options.borderWidth +
                 2 * this.options.dataLabels.padding);
             if (this.chart.inverted) {
-                width_1 = height_1;
-                height_1 = shapeArgs.width || 0;
+                width = height;
+                height = shapeArgs.width || 0;
             }
-            height_1 -= padjust;
-            width_1 -= padjust;
+            height -= padjust;
+            width -= padjust;
             // Set the size of the surrounding div emulating `g`
-            var text = dataLabel.text;
+            const text = dataLabel.text;
             if (text) {
                 css(text.element.parentNode, {
-                    width: width_1 + 'px',
-                    height: height_1 + 'px'
+                    width: width + 'px',
+                    height: height + 'px'
                 });
                 // Set properties for the span emulating `text`
                 css(text.element, {
@@ -105,21 +88,21 @@ var OrganizationSeries = /** @class */ (function (_super) {
             }
             // The getBBox function is used in `alignDataLabel` to align
             // inside the box
-            dataLabel.getBBox = function () { return ({ width: width_1, height: height_1, x: 0, y: 0 }); };
+            dataLabel.getBBox = () => ({ width, height, x: 0, y: 0 });
             // Overwrite dataLabel dimensions (#13100).
-            dataLabel.width = width_1;
-            dataLabel.height = height_1;
+            dataLabel.width = width;
+            dataLabel.height = height;
         }
-        _super.prototype.alignDataLabel.apply(this, arguments);
-    };
-    OrganizationSeries.prototype.createNode = function (id) {
-        var node = _super.prototype.createNode.call(this, id);
+        super.alignDataLabel.apply(this, arguments);
+    }
+    createNode(id) {
+        const node = super.createNode.call(this, id);
         // All nodes in an org chart are equal width
-        node.getSum = function () { return 1; };
+        node.getSum = () => 1;
         return node;
-    };
-    OrganizationSeries.prototype.pointAttribs = function (point, state) {
-        var series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
+    }
+    pointAttribs(point, state) {
+        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
             levelOptions.states[state]) ||
             {}, borderRadius = pick(stateOptions.borderRadius, options.borderRadius, levelOptions.borderRadius, series.options.borderRadius), linkColor = pick(stateOptions.linkColor, options.linkColor, levelOptions.linkColor, series.options.linkColor, stateOptions.link && stateOptions.link.color, options.link && options.link.color, levelOptions.link && levelOptions.link.color, series.options.link && series.options.link.color), linkLineWidth = pick(stateOptions.linkLineWidth, options.linkLineWidth, levelOptions.linkLineWidth, series.options.linkLineWidth, stateOptions.link && stateOptions.link.lineWidth, options.link && options.link.lineWidth, levelOptions.link && levelOptions.link.lineWidth, series.options.link && series.options.link.lineWidth), linkOpacity = pick(stateOptions.linkOpacity, options.linkOpacity, levelOptions.linkOpacity, series.options.linkOpacity, stateOptions.link && stateOptions.link.linkOpacity, options.link && options.link.linkOpacity, levelOptions.link && levelOptions.link.linkOpacity, series.options.link && series.options.link.linkOpacity);
         if (!point.isNode) {
@@ -129,19 +112,19 @@ var OrganizationSeries = /** @class */ (function (_super) {
             delete attribs.fill;
         }
         else {
-            if (borderRadius) {
+            if (isNumber(borderRadius)) {
                 attribs.r = borderRadius;
             }
         }
         return attribs;
-    };
-    OrganizationSeries.prototype.translateLink = function (point) {
-        var fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(this.options.linkLineWidth, this.options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, this.options.link.type);
+    }
+    translateLink(point) {
+        let fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(this.options.linkLineWidth, this.options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, this.options.link.type);
         if (fromNode.shapeArgs && toNode.shapeArgs) {
-            var x1 = Math.floor((fromNode.shapeArgs.x || 0) +
+            let x1 = Math.floor((fromNode.shapeArgs.x || 0) +
                 (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
                 (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle = void 0, hangingIndent = this.options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = this.chart.inverted;
+                (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle, hangingIndent = this.options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = this.chart.inverted;
             if (inverted) {
                 x1 -= (fromNode.shapeArgs.width || 0);
                 x2 += (toNode.shapeArgs.width || 0);
@@ -190,7 +173,7 @@ var OrganizationSeries = /** @class */ (function (_super) {
                 };
             }
             else if (type === 'curved') {
-                var offset = Math.abs(x2 - x1) * factor * (inverted ? -1 : 1);
+                const offset = Math.abs(x2 - x1) * factor * (inverted ? -1 : 1);
                 point.shapeArgs = {
                     d: [
                         ['M', x1, y1],
@@ -200,7 +183,7 @@ var OrganizationSeries = /** @class */ (function (_super) {
             }
             else {
                 point.shapeArgs = {
-                    d: PathUtilities.curvedPath([
+                    d: PathUtilities.applyRadius([
                         ['M', x1, y1],
                         ['L', xMiddle, y1],
                         ['L', xMiddle, y2],
@@ -215,10 +198,10 @@ var OrganizationSeries = /** @class */ (function (_super) {
                 width: 0
             };
         }
-    };
-    OrganizationSeries.prototype.translateNode = function (node, column) {
+    }
+    translateNode(node, column) {
         SankeySeries.prototype.translateNode.call(this, node, column);
-        var parentNode = node.hangsFrom, indent = this.options.hangingIndent || 0, sign = this.chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = this.options.hangingIndentTranslation, minLength = this.options.minNodeLength || 10;
+        let parentNode = node.hangsFrom, indent = this.options.hangingIndent || 0, sign = this.chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = this.options.hangingIndentTranslation, minLength = this.options.minNodeLength || 10;
         if (parentNode) {
             if (indentLogic === 'cumulative') {
                 // Move to the right:
@@ -249,10 +232,18 @@ var OrganizationSeries = /** @class */ (function (_super) {
         node.nodeHeight = this.chart.inverted ?
             shapeArgs.width :
             shapeArgs.height;
-    };
-    OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
-    return OrganizationSeries;
-}(SankeySeries));
+    }
+    drawDataLabels() {
+        const dlOptions = this.options.dataLabels;
+        if (dlOptions.linkTextPath && dlOptions.linkTextPath.enabled) {
+            for (const link of this.points) {
+                link.options.dataLabels = merge(link.options.dataLabels, { useHTML: false });
+            }
+        }
+        super.drawDataLabels();
+    }
+}
+OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
 extend(OrganizationSeries.prototype, {
     pointClass: OrganizationPoint
 });

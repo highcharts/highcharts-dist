@@ -13,27 +13,27 @@
 import BoostableMap from './BoostableMap.js';
 import Boostables from './Boostables.js';
 import BoostChart from './BoostChart.js';
-var getBoostClipRect = BoostChart.getBoostClipRect, isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
+const { getBoostClipRect, isChartSeriesBoosting } = BoostChart;
 import D from '../../Core/Defaults.js';
-var getOptions = D.getOptions;
+const { getOptions } = D;
 import H from '../../Core/Globals.js';
-var doc = H.doc, noop = H.noop, win = H.win;
+const { doc, noop, win } = H;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, wrap = U.wrap;
+const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap } = U;
 import WGLRenderer from './WGLRenderer.js';
 /* *
  *
  *  Constants
  *
  * */
-var CHUNK_SIZE = 3000;
-var composedClasses = [];
+const CHUNK_SIZE = 3000;
+const composedMembers = [];
 /* *
  *
  *  Variables
  *
  * */
-var index, mainCanvas;
+let index, mainCanvas;
 /* *
  *
  *  Functions
@@ -43,7 +43,7 @@ var index, mainCanvas;
  * @private
  */
 function allocateIfNotSeriesBoosting(renderer, series) {
-    var boost = series.boost;
+    const boost = series.boost;
     if (renderer &&
         boost &&
         boost.target &&
@@ -71,33 +71,29 @@ function boostEnabled(chart) {
  * @private
  */
 function compose(SeriesClass, seriesTypes, wglMode) {
-    if (composedClasses.indexOf(SeriesClass) === -1) {
-        composedClasses.push(SeriesClass);
+    if (U.pushUnique(composedMembers, SeriesClass)) {
         addEvent(SeriesClass, 'destroy', onSeriesDestroy);
         addEvent(SeriesClass, 'hide', onSeriesHide);
-        var seriesProto_1 = SeriesClass.prototype;
+        const seriesProto = SeriesClass.prototype;
         if (wglMode) {
-            seriesProto_1.renderCanvas = seriesRenderCanvas;
+            seriesProto.renderCanvas = seriesRenderCanvas;
         }
-        wrap(seriesProto_1, 'getExtremes', wrapSeriesGetExtremes);
-        wrap(seriesProto_1, 'processData', wrapSeriesProcessData);
-        wrap(seriesProto_1, 'searchPoint', wrapSeriesSearchPoint);
+        wrap(seriesProto, 'getExtremes', wrapSeriesGetExtremes);
+        wrap(seriesProto, 'processData', wrapSeriesProcessData);
+        wrap(seriesProto, 'searchPoint', wrapSeriesSearchPoint);
         [
             'translate',
             'generatePoints',
             'drawTracker',
             'drawPoints',
             'render'
-        ].forEach(function (method) {
-            return wrapSeriesFunctions(seriesProto_1, seriesTypes, method);
-        });
+        ].forEach((method) => wrapSeriesFunctions(seriesProto, seriesTypes, method));
     }
-    if (composedClasses.indexOf(getOptions) === -1) {
-        composedClasses.push(getOptions);
-        var plotOptions_1 = getOptions().plotOptions;
+    if (U.pushUnique(composedMembers, getOptions)) {
+        const plotOptions = getOptions().plotOptions;
         // Set default options
-        Boostables.forEach(function (type) {
-            var typePlotOptions = plotOptions_1[type];
+        Boostables.forEach((type) => {
+            const typePlotOptions = plotOptions[type];
             if (typePlotOptions) {
                 typePlotOptions.boostThreshold = 5000;
                 typePlotOptions.boostData = [];
@@ -106,10 +102,9 @@ function compose(SeriesClass, seriesTypes, wglMode) {
         });
     }
     if (wglMode) {
-        var AreaSeries = seriesTypes.area, AreaSplineSeries = seriesTypes.areaspline, BubbleSeries = seriesTypes.bubble, ColumnSeries = seriesTypes.column, HeatmapSeries = seriesTypes.heatmap, ScatterSeries = seriesTypes.scatter, TreemapSeries = seriesTypes.treemap;
+        const { area: AreaSeries, areaspline: AreaSplineSeries, bubble: BubbleSeries, column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries, treemap: TreemapSeries } = seriesTypes;
         if (AreaSeries &&
-            composedClasses.indexOf(AreaSeries) === -1) {
-            composedClasses.push(AreaSeries);
+            U.pushUnique(composedMembers, AreaSeries)) {
             extend(AreaSeries.prototype, {
                 fill: true,
                 fillOpacity: true,
@@ -117,8 +112,7 @@ function compose(SeriesClass, seriesTypes, wglMode) {
             });
         }
         if (AreaSplineSeries &&
-            composedClasses.indexOf(AreaSplineSeries) === -1) {
-            composedClasses.push(AreaSplineSeries);
+            U.pushUnique(composedMembers, AreaSplineSeries)) {
             extend(AreaSplineSeries.prototype, {
                 fill: true,
                 fillOpacity: true,
@@ -126,15 +120,14 @@ function compose(SeriesClass, seriesTypes, wglMode) {
             });
         }
         if (BubbleSeries &&
-            composedClasses.indexOf(BubbleSeries) === -1) {
-            composedClasses.push(BubbleSeries);
-            var bubbleProto_1 = BubbleSeries.prototype;
+            U.pushUnique(composedMembers, BubbleSeries)) {
+            const bubbleProto = BubbleSeries.prototype;
             // By default, the bubble series does not use the KD-tree, so force
             // it to.
-            delete bubbleProto_1.buildKDTree;
+            delete bubbleProto.buildKDTree;
             // seriesTypes.bubble.prototype.directTouch = false;
             // Needed for markers to work correctly
-            wrap(bubbleProto_1, 'markerAttribs', function (proceed) {
+            wrap(bubbleProto, 'markerAttribs', function (proceed) {
                 if (this.boosted) {
                     return false;
                 }
@@ -142,24 +135,21 @@ function compose(SeriesClass, seriesTypes, wglMode) {
             });
         }
         if (ColumnSeries &&
-            composedClasses.indexOf(ColumnSeries) === -1) {
-            composedClasses.push(ColumnSeries);
+            U.pushUnique(composedMembers, ColumnSeries)) {
             extend(ColumnSeries.prototype, {
                 fill: true,
                 sampling: true
             });
         }
         if (ScatterSeries &&
-            composedClasses.indexOf(ScatterSeries) === -1) {
-            composedClasses.push(ScatterSeries);
+            U.pushUnique(composedMembers, ScatterSeries)) {
             ScatterSeries.prototype.fill = true;
         }
         // We need to handle heatmaps separatly, since we can't perform the
         // size/color calculations in the shader easily.
         // @todo This likely needs future optimization.
-        [HeatmapSeries, TreemapSeries].forEach(function (SC) {
-            if (SC && composedClasses.indexOf(SC) === -1) {
-                composedClasses.push(SC);
+        [HeatmapSeries, TreemapSeries].forEach((SC) => {
+            if (SC && U.pushUnique(composedMembers, SC)) {
                 wrap(SC.prototype, 'drawPoints', wrapSeriesDrawPoints);
             }
         });
@@ -182,15 +172,15 @@ function compose(SeriesClass, seriesTypes, wglMode) {
  * the canvas renderer
  */
 function createAndAttachRenderer(chart, series) {
-    var ChartClass = chart.constructor, targetGroup = chart.seriesGroup || series.group, alpha = 1;
-    var width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined';
+    const ChartClass = chart.constructor, targetGroup = chart.seriesGroup || series.group, alpha = 1;
+    let width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined';
     if (isChartSeriesBoosting(chart)) {
         target = chart;
     }
     else {
         target = series;
     }
-    var boost = target.boost =
+    const boost = target.boost =
         target.boost ||
             {};
     // Support for foreignObject is flimsy as best.
@@ -249,8 +239,8 @@ function createAndAttachRenderer(chart, series) {
                 .attr({
                 x: 0,
                 y: 0,
-                width: width,
-                height: height
+                width,
+                height
             })
                 .css({
                 pointerEvents: 'none',
@@ -278,7 +268,7 @@ function createAndAttachRenderer(chart, series) {
     boost.resize();
     boost.clear();
     if (!boost.wgl) {
-        boost.wgl = new WGLRenderer(function (wgl) {
+        boost.wgl = new WGLRenderer((wgl) => {
             if (wgl.settings.debug.timeBufferCopy) {
                 console.time('buffer copy'); // eslint-disable-line no-console
             }
@@ -309,9 +299,9 @@ function createAndAttachRenderer(chart, series) {
  * @function Highcharts.Series#destroyGraphics
  */
 function destroyGraphics(series) {
-    var points = series.points;
+    const points = series.points;
     if (points) {
-        var point = void 0, i = void 0;
+        let point, i;
         for (i = 0; i < points.length; i = i + 1) {
             point = points[i];
             if (point && point.destroyElements) {
@@ -319,17 +309,17 @@ function destroyGraphics(series) {
             }
         }
     }
-    ['graph', 'area', 'tracker'].forEach(function (prop) {
-        var seriesProp = series[prop];
+    ['graph', 'area', 'tracker'].forEach((prop) => {
+        const seriesProp = series[prop];
         if (seriesProp) {
             series[prop] = seriesProp.destroy();
         }
     });
-    var zonesSeries = series;
+    const zonesSeries = series;
     if (zonesSeries.getZonesGraphs) {
-        var props = zonesSeries.getZonesGraphs([['graph', 'highcharts-graph']]);
-        props.forEach(function (prop) {
-            var zoneGraph = zonesSeries[prop[0]];
+        const props = zonesSeries.getZonesGraphs([['graph', 'highcharts-graph']]);
+        props.forEach((prop) => {
+            const zoneGraph = zonesSeries[prop[0]];
             if (zoneGraph) {
                 zonesSeries[prop[0]] = zoneGraph.destroy();
             }
@@ -357,8 +347,8 @@ function destroyGraphics(series) {
 function eachAsync(arr, fn, finalFunc, chunkSize, i, noTimeout) {
     i = i || 0;
     chunkSize = chunkSize || CHUNK_SIZE;
-    var threshold = i + chunkSize;
-    var proceed = true;
+    const threshold = i + chunkSize;
+    let proceed = true;
     while (proceed && i < threshold && i < arr.length) {
         proceed = fn(arr[i], i);
         ++i;
@@ -391,12 +381,12 @@ function eachAsync(arr, fn, finalFunc, chunkSize, i, noTimeout) {
 function enterBoost(series) {
     series.boost = series.boost || {
         // faster than a series bind:
-        getPoint: (function (bp) { return getPoint(series, bp); })
+        getPoint: ((bp) => getPoint(series, bp))
     };
-    var alteredByBoost = series.boost.altered = [];
+    const alteredByBoost = series.boost.altered = [];
     // Save the original values, including whether it was an own
     // property or inherited from the prototype.
-    ['allowDG', 'directTouch', 'stickyTracking'].forEach(function (prop) {
+    ['allowDG', 'directTouch', 'stickyTracking'].forEach((prop) => {
         alteredByBoost.push({
             prop: prop,
             val: series[prop],
@@ -419,11 +409,11 @@ function enterBoost(series) {
  * @function Highcharts.Series#exitBoost
  */
 function exitBoost(series) {
-    var boost = series.boost;
+    const boost = series.boost;
     // Reset instance properties and/or delete instance properties and go back
     // to prototype
     if (boost) {
-        (boost.altered || []).forEach(function (setting) {
+        (boost.altered || []).forEach((setting) => {
             if (setting.own) {
                 series[setting.prop] = setting.val;
             }
@@ -443,7 +433,7 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    var options = series.options, data = options.data, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
+    const options = series.options, data = options.data, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
     return data.length > (options.boostThreshold || Number.MAX_VALUE) &&
         // Defined yAxis extremes
         isNumber(yAxis.min) &&
@@ -462,7 +452,7 @@ function hasExtremes(series, checkX) {
  * @private
  */
 function onSeriesDestroy() {
-    var series = this, chart = series.chart;
+    const series = this, chart = series.chart;
     if (chart.boost &&
         chart.boost.markerGroup === series.markerGroup) {
         series.markerGroup = null;
@@ -480,7 +470,7 @@ function onSeriesDestroy() {
  * @private
  */
 function onSeriesHide() {
-    var boost = this.boost;
+    const boost = this.boost;
     if (boost && boost.canvas && boost.target) {
         if (boost.wgl) {
             boost.wgl.clear();
@@ -496,7 +486,7 @@ function onSeriesHide() {
  * @private
  */
 function renderIfNotSeriesBoosting(series) {
-    var boost = series.boost;
+    const boost = series.boost;
     if (boost &&
         boost.canvas &&
         boost.target &&
@@ -516,11 +506,11 @@ function renderIfNotSeriesBoosting(series) {
  *         A Point object as per https://api.highcharts.com/highcharts#Point
  */
 function getPoint(series, boostPoint) {
-    var seriesOptions = series.options, xAxis = series.xAxis, PointClass = series.pointClass;
+    const seriesOptions = series.options, xAxis = series.xAxis, PointClass = series.pointClass;
     if (boostPoint instanceof PointClass) {
         return boostPoint;
     }
-    var xData = (series.xData ||
+    const xData = (series.xData ||
         seriesOptions.xData ||
         series.processedXData ||
         false), point = (new PointClass()).init(series, series.options.data[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
@@ -542,13 +532,12 @@ function getPoint(series, boostPoint) {
  * @function Highcharts.Series#renderCanvas
  */
 function seriesRenderCanvas() {
-    var _this = this;
-    var options = this.options || {}, chart = this.chart, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.processedXData, yData = options.yData || this.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking !== false, threshold = options.threshold, isRange = this.pointArrayMap &&
+    const options = this.options || {}, chart = this.chart, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.processedXData, yData = options.yData || this.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking !== false, threshold = options.threshold, isRange = this.pointArrayMap &&
         this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = (this.xData ||
         this.options.xData ||
         this.processedXData ||
         false);
-    var renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
+    let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // Get or create the renderer
     renderer = createAndAttachRenderer(chart, this);
     chart.boosted = true;
@@ -585,7 +574,7 @@ function seriesRenderCanvas() {
             this.renderTarget = this.boost.target = this.boost.target.destroy();
         }
     }
-    var points = this.points = [], addKDPoint = function (clientX, plotY, i, percentage) {
+    const points = this.points = [], addKDPoint = (clientX, plotY, i, percentage) => {
         // We need to do ceil on the clientX to make things
         // snap to pixel values. The renderer will frequently
         // draw stuff on "sub-pixels".
@@ -602,6 +591,7 @@ function seriesRenderCanvas() {
                 plotY = yAxis.len - plotY;
             }
             points.push({
+                destroy: noop,
                 x: xDataFull ? xDataFull[cropStart + i] : false,
                 clientX: clientX,
                 plotX: clientX,
@@ -624,8 +614,8 @@ function seriesRenderCanvas() {
      * @private
      */
     function processPoint(d, i) {
-        var chartDestroyed = typeof chart.index === 'undefined';
-        var x, y, clientX, plotY, percentage, low = false, isYInside = true;
+        const chartDestroyed = typeof chart.index === 'undefined';
+        let x, y, clientX, plotY, percentage, low = false, isYInside = true;
         if (typeof d === 'undefined') {
             return true;
         }
@@ -656,7 +646,7 @@ function seriesRenderCanvas() {
             if (!requireSorting) {
                 isYInside = (y || 0) >= yMin && y <= yMax;
             }
-            if (y !== null && x >= xMin && x <= xMax && isYInside) {
+            if (x >= xMin && x <= xMax && isYInside) {
                 clientX = xAxis.toPixels(x, true);
                 if (sampling) {
                     if (typeof minI === 'undefined' ||
@@ -703,11 +693,11 @@ function seriesRenderCanvas() {
     /**
      * @private
      */
-    var boostOptions = renderer.settings, doneProcessing = function () {
-        fireEvent(_this, 'renderedCanvas');
+    const boostOptions = renderer.settings, doneProcessing = () => {
+        fireEvent(this, 'renderedCanvas');
         // Go back to prototype, ready to build
-        delete _this.buildKDTree;
-        _this.buildKDTree();
+        delete this.buildKDTree;
+        this.buildKDTree();
         if (boostOptions.debug.timeKDTree) {
             console.timeEnd('kd tree building'); // eslint-disable-line no-console
         }
@@ -726,7 +716,7 @@ function seriesRenderCanvas() {
  * @private
  */
 function wrapSeriesDrawPoints(proceed) {
-    var enabled = true;
+    let enabled = true;
     if (this.chart.options && this.chart.options.boost) {
         enabled = typeof this.chart.options.boost.enabled === 'undefined' ?
             true :
@@ -737,7 +727,7 @@ function wrapSeriesDrawPoints(proceed) {
     }
     this.chart.boosted = true;
     // Make sure we have a valid OGL context
-    var renderer = createAndAttachRenderer(this.chart, this);
+    const renderer = createAndAttachRenderer(this.chart, this);
     if (renderer) {
         allocateIfNotSeriesBoosting(renderer, this);
         renderer.pushSeries(this);
@@ -756,7 +746,7 @@ function wrapSeriesFunctions(seriesProto, seriesTypes, method) {
      * @private
      */
     function branch(proceed) {
-        var letItPass = this.options.stacking &&
+        const letItPass = this.options.stacking &&
             (method === 'translate' || method === 'generatePoints');
         if (!this.boosted ||
             letItPass ||
@@ -807,16 +797,15 @@ function wrapSeriesGetExtremes(proceed) {
  * @private
  */
 function wrapSeriesProcessData(proceed) {
-    var _this = this;
-    var dataToMeasure = this.options.data;
+    let dataToMeasure = this.options.data;
     /**
      * Used twice in this function, first on this.options.data, the second
      * time it runs the check again after processedXData is built.
      * If the data is going to be grouped, the series shouldn't be boosted.
      * @private
      */
-    var getSeriesBoosting = function (data) {
-        var series = _this;
+    const getSeriesBoosting = (data) => {
+        const series = this;
         // Check if will be grouped.
         if (series.forceCrop) {
             return false;
@@ -826,7 +815,7 @@ function wrapSeriesProcessData(proceed) {
                 (series.options.boostThreshold || Number.MAX_VALUE)));
     };
     if (boostEnabled(this.chart) && BoostableMap[this.type]) {
-        var series = this;
+        const series = this;
         // If there are no extremes given in the options, we also need to
         // process the data to read the data extremes. If this is a heatmap,
         // do default behaviour.
@@ -847,7 +836,7 @@ function wrapSeriesProcessData(proceed) {
         // Enter or exit boost mode
         if (series.boosted) {
             // Force turbo-mode:
-            var firstPoint = void 0;
+            let firstPoint;
             if (series.options.data &&
                 series.options.data.length) {
                 firstPoint = series.getFirstValidPoint(series.options.data);
@@ -871,7 +860,7 @@ function wrapSeriesProcessData(proceed) {
  * @private
  */
 function wrapSeriesSearchPoint(proceed) {
-    var result = proceed.apply(this, [].slice.call(arguments, 1));
+    const result = proceed.apply(this, [].slice.call(arguments, 1));
     if (this.boost && result) {
         return this.boost.getPoint(result);
     }
@@ -882,9 +871,9 @@ function wrapSeriesSearchPoint(proceed) {
  *  Default Export
  *
  * */
-var BoostSeries = {
-    compose: compose,
-    destroyGraphics: destroyGraphics,
-    getPoint: getPoint
+const BoostSeries = {
+    compose,
+    destroyGraphics,
+    getPoint
 };
 export default BoostSeries;

@@ -8,26 +8,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import DerivedComposition from '../DerivedComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var LineSeries = SeriesRegistry.seriesTypes.line;
+const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var correctFloat = U.correctFloat, merge = U.merge, extend = U.extend;
+const { correctFloat, merge, extend } = U;
 /* *
  *
  *  Class
@@ -42,24 +27,22 @@ var correctFloat = U.correctFloat, merge = U.merge, extend = U.extend;
  *
  * @augments Highcharts.Series
  */
-var ParetoSeries = /** @class */ (function (_super) {
-    __extends(ParetoSeries, _super);
-    function ParetoSeries() {
+class ParetoSeries extends LineSeries {
+    constructor() {
         /* *
          *
          *  Static properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        return _this;
+        this.data = void 0;
+        this.points = void 0;
+        this.options = void 0;
     }
     /* *
      *
@@ -89,8 +72,8 @@ var ParetoSeries = /** @class */ (function (_super) {
      *
      * @requires modules/pareto
      */
-    ParetoSeries.prototype.sumPointsPercents = function (yValues, xValues, sum, isSum) {
-        var sumY = 0, sumPercent = 0, percentPoints = [], percentPoint;
+    sumPointsPercents(yValues, xValues, sum, isSum) {
+        let sumY = 0, sumPercent = 0, percentPoints = [], percentPoint;
         yValues.forEach(function (point, i) {
             if (point !== null) {
                 if (isSum) {
@@ -107,7 +90,7 @@ var ParetoSeries = /** @class */ (function (_super) {
             }
         });
         return (isSum ? sumY : percentPoints);
-    };
+    }
     /**
      * Calculate sum and return percent points.
      *
@@ -115,40 +98,39 @@ var ParetoSeries = /** @class */ (function (_super) {
      * @function Highcharts.Series#setDerivedData
      * @requires modules/pareto
      */
-    ParetoSeries.prototype.setDerivedData = function () {
-        var xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
+    setDerivedData() {
+        const xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
         this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
-    };
+    }
+}
+/**
+ * A pareto diagram is a type of chart that contains both bars and a line
+ * graph, where individual values are represented in descending order by
+ * bars, and the cumulative total is represented by the line.
+ *
+ * @sample {highcharts} highcharts/demo/pareto/
+ *         Pareto diagram
+ *
+ * @extends      plotOptions.line
+ * @since        6.0.0
+ * @product      highcharts
+ * @excluding    allAreas, boostThreshold, borderColor, borderRadius,
+ *               borderWidth, crisp, colorAxis, depth, data, dragDrop,
+ *               edgeColor, edgeWidth, findNearestPointBy, gapSize, gapUnit,
+ *               grouping, groupPadding, groupZPadding, maxPointWidth, keys,
+ *               negativeColor, pointInterval, pointIntervalUnit,
+ *               pointPadding, pointPlacement, pointRange, pointStart,
+ *               pointWidth, shadow, step, softThreshold, stacking,
+ *               threshold, zoneAxis, zones, boostBlending
+ * @requires     modules/pareto
+ * @optionparent plotOptions.pareto
+ */
+ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, {
     /**
-     * A pareto diagram is a type of chart that contains both bars and a line
-     * graph, where individual values are represented in descending order by
-     * bars, and the cumulative total is represented by the line.
-     *
-     * @sample {highcharts} highcharts/demo/pareto/
-     *         Pareto diagram
-     *
-     * @extends      plotOptions.line
-     * @since        6.0.0
-     * @product      highcharts
-     * @excluding    allAreas, boostThreshold, borderColor, borderRadius,
-     *               borderWidth, crisp, colorAxis, depth, data, dragDrop,
-     *               edgeColor, edgeWidth, findNearestPointBy, gapSize, gapUnit,
-     *               grouping, groupPadding, groupZPadding, maxPointWidth, keys,
-     *               negativeColor, pointInterval, pointIntervalUnit,
-     *               pointPadding, pointPlacement, pointRange, pointStart,
-     *               pointWidth, shadow, step, softThreshold, stacking,
-     *               threshold, zoneAxis, zones, boostBlending
-     * @requires     modules/pareto
-     * @optionparent plotOptions.pareto
+     * Higher zIndex than column series to draw line above shapes.
      */
-    ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, {
-        /**
-         * Higher zIndex than column series to draw line above shapes.
-         */
-        zIndex: 3
-    });
-    return ParetoSeries;
-}(LineSeries));
+    zIndex: 3
+});
 extend(ParetoSeries.prototype, {
     hasDerivedData: DerivedComposition.hasDerivedData
 });

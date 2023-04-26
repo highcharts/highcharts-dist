@@ -6,32 +6,20 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var extend = U.extend, isArray = U.isArray, merge = U.merge;
+const { extend, isArray, merge } = U;
 /* *
  *
  *  Functions
  *
  * */
+/**
+ * @private
+ */
 function populateAverage(xVal, yVal, i, period, index) {
-    var mmY = yVal[i - 1][index] - yVal[i - period - 1][index], mmX = xVal[i - 1];
+    const mmY = yVal[i - 1][index] - yVal[i - period - 1][index], mmX = xVal[i - 1];
     return [mmX, mmY];
 }
 /* *
@@ -48,40 +36,36 @@ function populateAverage(xVal, yVal, i, period, index) {
  *
  * @augments Highcharts.Series
  */
-var MomentumIndicator = /** @class */ (function (_super) {
-    __extends(MomentumIndicator, _super);
-    function MomentumIndicator() {
+class MomentumIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    MomentumIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, yValue = yVal[0], MM = [], xData = [], yData = [], i, MMPoint;
+    getValues(series, params) {
+        const period = params.period, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, MM = [], xData = [], yData = [];
+        let i, MMPoint;
         if (xVal.length <= period) {
             return;
         }
         // Switch index for OHLC / Candlestick / Arearange
-        if (isArray(yVal[0])) {
-            yValue = yVal[0][index];
-        }
-        else {
+        if (!isArray(yVal[0])) {
             return;
         }
         // Calculate value one-by-one for each period in visible data
@@ -100,27 +84,26 @@ var MomentumIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
-    /**
-     * Momentum. This series requires `linkedTo` option to be set.
-     *
-     * @sample stock/indicators/momentum
-     *         Momentum indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/momentum
-     * @optionparent plotOptions.momentum
-     */
-    MomentumIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        params: {
-            index: 3
-        }
-    });
-    return MomentumIndicator;
-}(SMAIndicator));
+    }
+}
+/**
+ * Momentum. This series requires `linkedTo` option to be set.
+ *
+ * @sample stock/indicators/momentum
+ *         Momentum indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/momentum
+ * @optionparent plotOptions.momentum
+ */
+MomentumIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        index: 3
+    }
+});
 extend(MomentumIndicator.prototype, {
     nameBase: 'Momentum'
 });

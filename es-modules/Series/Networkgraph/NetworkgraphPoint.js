@@ -10,36 +10,17 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import NodesComposition from '../NodesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.series, seriesProto = _a.prototype, Point = _a.prototype.pointClass;
+const { series: { prototype: seriesProto, prototype: { pointClass: Point } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, css = U.css, defined = U.defined, extend = U.extend, pick = U.pick;
+const { addEvent, css, defined, extend, pick } = U;
 /* *
  *
  *  Class
  *
  * */
-var NetworkgraphPoint = /** @class */ (function (_super) {
-    __extends(NetworkgraphPoint, _super);
-    function NetworkgraphPoint() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class NetworkgraphPoint extends Point {
     /* *
      *
      *  Functions
@@ -50,7 +31,7 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
      * node. Then remove point from the layout.
      * @private
      */
-    NetworkgraphPoint.prototype.destroy = function () {
+    destroy() {
         if (this.isNode) {
             this.linksFrom.concat(this.linksTo).forEach(function (link) {
                 // Removing multiple nodes at the same time
@@ -62,39 +43,39 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
         }
         this.series.layout.removeElementFromCollection(this, this.series.layout[this.isNode ? 'nodes' : 'links']);
         return Point.prototype.destroy.apply(this, arguments);
-    };
+    }
     /**
      * Return degree of a node. If node has no connections, it still has
      * deg=1.
      * @private
      */
-    NetworkgraphPoint.prototype.getDegree = function () {
-        var deg = this.isNode ?
+    getDegree() {
+        const deg = this.isNode ?
             this.linksFrom.length + this.linksTo.length :
             0;
         return deg === 0 ? 1 : deg;
-    };
+    }
     /**
      * Get presentational attributes of link connecting two nodes.
      * @private
      */
-    NetworkgraphPoint.prototype.getLinkAttributes = function () {
-        var linkOptions = this.series.options.link, pointOptions = this.options;
+    getLinkAttributes() {
+        const linkOptions = this.series.options.link, pointOptions = this.options;
         return {
             'stroke-width': pick(pointOptions.width, linkOptions.width),
             stroke: (pointOptions.color || linkOptions.color),
             dashstyle: (pointOptions.dashStyle || linkOptions.dashStyle),
             opacity: pick(pointOptions.opacity, linkOptions.opacity, 1)
         };
-    };
+    }
     /**
      * Get link path connecting two nodes.
      * @private
      * @return {Array<Highcharts.SVGPathArray>}
      *         Path: `['M', x, y, 'L', x, y]`
      */
-    NetworkgraphPoint.prototype.getLinkPath = function () {
-        var left = this.fromNode, right = this.toNode;
+    getLinkPath() {
+        let left = this.fromNode, right = this.toNode;
         // Start always from left to the right node, to prevent rendering
         // labels upside down
         if (left.plotX > right.plotX) {
@@ -117,7 +98,7 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
             to.plotX,
             to.plotY
         ];*/
-    };
+    }
     /**
      * Get mass fraction applied on two nodes connected to each other. By
      * default, when mass is equal to `1`, mass fraction for both nodes
@@ -126,20 +107,20 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
      * @return {Highcharts.Dictionary<number>}
      *         For example `{ fromNode: 0.5, toNode: 0.5 }`
      */
-    NetworkgraphPoint.prototype.getMass = function () {
-        var m1 = this.fromNode.mass, m2 = this.toNode.mass, sum = m1 + m2;
+    getMass() {
+        const m1 = this.fromNode.mass, m2 = this.toNode.mass, sum = m1 + m2;
         return {
             fromNode: 1 - m1 / sum,
             toNode: 1 - m2 / sum
         };
-    };
+    }
     /**
      * Basic `point.init()` and additional styles applied when
      * `series.draggable` is enabled.
      * @private
      */
-    NetworkgraphPoint.prototype.init = function (series, options, x) {
-        _super.prototype.init.call(this, series, options, x);
+    init(series, options, x) {
+        super.init(series, options, x);
         if (this.series.options.draggable &&
             !this.series.chart.styledMode) {
             addEvent(this, 'mouseOver', function () {
@@ -150,19 +131,19 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
             });
         }
         return this;
-    };
+    }
     /**
      * @private
      */
-    NetworkgraphPoint.prototype.isValid = function () {
+    isValid() {
         return !this.isNode || defined(this.id);
-    };
+    }
     /**
      * Redraw link's path.
      * @private
      */
-    NetworkgraphPoint.prototype.redrawLink = function () {
-        var path = this.getLinkPath(), attribs;
+    redrawLink() {
+        let path = this.getLinkPath(), attribs;
         if (this.graphic) {
             this.shapeArgs = {
                 d: path
@@ -180,14 +161,14 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
             }
             this.graphic.animate(this.shapeArgs);
             // Required for dataLabels
-            var start = path[0];
-            var end = path[1];
+            const start = path[0];
+            const end = path[1];
             if (start[0] === 'M' && end[0] === 'L') {
                 this.plotX = (start[1] + end[1]) / 2;
                 this.plotY = (start[2] + end[2]) / 2;
             }
         }
-    };
+    }
     /**
      * Common method for removing points and nodes in networkgraph. To
      * remove `link`, use `series.data[index].remove()`. To remove `node`
@@ -202,8 +183,8 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
      *        Whether to apply animation, and optionally animation
      *        configuration.
      */
-    NetworkgraphPoint.prototype.remove = function (redraw, animation) {
-        var point = this, series = point.series, nodesOptions = series.options.nodes || [], index, i = nodesOptions.length;
+    remove(redraw, animation) {
+        let point = this, series = point.series, nodesOptions = series.options.nodes || [], index, i = nodesOptions.length;
         // For nodes, remove all connected links:
         if (point.isNode) {
             // Temporary disable series.points array, because
@@ -252,13 +233,13 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
         else {
             series.removePoint(series.data.indexOf(point), redraw, animation);
         }
-    };
+    }
     /**
      * Render link and add it to the DOM.
      * @private
      */
-    NetworkgraphPoint.prototype.renderLink = function () {
-        var attribs;
+    renderLink() {
+        let attribs;
         if (!this.graphic) {
             this.graphic = this.series.chart.renderer
                 .path(this.getLinkPath())
@@ -276,9 +257,8 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
                 });
             }
         }
-    };
-    return NetworkgraphPoint;
-}(Point));
+    }
+}
 extend(NetworkgraphPoint.prototype, {
     setState: NodesComposition.setNodeState
 });

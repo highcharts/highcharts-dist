@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Dot plot series type for Highcharts
  *
@@ -56,25 +56,7 @@
          * - Custom icons like persons, carts etc. Either as images, font icons or
          *   Highcharts symbols.
          */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        const { extend, merge, pick } = U;
         /* *
          *
          *  Class
@@ -87,54 +69,34 @@
          *
          * @augments Highcharts.Series
          */
-        var DotPlotSeries = /** @class */ (function (_super) {
-                __extends(DotPlotSeries, _super);
-            function DotPlotSeries() {
+        class DotPlotSeries extends ColumnSeries {
+            constructor() {
                 /* *
                  *
                  * Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  * Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
             }
             /* *
              *
              * Functions
              *
              * */
-            DotPlotSeries.prototype.drawPoints = function () {
-                var series = this,
-                    renderer = series.chart.renderer,
-                    seriesMarkerOptions = this.options.marker,
-                    itemPaddingTranslated = this.yAxis.transA *
-                        series.options.itemPadding,
-                    borderWidth = this.borderWidth,
-                    crisp = borderWidth % 2 ? 0.5 : 1;
+            drawPoints() {
+                const series = this, renderer = series.chart.renderer, seriesMarkerOptions = this.options.marker, itemPaddingTranslated = this.yAxis.transA *
+                    series.options.itemPadding, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1;
                 this.points.forEach(function (point) {
-                    var yPos,
-                        attr,
-                        graphics,
-                        pointAttr,
-                        pointMarkerOptions = point.marker || {},
-                        symbol = (pointMarkerOptions.symbol ||
-                            seriesMarkerOptions.symbol),
-                        radius = pick(pointMarkerOptions.radius,
-                        seriesMarkerOptions.radius),
-                        size,
-                        yTop,
-                        isSquare = symbol !== 'rect',
-                        x,
-                        y;
+                    let yPos, attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+                        seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size, yTop, isSquare = symbol !== 'rect', x, y;
                     point.graphics = graphics = point.graphics || [];
                     pointAttr = point.pointAttr ?
                         (point.pointAttr[point.selected ? 'selected' : ''] ||
@@ -151,7 +113,7 @@
                         }
                         yTop = pick(point.stackY, point.y);
                         size = Math.min(point.pointWidth, series.yAxis.transA - itemPaddingTranslated);
-                        var i = Math.floor(yTop);
+                        let i = Math.floor(yTop);
                         for (yPos = yTop; yPos > yTop - point.y; yPos--, i--) {
                             x = point.barX + (isSquare ?
                                 point.pointWidth / 2 - size / 2 :
@@ -169,7 +131,7 @@
                                 height: Math.round(size),
                                 r: radius
                             };
-                            var graphic = graphics[i];
+                            let graphic = graphics[i];
                             if (graphic) {
                                 graphic.animate(attr);
                             }
@@ -182,7 +144,7 @@
                             graphics[i] = graphic;
                         }
                     }
-                    graphics.forEach(function (graphic, i) {
+                    graphics.forEach((graphic, i) => {
                         if (!graphic) {
                             return;
                         }
@@ -195,19 +157,18 @@
                         }
                     });
                 });
-            };
-            DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-                itemPadding: 0.2,
-                marker: {
-                    symbol: 'circle',
-                    states: {
-                        hover: {},
-                        select: {}
-                    }
+            }
+        }
+        DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+            itemPadding: 0.2,
+            marker: {
+                symbol: 'circle',
+                states: {
+                    hover: {},
+                    select: {}
                 }
-            });
-            return DotPlotSeries;
-        }(ColumnSeries));
+            }
+        });
         extend(DotPlotSeries.prototype, {
             markerAttribs: void 0
         });

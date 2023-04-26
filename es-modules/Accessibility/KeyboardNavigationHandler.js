@@ -11,7 +11,7 @@
  * */
 'use strict';
 import U from '../Core/Utilities.js';
-var find = U.find;
+const { find } = U;
 /* *
  *
  *  Class
@@ -37,13 +37,13 @@ var find = U.find;
  * @param {Highcharts.KeyboardNavigationHandlerOptionsObject} options
  * Options for the keyboard navigation handler.
  */
-var KeyboardNavigationHandler = /** @class */ (function () {
+class KeyboardNavigationHandler {
     /* *
      *
      *  Constructor
      *
      * */
-    function KeyboardNavigationHandler(chart, options) {
+    constructor(chart, options) {
         this.chart = chart;
         this.keyCodeMap = options.keyCodeMap || [];
         this.validate = options.validate;
@@ -72,10 +72,10 @@ var KeyboardNavigationHandler = /** @class */ (function () {
      * @return {number} Returns a response code indicating whether the run was
      *      a success/fail/unhandled, or if we should move to next/prev module.
      */
-    KeyboardNavigationHandler.prototype.run = function (e) {
-        var keyCode = e.which || e.keyCode;
-        var response = this.response.noHandler;
-        var handlerCodeSet = find(this.keyCodeMap, function (codeSet) {
+    run(e) {
+        const keyCode = e.which || e.keyCode;
+        let response = this.response.noHandler;
+        const handlerCodeSet = find(this.keyCodeMap, function (codeSet) {
             return codeSet[0].indexOf(keyCode) > -1;
         });
         if (handlerCodeSet) {
@@ -86,9 +86,8 @@ var KeyboardNavigationHandler = /** @class */ (function () {
             response = this.response[e.shiftKey ? 'prev' : 'next'];
         }
         return response;
-    };
-    return KeyboardNavigationHandler;
-}());
+    }
+}
 /* *
  *
  *  Default Export

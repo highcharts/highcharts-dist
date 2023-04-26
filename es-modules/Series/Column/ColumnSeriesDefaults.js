@@ -27,16 +27,22 @@
  * @product      highcharts highstock
  * @optionparent plotOptions.column
  */
-var ColumnSeriesDefaults = {
+const ColumnSeriesDefaults = {
     /**
-     * The corner radius of the border surrounding each column or bar.
+     * The corner radius of the border surrounding each column or bar. A number
+     * signifies pixels. A percentage string, like for example `50%`, signifies
+     * a relative size. For columns this is relative to the column width, for
+     * pies it is relative to the radius and the inner radius.
      *
-     * @sample {highcharts} highcharts/plotoptions/column-borderradius/
-     *         Rounded columns
+     * @sample  {highcharts} highcharts/plotoptions/column-borderradius/
+     *          Rounded columns
+     * @sample  highcharts/plotoptions/series-border-radius
+     *          Column and pie with rounded border
      *
+     * @type    {number|string|Highcharts.BorderRadiusOptionsObject}
      * @product highcharts highstock gantt
      */
-    borderRadius: 0,
+    borderRadius: 3,
     /**
      * When using automatic point colors pulled from the global
      * [colors](colors) or series-specific

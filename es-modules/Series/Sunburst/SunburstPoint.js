@@ -12,45 +12,28 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Point = SeriesRegistry.series.prototype.pointClass, TreemapPoint = SeriesRegistry.seriesTypes.treemap.prototype.pointClass;
+const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var correctFloat = U.correctFloat, extend = U.extend;
+const { correctFloat, extend } = U;
 /* *
  *
  *  Class
  *
  * */
-var SunburstPoint = /** @class */ (function (_super) {
-    __extends(SunburstPoint, _super);
-    function SunburstPoint() {
+class SunburstPoint extends TreemapPoint {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.node = void 0;
-        _this.options = void 0;
-        _this.series = void 0;
-        _this.shapeExisting = void 0;
-        _this.shapeType = void 0;
-        return _this;
+        super(...arguments);
+        this.node = void 0;
+        this.options = void 0;
+        this.series = void 0;
+        this.shapeExisting = void 0;
+        this.shapeType = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -59,8 +42,8 @@ var SunburstPoint = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    SunburstPoint.prototype.getDataLabelPath = function (label) {
-        var renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, start = shapeArgs.start, end = shapeArgs.end, angle = start + (end - start) / 2, // arc middle value
+    getDataLabelPath(label) {
+        let renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, start = shapeArgs.start, end = shapeArgs.end, angle = start + (end - start) / 2, // arc middle value
         upperHalf = angle < 0 &&
             angle > -Math.PI ||
             angle > Math.PI, r = (shapeArgs.r + (label.options.distance || 0)), moreThanHalf;
@@ -96,12 +79,11 @@ var SunburstPoint = /** @class */ (function (_super) {
         })
             .add(renderer.defs);
         return this.dataLabelPath;
-    };
-    SunburstPoint.prototype.isValid = function () {
+    }
+    isValid() {
         return true;
-    };
-    return SunburstPoint;
-}(TreemapPoint));
+    }
+}
 extend(SunburstPoint.prototype, {
     getClassName: Point.prototype.getClassName,
     haloPath: Point.prototype.haloPath,

@@ -25,7 +25,7 @@
  * @product      highstock
  * @optionparent plotOptions.ohlc
  */
-var OHLCSeriesDefaults = {
+const OHLCSeriesDefaults = {
     /**
      * @type      {Highcharts.DataGroupingApproximationValue|Function}
      * @default   ohlc

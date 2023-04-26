@@ -9,9 +9,9 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var defaultOptions = D.defaultOptions;
+const { defaultOptions } = D;
 import U from '../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  API Options
@@ -29,7 +29,7 @@ var merge = U.merge;
  * @product      highstock
  * @optionparent plotOptions.candlestick
  */
-var CandlestickSeriesDefaults = {
+const CandlestickSeriesDefaults = {
     /**
      * The specific line color for up candle sticks. The default is to
      * inherit the general `lineColor` setting.

@@ -26,13 +26,13 @@
  * @param {Highcharts.Dictionary<number>} box
  *        Available space for the node
  */
-var QuadTreeNode = /** @class */ (function () {
+class QuadTreeNode {
     /* *
      *
      *  Constructor
      *
      * */
-    function QuadTreeNode(box) {
+    constructor(box) {
         /* *
          *
          *  Properties
@@ -110,8 +110,8 @@ var QuadTreeNode = /** @class */ (function () {
      * -------------               -------------
      * ```
      */
-    QuadTreeNode.prototype.divideBox = function () {
-        var halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
+    divideBox() {
+        const halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
         // Top left
         this.nodes[0] = new QuadTreeNode({
             left: this.box.left,
@@ -140,15 +140,15 @@ var QuadTreeNode = /** @class */ (function () {
             width: halfWidth,
             height: halfHeight
         });
-    };
+    }
     /**
      * Determine which of the quadrants should be used when placing node in
      * the QuadTree. Returned index is always in range `< 0 , 3 >`.
      * @private
      */
-    QuadTreeNode.prototype.getBoxPosition = function (point) {
-        var left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
-        var index;
+    getBoxPosition(point) {
+        const left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
+        let index;
         if (left) {
             if (top) {
                 // Top left
@@ -170,7 +170,7 @@ var QuadTreeNode = /** @class */ (function () {
             }
         }
         return index;
-    };
+    }
     /**
      * Insert recursively point(node) into the QuadTree. If the given
      * quadrant is already occupied, divide it into smaller quadrants.
@@ -180,8 +180,8 @@ var QuadTreeNode = /** @class */ (function () {
      * @param {number} depth
      *        Max depth of the QuadTree
      */
-    QuadTreeNode.prototype.insert = function (point, depth) {
-        var newQuadTreeNode;
+    insert(point, depth) {
+        let newQuadTreeNode;
         if (this.isInternal) {
             // Internal node:
             this.nodes[this.getBoxPosition(point)].insert(point, depth - 1);
@@ -230,17 +230,16 @@ var QuadTreeNode = /** @class */ (function () {
                 }
             }
         }
-    };
+    }
     /**
      * Each quad node requires it's mass and center position. That mass and
      * position is used to imitate real node in the layout by approximation.
      */
-    QuadTreeNode.prototype.updateMassAndCenter = function () {
-        var mass = 0, plotX = 0, plotY = 0;
+    updateMassAndCenter() {
+        let mass = 0, plotX = 0, plotY = 0;
         if (this.isInternal) {
             // Calcualte weightened mass of the quad node:
-            for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
-                var pointMass = _a[_i];
+            for (const pointMass of this.nodes) {
                 if (!pointMass.isEmpty) {
                     mass += pointMass.mass;
                     plotX += pointMass.plotX * pointMass.mass;
@@ -260,9 +259,8 @@ var QuadTreeNode = /** @class */ (function () {
         this.mass = mass;
         this.plotX = plotX;
         this.plotY = plotY;
-    };
-    return QuadTreeNode;
-}());
+    }
+}
 /* *
  *
  *  Default Export

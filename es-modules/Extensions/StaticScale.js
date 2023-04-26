@@ -11,7 +11,7 @@
 import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, isNumber = U.isNumber, pick = U.pick;
+const { addEvent, defined, isNumber, pick } = U;
 /* eslint-disable no-invalid-this */
 /**
  * For vertical axes only. Setting the static scale ensures that each tick unit
@@ -30,7 +30,7 @@ var addEvent = U.addEvent, defined = U.defined, isNumber = U.isNumber, pick = U.
  * @apioption yAxis.staticScale
  */
 addEvent(Axis, 'afterSetOptions', function () {
-    var chartOptions = this.chart.options.chart;
+    const chartOptions = this.chart.options.chart;
     if (!this.horiz &&
         isNumber(this.options.staticScale) &&
         (!chartOptions.height ||
@@ -42,7 +42,7 @@ addEvent(Axis, 'afterSetOptions', function () {
 Chart.prototype.adjustHeight = function () {
     if (this.redrawTrigger !== 'adjustHeight') {
         (this.axes || []).forEach(function (axis) {
-            var chart = axis.chart, animate = !!chart.initiatedScale &&
+            let chart = axis.chart, animate = !!chart.initiatedScale &&
                 chart.options.animation, staticScale = axis.options.staticScale, height, diff;
             if (axis.staticScale && defined(axis.min)) {
                 height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
@@ -57,7 +57,7 @@ Chart.prototype.adjustHeight = function () {
                 // Make sure clip rects have the right height before initial
                 // animation.
                 axis.series.forEach(function (series) {
-                    var clipRect = series.sharedClipKey &&
+                    const clipRect = series.sharedClipKey &&
                         chart.sharedClips[series.sharedClipKey];
                     if (clipRect) {
                         clipRect.attr(chart.inverted ? {

@@ -16,7 +16,7 @@
  * @product      highmaps
  * @optionparent mapView.insetOptions
  */
-var defaultOptions = {
+const defaultOptions = {
     /**
      * The border color of the insets.
      *

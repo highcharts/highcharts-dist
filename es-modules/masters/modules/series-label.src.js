@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/series-label
  * @requires highcharts
  *
@@ -10,5 +10,5 @@
 'use strict';
 import Highcharts from '../../Core/Globals.js';
 import SeriesLabel from '../../Extensions/SeriesLabel/SeriesLabel.js';
-var G = Highcharts;
+const G = Highcharts;
 SeriesLabel.compose(G.Chart, G.SVGRenderer);

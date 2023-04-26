@@ -9,7 +9,7 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-var defined = U.defined, isNumber = U.isNumber, pick = U.pick;
+const { defined, isNumber, pick } = U;
 /* *
  *
  *  Constants
@@ -20,7 +20,7 @@ var defined = U.defined, isNumber = U.isNumber, pick = U.pick;
  * numbers, because they won't change their type to string.
  * @private
  */
-var annotationsFieldsTypes = {
+const annotationsFieldsTypes = {
     backgroundColor: 'string',
     borderColor: 'string',
     borderRadius: 'string',
@@ -50,8 +50,8 @@ var annotationsFieldsTypes = {
  *         is currently pointing.
  */
 function getAssignedAxis(coords) {
-    return coords.filter(function (coord) {
-        var extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
+    return coords.filter((coord) => {
+        const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
         minPointOffset = pick(coord.axis.minPointOffset, 0);
@@ -74,8 +74,8 @@ function getAssignedAxis(coords) {
  * Field type (one of: text, number, checkbox)
  */
 function getFieldType(key, value) {
-    var predefinedType = annotationsFieldsTypes[key];
-    var fieldType = typeof value;
+    const predefinedType = annotationsFieldsTypes[key];
+    let fieldType = typeof value;
     if (defined(predefinedType)) {
         fieldType = predefinedType;
     }
@@ -90,9 +90,9 @@ function getFieldType(key, value) {
  *  Default Export
  *
  * */
-var NavigationBindingUtilities = {
-    annotationsFieldsTypes: annotationsFieldsTypes,
-    getAssignedAxis: getAssignedAxis,
-    getFieldType: getFieldType
+const NavigationBindingUtilities = {
+    annotationsFieldsTypes,
+    getAssignedAxis,
+    getFieldType
 };
 export default NavigationBindingUtilities;

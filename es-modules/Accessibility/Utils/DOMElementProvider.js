@@ -12,9 +12,9 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import HU from './HTMLUtilities.js';
-var removeElement = HU.removeElement;
+const { removeElement } = HU;
 /* *
  *
  *  Class
@@ -23,13 +23,13 @@ var removeElement = HU.removeElement;
 /**
  * @private
  */
-var DOMElementProvider = /** @class */ (function () {
+class DOMElementProvider {
     /* *
      *
      *  Constructor
      *
      * */
-    function DOMElementProvider() {
+    constructor() {
         this.elements = [];
     }
     /**
@@ -37,23 +37,22 @@ var DOMElementProvider = /** @class */ (function () {
      * Same args as document.createElement
      * @private
      */
-    DOMElementProvider.prototype.createElement = function () {
-        var el = doc.createElement.apply(doc, arguments);
+    createElement() {
+        const el = doc.createElement.apply(doc, arguments);
         this.elements.push(el);
         return el;
-    };
+    }
     /**
      * Destroy all created elements, removing them from the DOM.
      * @private
      */
-    DOMElementProvider.prototype.destroyCreatedElements = function () {
+    destroyCreatedElements() {
         this.elements.forEach(function (element) {
             removeElement(element);
         });
         this.elements = [];
-    };
-    return DOMElementProvider;
-}());
+    }
+}
 /* *
  *
  *  Default Export

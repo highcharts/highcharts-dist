@@ -22,7 +22,7 @@ var ExportingSymbols;
      *  Constants
      *
      * */
-    var modifiedClasses = [];
+    const modifiedClasses = [];
     /* *
      *
      *  Functions
@@ -35,7 +35,7 @@ var ExportingSymbols;
     function compose(SVGRendererClass) {
         if (modifiedClasses.indexOf(SVGRendererClass) === -1) {
             modifiedClasses.push(SVGRendererClass);
-            var symbols = SVGRendererClass.prototype.symbols;
+            const symbols = SVGRendererClass.prototype.symbols;
             symbols.menu = menu;
             symbols.menuball = menuball.bind(symbols);
         }
@@ -45,7 +45,7 @@ var ExportingSymbols;
      * @private
      */
     function menu(x, y, width, height) {
-        var arr = [
+        const arr = [
             ['M', x, y + 2.5],
             ['L', x + width, y + 2.5],
             ['M', x, y + height / 2 + 0.5],
@@ -59,8 +59,8 @@ var ExportingSymbols;
      * @private
      */
     function menuball(x, y, width, height) {
-        var h = (height / 3) - 2;
-        var path = [];
+        const h = (height / 3) - 2;
+        let path = [];
         path = path.concat(this.circle(width - h, y, h, h), this.circle(width - h, y + h + 4, h, h), this.circle(width - h, y + 2 * (h + 4), h, h));
         return path;
     }

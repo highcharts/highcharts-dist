@@ -10,32 +10,17 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import A from '../../Core/Animation/AnimationUtilities.js';
-var animObject = A.animObject;
+const { animObject } = A;
 import DependencyWheelPoint from './DependencyWheelPoint.js';
 import DependencyWheelSeriesDefaults from './DependencyWheelSeriesDefaults.js';
 import H from '../../Core/Globals.js';
-var deg2rad = H.deg2rad;
+const { deg2rad } = H;
 import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, PieSeries = _a.pie, SankeySeries = _a.sankey;
+const { seriesTypes: { pie: PieSeries, sankey: SankeySeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 /* *
  *
  *  Class
@@ -48,26 +33,24 @@ var extend = U.extend, merge = U.merge;
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-var DependencyWheelSeries = /** @class */ (function (_super) {
-    __extends(DependencyWheelSeries, _super);
-    function DependencyWheelSeries() {
+class DependencyWheelSeries extends SankeySeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.nodeColumns = void 0;
-        _this.nodes = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.nodeColumns = void 0;
+        this.nodes = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -76,22 +59,22 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    DependencyWheelSeries.prototype.animate = function (init) {
+    animate(init) {
         if (!init) {
-            var duration = animObject(this.options.animation).duration, step_1 = (duration / 2) / this.nodes.length;
+            const duration = animObject(this.options.animation).duration, step = (duration / 2) / this.nodes.length;
             this.nodes.forEach(function (point, i) {
-                var graphic = point.graphic;
+                const graphic = point.graphic;
                 if (graphic) {
                     graphic.attr({ opacity: 0 });
                     setTimeout(function () {
                         if (point.graphic) {
-                            point.graphic.animate({ opacity: 1 }, { duration: step_1 });
+                            point.graphic.animate({ opacity: 1 }, { duration: step });
                         }
-                    }, step_1 * i);
+                    }, step * i);
                 }
             }, this);
             this.points.forEach(function (point) {
-                var graphic = point.graphic;
+                const graphic = point.graphic;
                 if (!point.isNode && graphic) {
                     graphic.attr({ opacity: 0 })
                         .animate({
@@ -100,9 +83,9 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
                 }
             }, this);
         }
-    };
-    DependencyWheelSeries.prototype.createNode = function (id) {
-        var node = SankeySeries.prototype.createNode.call(this, id);
+    }
+    createNode(id) {
+        const node = SankeySeries.prototype.createNode.call(this, id);
         /**
          * Return the sum of incoming and outgoing links.
          * @private
@@ -119,7 +102,7 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
          * @private
          */
         node.offset = function (point) {
-            var offset = 0, i, links = node.linksFrom.concat(node.linksTo), sliced;
+            let offset = 0, i, links = node.linksFrom.concat(node.linksTo), sliced;
             /**
              * @private
              */
@@ -152,80 +135,82 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
             }
         };
         return node;
-    };
+    }
     /**
      * Dependency wheel has only one column, it runs along the perimeter.
      * @private
      */
-    DependencyWheelSeries.prototype.createNodeColumns = function () {
-        var columns = [SankeyColumnComposition.compose([], this)];
+    createNodeColumns() {
+        const columns = [SankeyColumnComposition.compose([], this)];
         this.nodes.forEach(function (node) {
             node.column = 0;
             columns[0].push(node);
         });
         return columns;
-    };
+    }
     /**
      * Translate from vertical pixels to perimeter.
      * @private
      */
-    DependencyWheelSeries.prototype.getNodePadding = function () {
+    getNodePadding() {
         return this.options.nodePadding / Math.PI;
-    };
+    }
     /**
      * @private
      * @todo Override the refactored sankey translateLink and translateNode
      * functions instead of the whole translate function.
      */
-    DependencyWheelSeries.prototype.translate = function () {
-        var options = this.options, factor = 2 * Math.PI /
-            (this.chart.plotHeight + this.getNodePadding()), center = this.getCenter(), startAngle = (options.startAngle - 90) * deg2rad;
+    translate() {
+        const options = this.options, factor = 2 * Math.PI /
+            (this.chart.plotHeight + this.getNodePadding()), center = this.getCenter(), startAngle = (options.startAngle - 90) * deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
+            brOption.radius : brOption;
         SankeySeries.prototype.translate.call(this);
         this.nodeColumns[0].forEach(function (node) {
             // Don't render the nodes if sum is 0 #12453
             if (node.sum) {
-                var shapeArgs = node.shapeArgs, centerX_1 = center[0], centerY_1 = center[1], r = center[2] / 2, innerR_1 = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
+                const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, innerR = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
                     factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                 // Middle angle
                 node.angle = start + (end - start) / 2;
                 node.shapeType = 'arc';
                 node.shapeArgs = {
-                    x: centerX_1,
-                    y: centerY_1,
+                    x: centerX,
+                    y: centerY,
                     r: r,
-                    innerR: innerR_1,
+                    innerR: innerR,
                     start: start,
-                    end: end
+                    end: end,
+                    borderRadius
                 };
                 node.dlBox = {
-                    x: centerX_1 + Math.cos((start + end) / 2) * (r + innerR_1) / 2,
-                    y: centerY_1 + Math.sin((start + end) / 2) * (r + innerR_1) / 2,
+                    x: centerX + Math.cos((start + end) / 2) * (r + innerR) / 2,
+                    y: centerY + Math.sin((start + end) / 2) * (r + innerR) / 2,
                     width: 1,
                     height: 1
                 };
                 // Draw the links from this node
                 node.linksFrom.forEach(function (point) {
                     if (point.linkBase) {
-                        var distance_1;
-                        var corners = point.linkBase.map(function (top, i) {
-                            var angle = factor * top, x = Math.cos(startAngle + angle) * (innerR_1 + 1), y = Math.sin(startAngle + angle) * (innerR_1 + 1), curveFactor = options.curveFactor || 0;
+                        let distance;
+                        const corners = point.linkBase.map(function (top, i) {
+                            let angle = factor * top, x = Math.cos(startAngle + angle) * (innerR + 1), y = Math.sin(startAngle + angle) * (innerR + 1), curveFactor = options.curveFactor || 0;
                             // The distance between the from and to node
                             // along the perimeter. This affect how curved
                             // the link is, so that links between neighbours
                             // don't extend too far towards the center.
-                            distance_1 = Math.abs(point.linkBase[3 - i] * factor - angle);
-                            if (distance_1 > Math.PI) {
-                                distance_1 = 2 * Math.PI - distance_1;
+                            distance = Math.abs(point.linkBase[3 - i] * factor - angle);
+                            if (distance > Math.PI) {
+                                distance = 2 * Math.PI - distance;
                             }
-                            distance_1 = distance_1 * innerR_1;
-                            if (distance_1 < innerR_1) {
-                                curveFactor *= (distance_1 / innerR_1);
+                            distance = distance * innerR;
+                            if (distance < innerR) {
+                                curveFactor *= (distance / innerR);
                             }
                             return {
-                                x: centerX_1 + x,
-                                y: centerY_1 + y,
-                                cpX: centerX_1 + (1 - curveFactor) * x,
-                                cpY: centerY_1 + (1 - curveFactor) * y
+                                x: centerX + x,
+                                y: centerY + y,
+                                cpX: centerX + (1 - curveFactor) * x,
+                                cpY: centerY + (1 - curveFactor) * y
                             };
                         });
                         point.shapeArgs = {
@@ -234,7 +219,7 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
                                     corners[0].x, corners[0].y
                                 ], [
                                     'A',
-                                    innerR_1, innerR_1,
+                                    innerR, innerR,
                                     0,
                                     0,
                                     1,
@@ -246,7 +231,7 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
                                     corners[2].x, corners[2].y
                                 ], [
                                     'A',
-                                    innerR_1, innerR_1,
+                                    innerR, innerR,
                                     0,
                                     0,
                                     1,
@@ -262,10 +247,9 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
                 });
             }
         });
-    };
-    DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
-    return DependencyWheelSeries;
-}(SankeySeries));
+    }
+}
+DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
 extend(DependencyWheelSeries.prototype, {
     orderNodes: false,
     getCenter: PieSeries.prototype.getCenter

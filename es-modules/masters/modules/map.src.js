@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.3.3 (2023-01-20)
+ * @license Highmaps JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -23,7 +23,7 @@ import '../../Extensions/GeoJSON.js';
 import MapChart from '../../Core/Chart/MapChart.js';
 import MapView from '../../Maps/MapView.js';
 import Projection from '../../Maps/Projection.js';
-var G = Highcharts;
+const G = Highcharts;
 G.ColorAxis = ColorAxis;
 G.MapChart = MapChart;
 G.mapChart = G.Map = MapChart.mapChart;

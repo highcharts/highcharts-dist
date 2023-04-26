@@ -10,38 +10,19 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import H from '../../Core/Globals.js';
-var deg2rad = H.deg2rad, svg = H.svg;
+const { deg2rad } = H;
 import Pie3DPoint from './Pie3DPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var PieSeries = SeriesRegistry.seriesTypes.pie;
+const { seriesTypes: { pie: PieSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, pick = U.pick;
+const { extend, pick } = U;
 /* *
  *
  *  Class
  *
  * */
-var Pie3DSeries = /** @class */ (function (_super) {
-    __extends(Pie3DSeries, _super);
-    function Pie3DSeries() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class Pie3DSeries extends PieSeries {
     /* *
      *
      *  Functions
@@ -51,69 +32,67 @@ var Pie3DSeries = /** @class */ (function (_super) {
     /**
      * @private
      */
-    Pie3DSeries.prototype.addPoint = function () {
-        _super.prototype.addPoint.apply(this, arguments);
+    addPoint() {
+        super.addPoint.apply(this, arguments);
         if (this.chart.is3d()) {
             // destroy (and rebuild) everything!!!
             this.update(this.userOptions, true); // #3845 pass the old options
         }
-    };
+    }
     /**
      * @private
      */
-    Pie3DSeries.prototype.animate = function (init) {
+    animate(init) {
         if (!this.chart.is3d()) {
-            _super.prototype.animate.apply(this, arguments);
+            super.animate.apply(this, arguments);
         }
         else {
-            var animation = this.options.animation, attribs = void 0, center = this.center, group = this.group, markerGroup = this.markerGroup;
-            if (svg) { // VML is too slow anyway
-                if (animation === true) {
-                    animation = {};
+            let animation = this.options.animation, attribs, center = this.center, group = this.group, markerGroup = this.markerGroup;
+            if (animation === true) {
+                animation = {};
+            }
+            // Initialize the animation
+            if (init) {
+                // Scale down the group and place it in the center
+                group.oldtranslateX = pick(group.oldtranslateX, group.translateX);
+                group.oldtranslateY = pick(group.oldtranslateY, group.translateY);
+                attribs = {
+                    translateX: center[0],
+                    translateY: center[1],
+                    scaleX: 0.001,
+                    scaleY: 0.001
+                };
+                group.attr(attribs);
+                if (markerGroup) {
+                    markerGroup.attrSetters = group.attrSetters;
+                    markerGroup.attr(attribs);
                 }
-                // Initialize the animation
-                if (init) {
-                    // Scale down the group and place it in the center
-                    group.oldtranslateX = pick(group.oldtranslateX, group.translateX);
-                    group.oldtranslateY = pick(group.oldtranslateY, group.translateY);
-                    attribs = {
-                        translateX: center[0],
-                        translateY: center[1],
-                        scaleX: 0.001,
-                        scaleY: 0.001
-                    };
-                    group.attr(attribs);
-                    if (markerGroup) {
-                        markerGroup.attrSetters = group.attrSetters;
-                        markerGroup.attr(attribs);
-                    }
-                    // Run the animation
-                }
-                else {
-                    attribs = {
-                        translateX: group.oldtranslateX,
-                        translateY: group.oldtranslateY,
-                        scaleX: 1,
-                        scaleY: 1
-                    };
-                    group.animate(attribs, animation);
-                    if (markerGroup) {
-                        markerGroup.animate(attribs, animation);
-                    }
+                // Run the animation
+            }
+            else {
+                attribs = {
+                    translateX: group.oldtranslateX,
+                    translateY: group.oldtranslateY,
+                    scaleX: 1,
+                    scaleY: 1
+                };
+                group.animate(attribs, animation);
+                if (markerGroup) {
+                    markerGroup.animate(attribs, animation);
                 }
             }
         }
-    };
+    }
     /**
      * @private
      */
-    Pie3DSeries.prototype.drawDataLabels = function () {
+    drawDataLabels() {
         if (this.chart.is3d()) {
-            var series = this, chart = series.chart, options3d_1 = chart.options.chart.options3d;
+            const series = this, chart = series.chart, options3d = chart.options.chart.options3d;
             series.data.forEach(function (point) {
-                var shapeArgs = point.shapeArgs, r = shapeArgs.r, 
+                const shapeArgs = point.shapeArgs, r = shapeArgs.r, 
                 // #3240 issue with datalabels for 0 and null values
-                a1 = ((shapeArgs.alpha || options3d_1.alpha) * deg2rad), b1 = ((shapeArgs.beta || options3d_1.beta) * deg2rad), a2 = ((shapeArgs.start + shapeArgs.end) / 2), labelPosition = point.labelPosition, connectorPosition = (labelPosition.connectorPosition), yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
+                a1 = ((shapeArgs.alpha || options3d.alpha) * deg2rad), b1 = ((shapeArgs.beta || options3d.beta) * deg2rad), a2 = ((shapeArgs.start + shapeArgs.end) / 2), labelPosition = point.labelPosition, connectorPosition = (labelPosition.connectorPosition), yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
                 // Apply perspective on label positions
                 [
                     labelPosition.natural,
@@ -125,29 +104,29 @@ var Pie3DSeries = /** @class */ (function (_super) {
                 });
             });
         }
-        _super.prototype.drawDataLabels.apply(this, arguments);
-    };
+        super.drawDataLabels.apply(this, arguments);
+    }
     /**
      * @private
      */
-    Pie3DSeries.prototype.pointAttribs = function (point) {
-        var attr = _super.prototype.pointAttribs.apply(this, arguments), options = this.options;
+    pointAttribs(point) {
+        const attr = super.pointAttribs.apply(this, arguments), options = this.options;
         if (this.chart.is3d() && !this.chart.styledMode) {
             attr.stroke = options.edgeColor || point.color || this.color;
             attr['stroke-width'] = pick(options.edgeWidth, 1);
         }
         return attr;
-    };
+    }
     /**
      * @private
      */
-    Pie3DSeries.prototype.translate = function () {
-        _super.prototype.translate.apply(this, arguments);
+    translate() {
+        super.translate.apply(this, arguments);
         // Do not do this if the chart is not 3D
         if (!this.chart.is3d()) {
             return;
         }
-        var series = this, seriesOptions = series.options, depth = seriesOptions.depth || 0, options3d = series.chart.options.chart.options3d, alpha = options3d.alpha, beta = options3d.beta, z = seriesOptions.stacking ?
+        let series = this, seriesOptions = series.options, depth = seriesOptions.depth || 0, options3d = series.chart.options.chart.options3d, alpha = options3d.alpha, beta = options3d.beta, z = seriesOptions.stacking ?
             (seriesOptions.stack || 0) * depth :
             series._i * depth;
         z += depth / 2;
@@ -155,7 +134,7 @@ var Pie3DSeries = /** @class */ (function (_super) {
             z = 0;
         }
         series.data.forEach(function (point) {
-            var shapeArgs = point.shapeArgs, angle;
+            let shapeArgs = point.shapeArgs, angle;
             point.shapeType = 'arc3d';
             shapeArgs.z = z;
             shapeArgs.depth = depth * 0.75;
@@ -172,28 +151,27 @@ var Pie3DSeries = /** @class */ (function (_super) {
                     Math.cos(alpha * deg2rad))
             };
         });
-    };
+    }
     /**
      * @private
      */
-    Pie3DSeries.prototype.drawTracker = function () {
-        _super.prototype.drawTracker.apply(this, arguments);
+    drawTracker() {
+        super.drawTracker.apply(this, arguments);
         // Do not do this if the chart is not 3D
         if (!this.chart.is3d()) {
             return;
         }
         this.points.forEach(function (point) {
             if (point.graphic) {
-                ['out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                ['out', 'inn', 'side1', 'side2'].forEach((face) => {
                     if (point.graphic) {
                         point.graphic[face].element.point = point;
                     }
                 });
             }
         });
-    };
-    return Pie3DSeries;
-}(PieSeries));
+    }
+}
 extend(Pie3DSeries.prototype, {
     pointClass: Pie3DPoint
 });

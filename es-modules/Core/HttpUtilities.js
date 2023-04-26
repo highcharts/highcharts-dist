@@ -9,9 +9,9 @@
  * */
 'use strict';
 import G from '../Core/Globals.js';
-var doc = G.doc;
+const { doc } = G;
 import U from '../Core/Utilities.js';
-var createElement = U.createElement, discardElement = U.discardElement, merge = U.merge, objectEach = U.objectEach;
+const { createElement, discardElement, merge, objectEach } = U;
 /* *
  *
  *  Functions
@@ -29,7 +29,7 @@ var createElement = U.createElement, discardElement = U.discardElement, merge = 
  *         Returns false, if error occured.
  */
 function ajax(settings) {
-    var headers = {
+    const headers = {
         json: 'application/json',
         xml: 'application/xml',
         text: 'text/plain',
@@ -66,7 +66,7 @@ function ajax(settings) {
     }
     // @todo lacking timeout handling
     r.onreadystatechange = function () {
-        var res;
+        let res;
         if (r.readyState === 4) {
             if (r.status === 200) {
                 if (settings.responseType !== 'blob') {
@@ -131,7 +131,7 @@ function getJSON(url, success) {
  */
 function post(url, data, formAttributes) {
     // create the form
-    var form = createElement('form', merge({
+    const form = createElement('form', merge({
         method: 'post',
         action: url,
         enctype: 'multipart/form-data'
@@ -156,10 +156,10 @@ function post(url, data, formAttributes) {
  *  Default Export
  *
  * */
-var HttpUtilities = {
-    ajax: ajax,
-    getJSON: getJSON,
-    post: post
+const HttpUtilities = {
+    ajax,
+    getJSON,
+    post
 };
 export default HttpUtilities;
 /* *

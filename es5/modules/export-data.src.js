@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Exporting module
  *
@@ -59,228 +59,248 @@
          * @private
          */
         var exporting = {
-            /**
-             * Caption for the data table. Same as chart title by default. Set to
-             * `false` to disable.
-             *
-             * @sample highcharts/export-data/multilevel-table
-             *         Multiple table headers
-             *
-             * @type      {boolean|string}
-             * @since     6.0.4
-             * @requires  modules/export-data
-             * @apioption exporting.tableCaption
-             */
-            /**
-             * Options for exporting data to CSV or ExCel, or displaying the data
-             * in a HTML table or a JavaScript structure.
-             *
-             * This module adds data export options to the export menu and provides
-             * functions like `Chart.getCSV`, `Chart.getTable`, `Chart.getDataRows`
-             * and `Chart.viewData`.
-             *
-             * The XLS converter is limited and only creates a HTML string that is
-             * passed for download, which works but creates a warning before
-             * opening. The workaround for this is to use a third party XLSX
-             * converter, as demonstrated in the sample below.
-             *
-             * @sample  highcharts/export-data/categorized/ Categorized data
-             * @sample  highcharts/export-data/stock-timeaxis/ Highcharts Stock time axis
-             * @sample  highcharts/export-data/xlsx/
-             *          Using a third party XLSX converter
-             *
-             * @since    6.0.0
-             * @requires modules/export-data
-             */
-            csv: {
                 /**
-                 *
-                 * Options for annotations in the export-data table.
-                 *
-                 * @since 8.2.0
-                 * @requires modules/export-data
-                 * @requires modules/annotations
-                 *
-                 *
-                 */
-                annotations: {
-                    /**
-                    * The way to mark the separator for annotations
-                    * combined in one export-data table cell.
-                    *
-                    * @since 8.2.0
-                    * @requires modules/annotations
-                    */
-                    itemDelimiter: '; ',
-                    /**
-                    * When several labels are assigned to a specific point,
-                    * they will be displayed in one field in the table.
-                    *
-                    * @sample highcharts/export-data/join-annotations/
-                    *         Concatenate point annotations with itemDelimiter set.
-                    *
-                    * @since 8.2.0
-                    * @requires modules/annotations
-                    */
-                    join: false
-                },
-                /**
-                 * Formatter callback for the column headers. Parameters are:
-                 * - `item` - The series or axis object)
-                 * - `key` -  The point key, for example y or z
-                 * - `keyLength` - The amount of value keys for this item, for
-                 *   example a range series has the keys `low` and `high` so the
-                 *   key length is 2.
-                 *
-                 * If [useMultiLevelHeaders](#exporting.useMultiLevelHeaders) is
-                 * true, columnHeaderFormatter by default returns an object with
-                 * columnTitle and topLevelColumnTitle for each key. Columns with
-                 * the same topLevelColumnTitle have their titles merged into a
-                 * single cell with colspan for table/Excel export.
-                 *
-                 * If `useMultiLevelHeaders` is false, or for CSV export, it returns
-                 * the series name, followed by the key if there is more than one
-                 * key.
-                 *
-                 * For the axis it returns the axis title or "Category" or
-                 * "DateTime" by default.
-                 *
-                 * Return `false` to use Highcharts' proposed header.
+                 * Caption for the data table. Same as chart title by default. Set to
+                 * `false` to disable.
                  *
                  * @sample highcharts/export-data/multilevel-table
                  *         Multiple table headers
                  *
-                 * @type {Function|null}
+                 * @type      {boolean|string}
+                 * @since     6.0.4
+                 * @requires  modules/export-data
+                 * @apioption exporting.tableCaption
                  */
-                columnHeaderFormatter: null,
                 /**
-                 * Which date format to use for exported dates on a datetime X axis.
-                 * See `Highcharts.dateFormat`.
-                 */
-                dateFormat: '%Y-%m-%d %H:%M:%S',
-                /**
-                 * Which decimal point to use for exported CSV. Defaults to the same
-                 * as the browser locale, typically `.` (English) or `,` (German,
-                 * French etc).
+                 * Options for exporting data to CSV or ExCel,
+            or displaying the data
+                 * in a HTML table or a JavaScript structure.
                  *
-                 * @type  {string|null}
-                 * @since 6.0.4
-                 */
-                decimalPoint: null,
-                /**
-                 * The item delimiter in the exported data. Use `;` for direct
-                 * exporting to Excel. Defaults to a best guess based on the browser
-                 * locale. If the locale _decimal point_ is `,`, the `itemDelimiter`
-                 * defaults to `;`, otherwise the `itemDelimiter` defaults to `,`.
+                 * This module adds data export options to the export menu and provides
+                 * functions like `Chart.getCSV`,
+            `Chart.getTable`,
+            `Chart.getDataRows`
+                 * and `Chart.viewData`.
                  *
-                 * @type {string|null}
+                 * The XLS converter is limited and only creates a HTML string that is
+                 * passed for download,
+            which works but creates a warning before
+                 * opening. The workaround for this is to use a third party XLSX
+                 * converter,
+            as demonstrated in the sample below.
+                 *
+                 * @sample  highcharts/export-data/categorized/ Categorized data
+                 * @sample  highcharts/export-data/stock-timeaxis/ Highcharts Stock time axis
+                 * @sample  highcharts/export-data/xlsx/
+                 *          Using a third party XLSX converter
+                 *
+                 * @since    6.0.0
+                 * @requires modules/export-data
                  */
-                itemDelimiter: null,
+                csv: {
+                    /**
+                     *
+                     * Options for annotations in the export-data table.
+                     *
+                     * @since 8.2.0
+                     * @requires modules/export-data
+                     * @requires modules/annotations
+                     *
+                     *
+                     */
+                    annotations: {
+                        /**
+                        * The way to mark the separator for annotations
+                        * combined in one export-data table cell.
+                        *
+                        * @since 8.2.0
+                        * @requires modules/annotations
+                        */
+                        itemDelimiter: '; ',
+                        /**
+                        * When several labels are assigned to a specific point,
+                        * they will be displayed in one field in the table.
+                        *
+                        * @sample highcharts/export-data/join-annotations/
+                        *         Concatenate point annotations with itemDelimiter set.
+                        *
+                        * @since 8.2.0
+                        * @requires modules/annotations
+                        */
+                        join: false
+                    },
+                    /**
+                     * Formatter callback for the column headers. Parameters are:
+                     * - `item` - The series or axis object)
+                     * - `key` -  The point key,
+            for example y or z
+                     * - `keyLength` - The amount of value keys for this item,
+            for
+                     *   example a range series has the keys `low` and `high` so the
+                     *   key length is 2.
+                     *
+                     * If [useMultiLevelHeaders](#exporting.useMultiLevelHeaders) is
+                     * true,
+            columnHeaderFormatter by default returns an object with
+                     * columnTitle and topLevelColumnTitle for each key. Columns with
+                     * the same topLevelColumnTitle have their titles merged into a
+                     * single cell with colspan for table/Excel export.
+                     *
+                     * If `useMultiLevelHeaders` is false,
+            or for CSV export,
+            it returns
+                     * the series name,
+            followed by the key if there is more than one
+                     * key.
+                     *
+                     * For the axis it returns the axis title or "Category" or
+                     * "DateTime" by default.
+                     *
+                     * Return `false` to use Highcharts' proposed header.
+                     *
+                     * @sample highcharts/export-data/multilevel-table
+                     *         Multiple table headers
+                     *
+                     * @type {Function|null}
+                     */
+                    columnHeaderFormatter: null,
+                    /**
+                     * Which date format to use for exported dates on a datetime X axis.
+                     * See `Highcharts.dateFormat`.
+                     */
+                    dateFormat: '%Y-%m-%d %H:%M:%S',
+                    /**
+                     * Which decimal point to use for exported CSV. Defaults to the same
+                     * as the browser locale,
+            typically `.` (English) or `,
+            ` (German,
+                     * French etc).
+                     *
+                     * @type  {string|null}
+                     * @since 6.0.4
+                     */
+                    decimalPoint: null,
+                    /**
+                     * The item delimiter in the exported data. Use `;` for direct
+                     * exporting to Excel. Defaults to a best guess based on the browser
+                     * locale. If the locale _decimal point_ is `,
+            `,
+            the `itemDelimiter`
+                     * defaults to `;`,
+            otherwise the `itemDelimiter` defaults to `,
+            `.
+                     *
+                     * @type {string|null}
+                     */
+                    itemDelimiter: null,
+                    /**
+                     * The line delimiter in the exported data,
+            defaults to a newline.
+                     */
+                    lineDelimiter: '\n'
+                },
                 /**
-                 * The line delimiter in the exported data, defaults to a newline.
+                 * Show a HTML table below the chart with the chart's current data.
+                 *
+                 * @sample highcharts/export-data/showtable/
+                 *         Show the table
+                 * @sample highcharts/studies/exporting-table-html
+                 *         Experiment with putting the table inside the subtitle to
+                 *         allow exporting it.
+                 *
+                 * @since    6.0.0
+                 * @requires modules/export-data
                  */
-                lineDelimiter: '\n'
-            },
-            /**
-             * Show a HTML table below the chart with the chart's current data.
-             *
-             * @sample highcharts/export-data/showtable/
-             *         Show the table
-             * @sample highcharts/studies/exporting-table-html
-             *         Experiment with putting the table inside the subtitle to
-             *         allow exporting it.
-             *
-             * @since    6.0.0
-             * @requires modules/export-data
-             */
-            showTable: false,
-            /**
-             * Use multi level headers in data table. If [csv.columnHeaderFormatter
-             * ](#exporting.csv.columnHeaderFormatter) is defined, it has to return
-             * objects in order for multi level headers to work.
-             *
-             * @sample highcharts/export-data/multilevel-table
-             *         Multiple table headers
-             *
-             * @since    6.0.4
-             * @requires modules/export-data
-             */
-            useMultiLevelHeaders: true,
-            /**
-             * If using multi level table headers, use rowspans for headers that
-             * have only one level.
-             *
-             * @sample highcharts/export-data/multilevel-table
-             *         Multiple table headers
-             *
-             * @since    6.0.4
-             * @requires modules/export-data
-             */
-            useRowspanHeaders: true
-        };
+                showTable: false,
+                /**
+                 * Use multi level headers in data table. If [csv.columnHeaderFormatter
+                 * ](#exporting.csv.columnHeaderFormatter) is defined,
+            it has to return
+                 * objects in order for multi level headers to work.
+                 *
+                 * @sample highcharts/export-data/multilevel-table
+                 *         Multiple table headers
+                 *
+                 * @since    6.0.4
+                 * @requires modules/export-data
+                 */
+                useMultiLevelHeaders: true,
+                /**
+                 * If using multi level table headers,
+            use rowspans for headers that
+                 * have only one level.
+                 *
+                 * @sample highcharts/export-data/multilevel-table
+                 *         Multiple table headers
+                 *
+                 * @since    6.0.4
+                 * @requires modules/export-data
+                 */
+                useRowspanHeaders: true
+            };
         /**
          * @optionparent lang
          * @private
          */
         var lang = {
-            /**
-             * The text for the menu item.
-             *
-             * @since    6.0.0
-             * @requires modules/export-data
-             */
-            downloadCSV: 'Download CSV',
-            /**
-             * The text for the menu item.
-             *
-             * @since    6.0.0
-             * @requires modules/export-data
-             */
-            downloadXLS: 'Download XLS',
-            /**
-             * The text for exported table.
-             *
-             * @since 8.1.0
-             * @requires modules/export-data
-             */
-            exportData: {
                 /**
-                 * The annotation column title.
+                 * The text for the menu item.
+                 *
+                 * @since    6.0.0
+                 * @requires modules/export-data
                  */
-                annotationHeader: 'Annotations',
+                downloadCSV: 'Download CSV',
                 /**
-                 * The category column title.
+                 * The text for the menu item.
+                 *
+                 * @since    6.0.0
+                 * @requires modules/export-data
                  */
-                categoryHeader: 'Category',
+                downloadXLS: 'Download XLS',
                 /**
-                 * The category column title when axis type set to "datetime".
+                 * The text for exported table.
+                 *
+                 * @since 8.1.0
+                 * @requires modules/export-data
                  */
-                categoryDatetimeHeader: 'DateTime'
-            },
-            /**
-             * The text for the menu item.
-             *
-             * @since    6.0.0
-             * @requires modules/export-data
-             */
-            viewData: 'View data table',
-            /**
-             * The text for the menu item.
-             *
-             * @since 8.2.0
-             * @requires modules/export-data
-             */
-            hideData: 'Hide data table'
-        };
+                exportData: {
+                    /**
+                     * The annotation column title.
+                     */
+                    annotationHeader: 'Annotations',
+                    /**
+                     * The category column title.
+                     */
+                    categoryHeader: 'Category',
+                    /**
+                     * The category column title when axis type set to "datetime".
+                     */
+                    categoryDatetimeHeader: 'DateTime'
+                },
+                /**
+                 * The text for the menu item.
+                 *
+                 * @since    6.0.0
+                 * @requires modules/export-data
+                 */
+                viewData: 'View data table',
+                /**
+                 * The text for the menu item.
+                 *
+                 * @since 8.2.0
+                 * @requires modules/export-data
+                 */
+                hideData: 'Hide data table'
+            };
         /* *
          *
          *  Default Export
          *
          * */
         var ExportDataDefaults = {
-            exporting: exporting,
-            lang: lang
-        };
+                exporting: exporting,
+                lang: lang
+            };
         /* *
          *
          *  API Options
@@ -324,7 +344,9 @@
          *
          * */
         var isSafari = Highcharts.isSafari;
-        var win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
+        var win = Highcharts.win,
+            doc = win.document,
+            domurl = win.URL || win.webkitURL || win;
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -335,9 +357,9 @@
          *         Blob
          */
         var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-            var parts = dataURL
-                .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                var parts = dataURL
+                    .replace(/filename=.*;/, '')
+                    .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
                 parts.length > 3 &&
                 (win.atob) &&
@@ -346,7 +368,9 @@
                 win.Blob &&
                 (domurl.createObjectURL)) {
                 // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
+                var binStr = win.atob(parts[3]),
+                    buf = new win.ArrayBuffer(binStr.length),
+                    binary = new win.Uint8Array(buf);
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
@@ -365,8 +389,10 @@
          *        The name of the resulting file (w/extension)
          * @return {void}
          */
-        var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
-            var nav = win.navigator, a = doc.createElement('a');
+        var downloadURL = Highcharts.downloadURL = function (dataURL,
+            filename) {
+                var nav = win.navigator,
+            a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -381,8 +407,8 @@
             var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
             // Safari on iOS needs Blob in order to download PDF
             var safariBlob = (isSafari &&
-                typeof dataURL === 'string' &&
-                dataURL.indexOf('data:application/pdf') === 0);
+                    typeof dataURL === 'string' &&
+                    dataURL.indexOf('data:application/pdf') === 0);
             if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
@@ -412,9 +438,9 @@
             }
         };
         var DownloadURL = {
-            dataURLtoBlob: dataURLtoBlob,
-            downloadURL: downloadURL
-        };
+                dataURLtoBlob: dataURLtoBlob,
+                downloadURL: downloadURL
+            };
 
         return DownloadURL;
     });
@@ -433,26 +459,45 @@
         // @todo
         // - Set up systematic tests for all series types, paired with tests of the data
         //   module importing the same data.
-        var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-            if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-                if (ar || !(i in from)) {
-                    if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+        var __spreadArray = (this && this.__spreadArray) || function (to,
+            from,
+            pack) {
+                if (pack || arguments.length === 2) for (var i = 0,
+            l = from.length,
+            ar; i < l; i++) {
+                    if (ar || !(i in from)) {
+                        if (!ar) ar = Array.prototype.slice.call(from, 0,
+            i);
                     ar[i] = from[i];
                 }
             }
             return to.concat(ar || Array.prototype.slice.call(from));
         };
-        var doc = H.doc, win = H.win;
-        var getOptions = D.getOptions, setOptions = D.setOptions;
+        var doc = H.doc,
+            win = H.win;
+        var getOptions = D.getOptions,
+            setOptions = D.setOptions;
         var downloadURL = DownloadURL.downloadURL;
-        var SeriesClass = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, GanttSeries = _a.gantt, MapSeries = _a.map, MapBubbleSeries = _a.mapbubble, TreemapSeries = _a.treemap;
-        var addEvent = U.addEvent, defined = U.defined, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick;
+        var SeriesClass = SeriesRegistry.series,
+            _a = SeriesRegistry.seriesTypes,
+            AreaRangeSeries = _a.arearange,
+            GanttSeries = _a.gantt,
+            MapSeries = _a.map,
+            MapBubbleSeries = _a.mapbubble,
+            TreemapSeries = _a.treemap;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            pick = U.pick;
         /* *
          *
          *  Constants
          *
          * */
-        var composedClasses = [];
+        var composedMembers = [];
         /* *
          *
          *  Functions
@@ -485,24 +530,24 @@
          */
         function chartDownloadXLS() {
             var uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
-                'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
-                'xmlns="http://www.w3.org/TR/REC-html40">' +
-                '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
-                '<x:ExcelWorksheets><x:ExcelWorksheet>' +
-                '<x:Name>Ark1</x:Name>' +
-                '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>' +
-                '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>' +
-                '</xml><![endif]-->' +
-                '<style>td{border:none;font-family: Calibri, sans-serif;} ' +
-                '.number{mso-number-format:"0.00";} ' +
-                '.text{ mso-number-format:"\@";}</style>' +
-                '<meta name=ProgId content=Excel.Sheet>' +
-                '<meta charset=UTF-8>' +
-                '</head><body>' +
-                this.getTable(true) +
-                '</body></html>', base64 = function (s) {
-                return win.btoa(unescape(encodeURIComponent(s))); // #50
-            };
+                    'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
+                    'xmlns="http://www.w3.org/TR/REC-html40">' +
+                    '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+                    '<x:ExcelWorksheets><x:ExcelWorksheet>' +
+                    '<x:Name>Ark1</x:Name>' +
+                    '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>' +
+                    '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>' +
+                    '</xml><![endif]-->' +
+                    '<style>td{border:none;font-family: Calibri, sans-serif;} ' +
+                    '.number{mso-number-format:"0.00";} ' +
+                    '.text{ mso-number-format:"\@";}</style>' +
+                    '<meta name=ProgId content=Excel.Sheet>' +
+                    '<meta charset=UTF-8>' +
+                    '</head><body>' +
+                    this.getTable(true) +
+                    '</body></html>', base64 = function (s) {
+                    return win.btoa(unescape(encodeURIComponent(s))); // #50
+                };
             downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
                 uri + base64(template), this.getFilename() + '.xls');
         }
@@ -522,15 +567,16 @@
         function chartGetCSV(useLocalDecimalPoint) {
             var csv = '';
             var rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
-                (1.1).toLocaleString()[1] :
-                '.'), 
-            // use ';' for direct to Excel
-            itemDelimiter = pick(csvOptions.itemDelimiter, decimalPoint === ',' ? ';' : ','), 
-            // '\n' isn't working with the js csv data extraction
-            lineDelimiter = csvOptions.lineDelimiter;
+                    (1.1).toLocaleString()[1] :
+                    '.'), 
+                // use ';' for direct to Excel
+                itemDelimiter = pick(csvOptions.itemDelimiter, decimalPoint === ',' ? ';' : ','), 
+                // '\n' isn't working with the js csv data extraction
+                lineDelimiter = csvOptions.lineDelimiter;
             // Transform the rows to CSV
             rows.forEach(function (row, i) {
-                var val = '', j = row.length;
+                var val = '',
+                    j = row.length;
                 while (j--) {
                     val = row[j];
                     if (typeof val === 'string') {
@@ -575,11 +621,26 @@
          * @emits Highcharts.Chart#event:exportData
          */
         function chartGetDataRows(multiLevelHeaders) {
-            var hasParallelCoords = this.hasParallelCoordinates, time = this.time, csvOptions = ((this.options.exporting && this.options.exporting.csv) || {}), xAxes = this.xAxis, rows = {}, rowArr = [], topLevelColumnTitles = [], columnTitles = [], langOptions = this.options.lang, exportDataOptions = langOptions.exportData, categoryHeader = exportDataOptions.categoryHeader, categoryDatetimeHeader = exportDataOptions.categoryDatetimeHeader, 
-            // Options
-            columnHeaderFormatter = function (item, key, keyLength) {
-                if (csvOptions.columnHeaderFormatter) {
-                    var s = csvOptions.columnHeaderFormatter(item, key, keyLength);
+            var hasParallelCoords = this.hasParallelCoordinates,
+                time = this.time,
+                csvOptions = ((this.options.exporting && this.options.exporting.csv) || {}),
+                xAxes = this.xAxis,
+                rows = {},
+                rowArr = [],
+                topLevelColumnTitles = [],
+                columnTitles = [],
+                langOptions = this.options.lang,
+                exportDataOptions = langOptions.exportData,
+                categoryHeader = exportDataOptions.categoryHeader,
+                categoryDatetimeHeader = exportDataOptions.categoryDatetimeHeader, 
+                // Options
+                columnHeaderFormatter = function (item,
+                key,
+                keyLength) {
+                    if (csvOptions.columnHeaderFormatter) {
+                        var s = csvOptions.columnHeaderFormatter(item,
+                key,
+                keyLength);
                     if (s !== false) {
                         return s;
                     }
@@ -603,15 +664,16 @@
             }, 
             // Map the categories for value axes
             getCategoryAndDateTimeMap = function (series, pointArrayMap, pIdx) {
-                var categoryMap = {}, dateTimeValueAxisMap = {};
+                var categoryMap = {},
+                    dateTimeValueAxisMap = {};
                 pointArrayMap.forEach(function (prop) {
                     var axisName = ((series.keyToAxis && series.keyToAxis[prop]) ||
-                        prop) + 'Axis', 
-                    // Points in parallel coordinates refers to all yAxis
-                    // not only `series.yAxis`
-                    axis = isNumber(pIdx) ?
-                        series.chart[axisName][pIdx] :
-                        series[axisName];
+                            prop) + 'Axis', 
+                        // Points in parallel coordinates refers to all yAxis
+                        // not only `series.yAxis`
+                        axis = isNumber(pIdx) ?
+                            series.chart[axisName][pIdx] :
+                            series[axisName];
                     categoryMap[prop] = (axis && axis.categories) || [];
                     dateTimeValueAxisMap[prop] = (axis && axis.dateTime);
                 });
@@ -624,7 +686,7 @@
             // or point.name is defined #13293
             getPointArray = function (series, xAxis) {
                 var namedPoints = series.data.filter(function (d) {
-                    return (typeof d.y !== 'undefined') && d.name;
+                        return (typeof d.y !== 'undefined') && d.name;
                 });
                 if (namedPoints.length &&
                     xAxis &&
@@ -632,7 +694,7 @@
                     !series.keyToAxis) {
                     if (series.pointArrayMap) {
                         var pointArrayMapCheck = series.pointArrayMap
-                            .filter(function (p) { return p === 'x'; });
+                                .filter(function (p) { return p === 'x'; });
                         if (pointArrayMapCheck.length) {
                             series.pointArrayMap.unshift('x');
                             return series.pointArrayMap;
@@ -642,11 +704,24 @@
                 }
                 return series.pointArrayMap || ['y'];
             }, xAxisIndices = [];
-            var xAxis, dataRows, columnTitleObj, i = 0, // Loop the series and index values
-            x, xTitle;
+            var xAxis,
+                dataRows,
+                columnTitleObj,
+                i = 0, // Loop the series and index values
+                x,
+                xTitle;
             this.series.forEach(function (series) {
-                var keys = series.options.keys, xAxis = series.xAxis, pointArrayMap = keys || getPointArray(series, xAxis), valueCount = pointArrayMap.length, xTaken = !series.requireSorting && {}, xAxisIndex = xAxes.indexOf(xAxis);
-                var categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap), mockSeries, j;
+                var keys = series.options.keys,
+                    xAxis = series.xAxis,
+                    pointArrayMap = keys || getPointArray(series,
+                    xAxis),
+                    valueCount = pointArrayMap.length,
+                    xTaken = !series.requireSorting && {},
+                    xAxisIndex = xAxes.indexOf(xAxis);
+                var categoryAndDatetimeMap = getCategoryAndDateTimeMap(series,
+                    pointArrayMap),
+                    mockSeries,
+                    j;
                 if (series.options.includeInDataExport !== false &&
                     !series.options.isInternal &&
                     series.visible !== false // #55
@@ -682,7 +757,9 @@
                     // data (#7913), and we need to support Boost (#7026).
                     series.options.data.forEach(function eachData(options, pIdx) {
                         var mockPoint = { series: mockSeries };
-                        var key, prop, val;
+                        var key,
+                            prop,
+                            val;
                         // In parallel coordinates chart, each data point is connected
                         // to a separate yAxis, conform this
                         if (hasParallelCoords) {
@@ -694,8 +771,8 @@
                             rows[key].seriesIndices.includes(mockSeries.index)) {
                             // find keys, which belong to actual series
                             var keysFromActualSeries = Object.keys(rows).filter(function (i) {
-                                return rows[i].seriesIndices.includes(mockSeries.index) &&
-                                    key;
+                                    return rows[i].seriesIndices.includes(mockSeries.index) &&
+                                        key;
                             }), 
                             // find all properties, which start with actual key
                             existingKeys = keysFromActualSeries
@@ -757,7 +834,8 @@
                     rowArr.push(rows[x]);
                 }
             }
-            var xAxisIndex, column;
+            var xAxisIndex,
+                column;
             // Add computed column headers and top level headers to final row set
             dataRows = multiLevelHeaders ? [topLevelColumnTitles, columnTitles] :
                 [columnTitles];
@@ -826,9 +904,9 @@
          */
         function chartGetTable(useLocalDecimalPoint) {
             var serialize = function (node) {
-                if (!node.tagName || node.tagName === '#text') {
-                    // Text node
-                    return node.textContent || '';
+                    if (!node.tagName || node.tagName === '#text') {
+                        // Text node
+                        return node.textContent || '';
                 }
                 var attributes = node.attributes;
                 var html = "<".concat(node.tagName);
@@ -868,10 +946,17 @@
         function chartGetTableAST(useLocalDecimalPoint) {
             var rowLength = 0;
             var treeChildren = [];
-            var options = this.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', useMultiLevelHeaders = pick(options.exporting.useMultiLevelHeaders, true), rows = this.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
-            // Compare two rows for equality
-            isRowEqual = function (row1, row2) {
-                var i = row1.length;
+            var options = this.options,
+                decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.',
+                useMultiLevelHeaders = pick(options.exporting.useMultiLevelHeaders,
+                true),
+                rows = this.getDataRows(useMultiLevelHeaders),
+                topHeaders = useMultiLevelHeaders ? rows.shift() : null,
+                subHeaders = rows.shift(), 
+                // Compare two rows for equality
+                isRowEqual = function (row1,
+                row2) {
+                    var i = row1.length;
                 if (row2.length === i) {
                     while (i--) {
                         if (row1[i] !== row2[i]) {
@@ -908,7 +993,12 @@
             // Get table header markup from row data
             getTableHeaderHTML = function (topheaders, subheaders, rowLength) {
                 var theadChildren = [];
-                var i = 0, len = rowLength || subheaders && subheaders.length, next, cur, curColspan = 0, rowspan;
+                var i = 0,
+                    len = rowLength || subheaders && subheaders.length,
+                    next,
+                    cur,
+                    curColspan = 0,
+                    rowspan;
                 // Clean up multiple table headers. Chart.getDataRows() returns two
                 // levels of headers when using multilevel, not merged. We need to
                 // merge identical headers, remove redundant headers, and keep it
@@ -1020,12 +1110,12 @@
                 children: trs
             });
             var e = {
-                tree: {
-                    tagName: 'table',
-                    id: "highcharts-data-table-".concat(this.index),
-                    children: treeChildren
-                }
-            };
+                    tree: {
+                        tagName: 'table',
+                        id: "highcharts-data-table-".concat(this.index),
+                        children: treeChildren
+                    }
+                };
             fireEvent(this, 'aftergetTableAST', e);
             return e.tree;
         }
@@ -1052,7 +1142,8 @@
             }
             // Toggle the visibility
             if (this.dataTableDiv) {
-                var style = this.dataTableDiv.style, oldDisplay = style.display;
+                var style = this.dataTableDiv.style,
+                    oldDisplay = style.display;
                 style.display = show ? 'block' : 'none';
                 // Generate the data table
                 if (show) {
@@ -1068,9 +1159,12 @@
             // Set the flag
             this.isDataTableVisible = show;
             // Change the menu item text
-            var exportDivElements = this.exportDivElements, options = this.options.exporting, menuItems = options &&
-                options.buttons &&
-                options.buttons.contextButton.menuItems, lang = this.options.lang;
+            var exportDivElements = this.exportDivElements,
+                options = this.options.exporting,
+                menuItems = options &&
+                    options.buttons &&
+                    options.buttons.contextButton.menuItems,
+                lang = this.options.lang;
             if (options &&
                 options.menuItemDefinitions &&
                 lang &&
@@ -1098,8 +1192,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (composedClasses.indexOf(ChartClass) === -1) {
-                composedClasses.push(ChartClass);
+            if (U.pushUnique(composedMembers, ChartClass)) {
                 // Add an event listener to handle the showTable option
                 addEvent(ChartClass, 'afterViewData', onChartAfterViewData);
                 addEvent(ChartClass, 'render', onChartRenderer);
@@ -1114,8 +1207,7 @@
                 chartProto.toggleDataTable = chartToggleDataTable;
                 chartProto.viewData = chartViewData;
             }
-            if (composedClasses.indexOf(setOptions) === -1) {
-                composedClasses.push(setOptions);
+            if (U.pushUnique(composedMembers, setOptions)) {
                 var exportingOptions = getOptions().exporting;
                 // Add "Download CSV" to the exporting menu.
                 // @todo consider move to defaults
@@ -1147,30 +1239,25 @@
                 }
                 setOptions(ExportDataDefaults);
             }
-            if (AreaRangeSeries && composedClasses.indexOf(AreaRangeSeries) === -1) {
-                composedClasses.push(AreaRangeSeries);
+            if (AreaRangeSeries && U.pushUnique(composedMembers, AreaRangeSeries)) {
                 AreaRangeSeries.prototype.keyToAxis = {
                     low: 'y',
                     high: 'y'
                 };
             }
-            if (GanttSeries && composedClasses.indexOf(GanttSeries) === -1) {
-                composedClasses.push(GanttSeries);
+            if (GanttSeries && U.pushUnique(composedMembers, GanttSeries)) {
                 GanttSeries.prototype.keyToAxis = {
                     start: 'x',
                     end: 'x'
                 };
             }
-            if (MapSeries && composedClasses.indexOf(MapSeries) === -1) {
-                composedClasses.push(MapSeries);
+            if (MapSeries && U.pushUnique(composedMembers, MapSeries)) {
                 MapSeries.prototype.exportKey = 'name';
             }
-            if (MapBubbleSeries && composedClasses.indexOf(MapBubbleSeries) === -1) {
-                composedClasses.push(MapBubbleSeries);
+            if (MapBubbleSeries && U.pushUnique(composedMembers, MapBubbleSeries)) {
                 MapBubbleSeries.prototype.exportKey = 'name';
             }
-            if (TreemapSeries && composedClasses.indexOf(TreemapSeries) === -1) {
-                composedClasses.push(TreemapSeries);
+            if (TreemapSeries && U.pushUnique(composedMembers, TreemapSeries)) {
                 TreemapSeries.prototype.exportKey = 'name';
             }
         }
@@ -1186,8 +1273,10 @@
          *         The blob object, or undefined if not supported.
          */
         function getBlobFromContent(content, type) {
-            var nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-                nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
+            var nav = win.navigator,
+                webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
+                    nav.userAgent.indexOf('Chrome') < 0),
+                domurl = win.URL || win.webkitURL || win;
             try {
                 // MS specific
                 if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
@@ -1210,13 +1299,17 @@
          * @private
          */
         function onChartAfterViewData() {
-            var chart = this, dataTableDiv = chart.dataTableDiv, getCellValue = function (tr, index) {
-                return tr.children[index].textContent;
+            var chart = this,
+                dataTableDiv = chart.dataTableDiv,
+                getCellValue = function (tr,
+                index) {
+                    return tr.children[index].textContent;
             }, comparer = function (index, ascending) {
                 return function (a, b) {
-                    var sort = function (v1, v2) { return (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
-                        v1 - v2 :
-                        v1.toString().localeCompare(v2)); };
+                    var sort = function (v1,
+                        v2) { return (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
+                            v1 - v2 :
+                            v1.toString().localeCompare(v2)); };
                     return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
                 };
             };
@@ -1228,7 +1321,12 @@
                     row.childNodes.forEach(function (th) {
                         var table = th.closest('table');
                         th.addEventListener('click', function () {
-                            var rows = __spreadArray([], dataTableDiv.querySelectorAll('tr:not(thead tr)'), true), headers = __spreadArray([], th.parentNode.children, true);
+                            var rows = __spreadArray([],
+                                dataTableDiv.querySelectorAll('tr:not(thead tr)'),
+                                true),
+                                headers = __spreadArray([],
+                                th.parentNode.children,
+                                true);
                             rows.sort(comparer(headers.indexOf(th), chart.ascendingOrderInTable =
                                 !chart.ascendingOrderInTable)).forEach(function (tr) {
                                 table.appendChild(tr);
@@ -1269,8 +1367,8 @@
          *
          * */
         var ExportData = {
-            compose: compose
-        };
+                compose: compose
+            };
         /* *
          *
          *  API Declarations

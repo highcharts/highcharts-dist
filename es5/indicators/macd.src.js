@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,23 +46,29 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, SMAIndicator = _a.sma;
-        var extend = U.extend, correctFloat = U.correctFloat, defined = U.defined, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            ColumnSeries = _a.column,
+            SMAIndicator = _a.sma;
+        var extend = U.extend,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -78,26 +84,19 @@
          * @augments Highcharts.Series
          */
         var MACDIndicator = /** @class */ (function (_super) {
-            __extends(MACDIndicator, _super);
+                __extends(MACDIndicator, _super);
             function MACDIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.data = void 0;
+                _this.macdZones = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
-                _this.currentLineZone = void 0;
-                _this.graphmacd = void 0;
-                _this.graphsignal = void 0;
-                _this.macdZones = void 0;
                 _this.signalZones = void 0;
                 return _this;
             }
@@ -108,7 +107,8 @@
              * */
             MACDIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
-                var originalColor = this.color, originalColorIndex = this.userOptions._colorIndex;
+                var originalColor = this.color,
+                    originalColorIndex = this.userOptions._colorIndex;
                 // Check whether series is initialized. It may be not initialized,
                 // when any of required indicators is missing.
                 if (this.options) {
@@ -171,11 +171,19 @@
                 SeriesRegistry.seriesTypes.sma.prototype.destroy.apply(this, arguments);
             };
             MACDIndicator.prototype.drawGraph = function () {
-                var indicator = this, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, otherSignals = [[], []], point;
+                var indicator = this,
+                    mainLinePoints = indicator.points,
+                    mainLineOptions = indicator.options,
+                    histogramZones = indicator.zones,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    },
+                    otherSignals = [[],
+                    []];
+                var point,
+                    pointsLength = mainLinePoints.length;
                 // Generate points for top and bottom lines:
                 while (pointsLength--) {
                     point = mainLinePoints[pointsLength];
@@ -210,11 +218,13 @@
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
                 indicator.zones = histogramZones;
-                indicator.currentLineZone = null;
+                indicator.currentLineZone = void 0;
                 // indicator.graph = null;
             };
             MACDIndicator.prototype.getZonesGraphs = function (props) {
-                var allZones = _super.prototype.getZonesGraphs.call(this, props), currentZones = allZones;
+                var allZones = _super.prototype.getZonesGraphs.call(this,
+                    props);
+                var currentZones = allZones;
                 if (this.currentLineZone) {
                     currentZones = allZones.splice(this[this.currentLineZone].startIndex + 1);
                     if (!currentZones.length) {
@@ -243,7 +253,14 @@
             };
             MACDIndicator.prototype.getValues = function (series, params) {
                 var indexToShift = (params.longPeriod - params.shortPeriod), // #14197
-                j = 0, MACD = [], xMACD = [], yMACD = [], signalLine = [], shortEMA, longEMA, i;
+                    MACD = [],
+                    xMACD = [],
+                    yMACD = [];
+                var shortEMA,
+                    longEMA,
+                    i,
+                    j = 0,
+                    signalLine = [];
                 if (series.xData.length <
                     params.longPeriod + params.signalPeriod) {
                     return;

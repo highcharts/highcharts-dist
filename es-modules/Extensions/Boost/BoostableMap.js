@@ -22,8 +22,8 @@ import Boostables from './Boostables.js';
  *
  * */
 // These are the series we allow boosting for.
-var BoostableMap = {};
-Boostables.forEach(function (item) {
+const BoostableMap = {};
+Boostables.forEach((item) => {
     BoostableMap[item] = true;
 });
 /* *

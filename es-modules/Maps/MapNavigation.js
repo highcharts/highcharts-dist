@@ -10,9 +10,9 @@
 'use strict';
 import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { addEvent, extend, isNumber, merge, objectEach, pick } = U;
 import './MapNavigationDefaults.js';
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
@@ -69,7 +69,7 @@ MapNavigation.prototype.init = function (chart) {
  * @return {void}
  */
 MapNavigation.prototype.update = function (options) {
-    var mapNav = this, chart = this.chart, o = chart.options.mapNavigation, attr, outerHandler = function (e) {
+    let mapNav = this, chart = this.chart, o = chart.options.mapNavigation, attr, outerHandler = function (e) {
         this.handler.call(chart, e);
         stopEvent(e); // Stop default click event (#4444)
     }, navButtons = mapNav.navButtons;
@@ -85,11 +85,14 @@ MapNavigation.prototype.update = function (options) {
     }
     if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
         if (!mapNav.navButtonsGroup) {
-            mapNav.navButtonsGroup = chart.renderer.g().attr({
+            mapNav.navButtonsGroup = chart.renderer.g()
+                .attr({
                 zIndex: 4 // #4955, // #8392
-            }).add();
+            })
+                .add();
         }
         objectEach(o.buttons, function (buttonOptions, n) {
+            var _a;
             buttonOptions = merge(o.buttonOptions, buttonOptions);
             // Presentational
             if (!chart.styledMode && buttonOptions.theme) {
@@ -97,20 +100,46 @@ MapNavigation.prototype.update = function (options) {
                 attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                 );
             }
-            var button = chart.renderer
-                .button(buttonOptions.text || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+            const { text, width = 0, height = 0, padding = 0 } = buttonOptions;
+            const button = chart.renderer
+                .button(
+            // Display the text from options only if it is not plus or
+            // minus
+            (text !== '+' && text !== '-' && text) || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
                 .addClass('highcharts-map-navigation highcharts-' + {
                 zoomIn: 'zoom-in',
                 zoomOut: 'zoom-out'
             }[n])
                 .attr({
-                width: buttonOptions.width,
-                height: buttonOptions.height,
+                width,
+                height,
                 title: chart.options.lang[n],
                 padding: buttonOptions.padding,
                 zIndex: 5
             })
                 .add(mapNav.navButtonsGroup);
+            // Add SVG paths for the default symbols, because the text
+            // representation of + and - is not sharp and position is not easy
+            // to control.
+            if (text === '+' || text === '-') {
+                // Mysterious +1 to achieve centering
+                const w = width + 1, d = [
+                    ['M', padding + 3, padding + height / 2],
+                    ['L', padding + w - 3, padding + height / 2]
+                ];
+                if (text === '+') {
+                    d.push(['M', padding + w / 2, padding + 3], ['L', padding + w / 2, padding + height - 3]);
+                }
+                chart.renderer
+                    .path(d)
+                    .addClass('highcharts-button-symbol')
+                    .attr(chart.styledMode ? {} : {
+                    stroke: (_a = buttonOptions.style) === null || _a === void 0 ? void 0 : _a.color,
+                    'stroke-width': 3,
+                    'stroke-linecap': 'round'
+                })
+                    .add(button);
+            }
             button.handler = buttonOptions.onclick;
             // Stop double click event (#4444)
             addEvent(button.element, 'dblclick', stopEvent);
@@ -121,12 +150,12 @@ MapNavigation.prototype.update = function (options) {
             });
             if (!chart.hasLoaded) {
                 // Align it after the plotBox is known (#12776)
-                var unbind_1 = addEvent(chart, 'load', function () {
+                const unbind = addEvent(chart, 'load', () => {
                     // #15406: Make sure button hasnt been destroyed
                     if (button.element) {
                         button.align(buttonOptions, false, buttonOptions.alignTo);
                     }
-                    unbind_1();
+                    unbind();
                 });
             }
             else {
@@ -134,21 +163,21 @@ MapNavigation.prototype.update = function (options) {
             }
         });
         // Borrowed from overlapping-datalabels. Consider a shared module.
-        var isIntersectRect_1 = function (box1, box2) { return !(box2.x >= box1.x + box1.width ||
+        const isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
             box2.x + box2.width <= box1.x ||
             box2.y >= box1.y + box1.height ||
-            box2.y + box2.height <= box1.y); };
+            box2.y + box2.height <= box1.y);
         // Check the mapNavigation buttons collision with exporting button
         // and translate the mapNavigation button if they overlap.
-        var adjustMapNavBtn = function () {
-            var expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
+        const adjustMapNavBtn = function () {
+            const expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
             if (expBtnBBox) {
-                var navBtnsBBox = mapNav.navButtonsGroup.getBBox();
+                const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
                 // If buttons overlap
-                if (isIntersectRect_1(expBtnBBox, navBtnsBBox)) {
+                if (isIntersectRect(expBtnBBox, navBtnsBBox)) {
                     // Adjust the mapNav buttons' position by translating them
                     // above or below the exporting button
-                    var aboveExpBtn = -navBtnsBBox.y - navBtnsBBox.height +
+                    const aboveExpBtn = -navBtnsBBox.y - navBtnsBBox.height +
                         expBtnBBox.y - 5, belowExpBtn = expBtnBBox.y + expBtnBBox.height -
                         navBtnsBBox.y + 5, mapNavVerticalAlign = o.buttonOptions && o.buttonOptions.verticalAlign;
                     // If bottom aligned and adjusting the mapNav button would
@@ -183,7 +212,7 @@ MapNavigation.prototype.update = function (options) {
  * @return {void}
  */
 MapNavigation.prototype.updateEvents = function (options) {
-    var chart = this.chart;
+    const chart = this.chart;
     // Add the double click event
     if (pick(options.enableDoubleClickZoom, options.enabled) ||
         options.enableDoubleClickZoomTo) {
@@ -236,7 +265,7 @@ extend(Chart.prototype, /** @lends Chart.prototype */ {
      */
     fitToBox: function (inner, outer) {
         [['x', 'width'], ['y', 'height']].forEach(function (dim) {
-            var pos = dim[0], size = dim[1];
+            const pos = dim[0], size = dim[1];
             if (inner[pos] + inner[size] >
                 outer[pos] + outer[size]) { // right
                 // the general size is greater, fit fully to outer

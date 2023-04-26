@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Force directed graph module
  *
@@ -49,13 +49,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent;
+        const { addEvent } = U;
         /* *
          *
          *  Constants
          *
          * */
-        var composedClasses = [];
+        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -65,8 +65,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (composedClasses.indexOf(ChartClass) === -1) {
-                composedClasses.push(ChartClass);
+            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'load', onChartLoad);
             }
         }
@@ -75,22 +74,20 @@
          * @private
          */
         function onChartLoad() {
-            var chart = this;
-            var mousedownUnbinder,
-                mousemoveUnbinder,
-                mouseupUnbinder;
+            const chart = this;
+            let mousedownUnbinder, mousemoveUnbinder, mouseupUnbinder;
             if (chart.container) {
-                mousedownUnbinder = addEvent(chart.container, 'mousedown', function (event) {
-                    var point = chart.hoverPoint;
+                mousedownUnbinder = addEvent(chart.container, 'mousedown', (event) => {
+                    const point = chart.hoverPoint;
                     if (point &&
                         point.series &&
                         point.series.hasDraggableNodes &&
                         point.series.options.draggable) {
                         point.series.onMouseDown(point, event);
-                        mousemoveUnbinder = addEvent(chart.container, 'mousemove', function (e) { return (point &&
+                        mousemoveUnbinder = addEvent(chart.container, 'mousemove', (e) => (point &&
                             point.series &&
-                            point.series.onMouseMove(point, e)); });
-                        mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', function (e) {
+                            point.series.onMouseMove(point, e)));
+                        mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', (e) => {
                             mousemoveUnbinder();
                             mouseupUnbinder();
                             return point &&
@@ -114,7 +111,7 @@
          *        Browser event, before normalization.
          */
         function onMouseDown(point, event) {
-            var normalizedEvent = this.chart.pointer.normalize(event);
+            const normalizedEvent = this.chart.pointer.normalize(event);
             point.fixedPosition = {
                 chartX: normalizedEvent.chartX,
                 chartY: normalizedEvent.chartY,
@@ -136,14 +133,8 @@
          */
         function onMouseMove(point, event) {
             if (point.fixedPosition && point.inDragMode) {
-                var series = this,
-                    chart = series.chart,
-                    normalizedEvent = chart.pointer.normalize(event),
-                    diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
-                    diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
-                    graphLayoutsLookup = chart.graphLayoutsLookup;
-                var newPlotX = void 0,
-                    newPlotY = void 0;
+                const series = this, chart = series.chart, normalizedEvent = chart.pointer.normalize(event), diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
+                let newPlotX, newPlotY;
                 // At least 5px to apply change (avoids simple click):
                 if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
                     newPlotX = point.fixedPosition.plotX - diffX;
@@ -153,7 +144,7 @@
                         point.plotY = newPlotY;
                         point.hasDragged = true;
                         this.redrawHalo(point);
-                        graphLayoutsLookup.forEach(function (layout) {
+                        graphLayoutsLookup.forEach((layout) => {
                             layout.restartSimulation();
                         });
                     }
@@ -202,13 +193,13 @@
          *  Default Export
          *
          * */
-        var DragNodesComposition = {
-                compose: compose,
-                onMouseDown: onMouseDown,
-                onMouseMove: onMouseMove,
-                onMouseUp: onMouseUp,
-                redrawHalo: redrawHalo
-            };
+        const DragNodesComposition = {
+            compose,
+            onMouseDown,
+            onMouseMove,
+            onMouseUp,
+            redrawHalo
+        };
 
         return DragNodesComposition;
     });
@@ -224,16 +215,16 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var setAnimation = A.setAnimation;
-        var addEvent = U.addEvent;
+        const { setAnimation } = A;
+        const { addEvent } = U;
         /* *
          *
          *  Constants
          *
          * */
-        var composedClasses = [];
-        var integrations = {};
-        var layouts = {};
+        const composedMembers = [];
+        const integrations = {};
+        const layouts = {};
         /* *
          *
          *  Functions
@@ -243,8 +234,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (composedClasses.indexOf(ChartClass)) {
-                composedClasses.push(ChartClass);
+            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
                 addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
                 addEvent(ChartClass, 'predraw', onChartPredraw);
@@ -257,7 +247,7 @@
          */
         function onChartAfterPrint() {
             if (this.graphLayoutsLookup) {
-                this.graphLayoutsLookup.forEach(function (layout) {
+                this.graphLayoutsLookup.forEach((layout) => {
                     // return to default simulation
                     layout.updateSimulation();
                 });
@@ -270,7 +260,7 @@
          */
         function onChartBeforePrint() {
             if (this.graphLayoutsLookup) {
-                this.graphLayoutsLookup.forEach(function (layout) {
+                this.graphLayoutsLookup.forEach((layout) => {
                     layout.updateSimulation(false);
                 });
                 this.redraw();
@@ -282,7 +272,7 @@
          */
         function onChartPredraw() {
             if (this.graphLayoutsLookup) {
-                this.graphLayoutsLookup.forEach(function (layout) {
+                this.graphLayoutsLookup.forEach((layout) => {
                     layout.stop();
                 });
             }
@@ -291,20 +281,19 @@
          * @private
          */
         function onChartRender() {
-            var systemsStable,
-                afterRender = false;
-            var layoutStep = function (layout) {
-                    if (layout.maxIterations-- &&
-                        isFinite(layout.temperature) &&
-                        !layout.isStable() &&
-                        !layout.enableSimulation) {
-                        // Hook similar to build-in addEvent, but instead of
-                        // creating whole events logic, use just a function.
-                        // It's faster which is important for rAF code.
-                        // Used e.g. in packed-bubble series for bubble radius
-                        // calculations
-                        if (layout.beforeStep) {
-                            layout.beforeStep();
+            let systemsStable, afterRender = false;
+            const layoutStep = (layout) => {
+                if (layout.maxIterations-- &&
+                    isFinite(layout.temperature) &&
+                    !layout.isStable() &&
+                    !layout.enableSimulation) {
+                    // Hook similar to build-in addEvent, but instead of
+                    // creating whole events logic, use just a function.
+                    // It's faster which is important for rAF code.
+                    // Used e.g. in packed-bubble series for bubble radius
+                    // calculations
+                    if (layout.beforeStep) {
+                        layout.beforeStep();
                     }
                     layout.step();
                     systemsStable = false;
@@ -314,7 +303,7 @@
             if (this.graphLayoutsLookup) {
                 setAnimation(false, this);
                 // Start simulation
-                this.graphLayoutsLookup.forEach(function (layout) { return layout.start(); });
+                this.graphLayoutsLookup.forEach((layout) => layout.start());
                 // Just one sync step, to run different layouts similar to
                 // async mode.
                 while (!systemsStable) {
@@ -322,7 +311,7 @@
                     this.graphLayoutsLookup.forEach(layoutStep);
                 }
                 if (afterRender) {
-                    this.series.forEach(function (series) {
+                    this.series.forEach((series) => {
                         if (series && series.layout) {
                             series.render();
                         }
@@ -335,11 +324,11 @@
          *  Default Export
          *
          * */
-        var GraphLayoutComposition = {
-                compose: compose,
-                integrations: integrations,
-                layouts: layouts
-            };
+        const GraphLayoutComposition = {
+            compose,
+            integrations,
+            layouts
+        };
 
         return GraphLayoutComposition;
     });
@@ -349,14 +338,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var _a = SeriesRegistry.series,
-            seriesProto = _a.prototype,
-            pointProto = _a.prototype.pointClass.prototype;
-        var defined = U.defined,
-            extend = U.extend,
-            find = U.find,
-            merge = U.merge,
-            pick = U.pick;
+        const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = SeriesRegistry;
+        const { defined, extend, find, merge, pick } = U;
         /* *
          *
          *  Composition
@@ -374,7 +357,7 @@
              *  Constants
              *
              * */
-            var composedClasses = [];
+            const composedMembers = [];
             /* *
              *
              *  Functions
@@ -384,18 +367,16 @@
              * @private
              */
             function compose(PointClass, SeriesClass) {
-                if (composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
-                    var pointProto_1 = PointClass.prototype;
-                    pointProto_1.setNodeState = setNodeState;
-                    pointProto_1.setState = setNodeState;
-                    pointProto_1.update = updateNode;
+                if (U.pushUnique(composedMembers, PointClass)) {
+                    const pointProto = PointClass.prototype;
+                    pointProto.setNodeState = setNodeState;
+                    pointProto.setState = setNodeState;
+                    pointProto.update = updateNode;
                 }
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
-                    var seriesProto_1 = SeriesClass.prototype;
-                    seriesProto_1.destroy = destroy;
-                    seriesProto_1.setData = setData;
+                if (U.pushUnique(composedMembers, SeriesClass)) {
+                    const seriesProto = SeriesClass.prototype;
+                    seriesProto.destroy = destroy;
+                    seriesProto.setData = setData;
                 }
                 return SeriesClass;
             }
@@ -406,36 +387,28 @@
              * @private
              */
             function createNode(id) {
-                var PointClass = this.pointClass,
-                    findById = function (nodes,
-                    id) { return find(nodes,
-                    function (node) { return node.id === id; }); };
-                var node = findById(this.nodes,
-                    id),
-                    options;
+                const PointClass = this.pointClass, findById = (nodes, id) => find(nodes, (node) => node.id === id);
+                let node = findById(this.nodes, id), options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
-                    var newNode_1 = (new PointClass()).init(this,
-                        extend({
-                            className: 'highcharts-node',
-                            isNode: true,
-                            id: id,
-                            y: 1 // Pass isNull test
-                        },
-                        options));
-                    newNode_1.linksTo = [];
-                    newNode_1.linksFrom = [];
+                    const newNode = (new PointClass()).init(this, extend({
+                        className: 'highcharts-node',
+                        isNode: true,
+                        id: id,
+                        y: 1 // Pass isNull test
+                    }, options));
+                    newNode.linksTo = [];
+                    newNode.linksFrom = [];
                     /**
                      * Return the largest sum of either the incoming or outgoing links.
                      * @private
                      */
-                    newNode_1.getSum = function () {
-                        var sumTo = 0,
-                            sumFrom = 0;
-                        newNode_1.linksTo.forEach(function (link) {
+                    newNode.getSum = function () {
+                        let sumTo = 0, sumFrom = 0;
+                        newNode.linksTo.forEach((link) => {
                             sumTo += link.weight || 0;
                         });
-                        newNode_1.linksFrom.forEach(function (link) {
+                        newNode.linksFrom.forEach((link) => {
                             sumFrom += link.weight || 0;
                         });
                         return Math.max(sumTo, sumFrom);
@@ -444,29 +417,29 @@
                      * Get the offset in weight values of a point/link.
                      * @private
                      */
-                    newNode_1.offset = function (point, coll) {
-                        var offset = 0;
-                        for (var i = 0; i < newNode_1[coll].length; i++) {
-                            if (newNode_1[coll][i] === point) {
+                    newNode.offset = function (point, coll) {
+                        let offset = 0;
+                        for (let i = 0; i < newNode[coll].length; i++) {
+                            if (newNode[coll][i] === point) {
                                 return offset;
                             }
-                            offset += newNode_1[coll][i].weight;
+                            offset += newNode[coll][i].weight;
                         }
                     };
                     // Return true if the node has a shape, otherwise all links are
                     // outgoing.
-                    newNode_1.hasShape = function () {
-                        var outgoing = 0;
-                        newNode_1.linksTo.forEach(function (link) {
+                    newNode.hasShape = function () {
+                        let outgoing = 0;
+                        newNode.linksTo.forEach((link) => {
                             if (link.outgoing) {
                                 outgoing++;
                             }
                         });
-                        return (!newNode_1.linksTo.length ||
-                            outgoing !== newNode_1.linksTo.length);
+                        return (!newNode.linksTo.length ||
+                            outgoing !== newNode.linksTo.length);
                     };
-                    newNode_1.index = this.nodes.push(newNode_1) - 1;
-                    node = newNode_1;
+                    newNode.index = this.nodes.push(newNode) - 1;
+                    node = newNode;
                 }
                 node.formatPrefix = 'node';
                 // for use in formats
@@ -499,25 +472,23 @@
              * @private
              */
             function generatePoints() {
-                var _this = this;
-                var chart = this.chart,
-                    nodeLookup = {};
+                const chart = this.chart, nodeLookup = {};
                 seriesProto.generatePoints.call(this);
                 if (!this.nodes) {
                     this.nodes = []; // List of Point-like node items
                 }
                 this.colorCounter = 0;
                 // Reset links from previous run
-                this.nodes.forEach(function (node) {
+                this.nodes.forEach((node) => {
                     node.linksFrom.length = 0;
                     node.linksTo.length = 0;
                     node.level = node.options.level;
                 });
                 // Create the node list and set up links
-                this.points.forEach(function (point) {
+                this.points.forEach((point) => {
                     if (defined(point.from)) {
                         if (!nodeLookup[point.from]) {
-                            nodeLookup[point.from] = _this.createNode(point.from);
+                            nodeLookup[point.from] = this.createNode(point.from);
                         }
                         nodeLookup[point.from].linksFrom.push(point);
                         point.fromNode = nodeLookup[point.from];
@@ -532,7 +503,7 @@
                     }
                     if (defined(point.to)) {
                         if (!nodeLookup[point.to]) {
-                            nodeLookup[point.to] = _this.createNode(point.to);
+                            nodeLookup[point.to] = this.createNode(point.to);
                         }
                         nodeLookup[point.to].linksTo.push(point);
                         point.toNode = nodeLookup[point.to];
@@ -549,7 +520,7 @@
              */
             function setData() {
                 if (this.nodes) {
-                    this.nodes.forEach(function (node) {
+                    this.nodes.forEach((node) => {
                         node.destroy();
                     });
                     this.nodes.length = 0;
@@ -562,12 +533,10 @@
              * @private
              */
             function setNodeState(state) {
-                var args = arguments,
-                    others = this.isNode ? this.linksTo.concat(this.linksFrom) :
-                        [this.fromNode,
-                    this.toNode];
+                const args = arguments, others = this.isNode ? this.linksTo.concat(this.linksFrom) :
+                    [this.fromNode, this.toNode];
                 if (state !== 'select') {
-                    others.forEach(function (linkOrNode) {
+                    others.forEach((linkOrNode) => {
                         if (linkOrNode && linkOrNode.series) {
                             pointProto.setState.apply(linkOrNode, args);
                             if (!linkOrNode.isNode) {
@@ -590,22 +559,14 @@
              * @private
              */
             function updateNode(options, redraw, animation, runEvent) {
-                var _this = this;
-                var nodes = this.series.options.nodes,
-                    data = this.series.options.data,
-                    dataLength = data && data.length || 0,
-                    linkConfig = data && data[this.index];
+                const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data && data.length || 0, linkConfig = data && data[this.index];
                 pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
                 animation, runEvent);
                 if (this.isNode) {
                     // this.index refers to `series.nodes`, not `options.nodes` array
-                    var nodeIndex = (nodes || [])
-                            .reduce(// Array.findIndex needs a polyfill
-                        function (prevIndex,
-                        n,
-                        index) {
-                            return (_this.id === n.id ? index : prevIndex);
-                    }, -1), 
+                    const nodeIndex = (nodes || [])
+                        .reduce(// Array.findIndex needs a polyfill
+                    (prevIndex, n, index) => (this.id === n.id ? index : prevIndex), -1), 
                     // Merge old config with new config. New config is stored in
                     // options.data, because of default logic in point.update()
                     nodeConfig = merge(nodes && nodes[nodeIndex] || {}, data && data[this.index] || {});
@@ -658,40 +619,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var _a = SeriesRegistry.series,
-            seriesProto = _a.prototype,
-            Point = _a.prototype.pointClass;
-        var addEvent = U.addEvent,
-            css = U.css,
-            defined = U.defined,
-            extend = U.extend,
-            pick = U.pick;
+        const { series: { prototype: seriesProto, prototype: { pointClass: Point } } } = SeriesRegistry;
+        const { addEvent, css, defined, extend, pick } = U;
         /* *
          *
          *  Class
          *
          * */
-        var NetworkgraphPoint = /** @class */ (function (_super) {
-                __extends(NetworkgraphPoint, _super);
-            function NetworkgraphPoint() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
+        class NetworkgraphPoint extends Point {
             /* *
              *
              *  Functions
@@ -702,7 +637,7 @@
              * node. Then remove point from the layout.
              * @private
              */
-            NetworkgraphPoint.prototype.destroy = function () {
+            destroy() {
                 if (this.isNode) {
                     this.linksFrom.concat(this.linksTo).forEach(function (link) {
                         // Removing multiple nodes at the same time
@@ -714,41 +649,39 @@
                 }
                 this.series.layout.removeElementFromCollection(this, this.series.layout[this.isNode ? 'nodes' : 'links']);
                 return Point.prototype.destroy.apply(this, arguments);
-            };
+            }
             /**
              * Return degree of a node. If node has no connections, it still has
              * deg=1.
              * @private
              */
-            NetworkgraphPoint.prototype.getDegree = function () {
-                var deg = this.isNode ?
-                        this.linksFrom.length + this.linksTo.length :
-                        0;
+            getDegree() {
+                const deg = this.isNode ?
+                    this.linksFrom.length + this.linksTo.length :
+                    0;
                 return deg === 0 ? 1 : deg;
-            };
+            }
             /**
              * Get presentational attributes of link connecting two nodes.
              * @private
              */
-            NetworkgraphPoint.prototype.getLinkAttributes = function () {
-                var linkOptions = this.series.options.link,
-                    pointOptions = this.options;
+            getLinkAttributes() {
+                const linkOptions = this.series.options.link, pointOptions = this.options;
                 return {
                     'stroke-width': pick(pointOptions.width, linkOptions.width),
                     stroke: (pointOptions.color || linkOptions.color),
                     dashstyle: (pointOptions.dashStyle || linkOptions.dashStyle),
                     opacity: pick(pointOptions.opacity, linkOptions.opacity, 1)
                 };
-            };
+            }
             /**
              * Get link path connecting two nodes.
              * @private
              * @return {Array<Highcharts.SVGPathArray>}
              *         Path: `['M', x, y, 'L', x, y]`
              */
-            NetworkgraphPoint.prototype.getLinkPath = function () {
-                var left = this.fromNode,
-                    right = this.toNode;
+            getLinkPath() {
+                let left = this.fromNode, right = this.toNode;
                 // Start always from left to the right node, to prevent rendering
                 // labels upside down
                 if (left.plotX > right.plotX) {
@@ -771,7 +704,7 @@
                     to.plotX,
                     to.plotY
                 ];*/
-            };
+            }
             /**
              * Get mass fraction applied on two nodes connected to each other. By
              * default, when mass is equal to `1`, mass fraction for both nodes
@@ -780,22 +713,20 @@
              * @return {Highcharts.Dictionary<number>}
              *         For example `{ fromNode: 0.5, toNode: 0.5 }`
              */
-            NetworkgraphPoint.prototype.getMass = function () {
-                var m1 = this.fromNode.mass,
-                    m2 = this.toNode.mass,
-                    sum = m1 + m2;
+            getMass() {
+                const m1 = this.fromNode.mass, m2 = this.toNode.mass, sum = m1 + m2;
                 return {
                     fromNode: 1 - m1 / sum,
                     toNode: 1 - m2 / sum
                 };
-            };
+            }
             /**
              * Basic `point.init()` and additional styles applied when
              * `series.draggable` is enabled.
              * @private
              */
-            NetworkgraphPoint.prototype.init = function (series, options, x) {
-                _super.prototype.init.call(this, series, options, x);
+            init(series, options, x) {
+                super.init(series, options, x);
                 if (this.series.options.draggable &&
                     !this.series.chart.styledMode) {
                     addEvent(this, 'mouseOver', function () {
@@ -806,20 +737,19 @@
                     });
                 }
                 return this;
-            };
+            }
             /**
              * @private
              */
-            NetworkgraphPoint.prototype.isValid = function () {
+            isValid() {
                 return !this.isNode || defined(this.id);
-            };
+            }
             /**
              * Redraw link's path.
              * @private
              */
-            NetworkgraphPoint.prototype.redrawLink = function () {
-                var path = this.getLinkPath(),
-                    attribs;
+            redrawLink() {
+                let path = this.getLinkPath(), attribs;
                 if (this.graphic) {
                     this.shapeArgs = {
                         d: path
@@ -837,14 +767,14 @@
                     }
                     this.graphic.animate(this.shapeArgs);
                     // Required for dataLabels
-                    var start = path[0];
-                    var end = path[1];
+                    const start = path[0];
+                    const end = path[1];
                     if (start[0] === 'M' && end[0] === 'L') {
                         this.plotX = (start[1] + end[1]) / 2;
                         this.plotY = (start[2] + end[2]) / 2;
                     }
                 }
-            };
+            }
             /**
              * Common method for removing points and nodes in networkgraph. To
              * remove `link`, use `series.data[index].remove()`. To remove `node`
@@ -859,12 +789,8 @@
              *        Whether to apply animation, and optionally animation
              *        configuration.
              */
-            NetworkgraphPoint.prototype.remove = function (redraw, animation) {
-                var point = this,
-                    series = point.series,
-                    nodesOptions = series.options.nodes || [],
-                    index,
-                    i = nodesOptions.length;
+            remove(redraw, animation) {
+                let point = this, series = point.series, nodesOptions = series.options.nodes || [], index, i = nodesOptions.length;
                 // For nodes, remove all connected links:
                 if (point.isNode) {
                     // Temporary disable series.points array, because
@@ -913,13 +839,13 @@
                 else {
                     series.removePoint(series.data.indexOf(point), redraw, animation);
                 }
-            };
+            }
             /**
              * Render link and add it to the DOM.
              * @private
              */
-            NetworkgraphPoint.prototype.renderLink = function () {
-                var attribs;
+            renderLink() {
+                let attribs;
                 if (!this.graphic) {
                     this.graphic = this.series.chart.renderer
                         .path(this.getLinkPath())
@@ -937,9 +863,8 @@
                         });
                     }
                 }
-            };
-            return NetworkgraphPoint;
-        }(Point));
+            }
+        }
         extend(NetworkgraphPoint.prototype, {
             setState: NodesComposition.setNodeState
         });
@@ -989,51 +914,27 @@
          *
          * @private
          */
-        var NetworkgraphSeriesDefaults = {
-                stickyTracking: false,
-                /**
-                 * @ignore-option
-                 * @private
-                 */
-                inactiveOtherPoints: true,
-                marker: {
-                    enabled: true,
-                    states: {
-                        /**
-                         * The opposite state of a hover for a single point node.
-                         * Applied to all not connected nodes to the hovered one.
-                         *
-                         * @declare Highcharts.PointStatesInactiveOptionsObject
-                         */
-                        inactive: {
-                            /**
-                             * Opacity of inactive markers.
-                             */
-                            opacity: 0.3,
-                            /**
-                             * Animation when not hovering over the node.
-                             *
-                             * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
-                             */
-                            animation: {
-                                /** @internal */
-                                duration: 50
-                            }
-                        }
-                    }
-                },
+        const NetworkgraphSeriesDefaults = {
+            stickyTracking: false,
+            /**
+             * @ignore-option
+             * @private
+             */
+            inactiveOtherPoints: true,
+            marker: {
+                enabled: true,
                 states: {
                     /**
-                     * The opposite state of a hover for a single point link. Applied
-                     * to all links that are not comming from the hovered node.
+                     * The opposite state of a hover for a single point node.
+                     * Applied to all not connected nodes to the hovered one.
                      *
-                     * @declare Highcharts.SeriesStatesInactiveOptionsObject
+                     * @declare Highcharts.PointStatesInactiveOptionsObject
                      */
                     inactive: {
                         /**
-                         * Opacity of inactive links.
+                         * Opacity of inactive markers.
                          */
-                        linkOpacity: 0.3,
+                        opacity: 0.3,
                         /**
                          * Animation when not hovering over the node.
                          *
@@ -1044,46 +945,68 @@
                             duration: 50
                         }
                     }
-                },
+                }
+            },
+            states: {
                 /**
-                 * @sample highcharts/series-networkgraph/link-datalabels
-                 *         Networkgraph with labels on links
-                 * @sample highcharts/series-networkgraph/textpath-datalabels
-                 *         Networkgraph with labels around nodes
-                 * @sample highcharts/series-networkgraph/link-datalabels
-                 *         Data labels moved into the nodes
-                 * @sample highcharts/series-networkgraph/link-datalabels
-                 *         Data labels moved under the links
+                 * The opposite state of a hover for a single point link. Applied
+                 * to all links that are not comming from the hovered node.
                  *
-                 * @declare Highcharts.SeriesNetworkgraphDataLabelsOptionsObject
-                 *
-                 * @private
+                 * @declare Highcharts.SeriesStatesInactiveOptionsObject
                  */
-                dataLabels: {
+                inactive: {
                     /**
-                     * The
-                     * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
-                     * specifying what to show for _node_ in the networkgraph. In v7.0
-                     * defaults to `{key}`,
-            since v7.1 defaults to `undefined` and
-                     * `formatter` is used instead.
-                     *
-                     * @type      {string}
-                     * @since     7.0.0
-                     * @apioption plotOptions.networkgraph.dataLabels.format
+                     * Opacity of inactive links.
                      */
-                    // eslint-disable-next-line valid-jsdoc
+                    linkOpacity: 0.3,
                     /**
-                     * Callback JavaScript function to format the data label for a node.
-                     * Note that if a `format` is defined,
-            the format takes precedence
-                     * and the formatter is ignored.
+                     * Animation when not hovering over the node.
                      *
-                     * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
-                     * @since 7.0.0
+                     * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      */
-                    formatter: function () {
-                        return this.key;
+                    animation: {
+                        /** @internal */
+                        duration: 50
+                    }
+                }
+            },
+            /**
+             * @sample highcharts/series-networkgraph/link-datalabels
+             *         Networkgraph with labels on links
+             * @sample highcharts/series-networkgraph/textpath-datalabels
+             *         Networkgraph with labels around nodes
+             * @sample highcharts/series-networkgraph/link-datalabels
+             *         Data labels moved into the nodes
+             * @sample highcharts/series-networkgraph/link-datalabels
+             *         Data labels moved under the links
+             *
+             * @declare Highcharts.SeriesNetworkgraphDataLabelsOptionsObject
+             *
+             * @private
+             */
+            dataLabels: {
+                /**
+                 * The
+                 * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+                 * specifying what to show for _node_ in the networkgraph. In v7.0
+                 * defaults to `{key}`, since v7.1 defaults to `undefined` and
+                 * `formatter` is used instead.
+                 *
+                 * @type      {string}
+                 * @since     7.0.0
+                 * @apioption plotOptions.networkgraph.dataLabels.format
+                 */
+                // eslint-disable-next-line valid-jsdoc
+                /**
+                 * Callback JavaScript function to format the data label for a node.
+                 * Note that if a `format` is defined, the format takes precedence
+                 * and the formatter is ignored.
+                 *
+                 * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
+                 * @since 7.0.0
+                 */
+                formatter: function () {
+                    return this.key;
                 },
                 /**
                  * The
@@ -1128,6 +1051,10 @@
                 },
                 style: {
                     transition: 'opacity 2000ms'
+                },
+                defer: true,
+                animation: {
+                    defer: 1000
                 }
             },
             /**
@@ -1358,6 +1285,13 @@
          *
          * */
         /**
+         * Fires after the simulation is ended and the layout is stable.
+         *
+         * @type      {Highcharts.NetworkgraphAfterSimulationCallbackFunction}
+         * @product   highcharts
+         * @apioption series.networkgraph.events.afterSimulation
+         */
+        /**
          * A `networkgraph` series. If the [type](#series.networkgraph.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
          *
@@ -1535,9 +1469,7 @@
          * @param {number} distanceR
              */
         function attractive(link, force, distanceXY, distanceR) {
-            var massFactor = link.getMass(),
-                translatedX = (distanceXY.x / distanceR) * force,
-                translatedY = (distanceXY.y / distanceR) * force;
+            const massFactor = link.getMass(), translatedX = (distanceXY.x / distanceR) * force, translatedY = (distanceXY.y / distanceR) * force;
             if (!link.fromNode.fixedPosition) {
                 link.fromNode.dispX -=
                     translatedX * massFactor.fromNode / link.fromNode.degree;
@@ -1578,13 +1510,10 @@
          * @private
          */
         function barycenter() {
-            var gravitationalConstant = this.options.gravitationalConstant,
-                xFactor = this.barycenter.xFactor,
-                yFactor = this.barycenter.yFactor;
+            const gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
             this.nodes.forEach(function (node) {
                 if (!node.fixedPosition) {
-                    var degree = node.getDegree(),
-                        phi = degree * (1 + degree / 2);
+                    const degree = node.getDegree(), phi = degree * (1 + degree / 2);
                     node.dispX += ((xFactor - node.plotX) *
                         gravitationalConstant *
                         phi / node.degree);
@@ -1635,7 +1564,7 @@
          *        Node that should be translated
          */
         function integrate(layout, node) {
-            var distanceR;
+            let distanceR;
             node.dispX +=
                 node.dispX * layout.options.friction;
             node.dispY +=
@@ -1696,15 +1625,15 @@
          *  Default Export
          *
          * */
-        var EulerIntegration = {
-                attractive: attractive,
-                attractiveForceFunction: attractiveForceFunction,
-                barycenter: barycenter,
-                getK: getK,
-                integrate: integrate,
-                repulsive: repulsive,
-                repulsiveForceFunction: repulsiveForceFunction
-            };
+        const EulerIntegration = {
+            attractive,
+            attractiveForceFunction,
+            barycenter,
+            getK,
+            integrate,
+            repulsive,
+            repulsiveForceFunction
+        };
 
         return EulerIntegration;
     });
@@ -1736,26 +1665,26 @@
          * @param {Highcharts.Dictionary<number>} box
          *        Available space for the node
          */
-        var QuadTreeNode = /** @class */ (function () {
+        class QuadTreeNode {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(box) {
                 /* *
                  *
-                 *  Constructor
+                 *  Properties
                  *
                  * */
-                function QuadTreeNode(box) {
-                    /* *
-                     *
-                     *  Properties
-                     *
-                     * */
-                    /**
-                     * Read only. If QuadTreeNode is an external node, Point is stored in
-                     * `this.body`.
-                     *
-                     * @name Highcharts.QuadTreeNode#body
-                     * @type {boolean|Highcharts.Point}
-                     */
-                    this.body = false;
+                /**
+                 * Read only. If QuadTreeNode is an external node, Point is stored in
+                 * `this.body`.
+                 *
+                 * @name Highcharts.QuadTreeNode#body
+                 * @type {boolean|Highcharts.Point}
+                 */
+                this.body = false;
                 /**
                  * Read only. Internal nodes when created are empty to reserve the
                  * space. If Point is added to this QuadTreeNode, QuadTreeNode is no
@@ -1820,9 +1749,8 @@
              * -------------               -------------
              * ```
              */
-            QuadTreeNode.prototype.divideBox = function () {
-                var halfWidth = this.box.width / 2,
-                    halfHeight = this.box.height / 2;
+            divideBox() {
+                const halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
                 // Top left
                 this.nodes[0] = new QuadTreeNode({
                     left: this.box.left,
@@ -1851,16 +1779,15 @@
                     width: halfWidth,
                     height: halfHeight
                 });
-            };
+            }
             /**
              * Determine which of the quadrants should be used when placing node in
              * the QuadTree. Returned index is always in range `< 0 , 3 >`.
              * @private
              */
-            QuadTreeNode.prototype.getBoxPosition = function (point) {
-                var left = point.plotX < this.box.left + this.box.width / 2,
-                    top = point.plotY < this.box.top + this.box.height / 2;
-                var index;
+            getBoxPosition(point) {
+                const left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
+                let index;
                 if (left) {
                     if (top) {
                         // Top left
@@ -1882,7 +1809,7 @@
                     }
                 }
                 return index;
-            };
+            }
             /**
              * Insert recursively point(node) into the QuadTree. If the given
              * quadrant is already occupied, divide it into smaller quadrants.
@@ -1892,8 +1819,8 @@
              * @param {number} depth
              *        Max depth of the QuadTree
              */
-            QuadTreeNode.prototype.insert = function (point, depth) {
-                var newQuadTreeNode;
+            insert(point, depth) {
+                let newQuadTreeNode;
                 if (this.isInternal) {
                     // Internal node:
                     this.nodes[this.getBoxPosition(point)].insert(point, depth - 1);
@@ -1942,19 +1869,16 @@
                         }
                     }
                 }
-            };
+            }
             /**
              * Each quad node requires it's mass and center position. That mass and
              * position is used to imitate real node in the layout by approximation.
              */
-            QuadTreeNode.prototype.updateMassAndCenter = function () {
-                var mass = 0,
-                    plotX = 0,
-                    plotY = 0;
+            updateMassAndCenter() {
+                let mass = 0, plotX = 0, plotY = 0;
                 if (this.isInternal) {
                     // Calcualte weightened mass of the quad node:
-                    for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
-                        var pointMass = _a[_i];
+                    for (const pointMass of this.nodes) {
                         if (!pointMass.isEmpty) {
                             mass += pointMass.mass;
                             plotX += pointMass.plotX * pointMass.mass;
@@ -1974,9 +1898,8 @@
                 this.mass = mass;
                 this.plotX = plotX;
                 this.plotY = plotY;
-            };
-            return QuadTreeNode;
-        }());
+            }
+        }
         /* *
          *
          *  Default Export
@@ -2019,20 +1942,20 @@
          * @param {number} height
          *        Height of the plotting area
          */
-        var QuadTree = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructor
-                 *
-                 * */
-                function QuadTree(x, y, width, height) {
-                    // Boundary rectangle:
-                    this.box = {
-                        left: x,
-                        top: y,
-                        width: width,
-                        height: height
-                    };
+        class QuadTree {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(x, y, width, height) {
+                // Boundary rectangle:
+                this.box = {
+                    left: x,
+                    top: y,
+                    width: width,
+                    height: height
+                };
                 this.maxDepth = 25;
                 this.root = new QuadTreeNode(this.box);
                 this.root.isInternal = true;
@@ -2047,23 +1970,22 @@
             /**
              * Calculate mass of the each QuadNode in the tree.
              */
-            QuadTree.prototype.calculateMassAndCenter = function () {
+            calculateMassAndCenter() {
                 this.visitNodeRecursive(null, null, function (node) {
                     node.updateMassAndCenter();
                 });
-            };
+            }
             /**
              * Insert nodes into the QuadTree
              *
              * @param {Array<Highcharts.Point>} points
              *        Points as nodes
              */
-            QuadTree.prototype.insertNodes = function (points) {
-                for (var _i = 0, points_1 = points; _i < points_1.length; _i++) {
-                    var point = points_1[_i];
+            insertNodes(points) {
+                for (const point of points) {
                     this.root.insert(point, this.maxDepth);
                 }
-            };
+            }
             /**
              * Depfth first treversal (DFS). Using `before` and `after` callbacks,
              * we can get two results: preorder and postorder traversals, reminder:
@@ -2087,8 +2009,8 @@
              * @param {Function} [afterCallback]
              *        Function to be called after visiting children nodes.
              */
-            QuadTree.prototype.visitNodeRecursive = function (node, beforeCallback, afterCallback) {
-                var goFurther;
+            visitNodeRecursive(node, beforeCallback, afterCallback) {
+                let goFurther;
                 if (!node) {
                     node = this.root;
                 }
@@ -2098,8 +2020,7 @@
                 if (goFurther === false) {
                     return;
                 }
-                for (var _i = 0, _a = node.nodes; _i < _a.length; _i++) {
-                    var qtNode = _a[_i];
+                for (const qtNode of node.nodes) {
                     if (qtNode.isInternal) {
                         if (beforeCallback) {
                             goFurther = beforeCallback(qtNode);
@@ -2121,9 +2042,8 @@
                 if (node === this.root && afterCallback) {
                     afterCallback(node);
                 }
-            };
-            return QuadTree;
-        }());
+            }
+        }
         /* *
          *
          *  Default Export
@@ -2164,9 +2084,7 @@
          *        Distance between two nodes e.g. `{x, y}`
          */
         function attractive(link, force, distanceXY) {
-            var massFactor = link.getMass(),
-                translatedX = -distanceXY.x * force * this.diffTemperature,
-                translatedY = -distanceXY.y * force * this.diffTemperature;
+            const massFactor = link.getMass(), translatedX = -distanceXY.x * force * this.diffTemperature, translatedY = -distanceXY.y * force * this.diffTemperature;
             if (!link.fromNode.fixedPosition) {
                 link.fromNode.plotX -=
                     translatedX * massFactor.fromNode / link.fromNode.degree;
@@ -2203,9 +2121,7 @@
          * @private
          */
         function barycenter() {
-            var gravitationalConstant = this.options.gravitationalConstant,
-                xFactor = this.barycenter.xFactor,
-                yFactor = this.barycenter.yFactor;
+            let gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
             // To consider:
             xFactor = (xFactor - (this.box.left + this.box.width) / 2) *
                 gravitationalConstant;
@@ -2260,18 +2176,12 @@
          * @param {Highcharts.Point} node node that should be translated
          */
         function integrate(layout, node) {
-            var friction = -layout.options.friction,
-                maxSpeed = layout.options.maxSpeed,
-                prevX = node.prevX,
-                prevY = node.prevY, 
-                // Apply friciton:
-                diffX = ((node.plotX + node.dispX -
-                    prevX) * friction),
-                diffY = ((node.plotY + node.dispY -
-                    prevY) * friction),
-                abs = Math.abs,
-                signX = abs(diffX) / (diffX || 1), // need to deal with 0
-                signY = abs(diffY) / (diffY || 1);
+            let friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
+            // Apply friciton:
+            diffX = ((node.plotX + node.dispX -
+                prevX) * friction), diffY = ((node.plotY + node.dispY -
+                prevY) * friction), abs = Math.abs, signX = abs(diffX) / (diffX || 1), // need to deal with 0
+            signY = abs(diffY) / (diffY || 1);
             // Apply max speed:
             diffX = signX * Math.min(maxSpeed, Math.abs(diffX));
             diffY = signY * Math.min(maxSpeed, Math.abs(diffY));
@@ -2301,7 +2211,7 @@
          *        Distance between two nodes e.g. `{x, y}`
          */
         function repulsive(node, force, distanceXY) {
-            var factor = force * this.diffTemperature / node.mass / node.degree;
+            const factor = force * this.diffTemperature / node.mass / node.degree;
             if (!node.fixedPosition) {
                 node.plotX += distanceXY.x * factor;
                 node.plotY += distanceXY.y * factor;
@@ -2325,15 +2235,15 @@
          *  Default Export
          *
          * */
-        var VerletIntegration = {
-                attractive: attractive,
-                attractiveForceFunction: attractiveForceFunction,
-                barycenter: barycenter,
-                getK: getK,
-                integrate: integrate,
-                repulsive: repulsive,
-                repulsiveForceFunction: repulsiveForceFunction
-            };
+        const VerletIntegration = {
+            attractive,
+            attractiveForceFunction,
+            barycenter,
+            getK,
+            integrate,
+            repulsive,
+            repulsiveForceFunction
+        };
 
         return VerletIntegration;
     });
@@ -2349,11 +2259,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var win = H.win;
-        var clamp = U.clamp,
-            defined = U.defined,
-            isFunction = U.isFunction,
-            pick = U.pick;
+        const { win } = H;
+        const { clamp, defined, isFunction, fireEvent, pick } = U;
         /* *
          *
          *  Class
@@ -2364,14 +2271,14 @@
          * "Graph Drawing by Force-directed Placement" paper.
          * @private
          */
-        var ReingoldFruchtermanLayout = /** @class */ (function () {
-                function ReingoldFruchtermanLayout() {
-                    /* *
-                     *
-                     *  Static Functions
-                     *
-                     * */
-                    this.attractiveForce = void 0;
+        class ReingoldFruchtermanLayout {
+            constructor() {
+                /* *
+                 *
+                 *  Static Functions
+                 *
+                 * */
+                this.attractiveForce = void 0;
                 this.box = {};
                 this.currentStep = 0;
                 this.initialRendering = true;
@@ -2384,14 +2291,14 @@
                 this.series = [];
                 this.simulation = false;
             }
-            ReingoldFruchtermanLayout.compose = function (ChartClass) {
+            static compose(ChartClass) {
                 GraphLayout.compose(ChartClass);
                 GraphLayout.integrations.euler = EulerIntegration;
                 GraphLayout.integrations.verlet = VerletIntegration;
                 GraphLayout.layouts['reingold-fruchterman'] =
                     ReingoldFruchtermanLayout;
-            };
-            ReingoldFruchtermanLayout.prototype.init = function (options) {
+            }
+            init(options) {
                 this.options = options;
                 this.nodes = [];
                 this.links = [];
@@ -2409,14 +2316,12 @@
                 this.attractiveForce = pick(options.attractiveForce, this.integration.attractiveForceFunction);
                 this.repulsiveForce = pick(options.repulsiveForce, this.integration.repulsiveForceFunction);
                 this.approximation = options.approximation;
-            };
-            ReingoldFruchtermanLayout.prototype.updateSimulation = function (enable) {
+            }
+            updateSimulation(enable) {
                 this.enableSimulation = pick(enable, this.options.enableSimulation);
-            };
-            ReingoldFruchtermanLayout.prototype.start = function () {
-                var layout = this,
-                    series = this.series,
-                    options = this.options;
+            }
+            start() {
+                const layout = this, series = this.series, options = this.options;
                 layout.currentStep = 0;
                 layout.forces = series[0] && series[0].forces || [];
                 layout.chart = series[0] && series[0].chart;
@@ -2433,19 +2338,16 @@
                 if (layout.enableSimulation) {
                     layout.step();
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.step = function () {
-                var _this = this;
-                var anyLayout = this,
-                    allSeries = this.series;
+            }
+            step() {
+                const anyLayout = this, allSeries = this.series;
                 // Algorithm:
                 this.currentStep++;
                 if (this.approximation === 'barnes-hut') {
                     this.createQuadTree();
                     this.quadTree.calculateMassAndCenter();
                 }
-                for (var _i = 0, _a = this.forces || []; _i < _a.length; _i++) {
-                    var forceName = _a[_i];
+                for (const forceName of this.forces || []) {
                     anyLayout[forceName + 'Forces'](this.temperature);
                 }
                 // Limit to the plotting area and cool down:
@@ -2455,8 +2357,7 @@
                 this.prevSystemTemperature = this.systemTemperature;
                 this.systemTemperature = this.getSystemTemperature();
                 if (this.enableSimulation) {
-                    for (var _b = 0, allSeries_1 = allSeries; _b < allSeries_1.length; _b++) {
-                        var series = allSeries_1[_b];
+                    for (const series of allSeries) {
                         // Chart could be destroyed during the simulation
                         if (series.chart) {
                             series.render();
@@ -2468,59 +2369,61 @@
                         if (this.simulation) {
                             win.cancelAnimationFrame(this.simulation);
                         }
-                        this.simulation = win.requestAnimationFrame(function () { return _this.step(); });
+                        this.simulation = win.requestAnimationFrame(() => this.step());
                     }
                     else {
                         this.simulation = false;
+                        this.series.forEach((s) => {
+                            fireEvent(s, 'afterSimulation');
+                        });
                     }
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.stop = function () {
+            }
+            stop() {
                 if (this.simulation) {
                     win.cancelAnimationFrame(this.simulation);
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.setArea = function (x, y, w, h) {
+            }
+            setArea(x, y, w, h) {
                 this.box = {
                     left: x,
                     top: y,
                     width: w,
                     height: h
                 };
-            };
-            ReingoldFruchtermanLayout.prototype.setK = function () {
+            }
+            setK() {
                 // Optimal distance between nodes,
                 // available space around the node:
                 this.k = this.options.linkLength || this.integration.getK(this);
-            };
-            ReingoldFruchtermanLayout.prototype.addElementsToCollection = function (elements, collection) {
-                for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
-                    var element = elements_1[_i];
+            }
+            addElementsToCollection(elements, collection) {
+                for (const element of elements) {
                     if (collection.indexOf(element) === -1) {
                         collection.push(element);
                     }
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.removeElementFromCollection = function (element, collection) {
-                var index = collection.indexOf(element);
+            }
+            removeElementFromCollection(element, collection) {
+                const index = collection.indexOf(element);
                 if (index !== -1) {
                     collection.splice(index, 1);
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.clear = function () {
+            }
+            clear() {
                 this.nodes.length = 0;
                 this.links.length = 0;
                 this.series.length = 0;
                 this.resetSimulation();
-            };
-            ReingoldFruchtermanLayout.prototype.resetSimulation = function () {
+            }
+            resetSimulation() {
                 this.forcedStop = false;
                 this.systemTemperature = 0;
                 this.setMaxIterations();
                 this.setTemperature();
                 this.setDiffTemperature();
-            };
-            ReingoldFruchtermanLayout.prototype.restartSimulation = function () {
+            }
+            restartSimulation() {
                 if (!this.simulation) {
                     // When dragging nodes, we don't need to calculate
                     // initial positions and rendering nodes:
@@ -2543,31 +2446,30 @@
                     // Extend current simulation:
                     this.resetSimulation();
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.setMaxIterations = function (maxIterations) {
+            }
+            setMaxIterations(maxIterations) {
                 this.maxIterations = pick(maxIterations, this.options.maxIterations);
-            };
-            ReingoldFruchtermanLayout.prototype.setTemperature = function () {
+            }
+            setTemperature() {
                 this.temperature = this.startTemperature =
                     Math.sqrt(this.nodes.length);
-            };
-            ReingoldFruchtermanLayout.prototype.setDiffTemperature = function () {
+            }
+            setDiffTemperature() {
                 this.diffTemperature = this.startTemperature /
                     (this.options.maxIterations + 1);
-            };
-            ReingoldFruchtermanLayout.prototype.setInitialRendering = function (enable) {
+            }
+            setInitialRendering(enable) {
                 this.initialRendering = enable;
-            };
-            ReingoldFruchtermanLayout.prototype.createQuadTree = function () {
+            }
+            createQuadTree() {
                 this.quadTree = new QuadTree(this.box.left, this.box.top, this.box.width, this.box.height);
                 this.quadTree.insertNodes(this.nodes);
-            };
-            ReingoldFruchtermanLayout.prototype.initPositions = function () {
-                var initialPositions = this.options.initialPositions;
+            }
+            initPositions() {
+                const initialPositions = this.options.initialPositions;
                 if (isFunction(initialPositions)) {
                     initialPositions.call(this);
-                    for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
-                        var node = _a[_i];
+                    for (const node of this.nodes) {
                         if (!defined(node.prevX)) {
                             node.prevX = node.plotX;
                         }
@@ -2584,17 +2486,12 @@
                 else {
                     this.setRandomPositions();
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.setCircularPositions = function () {
-                var box = this.box,
-                    nodes = this.nodes,
-                    nodesLength = nodes.length + 1,
-                    angle = 2 * Math.PI / nodesLength,
-                    rootNodes = nodes.filter(function (node) {
-                        return node.linksTo.length === 0;
-                }), visitedNodes = {}, radius = this.options.initialPositionRadius, addToNodes = function (node) {
-                    for (var _i = 0, _a = node.linksFrom || []; _i < _a.length; _i++) {
-                        var link = _a[_i];
+            }
+            setCircularPositions() {
+                const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, rootNodes = nodes.filter(function (node) {
+                    return node.linksTo.length === 0;
+                }), visitedNodes = {}, radius = this.options.initialPositionRadius, addToNodes = (node) => {
+                    for (const link of node.linksFrom || []) {
                         if (!visitedNodes[link.toNode.id]) {
                             visitedNodes[link.toNode.id] = true;
                             sortedNodes.push(link.toNode);
@@ -2602,12 +2499,11 @@
                         }
                     }
                 };
-                var sortedNodes = [];
+                let sortedNodes = [];
                 // Start with identified root nodes an sort the nodes by their
                 // hierarchy. In trees, this ensures that branches don't cross
                 // eachother.
-                for (var _i = 0, rootNodes_1 = rootNodes; _i < rootNodes_1.length; _i++) {
-                    var rootNode = rootNodes_1[_i];
+                for (const rootNode of rootNodes) {
                     sortedNodes.push(rootNode);
                     addToNodes(rootNode);
                 }
@@ -2617,66 +2513,55 @@
                     // Dangling, cyclic trees
                 }
                 else {
-                    for (var _a = 0, nodes_1 = nodes; _a < nodes_1.length; _a++) {
-                        var node_1 = nodes_1[_a];
-                        if (sortedNodes.indexOf(node_1) === -1) {
-                            sortedNodes.push(node_1);
+                    for (const node of nodes) {
+                        if (sortedNodes.indexOf(node) === -1) {
+                            sortedNodes.push(node);
                         }
                     }
                 }
-                var node;
+                let node;
                 // Initial positions are laid out along a small circle, appearing
                 // as a cluster in the middle
-                for (var i = 0, iEnd = sortedNodes.length; i < iEnd; ++i) {
+                for (let i = 0, iEnd = sortedNodes.length; i < iEnd; ++i) {
                     node = sortedNodes[i];
                     node.plotX = node.prevX = pick(node.plotX, box.width / 2 + radius * Math.cos(i * angle));
                     node.plotY = node.prevY = pick(node.plotY, box.height / 2 + radius * Math.sin(i * angle));
                     node.dispX = 0;
                     node.dispY = 0;
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.setRandomPositions = function () {
-                var box = this.box,
-                    nodes = this.nodes,
-                    nodesLength = nodes.length + 1, 
-                    /**
-                     * Return a repeatable,
-                    quasi-random number based on an integer
-                     * input. For the initial positions
-                     * @private
-                     */
-                    unrandom = function (n) {
-                        var rand = n * n / Math.PI;
+            }
+            setRandomPositions() {
+                const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, 
+                /**
+                 * Return a repeatable, quasi-random number based on an integer
+                 * input. For the initial positions
+                 * @private
+                 */
+                unrandom = (n) => {
+                    let rand = n * n / Math.PI;
                     rand = rand - Math.floor(rand);
                     return rand;
                 };
-                var node;
+                let node;
                 // Initial positions:
-                for (var i = 0, iEnd = nodes.length; i < iEnd; ++i) {
+                for (let i = 0, iEnd = nodes.length; i < iEnd; ++i) {
                     node = nodes[i];
                     node.plotX = node.prevX = pick(node.plotX, box.width * unrandom(i));
                     node.plotY = node.prevY = pick(node.plotY, box.height * unrandom(nodesLength + i));
                     node.dispX = 0;
                     node.dispY = 0;
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.force = function (name) {
-                var args = [];
-                for (var _i = 1; _i < arguments.length; _i++) {
-                    args[_i - 1] = arguments[_i];
-                }
+            }
+            force(name, ...args) {
                 this.integration[name].apply(this, args);
-            };
-            ReingoldFruchtermanLayout.prototype.barycenterForces = function () {
+            }
+            barycenterForces() {
                 this.getBarycenter();
                 this.force('barycenter');
-            };
-            ReingoldFruchtermanLayout.prototype.getBarycenter = function () {
-                var systemMass = 0,
-                    cx = 0,
-                    cy = 0;
-                for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
-                    var node = _a[_i];
+            }
+            getBarycenter() {
+                let systemMass = 0, cx = 0, cy = 0;
+                for (const node of this.nodes) {
                     cx += node.plotX * node.mass;
                     cy += node.plotY * node.mass;
                     systemMass += node.mass;
@@ -2688,13 +2573,10 @@
                     yFactor: cy / systemMass
                 };
                 return this.barycenter;
-            };
-            ReingoldFruchtermanLayout.prototype.barnesHutApproximation = function (node, quadNode) {
-                var distanceXY = this.getDistXY(node,
-                    quadNode),
-                    distanceR = this.vectorLength(distanceXY);
-                var goDeeper,
-                    force;
+            }
+            barnesHutApproximation(node, quadNode) {
+                const distanceXY = this.getDistXY(node, quadNode), distanceR = this.vectorLength(distanceXY);
+                let goDeeper, force;
                 if (node !== quadNode && distanceR !== 0) {
                     if (quadNode.isInternal) {
                         // Internal node:
@@ -2718,29 +2600,17 @@
                     }
                 }
                 return goDeeper;
-            };
-            ReingoldFruchtermanLayout.prototype.repulsiveForces = function () {
-                var _this = this;
+            }
+            repulsiveForces() {
                 if (this.approximation === 'barnes-hut') {
-                    var _loop_1 = function (node) {
-                            this_1.quadTree.visitNodeRecursive(null,
-                        function (quadNode) { return (_this.barnesHutApproximation(node,
-                        quadNode)); });
-                    };
-                    var this_1 = this;
-                    for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
-                        var node = _a[_i];
-                        _loop_1(node);
+                    for (const node of this.nodes) {
+                        this.quadTree.visitNodeRecursive(null, (quadNode) => (this.barnesHutApproximation(node, quadNode)));
                     }
                 }
                 else {
-                    var force = void 0,
-                        distanceR = void 0,
-                        distanceXY = void 0;
-                    for (var _b = 0, _c = this.nodes; _b < _c.length; _b++) {
-                        var node = _c[_b];
-                        for (var _d = 0, _e = this.nodes; _d < _e.length; _d++) {
-                            var repNode = _e[_d];
+                    let force, distanceR, distanceXY;
+                    for (const node of this.nodes) {
+                        for (const repNode of this.nodes) {
                             if (
                             // Node cannot repulse itself:
                             node !== repNode &&
@@ -2758,13 +2628,10 @@
                         }
                     }
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.attractiveForces = function () {
-                var distanceXY,
-                    distanceR,
-                    force;
-                for (var _i = 0, _a = this.links; _i < _a.length; _i++) {
-                    var link = _a[_i];
+            }
+            attractiveForces() {
+                let distanceXY, distanceR, force;
+                for (const link of this.links) {
                     if (link.fromNode && link.toNode) {
                         distanceXY = this.getDistXY(link.fromNode, link.toNode);
                         distanceR = this.vectorLength(distanceXY);
@@ -2774,11 +2641,10 @@
                         }
                     }
                 }
-            };
-            ReingoldFruchtermanLayout.prototype.applyLimits = function () {
-                var nodes = this.nodes;
-                for (var _i = 0, nodes_2 = nodes; _i < nodes_2.length; _i++) {
-                    var node = nodes_2[_i];
+            }
+            applyLimits() {
+                const nodes = this.nodes;
+                for (const node of nodes) {
                     if (node.fixedPosition) {
                         return;
                     }
@@ -2788,14 +2654,14 @@
                     node.dispX = 0;
                     node.dispY = 0;
                 }
-            };
+            }
             /**
              * External box that nodes should fall. When hitting an edge, node
              * should stop or bounce.
              * @private
              */
-            ReingoldFruchtermanLayout.prototype.applyLimitBox = function (node, box) {
-                var radius = node.radius;
+            applyLimitBox(node, box) {
+                const radius = node.radius;
                 /*
                 TO DO: Consider elastic collision instead of stopping.
                 o' means end position when hitting plotting area edge:
@@ -2832,13 +2698,13 @@
                 node.plotX = clamp(node.plotX, box.left + radius, box.width - radius);
                 // Limit Y-coordinates:
                 node.plotY = clamp(node.plotY, box.top + radius, box.height - radius);
-            };
+            }
             /**
              * From "A comparison of simulated annealing cooling strategies" by
              * Nourani and Andresen work.
              * @private
              */
-            ReingoldFruchtermanLayout.prototype.coolDown = function (temperature, temperatureStep, currentStep) {
+            coolDown(temperature, temperatureStep, currentStep) {
                 // Logarithmic:
                 /*
                 return Math.sqrt(this.nodes.length) -
@@ -2854,39 +2720,35 @@
                 */
                 // Linear:
                 return temperature - temperatureStep * currentStep;
-            };
-            ReingoldFruchtermanLayout.prototype.isStable = function () {
+            }
+            isStable() {
                 return Math.abs(this.systemTemperature -
                     this.prevSystemTemperature) < 0.00001 || this.temperature <= 0;
-            };
-            ReingoldFruchtermanLayout.prototype.getSystemTemperature = function () {
-                var value = 0;
-                for (var _i = 0, _a = this.nodes; _i < _a.length; _i++) {
-                    var node = _a[_i];
+            }
+            getSystemTemperature() {
+                let value = 0;
+                for (const node of this.nodes) {
                     value += node.temperature;
                 }
                 return value;
-            };
-            ReingoldFruchtermanLayout.prototype.vectorLength = function (vector) {
+            }
+            vectorLength(vector) {
                 return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-            };
-            ReingoldFruchtermanLayout.prototype.getDistR = function (nodeA, nodeB) {
-                var distance = this.getDistXY(nodeA,
-                    nodeB);
+            }
+            getDistR(nodeA, nodeB) {
+                const distance = this.getDistXY(nodeA, nodeB);
                 return this.vectorLength(distance);
-            };
-            ReingoldFruchtermanLayout.prototype.getDistXY = function (nodeA, nodeB) {
-                var xDist = nodeA.plotX - nodeB.plotX,
-                    yDist = nodeA.plotY - nodeB.plotY;
+            }
+            getDistXY(nodeA, nodeB) {
+                const xDist = nodeA.plotX - nodeB.plotX, yDist = nodeA.plotY - nodeB.plotY;
                 return {
                     x: xDist,
                     y: yDist,
                     absX: Math.abs(xDist),
                     absY: Math.abs(yDist)
                 };
-            };
-            return ReingoldFruchtermanLayout;
-        }());
+            }
+        }
         /* *
          *
          *  Default Export
@@ -2895,7 +2757,70 @@
 
         return ReingoldFruchtermanLayout;
     });
-    _registerModule(_modules, 'Series/Networkgraph/NetworkgraphSeries.js', [_modules['Series/DragNodesComposition.js'], _modules['Series/GraphLayoutComposition.js'], _modules['Core/Globals.js'], _modules['Series/Networkgraph/NetworkgraphPoint.js'], _modules['Series/Networkgraph/NetworkgraphSeriesDefaults.js'], _modules['Series/NodesComposition.js'], _modules['Series/Networkgraph/ReingoldFruchtermanLayout.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DragNodesComposition, GraphLayout, H, NetworkgraphPoint, NetworkgraphSeriesDefaults, NodesComposition, ReingoldFruchtermanLayout, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/SimulationSeriesUtilities.js', [_modules['Core/Utilities.js'], _modules['Core/Animation/AnimationUtilities.js']], function (U, A) {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { syncTimeout } = U;
+        const { animObject } = A;
+        /**
+         * Create a setTimeout for the first drawDataLabels()
+         * based on the dataLabels.animation.defer value
+         * for series which have enabled simulation.
+         * @private
+         */
+        function initDataLabelsDefer() {
+            var _a;
+            const dlOptions = this.options.dataLabels;
+            // drawDataLabels() fires for the first time after
+            // dataLabels.animation.defer time unless
+            // the dataLabels.animation = false or dataLabels.defer = false
+            // or if the simulation is disabled
+            if (!(dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.defer) ||
+                !((_a = this.options.layoutAlgorithm) === null || _a === void 0 ? void 0 : _a.enableSimulation)) {
+                this.deferDataLabels = false;
+            }
+            else {
+                syncTimeout(() => {
+                    this.deferDataLabels = false;
+                }, dlOptions ? animObject(dlOptions.animation).defer : 0);
+            }
+        }
+        /**
+         * Initialize the SVG group for the DataLabels with correct opacities
+         * and correct styles so that the animation for the series that have
+         * simulation enabled works fine.
+         * @private
+         */
+        function initDataLabels() {
+            const series = this, dlOptions = series.options.dataLabels;
+            if (!series.dataLabelsGroup) {
+                const dataLabelsGroup = this.initDataLabelsGroup();
+                // Apply the dataLabels.style not only to the
+                // individual dataLabels but also to the entire group
+                if (!series.chart.styledMode && (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.style)) {
+                    dataLabelsGroup.css(dlOptions.style);
+                }
+                // Initialize the opacity of the group to 0 (start of animation)
+                dataLabelsGroup.attr({ opacity: 0 });
+                if (series.visible) { // #2597, #3023, #3024
+                    dataLabelsGroup.show();
+                }
+                return dataLabelsGroup;
+            }
+            series.dataLabelsGroup.attr({ opacity: 1 });
+            return series.dataLabelsGroup;
+        }
+        const DataLabelsDeferUtils = {
+            initDataLabels,
+            initDataLabelsDefer
+        };
+
+        return DataLabelsDeferUtils;
+    });
+    _registerModule(_modules, 'Series/Networkgraph/NetworkgraphSeries.js', [_modules['Series/DragNodesComposition.js'], _modules['Series/GraphLayoutComposition.js'], _modules['Core/Globals.js'], _modules['Series/Networkgraph/NetworkgraphPoint.js'], _modules['Series/Networkgraph/NetworkgraphSeriesDefaults.js'], _modules['Series/NodesComposition.js'], _modules['Series/Networkgraph/ReingoldFruchtermanLayout.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/SimulationSeriesUtilities.js'], _modules['Core/Utilities.js']], function (DragNodesComposition, GraphLayout, H, NetworkgraphPoint, NetworkgraphSeriesDefaults, NodesComposition, ReingoldFruchtermanLayout, SeriesRegistry, D, U) {
         /* *
          *
          *  Networkgraph series
@@ -2907,32 +2832,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var noop = H.noop;
-        var Series = SeriesRegistry.series,
-            _a = SeriesRegistry.seriesTypes,
-            columnProto = _a.column.prototype,
-            lineProto = _a.line.prototype;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        const { noop } = H;
+        const { series: Series, seriesTypes: { column: { prototype: columnProto }, line: { prototype: lineProto } } } = SeriesRegistry;
+        const { initDataLabels, initDataLabelsDefer } = D;
+        const { addEvent, defined, extend, merge, pick } = U;
         /* *
          *
          *  Class
@@ -2945,36 +2848,34 @@
          *
          * @extends Highcharts.Series
          */
-        var NetworkgraphSeries = /** @class */ (function (_super) {
-                __extends(NetworkgraphSeries, _super);
-            function NetworkgraphSeries() {
+        class NetworkgraphSeries extends Series {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.nodes = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.nodes = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.deferDataLabels = true;
             }
             /* *
              *
              *  Static Functions
              *
              * */
-            NetworkgraphSeries.compose = function (ChartClass) {
+            static compose(ChartClass) {
                 DragNodesComposition.compose(ChartClass);
                 ReingoldFruchtermanLayout.compose(ChartClass);
-            };
+            }
             /* *
              *
              *  Functions
@@ -2991,12 +2892,8 @@
              * `Highcharts.animate()` use.
              * @private
              */
-            NetworkgraphSeries.prototype.deferLayout = function () {
-                var layoutOptions = this.options.layoutAlgorithm,
-                    graphLayoutsStorage = this.chart.graphLayoutsStorage,
-                    graphLayoutsLookup = this.chart.graphLayoutsLookup,
-                    chartOptions = this.chart.options.chart,
-                    layout;
+            deferLayout() {
+                let layoutOptions = this.options.layoutAlgorithm, graphLayoutsStorage = this.chart.graphLayoutsStorage, graphLayoutsLookup = this.chart.graphLayoutsLookup, chartOptions = this.chart.options.chart, layout;
                 if (!this.visible) {
                     return;
                 }
@@ -3020,39 +2917,52 @@
                 layout.addElementsToCollection([this], layout.series);
                 layout.addElementsToCollection(this.nodes, layout.nodes);
                 layout.addElementsToCollection(this.points, layout.links);
-            };
+            }
             /**
              * @private
              */
-            NetworkgraphSeries.prototype.destroy = function () {
+            destroy() {
                 if (this.layout) {
                     this.layout.removeElementFromCollection(this, this.layout.series);
                 }
                 NodesComposition.destroy.call(this);
-            };
+            }
             /**
              * Networkgraph has two separate collecions of nodes and lines, render
              * dataLabels for both sets:
              * @private
              */
-            NetworkgraphSeries.prototype.drawDataLabels = function () {
-                var textPath = this.options.dataLabels.textPath;
+            drawDataLabels() {
+                // We defer drawing the dataLabels
+                // until dataLabels.animation.defer time passes
+                if (this.deferDataLabels) {
+                    return;
+                }
+                const dlOptions = this.options.dataLabels;
+                let textPath;
+                if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.textPath) {
+                    textPath = dlOptions.textPath;
+                }
                 // Render node labels:
                 Series.prototype.drawDataLabels.call(this, this.nodes);
                 // Render link labels:
-                this.options.dataLabels.textPath =
-                    this.options.dataLabels.linkTextPath;
+                if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.linkTextPath) {
+                    // If linkTextPath is set, render link labels with linkTextPath
+                    dlOptions.textPath = dlOptions.linkTextPath;
+                }
                 Series.prototype.drawDataLabels.call(this, this.data);
-                this.options.dataLabels.textPath = textPath;
-            };
+                // Go back to textPath for nodes
+                if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.textPath) {
+                    dlOptions.textPath = textPath;
+                }
+            }
             /**
              * Extend generatePoints by adding the nodes, which are Point objects
              * but pushed to the this.nodes array.
              * @private
              */
-            NetworkgraphSeries.prototype.generatePoints = function () {
-                var node,
-                    i;
+            generatePoints() {
+                let node, i;
                 NodesComposition.generatePoints.apply(this, arguments);
                 // In networkgraph, it's fine to define stanalone nodes, create
                 // them:
@@ -3078,76 +2988,77 @@
                     link.formatPrefix = 'link';
                 });
                 this.indexateNodes();
-            };
+            }
             /**
              * In networkgraph, series.points refers to links,
              * but series.nodes refers to actual points.
              * @private
              */
-            NetworkgraphSeries.prototype.getPointsCollection = function () {
+            getPointsCollection() {
                 return this.nodes || [];
-            };
+            }
             /**
              * Set index for each node. Required for proper `node.update()`.
              * Note that links are indexated out of the box in `generatePoints()`.
              *
              * @private
              */
-            NetworkgraphSeries.prototype.indexateNodes = function () {
+            indexateNodes() {
                 this.nodes.forEach(function (node, index) {
                     node.index = index;
                 });
-            };
+            }
             /**
              * Extend init with base event, which should stop simulation during
              * update. After data is updated, `chart.render` resumes the simulation.
              * @private
              */
-            NetworkgraphSeries.prototype.init = function (chart, options) {
-                var _this = this;
-                _super.prototype.init.call(this, chart, options);
-                addEvent(this, 'updatedData', function () {
-                    if (_this.layout) {
-                        _this.layout.stop();
+            init(chart, options) {
+                super.init(chart, options);
+                initDataLabelsDefer.call(this);
+                addEvent(this, 'updatedData', () => {
+                    if (this.layout) {
+                        this.layout.stop();
                     }
                 });
-                addEvent(this, 'afterUpdate', function () {
-                    _this.nodes.forEach(function (node) {
+                addEvent(this, 'afterUpdate', () => {
+                    this.nodes.forEach((node) => {
                         if (node && node.series) {
                             node.resolveColor();
                         }
                     });
                 });
+                // If the dataLabels.animation.defer time is longer than
+                // the time it takes for the layout to become stable then
+                // drawDataLabels would never be called (that's why we force it here)
+                addEvent(this, 'afterSimulation', function () {
+                    this.deferDataLabels = false;
+                    this.drawDataLabels();
+                });
                 return this;
-            };
+            }
             /**
              * Extend the default marker attribs by using a non-rounded X position,
              * otherwise the nodes will jump from pixel to pixel which looks a bit
              * jaggy when approaching equilibrium.
              * @private
              */
-            NetworkgraphSeries.prototype.markerAttribs = function (point, state) {
-                var attribs = Series.prototype.markerAttribs.call(this,
-                    point,
-                    state);
+            markerAttribs(point, state) {
+                const attribs = Series.prototype.markerAttribs.call(this, point, state);
                 // series.render() is called before initial positions are set:
                 if (!defined(point.plotY)) {
                     attribs.y = 0;
                 }
                 attribs.x = (point.plotX || 0) - (attribs.width || 0) / 2;
                 return attribs;
-            };
+            }
             /**
              * Return the presentational attributes.
              * @private
              */
-            NetworkgraphSeries.prototype.pointAttribs = function (point, state) {
+            pointAttribs(point, state) {
                 // By default, only `selected` state is passed on
-                var pointState = state || point && point.state || 'normal',
-                    attribs = Series.prototype.pointAttribs.call(this,
-                    point,
-                    pointState),
-                    stateOptions = this.options.states[pointState];
+                let pointState = state || point && point.state || 'normal', attribs = Series.prototype.pointAttribs.call(this, point, pointState), stateOptions = this.options.states[pointState];
                 if (point && !point.isNode) {
                     attribs = point.getLinkAttributes();
                     // For link, get prefixed names:
@@ -3163,17 +3074,14 @@
                     }
                 }
                 return attribs;
-            };
+            }
             /**
              * Extend the render function to also render this.nodes together with
              * the points.
              * @private
              */
-            NetworkgraphSeries.prototype.render = function () {
-                var series = this,
-                    points = series.points,
-                    hoverPoint = series.chart.hoverPoint,
-                    dataLabels = [];
+            render() {
+                const series = this, points = series.points, hoverPoint = series.chart.hoverPoint, dataLabels = [];
                 // Render markers:
                 series.points = series.nodes;
                 lineProto.render.call(this);
@@ -3196,13 +3104,13 @@
                     });
                     series.chart.hideOverlappingLabels(dataLabels);
                 }
-            };
+            }
             /**
              * When state should be passed down to all points, concat nodes and
              * links and apply this state to all of them.
              * @private
              */
-            NetworkgraphSeries.prototype.setState = function (state, inherit) {
+            setState(state, inherit) {
                 if (inherit) {
                     this.points = this.nodes.concat(this.data);
                     Series.prototype.setState.apply(this, arguments);
@@ -3215,12 +3123,12 @@
                 if (!this.layout.simulation && !state) {
                     this.render();
                 }
-            };
+            }
             /**
              * Run pre-translation and register nodes&links to the deffered layout.
              * @private
              */
-            NetworkgraphSeries.prototype.translate = function () {
+            translate() {
                 if (!this.processedXData) {
                     this.processData();
                 }
@@ -3235,10 +3143,9 @@
                         point.y = 1;
                     });
                 });
-            };
-            NetworkgraphSeries.defaultOptions = merge(Series.defaultOptions, NetworkgraphSeriesDefaults);
-            return NetworkgraphSeries;
-        }(Series));
+            }
+        }
+        NetworkgraphSeries.defaultOptions = merge(Series.defaultOptions, NetworkgraphSeriesDefaults);
         extend(NetworkgraphSeries.prototype, {
             pointClass: NetworkgraphPoint,
             animate: void 0,
@@ -3251,6 +3158,7 @@
             pointArrayMap: ['from', 'to'],
             requireSorting: false,
             trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+            initDataLabels: initDataLabels,
             buildKDTree: noop,
             createNode: NodesComposition.createNode,
             drawTracker: columnProto.drawTracker,
@@ -3305,13 +3213,25 @@
         * @type {string}
         * @since 7.0.0
         */
+        /**
+         * Callback that fires after the end of Networkgraph series simulation
+         * when the layout is stable.
+         *
+         * @callback Highcharts.NetworkgraphAfterSimulationCallbackFunction
+         *
+         * @param {Highcharts.Series} this
+         *        The series where the event occured.
+         *
+         * @param {global.Event} event
+         *        The event that occured.
+         */
         ''; // detach doclets above
 
         return NetworkgraphSeries;
     });
     _registerModule(_modules, 'masters/modules/networkgraph.src.js', [_modules['Core/Globals.js'], _modules['Series/Networkgraph/NetworkgraphSeries.js']], function (Highcharts, NetworkgraphSeries) {
 
-        var G = Highcharts;
+        const G = Highcharts;
         NetworkgraphSeries.compose(G.Chart);
 
     });

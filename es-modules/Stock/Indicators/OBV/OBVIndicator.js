@@ -6,25 +6,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var isNumber = U.isNumber, error = U.error, extend = U.extend, merge = U.merge;
+const { isNumber, error, extend, merge } = U;
 /* *
  *
  *  Class
@@ -39,33 +24,31 @@ var isNumber = U.isNumber, error = U.error, extend = U.extend, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var OBVIndicator = /** @class */ (function (_super) {
-    __extends(OBVIndicator, _super);
-    function OBVIndicator() {
+class OBVIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        return _this;
+        this.data = void 0;
+        this.points = void 0;
+        this.options = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    OBVIndicator.prototype.getValues = function (series, params) {
-        var volumeSeries = series.chart.get(params.volumeSeriesID), xVal = series.xData, yVal = series.yData, OBV = [], xData = [], yData = [], hasOHLC = !isNumber(yVal[0]);
-        var OBVPoint = [], i = 1, previousOBV = 0, curentOBV = 0, previousClose = 0, curentClose = 0, volume;
+    getValues(series, params) {
+        const volumeSeries = series.chart.get(params.volumeSeriesID), xVal = series.xData, yVal = series.yData, OBV = [], xData = [], yData = [], hasOHLC = !isNumber(yVal[0]);
+        let OBVPoint = [], i = 1, previousOBV = 0, curentOBV = 0, previousClose = 0, curentClose = 0, volume;
         // Checks if volume series exists.
         if (volumeSeries) {
             volume = volumeSeries.yData;
@@ -109,49 +92,48 @@ var OBVIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * On-Balance Volume (OBV) technical indicator. This series
+ * requires the `linkedTo` option to be set and should be loaded after
+ * the `stock/indicators/indicators.js` file. Through the `volumeSeriesID`
+ * there also should be linked the volume series.
+ *
+ * @sample stock/indicators/obv
+ *         OBV indicator
+ *
+ * @extends      plotOptions.sma
+ * @since 9.1.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/obv
+ * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *               pointInterval, pointIntervalUnit, pointPlacement,
+ *               pointRange, pointStart, showInNavigator, stacking
+ * @optionparent plotOptions.obv
+ */
+OBVIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    marker: {
+        enabled: false
+    },
     /**
-     * On-Balance Volume (OBV) technical indicator. This series
-     * requires the `linkedTo` option to be set and should be loaded after
-     * the `stock/indicators/indicators.js` file. Through the `volumeSeriesID`
-     * there also should be linked the volume series.
-     *
-     * @sample stock/indicators/obv
-     *         OBV indicator
-     *
-     * @extends      plotOptions.sma
-     * @since 9.1.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/obv
-     * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
-     *               pointInterval, pointIntervalUnit, pointPlacement,
-     *               pointRange, pointStart, showInNavigator, stacking
-     * @optionparent plotOptions.obv
+     * @excluding index, period
      */
-    OBVIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        marker: {
-            enabled: false
-        },
+    params: {
+        // Index and period are unchangeable, do not inherit (#15362)
+        index: void 0,
+        period: void 0,
         /**
-         * @excluding index, period
+         * The id of another series to use its data as volume data for the
+         * indiator calculation.
          */
-        params: {
-            // Index and period are unchangeable, do not inherit (#15362)
-            index: void 0,
-            period: void 0,
-            /**
-             * The id of another series to use its data as volume data for the
-             * indiator calculation.
-             */
-            volumeSeriesID: 'volume'
-        },
-        tooltip: {
-            valueDecimals: 0
-        }
-    });
-    return OBVIndicator;
-}(SMAIndicator));
+        volumeSeriesID: 'volume'
+    },
+    tooltip: {
+        valueDecimals: 0
+    }
+});
 extend(OBVIndicator.prototype, {
     nameComponents: void 0
 });

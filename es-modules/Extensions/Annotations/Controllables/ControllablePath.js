@@ -4,37 +4,22 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Controllable from './Controllable.js';
 import ControllableDefaults from './ControllableDefaults.js';
-var defaultMarkers = ControllableDefaults.defaultMarkers;
+const { defaultMarkers } = ControllableDefaults;
 import H from '../../../Core/Globals.js';
 import U from '../../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, merge = U.merge, uniqueKey = U.uniqueKey;
+const { addEvent, defined, extend, merge, uniqueKey } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
-var markerEndSetter = createMarkerSetter('marker-end');
-var markerStartSetter = createMarkerSetter('marker-start');
+const composedMembers = [];
+const markerEndSetter = createMarkerSetter('marker-end');
+const markerStartSetter = createMarkerSetter('marker-start');
 // See TRACKER_FILL in highcharts.src.js
-var TRACKER_FILL = 'rgba(192,192,192,' + (H.svg ? 0.0001 : 0.002) + ')';
+const TRACKER_FILL = 'rgba(192,192,192,' + (H.svg ? 0.0001 : 0.002) + ')';
 /* *
  *
  *  Functions
@@ -69,8 +54,8 @@ function onChartAfterGetContainer() {
  * @private
  */
 function svgRendererAddMarker(id, markerOptions) {
-    var options = { attributes: { id: id } };
-    var attrs = {
+    const options = { attributes: { id } };
+    const attrs = {
         stroke: markerOptions.color || 'none',
         fill: markerOptions.color || 'rgba(0, 0, 0, 0.75)'
     };
@@ -78,7 +63,7 @@ function svgRendererAddMarker(id, markerOptions) {
         markerOptions.children.map(function (child) {
             return merge(attrs, child);
         }));
-    var ast = merge(true, {
+    const ast = merge(true, {
         attributes: {
             markerWidth: 20,
             markerHeight: 20,
@@ -87,7 +72,7 @@ function svgRendererAddMarker(id, markerOptions) {
             orient: 'auto'
         }
     }, markerOptions, options);
-    var marker = this.definition(ast);
+    const marker = this.definition(ast);
     marker.id = id;
     return marker;
 }
@@ -114,39 +99,35 @@ function svgRendererAddMarker(id, markerOptions) {
  * @param {number} index
  * Index of the path.
  */
-var ControllablePath = /** @class */ (function (_super) {
-    __extends(ControllablePath, _super);
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    function ControllablePath(annotation, options, index) {
-        var _this = _super.call(this, annotation, options, index, 'shape') || this;
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        _this.type = 'path';
-        return _this;
-    }
+class ControllablePath extends Controllable {
     /* *
      *
      *  Static Functions
      *
      * */
-    ControllablePath.compose = function (ChartClass, SVGRendererClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
+    static compose(ChartClass, SVGRendererClass) {
+        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
         }
-        if (composedClasses.indexOf(SVGRendererClass) === -1) {
-            composedClasses.push(SVGRendererClass);
-            var svgRendererProto = SVGRendererClass.prototype;
+        if (U.pushUnique(composedMembers, SVGRendererClass)) {
+            const svgRendererProto = SVGRendererClass.prototype;
             svgRendererProto.addMarker = svgRendererAddMarker;
         }
-    };
+    }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
+    constructor(annotation, options, index) {
+        super(annotation, options, index, 'shape');
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.type = 'path';
+    }
     /* *
      *
      *  Functions
@@ -158,15 +139,15 @@ var ControllablePath = /** @class */ (function (_super) {
      * @return {Highcharts.SVGPathArray|null}
      * A path's d attribute.
      */
-    ControllablePath.prototype.toD = function () {
-        var dOption = this.options.d;
+    toD() {
+        const dOption = this.options.d;
         if (dOption) {
             return typeof dOption === 'function' ?
                 dOption.call(this) :
                 dOption;
         }
-        var points = this.points, len = points.length, d = [];
-        var showPath = len, point = points[0], position = showPath && this.anchor(point).absolutePosition, pointIndex = 0, command;
+        const points = this.points, len = points.length, d = [];
+        let showPath = len, point = points[0], position = showPath && this.anchor(point).absolutePosition, pointIndex = 0, command;
         if (position) {
             d.push(['M', position.x, position.y]);
             while (++pointIndex < len && showPath) {
@@ -188,12 +169,12 @@ var ControllablePath = /** @class */ (function (_super) {
         return (showPath && this.graphic ?
             this.chart.renderer.crispLine(d, this.graphic.strokeWidth()) :
             null);
-    };
-    ControllablePath.prototype.shouldBeDrawn = function () {
-        return _super.prototype.shouldBeDrawn.call(this) || !!this.options.d;
-    };
-    ControllablePath.prototype.render = function (parent) {
-        var options = this.options, attrs = this.attrsFromOptions(options);
+    }
+    shouldBeDrawn() {
+        return super.shouldBeDrawn() || !!this.options.d;
+    }
+    render(parent) {
+        const options = this.options, attrs = this.attrsFromOptions(options);
         this.graphic = this.annotation.chart.renderer
             .path([['M', 0, 0]])
             .attr(attrs)
@@ -217,13 +198,13 @@ var ControllablePath = /** @class */ (function (_super) {
                     options.snap * 2
             });
         }
-        _super.prototype.render.call(this);
-        extend(this.graphic, { markerStartSetter: markerStartSetter, markerEndSetter: markerEndSetter });
+        super.render();
+        extend(this.graphic, { markerStartSetter, markerEndSetter });
         this.setMarkers(this);
-    };
-    ControllablePath.prototype.redraw = function (animation) {
+    }
+    redraw(animation) {
         if (this.graphic) {
-            var d = this.toD(), action = animation ? 'animate' : 'attr';
+            const d = this.toD(), action = animation ? 'animate' : 'attr';
             if (d) {
                 this.graphic[action]({ d: d });
                 this.tracker[action]({ d: d });
@@ -234,19 +215,19 @@ var ControllablePath = /** @class */ (function (_super) {
             }
             this.graphic.placed = this.tracker.placed = !!d;
         }
-        _super.prototype.redraw.call(this, animation);
-    };
+        super.redraw(animation);
+    }
     /**
      * Set markers.
      * @private
      * @param {Highcharts.AnnotationControllablePath} item
      */
-    ControllablePath.prototype.setMarkers = function (item) {
-        var itemOptions = item.options, chart = item.chart, defs = chart.options.defs, fill = itemOptions.fill, color = defined(fill) && fill !== 'none' ?
+    setMarkers(item) {
+        const itemOptions = item.options, chart = item.chart, defs = chart.options.defs, fill = itemOptions.fill, color = defined(fill) && fill !== 'none' ?
             fill :
             itemOptions.stroke;
-        var setMarker = function (markerType) {
-            var markerId = itemOptions[markerType], def, predefinedMarker, key, marker;
+        const setMarker = function (markerType) {
+            let markerId = itemOptions[markerType], def, predefinedMarker, key, marker;
             if (markerId) {
                 for (key in defs) { // eslint-disable-line guard-for-in
                     def = defs[key];
@@ -268,27 +249,26 @@ var ControllablePath = /** @class */ (function (_super) {
         };
         ['markerStart', 'markerEnd']
             .forEach(setMarker);
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    /**
-     * A map object which allows to map options attributes to element attributes
-     *
-     * @name Highcharts.AnnotationControllablePath.attrsMap
-     * @type {Highcharts.Dictionary<string>}
-     */
-    ControllablePath.attrsMap = {
-        dashStyle: 'dashstyle',
-        strokeWidth: 'stroke-width',
-        stroke: 'stroke',
-        fill: 'fill',
-        zIndex: 'zIndex'
-    };
-    return ControllablePath;
-}(Controllable));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+/**
+ * A map object which allows to map options attributes to element attributes
+ *
+ * @name Highcharts.AnnotationControllablePath.attrsMap
+ * @type {Highcharts.Dictionary<string>}
+ */
+ControllablePath.attrsMap = {
+    dashStyle: 'dashstyle',
+    strokeWidth: 'stroke-width',
+    stroke: 'stroke',
+    fill: 'fill',
+    zIndex: 'zIndex'
+};
 /* *
  *
  *  Default Export

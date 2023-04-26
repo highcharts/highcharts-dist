@@ -10,13 +10,13 @@
  * */
 'use strict';
 import U from '../../Utilities.js';
-var addEvent = U.addEvent, isObject = U.isObject, isNumber = U.isNumber, pick = U.pick, wrap = U.wrap;
+const { addEvent, isObject, isNumber, pick, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -26,7 +26,7 @@ var composedClasses = [];
  * @private
  */
 function onTickInit() {
-    var tick = this;
+    const tick = this;
     if (!tick.treeGrid) {
         tick.treeGrid = new TreeGridTickAdditions(tick);
     }
@@ -46,7 +46,7 @@ function onTickHover(label) {
  * @private
  */
 function onTickHoverExit(label, options) {
-    var css = isObject(options.style) ? options.style : {};
+    const css = isObject(options.style) ? options.style : {};
     label.removeClass('highcharts-treegrid-node-active');
     if (!label.renderer.styledMode) {
         label.css({ textDecoration: css.textDecoration });
@@ -56,11 +56,11 @@ function onTickHoverExit(label, options) {
  * @private
  */
 function renderLabelIcon(tick, params) {
-    var treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, iconCenter = {
+    const treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, iconCenter = {
         x: labelBox.x - (width / 2) - (options.padding || 0),
         y: labelBox.y - (height / 2)
     }, rotation = params.collapsed ? 90 : 180, shouldRender = params.show && isNumber(iconCenter.y);
-    var icon = treeGrid.labelIcon;
+    let icon = treeGrid.labelIcon;
     if (!icon) {
         treeGrid.labelIcon = icon = renderer
             .path(renderer.symbols[options.type](options.x || 0, options.y || 0, width, height))
@@ -91,8 +91,8 @@ function renderLabelIcon(tick, params) {
  * @private
  */
 function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index, step) {
-    var tick = this, lbOptions = pick(tick.options && tick.options.labels, labelOptions), pos = tick.pos, axis = tick.axis, options = axis.options, isTreeGrid = options.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
-    var symbolOptions, indentation, mapOfPosToGridNode, node, level;
+    const tick = this, lbOptions = pick(tick.options && tick.options.labels, labelOptions), pos = tick.pos, axis = tick.axis, options = axis.options, isTreeGrid = options.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
+    let symbolOptions, indentation, mapOfPosToGridNode, node, level;
     if (isTreeGrid) {
         symbolOptions = (lbOptions && isObject(lbOptions.symbol, true) ?
             lbOptions.symbol :
@@ -116,10 +116,10 @@ function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmar
  * @private
  */
 function wrapRenderLabel(proceed) {
-    var tick = this, pos = tick.pos, axis = tick.axis, label = tick.label, mapOfPosToGridNode = axis.treeGrid.mapOfPosToGridNode, options = axis.options, labelOptions = pick(tick.options && tick.options.labels, options && options.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
+    const tick = this, pos = tick.pos, axis = tick.axis, label = tick.label, mapOfPosToGridNode = axis.treeGrid.mapOfPosToGridNode, options = axis.options, labelOptions = pick(tick.options && tick.options.labels, options && options.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
         labelOptions.symbol :
         {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], level = node && node.depth, isTreeGrid = options.type === 'treegrid', shouldRender = axis.tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', styledMode = axis.chart.styledMode;
-    var collapsed, addClassName, removeClassName;
+    let collapsed, addClassName, removeClassName;
     if (isTreeGrid && node) {
         // Add class name for hierarchical styling.
         if (label &&
@@ -161,7 +161,7 @@ function wrapRenderLabel(proceed) {
             });
         }
         // Add events to both label text and icon
-        [label, tick.treeGrid.labelIcon].forEach(function (object) {
+        [label, tick.treeGrid.labelIcon].forEach((object) => {
             if (object && !object.attachedTreeGridEvents) {
                 // On hover
                 addEvent(object.element, 'mouseover', function () {
@@ -188,18 +188,7 @@ function wrapRenderLabel(proceed) {
  * @private
  * @class
  */
-var TreeGridTickAdditions = /** @class */ (function () {
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    /**
-     * @private
-     */
-    function TreeGridTickAdditions(tick) {
-        this.tick = tick;
-    }
+class TreeGridTickAdditions {
     /* *
      *
      *  Static Functions
@@ -208,9 +197,8 @@ var TreeGridTickAdditions = /** @class */ (function () {
     /**
      * @private
      */
-    TreeGridTickAdditions.compose = function (TickClass) {
-        if (composedClasses.indexOf(TickClass) === -1) {
-            composedClasses.push(TickClass);
+    static compose(TickClass) {
+        if (U.pushUnique(composedMembers, TickClass)) {
             addEvent(TickClass, 'init', onTickInit);
             wrap(TickClass.prototype, 'getLabelPosition', wrapGetLabelPosition);
             wrap(TickClass.prototype, 'renderLabel', wrapRenderLabel);
@@ -225,7 +213,18 @@ var TreeGridTickAdditions = /** @class */ (function () {
                 this.treeGrid.toggleCollapse(redraw);
             };
         }
-    };
+    }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
+    /**
+     * @private
+     */
+    constructor(tick) {
+        this.tick = tick;
+    }
     /* *
      *
      *  Functions
@@ -243,25 +242,25 @@ var TreeGridTickAdditions = /** @class */ (function () {
      * Whether to redraw the chart or wait for an explicit call to
      * {@link Highcharts.Chart#redraw}
      */
-    TreeGridTickAdditions.prototype.collapse = function (redraw) {
-        var tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
+    collapse(redraw) {
+        const tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
         if (brokenAxis &&
             axis.treeGrid.mapOfPosToGridNode) {
-            var pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.collapse(node);
+            const pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.collapse(node);
             brokenAxis.setBreaks(breaks, pick(redraw, true));
         }
-    };
+    }
     /**
      * Destroy remaining labelIcon if exist.
      *
      * @private
      * @function Highcharts.Tick#destroy
      */
-    TreeGridTickAdditions.prototype.destroy = function () {
+    destroy() {
         if (this.labelIcon) {
             this.labelIcon.destroy();
         }
-    };
+    }
     /**
      * Expand the grid cell. Used when axis is of type treegrid.
      *
@@ -274,14 +273,14 @@ var TreeGridTickAdditions = /** @class */ (function () {
      * Whether to redraw the chart or wait for an explicit call to
      * {@link Highcharts.Chart#redraw}
      */
-    TreeGridTickAdditions.prototype.expand = function (redraw) {
-        var tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
+    expand(redraw) {
+        const tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
         if (brokenAxis &&
             axis.treeGrid.mapOfPosToGridNode) {
-            var pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.expand(node);
+            const pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.expand(node);
             brokenAxis.setBreaks(breaks, pick(redraw, true));
         }
-    };
+    }
     /**
      * Toggle the collapse/expand state of the grid cell. Used when axis is
      * of type treegrid.
@@ -295,16 +294,15 @@ var TreeGridTickAdditions = /** @class */ (function () {
      * Whether to redraw the chart or wait for an explicit call to
      * {@link Highcharts.Chart#redraw}
      */
-    TreeGridTickAdditions.prototype.toggleCollapse = function (redraw) {
-        var tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
+    toggleCollapse(redraw) {
+        const tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
         if (brokenAxis &&
             axis.treeGrid.mapOfPosToGridNode) {
-            var pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.toggleCollapse(node);
+            const pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.toggleCollapse(node);
             brokenAxis.setBreaks(breaks, pick(redraw, true));
         }
-    };
-    return TreeGridTickAdditions;
-}());
+    }
+}
 /* *
  *
  *  Default Export

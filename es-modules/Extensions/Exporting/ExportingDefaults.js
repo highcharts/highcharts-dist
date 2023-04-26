@@ -9,7 +9,7 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-var isTouchDevice = H.isTouchDevice;
+const { isTouchDevice } = H;
 /* *
  *
  *  API Options
@@ -23,7 +23,7 @@ var isTouchDevice = H.isTouchDevice;
  * @requires     modules/exporting
  * @optionparent exporting
  */
-var exporting = {
+const exporting = {
     /**
      * Experimental setting to allow HTML inside the chart (added through
      * the `useHTML` options), directly in the exported image. This allows
@@ -504,7 +504,7 @@ var exporting = {
 /**
  * @optionparent lang
  */
-var lang = {
+const lang = {
     /**
      * Exporting module only. The text for the menu item to view the chart
      * in full screen.
@@ -570,7 +570,7 @@ var lang = {
  * @requires     modules/exporting
  * @optionparent navigation
  */
-var navigation = {
+const navigation = {
     /**
      * A collection of options for buttons appearing in the exporting
      * module.
@@ -609,7 +609,7 @@ var navigation = {
          *
          * @since 2.0
          */
-        symbolX: 12.5,
+        symbolX: 14.5,
         /**
          * The y position of the center of the symbol inside the button.
          *
@@ -618,7 +618,7 @@ var navigation = {
          *
          * @since 2.0
          */
-        symbolY: 10.5,
+        symbolY: 13.5,
         /**
          * Alignment for the buttons.
          *
@@ -643,7 +643,7 @@ var navigation = {
          *
          * @since 2.0
          */
-        height: 22,
+        height: 28,
         /**
          * A text string to add to the individual button.
          *
@@ -702,7 +702,7 @@ var navigation = {
          *
          * @since 2.0
          */
-        width: 24,
+        width: 28,
         /**
          * Fill color for the symbol within the button.
          *
@@ -777,16 +777,18 @@ var navigation = {
      *         Light gray menu background
      *
      * @type    {Highcharts.CSSObject}
-     * @default {"border": "1px solid #999999", "background": "#ffffff", "padding": "5px 0"}
+     * @default {"background": "#ffffff", "borderRadius": "3px", "padding": "0.5em"}
      * @since   2.0
      */
     menuStyle: {
         /** @ignore-option */
-        border: "1px solid ".concat("#999999" /* Palette.neutralColor40 */),
+        border: 'none',
+        /** @ignore-option */
+        borderRadius: '3px',
         /** @ignore-option */
         background: "#ffffff" /* Palette.backgroundColor */,
         /** @ignore-option */
-        padding: '5px 0'
+        padding: '0.5em'
     },
     /**
      * CSS styles for the individual items within the popup menu appearing
@@ -801,18 +803,20 @@ var navigation = {
      *         Add a grey stripe to the left
      *
      * @type    {Highcharts.CSSObject}
-     * @default {"padding": "0.5em 1em", "color": "#333333", "background": "none", "fontSize": "11px/14px", "transition": "background 250ms, color 250ms"}
+     * @default {"padding": "0.5em", "color": "#333333", "background": "none", "borderRadius": "3px", "fontSize": "0.8em", "transition": "background 250ms, color 250ms"}
      * @since   2.0
      */
     menuItemStyle: {
         /** @ignore-option */
-        padding: '0.5em 1em',
+        background: 'none',
+        /** @ignore-option */
+        borderRadius: '3px',
         /** @ignore-option */
         color: "#333333" /* Palette.neutralColor80 */,
         /** @ignore-option */
-        background: 'none',
+        padding: '0.5em',
         /** @ignore-option */
-        fontSize: isTouchDevice ? '14px' : '11px',
+        fontSize: isTouchDevice ? '0.9em' : '0.8em',
         /** @ignore-option */
         transition: 'background 250ms, color 250ms'
     },
@@ -828,14 +832,12 @@ var navigation = {
      *         Bold text on hover
      *
      * @type    {Highcharts.CSSObject}
-     * @default {"background": "#335cad", "color": "#ffffff"}
+     * @default {"background": "#f2f2f2" }
      * @since   2.0
      */
     menuItemHoverStyle: {
         /** @ignore-option */
-        background: "#335cad" /* Palette.highlightColor80 */,
-        /** @ignore-option */
-        color: "#ffffff" /* Palette.backgroundColor */
+        background: "#f2f2f2" /* Palette.neutralColor5 */
     }
 };
 /* *
@@ -843,9 +845,9 @@ var navigation = {
  *  Default Export
  *
  * */
-var ExportingDefaults = {
-    exporting: exporting,
-    lang: lang,
-    navigation: navigation
+const ExportingDefaults = {
+    exporting,
+    lang,
+    navigation
 };
 export default ExportingDefaults;

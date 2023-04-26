@@ -10,7 +10,7 @@
 'use strict';
 import PlotLineOrBandAxis from './PlotLineOrBandAxis.js';
 import U from '../../Utilities.js';
-var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, fireEvent = U.fireEvent, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
@@ -28,27 +28,27 @@ var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, destroyOb
  * @param {Highcharts.AxisPlotLinesOptions|Highcharts.AxisPlotBandsOptions} [options]
  * Options to use.
  */
-var PlotLineOrBand = /** @class */ (function () {
+class PlotLineOrBand {
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
+    static compose(AxisClass) {
+        return PlotLineOrBandAxis.compose(PlotLineOrBand, AxisClass);
+    }
     /* *
      *
      *  Constructor
      *
      * */
-    function PlotLineOrBand(axis, options) {
+    constructor(axis, options) {
         this.axis = axis;
         if (options) {
             this.options = options;
             this.id = options.id;
         }
     }
-    /* *
-     *
-     *  Static Functions
-     *
-     * */
-    PlotLineOrBand.compose = function (AxisClass) {
-        return PlotLineOrBandAxis.compose(PlotLineOrBand, AxisClass);
-    };
     /* *
      *
      *  Functions
@@ -61,15 +61,15 @@ var PlotLineOrBand = /** @class */ (function () {
      * @private
      * @function Highcharts.PlotLineOrBand#render
      */
-    PlotLineOrBand.prototype.render = function () {
+    render() {
         fireEvent(this, 'render');
-        var plotLine = this, axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
-        var optionsLabel = options.label, label = plotLine.label, to = options.to, from = options.from, value = options.value, svgElem = plotLine.svgElem, path = [], group;
-        var isBand = defined(from) && defined(to), isLine = defined(value), isNew = !svgElem, attribs = {
+        const plotLine = this, axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
+        let optionsLabel = options.label, label = plotLine.label, to = options.to, from = options.from, value = options.value, svgElem = plotLine.svgElem, path = [], group;
+        const isBand = defined(from) && defined(to), isLine = defined(value), isNew = !svgElem, attribs = {
             'class': 'highcharts-plot-' + (isBand ? 'band ' : 'line ') +
                 (options.className || '')
         };
-        var groupName = isBand ? 'bands' : 'lines';
+        let groupName = isBand ? 'bands' : 'lines';
         // logarithmic conversion
         if (log) {
             from = log.log2lin(from);
@@ -87,7 +87,7 @@ var PlotLineOrBand = /** @class */ (function () {
                 }
             }
             else if (isBand) { // plot band
-                attribs.fill = color || "#e6ebf5" /* Palette.highlightColor10 */;
+                attribs.fill = color || "#e6e9ff" /* Palette.highlightColor10 */;
                 if (options.borderWidth) {
                     attribs.stroke = options.borderColor;
                     attribs['stroke-width'] = options.borderWidth;
@@ -178,15 +178,15 @@ var PlotLineOrBand = /** @class */ (function () {
         }
         // chainable
         return plotLine;
-    };
+    }
     /**
      * Render and align label for plot line or band.
      * @private
      * @function Highcharts.PlotLineOrBand#renderLabel
      */
-    PlotLineOrBand.prototype.renderLabel = function (optionsLabel, path, isBand, zIndex) {
-        var plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer;
-        var label = plotLine.label;
+    renderLabel(optionsLabel, path, isBand, zIndex) {
+        const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer;
+        let label = plotLine.label;
         // add the SVG element
         if (!label) {
             /**
@@ -202,31 +202,32 @@ var PlotLineOrBand = /** @class */ (function () {
                 rotation: optionsLabel.rotation,
                 'class': 'highcharts-plot-' + (isBand ? 'band' : 'line') +
                     '-label ' + (optionsLabel.className || ''),
-                zIndex: zIndex
+                zIndex
             })
                 .add();
             if (!axis.chart.styledMode) {
                 label.css(merge({
+                    fontSize: '0.8em',
                     textOverflow: 'ellipsis'
                 }, optionsLabel.style));
             }
         }
         // get the bounding box and align the label
         // #3000 changed to better handle choice between plotband or plotline
-        var xBounds = path.xBounds ||
+        const xBounds = path.xBounds ||
             [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])];
-        var yBounds = path.yBounds ||
+        const yBounds = path.yBounds ||
             [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])];
-        var x = arrayMin(xBounds);
-        var y = arrayMin(yBounds);
+        const x = arrayMin(xBounds);
+        const y = arrayMin(yBounds);
         label.align(optionsLabel, false, {
-            x: x,
-            y: y,
+            x,
+            y,
             width: arrayMax(xBounds) - x,
             height: arrayMax(yBounds) - y
         });
         if (!label.alignValue || label.alignValue === 'left') {
-            var width = optionsLabel.clip ?
+            const width = optionsLabel.clip ?
                 axis.width : axis.chart.chartWidth;
             label.css({
                 width: (label.rotation === 90 ?
@@ -235,31 +236,30 @@ var PlotLineOrBand = /** @class */ (function () {
             });
         }
         label.show(true);
-    };
+    }
     /**
      * Get label's text content.
      * @private
      * @function Highcharts.PlotLineOrBand#getLabelText
      */
-    PlotLineOrBand.prototype.getLabelText = function (optionsLabel) {
+    getLabelText(optionsLabel) {
         return defined(optionsLabel.formatter) ?
             optionsLabel.formatter
                 .call(this) :
             optionsLabel.text;
-    };
+    }
     /**
      * Remove the plot line or band.
      *
      * @function Highcharts.PlotLineOrBand#destroy
      */
-    PlotLineOrBand.prototype.destroy = function () {
+    destroy() {
         // remove it from the lookup
         erase(this.axis.plotLinesAndBands, this);
         delete this.axis;
         destroyObjectProperties(this);
-    };
-    return PlotLineOrBand;
-}());
+    }
+}
 /* *
  *
  *  Default Export
@@ -351,7 +351,7 @@ export default PlotLineOrBand;
  *         Plot band on Y axis
  *
  * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
- * @default   #e6ebf5
+ * @default   #e6e9ff
  * @apioption xAxis.plotBands.color
  */
 /**

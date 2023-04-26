@@ -9,9 +9,9 @@
  * */
 'use strict';
 import H from './Globals.js';
-var deg2rad = H.deg2rad;
+const { deg2rad } = H;
 import U from './Utilities.js';
-var pick = U.pick;
+const { pick } = U;
 /* *
  *
  *  Functions
@@ -93,7 +93,7 @@ function rotate3D(x, y, z, angles) {
  * @requires highcharts-3d
  */
 function perspective(points, chart, insidePlotArea, useInvertedPersp) {
-    var options3d = chart.options.chart.options3d, 
+    const options3d = chart.options.chart.options3d, 
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
@@ -114,7 +114,7 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     }
     // Transform each point
     return points.map(function (point) {
-        var rotated = rotate3D((inverted ? point.y : point.x) - origin.x, (inverted ? point.x : point.y) - origin.y, (point.z || 0) - origin.z, angles), 
+        const rotated = rotate3D((inverted ? point.y : point.x) - origin.x, (inverted ? point.x : point.y) - origin.y, (point.z || 0) - origin.z, angles), 
         // Apply perspective
         coordinate = perspective3D(rotated, origin, origin.vd);
         // Apply translation
@@ -149,7 +149,7 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
  * @requires highcharts-3d
  */
 function perspective3D(coordinate, origin, distance) {
-    var projection = ((distance > 0) &&
+    const projection = ((distance > 0) &&
         (distance < Number.POSITIVE_INFINITY)) ?
         distance / (coordinate.z + origin.z + distance) :
         1;
@@ -177,7 +177,7 @@ function perspective3D(coordinate, origin, distance) {
  * @requires highcharts-3d
  */
 function pointCameraDistance(coordinates, chart) {
-    var options3d = chart.options.chart.options3d, cameraPosition = {
+    const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0) +
@@ -205,7 +205,7 @@ function pointCameraDistance(coordinates, chart) {
  * @requires highcharts-3d
  */
 function shapeArea(vertexes) {
-    var area = 0, i, j;
+    let area = 0, i, j;
     for (i = 0; i < vertexes.length; i++) {
         j = (i + 1) % vertexes.length;
         area += vertexes[i].x * vertexes[j].y - vertexes[j].x * vertexes[i].y;
@@ -240,11 +240,11 @@ function shapeArea3D(vertexes, chart, insidePlotArea) {
  *  Default Export
  *
  * */
-var Math3D = {
-    perspective: perspective,
-    perspective3D: perspective3D,
-    pointCameraDistance: pointCameraDistance,
-    shapeArea: shapeArea,
-    shapeArea3D: shapeArea3D
+const Math3D = {
+    perspective,
+    perspective3D,
+    pointCameraDistance,
+    shapeArea,
+    shapeArea3D
 };
 export default Math3D;

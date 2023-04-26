@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,22 +46,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, merge = U.merge, isArray = U.isArray;
+        var extend = U.extend,
+            merge = U.merge,
+            isArray = U.isArray;
         /* *
          *
          *  Class
@@ -77,14 +80,15 @@
          * @augments Highcharts.Series
          */
         var TrendLineIndicator = /** @class */ (function (_super) {
-            __extends(TrendLineIndicator, _super);
+                __extends(TrendLineIndicator, _super);
             function TrendLineIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *   Properties
@@ -93,6 +97,7 @@
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
+                _this.updateAllPoints = true;
                 return _this;
             }
             /* *
@@ -101,15 +106,25 @@
              *
              * */
             TrendLineIndicator.prototype.getValues = function (series, params) {
-                var xVal = series.xData, yVal = series.yData, LR = [], xData = [], yData = [], sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, xValLength = xVal.length, index = params.index, alpha, beta, i, x, y;
+                var xVal = series.xData,
+                    yVal = series.yData,
+                    LR = [],
+                    xData = [],
+                    yData = [],
+                    xValLength = xVal.length,
+                    index = params.index;
+                var sumX = (xValLength - 1) * xValLength / 2,
+                    sumY = 0,
+                    sumXY = 0,
+                    sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6,
+                    alpha,
+                    i,
+                    y;
                 // Get sums:
                 for (i = 0; i < xValLength; i++) {
-                    x = xVal[i];
                     y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];
-                    sumX += x;
                     sumY += y;
-                    sumXY += x * y;
-                    sumX2 += x * x;
+                    sumXY += i * y;
                 }
                 // Get slope and offset:
                 alpha = (xValLength * sumXY - sumX * sumY) /
@@ -117,14 +132,13 @@
                 if (isNaN(alpha)) {
                     alpha = 0;
                 }
-                beta = (sumY - alpha * sumX) / xValLength;
+                var beta = (sumY - alpha * sumX) / xValLength;
                 // Calculate linear regression:
                 for (i = 0; i < xValLength; i++) {
-                    x = xVal[i];
-                    y = alpha * x + beta;
+                    y = alpha * i + beta;
                     // Prepare arrays required for getValues() method
-                    LR[i] = [x, y];
-                    xData[i] = x;
+                    LR[i] = [xVal[i], y];
+                    xData[i] = xVal[i];
                     yData[i] = y;
                 }
                 return {

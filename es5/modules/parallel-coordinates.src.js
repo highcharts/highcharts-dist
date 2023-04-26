@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -51,7 +51,18 @@
          * */
         var format = F.format;
         var setOptions = D.setOptions;
-        var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, pick = U.pick, splat = U.splat, wrap = U.wrap;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            defined = U.defined,
+            erase = U.erase,
+            extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            splat = U.splat,
+            wrap = U.wrap;
         /* *
          *
          *  Constants
@@ -60,99 +71,129 @@
         // Extensions for parallel coordinates plot.
         var ChartProto = Chart.prototype;
         var defaultXAxisOptions = {
-            lineWidth: 0,
-            tickLength: 0,
-            opposite: true,
-            type: 'category'
-        };
+                lineWidth: 0,
+                tickLength: 0,
+                opposite: true,
+                type: 'category'
+            };
         /* eslint-disable valid-jsdoc */
         /**
          * @optionparent chart
          */
         var defaultParallelOptions = {
-            /**
-             * Flag to render charts as a parallel coordinates plot. In a parallel
-             * coordinates plot (||-coords) by default all required yAxes are generated
-             * and the legend is disabled. This feature requires
-             * `modules/parallel-coordinates.js`.
-             *
-             * @sample {highcharts} /highcharts/demo/parallel-coordinates/
-             *         Parallel coordinates demo
-             * @sample {highcharts} highcharts/parallel-coordinates/polar/
-             *         Star plot, multivariate data in a polar chart
-             *
-             * @since    6.0.0
-             * @product  highcharts
-             * @requires modules/parallel-coordinates
-             */
-            parallelCoordinates: false,
-            /**
-             * Common options for all yAxes rendered in a parallel coordinates plot.
-             * This feature requires `modules/parallel-coordinates.js`.
-             *
-             * The default options are:
-             * ```js
-             * parallelAxes: {
-             *    lineWidth: 1,       // classic mode only
-             *    gridlinesWidth: 0,  // classic mode only
-             *    title: {
-             *        text: '',
-             *        reserveSpace: false
-             *    },
-             *    labels: {
-             *        x: 0,
-             *        y: 0,
-             *        align: 'center',
-             *        reserveSpace: false
-             *    },
-             *    offset: 0
-             * }
-             * ```
-             *
-             * @sample {highcharts} highcharts/parallel-coordinates/parallelaxes/
-             *         Set the same tickAmount for all yAxes
-             *
-             * @extends   yAxis
-             * @since     6.0.0
-             * @product   highcharts
-             * @excluding alternateGridColor, breaks, id, gridLineColor,
-             *            gridLineDashStyle, gridLineWidth, minorGridLineColor,
-             *            minorGridLineDashStyle, minorGridLineWidth, plotBands,
-             *            plotLines, angle, gridLineInterpolation, maxColor, maxZoom,
-             *            minColor, scrollbar, stackLabels, stops,
-             * @requires  modules/parallel-coordinates
-             */
-            parallelAxes: {
-                lineWidth: 1,
                 /**
-                 * Titles for yAxes are taken from
-                 * [xAxis.categories](#xAxis.categories). All options for `xAxis.labels`
-                 * applies to parallel coordinates titles. For example, to style
-                 * categories, use [xAxis.labels.style](#xAxis.labels.style).
+                 * Flag to render charts as a parallel coordinates plot. In a parallel
+                 * coordinates plot (||-coords) by default all required yAxes are generated
+                 * and the legend is disabled. This feature requires
+                 * `modules/parallel-coordinates.js`.
                  *
-                 * @excluding align, enabled, margin, offset, position3d, reserveSpace,
-                 *            rotation, skew3d, style, text, useHTML, x, y
+                 * @sample {highcharts} /highcharts/demo/parallel-coordinates/
+                 *         Parallel coordinates demo
+                 * @sample {highcharts} highcharts/parallel-coordinates/polar/
+                 *         Star plot,
+            multivariate data in a polar chart
+                 *
+                 * @since    6.0.0
+                 * @product  highcharts
+                 * @requires modules/parallel-coordinates
                  */
-                title: {
-                    text: '',
-                    reserveSpace: false
-                },
-                labels: {
-                    x: 0,
-                    y: 4,
-                    align: 'center',
-                    reserveSpace: false
-                },
-                offset: 0
-            }
-        };
+                parallelCoordinates: false,
+                /**
+                 * Common options for all yAxes rendered in a parallel coordinates plot.
+                 * This feature requires `modules/parallel-coordinates.js`.
+                 *
+                 * The default options are:
+                 * ```js
+                 * parallelAxes: {
+                 *    lineWidth: 1,       // classic mode only
+                 *    gridlinesWidth: 0,  // classic mode only
+                 *    title: {
+                 *        text: '',
+                 *        reserveSpace: false
+                 *    },
+                 *    labels: {
+                 *        x: 0,
+                 *        y: 0,
+                 *        align: 'center',
+                 *        reserveSpace: false
+                 *    },
+                 *    offset: 0
+                 * }
+                 * ```
+                 *
+                 * @sample {highcharts} highcharts/parallel-coordinates/parallelaxes/
+                 *         Set the same tickAmount for all yAxes
+                 *
+                 * @extends   yAxis
+                 * @since     6.0.0
+                 * @product   highcharts
+                 * @excluding alternateGridColor,
+            breaks,
+            id,
+            gridLineColor,
+                 *            gridLineDashStyle,
+            gridLineWidth,
+            minorGridLineColor,
+                 *            minorGridLineDashStyle,
+            minorGridLineWidth,
+            plotBands,
+                 *            plotLines,
+            angle,
+            gridLineInterpolation,
+            maxColor,
+            maxZoom,
+                 *            minColor,
+            scrollbar,
+            stackLabels,
+            stops,
+                 * @requires  modules/parallel-coordinates
+                 */
+                parallelAxes: {
+                    lineWidth: 1,
+                    /**
+                     * Titles for yAxes are taken from
+                     * [xAxis.categories](#xAxis.categories). All options for `xAxis.labels`
+                     * applies to parallel coordinates titles. For example,
+            to style
+                     * categories,
+            use [xAxis.labels.style](#xAxis.labels.style).
+                     *
+                     * @excluding align,
+            enabled,
+            margin,
+            offset,
+            position3d,
+            reserveSpace,
+                     *            rotation,
+            skew3d,
+            style,
+            text,
+            useHTML,
+            x,
+            y
+                     */
+                    title: {
+                        text: '',
+                        reserveSpace: false
+                    },
+                    labels: {
+                        x: 0,
+                        y: 4,
+                        align: 'center',
+                        reserveSpace: false
+                    },
+                    offset: 0
+                }
+            };
         setOptions({
             chart: defaultParallelOptions
         });
         /* eslint-disable no-invalid-this */
         // Initialize parallelCoordinates
         addEvent(Chart, 'init', function (e) {
-            var options = e.args[0], defaultYAxis = splat(options.yAxis || {}), newYAxes = [];
+            var options = e.args[0],
+                defaultYAxis = splat(options.yAxis || {}),
+                newYAxes = [];
             var yAxisLength = defaultYAxis.length;
             /**
              * Flag used in parallel coordinates plot to check if chart has ||-coords
@@ -233,7 +274,8 @@
              * @requires modules/parallel-coordinates
              */
             setParallelInfo: function (options) {
-                var chart = this, seriesOptions = options.series;
+                var chart = this,
+                    seriesOptions = options.series;
                 chart.parallelInfo = {
                     counter: 0
                 };
@@ -260,7 +302,14 @@
         });
         // Translate each point using corresponding yAxis.
         addEvent(Series, 'afterTranslate', function () {
-            var series = this, chart = this.chart, points = series.points, dataLength = points && points.length, closestPointRangePx = Number.MAX_VALUE, lastPlotX, point, i;
+            var series = this,
+                chart = this.chart,
+                points = series.points,
+                dataLength = points && points.length,
+                closestPointRangePx = Number.MAX_VALUE,
+                lastPlotX,
+                point,
+                i;
             if (this.chart.hasParallelCoordinates) {
                 for (i = 0; i < dataLength; i++) {
                     point = points[i];
@@ -311,7 +360,13 @@
          * @private
          */
         function addFormattedValue(proceed) {
-            var chart = this.series && this.series.chart, config = proceed.apply(this, Array.prototype.slice.call(arguments, 1)), formattedValue, yAxisOptions, labelFormat, yAxis;
+            var chart = this.series && this.series.chart,
+                config = proceed.apply(this,
+                Array.prototype.slice.call(arguments, 1)),
+                formattedValue,
+                yAxisOptions,
+                labelFormat,
+                yAxis;
             if (chart &&
                 chart.hasParallelCoordinates &&
                 !defined(config.formattedValue)) {
@@ -372,13 +427,13 @@
          * @class
          */
         var ParallelAxisAdditions = /** @class */ (function () {
-            /* *
-             *
-             *  Constructors
-             *
-             * */
-            function ParallelAxisAdditions(axis) {
-                this.axis = axis;
+                /* *
+                 *
+                 *  Constructors
+                 *
+                 * */
+                function ParallelAxisAdditions(axis) {
+                    this.axis = axis;
             }
             /* *
              *
@@ -399,8 +454,11 @@
              * Axis options.
              */
             ParallelAxisAdditions.prototype.setPosition = function (axisPosition, options) {
-                var parallel = this, axis = parallel.axis, chart = axis.chart, fraction = ((parallel.position || 0) + 0.5) /
-                    (chart.parallelInfo.counter + 1);
+                var parallel = this,
+                    axis = parallel.axis,
+                    chart = axis.chart,
+                    fraction = ((parallel.position || 0) + 0.5) /
+                        (chart.parallelInfo.counter + 1);
                 if (chart.polar) {
                     options.angle = 360 * fraction;
                 }
@@ -438,10 +496,12 @@
              * @private
              */
             function onAfterSetOptions(e) {
-                var axis = this, chart = axis.chart, parallelCoordinates = axis.parallelCoordinates;
+                var axis = this,
+                    chart = axis.chart,
+                    parallelCoordinates = axis.parallelCoordinates;
                 var axisPosition = [
-                    'left', 'width', 'height', 'top'
-                ];
+                        'left', 'width', 'height', 'top'
+                    ];
                 if (chart.hasParallelCoordinates) {
                     if (chart.inverted) {
                         axisPosition = axisPosition.reverse();
@@ -451,7 +511,9 @@
                     }
                     else {
                         var axisIndex = chart.yAxis.indexOf(axis); // #13608
-                        axis.options = merge(axis.options, axis.chart.options.chart.parallelAxes, e.userOptions);
+                            axis.options = merge(axis.options,
+                            axis.chart.options.chart.parallelAxes,
+                            e.userOptions);
                         parallelCoordinates.position = pick(parallelCoordinates.position, axisIndex >= 0 ? axisIndex : chart.yAxis.length);
                         parallelCoordinates.setPosition(axisPosition, axis.options);
                     }

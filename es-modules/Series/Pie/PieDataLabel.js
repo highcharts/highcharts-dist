@@ -10,13 +10,13 @@
 'use strict';
 import DataLabel from '../../Core/Series/DataLabel.js';
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import R from '../../Core/Renderer/RendererUtilities.js';
-var distribute = R.distribute;
+const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Series = SeriesRegistry.series;
+const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var arrayMax = U.arrayMax, clamp = U.clamp, defined = U.defined, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
+const { arrayMax, clamp, defined, merge, pick, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -29,8 +29,8 @@ var ColumnDataLabel;
      *  Constants
      *
      * */
-    var composedClasses = [];
-    var dataLabelPositioners = {
+    const composedMembers = [];
+    const dataLabelPositioners = {
         // Based on the value computed in Highcharts' distribute algorithm.
         radialDistributionY: function (point) {
             return point.top + point.distributeBox.pos;
@@ -53,7 +53,7 @@ var ColumnDataLabel;
         // area. Right edges of the right-half labels touch the right edge of
         // the plot area.
         alignToPlotEdges: function (dataLabel, half, plotWidth, plotLeft) {
-            var dataLabelWidth = dataLabel.getBBox().width;
+            const dataLabelWidth = dataLabel.getBBox().width;
             return half ? dataLabelWidth + plotLeft :
                 plotWidth - dataLabelWidth - plotLeft;
         },
@@ -62,7 +62,7 @@ var ColumnDataLabel;
         // left edge of the plot area. Right edge of the widest right-half label
         // touches the right edge of the plot area.
         alignToConnectors: function (points, half, plotWidth, plotLeft) {
-            var maxDataLabelWidth = 0, dataLabelWidth;
+            let maxDataLabelWidth = 0, dataLabelWidth;
             // find widest data label
             points.forEach(function (point) {
                 dataLabelWidth = point.dataLabel.getBBox().width;
@@ -83,9 +83,8 @@ var ColumnDataLabel;
     /** @private */
     function compose(PieSeriesClass) {
         DataLabel.compose(Series);
-        if (composedClasses.indexOf(PieSeriesClass) === -1) {
-            composedClasses.push(PieSeriesClass);
-            var pieProto = PieSeriesClass.prototype;
+        if (U.pushUnique(composedMembers, PieSeriesClass)) {
+            const pieProto = PieSeriesClass.prototype;
             pieProto.dataLabelPositioners = dataLabelPositioners;
             pieProto.alignDataLabel = noop;
             pieProto.drawDataLabels = drawDataLabels;
@@ -99,12 +98,12 @@ var ColumnDataLabel;
      * @private
      */
     function drawDataLabels() {
-        var series = this, data = series.data, chart = series.chart, options = series.options.dataLabels || {}, connectorPadding = options.connectorPadding, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
+        const series = this, data = series.data, chart = series.chart, options = series.options.dataLabels || {}, connectorPadding = options.connectorPadding, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
             [],
             [] // left
         ], overflow = [0, 0, 0, 0], // top, right, bottom, left
         dataLabelPositioners = series.dataLabelPositioners;
-        var point, connectorWidth, connector, dataLabel, dataLabelWidth, 
+        let point, connectorWidth, connector, dataLabel, dataLabelWidth, 
         // labelPos,
         labelPosition, labelHeight, 
         // divide the points into right and left halves for anti collision
@@ -166,9 +165,9 @@ var ColumnDataLabel;
         /* Loop over the points in each half, starting from the top and bottom
          * of the pie to detect overlapping labels.
          */
-        halves.forEach(function (points, i) {
-            var length = points.length, positions = [];
-            var top, bottom, naturalY, sideOverflow, size, distributionLength;
+        halves.forEach((points, i) => {
+            const length = points.length, positions = [];
+            let top, bottom, naturalY, sideOverflow, size = 0, distributionLength;
             if (!length) {
                 return;
             }
@@ -193,7 +192,7 @@ var ColumnDataLabel;
                         point.distributeBox = {
                             target: point.labelPosition.natural.y -
                                 point.top + size / 2,
-                            size: size,
+                            size,
                             rank: point.y
                         };
                         positions.push(point.distributeBox);
@@ -255,15 +254,17 @@ var ColumnDataLabel;
                             left: connectorPadding,
                             right: -connectorPadding
                         }[labelPosition.alignment] || 0)),
-                    // 10 is for the baseline (label vs text)
                     y: (y +
                         pick(pointDataLabelsOptions.y, options.y) - // (#12985)
-                        10)
+                        // Vertically center
+                        dataLabel.getBBox().height / 2)
                 };
                 // labelPos.x = x;
                 // labelPos.y = y;
-                labelPosition.final.x = x;
-                labelPosition.final.y = y;
+                if (labelPosition) {
+                    labelPosition.computed.x = x;
+                    labelPosition.computed.y = y;
+                }
                 // Detect overflowing data labels
                 if (pick(options.crop, true)) {
                     dataLabelWidth = dataLabel.getBBox().width;
@@ -308,7 +309,7 @@ var ColumnDataLabel;
                     pick(pointDataLabelsOptions.connectorWidth, 1);
                 // Draw the connector
                 if (connectorWidth) {
-                    var isNew = void 0;
+                    let isNew;
                     connector = point.connector;
                     dataLabel = point.dataLabel;
                     if (dataLabel &&
@@ -354,7 +355,7 @@ var ColumnDataLabel;
      */
     function placeDataLabels() {
         this.points.forEach(function (point) {
-            var dataLabel = point.dataLabel, _pos;
+            let dataLabel = point.dataLabel, _pos;
             if (dataLabel && point.visible) {
                 _pos = dataLabel._pos;
                 if (_pos) {
@@ -391,7 +392,7 @@ var ColumnDataLabel;
      * @private
      */
     function verifyDataLabelOverflow(overflow) {
-        var center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80, newSize = minSize, 
+        let center = this.center, options = this.options, centerOption = options.center, minSize = options.minSize || 80, newSize = minSize, 
         // If a size is set, return true and don't try to shrink the pie
         // to fit the labels.
         ret = options.size !== null;

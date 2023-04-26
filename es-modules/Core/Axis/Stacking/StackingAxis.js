@@ -9,13 +9,13 @@
  * */
 'use strict';
 import A from '../../Animation/AnimationUtilities.js';
-var getDeferredAnimation = A.getDeferredAnimation;
+const { getDeferredAnimation } = A;
 import Axis from '../Axis.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
-var seriesProto = SeriesRegistry.series.prototype;
+const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';
 import U from '../../Utilities.js';
-var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isArray, isNumber, objectEach, pick } = U;
 /* *
  *
  *  Functions
@@ -28,15 +28,15 @@ var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, d
  * @function Highcharts.Chart#getStacks
  */
 function chartGetStacks() {
-    var chart = this, inverted = chart.inverted;
+    const chart = this, inverted = chart.inverted;
     // reset stacks for each yAxis
-    chart.yAxis.forEach(function (axis) {
+    chart.yAxis.forEach((axis) => {
         if (axis.stacking && axis.stacking.stacks && axis.hasVisibleSeries) {
             axis.stacking.oldStacks = axis.stacking.stacks;
         }
     });
-    chart.series.forEach(function (series) {
-        var xAxisOptions = series.xAxis && series.xAxis.options || {};
+    chart.series.forEach((series) => {
+        const xAxisOptions = series.xAxis && series.xAxis.options || {};
         if (series.options.stacking &&
             (series.visible === true ||
                 chart.options.chart.ignoreHiddenSeries === false)) {
@@ -53,11 +53,11 @@ function chartGetStacks() {
  * @private
  */
 function onAxisDestroy() {
-    var stacking = this.stacking;
+    const stacking = this.stacking;
     if (!stacking) {
         return;
     }
-    var stacks = stacking.stacks;
+    const stacks = stacking.stacks;
     // Destroy each stack total
     objectEach(stacks, function (stack, stackKey) {
         destroyObjectProperties(stack);
@@ -111,11 +111,11 @@ function seriesGetStackIndicator(stackIndicator, x, index, key) {
  * @function Highcharts.Series#modifyStacks
  */
 function seriesModifyStacks() {
-    var series = this, yAxis = series.yAxis, stackKey = series.stackKey, stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
-    var stackIndicator;
+    const series = this, yAxis = series.yAxis, stackKey = series.stackKey, stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
+    let stackIndicator;
     if (stacker) { // Modifier function exists (Series.percentStacker etc.)
-        [stackKey, '-' + stackKey].forEach(function (key) {
-            var i = processedXData.length, x, stack, pointExtremes;
+        [stackKey, '-' + stackKey].forEach((key) => {
+            let i = processedXData.length, x, stack, pointExtremes;
             while (i--) {
                 x = processedXData[i];
                 stackIndicator = series.getStackIndicator(stackIndicator, x, series.index, key);
@@ -136,7 +136,7 @@ function seriesModifyStacks() {
  * @function Highcharts.Series#percentStacker
  */
 function seriesPercentStacker(pointExtremes, stack, i) {
-    var totalFactor = stack.total ? 100 / stack.total : 0;
+    const totalFactor = stack.total ? 100 / stack.total : 0;
     // Y bottom value
     pointExtremes[0] = correctFloat(pointExtremes[0] * totalFactor);
     // Y value
@@ -153,7 +153,7 @@ function seriesPercentStacker(pointExtremes, stack, i) {
  * @return {void}
  */
 function seriesSetGroupedPoints() {
-    var stacking = this.yAxis.stacking;
+    const stacking = this.yAxis.stacking;
     if (this.options.centerInCategory &&
         (this.is('column') || this.is('columnrange')) &&
         // With stacking enabled, we already have stacks that we can compute
@@ -166,9 +166,9 @@ function seriesSetGroupedPoints() {
         // pseudo stacks (#14986)
     }
     else if (stacking) {
-        objectEach(stacking.stacks, function (type, key) {
+        objectEach(stacking.stacks, (type, key) => {
             if (key.slice(-5) === 'group') {
-                objectEach(type, function (stack) { return stack.destroy(); });
+                objectEach(type, (stack) => stack.destroy());
                 delete stacking.stacks[key];
             }
         });
@@ -181,15 +181,15 @@ function seriesSetGroupedPoints() {
  * @function Highcharts.Series#setStackedPoints
  */
 function seriesSetStackedPoints(stackingParam) {
-    var chart = this.chart, stacking = stackingParam || this.options.stacking;
+    const chart = this.chart, stacking = stackingParam || this.options.stacking;
     if (!stacking || (this.visible !== true &&
         chart.options.chart.ignoreHiddenSeries !== false)) {
         return;
     }
-    var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? "".concat(series.type, ",").concat(stacking) : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = stacking === 'group' ?
+    const series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? `${series.type},${stacking}` : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = stacking === 'group' ?
         chart.yAxis[0] :
         series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
-    var stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;
+    let stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;
     yAxis.stacking.stacksTouched += 1;
     // loop over the non-null y values and read them into a local array
     for (i = 0; i < yDataLength; i++) {
@@ -274,8 +274,8 @@ function seriesSetStackedPoints(stackingParam) {
             stack.cumulative = (stack.total || 1) - 1;
         }
         else {
-            stack.cumulative =
-                pick(stack.cumulative, stackThreshold) + (y || 0);
+            stack.cumulative = correctFloat(pick(stack.cumulative, stackThreshold) +
+                (y || 0));
         }
         if (y !== null) {
             stack.points[pointKey].push(stack.cumulative);
@@ -302,13 +302,13 @@ function seriesSetStackedPoints(stackingParam) {
  * @private
  * @class
  */
-var AxisAdditions = /** @class */ (function () {
+class AxisAdditions {
     /* *
      *
      *  Constructors
      *
      * */
-    function AxisAdditions(axis) {
+    constructor(axis) {
         this.oldStacks = {};
         this.stacks = {};
         this.stacksTouched = 0;
@@ -323,13 +323,13 @@ var AxisAdditions = /** @class */ (function () {
      * Build the stacks from top down
      * @private
      */
-    AxisAdditions.prototype.buildStacks = function () {
-        var stacking = this;
-        var axis = stacking.axis;
-        var axisSeries = axis.series;
-        var reversedStacks = axis.options.reversedStacks;
-        var len = axisSeries.length;
-        var actualSeries, i;
+    buildStacks() {
+        const stacking = this;
+        const axis = stacking.axis;
+        const axisSeries = axis.series;
+        const reversedStacks = axis.options.reversedStacks;
+        const len = axisSeries.length;
+        let actualSeries, i;
         stacking.usePercentage = false;
         i = len;
         while (i--) {
@@ -342,13 +342,13 @@ var AxisAdditions = /** @class */ (function () {
             axisSeries[i].modifyStacks();
         }
         fireEvent(axis, 'afterBuildStacks');
-    };
+    }
     /**
      * @private
      */
-    AxisAdditions.prototype.cleanStacks = function () {
-        var stacking = this;
-        var stacks;
+    cleanStacks() {
+        const stacking = this;
+        let stacks;
         if (stacking.oldStacks) {
             stacks = stacking.stacks = stacking.oldStacks;
         }
@@ -358,18 +358,17 @@ var AxisAdditions = /** @class */ (function () {
                 stack.cumulative = stack.total;
             });
         });
-    };
+    }
     /**
      * Set all the stacks to initial states and destroy unused ones.
      * @private
      */
-    AxisAdditions.prototype.resetStacks = function () {
-        var _this = this;
-        objectEach(this.stacks, function (type) {
-            objectEach(type, function (stack, x) {
+    resetStacks() {
+        objectEach(this.stacks, (type) => {
+            objectEach(type, (stack, x) => {
                 // Clean up memory after point deletion (#1044, #4320)
                 if (isNumber(stack.touched) &&
-                    stack.touched < _this.stacksTouched) {
+                    stack.touched < this.stacksTouched) {
                     stack.destroy();
                     delete type[x];
                     // Reset stacks
@@ -380,12 +379,12 @@ var AxisAdditions = /** @class */ (function () {
                 }
             });
         });
-    };
+    }
     /**
      * @private
      */
-    AxisAdditions.prototype.renderStackTotals = function () {
-        var stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels &&
+    renderStackTotals() {
+        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels &&
             axis.options.stackLabels.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
             renderer
                 .g('stack-labels')
@@ -407,9 +406,8 @@ var AxisAdditions = /** @class */ (function () {
         stackTotalGroup.animate({
             opacity: 1
         }, animationConfig);
-    };
-    return AxisAdditions;
-}());
+    }
+}
 /* *
  *
  *  Composition
@@ -422,7 +420,7 @@ var StackingAxis;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -433,24 +431,21 @@ var StackingAxis;
      * @private
      */
     function compose(AxisClass, ChartClass, SeriesClass) {
-        if (composedClasses.indexOf(AxisClass) === -1) {
-            composedClasses.push(AxisClass);
+        if (U.pushUnique(composedMembers, AxisClass)) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
         }
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.getStacks = chartGetStacks;
         }
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
-            var seriesProto_1 = SeriesClass.prototype;
-            seriesProto_1.getStackIndicator = seriesGetStackIndicator;
-            seriesProto_1.modifyStacks = seriesModifyStacks;
-            seriesProto_1.percentStacker = seriesPercentStacker;
-            seriesProto_1.setGroupedPoints = seriesSetGroupedPoints;
-            seriesProto_1.setStackedPoints = seriesSetStackedPoints;
+        if (U.pushUnique(composedMembers, SeriesClass)) {
+            const seriesProto = SeriesClass.prototype;
+            seriesProto.getStackIndicator = seriesGetStackIndicator;
+            seriesProto.modifyStacks = seriesModifyStacks;
+            seriesProto.percentStacker = seriesPercentStacker;
+            seriesProto.setGroupedPoints = seriesSetGroupedPoints;
+            seriesProto.setStackedPoints = seriesSetStackedPoints;
         }
     }
     StackingAxis.compose = compose;

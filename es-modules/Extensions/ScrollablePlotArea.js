@@ -18,16 +18,16 @@ WIP on vertical scrollable plot area (#9378). To do:
  */
 'use strict';
 import A from '../Core/Animation/AnimationUtilities.js';
-var stop = A.stop;
+const { stop } = A;
 import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
 import Series from '../Core/Series/Series.js';
 import RendererRegistry from '../Core/Renderer/RendererRegistry.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, defined = U.defined, merge = U.merge, pick = U.pick;
+const { addEvent, createElement, defined, merge, pick } = U;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 addEvent(Chart, 'afterSetChartSize', function (e) {
-    var scrollablePlotArea = this.options.chart.scrollablePlotArea, scrollableMinWidth = scrollablePlotArea && scrollablePlotArea.minWidth, scrollableMinHeight = scrollablePlotArea && scrollablePlotArea.minHeight, scrollablePixelsX, scrollablePixelsY, corrections;
+    let scrollablePlotArea = this.options.chart.scrollablePlotArea, scrollableMinWidth = scrollablePlotArea && scrollablePlotArea.minWidth, scrollableMinHeight = scrollablePlotArea && scrollablePlotArea.minHeight, scrollablePixelsX, scrollablePixelsY, corrections;
     if (!this.renderer.forExport) {
         // The amount of pixels to scroll, the difference between chart
         // width and scrollable width
@@ -72,7 +72,7 @@ addEvent(Chart, 'afterSetChartSize', function (e) {
                     // Get the plot lines right in getPlotLinePath,
                     // temporarily set it to the adjusted plot width.
                     axis.getPlotLinePath = function () {
-                        var marginName = corrections[axis.side].name, correctionValue = corrections[axis.side].value, 
+                        let marginName = corrections[axis.side].name, correctionValue = corrections[axis.side].value, 
                         // axis.right or axis.bottom
                         margin = this[marginName], path;
                         // Temporarily adjust
@@ -109,8 +109,7 @@ addEvent(Chart, 'render', function () {
  * @return {void}
  */
 Chart.prototype.setUpScrolling = function () {
-    var _this = this;
-    var css = {
+    const css = {
         WebkitOverflowScrolling: 'touch',
         overflowX: 'hidden',
         overflowY: 'hidden'
@@ -134,14 +133,14 @@ Chart.prototype.setUpScrolling = function () {
     }, css, this.scrollingParent);
     // On scroll, reset the chart position because it applies to the scrolled
     // container
-    var lastHoverPoint;
-    addEvent(this.scrollingContainer, 'scroll', function () {
-        if (_this.pointer) {
-            delete _this.pointer.chartPosition;
-            if (_this.hoverPoint) {
-                lastHoverPoint = _this.hoverPoint;
+    let lastHoverPoint;
+    addEvent(this.scrollingContainer, 'scroll', () => {
+        if (this.pointer) {
+            delete this.pointer.chartPosition;
+            if (this.hoverPoint) {
+                lastHoverPoint = this.hoverPoint;
             }
-            _this.pointer.runPointActions(void 0, lastHoverPoint, true);
+            this.pointer.runPointActions(void 0, lastHoverPoint, true);
         }
     });
     this.innerContainer = createElement('div', {
@@ -158,7 +157,7 @@ Chart.prototype.setUpScrolling = function () {
  * @private
  */
 Chart.prototype.moveFixedElements = function () {
-    var container = this.container, fixedRenderer = this.fixedRenderer, fixedSelectors = [
+    let container = this.container, fixedRenderer = this.fixedRenderer, fixedSelectors = [
         '.highcharts-breadcrumbs-group',
         '.highcharts-contextbutton',
         '.highcharts-credits',
@@ -187,7 +186,7 @@ Chart.prototype.moveFixedElements = function () {
         axisClass = '.highcharts-yaxis';
     }
     if (axisClass) {
-        fixedSelectors.push("".concat(axisClass, ":not(.highcharts-radial-axis)"), "".concat(axisClass, "-labels:not(.highcharts-radial-axis-labels)"));
+        fixedSelectors.push(`${axisClass}:not(.highcharts-radial-axis)`, `${axisClass}-labels:not(.highcharts-radial-axis-labels)`);
     }
     fixedSelectors.forEach(function (className) {
         [].forEach.call(container.querySelectorAll(className), function (elem) {
@@ -204,8 +203,8 @@ Chart.prototype.moveFixedElements = function () {
  * @return {void}
  */
 Chart.prototype.applyFixed = function () {
-    var firstTime = !this.fixedDiv, chartOptions = this.options.chart, scrollableOptions = chartOptions.scrollablePlotArea, Renderer = RendererRegistry.getRendererType();
-    var fixedRenderer, scrollableWidth, scrollableHeight;
+    const firstTime = !this.fixedDiv, chartOptions = this.options.chart, scrollableOptions = chartOptions.scrollablePlotArea, Renderer = RendererRegistry.getRendererType();
+    let fixedRenderer, scrollableWidth, scrollableHeight;
     // First render
     if (firstTime) {
         this.fixedDiv = createElement('div', {
@@ -274,7 +273,7 @@ Chart.prototype.applyFixed = function () {
         }
     }
     // Mask behind the left and right side
-    var axisOffset = this.axisOffset, maskTop = this.plotTop - axisOffset[0] - 1, maskLeft = this.plotLeft - axisOffset[3] - 1, maskBottom = this.plotTop + this.plotHeight + axisOffset[2] + 1, maskRight = this.plotLeft + this.plotWidth + axisOffset[1] + 1, maskPlotRight = this.plotLeft + this.plotWidth -
+    let axisOffset = this.axisOffset, maskTop = this.plotTop - axisOffset[0] - 1, maskLeft = this.plotLeft - axisOffset[3] - 1, maskBottom = this.plotTop + this.plotHeight + axisOffset[2] + 1, maskRight = this.plotLeft + this.plotWidth + axisOffset[1] + 1, maskPlotRight = this.plotLeft + this.plotWidth -
         (this.scrollablePixelsX || 0), maskPlotBottom = this.plotTop + this.plotHeight -
         (this.scrollablePixelsY || 0), d;
     if (this.scrollablePixelsX) {
@@ -313,7 +312,7 @@ Chart.prototype.applyFixed = function () {
         d = [['M', 0, 0]];
     }
     if (this.redrawTrigger !== 'adjustHeight') {
-        this.scrollableMask.attr({ d: d });
+        this.scrollableMask.attr({ d });
     }
 };
 addEvent(Axis, 'afterInit', function () {

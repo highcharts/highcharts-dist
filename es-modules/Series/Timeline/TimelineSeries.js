@@ -12,29 +12,14 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, LineSeries = _a.line;
+const { seriesTypes: { column: ColumnSeries, line: LineSeries } } = SeriesRegistry;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import TimelinePoint from './TimelinePoint.js';
 import TimelineSeriesDefaults from './TimelineSeriesDefaults.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, extend = U.extend, merge = U.merge, pick = U.pick;
+const { addEvent, arrayMax, arrayMin, defined, extend, merge, pick } = U;
 /* *
  *
  *  Class
@@ -49,26 +34,24 @@ var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined
  *
  * @augments Highcharts.Series
  */
-var TimelineSeries = /** @class */ (function (_super) {
-    __extends(TimelineSeries, _super);
-    function TimelineSeries() {
+class TimelineSeries extends LineSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.userOptions = void 0;
-        _this.visibilityMap = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
+        this.userOptions = void 0;
+        this.visibilityMap = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -77,8 +60,8 @@ var TimelineSeries = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    TimelineSeries.prototype.alignDataLabel = function (point, dataLabel, _options, _alignTo) {
-        var series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter(function (point) {
+    alignDataLabel(point, dataLabel, _options, _alignTo) {
+        let series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter(function (point) {
             return point;
         }), visiblePointsCount = series.visiblePointsCount, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
         // Define multiplier which is used to calculate data label
@@ -114,53 +97,52 @@ var TimelineSeries = /** @class */ (function (_super) {
                 dataLabel.shadow(dataLabelsOptions.shadow);
             }
         }
-        _super.prototype.alignDataLabel.apply(series, arguments);
-    };
-    TimelineSeries.prototype.bindAxes = function () {
-        var series = this;
-        _super.prototype.bindAxes.call(series);
+        super.alignDataLabel.apply(series, arguments);
+    }
+    bindAxes() {
+        const series = this;
+        super.bindAxes.call(series);
         ['xAxis', 'yAxis'].forEach(function (axis) {
             // Initially set the linked xAxis type to category.
             if (axis === 'xAxis' && !series[axis].userOptions.type) {
                 series[axis].categories = series[axis].hasNames = true;
             }
         });
-    };
-    TimelineSeries.prototype.distributeDL = function () {
-        var series = this, dataLabelsOptions = series.options.dataLabels;
-        var visibilityIndex = 1;
+    }
+    distributeDL() {
+        const series = this, dataLabelsOptions = series.options.dataLabels;
+        let visibilityIndex = 1;
         if (dataLabelsOptions) {
-            var distance_1 = dataLabelsOptions.distance || 0;
-            series.points.forEach(function (point) {
-                var _a;
-                point.options.dataLabels = merge((_a = {},
-                    _a[series.chart.inverted ? 'x' : 'y'] = dataLabelsOptions.alternate && visibilityIndex % 2 ?
-                        -distance_1 : distance_1,
-                    _a), point.userDLOptions);
+            const distance = dataLabelsOptions.distance || 0;
+            series.points.forEach((point) => {
+                point.options.dataLabels = merge({
+                    [series.chart.inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
+                        -distance : distance
+                }, point.userDLOptions);
                 visibilityIndex++;
             });
         }
-    };
-    TimelineSeries.prototype.generatePoints = function () {
-        var series = this;
-        _super.prototype.generatePoints.apply(series);
+    }
+    generatePoints() {
+        const series = this;
+        super.generatePoints.apply(series);
         series.points.forEach(function (point, i) {
             point.applyOptions({
                 x: series.xData[i]
             }, series.xData[i]);
         });
-    };
-    TimelineSeries.prototype.getVisibilityMap = function () {
-        var series = this, map = (series.data.length ?
+    }
+    getVisibilityMap() {
+        const series = this, map = (series.data.length ?
             series.data : series.userOptions.data).map(function (point) {
             return (point &&
                 point.visible !== false &&
                 !point.isNull) ? point : false;
         });
         return map;
-    };
-    TimelineSeries.prototype.getXExtremes = function (xData) {
-        var series = this, filteredData = xData.filter(function (x, i) {
+    }
+    getXExtremes(xData) {
+        const series = this, filteredData = xData.filter(function (x, i) {
             return series.points[i].isValid() &&
                 series.points[i].visible;
         });
@@ -168,12 +150,12 @@ var TimelineSeries = /** @class */ (function (_super) {
             min: arrayMin(filteredData),
             max: arrayMax(filteredData)
         };
-    };
-    TimelineSeries.prototype.init = function () {
-        var series = this;
-        _super.prototype.init.apply(series, arguments);
+    }
+    init() {
+        const series = this;
+        super.init.apply(series, arguments);
         series.eventsToUnbind.push(addEvent(series, 'afterTranslate', function () {
-            var lastPlotX, closestPointRangePx = Number.MAX_VALUE;
+            let lastPlotX, closestPointRangePx = Number.MAX_VALUE;
             series.points.forEach(function (point) {
                 // Set the isInside parameter basing also on the real point
                 // visibility, in order to avoid showing hidden points
@@ -198,7 +180,7 @@ var TimelineSeries = /** @class */ (function (_super) {
             series.distributeDL(); // @todo use this scope for series
         }));
         series.eventsToUnbind.push(addEvent(series, 'afterDrawDataLabels', function () {
-            var dataLabel; // @todo use this scope for series
+            let dataLabel; // @todo use this scope for series
             // Draw or align connector for each point.
             series.points.forEach(function (point) {
                 dataLabel = point.dataLabel;
@@ -234,13 +216,13 @@ var TimelineSeries = /** @class */ (function (_super) {
                 }
             });
         }));
-    };
-    TimelineSeries.prototype.markerAttribs = function (point, state) {
-        var series = this, seriesMarkerOptions = series.options.marker, seriesStateOptions, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), pointStateOptions, width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height), radius = 0, attribs;
+    }
+    markerAttribs(point, state) {
+        let series = this, seriesMarkerOptions = series.options.marker, seriesStateOptions, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), pointStateOptions, width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height), radius = 0, attribs;
         // Call default markerAttribs method, when the xAxis type
         // is set to datetime.
         if (series.xAxis.dateTime) {
-            return _super.prototype.markerAttribs.call(this, point, state);
+            return super.markerAttribs.call(this, point, state);
         }
         // Handle hover and select states
         if (state) {
@@ -264,9 +246,9 @@ var TimelineSeries = /** @class */ (function (_super) {
             width: attribs.height,
             height: attribs.width
         } : attribs;
-    };
-    TimelineSeries.prototype.processData = function () {
-        var series = this, visiblePoints = 0, i;
+    }
+    processData() {
+        let series = this, visiblePoints = 0, i;
         series.visibilityMap = series.getVisibilityMap();
         // Calculate currently visible points.
         series.visibilityMap.forEach(function (point) {
@@ -278,12 +260,11 @@ var TimelineSeries = /** @class */ (function (_super) {
         for (i = 0; i < series.xData.length; i++) {
             series.yData[i] = 1;
         }
-        _super.prototype.processData.call(this, arguments);
+        super.processData.call(this, arguments);
         return;
-    };
-    TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
-    return TimelineSeries;
-}(LineSeries));
+    }
+}
+TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
 extend(TimelineSeries.prototype, {
     // Use a simple symbol from LegendSymbolMixin
     drawLegendSymbol: LegendSymbol.drawRectangle,

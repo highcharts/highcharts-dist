@@ -6,25 +6,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var isNumber = U.isNumber, merge = U.merge;
+const { isNumber, merge } = U;
 /* *
  *
  *  Class
@@ -39,33 +24,31 @@ var isNumber = U.isNumber, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var CMOIndicator = /** @class */ (function (_super) {
-    __extends(CMOIndicator, _super);
-    function CMOIndicator() {
+class CMOIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    CMOIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, CMO = [], xData = [], yData = [];
-        var i, index = params.index, values;
+    getValues(series, params) {
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, CMO = [], xData = [], yData = [];
+        let i, index = params.index, values;
         if (xVal.length < period) {
             return;
         }
@@ -77,12 +60,12 @@ var CMOIndicator = /** @class */ (function (_super) {
             // shorter then 4 (HLC, range), this ensures that we are not trying
             // to reach the index out of bounds
             index = Math.min(index, yVal[0].length - 1);
-            values = yVal.map(function (value) { return value[index]; });
+            values = yVal.map((value) => value[index]);
         }
-        var firstAddedSum = 0, sumOfHigherValues = 0, sumOfLowerValues = 0, y;
+        let firstAddedSum = 0, sumOfHigherValues = 0, sumOfLowerValues = 0, y;
         // Calculate first point, check if the first value
         // was added to sum of higher/lower values, and what was the value.
-        for (var j = period; j > 0; j--) {
+        for (let j = period; j > 0; j--) {
             if (values[j] > values[j - 1]) {
                 sumOfHigherValues += values[j] - values[j - 1];
             }
@@ -131,30 +114,29 @@ var CMOIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
-    /**
-     * Chande Momentum Oscilator (CMO) technical indicator. This series
-     * requires the `linkedTo` option to be set and should be loaded after
-     * the `stock/indicators/indicators.js` file.
-     *
-     * @sample stock/indicators/cmo
-     *         CMO indicator
-     *
-     * @extends      plotOptions.sma
-     * @since 9.1.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/cmo
-     * @optionparent plotOptions.cmo
-     */
-    CMOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        params: {
-            period: 20,
-            index: 3
-        }
-    });
-    return CMOIndicator;
-}(SMAIndicator));
+    }
+}
+/**
+ * Chande Momentum Oscilator (CMO) technical indicator. This series
+ * requires the `linkedTo` option to be set and should be loaded after
+ * the `stock/indicators/indicators.js` file.
+ *
+ * @sample stock/indicators/cmo
+ *         CMO indicator
+ *
+ * @extends      plotOptions.sma
+ * @since 9.1.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/cmo
+ * @optionparent plotOptions.cmo
+ */
+CMOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        period: 20,
+        index: 3
+    }
+});
 SeriesRegistry.registerSeriesType('cmo', CMOIndicator);
 /* *
  *

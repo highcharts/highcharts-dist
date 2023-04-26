@@ -10,21 +10,6 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Color from '../../Core/Color/Color.js';
 import H from '../../Core/Globals.js';
 import NodesComposition from '../NodesComposition.js';
@@ -32,11 +17,11 @@ import SankeyPoint from './SankeyPoint.js';
 import SankeySeriesDefaults from './SankeySeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import SankeyColumnComposition from './SankeyColumnComposition.js';
-var Series = SeriesRegistry.series, ColumnSeries = SeriesRegistry.seriesTypes.column;
+const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import TU from '../TreeUtilities.js';
-var getLevelOptions = TU.getLevelOptions;
+const { getLevelOptions } = TU;
 import U from '../../Core/Utilities.js';
-var defined = U.defined, extend = U.extend, isObject = U.isObject, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength, stableSort = U.stableSort;
+const { extend, isObject, merge, pick, relativeLength, stableSort } = U;
 /* *
  *
  *  Class
@@ -49,31 +34,29 @@ var defined = U.defined, extend = U.extend, isObject = U.isObject, merge = U.mer
  *
  * @augments Highcharts.Series
  */
-var SankeySeries = /** @class */ (function (_super) {
-    __extends(SankeySeries, _super);
-    function SankeySeries() {
+class SankeySeries extends ColumnSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.colDistance = void 0;
-        _this.data = void 0;
-        _this.group = void 0;
-        _this.nodeLookup = void 0;
-        _this.nodePadding = void 0;
-        _this.nodes = void 0;
-        _this.nodeWidth = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.translationFactor = void 0;
-        return _this;
+        this.colDistance = void 0;
+        this.data = void 0;
+        this.group = void 0;
+        this.nodeLookup = void 0;
+        this.nodePadding = void 0;
+        this.nodes = void 0;
+        this.nodeWidth = void 0;
+        this.options = void 0;
+        this.points = void 0;
+        this.translationFactor = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -85,8 +68,8 @@ var SankeySeries = /** @class */ (function (_super) {
     /**
      * @private
      */
-    SankeySeries.getDLOptions = function (params) {
-        var optionsPoint = (isObject(params.optionsPoint) ?
+    static getDLOptions(params) {
+        const optionsPoint = (isObject(params.optionsPoint) ?
             params.optionsPoint.dataLabels :
             {}), optionsLevel = (isObject(params.level) ?
             params.level.dataLabels :
@@ -94,7 +77,7 @@ var SankeySeries = /** @class */ (function (_super) {
             style: {}
         }, optionsLevel, optionsPoint);
         return options;
-    };
+    }
     /* *
      *
      *  Functions
@@ -106,8 +89,8 @@ var SankeySeries = /** @class */ (function (_super) {
      * incoming and outgoing links.
      * @private
      */
-    SankeySeries.prototype.createNodeColumns = function () {
-        var columns = [];
+    createNodeColumns() {
+        const columns = [];
         this.nodes.forEach(function (node) {
             node.setNodeColumn();
             if (!columns[node.column]) {
@@ -117,20 +100,20 @@ var SankeySeries = /** @class */ (function (_super) {
             columns[node.column].push(node);
         }, this);
         // Fill in empty columns (#8865)
-        for (var i = 0; i < columns.length; i++) {
+        for (let i = 0; i < columns.length; i++) {
             if (typeof columns[i] === 'undefined') {
                 columns[i] =
                     SankeyColumnComposition.compose([], this);
             }
         }
         return columns;
-    };
+    }
     /**
      * Order the nodes, starting with the root node(s). (#9818)
      * @private
      */
-    SankeySeries.prototype.order = function (node, level) {
-        var series = this;
+    order(node, level) {
+        const series = this;
         // Prevents circular recursion:
         if (typeof node.level === 'undefined') {
             node.level = level;
@@ -140,15 +123,15 @@ var SankeySeries = /** @class */ (function (_super) {
                 }
             });
         }
-    };
+    }
     /**
      * Extend generatePoints by adding the nodes, which are Point objects
      * but pushed to the this.nodes array.
      * @private
      */
-    SankeySeries.prototype.generatePoints = function () {
+    generatePoints() {
         NodesComposition.generatePoints.apply(this, arguments);
-        var series = this;
+        const series = this;
         if (this.orderNodes) {
             this.nodes
                 // Identify the root node(s)
@@ -164,43 +147,43 @@ var SankeySeries = /** @class */ (function (_super) {
                 return a.level - b.level;
             });
         }
-    };
+    }
     /**
      * Overridable function to get node padding, overridden in dependency
      * wheel series type.
      * @private
      */
-    SankeySeries.prototype.getNodePadding = function () {
-        var nodePadding = this.options.nodePadding || 0;
+    getNodePadding() {
+        let nodePadding = this.options.nodePadding || 0;
         // If the number of columns is so great that they will overflow with
         // the given nodePadding, we sacrifice the padding in order to
         // render all nodes within the plot area (#11917).
         if (this.nodeColumns) {
-            var maxLength = this.nodeColumns.reduce(function (acc, col) { return Math.max(acc, col.length); }, 0);
+            const maxLength = this.nodeColumns.reduce((acc, col) => Math.max(acc, col.length), 0);
             if (maxLength * nodePadding > this.chart.plotSizeY) {
                 nodePadding = this.chart.plotSizeY / maxLength;
             }
         }
         return nodePadding;
-    };
+    }
     /**
      * Define hasData function for non-cartesian series.
      * @private
      * @return {boolean}
      *         Returns true if the series has points at all.
      */
-    SankeySeries.prototype.hasData = function () {
+    hasData() {
         return !!this.processedXData.length; // != 0
-    };
+    }
     /**
      * Return the presentational attributes.
      * @private
      */
-    SankeySeries.prototype.pointAttribs = function (point, state) {
+    pointAttribs(point, state) {
         if (!point) {
             return {};
         }
-        var series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state || '']) || {}, values = [
+        const series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state || '']) || {}, values = [
             'colorByPoint',
             'borderColor',
             'borderWidth',
@@ -223,35 +206,35 @@ var SankeySeries = /** @class */ (function (_super) {
         return {
             fill: Color.parse(color).setOpacity(values.linkOpacity).get()
         };
-    };
-    SankeySeries.prototype.drawTracker = function () {
+    }
+    drawTracker() {
         ColumnSeries.prototype.drawTracker.call(this, this.points);
         ColumnSeries.prototype.drawTracker.call(this, this.nodes);
-    };
-    SankeySeries.prototype.drawPoints = function () {
+    }
+    drawPoints() {
         ColumnSeries.prototype.drawPoints.call(this, this.points);
         ColumnSeries.prototype.drawPoints.call(this, this.nodes);
-    };
-    SankeySeries.prototype.drawDataLabels = function () {
+    }
+    drawDataLabels() {
         ColumnSeries.prototype.drawDataLabels.call(this, this.points);
         ColumnSeries.prototype.drawDataLabels.call(this, this.nodes);
-    };
+    }
     /**
      * Run pre-translation by generating the nodeColumns.
      * @private
      */
-    SankeySeries.prototype.translate = function () {
+    translate() {
         if (!this.processedXData) {
             this.processData();
         }
         this.generatePoints();
         this.nodeColumns = this.createNodeColumns();
         this.nodeWidth = relativeLength(this.options.nodeWidth, this.chart.plotSizeX);
-        var series = this, chart = this.chart, options = this.options, nodeWidth = this.nodeWidth, nodeColumns = this.nodeColumns;
+        const series = this, chart = this.chart, options = this.options, nodeWidth = this.nodeWidth, nodeColumns = this.nodeColumns;
         this.nodePadding = this.getNodePadding();
         // Find out how much space is needed. Base it on the translation
         // factor of the most spaceous column.
-        this.translationFactor = nodeColumns.reduce(function (translationFactor, column) { return Math.min(translationFactor, column.sankeyColumn.getTranslationFactor(series)); }, Infinity);
+        this.translationFactor = nodeColumns.reduce((translationFactor, column) => Math.min(translationFactor, column.sankeyColumn.getTranslationFactor(series)), Infinity);
         this.colDistance =
             (chart.plotSizeX - nodeWidth -
                 options.borderWidth) / Math.max(1, nodeColumns.length - 1);
@@ -295,21 +278,21 @@ var SankeySeries = /** @class */ (function (_super) {
                 }
             });
         });
-    };
+    }
     /**
      * Run translation operations for one link.
      * @private
      */
-    SankeySeries.prototype.translateLink = function (point) {
-        var getY = function (node, fromOrTo) {
-            var linkTop = (node.offset(point, fromOrTo) *
+    translateLink(point) {
+        const getY = (node, fromOrTo) => {
+            const linkTop = (node.offset(point, fromOrTo) *
                 translationFactor);
-            var y = Math.min(node.nodeY + linkTop, 
+            const y = Math.min(node.nodeY + linkTop, 
             // Prevent links from spilling below the node (#12014)
             node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
             return y;
         };
-        var fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+        let fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
             options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.nodeX, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
             fromY = chart.plotSizeY - fromY;
@@ -361,7 +344,7 @@ var SankeySeries = /** @class */ (function (_super) {
             //   down.
         }
         else if (typeof toY === 'number') {
-            var bend = 20, vDist = chart.plotHeight - fromY - linkHeight, x1 = right - bend - linkHeight, x2 = right - bend, x3 = right, x4 = nodeLeft + nodeW, x5 = x4 + bend, x6 = x5 + linkHeight, fy1 = fromY, fy2 = fromY + linkHeight, fy3 = fy2 + bend, y4 = fy3 + vDist, y5 = y4 + bend, y6 = y5 + linkHeight, ty1 = toY, ty2 = ty1 + linkHeight, ty3 = ty2 + bend, cfy1 = fy2 - linkHeight * 0.7, cy2 = y5 + linkHeight * 0.7, cty1 = ty2 - linkHeight * 0.7, cx1 = x3 - linkHeight * 0.7, cx2 = x4 + linkHeight * 0.7;
+            const bend = 20, vDist = chart.plotHeight - fromY - linkHeight, x1 = right - bend - linkHeight, x2 = right - bend, x3 = right, x4 = nodeLeft + nodeW, x5 = x4 + bend, x6 = x5 + linkHeight, fy1 = fromY, fy2 = fromY + linkHeight, fy3 = fy2 + bend, y4 = fy3 + vDist, y5 = y4 + bend, y6 = y5 + linkHeight, ty1 = toY, ty2 = ty1 + linkHeight, ty3 = ty2 + bend, cfy1 = fy2 - linkHeight * 0.7, cy2 = y5 + linkHeight * 0.7, cty1 = ty2 - linkHeight * 0.7, cx1 = x3 - linkHeight * 0.7, cx2 = x4 + linkHeight * 0.7;
             point.shapeArgs = {
                 d: [
                     ['M', x4, fy1],
@@ -406,15 +389,15 @@ var SankeySeries = /** @class */ (function (_super) {
         if (!point.color) {
             point.color = fromNode.color;
         }
-    };
+    }
     /**
      * Run translation operations for one node.
      * @private
      */
-    SankeySeries.prototype.translateNode = function (node, column) {
-        var translationFactor = this.translationFactor, chart = this.chart, options = this.options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(options.borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
+    translateNode(node, column) {
+        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
             nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-            options.borderWidth / 2) + relativeLength(node.options.offsetHorizontal || 0, nodeWidth) +
+            borderWidth / 2) + relativeLength(node.options.offsetHorizontal || 0, nodeWidth) +
             crisp, nodeLeft = chart.inverted ?
             chart.plotSizeX - left :
             left;
@@ -422,10 +405,13 @@ var SankeySeries = /** @class */ (function (_super) {
         // If node sum is 0, don't render the rect #12453
         if (sum) {
             // Draw the node
-            node.shapeType = 'rect';
+            node.shapeType = 'roundedRect';
             node.nodeX = nodeLeft;
             node.nodeY = fromNodeTop;
-            var x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
+            let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
+            const r = relativeLength((typeof borderRadius === 'object' ?
+                borderRadius.radius :
+                borderRadius || 0), width);
             if (chart.inverted) {
                 x = nodeLeft - nodeWidth;
                 y = chart.plotSizeY - fromNodeTop - nodeHeight;
@@ -449,10 +435,11 @@ var SankeySeries = /** @class */ (function (_super) {
                 y + height / 2
             ];
             node.shapeArgs = {
-                x: x,
-                y: y,
-                width: width,
-                height: height,
+                x,
+                y,
+                width,
+                height,
+                r,
                 display: node.hasShape() ? '' : 'none'
             };
         }
@@ -461,10 +448,9 @@ var SankeySeries = /** @class */ (function (_super) {
                 enabled: false
             };
         }
-    };
-    SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
-    return SankeySeries;
-}(ColumnSeries));
+    }
+}
+SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
 NodesComposition.compose(SankeyPoint, SankeySeries);
 extend(SankeySeries.prototype, {
     animate: Series.prototype.animate,

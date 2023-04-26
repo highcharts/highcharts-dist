@@ -8,25 +8,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-var defined = U.defined, merge = U.merge;
+const { defined, merge } = U;
 /* *
  *
  *  Class
@@ -37,24 +22,22 @@ var defined = U.defined, merge = U.merge;
  *
  * @private
  */
-var LineSeries = /** @class */ (function (_super) {
-    __extends(LineSeries, _super);
-    function LineSeries() {
+class LineSeries extends Series {
+    constructor() {
         /* *
          *
          *  Static Functions
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
@@ -70,9 +53,9 @@ var LineSeries = /** @class */ (function (_super) {
      *
      * @function Highcharts.Series#drawGraph
      */
-    LineSeries.prototype.drawGraph = function () {
-        var series = this, options = this.options, graphPath = (this.gappedPath || this.getGraphPath).call(this), styledMode = this.chart.styledMode;
-        var props = [[
+    drawGraph() {
+        const series = this, options = this.options, graphPath = (this.gappedPath || this.getGraphPath).call(this), styledMode = this.chart.styledMode;
+        let props = [[
                 'graph',
                 'highcharts-graph'
             ]];
@@ -86,9 +69,9 @@ var LineSeries = /** @class */ (function (_super) {
         props = series.getZonesGraphs(props);
         // Draw the graph
         props.forEach(function (prop, i) {
-            var graphKey = prop[0];
-            var attribs, graph = series[graphKey];
-            var verb = graph ? 'animate' : 'attr';
+            const graphKey = prop[0];
+            let attribs, graph = series[graphKey];
+            const verb = graph ? 'animate' : 'attr';
             if (graph) {
                 graph.endX = series.preventGraphAnimation ?
                     null :
@@ -151,19 +134,19 @@ var LineSeries = /** @class */ (function (_super) {
                 graph.isArea = graphPath.isArea; // For arearange animation
             }
         });
-    };
+    }
     // eslint-disable-next-line valid-jsdoc
     /**
      * Get the graph path.
      *
      * @private
      */
-    LineSeries.prototype.getGraphPath = function (points, nullsAsZeroes, connectCliffs) {
-        var series = this, options = series.options, graphPath = [], xMap = [];
-        var gap, step = options.step;
+    getGraphPath(points, nullsAsZeroes, connectCliffs) {
+        const series = this, options = series.options, graphPath = [], xMap = [];
+        let gap, step = options.step;
         points = points || series.points;
         // Bottom of a stack is reversed
-        var reversed = points.reversed;
+        const reversed = points.reversed;
         if (reversed) {
             points.reverse();
         }
@@ -179,19 +162,19 @@ var LineSeries = /** @class */ (function (_super) {
         points = this.getValidPoints(points, false, !(options.connectNulls && !nullsAsZeroes && !connectCliffs));
         // Build the line
         points.forEach(function (point, i) {
-            var plotX = point.plotX, plotY = point.plotY, lastPoint = points[i - 1];
+            const plotX = point.plotX, plotY = point.plotY, lastPoint = points[i - 1], isNull = point.isNull || typeof plotY !== 'number';
             // the path to this point from the previous
-            var pathToPoint;
+            let pathToPoint;
             if ((point.leftCliff || (lastPoint && lastPoint.rightCliff)) &&
                 !connectCliffs) {
                 gap = true; // ... and continue
             }
             // Line series, nullsAsZeroes is not handled
-            if (point.isNull && !defined(nullsAsZeroes) && i > 0) {
+            if (isNull && !defined(nullsAsZeroes) && i > 0) {
                 gap = !options.connectNulls;
                 // Area series, nullsAsZeroes is set
             }
-            else if (point.isNull && !nullsAsZeroes) {
+            else if (isNull && !nullsAsZeroes) {
                 gap = true;
             }
             else {
@@ -262,7 +245,7 @@ var LineSeries = /** @class */ (function (_super) {
         graphPath.xMap = xMap;
         series.graphPath = graphPath;
         return graphPath;
-    };
+    }
     // eslint-disable-next-line valid-jsdoc
     /**
      * Get zones properties for building graphs. Extendable by series with
@@ -270,10 +253,10 @@ var LineSeries = /** @class */ (function (_super) {
      *
      * @private
      */
-    LineSeries.prototype.getZonesGraphs = function (props) {
+    getZonesGraphs(props) {
         // Add the zone properties if any
         this.zones.forEach(function (zone, i) {
-            var propset = [
+            const propset = [
                 'zone-graph-' + i,
                 'highcharts-graph highcharts-zone-graph-' + i + ' ' +
                     (zone.className || '')
@@ -284,18 +267,17 @@ var LineSeries = /** @class */ (function (_super) {
             props.push(propset);
         }, this);
         return props;
-    };
-    LineSeries.defaultOptions = merge(Series.defaultOptions, 
-    /**
-     * General options for all series types.
-     *
-     * @optionparent plotOptions.series
-     */
-    {
-    // nothing here yet
-    });
-    return LineSeries;
-}(Series));
+    }
+}
+LineSeries.defaultOptions = merge(Series.defaultOptions, 
+/**
+ * General options for all series types.
+ *
+ * @optionparent plotOptions.series
+ */
+{
+// nothing here yet
+});
 SeriesRegistry.registerSeriesType('line', LineSeries);
 /* *
  *
@@ -440,6 +422,9 @@ export default LineSeries;
  * change the color of the graphic. In non-styled mode, the color is set by the
  * `fill` attribute, so the change in class name won't have a visual effect by
  * default.
+ *
+ * Since v11, CSS variables on the form `--highcharts-color-{n}` make changing
+ * the color scheme very convenient.
  *
  * @sample    {highcharts} highcharts/css/colorindex/
  *            Series and point color index

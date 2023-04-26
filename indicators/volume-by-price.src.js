@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -45,43 +45,27 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAPoint = SeriesRegistry.seriesTypes.sma.prototype.pointClass;
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        const { sma: { prototype: { pointClass: SMAPoint } } } = SeriesRegistry.seriesTypes;
         /* *
          *
          *  Class
          *
          * */
-        var VBPPoint = /** @class */ (function (_super) {
-                __extends(VBPPoint, _super);
-            function VBPPoint() {
-                return _super !== null && _super.apply(this, arguments) || this;
-            }
+        class VBPPoint extends SMAPoint {
             // Required for destroying negative part of volume
-            VBPPoint.prototype.destroy = function () {
+            destroy() {
                 // @todo: this.negativeGraphic doesn't seem to be used anywhere
                 if (this.negativeGraphic) {
                     this.negativeGraphic = this.negativeGraphic.destroy();
                 }
-                return _super.prototype.destroy.apply(this, arguments);
-            };
-            return VBPPoint;
-        }(SMAPoint));
+                super.destroy.apply(this, arguments);
+            }
+        }
         /* *
          *
          *  Default Export
@@ -102,48 +86,28 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var animObject = A.animObject;
-        var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            columnProto = _a.column.prototype,
-            SMAIndicator = _a.sma;
-        var addEvent = U.addEvent,
-            arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            correctFloat = U.correctFloat,
-            defined = U.defined,
-            error = U.error,
-            extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge;
+        const { animObject } = A;
+        const { noop } = H;
+        const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { addEvent, arrayMax, arrayMin, correctFloat, defined, error, extend, isArray, merge } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const abs = Math.abs;
         /* *
          *
          *  Functions
          *
          * */
         // Utils
+        /**
+         * @private
+         */
         function arrayExtremesOHLC(data) {
-            var dataLength = data.length,
-                min = data[0][3],
-                max = min,
-                i = 1,
-                currentPoint;
+            const dataLength = data.length;
+            let min = data[0][3], max = min, i = 1, currentPoint;
             for (; i < dataLength; i++) {
                 currentPoint = data[i][3];
                 if (currentPoint < min) {
@@ -158,7 +122,6 @@
                 max: max
             };
         }
-        var abs = Math.abs;
         /* *
          *
          *  Class
@@ -173,53 +136,44 @@
          *
          * @augments Highcharts.Series
          */
-        var VBPIndicator = /** @class */ (function (_super) {
-                __extends(VBPIndicator, _super);
-            function VBPIndicator() {
+        class VBPIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.negWidths = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                _this.posWidths = void 0;
-                _this.priceZones = void 0;
-                _this.rangeStep = void 0;
-                _this.volumeDataArray = void 0;
-                _this.zoneStarts = void 0;
-                _this.zoneLinesSVG = void 0;
-                return _this;
+                this.data = void 0;
+                this.negWidths = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.posWidths = void 0;
+                this.priceZones = void 0;
+                this.rangeStep = void 0;
+                this.volumeDataArray = void 0;
+                this.zoneStarts = void 0;
+                this.zoneLinesSVG = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            VBPIndicator.prototype.init = function (chart) {
-                var indicator = this,
-                    params,
-                    baseSeries,
-                    volumeSeries;
-                H.seriesTypes.sma.prototype.init.apply(indicator, arguments);
+            init(chart) {
+                const indicator = this;
+                super.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
-                var unbinder = addEvent(StockChart, 'afterLinkSeries',
-                    function () {
-                        // Protection for a case where the indicator is being updated,
-                        // for a brief moment the indicator is deleted.
-                        if (indicator.options) {
-                            params = indicator.options.params;
-                        baseSeries = indicator.linkedParent;
-                        volumeSeries = chart.get(params.volumeSeriesID);
+                const unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+                    // Protection for a case where the indicator is being updated,
+                    // for a brief moment the indicator is deleted.
+                    if (indicator.options) {
+                        const params = indicator.options.params, baseSeries = indicator.linkedParent, volumeSeries = chart.get(params.volumeSeriesID);
                         indicator.addCustomEvents(baseSeries, volumeSeries);
                     }
                     unbinder();
@@ -227,20 +181,17 @@
                     order: 1
                 });
                 return indicator;
-            };
+            }
             // Adds events related with removing series
-            VBPIndicator.prototype.addCustomEvents = function (baseSeries, volumeSeries) {
-                var indicator = this;
-                /* eslint-disable require-jsdoc */
-                function toEmptyIndicator() {
+            addCustomEvents(baseSeries, volumeSeries) {
+                const indicator = this, toEmptyIndicator = () => {
                     indicator.chart.redraw();
                     indicator.setData([]);
                     indicator.zoneStarts = [];
                     if (indicator.zoneLinesSVG) {
                         indicator.zoneLinesSVG = indicator.zoneLinesSVG.destroy();
                     }
-                }
-                /* eslint-enable require-jsdoc */
+                };
                 // If base series is deleted, indicator series data is filled with
                 // an empty array
                 indicator.dataEventsToUnbind.push(addEvent(baseSeries, 'remove', function () {
@@ -254,16 +205,12 @@
                     }));
                 }
                 return indicator;
-            };
+            }
             // Initial animation
-            VBPIndicator.prototype.animate = function (init) {
-                var series = this,
-                    inverted = series.chart.inverted,
-                    group = series.group,
-                    attr = {},
-                    position;
+            animate(init) {
+                const series = this, inverted = series.chart.inverted, group = series.group, attr = {};
                 if (!init && group) {
-                    position = inverted ? series.yAxis.top : series.xAxis.left;
+                    const position = inverted ? series.yAxis.top : series.xAxis.left;
                     if (inverted) {
                         group['forceAnimate:translateY'] = true;
                         attr.translateY = position;
@@ -280,21 +227,22 @@
                         }
                     }));
                 }
-            };
-            VBPIndicator.prototype.drawPoints = function () {
-                var indicator = this;
+            }
+            drawPoints() {
+                const indicator = this;
                 if (indicator.options.volumeDivision.enabled) {
                     indicator.posNegVolume(true, true);
                     columnProto.drawPoints.apply(indicator, arguments);
                     indicator.posNegVolume(false, false);
                 }
                 columnProto.drawPoints.apply(indicator, arguments);
-            };
+            }
             // Function responsible for dividing volume into positive and negative
-            VBPIndicator.prototype.posNegVolume = function (initVol, pos) {
-                var indicator = this, signOrder = pos ?
-                        ['positive', 'negative'] :
-                        ['negative', 'positive'], volumeDivision = indicator.options.volumeDivision, pointLength = indicator.points.length, posWidths = [], negWidths = [], i = 0, pointWidth, priceZone, wholeVol, point;
+            posNegVolume(initVol, pos) {
+                const indicator = this, signOrder = pos ?
+                    ['positive', 'negative'] :
+                    ['negative', 'positive'], volumeDivision = indicator.options.volumeDivision, pointLength = indicator.points.length;
+                let posWidths = [], negWidths = [], i = 0, pointWidth, priceZone, wholeVol, point;
                 if (initVol) {
                     indicator.posWidths = posWidths;
                     indicator.negWidths = negWidths;
@@ -330,30 +278,12 @@
                         point.shapeArgs.x :
                         indicator.posWidths[i];
                 }
-            };
-            VBPIndicator.prototype.translate = function () {
-                var indicator = this,
-                    options = indicator.options,
-                    chart = indicator.chart,
-                    yAxis = indicator.yAxis,
-                    yAxisMin = yAxis.min,
-                    zoneLinesOptions = indicator.options.zoneLines,
-                    priceZones = (indicator.priceZones),
-                    yBarOffset = 0,
-                    indicatorPoints,
-                    volumeDataArray,
-                    maxVolume,
-                    primalBarWidth,
-                    barHeight,
-                    barHeightP,
-                    oldBarHeight,
-                    barWidth,
-                    pointPadding,
-                    chartPlotTop,
-                    barX,
-                    barY;
+            }
+            translate() {
+                const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
+                let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
                 columnProto.translate.apply(indicator);
-                indicatorPoints = indicator.points;
+                const indicatorPoints = indicator.points;
                 // Do translate operation when points exist
                 if (indicatorPoints.length) {
                     pointPadding = options.pointPadding < 0.5 ?
@@ -393,34 +323,27 @@
                         indicator.drawZones(chart, yAxis, indicator.zoneStarts, zoneLinesOptions.styles);
                     }
                 }
-            };
-            VBPIndicator.prototype.getValues = function (series, params) {
-                var indicator = this,
-                    xValues = series.processedXData,
-                    yValues = series.processedYData,
-                    chart = indicator.chart,
-                    ranges = params.ranges,
-                    VBP = [],
-                    xData = [],
-                    yData = [],
-                    isOHLC,
-                    volumeSeries,
-                    priceZones;
+            }
+            getValues(series, params) {
+                const indicator = this, xValues = series.processedXData, yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
                 // Checks if base series exists
                 if (!series.chart) {
                     error('Base series not found! In case it has been removed, add ' +
                         'a new one.', true, chart);
                     return;
                 }
-                // Checks if volume series exists
-                if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
+                // Checks if volume series exists and if it has data
+                if (!volumeSeries ||
+                    !volumeSeries.processedXData.length) {
+                    const errorMessage = volumeSeries && !volumeSeries.processedXData.length ?
+                        ' does not contain any data.' :
+                        ' not found! Check `volumeSeriesID`.';
                     error('Series ' +
-                        params.volumeSeriesID +
-                        ' not found! Check `volumeSeriesID`.', true, chart);
+                        params.volumeSeriesID + errorMessage, true, chart);
                     return;
                 }
                 // Checks if series data fits the OHLC format
-                isOHLC = isArray(yValues[0]);
+                const isOHLC = isArray(yValues[0]);
                 if (isOHLC && yValues[0].length !== 4) {
                     error('Type of ' +
                         series.name +
@@ -429,7 +352,7 @@
                 }
                 // Price zones contains all the information about the zones (index,
                 // start, end, volumes, etc.)
-                priceZones = indicator.priceZones = indicator.specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries);
+                const priceZones = indicator.priceZones = indicator.specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries);
                 priceZones.forEach(function (zone, index) {
                     VBP.push([zone.x, zone.end]);
                     xData.push(VBP[index][0]);
@@ -440,26 +363,18 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
             // Specifing where each zone should start ans end
-            VBPIndicator.prototype.specifyZones = function (isOHLC, xValues, yValues, ranges, volumeSeries) {
-                var indicator = this,
-                    rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false),
-                    lowRange = rangeExtremes ?
-                        rangeExtremes.min :
-                        arrayMin(yValues),
-                    highRange = rangeExtremes ?
-                        rangeExtremes.max :
-                        arrayMax(yValues),
-                    zoneStarts = indicator.zoneStarts = [],
-                    priceZones = [],
-                    i = 0,
-                    j = 1,
-                    rangeStep,
-                    zoneStartsLength;
+            specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries) {
+                const indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), zoneStarts = indicator.zoneStarts = [], priceZones = [];
+                let lowRange = rangeExtremes ?
+                    rangeExtremes.min :
+                    arrayMin(yValues), highRange = rangeExtremes ?
+                    rangeExtremes.max :
+                    arrayMax(yValues), i = 0, j = 1;
                 // If the compare mode is set on the main series, change the VBP
                 // zones to fit new extremes, #16277.
-                var mainSeries = indicator.linkedParent;
+                const mainSeries = indicator.linkedParent;
                 if (!indicator.options.compareToMain &&
                     mainSeries.dataModify) {
                     lowRange = mainSeries.dataModify.modifyValue(lowRange);
@@ -475,14 +390,14 @@
                     }
                     return [];
                 }
-                rangeStep = indicator.rangeStep =
+                const rangeStep = indicator.rangeStep =
                     correctFloat(highRange - lowRange) / ranges;
                 zoneStarts.push(lowRange);
                 for (; i < ranges - 1; i++) {
                     zoneStarts.push(correctFloat(zoneStarts[i] + rangeStep));
                 }
                 zoneStarts.push(highRange);
-                zoneStartsLength = zoneStarts.length;
+                const zoneStartsLength = zoneStarts.length;
                 //    Creating zones
                 for (; j < zoneStartsLength; j++) {
                     priceZones.push({
@@ -493,20 +408,11 @@
                     });
                 }
                 return indicator.volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues);
-            };
+            }
             // Calculating sum of volume values for a specific zone
-            VBPIndicator.prototype.volumePerZone = function (isOHLC, priceZones, volumeSeries, xValues, yValues) {
-                var indicator = this,
-                    volumeXData = volumeSeries.processedXData,
-                    volumeYData = volumeSeries.processedYData,
-                    lastZoneIndex = priceZones.length - 1,
-                    baseSeriesLength = yValues.length,
-                    volumeSeriesLength = volumeYData.length,
-                    previousValue,
-                    startFlag,
-                    endFlag,
-                    value,
-                    i;
+            volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues) {
+                const indicator = this, volumeXData = volumeSeries.processedXData, volumeYData = volumeSeries.processedYData, lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length;
+                let previousValue, startFlag, endFlag, value, i;
                 // Checks if each point has a corresponding volume value
                 if (abs(baseSeriesLength - volumeSeriesLength)) {
                     // If the first point don't have volume, add 0 value at the
@@ -537,7 +443,7 @@
                             value;
                         // If the compare mode is set on the main series,
                         // change the VBP zones to fit new extremes, #16277.
-                        var mainSeries = indicator.linkedParent;
+                        const mainSeries = indicator.linkedParent;
                         if (!indicator.options.compareToMain &&
                             mainSeries.dataModify) {
                             value = mainSeries.dataModify.modifyValue(value);
@@ -568,17 +474,11 @@
                     indicator.volumeDataArray.push(zone.wholeVolumeData);
                 });
                 return priceZones;
-            };
+            }
             // Function responsoble for drawing additional lines indicating zones
-            VBPIndicator.prototype.drawZones = function (chart, yAxis, zonesValues, zonesStyles) {
-                var indicator = this,
-                    renderer = chart.renderer,
-                    zoneLinesSVG = indicator.zoneLinesSVG,
-                    zoneLinesPath = [],
-                    leftLinePos = 0,
-                    rightLinePos = chart.plotWidth,
-                    verticalOffset = chart.plotTop,
-                    verticalLinePos;
+            drawZones(chart, yAxis, zonesValues, zonesStyles) {
+                const indicator = this, renderer = chart.renderer, leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop;
+                let zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], verticalLinePos;
                 zonesValues.forEach(function (value) {
                     verticalLinePos = yAxis.toPixels(value) - verticalOffset;
                     zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([[
@@ -599,7 +499,9 @@
                 }
                 else {
                     zoneLinesSVG = indicator.zoneLinesSVG =
-                        renderer.path(zoneLinesPath).attr({
+                        renderer
+                            .path(zoneLinesPath)
+                            .attr({
                             'stroke-width': zonesStyles.lineWidth,
                             'stroke': zonesStyles.color,
                             'dashstyle': zonesStyles.dashStyle,
@@ -607,110 +509,109 @@
                         })
                             .add(indicator.group);
                 }
-            };
+            }
+        }
+        /**
+         * Volume By Price indicator.
+         *
+         * This series requires `linkedTo` option to be set.
+         *
+         * @sample stock/indicators/volume-by-price
+         *         Volume By Price indicator
+         *
+         * @extends      plotOptions.sma
+         * @since        6.0.0
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/volume-by-price
+         * @optionparent plotOptions.vbp
+         */
+        VBPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Volume By Price indicator.
-             *
-             * This series requires `linkedTo` option to be set.
-             *
-             * @sample stock/indicators/volume-by-price
-             *         Volume By Price indicator
-             *
-             * @extends      plotOptions.sma
-             * @since        6.0.0
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/volume-by-price
-             * @optionparent plotOptions.vbp
+             * @excluding index, period
              */
-            VBPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                // Index and period are unchangeable, do not inherit (#15362)
+                index: void 0,
+                period: void 0,
                 /**
-                 * @excluding index, period
+                 * The number of price zones.
                  */
-                params: {
-                    // Index and period are unchangeable, do not inherit (#15362)
-                    index: void 0,
-                    period: void 0,
-                    /**
-                     * The number of price zones.
-                     */
-                    ranges: 12,
-                    /**
-                     * The id of volume series which is mandatory. For example using
-                     * OHLC data, volumeSeriesID='volume' means the indicator will be
-                     * calculated using OHLC and volume values.
-                     */
-                    volumeSeriesID: 'volume'
-                },
+                ranges: 12,
                 /**
-                 * The styles for lines which determine price zones.
+                 * The id of volume series which is mandatory. For example using
+                 * OHLC data, volumeSeriesID='volume' means the indicator will be
+                 * calculated using OHLC and volume values.
                  */
-                zoneLines: {
-                    /**
-                     * Enable/disable zone lines.
-                     */
-                    enabled: true,
-                    /**
-                     * Specify the style of zone lines.
-                     *
-                     * @type    {Highcharts.CSSObject}
-                     * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
-                     */
-                    styles: {
-                        /** @ignore-option */
-                        color: '#0A9AC9',
-                        /** @ignore-option */
-                        dashStyle: 'LongDash',
-                        /** @ignore-option */
-                        lineWidth: 1
-                    }
-                },
+                volumeSeriesID: 'volume'
+            },
+            /**
+             * The styles for lines which determine price zones.
+             */
+            zoneLines: {
                 /**
-                 * The styles for bars when volume is divided into positive/negative.
+                 * Enable/disable zone lines.
                  */
-                volumeDivision: {
-                    /**
-                     * Option to control if volume is divided.
-                     */
-                    enabled: true,
-                    styles: {
-                        /**
-                         * Color of positive volume bars.
-                         *
-                         * @type {Highcharts.ColorString}
-                         */
-                        positiveColor: 'rgba(144, 237, 125, 0.8)',
-                        /**
-                         * Color of negative volume bars.
-                         *
-                         * @type {Highcharts.ColorString}
-                         */
-                        negativeColor: 'rgba(244, 91, 91, 0.8)'
-                    }
-                },
-                // To enable series animation; must be animationLimit > pointCount
-                animationLimit: 1000,
-                enableMouseTracking: false,
-                pointPadding: 0,
-                zIndex: -1,
-                crisp: true,
-                dataGrouping: {
-                    enabled: false
-                },
-                dataLabels: {
-                    allowOverlap: true,
-                    enabled: true,
-                    format: 'P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}',
-                    padding: 0,
-                    style: {
-                        /** @internal */
-                        fontSize: '7px'
-                    },
-                    verticalAlign: 'top'
+                enabled: true,
+                /**
+                 * Specify the style of zone lines.
+                 *
+                 * @type    {Highcharts.CSSObject}
+                 * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
+                 */
+                styles: {
+                    /** @ignore-option */
+                    color: '#0A9AC9',
+                    /** @ignore-option */
+                    dashStyle: 'LongDash',
+                    /** @ignore-option */
+                    lineWidth: 1
                 }
-            });
-            return VBPIndicator;
-        }(SMAIndicator));
+            },
+            /**
+             * The styles for bars when volume is divided into positive/negative.
+             */
+            volumeDivision: {
+                /**
+                 * Option to control if volume is divided.
+                 */
+                enabled: true,
+                styles: {
+                    /**
+                     * Color of positive volume bars.
+                     *
+                     * @type {Highcharts.ColorString}
+                     */
+                    positiveColor: 'rgba(144, 237, 125, 0.8)',
+                    /**
+                     * Color of negative volume bars.
+                     *
+                     * @type {Highcharts.ColorString}
+                     */
+                    negativeColor: 'rgba(244, 91, 91, 0.8)'
+                }
+            },
+            // To enable series animation; must be animationLimit > pointCount
+            animationLimit: 1000,
+            enableMouseTracking: false,
+            pointPadding: 0,
+            zIndex: -1,
+            crisp: true,
+            dataGrouping: {
+                enabled: false
+            },
+            dataLabels: {
+                allowOverlap: true,
+                enabled: true,
+                format: 'P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}',
+                padding: 0,
+                style: {
+                    /** @internal */
+                    fontSize: '0.5em'
+                },
+                verticalAlign: 'top'
+            }
+        });
         extend(VBPIndicator.prototype, {
             nameBase: 'Volume by Price',
             nameComponents: ['ranges'],

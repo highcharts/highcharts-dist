@@ -8,55 +8,38 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, AreaSeries = _a.area, LineSeries = _a.line, ScatterSeries = _a.scatter;
+const { series: Series, seriesTypes: { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 import '../../Core/Legend/Legend.js';
 /* *
  *
  * Class
  *
  * */
-var PolygonSeries = /** @class */ (function (_super) {
-    __extends(PolygonSeries, _super);
-    function PolygonSeries() {
+class PolygonSeries extends ScatterSeries {
+    constructor() {
         /* *
          *
          * Static properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        super(...arguments);
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      * Functions
      *
      * */
-    PolygonSeries.prototype.getGraphPath = function () {
-        var graphPath = LineSeries.prototype.getGraphPath.call(this), i = graphPath.length + 1;
+    getGraphPath() {
+        let graphPath = LineSeries.prototype.getGraphPath.call(this), i = graphPath.length + 1;
         // Close all segments
         while (i--) {
             if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
@@ -65,48 +48,47 @@ var PolygonSeries = /** @class */ (function (_super) {
         }
         this.areaPath = graphPath;
         return graphPath;
-    };
-    PolygonSeries.prototype.drawGraph = function () {
+    }
+    drawGraph() {
         // Hack into the fill logic in area.drawGraph
         this.options.fillColor = this.color;
         AreaSeries.prototype.drawGraph.call(this);
-    };
-    /**
-     * A polygon series can be used to draw any freeform shape in the cartesian
-     * coordinate system. A fill is applied with the `color` option, and
-     * stroke is applied through `lineWidth` and `lineColor` options.
-     *
-     * @sample {highcharts} highcharts/demo/polygon/
-     *         Polygon
-     * @sample {highstock} highcharts/demo/polygon/
-     *         Polygon
-     *
-     * @extends      plotOptions.scatter
-     * @since        4.1.0
-     * @excluding    jitter, softThreshold, threshold, cluster, boostThreshold,
-     *               boostBlending
-     * @product      highcharts highstock
-     * @requires     highcharts-more
-     * @optionparent plotOptions.polygon
-     */
-    PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-        marker: {
-            enabled: false,
-            states: {
-                hover: {
-                    enabled: false
-                }
+    }
+}
+/**
+ * A polygon series can be used to draw any freeform shape in the cartesian
+ * coordinate system. A fill is applied with the `color` option, and
+ * stroke is applied through `lineWidth` and `lineColor` options.
+ *
+ * @sample {highcharts} highcharts/demo/polygon/
+ *         Polygon
+ * @sample {highstock} highcharts/demo/polygon/
+ *         Polygon
+ *
+ * @extends      plotOptions.scatter
+ * @since        4.1.0
+ * @excluding    jitter, softThreshold, threshold, cluster, boostThreshold,
+ *               boostBlending
+ * @product      highcharts highstock
+ * @requires     highcharts-more
+ * @optionparent plotOptions.polygon
+ */
+PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
+    marker: {
+        enabled: false,
+        states: {
+            hover: {
+                enabled: false
             }
-        },
-        stickyTracking: false,
-        tooltip: {
-            followPointer: true,
-            pointFormat: ''
-        },
-        trackByArea: true
-    });
-    return PolygonSeries;
-}(ScatterSeries));
+        }
+    },
+    stickyTracking: false,
+    tooltip: {
+        followPointer: true,
+        pointFormat: ''
+    },
+    trackByArea: true
+});
 extend(PolygonSeries.prototype, {
     type: 'polygon',
     drawLegendSymbol: LegendSymbol.drawRectangle,

@@ -10,9 +10,9 @@
 'use strict';
 import DataLabel from '../../Core/Series/DataLabel.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Series = SeriesRegistry.series;
+const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var merge = U.merge, pick = U.pick;
+const { merge, pick } = U;
 /* *
  *
  *  Composition
@@ -25,7 +25,7 @@ var ColumnDataLabel;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -38,7 +38,7 @@ var ColumnDataLabel;
      * @private
      */
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        var inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
+        let inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
         // data label box for alignment
         dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // range series
         point.plotY >
@@ -94,8 +94,7 @@ var ColumnDataLabel;
     /** @private */
     function compose(ColumnSeriesClass) {
         DataLabel.compose(Series);
-        if (composedClasses.indexOf(ColumnSeriesClass) === -1) {
-            composedClasses.push(ColumnSeriesClass);
+        if (U.pushUnique(composedMembers, ColumnSeriesClass)) {
             ColumnSeriesClass.prototype.alignDataLabel = alignDataLabel;
         }
     }

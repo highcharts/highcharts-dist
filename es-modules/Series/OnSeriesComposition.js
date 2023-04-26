@@ -9,11 +9,11 @@
  * */
 'use strict';
 import ColumnSeries from './Column/ColumnSeries.js';
-var columnProto = ColumnSeries.prototype;
+const { prototype: columnProto } = ColumnSeries;
 import Series from '../Core/Series/Series.js';
-var seriesProto = Series.prototype;
+const { prototype: seriesProto } = Series;
 import U from '../Core/Utilities.js';
-var defined = U.defined, stableSort = U.stableSort;
+const { defined, stableSort } = U;
 /* *
  *
  *  Composition
@@ -31,7 +31,7 @@ var OnSeriesComposition;
      *  Properties
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -42,11 +42,10 @@ var OnSeriesComposition;
      * @private
      */
     function compose(SeriesClass) {
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
-            var seriesProto_1 = SeriesClass.prototype;
-            seriesProto_1.getPlotBox = getPlotBox;
-            seriesProto_1.translate = translate;
+        if (U.pushUnique(composedMembers, SeriesClass)) {
+            const seriesProto = SeriesClass.prototype;
+            seriesProto.getPlotBox = getPlotBox;
+            seriesProto.translate = translate;
         }
         return SeriesClass;
     }
@@ -69,9 +68,9 @@ var OnSeriesComposition;
      */
     function translate() {
         columnProto.translate.apply(this);
-        var series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
+        const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
             chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
-        var cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
+        let cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
         // relate to a master series
         if (onSeries && onSeries.visible && i) {
             xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
@@ -79,7 +78,7 @@ var OnSeriesComposition;
             lastX = (onData[i - 1].x +
                 (currentDataGrouping ? currentDataGrouping.totalRange : 0)); // #2374
             // sort the data points
-            stableSort(points, function (a, b) { return (a.x - b.x); });
+            stableSort(points, (a, b) => (a.x - b.x));
             onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
             while (i-- && points[cursor]) {
                 leftPoint = onData[i];
@@ -118,8 +117,8 @@ var OnSeriesComposition;
             }
         }
         // Add plotY position and handle stacking
-        points.forEach(function (point, i) {
-            var stackIndex;
+        points.forEach((point, i) => {
+            let stackIndex;
             point.plotX += xOffset; // #2049
             // Undefined plotY means the point is either on axis, outside series
             // range or hidden series. If the series is outside the range of the

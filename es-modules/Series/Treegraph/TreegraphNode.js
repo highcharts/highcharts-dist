@@ -8,23 +8,8 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var TreemapNode = SeriesRegistry.seriesTypes.treemap.prototype.NodeClass;
+const { seriesTypes: { treemap: { prototype: { NodeClass: TreemapNode } } } } = SeriesRegistry;
 /* *
  *
  *  Class
@@ -34,24 +19,22 @@ var TreemapNode = SeriesRegistry.seriesTypes.treemap.prototype.NodeClass;
  * @private
  * @class
  */
-var TreegraphNode = /** @class */ (function (_super) {
-    __extends(TreegraphNode, _super);
-    function TreegraphNode() {
+class TreegraphNode extends TreemapNode {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.mod = 0;
-        _this.shift = 0;
-        _this.change = 0;
-        _this.children = [];
-        _this.preX = 0;
-        _this.hidden = false;
-        _this.wasVisited = false;
-        _this.collapsed = false;
-        return _this;
+        super(...arguments);
+        this.mod = 0;
+        this.shift = 0;
+        this.change = 0;
+        this.children = [];
+        this.preX = 0;
+        this.hidden = false;
+        this.wasVisited = false;
+        this.collapsed = false;
     }
     /* *
      *
@@ -64,18 +47,18 @@ var TreegraphNode = /** @class */ (function (_super) {
      * @return {TreegraphNode|undefined}
      *         Next left node child or thread.
      */
-    TreegraphNode.prototype.nextLeft = function () {
+    nextLeft() {
         return this.getLeftMostChild() || this.thread;
-    };
+    }
     /**
      * Get the next right node which is either last child or thread.
      *
      * @return {TreegraphNode|undefined}
      *         Next right node child or thread.
      */
-    TreegraphNode.prototype.nextRight = function () {
+    nextRight() {
         return this.getRightMostChild() || this.thread;
-    };
+    }
     /**
      * Return the left one of the greatest uncommon ancestors of a
      * leftInternal node and it's right neighbor.
@@ -87,13 +70,13 @@ var TreegraphNode = /** @class */ (function (_super) {
      *         node and it's right neighbor.
      *
      */
-    TreegraphNode.prototype.getAncestor = function (leftIntNode, defaultAncestor) {
-        var leftAnc = leftIntNode.ancestor;
+    getAncestor(leftIntNode, defaultAncestor) {
+        const leftAnc = leftIntNode.ancestor;
         if (leftAnc.children[0] === this.children[0]) {
             return leftIntNode.ancestor;
         }
         return defaultAncestor;
-    };
+    }
     /**
      * Get node's first sibling, which is not hidden.
      *
@@ -101,77 +84,76 @@ var TreegraphNode = /** @class */ (function (_super) {
      *         First sibling of the node which is not hidden or undefined, if it
      *         does not exists.
      */
-    TreegraphNode.prototype.getLeftMostSibling = function () {
-        var parent = this.getParent();
+    getLeftMostSibling() {
+        const parent = this.getParent();
         if (parent) {
-            for (var _i = 0, _a = parent.children; _i < _a.length; _i++) {
-                var child = _a[_i];
+            for (const child of parent.children) {
                 if (child && child.point.visible) {
                     return child;
                 }
             }
         }
-    };
+    }
     /**
      * Check if the node is a leaf (if it has any children).
      *
      * @return {boolean}
      *         If the node has no visible children return true.
      */
-    TreegraphNode.prototype.hasChildren = function () {
-        var children = this.children;
-        for (var i = 0; i < children.length; i++) {
+    hasChildren() {
+        const children = this.children;
+        for (let i = 0; i < children.length; i++) {
             if (children[i].point.visible) {
                 return true;
             }
         }
         return false;
-    };
+    }
     /**
      * Get node's left sibling (if it exists).
      *
      * @return {TreegraphNode|undefined}
      *         Left sibling of the node
      */
-    TreegraphNode.prototype.getLeftSibling = function () {
-        var parent = this.getParent();
+    getLeftSibling() {
+        const parent = this.getParent();
         if (parent) {
-            var children = parent.children;
-            for (var i = this.relativeXPosition - 1; i >= 0; i--) {
+            const children = parent.children;
+            for (let i = this.relativeXPosition - 1; i >= 0; i--) {
                 if (children[i] && children[i].point.visible) {
                     return children[i];
                 }
             }
         }
-    };
+    }
     /**
      * Get the node's first child (if it exists).
      *
      * @return {TreegraphNode|undefined}
      *         Node's first child which isn't hidden.
      */
-    TreegraphNode.prototype.getLeftMostChild = function () {
-        var children = this.children;
-        for (var i = 0; i < children.length; i++) {
+    getLeftMostChild() {
+        const children = this.children;
+        for (let i = 0; i < children.length; i++) {
             if (children[i].point.visible) {
                 return children[i];
             }
         }
-    };
+    }
     /**
      * Get the node's last child (if it exists).
      *
      * @return {TreegraphNode|undefined}
      *         Node's last child which isn't hidden.
      */
-    TreegraphNode.prototype.getRightMostChild = function () {
-        var children = this.children;
-        for (var i = children.length - 1; i >= 0; i--) {
+    getRightMostChild() {
+        const children = this.children;
+        for (let i = children.length - 1; i >= 0; i--) {
             if (children[i].point.visible) {
                 return children[i];
             }
         }
-    };
+    }
     /**
      * Get the parent of current node or return undefined for root of the
      * tree.
@@ -179,25 +161,24 @@ var TreegraphNode = /** @class */ (function (_super) {
      * @return {TreegraphNode|undefined}
      *         Node's parent or undefined for root.
      */
-    TreegraphNode.prototype.getParent = function () {
+    getParent() {
         return this.parentNode;
-    };
+    }
     /**
      * Get node's first child which is not hidden.
      *
      * @return {TreegraphNode|undefined}
      *         First child.
      */
-    TreegraphNode.prototype.getFirstChild = function () {
-        var children = this.children;
-        for (var i = 0; i < children.length; i++) {
+    getFirstChild() {
+        const children = this.children;
+        for (let i = 0; i < children.length; i++) {
             if (children[i].point.visible) {
                 return children[i];
             }
         }
-    };
-    return TreegraphNode;
-}(TreemapNode));
+    }
+}
 /* *
  *
  *  Default Export

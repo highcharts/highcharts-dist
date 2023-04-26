@@ -10,7 +10,7 @@
 'use strict';
 import StackItem from './Stacking/StackItem.js';
 import U from '../Utilities.js';
-var addEvent = U.addEvent, objectEach = U.objectEach;
+const { addEvent, objectEach } = U;
 /**
  * @private
  */
@@ -29,7 +29,7 @@ var WaterfallAxis;
     /**
      * @private
      */
-    var Composition = /** @class */ (function () {
+    class Composition {
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /* *
          *
@@ -39,7 +39,7 @@ var WaterfallAxis;
         /**
          * @private
          */
-        function Composition(axis) {
+        constructor(axis) {
             this.axis = axis;
             this.stacks = {
                 changed: false
@@ -57,8 +57,8 @@ var WaterfallAxis;
          * @private
          * @function Highcharts.Axis#renderWaterfallStackTotals
          */
-        Composition.prototype.renderStackTotals = function () {
-            var yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = (yAxis.stacking && yAxis.stacking.stackTotalGroup), dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
+        renderStackTotals() {
+            const yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = (yAxis.stacking && yAxis.stacking.stackTotalGroup), dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
             this.dummyStackItem = dummyStackItem;
             // Render each waterfall stack total
             if (stackTotalGroup) {
@@ -76,9 +76,8 @@ var WaterfallAxis;
                 });
             }
             dummyStackItem.total = null;
-        };
-        return Composition;
-    }());
+        }
+    }
     WaterfallAxis.Composition = Composition;
     /* *
      *
@@ -100,8 +99,8 @@ var WaterfallAxis;
      * @private
      */
     function onAfterBuildStacks() {
-        var axis = this;
-        var stacks = axis.waterfall.stacks;
+        const axis = this;
+        const stacks = axis.waterfall.stacks;
         if (stacks) {
             stacks.changed = false;
             delete stacks.alreadyChanged;
@@ -111,8 +110,8 @@ var WaterfallAxis;
      * @private
      */
     function onAfterRender() {
-        var axis = this;
-        var stackLabelOptions = axis.options.stackLabels;
+        const axis = this;
+        const stackLabelOptions = axis.options.stackLabels;
         if (stackLabelOptions && stackLabelOptions.enabled &&
             axis.waterfall.stacks) {
             axis.waterfall.renderStackTotals();
@@ -122,7 +121,7 @@ var WaterfallAxis;
      * @private
      */
     function onBeforeRedraw() {
-        var axes = this.axes, series = this.series, i = series.length;
+        let axes = this.axes, series = this.series, i = series.length;
         while (i--) {
             if (series[i].options.stacking) {
                 axes.forEach(function (axis) {
@@ -138,7 +137,7 @@ var WaterfallAxis;
      * @private
      */
     function onInit() {
-        var axis = this;
+        const axis = this;
         if (!axis.waterfall) {
             axis.waterfall = new Composition(axis);
         }

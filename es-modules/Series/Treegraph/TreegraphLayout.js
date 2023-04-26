@@ -18,9 +18,7 @@ import TreegraphNode from './TreegraphNode.js';
  * @private
  * @class
  */
-var TreegraphLayout = /** @class */ (function () {
-    function TreegraphLayout() {
-    }
+class TreegraphLayout {
     /* *
      *
      *  Functions
@@ -41,9 +39,9 @@ var TreegraphLayout = /** @class */ (function () {
      * @return {TreegraphNode}
      *         DummyNode as a parent of nodes, which column changes.
      */
-    TreegraphLayout.createDummyNode = function (parent, child, gapSize, index) {
+    static createDummyNode(parent, child, gapSize, index) {
         // Initialise dummy node.
-        var dummyNode = new TreegraphNode();
+        const dummyNode = new TreegraphNode();
         dummyNode.id = parent.id + '-' + gapSize;
         dummyNode.ancestor = parent;
         // Add connection from new node to the previous points.
@@ -63,7 +61,7 @@ var TreegraphLayout = /** @class */ (function () {
         child.parentNode = dummyNode;
         child.parent = dummyNode.id;
         return dummyNode;
-    };
+    }
     /**
      * Walker algorithm of positioning the nodes in the treegraph improved by
      * Buchheim to run in the linear time. Basic algorithm consists of post
@@ -74,11 +72,11 @@ var TreegraphLayout = /** @class */ (function () {
      *
      * @param {TreegraphSeries} series the Treegraph series
      */
-    TreegraphLayout.prototype.calculatePositions = function (series) {
-        var treeLayout = this;
-        var nodes = series.nodeList;
+    calculatePositions(series) {
+        const treeLayout = this;
+        const nodes = series.nodeList;
         this.resetValues(nodes);
-        var root = series.tree;
+        const root = series.tree;
         if (root) {
             treeLayout.calculateRelativeX(root, 0);
             treeLayout.beforeLayout(nodes);
@@ -86,24 +84,22 @@ var TreegraphLayout = /** @class */ (function () {
             treeLayout.secondWalk(root, -root.preX);
             treeLayout.afterLayout(nodes);
         }
-    };
+    }
     /**
      * Create dummyNodes as parents for nodes, which column is changed.
      *
      * @param {Array<TreegraphNode>} nodes
      *        All of the nodes.
      */
-    TreegraphLayout.prototype.beforeLayout = function (nodes) {
-        for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
-            var node = nodes_1[_i];
-            var index = 0;
-            for (var _a = 0, _b = node.children; _a < _b.length; _a++) {
-                var child = _b[_a];
+    beforeLayout(nodes) {
+        for (const node of nodes) {
+            let index = 0;
+            for (let child of node.children) {
                 // Support for children placed in distant columns.
                 if (child && child.level - node.level > 1) {
                     // For further columns treat the nodes as a
                     // single parent-child pairs till the column is achieved.
-                    var gapSize = child.level - node.level - 1;
+                    let gapSize = child.level - node.level - 1;
                     // parent -> dummyNode -> child
                     while (gapSize > 0) {
                         child = TreegraphLayout.createDummyNode(node, child, gapSize, index);
@@ -113,14 +109,13 @@ var TreegraphLayout = /** @class */ (function () {
                 ++index;
             }
         }
-    };
+    }
     /**
      * Reset the caluclated values from the previous run.
      * @param {TreegraphNode[]} nodes all of the nodes.
      */
-    TreegraphLayout.prototype.resetValues = function (nodes) {
-        for (var _i = 0, nodes_2 = nodes; _i < nodes_2.length; _i++) {
-            var node = nodes_2[_i];
+    resetValues(nodes) {
+        for (const node of nodes) {
             node.mod = 0;
             node.ancestor = node;
             node.shift = 0;
@@ -128,7 +123,7 @@ var TreegraphLayout = /** @class */ (function () {
             node.change = 0;
             node.preX = 0;
         }
-    };
+    }
     /**
      * Assigns the value to each node, which indicates, what is his sibling
      * number.
@@ -138,13 +133,13 @@ var TreegraphLayout = /** @class */ (function () {
      * @param {number} index
      *        Index to which the nodes position should be set
      */
-    TreegraphLayout.prototype.calculateRelativeX = function (node, index) {
-        var treeLayout = this, children = node.children;
-        for (var i = 0, iEnd = children.length; i < iEnd; ++i) {
+    calculateRelativeX(node, index) {
+        const treeLayout = this, children = node.children;
+        for (let i = 0, iEnd = children.length; i < iEnd; ++i) {
             treeLayout.calculateRelativeX(children[i], i);
         }
         node.relativeXPosition = index;
-    };
+    }
     /**
      * Recursive post order traversal of the tree, where the initial position
      * of the nodes is calculated.
@@ -152,11 +147,11 @@ var TreegraphLayout = /** @class */ (function () {
      * @param {TreegraphNode} node
      *        The node for which the position should be calculated.
      */
-    TreegraphLayout.prototype.firstWalk = function (node) {
-        var treeLayout = this, 
+    firstWalk(node) {
+        const treeLayout = this, 
         // Arbitrary value used to position nodes in respect to each other.
         siblingDistance = 1;
-        var leftSibling;
+        let leftSibling;
         // If the node is a leaf, set it's position based on the left siblings.
         if (!node.hasChildren()) {
             leftSibling = node.getLeftSibling();
@@ -172,14 +167,13 @@ var TreegraphLayout = /** @class */ (function () {
             // If the node has children, perform the recursive first walk for
             // its children, and then calculate its shift in the apportion
             // function (most crucial part part of the algorythm).
-            var defaultAncestor = node.getLeftMostChild();
-            for (var _i = 0, _a = node.children; _i < _a.length; _i++) {
-                var child = _a[_i];
+            let defaultAncestor = node.getLeftMostChild();
+            for (const child of node.children) {
                 treeLayout.firstWalk(child);
                 defaultAncestor = treeLayout.apportion(child, defaultAncestor);
             }
             treeLayout.executeShifts(node);
-            var leftChild = node.getLeftMostChild(), rightChild = node.getRightMostChild(), 
+            const leftChild = node.getLeftMostChild(), rightChild = node.getRightMostChild(), 
             // Set the position of the parent as a middle point of its
             // children and move it by the value of the leftSibling (if it
             // exists).
@@ -193,7 +187,7 @@ var TreegraphLayout = /** @class */ (function () {
                 node.preX = midPoint;
             }
         }
-    };
+    }
     /**
      * Pre order traversal of the tree, which sets the final xPosition of the
      * node as its preX value and sum of all if it's parents' modifiers.
@@ -203,34 +197,33 @@ var TreegraphLayout = /** @class */ (function () {
      * @param {number} modSum
      *        The sum of modifiers of all of the parents.
      */
-    TreegraphLayout.prototype.secondWalk = function (node, modSum) {
-        var treeLayout = this;
+    secondWalk(node, modSum) {
+        const treeLayout = this;
         // When the chart is not inverted we want the tree to be positioned from
         // left to right with root node close to the chart border, this is why
         // x and y positions are switched.
         node.yPosition = node.preX + modSum;
         node.xPosition = node.level;
-        for (var _i = 0, _a = node.children; _i < _a.length; _i++) {
-            var child = _a[_i];
+        for (const child of node.children) {
             treeLayout.secondWalk(child, modSum + node.mod);
         }
-    };
+    }
     /**
      *  Shift all children of the current node from right to left.
      *
      * @param {TreegraphNode} node
      *        The parent node.
      */
-    TreegraphLayout.prototype.executeShifts = function (node) {
-        var shift = 0, change = 0;
-        for (var i = node.children.length - 1; i >= 0; i--) {
-            var childNode = node.children[i];
+    executeShifts(node) {
+        let shift = 0, change = 0;
+        for (let i = node.children.length - 1; i >= 0; i--) {
+            const childNode = node.children[i];
             childNode.preX += shift;
             childNode.mod += shift;
             change += childNode.change;
             shift += childNode.shift + change;
         }
-    };
+    }
     /**
      * The core of the algorithm. The new subtree is combined with the previous
      * subtrees. Threads are used to traverse the inside and outside contours of
@@ -248,10 +241,10 @@ var TreegraphLayout = /** @class */ (function () {
      * @param {TreegraphNode} defaultAncestor
      *        The default ancestor of the passed node.
      */
-    TreegraphLayout.prototype.apportion = function (node, defaultAncestor) {
-        var treeLayout = this, leftSibling = node.getLeftSibling();
+    apportion(node, defaultAncestor) {
+        const treeLayout = this, leftSibling = node.getLeftSibling();
         if (leftSibling) {
-            var rightIntNode = node, rightOutNode = node, leftIntNode = leftSibling, leftOutNode = rightIntNode.getLeftMostSibling(), rightIntMod = rightIntNode.mod, rightOutMod = rightOutNode.mod, leftIntMod = leftIntNode.mod, leftOutMod = leftOutNode.mod;
+            let rightIntNode = node, rightOutNode = node, leftIntNode = leftSibling, leftOutNode = rightIntNode.getLeftMostSibling(), rightIntMod = rightIntNode.mod, rightOutMod = rightOutNode.mod, leftIntMod = leftIntNode.mod, leftOutMod = leftOutNode.mod;
             while (leftIntNode &&
                 leftIntNode.nextRight() &&
                 rightIntNode &&
@@ -261,7 +254,7 @@ var TreegraphLayout = /** @class */ (function () {
                 rightIntNode = rightIntNode.nextLeft();
                 rightOutNode = rightOutNode.nextRight();
                 rightOutNode.ancestor = node;
-                var siblingDistance = 1, shift = leftIntNode.preX +
+                const siblingDistance = 1, shift = leftIntNode.preX +
                     leftIntMod -
                     (rightIntNode.preX + rightIntMod) +
                     siblingDistance;
@@ -290,7 +283,7 @@ var TreegraphLayout = /** @class */ (function () {
             defaultAncestor = node;
         }
         return defaultAncestor;
-    };
+    }
     /**
      * Shifts the subtree from leftNode to rightNode.
      *
@@ -299,23 +292,22 @@ var TreegraphLayout = /** @class */ (function () {
      * @param {number} shift
      *        The value, by which the subtree should be moved.
      */
-    TreegraphLayout.prototype.moveSubtree = function (leftNode, rightNode, shift) {
-        var subtrees = rightNode.relativeXPosition - leftNode.relativeXPosition;
+    moveSubtree(leftNode, rightNode, shift) {
+        const subtrees = rightNode.relativeXPosition - leftNode.relativeXPosition;
         rightNode.change -= shift / subtrees;
         rightNode.shift += shift;
         rightNode.preX += shift;
         rightNode.mod += shift;
         leftNode.change += shift / subtrees;
-    };
+    }
     /**
      * Clear values created in a beforeLayout.
      *
      * @param {TreegraphNode[]} nodes
      *        All of the nodes of the Treegraph Series.
      */
-    TreegraphLayout.prototype.afterLayout = function (nodes) {
-        for (var _i = 0, nodes_3 = nodes; _i < nodes_3.length; _i++) {
-            var node = nodes_3[_i];
+    afterLayout(nodes) {
+        for (const node of nodes) {
             if (node.oldParentNode) {
                 // Restore default connections
                 node.relativeXPosition = node.parentNode.relativeXPosition;
@@ -327,9 +319,8 @@ var TreegraphLayout = /** @class */ (function () {
                 node.oldParentNode = void 0;
             }
         }
-    };
-    return TreegraphLayout;
-}());
+    }
+}
 /* *
  *
  *  Default Export

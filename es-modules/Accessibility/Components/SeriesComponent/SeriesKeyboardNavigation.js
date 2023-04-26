@@ -13,15 +13,15 @@
 import Point from '../../../Core/Series/Point.js';
 import Series from '../../../Core/Series/Series.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var seriesTypes = SeriesRegistry.seriesTypes;
+const { seriesTypes } = SeriesRegistry;
 import H from '../../../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import U from '../../../Core/Utilities.js';
-var defined = U.defined, fireEvent = U.fireEvent;
+const { defined, fireEvent } = U;
 import KeyboardNavigationHandler from '../../KeyboardNavigationHandler.js';
 import EventProvider from '../../Utils/EventProvider.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
-var getPointFromXY = ChartUtilities.getPointFromXY, getSeriesFromName = ChartUtilities.getSeriesFromName, scrollToPoint = ChartUtilities.scrollToPoint;
+const { getPointFromXY, getSeriesFromName, scrollToPoint } = ChartUtilities;
 /* *
  *
  *  Functions
@@ -40,8 +40,8 @@ var getPointFromXY = ChartUtilities.getPointFromXY, getSeriesFromName = ChartUti
  * The index in the series.points array of the point.
  */
 function getPointIndex(point) {
-    var index = point.index, points = point.series.points;
-    var i = points.length;
+    const index = point.index, points = point.series.points;
+    let i = points.length;
     if (points[index] !== point) {
         while (i--) {
             if (points[i] === point) {
@@ -58,7 +58,7 @@ function getPointIndex(point) {
  * @private
  */
 function isSkipSeries(series) {
-    var a11yOptions = series.chart.options.accessibility, seriesNavOptions = a11yOptions.keyboardNavigation.seriesNavigation, seriesA11yOptions = series.options.accessibility || {}, seriesKbdNavOptions = seriesA11yOptions.keyboardNavigation;
+    const a11yOptions = series.chart.options.accessibility, seriesNavOptions = a11yOptions.keyboardNavigation.seriesNavigation, seriesA11yOptions = series.options.accessibility || {}, seriesKbdNavOptions = seriesA11yOptions.keyboardNavigation;
     return seriesKbdNavOptions && seriesKbdNavOptions.enabled === false ||
         seriesA11yOptions.enabled === false ||
         series.options.enableMouseTracking === false || // #8440
@@ -74,8 +74,8 @@ function isSkipSeries(series) {
  * @private
  */
 function isSkipPoint(point) {
-    var a11yOptions = point.series.chart.options.accessibility;
-    var pointA11yDisabled = (point.options.accessibility &&
+    const a11yOptions = point.series.chart.options.accessibility;
+    const pointA11yDisabled = (point.options.accessibility &&
         point.options.accessibility.enabled === false);
     return point.isNull &&
         a11yOptions.keyboardNavigation.seriesNavigation.skipNullPoints ||
@@ -89,8 +89,8 @@ function isSkipPoint(point) {
  * @private
  */
 function getFirstValidPointInSeries(series) {
-    var points = series.points || [], len = points.length;
-    for (var i = 0; i < len; ++i) {
+    const points = series.points || [], len = points.length;
+    for (let i = 0; i < len; ++i) {
         if (!isSkipPoint(points[i])) {
             return points[i];
         }
@@ -102,10 +102,10 @@ function getFirstValidPointInSeries(series) {
  * @private
  */
 function getFirstValidPointInChart(chart) {
-    var series = chart.series || [], len = series.length;
-    for (var i = 0; i < len; ++i) {
+    const series = chart.series || [], len = series.length;
+    for (let i = 0; i < len; ++i) {
         if (!isSkipSeries(series[i])) {
-            var point = getFirstValidPointInSeries(series[i]);
+            const point = getFirstValidPointInSeries(series[i]);
             if (point) {
                 return point;
             }
@@ -117,8 +117,8 @@ function getFirstValidPointInChart(chart) {
  * @private
  */
 function highlightLastValidPointInChart(chart) {
-    var numSeries = chart.series.length;
-    var i = numSeries, res = false;
+    const numSeries = chart.series.length;
+    let i = numSeries, res = false;
     while (i--) {
         chart.highlightedPoint = chart.series[i].points[chart.series[i].points.length - 1];
         // Highlight first valid point in the series will also
@@ -137,7 +137,7 @@ function highlightLastValidPointInChart(chart) {
  * @private
  */
 function updateChartFocusAfterDrilling(chart) {
-    var point = getFirstValidPointInChart(chart);
+    const point = getFirstValidPointInChart(chart);
     if (point) {
         point.highlight(false); // Do not visually highlight
     }
@@ -148,7 +148,7 @@ function updateChartFocusAfterDrilling(chart) {
  */
 function highlightFirstValidPointInChart(chart) {
     delete chart.highlightedPoint;
-    var point = getFirstValidPointInChart(chart);
+    const point = getFirstValidPointInChart(chart);
     return point ? point.highlight() : false;
 }
 /* *
@@ -161,13 +161,13 @@ function highlightFirstValidPointInChart(chart) {
  * @class
  * @name Highcharts.SeriesKeyboardNavigation
  */
-var SeriesKeyboardNavigation = /** @class */ (function () {
+class SeriesKeyboardNavigation {
     /* *
      *
      *  Constructor
      *
      * */
-    function SeriesKeyboardNavigation(chart, keyCodes) {
+    constructor(chart, keyCodes) {
         this.keyCodes = keyCodes;
         this.chart = chart;
     }
@@ -180,8 +180,8 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
     /**
      * Init the keyboard navigation
      */
-    SeriesKeyboardNavigation.prototype.init = function () {
-        var keyboardNavigation = this, chart = this.chart, e = this.eventProvider = new EventProvider();
+    init() {
+        const keyboardNavigation = this, chart = this.chart, e = this.eventProvider = new EventProvider();
         e.addEvent(Series, 'destroy', function () {
             return keyboardNavigation.onSeriesDestroy(this);
         });
@@ -189,7 +189,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
             updateChartFocusAfterDrilling(this);
         });
         e.addEvent(chart, 'drilldown', function (e) {
-            var point = e.point, series = point.series;
+            const point = e.point, series = point.series;
             keyboardNavigation.lastDrilledDownPoint = {
                 x: point.x,
                 y: point.y,
@@ -204,15 +204,15 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
         // Heatmaps et al. alter z-index in setState, causing elements
         // to lose focus
         e.addEvent(Point, 'afterSetState', function () {
-            var point = this;
-            var pointEl = point.graphic && point.graphic.element;
-            var focusedElement = doc.activeElement;
+            const point = this;
+            const pointEl = point.graphic && point.graphic.element;
+            const focusedElement = doc.activeElement;
             // VO brings focus with it to container, causing series nav to run.
             // If then navigating with virtual cursor, it is possible to leave
             // keyboard nav module state on the data points and still activate
             // proxy buttons.
-            var focusedElClassName = (focusedElement && focusedElement.getAttribute('class'));
-            var isProxyFocused = focusedElClassName &&
+            const focusedElClassName = (focusedElement && focusedElement.getAttribute('class'));
+            const isProxyFocused = focusedElClassName &&
                 focusedElClassName.indexOf('highcharts-a11y-proxy-button') > -1;
             if (chart.highlightedPoint === point &&
                 focusedElement !== pointEl &&
@@ -222,15 +222,15 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                 pointEl.focus();
             }
         });
-    };
+    }
     /**
      * After drillup we want to find the point that was drilled down to and
      * highlight it.
      * @private
      */
-    SeriesKeyboardNavigation.prototype.onDrillupAll = function () {
-        var last = this.lastDrilledDownPoint, chart = this.chart, series = last && getSeriesFromName(chart, last.seriesName);
-        var point;
+    onDrillupAll() {
+        const last = this.lastDrilledDownPoint, chart = this.chart, series = last && getSeriesFromName(chart, last.seriesName);
+        let point;
         if (last && series && defined(last.x) && defined(last.y)) {
             point = getPointFromXY(series, last.x, last.y);
         }
@@ -242,12 +242,12 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
         if (point && point.highlight) {
             point.highlight(false); // Do not visually highlight
         }
-    };
+    }
     /**
      * @private
      */
-    SeriesKeyboardNavigation.prototype.getKeyboardNavigationHandler = function () {
-        var keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
+    getKeyboardNavigationHandler() {
+        const keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
         return new KeyboardNavigationHandler(chart, {
             keyCodeMap: [
                 [inverted ? [keys.up, keys.down] : [keys.left, keys.right],
@@ -260,7 +260,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                     }],
                 [[keys.enter, keys.space],
                     function (keyCode, event) {
-                        var point = chart.highlightedPoint;
+                        const point = chart.highlightedPoint;
                         if (point) {
                             event.point = point;
                             fireEvent(point.series, 'click', event);
@@ -294,7 +294,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                 return keyboardNavigation.onHandlerTerminate();
             }
         });
-    };
+    }
     /**
      * @private
      * @param {Highcharts.KeyboardNavigationHandler} handler
@@ -302,10 +302,10 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @return {number}
      * response
      */
-    SeriesKeyboardNavigation.prototype.onKbdSideways = function (handler, keyCode) {
-        var keys = this.keyCodes, isNext = keyCode === keys.right || keyCode === keys.down;
+    onKbdSideways(handler, keyCode) {
+        const keys = this.keyCodes, isNext = keyCode === keys.right || keyCode === keys.down;
         return this.attemptHighlightAdjacentPoint(handler, isNext);
-    };
+    }
     /**
      * When keyboard navigation inits.
      * @private
@@ -313,8 +313,8 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @return {number}
      * response
      */
-    SeriesKeyboardNavigation.prototype.onHandlerInit = function (handler) {
-        var chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
+    onHandlerInit(handler) {
+        const chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
         if (kbdNavOptions.seriesNavigation.rememberPointFocus &&
             chart.highlightedPoint) {
             chart.highlightedPoint.highlight();
@@ -323,7 +323,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
             highlightFirstValidPointInChart(chart);
         }
         return handler.response.success;
-    };
+    }
     /**
      * @private
      * @param {Highcharts.KeyboardNavigationHandler} handler
@@ -331,30 +331,30 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @return {number}
      * response
      */
-    SeriesKeyboardNavigation.prototype.onKbdVertical = function (handler, keyCode) {
-        var chart = this.chart, keys = this.keyCodes, isNext = keyCode === keys.down || keyCode === keys.right, navOptions = chart.options.accessibility.keyboardNavigation
+    onKbdVertical(handler, keyCode) {
+        const chart = this.chart, keys = this.keyCodes, isNext = keyCode === keys.down || keyCode === keys.right, navOptions = chart.options.accessibility.keyboardNavigation
             .seriesNavigation;
         // Handle serialized mode, act like left/right
         if (navOptions.mode && navOptions.mode === 'serialize') {
             return this.attemptHighlightAdjacentPoint(handler, isNext);
         }
         // Normal mode, move between series
-        var highlightMethod = (chart.highlightedPoint &&
+        const highlightMethod = (chart.highlightedPoint &&
             chart.highlightedPoint.series.keyboardMoveVertical) ?
             'highlightAdjacentPointVertical' :
             'highlightAdjacentSeries';
         chart[highlightMethod](isNext);
         return handler.response.success;
-    };
+    }
     /**
      * @private
      */
-    SeriesKeyboardNavigation.prototype.onHandlerTerminate = function () {
-        var chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
+    onHandlerTerminate() {
+        const chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
         if (chart.tooltip) {
             chart.tooltip.hide(0);
         }
-        var hoverSeries = (chart.highlightedPoint && chart.highlightedPoint.series);
+        const hoverSeries = (chart.highlightedPoint && chart.highlightedPoint.series);
         if (hoverSeries && hoverSeries.onMouseOut) {
             hoverSeries.onMouseOut();
         }
@@ -364,13 +364,13 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
         if (!kbdNavOptions.seriesNavigation.rememberPointFocus) {
             delete chart.highlightedPoint;
         }
-    };
+    }
     /**
      * Function that attempts to highlight next/prev point. Handles wrap around.
      * @private
      */
-    SeriesKeyboardNavigation.prototype.attemptHighlightAdjacentPoint = function (handler, directionIsNext) {
-        var chart = this.chart, wrapAround = chart.options.accessibility.keyboardNavigation
+    attemptHighlightAdjacentPoint(handler, directionIsNext) {
+        const chart = this.chart, wrapAround = chart.options.accessibility.keyboardNavigation
             .wrapAround, highlightSuccessful = chart.highlightAdjacentPoint(directionIsNext);
         if (!highlightSuccessful) {
             if (wrapAround && (directionIsNext ?
@@ -381,12 +381,12 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
             return handler.response[directionIsNext ? 'next' : 'prev'];
         }
         return handler.response.success;
-    };
+    }
     /**
      * @private
      */
-    SeriesKeyboardNavigation.prototype.onSeriesDestroy = function (series) {
-        var chart = this.chart, currentHighlightedPointDestroyed = chart.highlightedPoint &&
+    onSeriesDestroy(series) {
+        const chart = this.chart, currentHighlightedPointDestroyed = chart.highlightedPoint &&
             chart.highlightedPoint.series === series;
         if (currentHighlightedPointDestroyed) {
             delete chart.highlightedPoint;
@@ -394,15 +394,14 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                 chart.focusElement.removeFocusBorder();
             }
         }
-    };
+    }
     /**
      * @private
      */
-    SeriesKeyboardNavigation.prototype.destroy = function () {
+    destroy() {
         this.eventProvider.removeAddedEvents();
-    };
-    return SeriesKeyboardNavigation;
-}());
+    }
+}
 /* *
  *
  *  Class Namespace
@@ -419,7 +418,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -439,10 +438,10 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * to highlight in chosen direction).
      */
     function chartHighlightAdjacentPoint(next) {
-        var chart = this, series = chart.series, curPoint = chart.highlightedPoint, curPointIndex = curPoint && getPointIndex(curPoint) || 0, curPoints = curPoint && curPoint.series.points || [], lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries &&
+        const chart = this, series = chart.series, curPoint = chart.highlightedPoint, curPointIndex = curPoint && getPointIndex(curPoint) || 0, curPoints = curPoint && curPoint.series.points || [], lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries &&
             lastSeries.points &&
             lastSeries.points[lastSeries.points.length - 1];
-        var newSeries, newPoint;
+        let newSeries, newPoint;
         // If no points, return false
         if (!series[0] || !series[0].points) {
             return false;
@@ -490,22 +489,22 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @private
      */
     function chartHighlightAdjacentPointVertical(down) {
-        var curPoint = this.highlightedPoint;
-        var minDistance = Infinity, bestPoint;
+        const curPoint = this.highlightedPoint;
+        let minDistance = Infinity, bestPoint;
         if (!defined(curPoint.plotX) || !defined(curPoint.plotY)) {
             return false;
         }
-        this.series.forEach(function (series) {
+        this.series.forEach((series) => {
             if (isSkipSeries(series)) {
                 return;
             }
-            series.points.forEach(function (point) {
+            series.points.forEach((point) => {
                 if (!defined(point.plotY) || !defined(point.plotX) ||
                     point === curPoint) {
                     return;
                 }
-                var yDistance = point.plotY - curPoint.plotY;
-                var width = Math.abs(point.plotX - curPoint.plotX), distance = Math.abs(yDistance) * Math.abs(yDistance) +
+                let yDistance = point.plotY - curPoint.plotY;
+                const width = Math.abs(point.plotX - curPoint.plotX), distance = Math.abs(yDistance) * Math.abs(yDistance) +
                     width * width * 4; // Weigh horizontal distance highly
                 // Reverse distance number if axis is reversed
                 if (series.yAxis && series.yAxis.reversed) {
@@ -530,9 +529,9 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @private
      */
     function chartHighlightAdjacentSeries(down) {
-        var chart = this, curPoint = chart.highlightedPoint, lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries && lastSeries.points &&
+        const chart = this, curPoint = chart.highlightedPoint, lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries && lastSeries.points &&
             lastSeries.points[lastSeries.points.length - 1];
-        var newSeries, newPoint, adjacentNewPoint;
+        let newSeries, newPoint, adjacentNewPoint;
         // If no point is highlighted, highlight the first/last point
         if (!chart.highlightedPoint) {
             newSeries = down ? (chart.series && chart.series[0]) : lastSeries;
@@ -574,21 +573,18 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @private
      */
     function compose(ChartClass, PointClass, SeriesClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.highlightAdjacentPoint = chartHighlightAdjacentPoint;
             chartProto.highlightAdjacentPointVertical = (chartHighlightAdjacentPointVertical);
             chartProto.highlightAdjacentSeries = chartHighlightAdjacentSeries;
         }
-        if (composedClasses.indexOf(PointClass) === -1) {
-            composedClasses.push(PointClass);
-            var pointProto = PointClass.prototype;
+        if (U.pushUnique(composedMembers, PointClass)) {
+            const pointProto = PointClass.prototype;
             pointProto.highlight = pointHighlight;
         }
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
-            var seriesProto = SeriesClass.prototype;
+        if (U.pushUnique(composedMembers, SeriesClass)) {
+            const seriesProto = SeriesClass.prototype;
             /**
              * Set for which series types it makes sense to move to the closest
              * point with up/down arrows, and which series types should just
@@ -600,7 +596,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                 'column',
                 'gantt',
                 'pie'
-            ].forEach(function (type) {
+            ].forEach((type) => {
                 if (seriesTypes[type]) {
                     seriesTypes[type].prototype.keyboardMoveVertical = false;
                 }
@@ -615,8 +611,8 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @private
      */
     function getClosestPoint(point, series, xWeight, yWeight) {
-        var minDistance = Infinity, dPoint, minIx, distance, i = series.points.length;
-        var hasUndefinedPosition = function (point) { return (!(defined(point.plotX) && defined(point.plotY))); };
+        let minDistance = Infinity, dPoint, minIx, distance, i = series.points.length;
+        const hasUndefinedPosition = (point) => (!(defined(point.plotX) && defined(point.plotY)));
         if (hasUndefinedPosition(point)) {
             return;
         }
@@ -647,9 +643,8 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @return {Highcharts.Point}
      *         This highlighted point.
      */
-    function pointHighlight(highlightVisually) {
-        if (highlightVisually === void 0) { highlightVisually = true; }
-        var chart = this.series.chart;
+    function pointHighlight(highlightVisually = true) {
+        const chart = this.series.chart;
         if (!this.isNull && highlightVisually) {
             this.onMouseOver(); // Show the hover marker and tooltip
         }
@@ -681,16 +676,16 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @function Highcharts.Series#highlightNextValidPoint
      */
     function seriesHighlightNextValidPoint() {
-        var curPoint = this.chart.highlightedPoint, start = (curPoint && curPoint.series) === this ?
+        const curPoint = this.chart.highlightedPoint, start = (curPoint && curPoint.series) === this ?
             getPointIndex(curPoint) :
             0, points = this.points, len = points.length;
         if (points && len) {
-            for (var i = start; i < len; ++i) {
+            for (let i = start; i < len; ++i) {
                 if (!isSkipPoint(points[i])) {
                     return points[i].highlight();
                 }
             }
-            for (var j = start; j >= 0; --j) {
+            for (let j = start; j >= 0; --j) {
                 if (!isSkipPoint(points[j])) {
                     return points[j].highlight();
                 }

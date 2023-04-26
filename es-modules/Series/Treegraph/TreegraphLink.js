@@ -8,26 +8,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Point from '../../Core/Series/Point.js';
 import U from '../../Core/Utilities.js';
-var pick = U.pick, extend = U.extend;
+const { pick, extend } = U;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
+const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
 /* *
  *
  *  Class
@@ -37,28 +22,26 @@ var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
  * @private
  * @class
  */
-var LinkPoint = /** @class */ (function (_super) {
-    __extends(LinkPoint, _super);
-    function LinkPoint() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+class LinkPoint extends ColumnPoint {
+    constructor() {
+        super(...arguments);
         /* *
         *
         *  Class properties
         *
         * */
-        _this.isLink = true;
-        _this.node = {};
-        _this.formatPrefix = 'link';
-        _this.dataLabelOnNull = true;
-        return _this;
+        this.isLink = true;
+        this.node = {};
+        this.formatPrefix = 'link';
+        this.dataLabelOnNull = true;
     }
     /* *
      *
      *  Functions
      *
      * */
-    LinkPoint.prototype.init = function (series, options, x, point) {
-        var link = _super.prototype.init.apply(this, arguments);
+    init(series, options, x, point) {
+        const link = super.init.apply(this, arguments);
         this.formatPrefix = 'link';
         this.dataLabelOnNull = true;
         if (point) {
@@ -68,9 +51,9 @@ var LinkPoint = /** @class */ (function (_super) {
             this.id = link.toNode.id + '-' + link.fromNode.id;
         }
         return link;
-    };
-    LinkPoint.prototype.update = function (options, redraw, animation, runEvent) {
-        var oldOptions = {
+    }
+    update(options, redraw, animation, runEvent) {
+        const oldOptions = {
             id: this.id,
             formatPrefix: this.formatPrefix
         };
@@ -81,9 +64,8 @@ var LinkPoint = /** @class */ (function (_super) {
         if (pick(redraw, true)) {
             this.series.chart.redraw(animation);
         }
-    };
-    return LinkPoint;
-}(ColumnPoint));
+    }
+}
 /* *
  *
  *  Export Default

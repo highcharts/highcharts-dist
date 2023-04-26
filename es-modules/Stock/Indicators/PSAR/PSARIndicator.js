@@ -10,25 +10,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var merge = U.merge, extend = U.extend;
+const { merge } = U;
 /* *
  *
  *  Functions
@@ -118,37 +103,37 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
  *
  * @augments Highcharts.Series
  */
-var PSARIndicator = /** @class */ (function (_super) {
-    __extends(PSARIndicator, _super);
-    function PSARIndicator() {
+class PSARIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        return _this;
+        this.data = void 0;
+        this.nameComponents = void 0;
+        this.points = void 0;
+        this.options = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    PSARIndicator.prototype.getValues = function (series, params) {
-        var xVal = series.xData, yVal = series.yData, 
+    getValues(series, params) {
+        const xVal = series.xData, yVal = series.yData, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
+        // Set initial acc factor (for every new trend!)
+        initialAccelerationFactor = params.initialAccelerationFactor, decimals = params.decimals, index = params.index, PSARArr = [], xData = [], yData = [];
+        let accelerationFactor = params.initialAccelerationFactor, direction, 
         // Extreme point is the lowest low for falling and highest high
         // for rising psar - and we are starting with falling
-        extremePoint = yVal[0][1], accelerationFactor = params.initialAccelerationFactor, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
-        // Set initial acc factor (for every new trend!)
-        initialAccelerationFactor = params.initialAccelerationFactor, PSAR = yVal[0][2], decimals = params.decimals, index = params.index, PSARArr = [], xData = [], yData = [], previousDirection = 1, direction, EPMinusPSAR, accelerationFactorMultiply, newDirection, prevLow, prevPrevLow, prevHigh, prevPrevHigh, newExtremePoint, high, low, ind;
+        extremePoint = yVal[0][1], EPMinusPSAR, accelerationFactorMultiply, newDirection, previousDirection = 1, prevLow, prevPrevLow, prevHigh, prevPrevHigh, PSAR = yVal[0][2], newExtremePoint, high, low, ind;
         if (index >= yVal.length) {
             return;
         }
@@ -196,77 +181,73 @@ var PSARIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
-    /**
-     * Parabolic SAR. This series requires `linkedTo`
-     * option to be set and should be loaded
-     * after `stock/indicators/indicators.js` file.
-     *
-     * @sample stock/indicators/psar
-     *         Parabolic SAR Indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/psar
-     * @optionparent plotOptions.psar
-     */
-    PSARIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        lineWidth: 0,
-        marker: {
-            enabled: true
-        },
-        states: {
-            hover: {
-                lineWidthPlus: 0
-            }
-        },
-        /**
-         * @excluding period
-         */
-        params: {
-            period: void 0,
-            /**
-             * The initial value for acceleration factor.
-             * Acceleration factor is starting with this value
-             * and increases by specified increment each time
-             * the extreme point makes a new high.
-             * AF can reach a maximum of maxAccelerationFactor,
-             * no matter how long the uptrend extends.
-             */
-            initialAccelerationFactor: 0.02,
-            /**
-             * The Maximum value for acceleration factor.
-             * AF can reach a maximum of maxAccelerationFactor,
-             * no matter how long the uptrend extends.
-             */
-            maxAccelerationFactor: 0.2,
-            /**
-             * Acceleration factor increases by increment each time
-             * the extreme point makes a new high.
-             *
-             * @since 6.0.0
-             */
-            increment: 0.02,
-            /**
-             * Index from which PSAR is starting calculation
-             *
-             * @since 6.0.0
-             */
-            index: 2,
-            /**
-             * Number of maximum decimals that are used in PSAR calculations.
-             *
-             * @since 6.0.0
-             */
-            decimals: 4
+    }
+}
+/**
+ * Parabolic SAR. This series requires `linkedTo`
+ * option to be set and should be loaded
+ * after `stock/indicators/indicators.js` file.
+ *
+ * @sample stock/indicators/psar
+ *         Parabolic SAR Indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/psar
+ * @optionparent plotOptions.psar
+ */
+PSARIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    lineWidth: 0,
+    marker: {
+        enabled: true
+    },
+    states: {
+        hover: {
+            lineWidthPlus: 0
         }
-    });
-    return PSARIndicator;
-}(SMAIndicator));
-extend(PSARIndicator.prototype, {
-    nameComponents: void 0
+    },
+    /**
+     * @excluding period
+     */
+    params: {
+        period: void 0,
+        /**
+         * The initial value for acceleration factor.
+         * Acceleration factor is starting with this value
+         * and increases by specified increment each time
+         * the extreme point makes a new high.
+         * AF can reach a maximum of maxAccelerationFactor,
+         * no matter how long the uptrend extends.
+         */
+        initialAccelerationFactor: 0.02,
+        /**
+         * The Maximum value for acceleration factor.
+         * AF can reach a maximum of maxAccelerationFactor,
+         * no matter how long the uptrend extends.
+         */
+        maxAccelerationFactor: 0.2,
+        /**
+         * Acceleration factor increases by increment each time
+         * the extreme point makes a new high.
+         *
+         * @since 6.0.0
+         */
+        increment: 0.02,
+        /**
+         * Index from which PSAR is starting calculation
+         *
+         * @since 6.0.0
+         */
+        index: 2,
+        /**
+         * Number of maximum decimals that are used in PSAR calculations.
+         *
+         * @since 6.0.0
+         */
+        decimals: 4
+    }
 });
 SeriesRegistry.registerSeriesType('psar', PSARIndicator);
 /* *

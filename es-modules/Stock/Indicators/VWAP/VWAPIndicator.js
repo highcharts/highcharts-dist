@@ -10,25 +10,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var error = U.error, isArray = U.isArray, merge = U.merge;
+const { error, isArray, merge } = U;
 /* *
  *
  *  Class
@@ -43,32 +28,31 @@ var error = U.error, isArray = U.isArray, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var VWAPIndicator = /** @class */ (function (_super) {
-    __extends(VWAPIndicator, _super);
-    function VWAPIndicator() {
+class VWAPIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        return _this;
+        this.data = void 0;
+        this.points = void 0;
+        this.options = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    VWAPIndicator.prototype.getValues = function (series, params) {
-        var indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period, isOHLC = true, volumeSeries;
+    getValues(series, params) {
+        const indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period;
+        let isOHLC = true, volumeSeries;
         // Checks if volume series exists
         if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
             error('Series ' +
@@ -81,7 +65,7 @@ var VWAPIndicator = /** @class */ (function (_super) {
             isOHLC = false;
         }
         return indicator.calculateVWAPValues(isOHLC, xValues, yValues, volumeSeries, period);
-    };
+    }
     /**
      * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
      * values
@@ -107,8 +91,9 @@ var VWAPIndicator = /** @class */ (function (_super) {
      * @return {Object}
      * Object contains computed VWAP
      **/
-    VWAPIndicator.prototype.calculateVWAPValues = function (isOHLC, xValues, yValues, volumeSeries, period) {
-        var volumeValues = volumeSeries.yData, volumeLength = volumeSeries.xData.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [], commonLength, typicalPrice, cPrice, cVolume, i, j;
+    calculateVWAPValues(isOHLC, xValues, yValues, volumeSeries, period) {
+        const volumeValues = volumeSeries.yData, volumeLength = volumeSeries.xData.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [];
+        let commonLength, typicalPrice, cPrice, cVolume, i, j;
         if (pointsLength <= volumeLength) {
             commonLength = pointsLength;
         }
@@ -144,39 +129,38 @@ var VWAPIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Volume Weighted Average Price indicator.
+ *
+ * This series requires `linkedTo` option to be set.
+ *
+ * @sample stock/indicators/vwap
+ *         Volume Weighted Average Price indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/vwap
+ * @optionparent plotOptions.vwap
+ */
+VWAPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Volume Weighted Average Price indicator.
-     *
-     * This series requires `linkedTo` option to be set.
-     *
-     * @sample stock/indicators/vwap
-     *         Volume Weighted Average Price indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/vwap
-     * @optionparent plotOptions.vwap
+     * @excluding index
      */
-    VWAPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        index: void 0,
+        period: 30,
         /**
-         * @excluding index
+         * The id of volume series which is mandatory. For example using
+         * OHLC data, volumeSeriesID='volume' means the indicator will be
+         * calculated using OHLC and volume values.
          */
-        params: {
-            index: void 0,
-            period: 30,
-            /**
-             * The id of volume series which is mandatory. For example using
-             * OHLC data, volumeSeriesID='volume' means the indicator will be
-             * calculated using OHLC and volume values.
-             */
-            volumeSeriesID: 'volume'
-        }
-    });
-    return VWAPIndicator;
-}(SMAIndicator));
+        volumeSeriesID: 'volume'
+    }
+});
 SeriesRegistry.registerSeriesType('vwap', VWAPIndicator);
 /* *
  *

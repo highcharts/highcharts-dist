@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2020-2022 Highsoft AS
+ *  (c) 2009-2023 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -12,24 +12,9 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import DataModifier from './DataModifier.js';
 import U from '../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
@@ -40,8 +25,7 @@ var merge = U.merge;
  *
  * @private
  */
-var InvertModifier = /** @class */ (function (_super) {
-    __extends(InvertModifier, _super);
+class InvertModifier extends DataModifier {
     /* *
      *
      *  Constructor
@@ -53,10 +37,9 @@ var InvertModifier = /** @class */ (function (_super) {
      * @param {InvertModifier.Options} [options]
      * Options to configure the invert modifier.
      */
-    function InvertModifier(options) {
-        var _this = _super.call(this) || this;
-        _this.options = merge(InvertModifier.defaultOptions, options);
-        return _this;
+    constructor(options) {
+        super();
+        this.options = merge(InvertModifier.defaultOptions, options);
     }
     /* *
      *
@@ -85,16 +68,16 @@ var InvertModifier = /** @class */ (function (_super) {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    InvertModifier.prototype.modifyCell = function (table, columnName, rowIndex, cellValue, eventDetail) {
-        var modified = table.modified, modifiedRowIndex = modified.getRowIndexBy('columnNames', columnName);
+    modifyCell(table, columnName, rowIndex, cellValue, eventDetail) {
+        const modified = table.modified, modifiedRowIndex = modified.getRowIndexBy('columnNames', columnName);
         if (typeof modifiedRowIndex === 'undefined') {
             modified.setColumns(this.modifyTable(table.clone()).getColumns(), void 0, eventDetail);
         }
         else {
-            modified.setCell("".concat(rowIndex), modifiedRowIndex, cellValue, eventDetail);
+            modified.setCell(`${rowIndex}`, modifiedRowIndex, cellValue, eventDetail);
         }
         return table;
-    };
+    }
     /**
      * Applies partial modifications of column changes to the property
      * `modified` of the given table.
@@ -114,11 +97,11 @@ var InvertModifier = /** @class */ (function (_super) {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    InvertModifier.prototype.modifyColumns = function (table, columns, rowIndex, eventDetail) {
-        var modified = table.modified, modifiedColumnNames = (modified.getColumn('columnNames') || []);
-        var columnNames = table.getColumnNames(), reset = (table.getRowCount() !== modifiedColumnNames.length);
+    modifyColumns(table, columns, rowIndex, eventDetail) {
+        const modified = table.modified, modifiedColumnNames = (modified.getColumn('columnNames') || []);
+        let columnNames = table.getColumnNames(), reset = (table.getRowCount() !== modifiedColumnNames.length);
         if (!reset) {
-            for (var i = 0, iEnd = columnNames.length; i < iEnd; ++i) {
+            for (let i = 0, iEnd = columnNames.length; i < iEnd; ++i) {
                 if (columnNames[i] !== modifiedColumnNames[i]) {
                     reset = true;
                     break;
@@ -129,17 +112,17 @@ var InvertModifier = /** @class */ (function (_super) {
             return this.modifyTable(table, eventDetail);
         }
         columnNames = Object.keys(columns);
-        for (var i = 0, iEnd = columnNames.length, column = void 0, columnName = void 0, modifiedRowIndex = void 0; i < iEnd; ++i) {
+        for (let i = 0, iEnd = columnNames.length, column, columnName, modifiedRowIndex; i < iEnd; ++i) {
             columnName = columnNames[i];
             column = columns[columnName];
             modifiedRowIndex = (modified.getRowIndexBy('columnNames', columnName) ||
                 modified.getRowCount());
-            for (var j = 0, j2 = rowIndex, jEnd = column.length; j < jEnd; ++j, ++j2) {
-                modified.setCell("".concat(j2), modifiedRowIndex, column[j], eventDetail);
+            for (let j = 0, j2 = rowIndex, jEnd = column.length; j < jEnd; ++j, ++j2) {
+                modified.setCell(`${j2}`, modifiedRowIndex, column[j], eventDetail);
             }
         }
         return table;
-    };
+    }
     /**
      * Applies partial modifications of row changes to the property `modified`
      * of the given table.
@@ -159,11 +142,11 @@ var InvertModifier = /** @class */ (function (_super) {
      * @return {Highcharts.DataTable}
      * Table with `modified` property as a reference.
      */
-    InvertModifier.prototype.modifyRows = function (table, rows, rowIndex, eventDetail) {
-        var columnNames = table.getColumnNames(), modified = table.modified, modifiedColumnNames = (modified.getColumn('columnNames') || []);
-        var reset = (table.getRowCount() !== modifiedColumnNames.length);
+    modifyRows(table, rows, rowIndex, eventDetail) {
+        const columnNames = table.getColumnNames(), modified = table.modified, modifiedColumnNames = (modified.getColumn('columnNames') || []);
+        let reset = (table.getRowCount() !== modifiedColumnNames.length);
         if (!reset) {
-            for (var i = 0, iEnd = columnNames.length; i < iEnd; ++i) {
+            for (let i = 0, iEnd = columnNames.length; i < iEnd; ++i) {
                 if (columnNames[i] !== modifiedColumnNames[i]) {
                     reset = true;
                     break;
@@ -173,39 +156,39 @@ var InvertModifier = /** @class */ (function (_super) {
         if (reset) {
             return this.modifyTable(table, eventDetail);
         }
-        for (var i = 0, i2 = rowIndex, iEnd = rows.length, row = void 0; i < iEnd; ++i, ++i2) {
+        for (let i = 0, i2 = rowIndex, iEnd = rows.length, row; i < iEnd; ++i, ++i2) {
             row = rows[i];
             if (row instanceof Array) {
-                modified.setColumn("".concat(i2), row);
+                modified.setColumn(`${i2}`, row);
             }
             else {
-                for (var j = 0, jEnd = columnNames.length; j < jEnd; ++j) {
-                    modified.setCell("".concat(i2), j, row[columnNames[j]], eventDetail);
+                for (let j = 0, jEnd = columnNames.length; j < jEnd; ++j) {
+                    modified.setCell(`${i2}`, j, row[columnNames[j]], eventDetail);
                 }
             }
         }
         return table;
-    };
+    }
     /**
      * Inverts rows and columns in the table.
      *
      * @param {DataTable} table
      * Table to invert.
      *
-     * @param {DataEventEmitter.EventDetail} [eventDetail]
+     * @param {DataEvent.Detail} [eventDetail]
      * Custom information for pending events.
      *
      * @return {DataTable}
      * Table with inverted `modified` property as a reference.
      */
-    InvertModifier.prototype.modifyTable = function (table, eventDetail) {
-        var modifier = this;
-        modifier.emit({ type: 'modify', detail: eventDetail, table: table });
-        var modified = table.modified;
+    modifyTable(table, eventDetail) {
+        const modifier = this;
+        modifier.emit({ type: 'modify', detail: eventDetail, table });
+        const modified = table.modified;
         if (table.hasColumns(['columnNames'])) { // inverted table
-            var columnNames = ((table.deleteColumns(['columnNames']) || {})
-                .columnNames || []).map(function (column) { return "".concat(column); }), columns = {};
-            for (var i = 0, iEnd = table.getRowCount(), row = void 0; i < iEnd; ++i) {
+            const columnNames = ((table.deleteColumns(['columnNames']) || {})
+                .columnNames || []).map((column) => `${column}`), columns = {};
+            for (let i = 0, iEnd = table.getRowCount(), row; i < iEnd; ++i) {
                 row = table.getRow(i);
                 if (row) {
                     columns[columnNames[i]] = row;
@@ -215,42 +198,36 @@ var InvertModifier = /** @class */ (function (_super) {
             modified.setColumns(columns);
         }
         else { // regular table
-            var columns = {};
-            for (var i = 0, iEnd = table.getRowCount(), row = void 0; i < iEnd; ++i) {
+            const columns = {};
+            for (let i = 0, iEnd = table.getRowCount(), row; i < iEnd; ++i) {
                 row = table.getRow(i);
                 if (row) {
-                    columns["".concat(i)] = row;
+                    columns[`${i}`] = row;
                 }
             }
             columns.columnNames = table.getColumnNames();
             modified.deleteColumns();
             modified.setColumns(columns);
         }
-        modifier.emit({ type: 'afterModify', detail: eventDetail, table: table });
+        modifier.emit({ type: 'afterModify', detail: eventDetail, table });
         return table;
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    /**
-     * Default options for the invert modifier.
-     */
-    InvertModifier.defaultOptions = {
-        modifier: 'InvertModifier'
-    };
-    return InvertModifier;
-}(DataModifier));
+    }
+}
 /* *
  *
- *  Register
+ *  Static Properties
  *
  * */
-DataModifier.addModifier(InvertModifier);
+/**
+ * Default options for the invert modifier.
+ */
+InvertModifier.defaultOptions = {
+    modifier: 'Invert'
+};
+DataModifier.registerType('Invert', InvertModifier);
 /* *
  *
- *  Export
+ *  Default Export
  *
  * */
 export default InvertModifier;

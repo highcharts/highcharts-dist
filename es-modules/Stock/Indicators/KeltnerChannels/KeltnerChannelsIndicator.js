@@ -6,26 +6,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge;
+const { correctFloat, extend, merge } = U;
 /* *
  *
  *  Class
@@ -40,31 +25,29 @@ var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var KeltnerChannelsIndicator = /** @class */ (function (_super) {
-    __extends(KeltnerChannelsIndicator, _super);
-    function KeltnerChannelsIndicator() {
+class KeltnerChannelsIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    KeltnerChannelsIndicator.prototype.init = function () {
+    init() {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
         this.options = merge({
@@ -79,19 +62,19 @@ var KeltnerChannelsIndicator = /** @class */ (function (_super) {
                 }
             }
         }, this.options);
-    };
-    KeltnerChannelsIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, periodATR = params.periodATR, multiplierATR = params.multiplierATR, index = params.index, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
+    }
+    getValues(series, params) {
+        const period = params.period, periodATR = params.periodATR, multiplierATR = params.multiplierATR, index = params.index, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // Keltner Channels array structure:
         // 0-date, 1-top line, 2-middle line, 3-bottom line
-        KC = [], 
-        // middle line, top line and bottom lineI
-        ML, TL, BL, date, seriesEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
+        KC = [], seriesEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
             period: period,
             index: index
         }), seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
             period: periodATR
-        }), pointEMA, pointATR, xData = [], yData = [], i;
+        }), xData = [], yData = [];
+        // middle line, top line and bottom lineI
+        let ML, TL, BL, date, pointEMA, pointATR, i;
         if (yValLen < period) {
             return;
         }
@@ -111,100 +94,99 @@ var KeltnerChannelsIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Keltner Channels. This series requires the `linkedTo` option to be set
+ * and should be loaded after the `stock/indicators/indicators.js`,
+ * `stock/indicators/atr.js`, and `stock/ema/.js`.
+ *
+ * @sample {highstock} stock/indicators/keltner-channels
+ *         Keltner Channels
+ *
+ * @extends      plotOptions.sma
+ * @since        7.0.0
+ * @product      highstock
+ * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+ *               navigatorOptions, pointInterval, pointIntervalUnit,
+ *               pointPlacement, pointRange, pointStart,showInNavigator,
+ *               stacking
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/keltner-channels
+ * @optionparent plotOptions.keltnerchannels
+ */
+KeltnerChannelsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Keltner Channels. This series requires the `linkedTo` option to be set
-     * and should be loaded after the `stock/indicators/indicators.js`,
-     * `stock/indicators/atr.js`, and `stock/ema/.js`.
+     * Option for fill color between lines in Keltner Channels Indicator.
      *
-     * @sample {highstock} stock/indicators/keltner-channels
-     *         Keltner Channels
+     * @sample {highstock} stock/indicators/indicator-area-fill
+     *      Background fill between lines.
      *
-     * @extends      plotOptions.sma
-     * @since        7.0.0
-     * @product      highstock
-     * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-     *               navigatorOptions, pointInterval, pointIntervalUnit,
-     *               pointPlacement, pointRange, pointStart,showInNavigator,
-     *               stacking
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/keltner-channels
-     * @optionparent plotOptions.keltnerchannels
+     * @type {Highcharts.Color}
+     * @since 9.3.2
+     * @apioption plotOptions.keltnerchannels.fillColor
+     *
      */
-    KeltnerChannelsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
         /**
-         * Option for fill color between lines in Keltner Channels Indicator.
-         *
-         * @sample {highstock} stock/indicators/indicator-area-fill
-         *      Background fill between lines.
-         *
-         * @type {Highcharts.Color}
-         * @since 9.3.2
-         * @apioption plotOptions.keltnerchannels.fillColor
+         * The point index which indicator calculations will base. For
+         * example using OHLC data, index=2 means the indicator will be
+         * calculated using Low values.
+         */
+        index: 0,
+        period: 20,
+        /**
+         * The ATR period.
+         */
+        periodATR: 10,
+        /**
+         * The ATR multiplier.
+         */
+        multiplierATR: 2
+    },
+    /**
+     * Bottom line options.
+     *
+     */
+    bottomLine: {
+        /**
+         * Styles for a bottom line.
          *
          */
-        params: {
+        styles: {
             /**
-             * The point index which indicator calculations will base. For
-             * example using OHLC data, index=2 means the indicator will be
-             * calculated using Low values.
+             * Pixel width of the line.
              */
-            index: 0,
-            period: 20,
+            lineWidth: 1,
             /**
-             * The ATR period.
+             * Color of the line. If not set, it's inherited from
+             * `plotOptions.keltnerchannels.color`
              */
-            periodATR: 10,
-            /**
-             * The ATR multiplier.
-             */
-            multiplierATR: 2
-        },
-        /**
-         * Bottom line options.
-         *
-         */
-        bottomLine: {
-            /**
-             * Styles for a bottom line.
-             *
-             */
-            styles: {
-                /**
-                 * Pixel width of the line.
-                 */
-                lineWidth: 1,
-                /**
-                 * Color of the line. If not set, it's inherited from
-                 * `plotOptions.keltnerchannels.color`
-                 */
-                lineColor: void 0
-            }
-        },
-        /**
-         * Top line options.
-         *
-         * @extends plotOptions.keltnerchannels.bottomLine
-         */
-        topLine: {
-            styles: {
-                lineWidth: 1,
-                lineColor: void 0
-            }
-        },
-        tooltip: {
-            pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Upper Channel: {point.top}<br/>EMA({series.options.params.period}): {point.middle}<br/>Lower Channel: {point.bottom}<br/>'
-        },
-        marker: {
-            enabled: false
-        },
-        dataGrouping: {
-            approximation: 'averages'
-        },
-        lineWidth: 1
-    });
-    return KeltnerChannelsIndicator;
-}(SMAIndicator));
+            lineColor: void 0
+        }
+    },
+    /**
+     * Top line options.
+     *
+     * @extends plotOptions.keltnerchannels.bottomLine
+     */
+    topLine: {
+        styles: {
+            lineWidth: 1,
+            lineColor: void 0
+        }
+    },
+    tooltip: {
+        pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Upper Channel: {point.top}<br/>EMA({series.options.params.period}): {point.middle}<br/>Lower Channel: {point.bottom}<br/>'
+    },
+    marker: {
+        enabled: false
+    },
+    dataGrouping: {
+        approximation: 'averages'
+    },
+    lineWidth: 1
+});
 extend(KeltnerChannelsIndicator.prototype, {
     nameBase: 'Keltner Channels',
     areaLinesNames: ['top', 'bottom'],

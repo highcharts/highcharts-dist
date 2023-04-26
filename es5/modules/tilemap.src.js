@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.3.3 (2023-01-20)
+ * @license Highmaps JS v11.0.0 (2023-04-26)
  *
  * Tilemap module
  *
@@ -51,21 +51,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var Point = SeriesRegistry.series.prototype.pointClass, HeatmapPoint = SeriesRegistry.seriesTypes.heatmap.prototype.pointClass;
+        var Point = SeriesRegistry.series.prototype.pointClass,
+            HeatmapPoint = SeriesRegistry.seriesTypes.heatmap.prototype.pointClass;
         var extend = U.extend;
         /* *
          *
@@ -73,14 +75,15 @@
          *
          * */
         var TilemapPoint = /** @class */ (function (_super) {
-            __extends(TilemapPoint, _super);
+                __extends(TilemapPoint, _super);
             function TilemapPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.options = void 0;
                 _this.radius = void 0;
                 _this.series = void 0;
@@ -129,8 +132,11 @@
          *
          * */
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, HeatmapSeries = _a.heatmap, ScatterSeries = _a.scatter;
-        var clamp = U.clamp, pick = U.pick;
+        var _a = SeriesRegistry.seriesTypes,
+            HeatmapSeries = _a.heatmap,
+            ScatterSeries = _a.scatter;
+        var clamp = U.clamp,
+            pick = U.pick;
         /**
          * Utility func to get padding definition from tile size division
          * @private
@@ -152,11 +158,11 @@
          * @private
          */
         var TilemapShapes = {
-            // Hexagon shape type.
-            hexagon: {
-                alignDataLabel: ScatterSeries.prototype.alignDataLabel,
-                getSeriesPadding: function (series) {
-                    return tilePaddingFromTileSize(series, 3, 2);
+                // Hexagon shape type.
+                hexagon: {
+                    alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+                    getSeriesPadding: function (series) {
+                        return tilePaddingFromTileSize(series, 3, 2);
                 },
                 haloPath: function (size) {
                     if (!size) {
@@ -174,21 +180,39 @@
                     ];
                 },
                 translate: function () {
-                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, xPad = (options.colsize || 1) / 3, yPad = (options.rowsize || 1) / 2, yShift;
+                    var series = this,
+                        options = series.options,
+                        xAxis = series.xAxis,
+                        yAxis = series.yAxis,
+                        seriesPointPadding = options.pointPadding || 0,
+                        xPad = (options.colsize || 1) / 3,
+                        yPad = (options.rowsize || 1) / 2,
+                        yShift;
                     series.generatePoints();
                     series.points.forEach(function (point) {
                         var x1 = clamp(Math.floor(xAxis.len -
-                            xAxis.translate(point.x - xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x2 = clamp(Math.floor(xAxis.len -
-                            xAxis.translate(point.x - xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x3 = clamp(Math.floor(xAxis.len -
-                            xAxis.translate(point.x + xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x4 = clamp(Math.floor(xAxis.len -
-                            xAxis.translate(point.x + xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), y1 = clamp(Math.floor(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y2 = clamp(Math.floor(yAxis.translate(point.y, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y3 = clamp(Math.floor(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding), 
-                        // We calculate the point padding of the midpoints to
-                        // preserve the angles of the shape.
-                        midPointPadding = pointPadding *
-                            Math.abs(x2 - x1) / Math.abs(y3 - y2), xMidPadding = xAxis.reversed ?
-                            -midPointPadding : midPointPadding, xPointPadding = xAxis.reversed ?
-                            -pointPadding : pointPadding, yPointPadding = yAxis.reversed ?
-                            -pointPadding : pointPadding;
+                                xAxis.translate(point.x - xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            x2 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x - xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            x3 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x + xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            x4 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x + xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            y1 = clamp(Math.floor(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                            y2 = clamp(Math.floor(yAxis.translate(point.y, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                            y3 = clamp(Math.floor(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                            pointPadding = pick(point.pointPadding,
+                            seriesPointPadding), 
+                            // We calculate the point padding of the midpoints to
+                            // preserve the angles of the shape.
+                            midPointPadding = pointPadding *
+                                Math.abs(x2 - x1) / Math.abs(y3 - y2),
+                            xMidPadding = xAxis.reversed ?
+                                -midPointPadding : midPointPadding,
+                            xPointPadding = xAxis.reversed ?
+                                -pointPadding : pointPadding,
+                            yPointPadding = yAxis.reversed ?
+                                -pointPadding : pointPadding;
                         // Shift y-values for every second grid column
                         if (point.x % 2) {
                             yShift = yShift || Math.round(Math.abs(y3 - y1) / 2) *
@@ -249,19 +273,35 @@
                     ];
                 },
                 translate: function () {
-                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, xPad = (options.colsize || 1), yPad = (options.rowsize || 1) / 2, yShift;
+                    var series = this,
+                        options = series.options,
+                        xAxis = series.xAxis,
+                        yAxis = series.yAxis,
+                        seriesPointPadding = options.pointPadding || 0,
+                        xPad = (options.colsize || 1),
+                        yPad = (options.rowsize || 1) / 2,
+                        yShift;
                     series.generatePoints();
                     series.points.forEach(function (point) {
                         var x1 = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x - xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), x2 = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), x3 = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x + xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y1 = clamp(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y2 = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y3 = clamp(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding), 
-                        // We calculate the point padding of the midpoints to
-                        // preserve the angles of the shape.
-                        midPointPadding = pointPadding *
-                            Math.abs(x2 - x1) / Math.abs(y3 - y2), xPointPadding = xAxis.reversed ?
-                            -midPointPadding : midPointPadding, yPointPadding = yAxis.reversed ?
-                            -pointPadding : pointPadding;
+                                xAxis.translate(point.x - xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            x2 = clamp(Math.round(xAxis.len -
+                                xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            x3 = clamp(Math.round(xAxis.len -
+                                xAxis.translate(point.x + xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            y1 = clamp(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            y2 = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            y3 = clamp(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            pointPadding = pick(point.pointPadding,
+                            seriesPointPadding), 
+                            // We calculate the point padding of the midpoints to
+                            // preserve the angles of the shape.
+                            midPointPadding = pointPadding *
+                                Math.abs(x2 - x1) / Math.abs(y3 - y2),
+                            xPointPadding = xAxis.reversed ?
+                                -midPointPadding : midPointPadding,
+                            yPointPadding = yAxis.reversed ?
+                                -pointPadding : pointPadding;
                         // Shift y-values for every second grid column
                         // We have to reverse the shift for reversed y-axes
                         if (point.x % 2) {
@@ -308,11 +348,25 @@
                         .call(this, size + (size && this.radius));
                 },
                 translate: function () {
-                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, yRadius = (options.rowsize || 1) / 2, colsize = (options.colsize || 1), colsizePx, yRadiusPx, xRadiusPx, radius, forceNextRadiusCompute = false;
+                    var series = this,
+                        options = series.options,
+                        xAxis = series.xAxis,
+                        yAxis = series.yAxis,
+                        seriesPointPadding = options.pointPadding || 0,
+                        yRadius = (options.rowsize || 1) / 2,
+                        colsize = (options.colsize || 1),
+                        colsizePx,
+                        yRadiusPx,
+                        xRadiusPx,
+                        radius,
+                        forceNextRadiusCompute = false;
                     series.generatePoints();
                     series.points.forEach(function (point) {
                         var x = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), pointPadding = seriesPointPadding, hasPerPointPadding = false;
+                                xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            y = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            pointPadding = seriesPointPadding,
+                            hasPerPointPadding = false;
                         // If there is point padding defined on a single point, add it
                         if (typeof point.pointPadding !== 'undefined') {
                             pointPadding = point.pointPadding;
@@ -422,11 +476,11 @@
                 return;
             }
             var axis = this, 
-            // Find which series' padding to use
-            seriesPadding = axis.series
-                .map(function (series) {
-                return series.getSeriesPixelPadding &&
-                    series.getSeriesPixelPadding(axis);
+                // Find which series' padding to use
+                seriesPadding = axis.series
+                    .map(function (series) {
+                    return series.getSeriesPixelPadding &&
+                        series.getSeriesPixelPadding(axis);
             })
                 .reduce(function (a, b) {
                 return (a && a.padding) > (b && b.padding) ?
@@ -464,23 +518,28 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, HeatmapSeries = _a.heatmap, ScatterSeries = _a.scatter;
-        var extend = U.extend, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            ColumnSeries = _a.column,
+            HeatmapSeries = _a.heatmap,
+            ScatterSeries = _a.scatter;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -494,14 +553,15 @@
          * @augments Highcharts.Series
          */
         var TilemapSeries = /** @class */ (function (_super) {
-            __extends(TilemapSeries, _super);
+                __extends(TilemapSeries, _super);
             function TilemapSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -542,7 +602,10 @@
              * @private
              */
             TilemapSeries.prototype.getSeriesPixelPadding = function (axis) {
-                var isX = axis.isXAxis, padding = this.tileShape.getSeriesPadding(this), coord1, coord2;
+                var isX = axis.isXAxis,
+                    padding = this.tileShape.getSeriesPadding(this),
+                    coord1,
+                    coord2;
                 // If the shape type does not require padding, return no-op padding
                 if (!padding) {
                     return {
@@ -557,7 +620,9 @@
                     padding.yPad, 0, 1, 0, 1));
                 coord2 = Math.round(axis.translate(isX ? padding.xPad : 0, 0, 1, 0, 1));
                 return {
-                    padding: Math.abs(coord1 - coord2) || 0,
+                    padding: (axis.single ? // if there is only one tick adjust padding #18647
+                        Math.abs(coord1 - coord2) / 2 :
+                        Math.abs(coord1 - coord2)) || 0,
                     // Offset the yAxis length to compensate for shift. Setting the
                     // length factor to 2 would add the same margin to max as min.
                     // Now we only add a slight bit of the min margin to max, as we
@@ -573,7 +638,8 @@
              */
             TilemapSeries.prototype.setOptions = function () {
                 // Call original function
-                var ret = _super.prototype.setOptions.apply(this, Array.prototype.slice.call(arguments));
+                var ret = _super.prototype.setOptions.apply(this,
+                    Array.prototype.slice.call(arguments));
                 this.tileShape = TilemapShapes[ret.tileShape];
                 return ret;
             };

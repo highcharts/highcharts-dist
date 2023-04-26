@@ -10,7 +10,7 @@
 'use strict';
 import D from '../Core/Defaults.js';
 import U from '../Core/Utilities.js';
-var extend = U.extend;
+const { extend } = U;
 /* *
  *
  *  Constants
@@ -23,7 +23,7 @@ var extend = U.extend;
  * @product      highmaps
  * @optionparent mapNavigation
  */
-var MapNavigationDefaults = {
+const MapNavigationDefaults = {
     /**
      * General options for the map navigation buttons. Individual options
      * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
@@ -75,11 +75,13 @@ var MapNavigationDefaults = {
          * Text styles for the map navigation buttons.
          *
          * @type    {Highcharts.CSSObject}
-         * @default {"fontSize": "15px", "fontWeight": "bold"}
+         * @default {"fontSize": "1em", "fontWeight": "bold"}
          */
         style: {
             /** @ignore */
-            fontSize: '15px',
+            color: "#666666" /* Palette.neutralColor60 */,
+            /** @ignore */
+            fontSize: '1em',
             /** @ignore */
             fontWeight: 'bold'
         },
@@ -96,6 +98,10 @@ var MapNavigationDefaults = {
          * @default {"stroke-width": 1, "text-align": "center"}
          */
         theme: {
+            /** @ignore */
+            fill: "#ffffff" /* Palette.backgroundColor */,
+            /** @ignore */
+            stroke: "#e6e6e6" /* Palette.neutralColor10 */,
             /** @ignore */
             'stroke-width': 1,
             /** @ignore */

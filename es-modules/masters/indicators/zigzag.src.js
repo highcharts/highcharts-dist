@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  * @module highcharts/indicators/zigzag
  * @requires highcharts
  * @requires highcharts/modules/stock

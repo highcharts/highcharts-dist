@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -10,5 +10,9 @@
  *
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Extensions/Drilldown.js';
-import '../../Extensions/Breadcrumbs.js';
+import Breadcrumbs from '../../Extensions/Breadcrumbs/Breadcrumbs.js';
+const G = Highcharts;
+G.Breadcrumbs = Breadcrumbs;
+Breadcrumbs.compose(G.Chart, G.defaultOptions);

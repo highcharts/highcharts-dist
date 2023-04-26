@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Client side exporting module
  *
@@ -50,7 +50,9 @@
          *
          * */
         var isSafari = Highcharts.isSafari;
-        var win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
+        var win = Highcharts.win,
+            doc = win.document,
+            domurl = win.URL || win.webkitURL || win;
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -61,9 +63,9 @@
          *         Blob
          */
         var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-            var parts = dataURL
-                .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                var parts = dataURL
+                    .replace(/filename=.*;/, '')
+                    .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
                 parts.length > 3 &&
                 (win.atob) &&
@@ -72,7 +74,9 @@
                 win.Blob &&
                 (domurl.createObjectURL)) {
                 // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
+                var binStr = win.atob(parts[3]),
+                    buf = new win.ArrayBuffer(binStr.length),
+                    binary = new win.Uint8Array(buf);
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
@@ -91,8 +95,10 @@
          *        The name of the resulting file (w/extension)
          * @return {void}
          */
-        var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
-            var nav = win.navigator, a = doc.createElement('a');
+        var downloadURL = Highcharts.downloadURL = function (dataURL,
+            filename) {
+                var nav = win.navigator,
+            a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -107,8 +113,8 @@
             var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
             // Safari on iOS needs Blob in order to download PDF
             var safariBlob = (isSafari &&
-                typeof dataURL === 'string' &&
-                dataURL.indexOf('data:application/pdf') === 0);
+                    typeof dataURL === 'string' &&
+                    dataURL.indexOf('data:application/pdf') === 0);
             if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
@@ -138,9 +144,9 @@
             }
         };
         var DownloadURL = {
-            dataURLtoBlob: dataURLtoBlob,
-            downloadURL: downloadURL
-        };
+                dataURLtoBlob: dataURLtoBlob,
+                downloadURL: downloadURL
+            };
 
         return DownloadURL;
     });
@@ -160,14 +166,14 @@
          *
          * */
         var OfflineExportingDefaults = {
-            libURL: 'https://code.highcharts.com/10.3.3/lib/',
-            // When offline-exporting is loaded, redefine the menu item definitions
-            // related to download.
-            menuItemDefinitions: {
-                downloadPNG: {
-                    textKey: 'downloadPNG',
-                    onclick: function () {
-                        this.exportChartLocal();
+                libURL: 'https://code.highcharts.com/11.0.0/lib/',
+                // When offline-exporting is loaded, redefine the menu item definitions
+                // related to download.
+                menuItemDefinitions: {
+                    downloadPNG: {
+                        textKey: 'downloadPNG',
+                        onclick: function () {
+                            this.exportChartLocal();
                     }
                 },
                 downloadJPEG: {
@@ -219,9 +225,14 @@
         /* global MSBlobBuilder */
         var defaultOptions = D.defaultOptions;
         var downloadURL = DownloadURL.downloadURL;
-        var win = H.win, doc = H.doc;
+        var win = H.win,
+            doc = H.doc;
         var ajax = HU.ajax;
-        var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, pick = U.pick, merge = U.merge;
+        var addEvent = U.addEvent,
+            error = U.error,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            merge = U.merge;
         AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
         AST.allowedTags.push('desc', 'clippath', 'g');
         /* *
@@ -229,7 +240,7 @@
          * Constants
          *
          * */
-        var composedClasses = [];
+        var composedMembers = [];
         /* *
          *
          *  Composition
@@ -262,8 +273,7 @@
              * @private
              */
             function compose(ChartClass) {
-                if (composedClasses.indexOf(ChartClass) === -1) {
-                    composedClasses.push(ChartClass);
+                if (U.pushUnique(composedMembers, ChartClass)) {
                     var chartProto = ChartClass.prototype;
                     chartProto.getSVGForLocalExport = getSVGForLocalExport;
                     chartProto.exportChartLocal = exportChartLocal;
@@ -306,10 +316,15 @@
              */
             function downloadSVGLocal(svg, options, failCallback, successCallback) {
                 var dummySVGContainer = doc.createElement('div'), imageType = options.type || 'image/png', filename = ((options.filename || 'chart') +
-                    '.' +
-                    (imageType === 'image/svg+xml' ?
-                        'svg' : imageType.split('/')[1])), scale = options.scale || 1;
-                var svgurl, blob, finallyHandler, libURL = (options.libURL || defaultOptions.exporting.libURL), objectURLRevoke = true, pdfFont = options.pdfFont;
+                        '.' +
+                        (imageType === 'image/svg+xml' ?
+                            'svg' : imageType.split('/')[1])), scale = options.scale || 1;
+                var svgurl,
+                    blob,
+                    finallyHandler,
+                    libURL = (options.libURL || defaultOptions.exporting.libURL),
+                    objectURLRevoke = true,
+                    pdfFont = options.pdfFont;
                 // Allow libURL to end with or without fordward slash
                 libURL = libURL.slice(-1) !== '/' ? libURL + '/' : libURL;
                 /*
@@ -318,17 +333,20 @@
                  *
                  * @private
                  */
-                var loadPdfFonts = function (svgElement, callback) {
-                    var hasNonASCII = function (s) { return (
-                    // eslint-disable-next-line no-control-regex
-                    /[^\u0000-\u007F\u200B]+/.test(s)); };
+                var loadPdfFonts = function (svgElement,
+                    callback) {
+                        var hasNonASCII = function (s) { return (
+                        // eslint-disable-next-line no-control-regex
+                        /[^\u0000-\u007F\u200B]+/.test(s)); };
                     // Register an event in order to add the font once jsPDF is
                     // initialized
-                    var addFont = function (variant, base64) {
-                        win.jspdf.jsPDF.API.events.push([
-                            'initialized',
-                            function () {
-                                this.addFileToVFS(variant, base64);
+                    var addFont = function (variant,
+                        base64) {
+                            win.jspdf.jsPDF.API.events.push([
+                                'initialized',
+                                function () {
+                                    this.addFileToVFS(variant,
+                        base64);
                                 this.addFont(variant, 'HighchartsFont', variant);
                                 if (!this.getFontList().HighchartsFont) {
                                     this.setFont('HighchartsFont');
@@ -348,7 +366,7 @@
                     // callback when the variants are empty.
                     var normalBase64;
                     var shiftAndLoadVariant = function () {
-                        var variant = variants.shift();
+                            var variant = variants.shift();
                         // All variants shifted and possibly loaded, proceed
                         if (!variant) {
                             return callback();
@@ -389,17 +407,22 @@
                  * @private
                  */
                 var downloadPDF = function () {
-                    AST.setElementHTML(dummySVGContainer, svg);
+                        AST.setElementHTML(dummySVGContainer,
+                    svg);
                     var textElements = dummySVGContainer.getElementsByTagName('text'), 
-                    // Copy style property to element from parents if it's not
-                    // there. Searches up hierarchy until it finds prop, or hits the
-                    // chart container.
-                    setStylePropertyFromParents = function (el, propName) {
-                        var curParent = el;
+                        // Copy style property to element from parents if it's not
+                        // there. Searches up hierarchy until it finds prop, or hits the
+                        // chart container.
+                        setStylePropertyFromParents = function (el,
+                        propName) {
+                            var curParent = el;
                         while (curParent && curParent !== dummySVGContainer) {
                             if (curParent.style[propName]) {
-                                el.style[propName] =
-                                    curParent.style[propName];
+                                var value = curParent.style[propName];
+                                if (propName === 'fontSize' && /em$/.test(value)) {
+                                    value = Math.round(parseFloat(value) * 16) + 'px';
+                                }
+                                el.style[propName] = value;
                                 break;
                             }
                             curParent = curParent.parentNode;
@@ -411,7 +434,8 @@
                     [].forEach.call(textElements, function (el) {
                         // Workaround for the text styling. making sure it does pick up
                         // the root element
-                        ['font-family', 'font-size'].forEach(function (property) {
+                        ['fontFamily', 'fontSize']
+                            .forEach(function (property) {
                             setStylePropertyFromParents(el, property);
                         });
                         el.style.fontFamily = pdfFont && pdfFont.normal ?
@@ -449,8 +473,8 @@
                     // SVG download. In this case, we want to use Microsoft specific
                     // Blob if available
                     try {
-                        if (typeof win.navigator.msSaveOrOpenBlob !== 'undefined') {
-                            blob = new MSBlobBuilder();
+                        if (typeof win.MSBlobBuilder !== 'undefined') {
+                            blob = new win.MSBlobBuilder();
                             blob.append(svg);
                             svgurl = blob.getBlob('image/svg+xml');
                         }
@@ -507,7 +531,7 @@
                         // Failed due to tainted canvas
                         // Create new and untainted canvas
                         var canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
-                            var v = win.canvg.Canvg.fromString(ctx, svg);
+                                var v = win.canvg.Canvg.fromString(ctx, svg);
                             v.start();
                             try {
                                 downloadURL(win.navigator.msSaveOrOpenBlob ?
@@ -575,10 +599,14 @@
              * @requires modules/offline-exporting
              */
             function exportChartLocal(exportingOptions, chartOptions) {
-                var chart = this, options = merge(chart.options.exporting, exportingOptions), fallbackToExportServer = function (err) {
-                    if (options.fallbackToExportServer === false) {
-                        if (options.error) {
-                            options.error(options, err);
+                var chart = this,
+                    options = merge(chart.options.exporting,
+                    exportingOptions),
+                    fallbackToExportServer = function (err) {
+                        if (options.fallbackToExportServer === false) {
+                            if (options.error) {
+                                options.error(options,
+                    err);
                         }
                         else {
                             error(28, true); // Fallback disabled
@@ -664,13 +692,14 @@
              */
             function getSVGForLocalExport(options, chartOptions, failCallback, successCallback) {
                 var chart = this, 
-                // After grabbing the SVG of the chart's copy container we need
-                // to do sanitation on the SVG
-                sanitize = function (svg) { return chart.sanitizeSVG(svg, chartCopyOptions); }, 
-                // When done with last image we have our SVG
-                checkDone = function () {
-                    if (images && imagesEmbedded === imagesLength) {
-                        successCallback(sanitize(chartCopyContainer.innerHTML));
+                    // After grabbing the SVG of the chart's copy container we need
+                    // to do sanitation on the SVG
+                    sanitize = function (svg) { return chart.sanitizeSVG(svg,
+                    chartCopyOptions); }, 
+                    // When done with last image we have our SVG
+                    checkDone = function () {
+                        if (images && imagesEmbedded === imagesLength) {
+                            successCallback(sanitize(chartCopyContainer.innerHTML));
                     }
                 }, 
                 // Success handler, we converted image to base64!
@@ -680,7 +709,13 @@
                     callbackArgs.imageElement.setAttributeNS('http://www.w3.org/1999/xlink', 'href', imageURL);
                     checkDone();
                 };
-                var el, chartCopyContainer, chartCopyOptions, href = null, images, imagesLength = 0, imagesEmbedded = 0;
+                var el,
+                    chartCopyContainer,
+                    chartCopyOptions,
+                    href = null,
+                    images,
+                    imagesLength = 0,
+                    imagesEmbedded = 0;
                 // Hook into getSVG to get a copy of the chart copy's
                 // container (#8273)
                 chart.unbindGetSVG = addEvent(chart, 'getSVG', function (e) {
@@ -764,10 +799,11 @@
              *        callbackArgs, and scale.
              */
             function imageToDataUrl(imageURL, imageType, callbackArgs, scale, successCallback, taintedCallback, noCanvasSupportCallback, failedLoadCallback, finallyCallback) {
-                var img = new win.Image(), taintedHandler;
+                var img = new win.Image(),
+                    taintedHandler;
                 var loadHandler = function () {
-                    setTimeout(function () {
-                        var canvas = doc.createElement('canvas'), ctx = canvas.getContext && canvas.getContext('2d');
+                        setTimeout(function () {
+                            var canvas = doc.createElement('canvas'), ctx = canvas.getContext && canvas.getContext('2d');
                         var dataURL;
                         try {
                             if (!ctx) {
@@ -830,7 +866,7 @@
                 // Webkit and not chrome
                 var userAgent = win.navigator.userAgent;
                 var webKit = (userAgent.indexOf('WebKit') > -1 &&
-                    userAgent.indexOf('Chrome') < 0);
+                        userAgent.indexOf('Chrome') < 0);
                 try {
                     // Safari requires data URI since it doesn't allow navigation to
                     // blob URLs. ForeignObjects also dont work well in Blobs in Chrome
@@ -853,8 +889,8 @@
              */
             function svgToPdf(svgElement, margin, callback) {
                 var width = Number(svgElement.getAttribute('width')) + 2 * margin, height = Number(svgElement.getAttribute('height')) + 2 * margin, pdfDoc = new win.jspdf.jsPDF(// eslint-disable-line new-cap
-                // setting orientation to portrait if height exceeds width
-                height > width ? 'p' : 'l', 'pt', [width, height]);
+                    // setting orientation to portrait if height exceeds width
+                    height > width ? 'p' : 'l', 'pt', [width, height]);
                 // Workaround for #7090, hidden elements were drawn anyway. It comes
                 // down to https://github.com/yWorks/svg2pdf.js/issues/28. Check this
                 // later.

@@ -10,11 +10,11 @@
 'use strict';
 import Chart from '../Core/Chart/Chart.js';
 import F from '../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import H from '../Core/Globals.js';
-var win = H.win;
+const { win } = H;
 import U from '../Core/Utilities.js';
-var error = U.error, extend = U.extend, merge = U.merge, wrap = U.wrap;
+const { error, extend, merge, wrap } = U;
 /**
  * Represents the loose structure of a geographic JSON file.
  *
@@ -190,13 +190,13 @@ Chart.prototype.transformFromLatLon = function (latLon, transform) {
      * @product   highmaps
      * @apioption chart.proj4
      */
-    var proj4 = this.options.chart.proj4 || win.proj4;
+    const proj4 = this.options.chart.proj4 || win.proj4;
     if (!proj4) {
         error(21, false, this);
         return;
     }
-    var _a = transform.jsonmarginX, jsonmarginX = _a === void 0 ? 0 : _a, _b = transform.jsonmarginY, jsonmarginY = _b === void 0 ? 0 : _b, _c = transform.jsonres, jsonres = _c === void 0 ? 1 : _c, _d = transform.scale, scale = _d === void 0 ? 1 : _d, _e = transform.xoffset, xoffset = _e === void 0 ? 0 : _e, _f = transform.xpan, xpan = _f === void 0 ? 0 : _f, _g = transform.yoffset, yoffset = _g === void 0 ? 0 : _g, _h = transform.ypan, ypan = _h === void 0 ? 0 : _h;
-    var projected = proj4(transform.crs, [latLon.lon, latLon.lat]), cosAngle = transform.cosAngle ||
+    const { jsonmarginX = 0, jsonmarginY = 0, jsonres = 1, scale = 1, xoffset = 0, xpan = 0, yoffset = 0, ypan = 0 } = transform;
+    const projected = proj4(transform.crs, [latLon.lon, latLon.lat]), cosAngle = transform.cosAngle ||
         (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
         (transform.rotation && Math.sin(transform.rotation)), rotated = transform.rotation ? [
         projected[0] * cosAngle + projected[1] * sinAngle,
@@ -228,7 +228,7 @@ Chart.prototype.transformFromLatLon = function (latLon, transform) {
  *         properties.
  */
 Chart.prototype.transformToLatLon = function (point, transform) {
-    var proj4 = this.options.chart.proj4 || win.proj4;
+    const proj4 = this.options.chart.proj4 || win.proj4;
     if (!proj4) {
         error(21, false, this);
         return;
@@ -236,8 +236,8 @@ Chart.prototype.transformToLatLon = function (point, transform) {
     if (point.y === null) {
         return;
     }
-    var _a = transform.jsonmarginX, jsonmarginX = _a === void 0 ? 0 : _a, _b = transform.jsonmarginY, jsonmarginY = _b === void 0 ? 0 : _b, _c = transform.jsonres, jsonres = _c === void 0 ? 1 : _c, _d = transform.scale, scale = _d === void 0 ? 1 : _d, _e = transform.xoffset, xoffset = _e === void 0 ? 0 : _e, _f = transform.xpan, xpan = _f === void 0 ? 0 : _f, _g = transform.yoffset, yoffset = _g === void 0 ? 0 : _g, _h = transform.ypan, ypan = _h === void 0 ? 0 : _h;
-    var normalized = {
+    const { jsonmarginX = 0, jsonmarginY = 0, jsonres = 1, scale = 1, xoffset = 0, xpan = 0, yoffset = 0, ypan = 0 } = transform;
+    const normalized = {
         x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
         y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
     }, cosAngle = transform.cosAngle ||
@@ -296,31 +296,31 @@ function topo2geo(topology, objectName) {
     if (!objectName) {
         objectName = Object.keys(topology.objects)[0];
     }
-    var object = topology.objects[objectName];
+    const object = topology.objects[objectName];
     // Already decoded => return cache
     if (object['hc-decoded-geojson']) {
         return object['hc-decoded-geojson'];
     }
     // Do the initial transform
-    var arcsArray = topology.arcs;
+    let arcsArray = topology.arcs;
     if (topology.transform) {
-        var _a = topology.transform, scale_1 = _a.scale, translate_1 = _a.translate;
-        arcsArray = topology.arcs.map(function (arc) {
-            var x = 0, y = 0;
-            return arc.map(function (position) {
+        const { scale, translate } = topology.transform;
+        arcsArray = topology.arcs.map((arc) => {
+            let x = 0, y = 0;
+            return arc.map((position) => {
                 position = position.slice();
-                position[0] = (x += position[0]) * scale_1[0] + translate_1[0];
-                position[1] = (y += position[1]) * scale_1[1] + translate_1[1];
+                position[0] = (x += position[0]) * scale[0] + translate[0];
+                position[1] = (y += position[1]) * scale[1] + translate[1];
                 return position;
             });
         });
     }
     // Recurse down any depth of multi-dimentional arrays of arcs and insert
     // the coordinates
-    var arcsToCoordinates = function (arcs) {
+    const arcsToCoordinates = (arcs) => {
         if (typeof arcs[0] === 'number') {
-            return arcs.reduce(function (coordinates, arcNo, i) {
-                var arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
+            return arcs.reduce((coordinates, arcNo, i) => {
+                let arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
                 // The first point of an arc is always identical to the last
                 // point of the previes arc, so slice it off to save further
                 // processing.
@@ -336,8 +336,8 @@ function topo2geo(topology, objectName) {
         }
         return arcs.map(arcsToCoordinates);
     };
-    var features = object.geometries
-        .map(function (geometry) { return ({
+    const features = object.geometries
+        .map((geometry) => ({
         type: 'Feature',
         properties: geometry.properties,
         geometry: {
@@ -345,13 +345,13 @@ function topo2geo(topology, objectName) {
             coordinates: geometry.coordinates ||
                 arcsToCoordinates(geometry.arcs)
         }
-    }); });
-    var geojson = {
+    }));
+    const geojson = {
         type: 'FeatureCollection',
         copyright: topology.copyright,
         copyrightShort: topology.copyrightShort,
         copyrightUrl: topology.copyrightUrl,
-        features: features,
+        features,
         'hc-recommended-mapview': object['hc-recommended-mapview'],
         bbox: topology.bbox,
         title: topology.title
@@ -387,37 +387,36 @@ function topo2geo(topology, objectName) {
  *
  * @return {Array<*>} An object ready for the `mapData` option.
  */
-function geojson(json, hType, series) {
-    if (hType === void 0) { hType = 'map'; }
-    var mapData = [];
-    var geojson = json.type === 'Topology' ? topo2geo(json) : json;
+function geojson(json, hType = 'map', series) {
+    const mapData = [];
+    const geojson = json.type === 'Topology' ? topo2geo(json) : json;
     geojson.features.forEach(function (feature) {
-        var geometry = feature.geometry || {}, type = geometry.type, coordinates = geometry.coordinates, properties = feature.properties;
-        var pointOptions;
+        const geometry = feature.geometry || {}, type = geometry.type, coordinates = geometry.coordinates, properties = feature.properties;
+        let pointOptions;
         if ((hType === 'map' || hType === 'mapbubble') &&
             (type === 'Polygon' || type === 'MultiPolygon')) {
             if (coordinates.length) {
-                pointOptions = { geometry: { coordinates: coordinates, type: type } };
+                pointOptions = { geometry: { coordinates, type } };
             }
         }
         else if (hType === 'mapline' &&
             (type === 'LineString' ||
                 type === 'MultiLineString')) {
             if (coordinates.length) {
-                pointOptions = { geometry: { coordinates: coordinates, type: type } };
+                pointOptions = { geometry: { coordinates, type } };
             }
         }
         else if (hType === 'mappoint' && type === 'Point') {
             if (coordinates.length) {
-                pointOptions = { geometry: { coordinates: coordinates, type: type } };
+                pointOptions = { geometry: { coordinates, type } };
             }
         }
         if (pointOptions) {
-            var name_1 = properties && (properties.name || properties.NAME), lon = properties && properties.lon, lat = properties && properties.lat;
+            const name = properties && (properties.name || properties.NAME), lon = properties && properties.lon, lat = properties && properties.lat;
             mapData.push(extend(pointOptions, {
                 lat: typeof lat === 'number' ? lat : void 0,
                 lon: typeof lon === 'number' ? lon : void 0,
-                name: typeof name_1 === 'string' ? name_1 : void 0,
+                name: typeof name === 'string' ? name : void 0,
                 /**
                  * In Highcharts Maps, when data is loaded from GeoJSON, the
                  * GeoJSON item's properies are copied over here.
@@ -426,7 +425,7 @@ function geojson(json, hType, series) {
                  * @name Highcharts.Point#properties
                  * @type {*}
                  */
-                properties: properties
+                properties
             }));
         }
     });
@@ -456,8 +455,8 @@ wrap(Chart.prototype, 'addCredits', function (proceed, credits) {
 });
 H.geojson = geojson;
 H.topo2geo = topo2geo;
-var GeoJSONModule = {
-    geojson: geojson,
-    topo2geo: topo2geo
+const GeoJSONModule = {
+    geojson,
+    topo2geo
 };
 export default GeoJSONModule;

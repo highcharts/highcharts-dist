@@ -10,34 +10,19 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import A from '../../Core/Animation/AnimationUtilities.js';
-var animObject = A.animObject;
+const { animObject } = A;
 import H from '../../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
 import Legend from '../../Core/Legend/Legend.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick, syncTimeout = U.syncTimeout;
+const { addEvent, fireEvent, isNumber, pick, syncTimeout } = U;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import CU from '../Utils/ChartUtilities.js';
-var getChartTitle = CU.getChartTitle;
+const { getChartTitle } = CU;
 import HU from '../Utils/HTMLUtilities.js';
-var stripHTMLTags = HU.stripHTMLTagsFromString, addClass = HU.addClass, removeClass = HU.removeClass;
+const { stripHTMLTagsFromString: stripHTMLTags, addClass, removeClass } = HU;
 /* *
  *
  *  Functions
@@ -47,7 +32,7 @@ var stripHTMLTags = HU.stripHTMLTagsFromString, addClass = HU.addClass, removeCl
  * @private
  */
 function scrollLegendToItem(legend, itemIx) {
-    var itemPage = (legend.allItems[itemIx].legendItem || {}).pageIx, curPage = legend.currentPage;
+    const itemPage = (legend.allItems[itemIx].legendItem || {}).pageIx, curPage = legend.currentPage;
     if (typeof itemPage !== 'undefined' && itemPage + 1 !== curPage) {
         legend.scroll(1 + itemPage - curPage);
     }
@@ -56,7 +41,7 @@ function scrollLegendToItem(legend, itemIx) {
  * @private
  */
 function shouldDoLegendA11y(chart) {
-    var items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some(function (c) { return !c.dataClasses || !c.dataClasses.length; });
+    const items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
     return !!(items && items.length &&
         !unsupportedColorAxis &&
         legendA11yOptions.enabled !== false);
@@ -65,12 +50,11 @@ function shouldDoLegendA11y(chart) {
  * @private
  */
 function setLegendItemHoverState(hoverActive, item) {
-    var legendItem = item.legendItem || {};
+    const legendItem = item.legendItem || {};
     item.setState(hoverActive ? 'hover' : '', true);
-    for (var _i = 0, _a = ['group', 'label', 'symbol']; _i < _a.length; _i++) {
-        var key = _a[_i];
-        var svgElement = legendItem[key];
-        var element = svgElement && svgElement.element || svgElement;
+    for (const key of ['group', 'label', 'symbol']) {
+        const svgElement = legendItem[key];
+        const element = svgElement && svgElement.element || svgElement;
         if (element) {
             fireEvent(element, hoverActive ? 'mouseover' : 'mouseout');
         }
@@ -88,18 +72,16 @@ function setLegendItemHoverState(hoverActive, item) {
  * @class
  * @name Highcharts.LegendComponent
  */
-var LegendComponent = /** @class */ (function (_super) {
-    __extends(LegendComponent, _super);
-    function LegendComponent() {
+class LegendComponent extends AccessibilityComponent {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.highlightedLegendItemIx = NaN;
-        _this.proxyGroup = null;
-        return _this;
+        super(...arguments);
+        this.highlightedLegendItemIx = NaN;
+        this.proxyGroup = null;
     }
     /* *
      *
@@ -110,8 +92,8 @@ var LegendComponent = /** @class */ (function (_super) {
      * Init the component
      * @private
      */
-    LegendComponent.prototype.init = function () {
-        var component = this;
+    init() {
+        const component = this;
         this.recreateProxies();
         // Note: Chart could create legend dynamically, so events cannot be
         // tied to the component's chart's current legend.
@@ -135,32 +117,32 @@ var LegendComponent = /** @class */ (function (_super) {
             if (this.chart === component.chart &&
                 this.chart.renderer &&
                 component.recreateProxies()) {
-                syncTimeout(function () { return component.proxyProvider
-                    .updateGroupProxyElementPositions('legend'); }, animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                syncTimeout(() => component.proxyProvider
+                    .updateGroupProxyElementPositions('legend'), animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
             }
         });
-    };
+    }
     /**
      * Update visibility of legend items when using paged legend
      * @private
      */
-    LegendComponent.prototype.updateLegendItemProxyVisibility = function () {
-        var chart = this.chart;
-        var legend = chart.legend;
-        var items = legend.allItems || [];
-        var curPage = legend.currentPage || 1;
-        var clipHeight = legend.clipHeight || 0;
-        var legendItem;
-        items.forEach(function (item) {
+    updateLegendItemProxyVisibility() {
+        const chart = this.chart;
+        const legend = chart.legend;
+        const items = legend.allItems || [];
+        const curPage = legend.currentPage || 1;
+        const clipHeight = legend.clipHeight || 0;
+        let legendItem;
+        items.forEach((item) => {
             if (item.a11yProxyElement) {
-                var hasPages = legend.pages && legend.pages.length;
-                var proxyEl = item.a11yProxyElement.element;
-                var hide = false;
+                const hasPages = legend.pages && legend.pages.length;
+                const proxyEl = item.a11yProxyElement.element;
+                let hide = false;
                 legendItem = item.legendItem || {};
                 if (hasPages) {
-                    var itemPage = legendItem.pageIx || 0;
-                    var y = legendItem.y || 0;
-                    var h = legendItem.label ?
+                    const itemPage = legendItem.pageIx || 0;
+                    const y = legendItem.y || 0;
+                    const h = legendItem.label ?
                         Math.round(legendItem.label.getBBox().height) :
                         0;
                     hide = y + h - legend.pages[itemPage] > clipHeight ||
@@ -180,28 +162,27 @@ var LegendComponent = /** @class */ (function (_super) {
                 }
             }
         });
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.onChartRender = function () {
+    onChartRender() {
         if (!shouldDoLegendA11y(this.chart)) {
             this.removeProxies();
         }
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.highlightAdjacentLegendPage = function (direction) {
-        var chart = this.chart;
-        var legend = chart.legend;
-        var curPageIx = legend.currentPage || 1;
-        var newPageIx = curPageIx + direction;
-        var pages = legend.pages || [];
+    highlightAdjacentLegendPage(direction) {
+        const chart = this.chart;
+        const legend = chart.legend;
+        const curPageIx = legend.currentPage || 1;
+        const newPageIx = curPageIx + direction;
+        const pages = legend.pages || [];
         if (newPageIx > 0 && newPageIx <= pages.length) {
-            var i = 0, res = void 0;
-            for (var _i = 0, _a = legend.allItems; _i < _a.length; _i++) {
-                var item = _a[_i];
+            let i = 0, res;
+            for (const item of legend.allItems) {
                 if (((item.legendItem || {}).pageIx || 0) + 1 === newPageIx) {
                     res = chart.highlightLegendItem(i);
                     if (res) {
@@ -211,24 +192,24 @@ var LegendComponent = /** @class */ (function (_super) {
                 ++i;
             }
         }
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.updateProxyPositionForItem = function (item) {
+    updateProxyPositionForItem(item) {
         if (item.a11yProxyElement) {
             item.a11yProxyElement.refreshPosition();
         }
-    };
+    }
     /**
      * Returns false if legend a11y is disabled and proxies were not created,
      * true otherwise.
      * @private
      */
-    LegendComponent.prototype.recreateProxies = function () {
-        var focusedElement = doc.activeElement;
-        var proxyGroup = this.proxyGroup;
-        var shouldRestoreFocus = focusedElement && proxyGroup &&
+    recreateProxies() {
+        const focusedElement = doc.activeElement;
+        const proxyGroup = this.proxyGroup;
+        const shouldRestoreFocus = focusedElement && proxyGroup &&
             proxyGroup.contains(focusedElement);
         this.removeProxies();
         if (shouldDoLegendA11y(this.chart)) {
@@ -242,37 +223,37 @@ var LegendComponent = /** @class */ (function (_super) {
             return true;
         }
         return false;
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.removeProxies = function () {
+    removeProxies() {
         this.proxyProvider.removeGroup('legend');
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.updateLegendTitle = function () {
-        var chart = this.chart;
-        var legendTitle = stripHTMLTags((chart.legend &&
+    updateLegendTitle() {
+        const chart = this.chart;
+        const legendTitle = stripHTMLTags((chart.legend &&
             chart.legend.options.title &&
             chart.legend.options.title.text ||
             '').replace(/<br ?\/?>/g, ' '));
-        var legendLabel = chart.langFormat('accessibility.legend.legendLabel' + (legendTitle ? '' : 'NoTitle'), {
-            chart: chart,
-            legendTitle: legendTitle,
+        const legendLabel = chart.langFormat('accessibility.legend.legendLabel' + (legendTitle ? '' : 'NoTitle'), {
+            chart,
+            legendTitle,
             chartTitle: getChartTitle(chart)
         });
         this.proxyProvider.updateGroupAttrs('legend', {
             'aria-label': legendLabel
         });
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.addLegendProxyGroup = function () {
-        var a11yOptions = this.chart.options.accessibility;
-        var groupRole = a11yOptions.landmarkVerbosity === 'all' ?
+    addLegendProxyGroup() {
+        const a11yOptions = this.chart.options.accessibility;
+        const groupRole = a11yOptions.landmarkVerbosity === 'all' ?
             'region' : null;
         this.proxyGroup = this.proxyProvider.addGroup('legend', 'ul', {
             // Filled by updateLegendTitle, to keep up to date without
@@ -280,54 +261,54 @@ var LegendComponent = /** @class */ (function (_super) {
             'aria-label': '_placeholder_',
             role: groupRole
         });
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.proxyLegendItems = function () {
-        var component = this, items = (this.chart.legend || {}).allItems || [];
-        var legendItem;
-        items.forEach(function (item) {
+    proxyLegendItems() {
+        const component = this, items = (this.chart.legend || {}).allItems || [];
+        let legendItem;
+        items.forEach((item) => {
             legendItem = item.legendItem || {};
             if (legendItem.label && legendItem.label.element) {
                 component.proxyLegendItem(item);
             }
         });
-    };
+    }
     /**
      * @private
      * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
      */
-    LegendComponent.prototype.proxyLegendItem = function (item) {
-        var legendItem = item.legendItem || {};
+    proxyLegendItem(item) {
+        const legendItem = item.legendItem || {};
         if (!legendItem.label || !legendItem.group) {
             return;
         }
-        var itemLabel = this.chart.langFormat('accessibility.legend.legendItem', {
+        const itemLabel = this.chart.langFormat('accessibility.legend.legendItem', {
             chart: this.chart,
             itemName: stripHTMLTags(item.name),
-            item: item
+            item
         });
-        var attribs = {
+        const attribs = {
             tabindex: -1,
             'aria-pressed': item.visible,
             'aria-label': itemLabel
         };
         // Considers useHTML
-        var proxyPositioningElement = legendItem.group.div ?
+        const proxyPositioningElement = legendItem.group.div ?
             legendItem.label :
             legendItem.group;
         item.a11yProxyElement = this.proxyProvider.addProxyElement('legend', {
             click: legendItem.label,
             visual: proxyPositioningElement.element
         }, attribs);
-    };
+    }
     /**
      * Get keyboard navigation handler for this component.
      * @private
      */
-    LegendComponent.prototype.getKeyboardNavigation = function () {
-        var keys = this.keyCodes, component = this, chart = this.chart;
+    getKeyboardNavigation() {
+        const keys = this.keyCodes, component = this, chart = this.chart;
         return new KeyboardNavigationHandler(chart, {
             keyCodeMap: [
                 [
@@ -345,7 +326,7 @@ var LegendComponent = /** @class */ (function (_super) {
                 [
                     [keys.pageDown, keys.pageUp],
                     function (keyCode) {
-                        var direction = keyCode === keys.pageDown ? 1 : -1;
+                        const direction = keyCode === keys.pageDown ? 1 : -1;
                         component.highlightAdjacentLegendPage(direction);
                         return this.response.success;
                     }
@@ -360,17 +341,17 @@ var LegendComponent = /** @class */ (function (_super) {
             },
             terminate: function () {
                 component.highlightedLegendItemIx = -1;
-                chart.legend.allItems.forEach(function (item) { return setLegendItemHoverState(false, item); });
+                chart.legend.allItems.forEach((item) => setLegendItemHoverState(false, item));
             }
         });
-    };
+    }
     /**
      * Arrow key navigation
      * @private
      */
-    LegendComponent.prototype.onKbdArrowKey = function (keyboardNavigationHandler, keyCode) {
-        var keys = this.keyCodes, response = keyboardNavigationHandler.response, chart = this.chart, a11yOptions = chart.options.accessibility, numItems = chart.legend.allItems.length, direction = (keyCode === keys.left || keyCode === keys.up) ? -1 : 1;
-        var res = chart.highlightLegendItem(this.highlightedLegendItemIx + direction);
+    onKbdArrowKey(keyboardNavigationHandler, keyCode) {
+        const keys = this.keyCodes, response = keyboardNavigationHandler.response, chart = this.chart, a11yOptions = chart.options.accessibility, numItems = chart.legend.allItems.length, direction = (keyCode === keys.left || keyCode === keys.up) ? -1 : 1;
+        const res = chart.highlightLegendItem(this.highlightedLegendItemIx + direction);
         if (res) {
             this.highlightedLegendItemIx += direction;
             return response.success;
@@ -381,33 +362,32 @@ var LegendComponent = /** @class */ (function (_super) {
             return response.success;
         }
         return response.success;
-    };
+    }
     /**
      * @private
      * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
      * @return {number} Response code
      */
-    LegendComponent.prototype.onKbdClick = function (keyboardNavigationHandler) {
-        var legendItem = this.chart.legend.allItems[this.highlightedLegendItemIx];
+    onKbdClick(keyboardNavigationHandler) {
+        const legendItem = this.chart.legend.allItems[this.highlightedLegendItemIx];
         if (legendItem && legendItem.a11yProxyElement) {
             legendItem.a11yProxyElement.click();
         }
         return keyboardNavigationHandler.response.success;
-    };
+    }
     /**
      * @private
      */
-    LegendComponent.prototype.shouldHaveLegendNavigation = function () {
+    shouldHaveLegendNavigation() {
         if (!shouldDoLegendA11y(this.chart)) {
             return false;
         }
-        var chart = this.chart, legendOptions = chart.options.legend || {}, legendA11yOptions = (legendOptions.accessibility || {});
+        const chart = this.chart, legendOptions = chart.options.legend || {}, legendA11yOptions = (legendOptions.accessibility || {});
         return !!(chart.legend.display &&
             legendA11yOptions.keyboardNavigation &&
             legendA11yOptions.keyboardNavigation.enabled);
-    };
-    return LegendComponent;
-}(AccessibilityComponent));
+    }
+}
 /* *
  *
  *  Class Namespace
@@ -424,7 +404,7 @@ var LegendComponent = /** @class */ (function (_super) {
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -436,17 +416,17 @@ var LegendComponent = /** @class */ (function (_super) {
      * @private
      */
     function chartHighlightLegendItem(ix) {
-        var items = this.legend.allItems;
-        var oldIx = this.accessibility &&
+        const items = this.legend.allItems;
+        const oldIx = this.accessibility &&
             this.accessibility.components.legend.highlightedLegendItemIx;
-        var itemToHighlight = items[ix], legendItem = itemToHighlight.legendItem || {};
+        const itemToHighlight = items[ix], legendItem = itemToHighlight.legendItem || {};
         if (itemToHighlight) {
             if (isNumber(oldIx) && items[oldIx]) {
                 setLegendItemHoverState(false, items[oldIx]);
             }
             scrollLegendToItem(this.legend, ix);
-            var legendItemProp = legendItem.label;
-            var proxyBtn = itemToHighlight.a11yProxyElement &&
+            const legendItemProp = legendItem.label;
+            const proxyBtn = itemToHighlight.a11yProxyElement &&
                 itemToHighlight.a11yProxyElement.buttonElement;
             if (legendItemProp && legendItemProp.element && proxyBtn) {
                 this.setFocusToElement(legendItemProp, proxyBtn);
@@ -460,13 +440,11 @@ var LegendComponent = /** @class */ (function (_super) {
      * @private
      */
     function compose(ChartClass, LegendClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.highlightLegendItem = chartHighlightLegendItem;
         }
-        if (composedClasses.indexOf(LegendClass) === -1) {
-            composedClasses.push(LegendClass);
+        if (U.pushUnique(composedMembers, LegendClass)) {
             addEvent(LegendClass, 'afterColorizeItem', legendOnAfterColorizeItem);
         }
     }
@@ -476,7 +454,7 @@ var LegendComponent = /** @class */ (function (_super) {
      * @private
      */
     function legendOnAfterColorizeItem(e) {
-        var chart = this.chart, a11yOptions = chart.options.accessibility, legendItem = e.item;
+        const chart = this.chart, a11yOptions = chart.options.accessibility, legendItem = e.item;
         if (a11yOptions.enabled && legendItem && legendItem.a11yProxyElement) {
             legendItem.a11yProxyElement.buttonElement.setAttribute('aria-pressed', e.visible ? 'true' : 'false');
         }

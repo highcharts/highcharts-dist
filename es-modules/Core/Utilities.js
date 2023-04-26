@@ -9,7 +9,7 @@
  * */
 'use strict';
 import H from './Globals.js';
-var charts = H.charts, doc = H.doc, win = H.win;
+const { charts, doc, win } = H;
 /* *
  *
  *  Functions
@@ -46,15 +46,15 @@ var charts = H.charts, doc = H.doc, win = H.win;
  * @return {void}
  */
 function error(code, stop, chart, params) {
-    var severity = stop ? 'Highcharts error' : 'Highcharts warning';
+    const severity = stop ? 'Highcharts error' : 'Highcharts warning';
     if (code === 32) {
-        code = "".concat(severity, ": Deprecated member");
+        code = `${severity}: Deprecated member`;
     }
-    var isCode = isNumber(code);
-    var message = isCode ?
-        "".concat(severity, " #").concat(code, ": www.highcharts.com/errors/").concat(code, "/") :
+    const isCode = isNumber(code);
+    let message = isCode ?
+        `${severity} #${code}: www.highcharts.com/errors/${code}/` :
         code.toString();
-    var defaultHandler = function () {
+    const defaultHandler = function () {
         if (stop) {
             throw new Error(message);
         }
@@ -66,19 +66,19 @@ function error(code, stop, chart, params) {
         }
     };
     if (typeof params !== 'undefined') {
-        var additionalMessages_1 = '';
+        let additionalMessages = '';
         if (isCode) {
             message += '?';
         }
         objectEach(params, function (value, key) {
-            additionalMessages_1 += "\n - ".concat(key, ": ").concat(value);
+            additionalMessages += `\n - ${key}: ${value}`;
             if (isCode) {
                 message += encodeURI(key) + '=' + encodeURI(value);
             }
         });
-        message += additionalMessages_1;
+        message += additionalMessages;
     }
-    fireEvent(H, 'displayError', { chart: chart, code: code, message: message, params: params }, defaultHandler);
+    fireEvent(H, 'displayError', { chart, code, message, params }, defaultHandler);
     error.messages.push(message);
 }
 (function (error) {
@@ -127,8 +127,8 @@ function error(code, stop, chart, params) {
 */
 function merge() {
     /* eslint-enable valid-jsdoc */
-    var i, args = arguments, ret = {};
-    var doCopy = function (copy, original) {
+    let i, args = arguments, ret = {};
+    const doCopy = function (copy, original) {
         // An object is replacing a primitive
         if (typeof copy !== 'object') {
             copy = {};
@@ -158,7 +158,7 @@ function merge() {
         args = Array.prototype.slice.call(args, 2);
     }
     // For each argument, extend the return
-    var len = args.length;
+    const len = args.length;
     for (i = 0; i < len; i++) {
         ret = doCopy(ret, args[i]);
     }
@@ -183,9 +183,9 @@ function clamp(value, min, max) {
  * @private
  */
 function cleanRecursively(newer, older) {
-    var result = {};
+    const result = {};
     objectEach(newer, function (_val, key) {
-        var ob;
+        let ob;
         // Dive into objects (except DOM nodes)
         if (isObject(newer[key], true) &&
             !newer.nodeType && // #10044
@@ -249,7 +249,7 @@ function isString(s) {
  *         True if the argument is an array.
  */
 function isArray(obj) {
-    var str = Object.prototype.toString.call(obj);
+    const str = Object.prototype.toString.call(obj);
     return str === '[object Array]' || str === '[object Array Iterator]';
 }
 /**
@@ -297,7 +297,7 @@ function isDOMElement(obj) {
  *         True if the argument is a class.
  */
 function isClass(obj) {
-    var c = obj && obj.constructor;
+    const c = obj && obj.constructor;
     return !!(isObject(obj, true) &&
         !isDOMElement(obj) &&
         (c && c.name && c.name !== 'Object'));
@@ -331,13 +331,30 @@ function isNumber(n) {
  * @return {void}
  */
 function erase(arr, item) {
-    var i = arr.length;
+    let i = arr.length;
     while (i--) {
         if (arr[i] === item) {
             arr.splice(i, 1);
             break;
         }
     }
+}
+/**
+ * Adds an item to an array, if it is not present in the array.
+ *
+ * @function Highcharts.pushUnique
+ *
+ * @param {Array<unknown>} array
+ * The array to add the item to.
+ *
+ * @param {unknown} item
+ * The item to add.
+ *
+ * @return {boolean}
+ * Returns true, if the item was not present and has been added.
+ */
+function pushUnique(array, item) {
+    return array.indexOf(item) < 0 && !!array.push(item);
 }
 /**
  * Check if an object is null or undefined.
@@ -377,9 +394,9 @@ function defined(obj) {
  *         When used as a getter, return the value.
  */
 function attr(elem, keyOrAttribs, value) {
-    var isGetter = isString(keyOrAttribs) && !defined(value);
-    var ret;
-    var attrSingle = function (value, key) {
+    const isGetter = isString(keyOrAttribs) && !defined(value);
+    let ret;
+    const attrSingle = (value, key) => {
         // Set the value
         if (defined(value)) {
             elem.setAttribute(key, value);
@@ -479,7 +496,7 @@ function internalClearTimeout(id) {
  */
 function extend(a, b) {
     /* eslint-enable valid-jsdoc */
-    var n;
+    let n;
     if (!a) {
         a = {};
     }
@@ -501,10 +518,10 @@ function extend(a, b) {
  *         The value of the first argument that is not null or undefined.
  */
 function pick() {
-    var args = arguments;
-    var length = args.length;
-    for (var i = 0; i < length; i++) {
-        var arg = args[i];
+    const args = arguments;
+    const length = args.length;
+    for (let i = 0; i < length; i++) {
+        const arg = args[i];
         if (typeof arg !== 'undefined' && arg !== null) {
             return arg;
         }
@@ -526,7 +543,7 @@ function pick() {
 function css(el, styles) {
     if (H.isMS && !H.svg) { // #2686
         if (styles && defined(styles.opacity)) {
-            styles.filter = "alpha(opacity=".concat(styles.opacity * 100, ")");
+            styles.filter = `alpha(opacity=${styles.opacity * 100})`;
         }
     }
     extend(el.style, styles);
@@ -555,7 +572,7 @@ function css(el, styles) {
  *         The created DOM element.
  */
 function createElement(tag, attribs, styles, parent, nopad) {
-    var el = doc.createElement(tag);
+    const el = doc.createElement(tag);
     if (attribs) {
         extend(el, attribs);
     }
@@ -574,6 +591,7 @@ function createElement(tag, attribs, styles, parent, nopad) {
 /**
  * Extend a prototyped class by new members.
  *
+ * @deprecated
  * @function Highcharts.extendClass<T>
  *
  * @param {Highcharts.Class<T>} parent
@@ -587,7 +605,7 @@ function createElement(tag, attribs, styles, parent, nopad) {
  *         A new prototype.
  */
 function extendClass(parent, members) {
-    var obj = (function () { });
+    const obj = (function () { });
     obj.prototype = new parent(); // eslint-disable-line new-cap
     extend(obj.prototype, members);
     return obj;
@@ -657,9 +675,9 @@ function relativeLength(value, base, offset) {
  *        is unshifted and passed as the first argument.
  */
 function wrap(obj, method, func) {
-    var proceed = obj[method];
+    const proceed = obj[method];
     obj[method] = function () {
-        var outerArgs = arguments, scope = this;
+        const outerArgs = arguments, scope = this;
         return func.apply(this, [
             function () {
                 return proceed.apply(scope, arguments.length ? arguments : outerArgs);
@@ -711,10 +729,10 @@ function getMagnitude(num) {
  * reasons.
  */
 function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
-    var i, retInterval = interval;
+    let i, retInterval = interval;
     // round to a tenfold of 1, 2, 2.5 or 5
     magnitude = pick(magnitude, getMagnitude(interval));
-    var normalized = interval / magnitude;
+    const normalized = interval / magnitude;
     // multiples for a linear scale
     if (!multiples) {
         multiples = hasTickAmount ?
@@ -769,8 +787,8 @@ function stableSort(arr, sortFunction) {
     // @todo It seems like Chrome since v70 sorts in a stable way internally,
     // plus all other browsers do it, so over time we may be able to remove this
     // function
-    var length = arr.length;
-    var sortValue, i;
+    const length = arr.length;
+    let sortValue, i;
     // Add index to each item
     for (i = 0; i < length; i++) {
         arr[i].safeI = i; // stable sort index
@@ -798,7 +816,7 @@ function stableSort(arr, sortFunction) {
  *         The lowest number.
  */
 function arrayMin(data) {
-    var i = data.length, min = data[0];
+    let i = data.length, min = data[0];
     while (i--) {
         if (data[i] < min) {
             min = data[i];
@@ -820,7 +838,7 @@ function arrayMin(data) {
  *         The highest number.
  */
 function arrayMax(data) {
-    var i = data.length, max = data[0];
+    let i = data.length, max = data[0];
     while (i--) {
         if (data[i] > max) {
             max = data[i];
@@ -888,7 +906,7 @@ function correctFloat(num, prec) {
  *
  * @ignore
  */
-var timeUnits = {
+const timeUnits = {
     millisecond: 1,
     second: 1000,
     minute: 60000,
@@ -929,15 +947,15 @@ Math.easeInOutSine = function (pos) {
  * The unknown property value.
  */
 function getNestedProperty(path, parent) {
-    var pathElements = path.split('.');
+    const pathElements = path.split('.');
     while (pathElements.length && defined(parent)) {
-        var pathElement = pathElements.shift();
+        const pathElement = pathElements.shift();
         // Filter on the key
         if (typeof pathElement === 'undefined' ||
             pathElement === '__proto__') {
             return; // undefined
         }
-        var child = parent[pathElement];
+        const child = parent[pathElement];
         // Filter on the child
         if (!defined(child) ||
             typeof child === 'function' ||
@@ -970,15 +988,14 @@ function getNestedProperty(path, parent) {
  * The style value.
  */
 function getStyle(el, prop, toInt) {
-    var customGetStyle = (H.getStyle || // oldie getStyle
-        getStyle);
-    var style;
+    const customGetStyle = H.getStyle;
+    let style;
     // For width and height, return the actual inner pixel size (#4913)
     if (prop === 'width') {
-        var offsetWidth = Math.min(el.offsetWidth, el.scrollWidth);
+        let offsetWidth = Math.min(el.offsetWidth, el.scrollWidth);
         // In flex boxes, we need to use getBoundingClientRect and floor it,
         // because scrollWidth doesn't support subpixel precision (#6427) ...
-        var boundingClientRectWidth = el.getBoundingClientRect &&
+        const boundingClientRectWidth = el.getBoundingClientRect &&
             el.getBoundingClientRect().width;
         // ...unless if the containing div or its parents are transform-scaled
         // down, in which case the boundingClientRect can't be used as it is
@@ -998,12 +1015,8 @@ function getStyle(el, prop, toInt) {
             (customGetStyle(el, 'padding-top', true) || 0) -
             (customGetStyle(el, 'padding-bottom', true) || 0)));
     }
-    if (!win.getComputedStyle) {
-        // SVG not supported, forgot to load oldie.js?
-        error(27, true);
-    }
     // Otherwise, get the computed style
-    var css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
+    const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
     if (css) {
         style = css.getPropertyValue(prop);
         if (pick(toInt, prop !== 'opacity')) {
@@ -1051,14 +1064,14 @@ function inArray(item, arr, fromIndex) {
  * @return {T|undefined}
  *         The value of the element.
  */
-var find = Array.prototype.find ?
+const find = Array.prototype.find ?
     function (arr, callback) {
         return arr.find(callback);
     } :
     // Legacy implementation. PhantomJS, IE <= 11 etc. #7223.
     function (arr, callback) {
-        var i;
-        var length = arr.length;
+        let i;
+        const length = arr.length;
         for (i = 0; i < length; i++) {
             if (callback(arr[i], i)) { // eslint-disable-line node/callback-return
                 return arr[i];
@@ -1094,7 +1107,7 @@ function keys(obj) {
  *         the page.
  */
 function offset(el) {
-    var docElem = doc.documentElement, box = (el.parentElement || el.parentNode) ?
+    const docElem = doc.documentElement, box = (el.parentElement || el.parentNode) ?
         el.getBoundingClientRect() :
         { top: 0, left: 0, width: 0, height: 0 };
     return {
@@ -1126,7 +1139,7 @@ function offset(el) {
  */
 function objectEach(obj, fn, ctx) {
     /* eslint-enable valid-jsdoc */
-    for (var key in obj) {
+    for (const key in obj) {
         if (Object.hasOwnProperty.call(obj, key)) {
             fn.call(ctx || obj[key], obj[key], key, obj);
         }
@@ -1230,8 +1243,7 @@ objectEach({
     some: 'some'
 }, function (val, key) {
     H[key] = function (arr) {
-        var _a;
-        error(32, false, void 0, (_a = {}, _a["Highcharts.".concat(key)] = "use Array.".concat(val), _a));
+        error(32, false, void 0, { [`Highcharts.${key}`]: `use Array.${val}` });
         return Array.prototype[val].apply(arr, [].slice.call(arguments, 1));
     };
 });
@@ -1257,18 +1269,17 @@ objectEach({
  * @return {Function}
  *         A callback function to remove the added event.
  */
-function addEvent(el, type, fn, options) {
+function addEvent(el, type, fn, options = {}) {
     /* eslint-enable valid-jsdoc */
-    if (options === void 0) { options = {}; }
     // Add hcEvents to either the prototype (in case we're running addEvent on a
     // class) or the instance. If hasOwnProperty('hcEvents') is false, it is
     // inherited down the prototype chain, in which case we need to set the
     // property on this instance (which may itself be a prototype).
-    var owner = typeof el === 'function' && el.prototype || el;
+    const owner = typeof el === 'function' && el.prototype || el;
     if (!Object.hasOwnProperty.call(owner, 'hcEvents')) {
         owner.hcEvents = {};
     }
-    var events = owner.hcEvents;
+    const events = owner.hcEvents;
     // Allow click events added to points, otherwise they will be prevented by
     // the TouchPointer.pinch function after a pinch zoom operation (#7091).
     if (H.Point && // without H a dependency loop occurs
@@ -1280,7 +1291,7 @@ function addEvent(el, type, fn, options) {
     // Handle DOM events
     // If the browser supports passive events, add it to improve performance
     // on touch events (#11353).
-    var addEventListener = (el.addEventListener || H.addEventListenerPolyfill);
+    const addEventListener = el.addEventListener;
     if (addEventListener) {
         addEventListener.call(el, type, fn, H.supportsPassiveEvents ? {
             passive: options.passive === void 0 ?
@@ -1291,13 +1302,13 @@ function addEvent(el, type, fn, options) {
     if (!events[type]) {
         events[type] = [];
     }
-    var eventObject = {
-        fn: fn,
+    const eventObject = {
+        fn,
         order: typeof options.order === 'number' ? options.order : Infinity
     };
     events[type].push(eventObject);
     // Order the calls
-    events[type].sort(function (a, b) { return a.order - b.order; });
+    events[type].sort((a, b) => a.order - b.order);
     // Return a function that can be called to remove this event.
     return function () {
         removeEvent(el, type, fn);
@@ -1328,7 +1339,7 @@ function removeEvent(el, type, fn) {
      * @private
      */
     function removeOneEvent(type, fn) {
-        var removeEventListener = (el.removeEventListener || H.removeEventListenerPolyfill);
+        const removeEventListener = el.removeEventListener;
         if (removeEventListener) {
             removeEventListener.call(el, type, fn, false);
         }
@@ -1337,7 +1348,7 @@ function removeEvent(el, type, fn) {
      * @private
      */
     function removeAllEvents(eventCollection) {
-        var types, len;
+        let types, len;
         if (!el.nodeName) {
             return; // break on non-DOM events
         }
@@ -1357,11 +1368,11 @@ function removeEvent(el, type, fn) {
             }
         });
     }
-    var owner = typeof el === 'function' && el.prototype || el;
+    const owner = typeof el === 'function' && el.prototype || el;
     if (Object.hasOwnProperty.call(owner, 'hcEvents')) {
-        var events = owner.hcEvents;
+        const events = owner.hcEvents;
         if (type) {
-            var typeEvents = (events[type] || []);
+            const typeEvents = (events[type] || []);
             if (fn) {
                 events[type] = typeEvents.filter(function (obj) {
                     return fn !== obj.fn;
@@ -1404,7 +1415,7 @@ function removeEvent(el, type, fn) {
  */
 function fireEvent(el, type, eventArguments, defaultFunction) {
     /* eslint-enable valid-jsdoc */
-    var e, i;
+    let e, i;
     eventArguments = eventArguments || {};
     if (doc.createEvent &&
         (el.dispatchEvent ||
@@ -1435,14 +1446,13 @@ function fireEvent(el, type, eventArguments, defaultFunction) {
                 // the zoom-out button in Chrome.
                 target: el,
                 // If the type is not set, we're running a custom event
-                // (#2297). If it is set, we're running a browser event,
-                // and setting it will cause en error in IE8 (#2465).
+                // (#2297). If it is set, we're running a browser event.
                 type: type
             });
         }
-        var events = [];
-        var object = el;
-        var multilevel = false;
+        const events = [];
+        let object = el;
+        let multilevel = false;
         // Recurse up the inheritance chain and collect hcEvents set as own
         // objects on the prototypes.
         while (object.hcEvents) {
@@ -1460,10 +1470,10 @@ function fireEvent(el, type, eventArguments, defaultFunction) {
         // events are already sorted in the addEvent function.
         if (multilevel) {
             // Order the calls
-            events.sort(function (a, b) { return a.order - b.order; });
+            events.sort((a, b) => a.order - b.order);
         }
         // Call the collected event handlers
-        events.forEach(function (obj) {
+        events.forEach((obj) => {
             // If the event handler returns false, prevent the default handler
             // from executing
             if (obj.fn.call(el, eventArguments) === false) {
@@ -1476,7 +1486,7 @@ function fireEvent(el, type, eventArguments, defaultFunction) {
         defaultFunction.call(el, eventArguments);
     }
 }
-var serialMode;
+let serialMode;
 /**
  * Get a unique key for using in internal element id's and pointers. The key is
  * composed of a random hash specific to this Highcharts instance, and a
@@ -1490,9 +1500,9 @@ var serialMode;
  * @return {string}
  * A unique key.
  */
-var uniqueKey = (function () {
-    var hash = Math.random().toString(36).substring(2, 9) + '-';
-    var id = 0;
+const uniqueKey = (function () {
+    const hash = Math.random().toString(36).substring(2, 9) + '-';
+    let id = 0;
     return function () {
         return 'highcharts-' + (serialMode ? '' : hash) + id++;
     };
@@ -1564,7 +1574,7 @@ if (win.jQuery) {
     *         The current JQuery selector.
     */
     win.jQuery.fn.highcharts = function () {
-        var args = [].slice.call(arguments);
+        const args = [].slice.call(arguments);
         if (this[0]) { // this[0] is the renderTo div
             // Create the chart
             if (args[0]) {
@@ -1585,54 +1595,55 @@ if (win.jQuery) {
  *
  * */
 // TODO use named exports when supported.
-var Utilities = {
-    addEvent: addEvent,
-    arrayMax: arrayMax,
-    arrayMin: arrayMin,
-    attr: attr,
-    clamp: clamp,
-    cleanRecursively: cleanRecursively,
+const Utilities = {
+    addEvent,
+    arrayMax,
+    arrayMin,
+    attr,
+    clamp,
+    cleanRecursively,
     clearTimeout: internalClearTimeout,
-    correctFloat: correctFloat,
-    createElement: createElement,
-    css: css,
-    defined: defined,
-    destroyObjectProperties: destroyObjectProperties,
-    discardElement: discardElement,
-    erase: erase,
-    error: error,
-    extend: extend,
-    extendClass: extendClass,
-    find: find,
-    fireEvent: fireEvent,
-    getMagnitude: getMagnitude,
-    getNestedProperty: getNestedProperty,
-    getStyle: getStyle,
-    inArray: inArray,
-    isArray: isArray,
-    isClass: isClass,
-    isDOMElement: isDOMElement,
-    isFunction: isFunction,
-    isNumber: isNumber,
-    isObject: isObject,
-    isString: isString,
-    keys: keys,
-    merge: merge,
-    normalizeTickInterval: normalizeTickInterval,
-    objectEach: objectEach,
-    offset: offset,
-    pad: pad,
-    pick: pick,
-    pInt: pInt,
-    relativeLength: relativeLength,
-    removeEvent: removeEvent,
-    splat: splat,
-    stableSort: stableSort,
-    syncTimeout: syncTimeout,
-    timeUnits: timeUnits,
-    uniqueKey: uniqueKey,
-    useSerialIds: useSerialIds,
-    wrap: wrap
+    correctFloat,
+    createElement,
+    css,
+    defined,
+    destroyObjectProperties,
+    discardElement,
+    erase,
+    error,
+    extend,
+    extendClass,
+    find,
+    fireEvent,
+    getMagnitude,
+    getNestedProperty,
+    getStyle,
+    inArray,
+    isArray,
+    isClass,
+    isDOMElement,
+    isFunction,
+    isNumber,
+    isObject,
+    isString,
+    keys,
+    merge,
+    normalizeTickInterval,
+    objectEach,
+    offset,
+    pad,
+    pick,
+    pInt,
+    pushUnique,
+    relativeLength,
+    removeEvent,
+    splat,
+    stableSort,
+    syncTimeout,
+    timeUnits,
+    uniqueKey,
+    useSerialIds,
+    wrap
 };
 export default Utilities;
 /* *

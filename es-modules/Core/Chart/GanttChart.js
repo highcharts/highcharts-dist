@@ -10,26 +10,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Chart from './Chart.js';
 import D from '../Defaults.js';
-var getOptions = D.getOptions;
+const { getOptions } = D;
 import U from '../Utilities.js';
-var isArray = U.isArray, merge = U.merge, splat = U.splat;
+const { isArray, merge, splat } = U;
 import '../../Series/Gantt/GanttSeries.js';
 /* *
  *
@@ -45,11 +30,7 @@ import '../../Series/Gantt/GanttSeries.js';
  * @name Highcharts.GanttChart
  * @extends Highcharts.Chart
  */
-var GanttChart = /** @class */ (function (_super) {
-    __extends(GanttChart, _super);
-    function GanttChart() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class GanttChart extends Chart {
     /**
      * Initializes the chart. The constructor's arguments are passed on
      * directly.
@@ -67,12 +48,12 @@ var GanttChart = /** @class */ (function (_super) {
      * @emits Highcharts.GanttChart#event:init
      * @emits Highcharts.GanttChart#event:afterInit
      */
-    GanttChart.prototype.init = function (userOptions, callback) {
-        var defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis;
-        var defaultLinkedTo;
+    init(userOptions, callback) {
+        const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis;
+        let defaultLinkedTo;
         // Avoid doing these twice
         userOptions.xAxis = userOptions.yAxis = void 0;
-        var options = merge(true, {
+        const options = merge(true, {
             chart: {
                 type: 'gantt'
             },
@@ -132,10 +113,9 @@ var GanttChart = /** @class */ (function (_super) {
             }, yAxisOptions // user options
             );
         });
-        _super.prototype.init.call(this, options, callback);
-    };
-    return GanttChart;
-}(Chart));
+        super.init(options, callback);
+    }
+}
 /* eslint-disable valid-jsdoc */
 (function (GanttChart) {
     /**

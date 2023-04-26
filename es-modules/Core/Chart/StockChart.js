@@ -8,34 +8,19 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Axis from '../Axis/Axis.js';
 import Chart from '../Chart/Chart.js';
 import F from '../../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import D from '../Defaults.js';
-var getOptions = D.getOptions;
+const { getOptions } = D;
 import NavigatorDefaults from '../../Stock/Navigator/NavigatorDefaults.js';
 import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaults.js';
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
 import Series from '../Series/Series.js';
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import U from '../Utilities.js';
-var addEvent = U.addEvent, clamp = U.clamp, defined = U.defined, extend = U.extend, find = U.find, isNumber = U.isNumber, isString = U.isString, merge = U.merge, pick = U.pick, splat = U.splat;
+const { addEvent, clamp, defined, extend, find, isNumber, isString, merge, pick, splat } = U;
 import '../Pointer.js';
 /* *
  *
@@ -51,11 +36,7 @@ import '../Pointer.js';
  * @name Highcharts.StockChart
  * @extends Highcharts.Chart
  */
-var StockChart = /** @class */ (function (_super) {
-    __extends(StockChart, _super);
-    function StockChart() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class StockChart extends Chart {
     /**
      * Initializes the chart. The constructor's arguments are passed on
      * directly.
@@ -73,14 +54,14 @@ var StockChart = /** @class */ (function (_super) {
      * @emits Highcharts.StockChart#event:init
      * @emits Highcharts.StockChart#event:afterInit
      */
-    StockChart.prototype.init = function (userOptions, callback) {
-        var defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis, 
+    init(userOptions, callback) {
+        const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis, 
         // Always disable startOnTick:true on the main axis when the
         // navigator is enabled (#1090)
         navigatorEnabled = pick(userOptions.navigator && userOptions.navigator.enabled, NavigatorDefaults.enabled, true);
         // Avoid doing these twice
         userOptions.xAxis = userOptions.yAxis = void 0;
-        var options = merge({
+        const options = merge({
             chart: {
                 panning: {
                     enabled: true,
@@ -131,8 +112,8 @@ var StockChart = /** @class */ (function (_super) {
             defaultOptions.yAxis && defaultOptions.yAxis[i], yAxisOptions // user options
             );
         });
-        _super.prototype.init.call(this, options, callback);
-    };
+        super.init(options, callback);
+    }
     /**
      * Factory for creating different axis types.
      * Extended to add stock defaults.
@@ -144,12 +125,11 @@ var StockChart = /** @class */ (function (_super) {
      * @param {Chart.CreateAxisOptionsObject} options
      * The axis creation options.
      */
-    StockChart.prototype.createAxis = function (type, options) {
+    createAxis(type, options) {
         options.axis = merge(getDefaultAxisOptions(type, options.axis), options.axis, getForcedAxisOptions(type, this.userOptions));
-        return _super.prototype.createAxis.call(this, type, options);
-    };
-    return StockChart;
-}(Chart));
+        return super.createAxis(type, options);
+    }
+}
 /* eslint-disable no-invalid-this, valid-jsdoc */
 (function (StockChart) {
     /**
@@ -175,13 +155,9 @@ var StockChart = /** @class */ (function (_super) {
      *        [options reference](https://api.highcharts.com/highstock).
      *
      * @param {Highcharts.ChartCallbackFunction} [callback]
-     *        A function to execute when the chart object is finished loading
-     *        and rendering. In most cases the chart is built in one thread,
-     *        but in Internet Explorer version 8 or less the chart is sometimes
-     *        initialized before the document is ready, and in these cases the
-     *        chart object will not be finished synchronously. As a
-     *        consequence, code that relies on the newly built Chart object
-     *        should always run in the callback. Defining a
+     *        A function to execute when the chart object is finished
+     *        rendering and all external image files (`chart.backgroundImage`,
+     *        `chart.plotBackgroundImage` etc) are loaded. Defining a
      *        [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
      *        handler is equivalent.
      *
@@ -242,8 +218,8 @@ function getForcedAxisOptions(type, chartOptions) {
     if (type === 'xAxis') {
         // Always disable startOnTick:true on the main axis when the navigator
         // is enabled (#1090)
-        var navigatorEnabled = pick(chartOptions.navigator && chartOptions.navigator.enabled, NavigatorDefaults.enabled, true);
-        var axisOptions = {
+        const navigatorEnabled = pick(chartOptions.navigator && chartOptions.navigator.enabled, NavigatorDefaults.enabled, true);
+        const axisOptions = {
             type: 'datetime',
             categories: void 0
         };
@@ -263,7 +239,7 @@ function getForcedAxisOptions(type, chartOptions) {
 // Handle som Stock-specific series defaults, override the plotOptions before
 // series options are handled.
 addEvent(Series, 'setOptions', function (e) {
-    var overrides;
+    let overrides;
     if (this.chart.options.isStock) {
         if (this.is('column') || this.is('columnrange')) {
             overrides = {
@@ -284,16 +260,17 @@ addEvent(Series, 'setOptions', function (e) {
         }
     }
 });
-// Override the automatic label alignment so that the first Y axis' labels
-// are drawn on top of the grid line, and subsequent axes are drawn outside
+// Override the automatic label alignment so that the first Y axis' labels are
+// drawn on top of the grid line, and subsequent axes are drawn outside
 addEvent(Axis, 'autoLabelAlign', function (e) {
-    var chart = this.chart, options = this.options, panes = chart._labelPanes = chart._labelPanes || {}, key, labelOptions = this.options.labels;
-    if (this.chart.options.isStock && this.coll === 'yAxis') {
-        key = options.top + ',' + options.height;
-        // do it only for the first Y axis of each pane
+    const { chart, options } = this, panes = chart._labelPanes = chart._labelPanes || {}, labelOptions = options.labels;
+    if (chart.options.isStock && this.coll === 'yAxis') {
+        const key = options.top + ',' + options.height;
+        // Do it only for the first Y axis of each pane
         if (!panes[key] && labelOptions.enabled) {
-            if (labelOptions.x === 15) { // default
-                labelOptions.x = 0;
+            if (labelOptions.distance === 15 && // default
+                this.side === 1) {
+                labelOptions.distance = 0;
             }
             if (typeof labelOptions.align === 'undefined') {
                 labelOptions.align = 'right';
@@ -306,14 +283,14 @@ addEvent(Axis, 'autoLabelAlign', function (e) {
 });
 // Clear axis from label panes (#6071)
 addEvent(Axis, 'destroy', function () {
-    var chart = this.chart, key = this.options && (this.options.top + ',' + this.options.height);
+    const chart = this.chart, key = this.options && (this.options.top + ',' + this.options.height);
     if (key && chart._labelPanes && chart._labelPanes[key] === this) {
         delete chart._labelPanes[key];
     }
 });
 // Override getPlotLinePath to allow for multipane charts
 addEvent(Axis, 'getPlotLinePath', function (e) {
-    var axis = this, series = (this.isLinked && !this.series ?
+    let axis = this, series = (this.isLinked && !this.series ?
         this.linkedParent.series :
         this.series), chart = axis.chart, renderer = chart.renderer, axisLeft = axis.left, axisTop = axis.top, x1, y1, x2, y2, result = [], axes = [], // #3416 need a default array
     axes2, uniqueAxes, translatedValue = e.translatedValue, value = e.value, force = e.force, transVal;
@@ -323,7 +300,7 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
      * @private
      */
     function getAxis(coll) {
-        var otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axis.options[otherColl];
+        const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axis.options[otherColl];
         // Other axis indexed by number
         if (isNumber(opt)) {
             return [chart[otherColl][opt]];
@@ -351,7 +328,7 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
             if (defined(A.options.id) ?
                 A.options.id.indexOf('navigator') === -1 :
                 true) {
-                var a = (A.isXAxis ? 'yAxis' : 'xAxis'), rax = (defined(A.options[a]) ?
+                const a = (A.isXAxis ? 'yAxis' : 'xAxis'), rax = (defined(A.options[a]) ?
                     chart[a][A.options[a]] :
                     chart[a][0]);
                 if (axis === rax) {
@@ -378,7 +355,7 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
         if (isNumber(transVal)) {
             if (axis.horiz) {
                 uniqueAxes.forEach(function (axis2) {
-                    var skip;
+                    let skip;
                     y1 = axis2.pos;
                     y2 = y1 + axis2.len;
                     x1 = x2 = Math.round(transVal + axis.transB);
@@ -399,7 +376,7 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
             }
             else {
                 uniqueAxes.forEach(function (axis2) {
-                    var skip;
+                    let skip;
                     x1 = axis2.pos;
                     x2 = x1 + axis2.len;
                     y1 = y2 = Math.round(axisTop + axis.height - transVal);
@@ -434,8 +411,8 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
 SVGRenderer.prototype.crispPolyLine = function (points, width) {
     // points format: [['M', 0, 0], ['L', 100, 0]]
     // normalize to a crisp line
-    for (var i = 0; i < points.length; i = i + 2) {
-        var start = points[i], end = points[i + 1];
+    for (let i = 0; i < points.length; i = i + 2) {
+        const start = points[i], end = points[i + 1];
         if (start[1] === end[1]) {
             // Substract due to #1129. Now bottom and left axis gridlines behave
             // the same.
@@ -466,12 +443,12 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
         !isNumber(this.max)) {
         return;
     }
-    var chart = this.chart, log = this.logarithmic, options = this.crosshair.label, // the label's options
+    let chart = this.chart, log = this.logarithmic, options = this.crosshair.label, // the label's options
     horiz = this.horiz, // axis orientation
     opposite = this.opposite, // axis position
     left = this.left, // left position
     top = this.top, // top position
-    crossLabel = this.crossLabel, // the svgElement
+    width = this.width, crossLabel = this.crossLabel, // the svgElement
     posx, posy, crossBox, formatOption = options.format, formatFormat = '', limit, align, tickInside = this.options.tickPosition === 'inside', snap = this.crosshair.snap !== false, offset = 0, 
     // Use last available event (#5287)
     e = event.e || (this.cross && this.cross.e), point = event.point, min = this.min, max = this.max;
@@ -509,7 +486,7 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
                 .css(extend({
                 color: "#ffffff" /* Palette.backgroundColor */,
                 fontWeight: 'normal',
-                fontSize: '11px',
+                fontSize: '0.7em',
                 textAlign: 'center'
             }, options.style || {}));
         }
@@ -519,7 +496,7 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
         posy = top + (opposite ? 0 : this.height);
     }
     else {
-        posx = opposite ? this.width + left : 0;
+        posx = left + this.offset + (opposite ? width : 0);
         posy = snap ? (point.plotY || 0) + top : e.chartY;
     }
     if (!formatOption && !options.formatter) {
@@ -530,29 +507,32 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
             '{value' + (formatFormat ? ':' + formatFormat : '') + '}';
     }
     // Show the label
-    var value = snap ?
+    const value = snap ?
         (this.isXAxis ? point.x : point.y) :
         this.toValue(horiz ? e.chartX : e.chartY);
     // Crosshair should be rendered within Axis range (#7219). Also, the point
     // of currentPriceIndicator should be inside the plot area, #14879.
-    var isInside = point && point.series ?
+    const isInside = point && point.series ?
         point.series.isPointInside(point) :
         (isNumber(value) && value > min && value < max);
-    var text = '';
+    let text = '';
     if (formatOption) {
-        text = format(formatOption, { value: value }, chart);
+        text = format(formatOption, { value }, chart);
     }
     else if (options.formatter && isNumber(value)) {
         text = options.formatter.call(this, value);
     }
     crossLabel.attr({
-        text: text,
+        text,
         x: posx,
         y: posy,
         visibility: isInside ? 'inherit' : 'hidden'
     });
     crossBox = crossLabel.getBBox();
     // now it is placed we can correct its position
+    if (isNumber(crossLabel.x) && !horiz && !opposite) {
+        posx = crossLabel.x - (crossBox.width / 2);
+    }
     if (isNumber(crossLabel.y)) {
         if (horiz) {
             if ((tickInside && !opposite) || (!tickInside && opposite)) {
@@ -608,12 +588,12 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
  * @function Highcharts.Series#forceCropping
  */
 Series.prototype.forceCropping = function () {
-    var chart = this.chart, options = this.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = this.allowDG !== false && dataGroupingOptions &&
+    const chart = this.chart, options = this.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = this.allowDG !== false && dataGroupingOptions &&
         pick(dataGroupingOptions.enabled, chart.options.isStock);
     return groupingEnabled;
 };
 addEvent(Chart, 'update', function (e) {
-    var options = e.options;
+    const options = e.options;
     // Use case: enabling scrollbar from a disabled state.
     // Scrollbar needs to be initialized from a controller, Navigator in this
     // case (#6615)

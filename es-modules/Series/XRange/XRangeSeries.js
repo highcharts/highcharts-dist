@@ -10,29 +10,14 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import Color from '../../Core/Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var seriesProto = SeriesRegistry.series.prototype, ColumnSeries = SeriesRegistry.seriesTypes.column;
+const { series: { prototype: seriesProto }, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, clamp = U.clamp, defined = U.defined, extend = U.extend, find = U.find, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, pick = U.pick;
+const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick } = U;
 import XRangeSeriesDefaults from './XRangeSeriesDefaults.js';
 import XRangePoint from './XRangePoint.js';
 /* *
@@ -40,7 +25,7 @@ import XRangePoint from './XRangePoint.js';
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -51,14 +36,12 @@ var composedClasses = [];
  * @private
  */
 function onAxisAfterGetSeriesExtremes() {
-    var dataMax, modMax;
+    let dataMax, modMax;
     if (this.isXAxis) {
         dataMax = pick(this.dataMax, -Number.MAX_VALUE);
-        for (var _i = 0, _a = this.series; _i < _a.length; _i++) {
-            var series = _a[_i];
+        for (const series of this.series) {
             if (series.x2Data) {
-                for (var _b = 0, _c = series.x2Data; _b < _c.length; _b++) {
-                    var val = _c[_b];
+                for (const val of series.x2Data) {
                     if (val && val > dataMax) {
                         dataMax = val;
                         modMax = true;
@@ -83,24 +66,22 @@ function onAxisAfterGetSeriesExtremes() {
  *
  * @augments Highcharts.Series
  */
-var XRangeSeries = /** @class */ (function (_super) {
-    __extends(XRangeSeries, _super);
-    function XRangeSeries() {
+class XRangeSeries extends ColumnSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /*
         // Override to remove stroke from points. For partial fill.
         pointAttribs: function () {
@@ -119,12 +100,11 @@ var XRangeSeries = /** @class */ (function (_super) {
      *  Static Functions
      *
      * */
-    XRangeSeries.compose = function (AxisClass) {
-        if (composedClasses.indexOf(AxisClass) === -1) {
-            composedClasses.push(AxisClass);
+    static compose(AxisClass) {
+        if (U.pushUnique(composedMembers, AxisClass)) {
             addEvent(AxisClass, 'afterGetSeriesExtremes', onAxisAfterGetSeriesExtremes);
         }
-    };
+    }
     /* *
      *
      *  Functions
@@ -133,42 +113,40 @@ var XRangeSeries = /** @class */ (function (_super) {
     /**
      * @private
      */
-    XRangeSeries.prototype.init = function () {
-        _super.prototype.init.apply(this, arguments);
+    init() {
+        super.init.apply(this, arguments);
         this.options.stacking = void 0; // #13161
-    };
+    }
     /**
      * Borrow the column series metrics, but with swapped axes. This gives
      * free access to features like groupPadding, grouping, pointWidth etc.
      * @private
      */
-    XRangeSeries.prototype.getColumnMetrics = function () {
-        var _this = this;
-        var swapAxes = function () {
-            for (var _i = 0, _a = _this.chart.series; _i < _a.length; _i++) {
-                var series = _a[_i];
-                var xAxis = series.xAxis;
+    getColumnMetrics() {
+        const swapAxes = () => {
+            for (const series of this.chart.series) {
+                const xAxis = series.xAxis;
                 series.xAxis = series.yAxis;
                 series.yAxis = xAxis;
             }
         };
         swapAxes();
-        var metrics = _super.prototype.getColumnMetrics.call(this);
+        const metrics = super.getColumnMetrics();
         swapAxes();
         return metrics;
-    };
+    }
     /**
      * Override cropData to show a point where x or x2 is outside visible range,
      * but one of them is inside.
      * @private
      */
-    XRangeSeries.prototype.cropData = function (xData, yData, min, max) {
+    cropData(xData, yData, min, max) {
         // Replace xData with x2Data to find the appropriate cropStart
-        var crop = seriesProto.cropData.call(this, this.x2Data, yData, min, max);
+        const crop = seriesProto.cropData.call(this, this.x2Data, yData, min, max);
         // Re-insert the cropped xData
         crop.xData = xData.slice(crop.start, crop.end);
         return crop;
-    };
+    }
     /**
      * Finds the index of an existing point that matches the given point
      * options.
@@ -182,18 +160,18 @@ var XRangeSeries = /** @class */ (function (_super) {
      *         Returns index of a matching point, or undefined if no match is
      *         found.
      */
-    XRangeSeries.prototype.findPointIndex = function (options) {
-        var _a = this, cropStart = _a.cropStart, points = _a.points;
-        var id = options.id;
-        var pointIndex;
+    findPointIndex(options) {
+        const { cropStart, points } = this;
+        const { id } = options;
+        let pointIndex;
         if (id) {
-            var point = find(points, function (point) { return point.id === id; });
+            const point = find(points, (point) => point.id === id);
             pointIndex = point ? point.index : void 0;
         }
         if (typeof pointIndex === 'undefined') {
-            var point = find(points, function (point) { return (point.x === options.x &&
+            const point = find(points, (point) => (point.x === options.x &&
                 point.x2 === options.x2 &&
-                !point.touched); });
+                !point.touched));
             pointIndex = point ? point.index : void 0;
         }
         // Reduce pointIndex if data is cropped
@@ -204,21 +182,21 @@ var XRangeSeries = /** @class */ (function (_super) {
             pointIndex -= cropStart;
         }
         return pointIndex;
-    };
-    XRangeSeries.prototype.alignDataLabel = function (point) {
-        var oldPlotX = point.plotX;
+    }
+    alignDataLabel(point) {
+        const oldPlotX = point.plotX;
         point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
-        _super.prototype.alignDataLabel.apply(this, arguments);
+        super.alignDataLabel.apply(this, arguments);
         point.plotX = oldPlotX;
-    };
+    }
     /**
      * @private
      */
-    XRangeSeries.prototype.translatePoint = function (point) {
-        var xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0));
-        var plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
-        var length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1), crisper = borderWidth % 2 / 2;
-        var widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
+    translatePoint(point) {
+        const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, { borderRadius } = options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0));
+        let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
+        const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1), crisper = borderWidth % 2 / 2;
+        let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
         if (minPointLength) {
             widthDifference = minPointLength - length;
             if (widthDifference < 0) {
@@ -240,16 +218,18 @@ var XRangeSeries = /** @class */ (function (_super) {
             yAxis.categories) {
             point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
         }
-        var x = Math.floor(Math.min(plotX, plotX2)) + crisper;
-        var x2 = Math.floor(Math.max(plotX, plotX2)) + crisper;
-        var shapeArgs = {
-            x: x,
+        const x = Math.floor(Math.min(plotX, plotX2)) + crisper;
+        const x2 = Math.floor(Math.max(plotX, plotX2)) + crisper;
+        const shapeArgs = {
+            x,
             y: Math.floor(point.plotY + yOffset) + crisper,
             width: x2 - x,
-            height: pointHeight,
-            r: this.options.borderRadius
+            height: pointHeight
         };
         point.shapeArgs = shapeArgs;
+        if (isNumber(borderRadius)) {
+            point.shapeArgs.r = borderRadius;
+        }
         // Move tooltip to default position
         if (!inverted) {
             point.tooltipPos[0] -= oldColWidth +
@@ -277,15 +257,16 @@ var XRangeSeries = /** @class */ (function (_super) {
             point.dlBox = null;
         }
         // Tooltip position
-        var tooltipPos = point.tooltipPos;
-        var xIndex = !inverted ? 0 : 1;
-        var yIndex = !inverted ? 1 : 0;
-        var tooltipYOffset = (this.columnMetrics ?
+        const tooltipPos = point.tooltipPos;
+        const xIndex = !inverted ? 0 : 1;
+        const yIndex = !inverted ? 1 : 0;
+        const tooltipYOffset = (this.columnMetrics ?
             this.columnMetrics.offset :
             -metrics.width / 2);
         // Centering tooltip position (#14147)
         if (!inverted) {
-            tooltipPos[xIndex] += (xAxis.reversed ? -1 : 0) * shapeArgs.width;
+            tooltipPos[xIndex] = clamp(tooltipPos[xIndex] +
+                (xAxis.reversed ? -1 : 0) * shapeArgs.width, 0, xAxis.len - 1);
         }
         else {
             tooltipPos[xIndex] += shapeArgs.width / 2;
@@ -302,9 +283,11 @@ var XRangeSeries = /** @class */ (function (_super) {
             if (!isNumber(partialFill)) {
                 partialFill = 0;
             }
-            point.partShapeArgs = merge(shapeArgs, {
-                r: this.options.borderRadius
-            });
+            if (isNumber(borderRadius)) {
+                point.partShapeArgs = merge(shapeArgs, {
+                    r: borderRadius
+                });
+            }
             clipRectWidth = Math.max(Math.round(length * partialFill + point.plotX -
                 plotX), 0);
             point.clipRectArgs = {
@@ -316,17 +299,16 @@ var XRangeSeries = /** @class */ (function (_super) {
                 height: shapeArgs.height
             };
         }
-    };
+    }
     /**
      * @private
      */
-    XRangeSeries.prototype.translate = function () {
-        _super.prototype.translate.apply(this, arguments);
-        for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
-            var point = _a[_i];
+    translate() {
+        super.translate.apply(this, arguments);
+        for (const point of this.points) {
             this.translatePoint(point);
         }
-    };
+    }
     /**
      * Draws a single point in the series. Needed for partial fill.
      *
@@ -341,11 +323,11 @@ var XRangeSeries = /** @class */ (function (_super) {
      * @param {"animate"|"attr"} verb
      *        'animate' (animates changes) or 'attr' (sets options)
      */
-    XRangeSeries.prototype.drawPoint = function (point, verb) {
-        var seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
+    drawPoint(point, verb) {
+        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
             {}), pointStateVerb = typeof pointState === 'undefined' ?
             'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
-        var graphic = point.graphic, pfOptions = point.partialFill;
+        let graphic = point.graphic, pfOptions = point.partialFill;
         if (!point.isNull && point.visible !== false) {
             // Original graphic
             if (graphic) { // update
@@ -379,7 +361,7 @@ var XRangeSeries = /** @class */ (function (_super) {
             if (!this.chart.styledMode) {
                 graphic
                     .rect[verb](pointAttr, animation)
-                    .shadow(seriesOpts.shadow, null, cutOff);
+                    .shadow(seriesOpts.shadow);
                 if (partShapeArgs) {
                     // Ensure pfOptions is an object
                     if (!isObject(pfOptions)) {
@@ -388,62 +370,60 @@ var XRangeSeries = /** @class */ (function (_super) {
                     if (isObject(seriesOpts.partialFill)) {
                         pfOptions = merge(seriesOpts.partialFill, pfOptions);
                     }
-                    var fill = (pfOptions.fill ||
+                    const fill = (pfOptions.fill ||
                         color(pointAttr.fill).brighten(-0.3).get() ||
                         color(point.color || this.color)
                             .brighten(-0.3).get());
                     pointAttr.fill = fill;
                     graphic
                         .partRect[pointStateVerb](pointAttr, animation)
-                        .shadow(seriesOpts.shadow, null, cutOff);
+                        .shadow(seriesOpts.shadow);
                 }
             }
         }
         else if (graphic) {
             point.graphic = graphic.destroy(); // #1269
         }
-    };
+    }
     /**
      * @private
      */
-    XRangeSeries.prototype.drawPoints = function () {
-        var verb = this.getAnimationVerb();
+    drawPoints() {
+        const verb = this.getAnimationVerb();
         // Draw the columns
-        for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
-            var point = _a[_i];
+        for (const point of this.points) {
             this.drawPoint(point, verb);
         }
-    };
+    }
     /**
      * Returns "animate", or "attr" if the number of points is above the
      * animation limit.
      *
      * @private
      */
-    XRangeSeries.prototype.getAnimationVerb = function () {
+    getAnimationVerb() {
         return (this.chart.pointCount < (this.options.animationLimit || 250) ?
             'animate' :
             'attr');
-    };
+    }
     /**
      * @private
      */
-    XRangeSeries.prototype.isPointInside = function (point) {
-        var shapeArgs = point.shapeArgs, plotX = point.plotX, plotY = point.plotY;
+    isPointInside(point) {
+        const shapeArgs = point.shapeArgs, plotX = point.plotX, plotY = point.plotY;
         if (!shapeArgs) {
-            return _super.prototype.isPointInside.apply(this, arguments);
+            return super.isPointInside.apply(this, arguments);
         }
-        var isInside = typeof plotX !== 'undefined' &&
+        const isInside = typeof plotX !== 'undefined' &&
             typeof plotY !== 'undefined' &&
             plotY >= 0 &&
             plotY <= this.yAxis.len &&
             (shapeArgs.x || 0) + (shapeArgs.width || 0) >= 0 &&
             plotX <= this.xAxis.len;
         return isInside;
-    };
-    XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
-    return XRangeSeries;
-}(ColumnSeries));
+    }
+}
+XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
 extend(XRangeSeries.prototype, {
     pointClass: XRangePoint,
     cropShoulder: 1,

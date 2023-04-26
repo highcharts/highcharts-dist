@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Item series type for Highcharts
  *
@@ -50,21 +50,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var Series = SeriesRegistry.series, PieSeries = SeriesRegistry.seriesTypes.pie;
+        var Series = SeriesRegistry.series,
+            PieSeries = SeriesRegistry.seriesTypes.pie;
         var extend = U.extend;
         /* *
          *
@@ -72,14 +74,15 @@
          *
          * */
         var ItemPoint = /** @class */ (function (_super) {
-            __extends(ItemPoint, _super);
+                __extends(ItemPoint, _super);
             function ItemPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
                 return _this;
@@ -110,15 +113,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -126,7 +130,13 @@
         })();
         var defaultOptions = D.defaultOptions;
         var PieSeries = SeriesRegistry.seriesTypes.pie;
-        var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+        var defined = U.defined,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick;
         /* *
          *
          *  Class
@@ -146,14 +156,15 @@
          * @augments Highcharts.seriesTypes.pie
          */
         var ItemSeries = /** @class */ (function (_super) {
-            __extends(ItemSeries, _super);
+                __extends(ItemSeries, _super);
             function ItemSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -195,7 +206,19 @@
                 }
             };
             ItemSeries.prototype.drawPoints = function () {
-                var series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, i = 0, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
+                var series = this,
+                    options = this.options,
+                    renderer = series.chart.renderer,
+                    seriesMarkerOptions = options.marker,
+                    borderWidth = this.borderWidth,
+                    crisp = borderWidth % 2 ? 0.5 : 1,
+                    i = 0,
+                    rows = this.getRows(),
+                    cols = Math.ceil(this.total / rows),
+                    cellWidth = this.chart.plotWidth / cols,
+                    cellHeight = this.chart.plotHeight / rows,
+                    itemSize = this.itemSize || Math.min(cellWidth,
+                    cellHeight);
                 /* @todo: remove if not needed
                 this.slots.forEach(slot => {
                     this.chart.renderer.circle(slot.x, slot.y, 6)
@@ -206,8 +229,20 @@
                 });
                 //*/
                 this.points.forEach(function (point) {
-                    var attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                        seriesMarkerOptions.symbol), r = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding, x, y, width, height;
+                    var attr,
+                        graphics,
+                        pointAttr,
+                        pointMarkerOptions = point.marker || {},
+                        symbol = (pointMarkerOptions.symbol ||
+                            seriesMarkerOptions.symbol),
+                        r = pick(pointMarkerOptions.radius,
+                        seriesMarkerOptions.radius),
+                        size = defined(r) ? 2 * r : itemSize,
+                        padding = size * options.itemPadding,
+                        x,
+                        y,
+                        width,
+                        height;
                     point.graphics = graphics = point.graphics || [];
                     if (!series.chart.styledMode) {
                         pointAttr = series.pointAttribs(point, point.selected && 'select');
@@ -250,14 +285,15 @@
                             if (typeof r !== 'undefined') {
                                 attr.r = r;
                             }
+                            // Circles attributes update (#17257)
+                            if (pointAttr) {
+                                extend(attr, pointAttr);
+                            }
                             var graphic = graphics[val];
                             if (graphic) {
                                 graphic.animate(attr);
                             }
                             else {
-                                if (pointAttr) {
-                                    extend(attr, pointAttr);
-                                }
                                 graphic = renderer
                                     .symbol(symbol, void 0, void 0, void 0, void 0, {
                                     backgroundSize: 'within'
@@ -285,7 +321,9 @@
                 });
             };
             ItemSeries.prototype.getRows = function () {
-                var rows = this.options.rows, cols, ratio;
+                var rows = this.options.rows,
+                    cols,
+                    ratio;
                 // Get the row count that gives the most square cells
                 if (!rows) {
                     ratio = this.chart.plotWidth / this.chart.plotHeight;
@@ -318,9 +356,31 @@
              * @private
              */
             ItemSeries.prototype.getSlots = function () {
-                var center = this.center, diameter = center[2], innerSize = center[3], row, slots = this.slots, x, y, rowRadius, rowLength, colCount, increment, angle, col, itemSize = 0, rowCount, fullAngle = (this.endAngleRad - this.startAngleRad), itemCount = Number.MAX_VALUE, finalItemCount, rows, testRows, rowsOption = this.options.rows, 
-                // How many rows (arcs) should be used
-                rowFraction = (diameter - innerSize) / diameter, isCircle = fullAngle % (2 * Math.PI) === 0, total = this.total || 0;
+                var center = this.center,
+                    diameter = center[2],
+                    innerSize = center[3],
+                    row,
+                    slots = this.slots,
+                    x,
+                    y,
+                    rowRadius,
+                    rowLength,
+                    colCount,
+                    increment,
+                    angle,
+                    col,
+                    itemSize = 0,
+                    rowCount,
+                    fullAngle = (this.endAngleRad - this.startAngleRad),
+                    itemCount = Number.MAX_VALUE,
+                    finalItemCount,
+                    rows,
+                    testRows,
+                    rowsOption = this.options.rows, 
+                    // How many rows (arcs) should be used
+                    rowFraction = (diameter - innerSize) / diameter,
+                    isCircle = fullAngle % (2 * Math.PI) === 0,
+                    total = this.total || 0;
                 // Increase the itemSize until we find the best fit
                 while (itemCount > total + (rows && isCircle ? rows.length : 0)) {
                     finalItemCount = itemCount;
@@ -371,7 +431,7 @@
                 // For each iteration we sort the last slot by the angle, and
                 // remove those with the highest angles.
                 var overshoot = finalItemCount - this.total -
-                    (isCircle ? rows.length : 0);
+                        (isCircle ? rows.length : 0);
                 /**
                  * @private
                  * @param {Highcharts.ItemRowContainerObject} item
@@ -404,7 +464,8 @@
                         .forEach(cutOffRow);
                 }
                 rows.forEach(function (row) {
-                    var rowRadius = row.rowRadius, colCount = row.colCount;
+                    var rowRadius = row.rowRadius,
+                        colCount = row.colCount;
                     increment = colCount ? fullAngle / colCount : 0;
                     for (col = 0; col <= colCount; col += 1) {
                         angle = this.startAngleRad + col * increment;

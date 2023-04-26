@@ -33,13 +33,13 @@ import QuadTreeNode from './QuadTreeNode.js';
  * @param {number} height
  *        Height of the plotting area
  */
-var QuadTree = /** @class */ (function () {
+class QuadTree {
     /* *
      *
      *  Constructor
      *
      * */
-    function QuadTree(x, y, width, height) {
+    constructor(x, y, width, height) {
         // Boundary rectangle:
         this.box = {
             left: x,
@@ -61,23 +61,22 @@ var QuadTree = /** @class */ (function () {
     /**
      * Calculate mass of the each QuadNode in the tree.
      */
-    QuadTree.prototype.calculateMassAndCenter = function () {
+    calculateMassAndCenter() {
         this.visitNodeRecursive(null, null, function (node) {
             node.updateMassAndCenter();
         });
-    };
+    }
     /**
      * Insert nodes into the QuadTree
      *
      * @param {Array<Highcharts.Point>} points
      *        Points as nodes
      */
-    QuadTree.prototype.insertNodes = function (points) {
-        for (var _i = 0, points_1 = points; _i < points_1.length; _i++) {
-            var point = points_1[_i];
+    insertNodes(points) {
+        for (const point of points) {
             this.root.insert(point, this.maxDepth);
         }
-    };
+    }
     /**
      * Depfth first treversal (DFS). Using `before` and `after` callbacks,
      * we can get two results: preorder and postorder traversals, reminder:
@@ -101,8 +100,8 @@ var QuadTree = /** @class */ (function () {
      * @param {Function} [afterCallback]
      *        Function to be called after visiting children nodes.
      */
-    QuadTree.prototype.visitNodeRecursive = function (node, beforeCallback, afterCallback) {
-        var goFurther;
+    visitNodeRecursive(node, beforeCallback, afterCallback) {
+        let goFurther;
         if (!node) {
             node = this.root;
         }
@@ -112,8 +111,7 @@ var QuadTree = /** @class */ (function () {
         if (goFurther === false) {
             return;
         }
-        for (var _i = 0, _a = node.nodes; _i < _a.length; _i++) {
-            var qtNode = _a[_i];
+        for (const qtNode of node.nodes) {
             if (qtNode.isInternal) {
                 if (beforeCallback) {
                     goFurther = beforeCallback(qtNode);
@@ -135,9 +133,8 @@ var QuadTree = /** @class */ (function () {
         if (node === this.root && afterCallback) {
             afterCallback(node);
         }
-    };
-    return QuadTree;
-}());
+    }
+}
 /* *
  *
  *  Default Export

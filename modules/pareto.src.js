@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Pareto series type for Highcharts
  *
@@ -43,9 +43,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var noop = H.noop;
-        var addEvent = U.addEvent,
-            defined = U.defined;
+        const { noop } = H;
+        const { addEvent, defined } = U;
         /* *
          *
          *  Composition
@@ -68,7 +67,7 @@
              *  Constants
              *
              * */
-            var composedClasses = [];
+            const composedMembers = [];
             DerivedComposition.hasDerivedData = true;
             /**
              * Method to be implemented - inside the method the series has already
@@ -88,9 +87,8 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
-                    var seriesProto = SeriesClass.prototype;
+                if (U.pushUnique(composedMembers, SeriesClass)) {
+                    const seriesProto = SeriesClass.prototype;
                     seriesProto.addBaseSeriesEvents = addBaseSeriesEvents;
                     seriesProto.addEvents = addEvents;
                     seriesProto.destroy = destroy;
@@ -117,11 +115,9 @@
              * @private
              */
             function setBaseSeries() {
-                var chart = this.chart,
-                    baseSeriesOptions = this.options.baseSeries,
-                    baseSeries = (defined(baseSeriesOptions) &&
-                        (chart.series[baseSeriesOptions] ||
-                            chart.get(baseSeriesOptions)));
+                const chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
+                    (chart.series[baseSeriesOptions] ||
+                        chart.get(baseSeriesOptions)));
                 this.baseSeries = baseSeries || null;
             }
             DerivedComposition.setBaseSeries = setBaseSeries;
@@ -130,13 +126,12 @@
              * @private
              */
             function addEvents() {
-                var _this = this;
-                this.eventRemovers.push(addEvent(this.chart, 'afterLinkSeries', function () {
-                    _this.setBaseSeries();
-                    if (_this.baseSeries && !_this.initialised) {
-                        _this.setDerivedData();
-                        _this.addBaseSeriesEvents();
-                        _this.initialised = true;
+                this.eventRemovers.push(addEvent(this.chart, 'afterLinkSeries', () => {
+                    this.setBaseSeries();
+                    if (this.baseSeries && !this.initialised) {
+                        this.setDerivedData();
+                        this.addBaseSeriesEvents();
+                        this.initialised = true;
                     }
                 }));
             }
@@ -147,12 +142,11 @@
              * @private
              */
             function addBaseSeriesEvents() {
-                var _this = this;
-                this.eventRemovers.push(addEvent(this.baseSeries, 'updatedData', function () {
-                    _this.setDerivedData();
-                }), addEvent(this.baseSeries, 'destroy', function () {
-                    _this.baseSeries = null;
-                    _this.initialised = false;
+                this.eventRemovers.push(addEvent(this.baseSeries, 'updatedData', () => {
+                    this.setDerivedData();
+                }), addEvent(this.baseSeries, 'destroy', () => {
+                    this.baseSeries = null;
+                    this.initialised = false;
                 }));
             }
             DerivedComposition.addBaseSeriesEvents = addBaseSeriesEvents;
@@ -161,7 +155,7 @@
              * @private
              */
             function destroy() {
-                this.eventRemovers.forEach(function (remover) {
+                this.eventRemovers.forEach((remover) => {
                     remover();
                 });
                 Series.prototype.destroy.apply(this, arguments);
@@ -186,26 +180,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var LineSeries = SeriesRegistry.seriesTypes.line;
-        var correctFloat = U.correctFloat,
-            merge = U.merge,
-            extend = U.extend;
+        const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
+        const { correctFloat, merge, extend } = U;
         /* *
          *
          *  Class
@@ -220,25 +196,22 @@
          *
          * @augments Highcharts.Series
          */
-        var ParetoSeries = /** @class */ (function (_super) {
-                __extends(ParetoSeries, _super);
-            function ParetoSeries() {
+        class ParetoSeries extends LineSeries {
+            constructor() {
                 /* *
                  *
                  *  Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.points = void 0;
-                _this.options = void 0;
-                return _this;
+                this.data = void 0;
+                this.points = void 0;
+                this.options = void 0;
             }
             /* *
              *
@@ -268,11 +241,8 @@
              *
              * @requires modules/pareto
              */
-            ParetoSeries.prototype.sumPointsPercents = function (yValues, xValues, sum, isSum) {
-                var sumY = 0,
-                    sumPercent = 0,
-                    percentPoints = [],
-                    percentPoint;
+            sumPointsPercents(yValues, xValues, sum, isSum) {
+                let sumY = 0, sumPercent = 0, percentPoints = [], percentPoint;
                 yValues.forEach(function (point, i) {
                     if (point !== null) {
                         if (isSum) {
@@ -289,7 +259,7 @@
                     }
                 });
                 return (isSum ? sumY : percentPoints);
-            };
+            }
             /**
              * Calculate sum and return percent points.
              *
@@ -297,45 +267,39 @@
              * @function Highcharts.Series#setDerivedData
              * @requires modules/pareto
              */
-            ParetoSeries.prototype.setDerivedData = function () {
-                var xValues = this.baseSeries.xData,
-                    yValues = this.baseSeries.yData,
-                    sum = this.sumPointsPercents(yValues,
-                    xValues,
-                    null,
-                    true);
+            setDerivedData() {
+                const xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
                 this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
-            };
+            }
+        }
+        /**
+         * A pareto diagram is a type of chart that contains both bars and a line
+         * graph, where individual values are represented in descending order by
+         * bars, and the cumulative total is represented by the line.
+         *
+         * @sample {highcharts} highcharts/demo/pareto/
+         *         Pareto diagram
+         *
+         * @extends      plotOptions.line
+         * @since        6.0.0
+         * @product      highcharts
+         * @excluding    allAreas, boostThreshold, borderColor, borderRadius,
+         *               borderWidth, crisp, colorAxis, depth, data, dragDrop,
+         *               edgeColor, edgeWidth, findNearestPointBy, gapSize, gapUnit,
+         *               grouping, groupPadding, groupZPadding, maxPointWidth, keys,
+         *               negativeColor, pointInterval, pointIntervalUnit,
+         *               pointPadding, pointPlacement, pointRange, pointStart,
+         *               pointWidth, shadow, step, softThreshold, stacking,
+         *               threshold, zoneAxis, zones, boostBlending
+         * @requires     modules/pareto
+         * @optionparent plotOptions.pareto
+         */
+        ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, {
             /**
-             * A pareto diagram is a type of chart that contains both bars and a line
-             * graph, where individual values are represented in descending order by
-             * bars, and the cumulative total is represented by the line.
-             *
-             * @sample {highcharts} highcharts/demo/pareto/
-             *         Pareto diagram
-             *
-             * @extends      plotOptions.line
-             * @since        6.0.0
-             * @product      highcharts
-             * @excluding    allAreas, boostThreshold, borderColor, borderRadius,
-             *               borderWidth, crisp, colorAxis, depth, data, dragDrop,
-             *               edgeColor, edgeWidth, findNearestPointBy, gapSize, gapUnit,
-             *               grouping, groupPadding, groupZPadding, maxPointWidth, keys,
-             *               negativeColor, pointInterval, pointIntervalUnit,
-             *               pointPadding, pointPlacement, pointRange, pointStart,
-             *               pointWidth, shadow, step, softThreshold, stacking,
-             *               threshold, zoneAxis, zones, boostBlending
-             * @requires     modules/pareto
-             * @optionparent plotOptions.pareto
+             * Higher zIndex than column series to draw line above shapes.
              */
-            ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, {
-                /**
-                 * Higher zIndex than column series to draw line above shapes.
-                 */
-                zIndex: 3
-            });
-            return ParetoSeries;
-        }(LineSeries));
+            zIndex: 3
+        });
         extend(ParetoSeries.prototype, {
             hasDerivedData: DerivedComposition.hasDerivedData
         });

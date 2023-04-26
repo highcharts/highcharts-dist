@@ -14,10 +14,10 @@
 import AST from '../Core/Renderer/HTML/AST.js';
 import Chart from '../Core/Chart/Chart.js';
 import D from '../Core/Defaults.js';
-var getOptions = D.getOptions;
+const { getOptions } = D;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend;
-var chartPrototype = Chart.prototype, defaultOptions = getOptions();
+const { addEvent, extend } = U;
+const chartPrototype = Chart.prototype, defaultOptions = getOptions();
 // Add language option
 extend(defaultOptions.lang, 
 /**
@@ -115,7 +115,7 @@ defaultOptions.noData = {
         /** @ignore */
         fontWeight: 'bold',
         /** @ignore */
-        fontSize: '12px',
+        fontSize: '0.8em',
         /** @ignore */
         color: "#666666" /* Palette.neutralColor60 */
     }
@@ -130,7 +130,7 @@ defaultOptions.noData = {
  * @requires modules/no-data-to-display
  */
 chartPrototype.showNoData = function (str) {
-    var chart = this, options = chart.options, text = str || (options && options.lang.noData) || '', noDataOptions = options && (options.noData || {});
+    const chart = this, options = chart.options, text = str || (options && options.lang.noData) || '', noDataOptions = options && (options.noData || {});
     if (chart.renderer) { // Meaning chart is not destroyed
         if (!chart.noDataLabel) {
             chart.noDataLabel = chart.renderer
@@ -154,7 +154,7 @@ chartPrototype.showNoData = function (str) {
  * @requires modules/no-data-to-display
  */
 chartPrototype.hideNoData = function () {
-    var chart = this;
+    const chart = this;
     if (chart.noDataLabel) {
         chart.noDataLabel = chart.noDataLabel.destroy();
     }
@@ -169,7 +169,7 @@ chartPrototype.hideNoData = function () {
  * @requires modules/no-data-to-display
  */
 chartPrototype.hasData = function () {
-    var chart = this, series = chart.series || [], i = series.length;
+    let chart = this, series = chart.series || [], i = series.length;
     while (i--) {
         if (series[i].hasData() && !series[i].options.isInternal) {
             return true;

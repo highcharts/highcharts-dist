@@ -32,7 +32,7 @@ var GeometryUtilities;
      * Calculated center
      */
     function getCenterOfPoints(points) {
-        var sum = points.reduce(function (sum, point) {
+        const sum = points.reduce((sum, point) => {
             sum.x += point.x;
             sum.y += point.y;
             return sum;

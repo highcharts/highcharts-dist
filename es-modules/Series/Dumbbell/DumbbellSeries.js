@@ -8,34 +8,19 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import ColumnSeries from '../Column/ColumnSeries.js';
-var colProto = ColumnSeries.prototype;
+const { prototype: colProto } = ColumnSeries;
 import DumbbellPoint from './DumbbellPoint.js';
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import Series from '../../Core/Series/Series.js';
-var seriesProto = Series.prototype;
+const { prototype: seriesProto } = Series;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, columnRangeProto = _a.columnrange.prototype;
-var areaRangeProto = AreaRangeSeries.prototype;
+const { seriesTypes: { arearange: AreaRangeSeries, columnrange: { prototype: columnRangeProto } } } = SeriesRegistry;
+const { prototype: areaRangeProto } = AreaRangeSeries;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge, pick = U.pick;
+const { extend, merge, pick } = U;
 /**
  * The dumbbell series type
  *
@@ -45,25 +30,23 @@ var extend = U.extend, merge = U.merge, pick = U.pick;
  *
  * @augments Highcharts.Series
  */
-var DumbbellSeries = /** @class */ (function (_super) {
-    __extends(DumbbellSeries, _super);
-    function DumbbellSeries() {
+class DumbbellSeries extends AreaRangeSeries {
+    constructor() {
         /* *
          *
          * Static properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          * Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.columnMetrics = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
+        this.columnMetrics = void 0;
     }
     /**
      *
@@ -79,8 +62,8 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *
      * @return {Highcharts.SVGAttributes} attribs The path and styles.
      */
-    DumbbellSeries.prototype.getConnectorAttribs = function (point) {
-        var series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidth = pick(pointOptions.connectorWidth, seriesOptions.connectorWidth), connectorColor = pick(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color), connectorWidthPlus = pick(seriesOptions.states &&
+    getConnectorAttribs(point) {
+        let series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidth = pick(pointOptions.connectorWidth, seriesOptions.connectorWidth), connectorColor = pick(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color), connectorWidthPlus = pick(seriesOptions.states &&
             seriesOptions.states.hover &&
             seriesOptions.states.hover.connectorWidthPlus, 1), dashStyle = pick(pointOptions.dashStyle, seriesOptions.dashStyle), pointTop = pick(point.plotLow, point.plotY), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
             yAxis.len - pxThreshold : pxThreshold, pointBottom = pick(point.plotHigh, pointHeight), attribs, origProps;
@@ -135,7 +118,7 @@ var DumbbellSeries = /** @class */ (function (_super) {
             }
         }
         return attribs;
-    };
+    }
     /**
      * Draw connector line that connects dumbbell point's low and high values.
      * @private
@@ -143,8 +126,8 @@ var DumbbellSeries = /** @class */ (function (_super) {
      * @param {Highcharts.Point} point The point to inspect.
      *
      */
-    DumbbellSeries.prototype.drawConnector = function (point) {
-        var series = this, animationLimit = pick(series.options.animationLimit, 250), verb = point.connector && series.chart.pointCount < animationLimit ?
+    drawConnector(point) {
+        const series = this, animationLimit = pick(series.options.animationLimit, 250), verb = point.connector && series.chart.pointCount < animationLimit ?
             'animate' : 'attr';
         if (!point.connector) {
             point.connector = series.chart.renderer.path()
@@ -155,7 +138,7 @@ var DumbbellSeries = /** @class */ (function (_super) {
                 .add(series.group);
         }
         point.connector[verb](this.getConnectorAttribs(point));
-    };
+    }
     /**
      * Return the width and x offset of the dumbbell adjusted for grouping,
      * groupPadding, pointPadding, pointWidth etc.
@@ -169,11 +152,11 @@ var DumbbellSeries = /** @class */ (function (_super) {
      * @return {Highcharts.ColumnMetricsObject} metrics shapeArgs
      *
      */
-    DumbbellSeries.prototype.getColumnMetrics = function () {
-        var metrics = colProto.getColumnMetrics.apply(this, arguments);
+    getColumnMetrics() {
+        const metrics = colProto.getColumnMetrics.apply(this, arguments);
         metrics.offset += metrics.width / 2;
         return metrics;
-    };
+    }
     /**
      * Translate each point to the plot area coordinate system and find
      * shape positions
@@ -185,21 +168,20 @@ var DumbbellSeries = /** @class */ (function (_super) {
      * @param {Highcharts.Series} this The series of points.
      *
      */
-    DumbbellSeries.prototype.translate = function () {
-        var _this = this;
-        var inverted = this.chart.inverted;
+    translate() {
+        const inverted = this.chart.inverted;
         // Calculate shapeargs
         this.setShapeArgs.apply(this);
         // Calculate point low / high values
         this.translatePoint.apply(this, arguments);
         // Correct x position
-        this.points.forEach(function (point) {
-            var pointWidth = point.pointWidth, _a = point.shapeArgs, shapeArgs = _a === void 0 ? {} : _a, tooltipPos = point.tooltipPos;
+        this.points.forEach((point) => {
+            const { pointWidth, shapeArgs = {}, tooltipPos } = point;
             point.plotX = shapeArgs.x || 0;
             shapeArgs.x = point.plotX - pointWidth / 2;
             if (tooltipPos) {
                 if (inverted) {
-                    tooltipPos[1] = _this.xAxis.len - point.plotX;
+                    tooltipPos[1] = this.xAxis.len - point.plotX;
                 }
                 else {
                     tooltipPos[0] = point.plotX;
@@ -207,7 +189,7 @@ var DumbbellSeries = /** @class */ (function (_super) {
             }
         });
         this.columnMetrics.offset -= this.columnMetrics.width / 2;
-    };
+    }
     /**
      * Extend the arearange series' drawPoints method by applying a connector
      * and coloring markers.
@@ -218,13 +200,13 @@ var DumbbellSeries = /** @class */ (function (_super) {
      * @param {Highcharts.Series} this The series of points.
      *
      */
-    DumbbellSeries.prototype.drawPoints = function () {
-        var series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
+    drawPoints() {
+        let series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
         this.seriesDrawPoints.apply(series, arguments);
         // Draw connectors and color upper markers
         while (i < pointLength) {
             point = series.points[i];
-            var _a = point.graphics || [], lowerGraphic = _a[0], upperGraphic = _a[1];
+            const [lowerGraphic, upperGraphic] = point.graphics || [];
             series.drawConnector(point);
             if (upperGraphic) {
                 upperGraphic.element.point = point;
@@ -243,7 +225,7 @@ var DumbbellSeries = /** @class */ (function (_super) {
             }
             i++;
         }
-    };
+    }
     /**
      * Get non-presentational attributes for a point. Used internally for
      * both styled mode and classic. Set correct position in link with connector
@@ -259,12 +241,12 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *         A hash containing those attributes that are not settable from
      *         CSS.
      */
-    DumbbellSeries.prototype.markerAttribs = function () {
-        var ret = areaRangeProto.markerAttribs.apply(this, arguments);
+    markerAttribs() {
+        const ret = areaRangeProto.markerAttribs.apply(this, arguments);
         ret.x = Math.floor(ret.x || 0);
         ret.y = Math.floor(ret.y || 0);
         return ret;
-    };
+    }
     /**
      * Get presentational attributes
      *
@@ -276,89 +258,88 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *
      * @return {Highcharts.SVGAttributes} pointAttribs SVGAttributes
      */
-    DumbbellSeries.prototype.pointAttribs = function (point, state) {
-        var pointAttribs;
+    pointAttribs(point, state) {
+        let pointAttribs;
         pointAttribs = seriesProto.pointAttribs.apply(this, arguments);
         if (state === 'hover') {
             delete pointAttribs.fill;
         }
         return pointAttribs;
-    };
+    }
+}
+/**
+ * The dumbbell series is a cartesian series with higher and lower values
+ * for each point along an X axis, connected with a line between the
+ * values.
+ *
+ * Requires `highcharts-more.js` and `modules/dumbbell.js`.
+ *
+ * @sample {highcharts} highcharts/demo/dumbbell/
+ *         Dumbbell chart
+ * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
+ *         Styled mode
+ *
+ * @extends      plotOptions.arearange
+ * @product      highcharts highstock
+ * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
+ *               stickyTracking, trackByArea, boostThreshold, boostBlending
+ * @since 8.0.0
+ * @optionparent plotOptions.dumbbell
+ */
+DumbbellSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions, {
+    /** @ignore-option */
+    trackByArea: false,
+    /** @ignore-option */
+    fillColor: 'none',
+    /** @ignore-option */
+    lineWidth: 0,
+    pointRange: 1,
     /**
-     * The dumbbell series is a cartesian series with higher and lower values
-     * for each point along an X axis, connected with a line between the
+     * Pixel width of the line that connects the dumbbell point's
      * values.
      *
-     * Requires `highcharts-more.js` and `modules/dumbbell.js`.
-     *
-     * @sample {highcharts} highcharts/demo/dumbbell/
-     *         Dumbbell chart
-     * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
-     *         Styled mode
-     *
-     * @extends      plotOptions.arearange
-     * @product      highcharts highstock
-     * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
-     *               stickyTracking, trackByArea, boostThreshold, boostBlending
      * @since 8.0.0
-     * @optionparent plotOptions.dumbbell
+     * @product   highcharts highstock
      */
-    DumbbellSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions, {
-        /** @ignore-option */
-        trackByArea: false,
-        /** @ignore-option */
-        fillColor: 'none',
-        /** @ignore-option */
-        lineWidth: 0,
-        pointRange: 1,
-        /**
-         * Pixel width of the line that connects the dumbbell point's
-         * values.
-         *
-         * @since 8.0.0
-         * @product   highcharts highstock
-         */
-        connectorWidth: 1,
-        /** @ignore-option */
-        stickyTracking: false,
-        groupPadding: 0.2,
-        crisp: false,
-        pointPadding: 0.1,
-        /**
-         * Color of the start markers in a dumbbell graph.
-         *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         * @since 8.0.0
-         * @product   highcharts highstock
-         */
-        lowColor: "#333333" /* Palette.neutralColor80 */,
-        /**
-         * Color of the line that connects the dumbbell point's values.
-         * By default it is the series' color.
-         *
-         * @type      {string}
-         * @product   highcharts highstock
-         * @since 8.0.0
-         * @apioption plotOptions.dumbbell.connectorColor
-         */
-        states: {
-            hover: {
-                /** @ignore-option */
-                lineWidthPlus: 0,
-                /**
-                 * The additional connector line width for a hovered point.
-                 *
-                 * @since 8.0.0
-                 * @product   highcharts highstock
-                 */
-                connectorWidthPlus: 1,
-                /** @ignore-option */
-                halo: false
-            }
+    connectorWidth: 1,
+    /** @ignore-option */
+    stickyTracking: false,
+    groupPadding: 0.2,
+    crisp: false,
+    pointPadding: 0.1,
+    /**
+     * Color of the start markers in a dumbbell graph.
+     *
+     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @since 8.0.0
+     * @product   highcharts highstock
+     */
+    lowColor: "#333333" /* Palette.neutralColor80 */,
+    /**
+     * Color of the line that connects the dumbbell point's values.
+     * By default it is the series' color.
+     *
+     * @type      {string}
+     * @product   highcharts highstock
+     * @since 8.0.0
+     * @apioption plotOptions.dumbbell.connectorColor
+     */
+    states: {
+        hover: {
+            /** @ignore-option */
+            lineWidthPlus: 0,
+            /**
+             * The additional connector line width for a hovered point.
+             *
+             * @since 8.0.0
+             * @product   highcharts highstock
+             */
+            connectorWidthPlus: 1,
+            /** @ignore-option */
+            halo: false
         }
-    });
-    return DumbbellSeries;
-}(AreaRangeSeries));
+    }
+});
 extend(DumbbellSeries.prototype, {
     crispCol: colProto.crispCol,
     drawGraph: noop,

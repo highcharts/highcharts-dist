@@ -9,48 +9,41 @@
  * */
 'use strict';
 import U from '../../Utilities.js';
-var defined = U.defined, isNumber = U.isNumber, pick = U.pick;
+const { defined, isNumber, pick } = U;
 /* *
  *
  *  Functions
  *
  * */
 /* eslint-disable require-jsdoc, valid-jsdoc */
-function arc(x, y, w, h, options) {
-    var arc = [];
+function arc(cx, cy, w, h, options) {
+    const arc = [];
     if (options) {
-        var start = options.start || 0, rx = pick(options.r, w), ry = pick(options.r, h || w), proximity = 0.001, fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
+        const start = options.start || 0, rx = pick(options.r, w), ry = pick(options.r, h || w), proximity = 0.001, fullCircle = (Math.abs((options.end || 0) - start - 2 * Math.PI) <
             proximity), 
         // Substract a small number to prevent cos and sin of start
         // and end from becoming equal on 360 arcs (related: #1561)
-        end = (options.end || 0) - proximity, innerRadius = options.innerR, open_1 = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
+        end = (options.end || 0) - proximity, innerRadius = options.innerR, open = pick(options.open, fullCircle), cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
         longArc = pick(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
-        arc.push([
-            'M',
-            x + rx * cosStart,
-            y + ry * sinStart
-        ], [
+        let arcSegment = [
             'A',
             rx,
             ry,
             0,
             longArc,
             pick(options.clockwise, 1),
-            x + rx * cosEnd,
-            y + ry * sinEnd
-        ]);
+            cx + rx * cosEnd,
+            cy + ry * sinEnd
+        ];
+        arcSegment.params = { start, end, cx, cy }; // Memo for border radius
+        arc.push([
+            'M',
+            cx + rx * cosStart,
+            cy + ry * sinStart
+        ], arcSegment);
         if (defined(innerRadius)) {
-            arc.push(open_1 ?
-                [
-                    'M',
-                    x + innerRadius * cosEnd,
-                    y + innerRadius * sinEnd
-                ] : [
-                'L',
-                x + innerRadius * cosEnd,
-                y + innerRadius * sinEnd
-            ], [
+            arcSegment = [
                 'A',
                 innerRadius,
                 innerRadius,
@@ -58,23 +51,39 @@ function arc(x, y, w, h, options) {
                 longArc,
                 // Clockwise - opposite to the outer arc clockwise
                 defined(options.clockwise) ? 1 - options.clockwise : 0,
-                x + innerRadius * cosStart,
-                y + innerRadius * sinStart
-            ]);
+                cx + innerRadius * cosStart,
+                cy + innerRadius * sinStart
+            ];
+            // Memo for border radius
+            arcSegment.params = {
+                start: end,
+                end: start,
+                cx,
+                cy
+            };
+            arc.push(open ?
+                [
+                    'M',
+                    cx + innerRadius * cosEnd,
+                    cy + innerRadius * sinEnd
+                ] : [
+                'L',
+                cx + innerRadius * cosEnd,
+                cy + innerRadius * sinEnd
+            ], arcSegment);
         }
-        if (!open_1) {
+        if (!open) {
             arc.push(['Z']);
         }
     }
     return arc;
 }
 /**
- * Callout shape used for default tooltips, also used for rounded
- * rectangles in VML
+ * Callout shape used for default tooltips.
  */
 function callout(x, y, w, h, options) {
-    var arrowLength = 6, halfDistance = 6, r = Math.min((options && options.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options && options.anchorX, anchorY = options && options.anchorY || 0;
-    var path = roundedRect(x, y, w, h, { r: r });
+    const arrowLength = 6, halfDistance = 6, r = Math.min((options && options.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options && options.anchorX, anchorY = options && options.anchorY || 0;
+    const path = roundedRect(x, y, w, h, { r });
     if (!isNumber(anchorX)) {
         return path;
     }
@@ -149,17 +158,18 @@ function rect(x, y, w, h, options) {
     ];
 }
 function roundedRect(x, y, w, h, options) {
-    var r = (options && options.r) || 0;
+    const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
     return [
         ['M', x + r, y],
         ['L', x + w - r, y],
-        ['C', x + w, y, x + w, y, x + w, y + r],
+        ['A', r, r, 0, 0, 1, x + w, y + r],
         ['L', x + w, y + h - r],
-        ['C', x + w, y + h, x + w, y + h, x + w - r, y + h],
+        ['A', r, r, 0, 0, 1, x + w - r, y + h],
         ['L', x + r, y + h],
-        ['C', x, y + h, x, y + h, x, y + h - r],
+        ['A', r, r, 0, 0, 1, x, y + h - r],
         ['L', x, y + r],
-        ['C', x, y, x, y, x + r, y] // top-left corner
+        ['A', r, r, 0, 0, 1, x + r, y],
+        ['Z'] // top-left corner
     ];
 }
 function triangle(x, y, w, h) {
@@ -178,15 +188,15 @@ function triangleDown(x, y, w, h) {
         ['Z']
     ];
 }
-var Symbols = {
-    arc: arc,
-    callout: callout,
-    circle: circle,
-    diamond: diamond,
-    rect: rect,
-    roundedRect: roundedRect,
+const Symbols = {
+    arc,
+    callout,
+    circle,
+    diamond,
+    rect,
+    roundedRect,
     square: rect,
-    triangle: triangle,
+    triangle,
     'triangle-down': triangleDown
 };
 /* *

@@ -11,13 +11,13 @@
  * */
 'use strict';
 import Color from '../Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import D from '../Defaults.js';
-var genericDefaultOptions = D.defaultOptions;
+const { defaultOptions: genericDefaultOptions } = D;
 import Math3D from '../Math3D.js';
-var perspective = Math3D.perspective, shapeArea3D = Math3D.shapeArea3D;
+const { perspective, shapeArea3D } = Math3D;
 import U from '../Utilities.js';
-var addEvent = U.addEvent, isArray = U.isArray, merge = U.merge, pick = U.pick, wrap = U.wrap;
+const { addEvent, isArray, merge, pick, wrap } = U;
 var Chart3D;
 (function (Chart3D) {
     /* *
@@ -30,13 +30,13 @@ var Chart3D;
      *  Classes
      *
      * */
-    var Composition = /** @class */ (function () {
+    class Composition {
         /* *
          *
          *  Constructors
          *
          * */
-        function Composition(chart) {
+        constructor(chart) {
             this.frame3d = void 0;
             this.chart = chart;
         }
@@ -45,9 +45,9 @@ var Chart3D;
          *  Functions
          *
          * */
-        Composition.prototype.get3dFrame = function () {
-            var chart = this.chart, options3d = chart.options.chart.options3d, frameOptions = options3d.frame, xm = chart.plotLeft, xp = chart.plotLeft + chart.plotWidth, ym = chart.plotTop, yp = chart.plotTop + chart.plotHeight, zm = 0, zp = options3d.depth, faceOrientation = function (vertexes) {
-                var area = shapeArea3D(vertexes, chart);
+        get3dFrame() {
+            const chart = this.chart, options3d = chart.options.chart.options3d, frameOptions = options3d.frame, xm = chart.plotLeft, xp = chart.plotLeft + chart.plotWidth, ym = chart.plotTop, yp = chart.plotTop + chart.plotHeight, zm = 0, zp = options3d.depth, faceOrientation = function (vertexes) {
+                const area = shapeArea3D(vertexes, chart);
                 // Give it 0.5 squared-pixel as a margin for rounding errors
                 if (area > 0.5) {
                     return 1;
@@ -87,7 +87,7 @@ var Chart3D;
                 { x: xp, y: yp, z: zp },
                 { x: xm, y: yp, z: zp }
             ]), defaultShowFront = false, defaultShowBack = true;
-            var defaultShowBottom = false, defaultShowTop = false, defaultShowLeft = false, defaultShowRight = false;
+            let defaultShowBottom = false, defaultShowTop = false, defaultShowLeft = false, defaultShowRight = false;
             // The 'default' criteria to visible faces of the frame is looking
             // up every axis to decide whenever the left/right//top/bottom sides
             // of the frame will be shown
@@ -113,13 +113,13 @@ var Chart3D;
                     }
                 }
             });
-            var getFaceOptions = function (sources, faceOrientation, defaultVisible) {
-                var faceAttrs = ['size', 'color', 'visible'], options = {};
-                for (var i = 0; i < faceAttrs.length; i++) {
-                    var attr = faceAttrs[i];
-                    for (var j = 0; j < sources.length; j++) {
+            const getFaceOptions = function (sources, faceOrientation, defaultVisible) {
+                const faceAttrs = ['size', 'color', 'visible'], options = {};
+                for (let i = 0; i < faceAttrs.length; i++) {
+                    const attr = faceAttrs[i];
+                    for (let j = 0; j < sources.length; j++) {
                         if (typeof sources[j] === 'object') {
-                            var val = sources[j][attr];
+                            const val = sources[j][attr];
                             if (typeof val !== 'undefined' && val !== null) {
                                 options[attr] = val;
                                 break;
@@ -127,7 +127,7 @@ var Chart3D;
                         }
                     }
                 }
-                var isVisible = defaultVisible;
+                let isVisible = defaultVisible;
                 if (options.visible === true || options.visible === false) {
                     isVisible = options.visible;
                 }
@@ -143,7 +143,7 @@ var Chart3D;
             };
             // docs @TODO: Add all frame options (left, right, top, bottom,
             // front, back) to apioptions JSDoc once the new system is up.
-            var ret = {
+            const ret = {
                 axes: {},
                 // FIXME: Previously, left/right, top/bottom and front/back
                 // pairs shared size and color.
@@ -173,13 +173,13 @@ var Chart3D;
             // between a visible face and an invisble one. Also, the Y label
             // should be one the left-most edge (right-most if opposite).
             if (options3d.axisLabelPosition === 'auto') {
-                var isValidEdge = function (face1, face2) {
+                const isValidEdge = function (face1, face2) {
                     return ((face1.visible !== face2.visible) ||
                         (face1.visible &&
                             face2.visible &&
                             (face1.frontFacing !== face2.frontFacing)));
                 };
-                var yEdges = [];
+                const yEdges = [];
                 if (isValidEdge(ret.left, ret.front)) {
                     yEdges.push({
                         y: (ym + yp) / 2,
@@ -212,7 +212,7 @@ var Chart3D;
                         xDir: { x: -1, y: 0, z: 0 }
                     });
                 }
-                var xBottomEdges = [];
+                const xBottomEdges = [];
                 if (isValidEdge(ret.bottom, ret.front)) {
                     xBottomEdges.push({
                         x: (xm + xp) / 2,
@@ -229,7 +229,7 @@ var Chart3D;
                         xDir: { x: -1, y: 0, z: 0 }
                     });
                 }
-                var xTopEdges = [];
+                const xTopEdges = [];
                 if (isValidEdge(ret.top, ret.front)) {
                     xTopEdges.push({
                         x: (xm + xp) / 2,
@@ -246,7 +246,7 @@ var Chart3D;
                         xDir: { x: -1, y: 0, z: 0 }
                     });
                 }
-                var zBottomEdges = [];
+                const zBottomEdges = [];
                 if (isValidEdge(ret.bottom, ret.left)) {
                     zBottomEdges.push({
                         z: (zm + zp) / 2,
@@ -263,7 +263,7 @@ var Chart3D;
                         xDir: { x: 0, y: 0, z: 1 }
                     });
                 }
-                var zTopEdges = [];
+                const zTopEdges = [];
                 if (isValidEdge(ret.top, ret.left)) {
                     zTopEdges.push({
                         z: (zm + zp) / 2,
@@ -280,16 +280,16 @@ var Chart3D;
                         xDir: { x: 0, y: 0, z: 1 }
                     });
                 }
-                var pickEdge = function (edges, axis, mult) {
+                const pickEdge = function (edges, axis, mult) {
                     if (edges.length === 0) {
                         return null;
                     }
                     if (edges.length === 1) {
                         return edges[0];
                     }
-                    var projections = perspective(edges, chart, false);
-                    var best = 0;
-                    for (var i = 1; i < projections.length; i++) {
+                    const projections = perspective(edges, chart, false);
+                    let best = 0;
+                    for (let i = 1; i < projections.length; i++) {
                         if (mult * projections[i][axis] >
                             mult * projections[best][axis]) {
                             best = i;
@@ -356,7 +356,7 @@ var Chart3D;
                 };
             }
             return ret;
-        };
+        }
         /**
          * Calculate scale of the 3D view. That is required to fit chart's 3D
          * projection into the actual plotting area. Reported as #4933.
@@ -378,14 +378,14 @@ var Chart3D;
          *
          * @requires highcharts-3d
          */
-        Composition.prototype.getScale = function (depth) {
-            var chart = this.chart, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop, originX = plotLeft + chart.plotWidth / 2, originY = plotTop + chart.plotHeight / 2, bbox3d = {
+        getScale(depth) {
+            const chart = this.chart, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop, originX = plotLeft + chart.plotWidth / 2, originY = plotTop + chart.plotHeight / 2, bbox3d = {
                 minX: Number.MAX_VALUE,
                 maxX: -Number.MAX_VALUE,
                 minY: Number.MAX_VALUE,
                 maxY: -Number.MAX_VALUE
             };
-            var corners, scale = 1;
+            let corners, scale = 1;
             // Top left corners:
             corners = [{
                     x: plotLeft,
@@ -443,9 +443,8 @@ var Chart3D;
                 scale = Math.min(scale, Math.abs((plotBottom - originY) / (bbox3d.maxY - originY)));
             }
             return scale;
-        };
-        return Composition;
-    }());
+        }
+    }
     Chart3D.Composition = Composition;
     /* *
      *
@@ -628,8 +627,8 @@ var Chart3D;
      * @private
      */
     function compose(ChartClass, FxClass) {
-        var chartProto = ChartClass.prototype;
-        var fxProto = FxClass.prototype;
+        const chartProto = ChartClass.prototype;
+        const fxProto = FxClass.prototype;
         /**
          * Shorthand to check the is3d flag.
          * @private
@@ -647,13 +646,13 @@ var Chart3D;
          * @private
          */
         fxProto.matrixSetter = function () {
-            var interpolated;
+            let interpolated;
             if (this.pos < 1 &&
                 (isArray(this.start) || isArray(this.end))) {
-                var start = (this.start ||
+                const start = (this.start ||
                     [1, 0, 0, 1, 0, 0]), end = this.end || [1, 0, 0, 1, 0, 0];
                 interpolated = [];
-                for (var i = 0; i < 6; i++) {
+                for (let i = 0; i < 6; i++) {
                     interpolated.push(this.pos * end[i] + (1 - this.pos) * start[i]);
                 }
             }
@@ -694,7 +693,7 @@ var Chart3D;
     function onAfterDrawChartBox() {
         if (this.chart3d &&
             this.is3d()) {
-            var chart = this, renderer = chart.renderer, options3d = chart.options.chart.options3d, frame = chart.chart3d.get3dFrame(), xm = chart.plotLeft, xp = chart.plotLeft + chart.plotWidth, ym = chart.plotTop, yp = chart.plotTop + chart.plotHeight, zm = 0, zp = options3d.depth, xmm = xm - (frame.left.visible ? frame.left.size : 0), xpp = xp + (frame.right.visible ? frame.right.size : 0), ymm = ym - (frame.top.visible ? frame.top.size : 0), ypp = yp + (frame.bottom.visible ? frame.bottom.size : 0), zmm = zm - (frame.front.visible ? frame.front.size : 0), zpp = zp + (frame.back.visible ? frame.back.size : 0), verb = chart.hasRendered ? 'animate' : 'attr';
+            const chart = this, renderer = chart.renderer, options3d = chart.options.chart.options3d, frame = chart.chart3d.get3dFrame(), xm = chart.plotLeft, xp = chart.plotLeft + chart.plotWidth, ym = chart.plotTop, yp = chart.plotTop + chart.plotHeight, zm = 0, zp = options3d.depth, xmm = xm - (frame.left.visible ? frame.left.size : 0), xpp = xp + (frame.right.visible ? frame.right.size : 0), ymm = ym - (frame.top.visible ? frame.top.size : 0), ypp = yp + (frame.bottom.visible ? frame.bottom.size : 0), zmm = zm - (frame.front.visible ? frame.front.size : 0), zpp = zp + (frame.back.visible ? frame.back.size : 0), verb = chart.hasRendered ? 'animate' : 'attr';
             chart.chart3d.frame3d = frame;
             if (!chart.frameShapes) {
                 chart.frameShapes = {
@@ -1539,10 +1538,10 @@ var Chart3D;
      * @private
      */
     function onAfterInit() {
-        var options = this.options;
+        const options = this.options;
         if (this.is3d()) {
             (options.series || []).forEach(function (s) {
-                var type = (s.type ||
+                const type = (s.type ||
                     options.chart.type ||
                     options.chart.defaultSeriesType);
                 if (type === 'scatter') {
@@ -1555,7 +1554,7 @@ var Chart3D;
      * @private
      */
     function onAfterSetChartSize() {
-        var chart = this, options3d = chart.options.chart.options3d;
+        const chart = this, options3d = chart.options.chart.options3d;
         if (chart.chart3d &&
             chart.is3d()) {
             // Add a 0-360 normalisation for alfa and beta angles in 3d graph
@@ -1565,7 +1564,7 @@ var Chart3D;
                 options3d.beta = options3d.beta % 360 +
                     (options3d.beta >= 0 ? 0 : 360);
             }
-            var inverted = chart.inverted, clipBox = chart.clipBox, margin = chart.margin, x = inverted ? 'y' : 'x', y = inverted ? 'x' : 'y', w = inverted ? 'height' : 'width', h = inverted ? 'width' : 'height';
+            const inverted = chart.inverted, clipBox = chart.clipBox, margin = chart.margin, x = inverted ? 'y' : 'x', y = inverted ? 'x' : 'y', w = inverted ? 'height' : 'width', h = inverted ? 'width' : 'height';
             clipBox[x] = -(margin[3] || 0);
             clipBox[y] = -(margin[0] || 0);
             clipBox[w] = (chart.chartWidth + (margin[3] || 0) + (margin[1] || 0));
@@ -1618,7 +1617,7 @@ var Chart3D;
      * @private
      */
     function wrapRenderSeries(proceed) {
-        var series, i = this.series.length;
+        let series, i = this.series.length;
         if (this.is3d()) {
             while (i--) {
                 series = this.series[i];

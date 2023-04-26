@@ -5,25 +5,10 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var isArray = U.isArray, merge = U.merge;
+const { isArray, merge } = U;
 /* *
  *
  *  Functions
@@ -42,8 +27,8 @@ function sumArray(array) {
  * @private
  */
 function meanDeviation(arr, sma) {
-    var len = arr.length;
-    var sum = 0, i;
+    const len = arr.length;
+    let sum = 0, i;
     for (i = 0; i < len; i++) {
         sum += Math.abs(sma - (arr[i]));
     }
@@ -63,33 +48,31 @@ function meanDeviation(arr, sma) {
  *
  * @augments Highcharts.Series
  */
-var CCIIndicator = /** @class */ (function (_super) {
-    __extends(CCIIndicator, _super);
-    function CCIIndicator() {
+class CCIIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.points = void 0;
-        _this.options = void 0;
-        return _this;
+        this.data = void 0;
+        this.points = void 0;
+        this.options = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    CCIIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
-        var CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
+    getValues(series, params) {
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
+        let CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
         // CCI requires close value
         if (xVal.length <= period ||
             !isArray(yVal[0]) ||
@@ -119,31 +102,30 @@ var CCIIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Commodity Channel Index (CCI). This series requires `linkedTo` option to
+ * be set.
+ *
+ * @sample stock/indicators/cci
+ *         CCI indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/cci
+ * @optionparent plotOptions.cci
+ */
+CCIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Commodity Channel Index (CCI). This series requires `linkedTo` option to
-     * be set.
-     *
-     * @sample stock/indicators/cci
-     *         CCI indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/cci
-     * @optionparent plotOptions.cci
+     * @excluding index
      */
-    CCIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        /**
-         * @excluding index
-         */
-        params: {
-            index: void 0 // unused index, do not inherit (#15362)
-        }
-    });
-    return CCIIndicator;
-}(SMAIndicator));
+    params: {
+        index: void 0 // unused index, do not inherit (#15362)
+    }
+});
 SeriesRegistry.registerSeriesType('cci', CCIIndicator);
 /* *
  *

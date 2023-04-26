@@ -10,29 +10,14 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import RangeSelector from '../../Stock/RangeSelector/RangeSelector.js';
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
-var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT, getAxisRangeDescription = ChartUtilities.getAxisRangeDescription;
+const { unhideChartElementFromAT, getAxisRangeDescription } = ChartUtilities;
 import Announcer from '../Utils/Announcer.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, attr = U.attr;
+const { addEvent, attr } = U;
 /* *
  *
  *  Functions
@@ -40,6 +25,7 @@ var addEvent = U.addEvent, attr = U.attr;
  * */
 /* eslint-disable valid-jsdoc */
 /**
+ * Do we want date input navigation
  * @private
  */
 function shouldRunInputNavigation(chart) {
@@ -62,17 +48,15 @@ function shouldRunInputNavigation(chart) {
  * @class
  * @name Highcharts.RangeSelectorComponent
  */
-var RangeSelectorComponent = /** @class */ (function (_super) {
-    __extends(RangeSelectorComponent, _super);
-    function RangeSelectorComponent() {
+class RangeSelectorComponent extends AccessibilityComponent {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.announcer = void 0;
-        return _this;
+        super(...arguments);
+        this.announcer = void 0;
     }
     /* *
      *
@@ -84,15 +68,15 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
      * Init the component
      * @private
      */
-    RangeSelectorComponent.prototype.init = function () {
-        var chart = this.chart;
+    init() {
+        const chart = this.chart;
         this.announcer = new Announcer(chart, 'polite');
-    };
+    }
     /**
      * Called on first render/updates to the chart, including options changes.
      */
-    RangeSelectorComponent.prototype.onChartUpdate = function () {
-        var chart = this.chart, component = this, rangeSelector = chart.rangeSelector;
+    onChartUpdate() {
+        const chart = this.chart, component = this, rangeSelector = chart.rangeSelector;
         if (!rangeSelector) {
             return;
         }
@@ -100,14 +84,14 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
         this.setDropdownAttrs();
         if (rangeSelector.buttons &&
             rangeSelector.buttons.length) {
-            rangeSelector.buttons.forEach(function (button) {
+            rangeSelector.buttons.forEach((button) => {
                 component.setRangeButtonAttrs(button);
             });
         }
         // Make sure input boxes are accessible and focusable
         if (rangeSelector.maxInput && rangeSelector.minInput) {
             ['minInput', 'maxInput'].forEach(function (key, i) {
-                var input = rangeSelector[key];
+                const input = rangeSelector[key];
                 if (input) {
                     unhideChartElementFromAT(chart, input);
                     component.setRangeInputAttrs(input, 'accessibility.rangeSelector.' + (i ? 'max' : 'min') +
@@ -115,75 +99,74 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
                 }
             });
         }
-    };
+    }
     /**
      * Hide buttons from AT when showing dropdown, and vice versa.
      * @private
      */
-    RangeSelectorComponent.prototype.updateSelectorVisibility = function () {
-        var chart = this.chart;
-        var rangeSelector = chart.rangeSelector;
-        var dropdown = (rangeSelector &&
+    updateSelectorVisibility() {
+        const chart = this.chart;
+        const rangeSelector = chart.rangeSelector;
+        const dropdown = (rangeSelector &&
             rangeSelector.dropdown);
-        var buttons = (rangeSelector &&
+        const buttons = (rangeSelector &&
             rangeSelector.buttons ||
             []);
-        var hideFromAT = function (el) { return el.setAttribute('aria-hidden', true); };
+        const hideFromAT = (el) => el.setAttribute('aria-hidden', true);
         if (rangeSelector &&
             rangeSelector.hasVisibleDropdown &&
             dropdown) {
             unhideChartElementFromAT(chart, dropdown);
-            buttons.forEach(function (btn) { return hideFromAT(btn.element); });
+            buttons.forEach((btn) => hideFromAT(btn.element));
         }
         else {
             if (dropdown) {
                 hideFromAT(dropdown);
             }
-            buttons.forEach(function (btn) { return unhideChartElementFromAT(chart, btn.element); });
+            buttons.forEach((btn) => unhideChartElementFromAT(chart, btn.element));
         }
-    };
+    }
     /**
      * Set accessibility related attributes on dropdown element.
      * @private
      */
-    RangeSelectorComponent.prototype.setDropdownAttrs = function () {
-        var chart = this.chart;
-        var dropdown = (chart.rangeSelector &&
+    setDropdownAttrs() {
+        const chart = this.chart;
+        const dropdown = (chart.rangeSelector &&
             chart.rangeSelector.dropdown);
         if (dropdown) {
-            var label = chart.langFormat('accessibility.rangeSelector.dropdownLabel', { rangeTitle: chart.options.lang.rangeSelectorZoom });
+            const label = chart.langFormat('accessibility.rangeSelector.dropdownLabel', { rangeTitle: chart.options.lang.rangeSelectorZoom });
             dropdown.setAttribute('aria-label', label);
             dropdown.setAttribute('tabindex', -1);
         }
-    };
+    }
     /**
+     * Set attrs for a range button
      * @private
-     * @param {Highcharts.SVGElement} button
      */
-    RangeSelectorComponent.prototype.setRangeButtonAttrs = function (button) {
+    setRangeButtonAttrs(button) {
         attr(button.element, {
             tabindex: -1,
             role: 'button'
         });
-    };
+    }
     /**
+     * Set attrs for a date input
      * @private
      */
-    RangeSelectorComponent.prototype.setRangeInputAttrs = function (input, langKey) {
-        var chart = this.chart;
+    setRangeInputAttrs(input, langKey) {
+        const chart = this.chart;
         attr(input, {
             tabindex: -1,
             'aria-label': chart.langFormat(langKey, { chart: chart })
         });
-    };
+    }
     /**
+     * Handle arrow key nav
      * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-     * @param {number} keyCode
-     * @return {number} Response code
      */
-    RangeSelectorComponent.prototype.onButtonNavKbdArrowKey = function (keyboardNavigationHandler, keyCode) {
-        var response = keyboardNavigationHandler.response, keys = this.keyCodes, chart = this.chart, wrapAround = chart.options.accessibility
+    onButtonNavKbdArrowKey(keyboardNavigationHandler, keyCode) {
+        const response = keyboardNavigationHandler.response, keys = this.keyCodes, chart = this.chart, wrapAround = chart.options.accessibility
             .keyboardNavigation.wrapAround, direction = (keyCode === keys.left || keyCode === keys.up) ? -1 : 1, didHighlight = chart.highlightRangeSelectorButton(chart.highlightedRangeSelectorItemIx + direction);
         if (!didHighlight) {
             if (wrapAround) {
@@ -193,68 +176,72 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
             return response[direction > 0 ? 'next' : 'prev'];
         }
         return response.success;
-    };
+    }
     /**
+     * Handle keyboard click
      * @private
      */
-    RangeSelectorComponent.prototype.onButtonNavKbdClick = function (keyboardNavigationHandler) {
-        var response = keyboardNavigationHandler.response, chart = this.chart, wasDisabled = chart.oldRangeSelectorItemState === 3;
+    onButtonNavKbdClick(keyboardNavigationHandler) {
+        const response = keyboardNavigationHandler.response, chart = this.chart, wasDisabled = chart.oldRangeSelectorItemState === 3;
         if (!wasDisabled) {
             this.fakeClickEvent(chart.rangeSelector.buttons[chart.highlightedRangeSelectorItemIx].element);
         }
         return response.success;
-    };
+    }
     /**
      * Called whenever a range selector button has been clicked, either by
      * mouse, touch, or kbd/voice/other.
      * @private
      */
-    RangeSelectorComponent.prototype.onAfterBtnClick = function () {
-        var chart = this.chart;
-        var axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
-        var announcement = chart.langFormat('accessibility.rangeSelector.clickButtonAnnouncement', { chart: chart, axisRangeDescription: axisRangeDescription });
+    onAfterBtnClick() {
+        const chart = this.chart;
+        const axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
+        const announcement = chart.langFormat('accessibility.rangeSelector.clickButtonAnnouncement', { chart, axisRangeDescription });
         if (announcement) {
             this.announcer.announce(announcement);
         }
-    };
+    }
     /**
+     * Handle move between input elements with Tab key
      * @private
      */
-    RangeSelectorComponent.prototype.onInputKbdMove = function (direction) {
-        var chart = this.chart;
-        var rangeSel = chart.rangeSelector;
-        var newIx = chart.highlightedInputRangeIx = (chart.highlightedInputRangeIx || 0) + direction;
-        var newIxOutOfRange = newIx > 1 || newIx < 0;
+    onInputKbdMove(direction) {
+        const chart = this.chart;
+        const rangeSel = chart.rangeSelector;
+        const newIx = chart.highlightedInputRangeIx = (chart.highlightedInputRangeIx || 0) + direction;
+        const newIxOutOfRange = newIx > 1 || newIx < 0;
         if (newIxOutOfRange) {
             if (chart.accessibility) {
+                // Ignore focus
+                chart.accessibility.keyboardNavigation.exiting = true;
                 chart.accessibility.keyboardNavigation.tabindexContainer
                     .focus();
-                chart.accessibility.keyboardNavigation.move(direction);
+                return chart.accessibility.keyboardNavigation.move(direction);
             }
         }
         else if (rangeSel) {
-            var svgEl = rangeSel[newIx ? 'maxDateBox' : 'minDateBox'];
-            var inputEl = rangeSel[newIx ? 'maxInput' : 'minInput'];
+            const svgEl = rangeSel[newIx ? 'maxDateBox' : 'minDateBox'];
+            const inputEl = rangeSel[newIx ? 'maxInput' : 'minInput'];
             if (svgEl && inputEl) {
                 chart.setFocusToElement(svgEl, inputEl);
             }
         }
-    };
+        return true;
+    }
     /**
+     * Init date input navigation
      * @private
-     * @param {number} direction
      */
-    RangeSelectorComponent.prototype.onInputNavInit = function (direction) {
-        var _this = this;
-        var component = this;
-        var chart = this.chart;
-        var buttonIxToHighlight = direction > 0 ? 0 : 1;
-        var rangeSel = chart.rangeSelector;
-        var svgEl = (rangeSel &&
+    onInputNavInit(direction) {
+        const component = this;
+        const chart = this.chart;
+        const buttonIxToHighlight = direction > 0 ? 0 : 1;
+        const rangeSel = chart.rangeSelector;
+        const svgEl = (rangeSel &&
             rangeSel[buttonIxToHighlight ? 'maxDateBox' : 'minDateBox']);
-        var minInput = (rangeSel && rangeSel.minInput);
-        var maxInput = (rangeSel && rangeSel.maxInput);
-        var inputEl = buttonIxToHighlight ? maxInput : minInput;
+        const minInput = (rangeSel && rangeSel.minInput);
+        const maxInput = (rangeSel && rangeSel.maxInput);
+        const inputEl = buttonIxToHighlight ? maxInput : minInput;
         chart.highlightedInputRangeIx = buttonIxToHighlight;
         if (svgEl && minInput && maxInput) {
             chart.setFocusToElement(svgEl, inputEl);
@@ -263,27 +250,28 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
             if (this.removeInputKeydownHandler) {
                 this.removeInputKeydownHandler();
             }
-            var keydownHandler = function (e) {
-                var isTab = (e.which || e.keyCode) === _this.keyCodes.tab;
-                if (isTab) {
+            const keydownHandler = (e) => {
+                const isTab = (e.which || e.keyCode) === this.keyCodes.tab;
+                if (isTab &&
+                    component.onInputKbdMove(e.shiftKey ? -1 : 1)) {
                     e.preventDefault();
                     e.stopPropagation();
-                    component.onInputKbdMove(e.shiftKey ? -1 : 1);
                 }
             };
-            var minRemover_1 = addEvent(minInput, 'keydown', keydownHandler);
-            var maxRemover_1 = addEvent(maxInput, 'keydown', keydownHandler);
-            this.removeInputKeydownHandler = function () {
-                minRemover_1();
-                maxRemover_1();
+            const minRemover = addEvent(minInput, 'keydown', keydownHandler);
+            const maxRemover = addEvent(maxInput, 'keydown', keydownHandler);
+            this.removeInputKeydownHandler = () => {
+                minRemover();
+                maxRemover();
             };
         }
-    };
+    }
     /**
+     * Terminate date input nav
      * @private
      */
-    RangeSelectorComponent.prototype.onInputNavTerminate = function () {
-        var rangeSel = (this.chart.rangeSelector || {});
+    onInputNavTerminate() {
+        const rangeSel = (this.chart.rangeSelector || {});
         if (rangeSel.maxInput) {
             rangeSel.hideInput('max');
         }
@@ -294,15 +282,15 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
             this.removeInputKeydownHandler();
             delete this.removeInputKeydownHandler;
         }
-    };
+    }
     /**
+     * Init range selector dropdown nav
      * @private
      */
-    RangeSelectorComponent.prototype.initDropdownNav = function () {
-        var _this = this;
-        var chart = this.chart;
-        var rangeSelector = chart.rangeSelector;
-        var dropdown = (rangeSelector && rangeSelector.dropdown);
+    initDropdownNav() {
+        const chart = this.chart;
+        const rangeSelector = chart.rangeSelector;
+        const dropdown = (rangeSelector && rangeSelector.dropdown);
         if (rangeSelector && dropdown) {
             chart.setFocusToElement(rangeSelector.buttonGroup, dropdown);
             if (this.removeDropdownKeydownHandler) {
@@ -310,8 +298,8 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
             }
             // Tab-press with dropdown focused does not propagate to chart
             // automatically, so we manually catch and handle it when relevant.
-            this.removeDropdownKeydownHandler = addEvent(dropdown, 'keydown', function (e) {
-                var isTab = (e.which || e.keyCode) === _this.keyCodes.tab, a11y = chart.accessibility;
+            this.removeDropdownKeydownHandler = addEvent(dropdown, 'keydown', (e) => {
+                const isTab = (e.which || e.keyCode) === this.keyCodes.tab, a11y = chart.accessibility;
                 if (isTab) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -322,16 +310,16 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
                 }
             });
         }
-    };
+    }
     /**
      * Get navigation for the range selector buttons.
      * @private
      * @return {Highcharts.KeyboardNavigationHandler} The module object.
      */
-    RangeSelectorComponent.prototype.getRangeSelectorButtonNavigation = function () {
-        var chart = this.chart;
-        var keys = this.keyCodes;
-        var component = this;
+    getRangeSelectorButtonNavigation() {
+        const chart = this.chart;
+        const keys = this.keyCodes;
+        const component = this;
         return new KeyboardNavigationHandler(chart, {
             keyCodeMap: [
                 [
@@ -353,12 +341,12 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
                     chart.rangeSelector.buttons.length);
             },
             init: function (direction) {
-                var rangeSelector = chart.rangeSelector;
+                const rangeSelector = chart.rangeSelector;
                 if (rangeSelector && rangeSelector.hasVisibleDropdown) {
                     component.initDropdownNav();
                 }
                 else if (rangeSelector) {
-                    var lastButtonIx = rangeSelector.buttons.length - 1;
+                    const lastButtonIx = rangeSelector.buttons.length - 1;
                     chart.highlightRangeSelectorButton(direction > 0 ? 0 : lastButtonIx);
                 }
             },
@@ -369,16 +357,16 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
                 }
             }
         });
-    };
+    }
     /**
      * Get navigation for the range selector input boxes.
      * @private
      * @return {Highcharts.KeyboardNavigationHandler}
      *         The module object.
      */
-    RangeSelectorComponent.prototype.getRangeSelectorInputNavigation = function () {
-        var chart = this.chart;
-        var component = this;
+    getRangeSelectorInputNavigation() {
+        const chart = this.chart;
+        const component = this;
         return new KeyboardNavigationHandler(chart, {
             keyCodeMap: [],
             validate: function () {
@@ -391,22 +379,22 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
                 component.onInputNavTerminate();
             }
         });
-    };
+    }
     /**
      * Get keyboard navigation handlers for this component.
      * @return {Array<Highcharts.KeyboardNavigationHandler>}
      *         List of module objects.
      */
-    RangeSelectorComponent.prototype.getKeyboardNavigation = function () {
+    getKeyboardNavigation() {
         return [
             this.getRangeSelectorButtonNavigation(),
             this.getRangeSelectorInputNavigation()
         ];
-    };
+    }
     /**
      * Remove component traces
      */
-    RangeSelectorComponent.prototype.destroy = function () {
+    destroy() {
         if (this.removeDropdownKeydownHandler) {
             this.removeDropdownKeydownHandler();
         }
@@ -416,9 +404,8 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
         if (this.announcer) {
             this.announcer.destroy();
         }
-    };
-    return RangeSelectorComponent;
-}(AccessibilityComponent));
+    }
+}
 /* *
  *
  *  Class Namespace
@@ -435,7 +422,7 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -449,11 +436,11 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
      * @function Highcharts.Chart#highlightRangeSelectorButton
      */
     function chartHighlightRangeSelectorButton(ix) {
-        var buttons = (this.rangeSelector &&
+        const buttons = (this.rangeSelector &&
             this.rangeSelector.buttons ||
             []);
-        var curHighlightedIx = this.highlightedRangeSelectorItemIx;
-        var curSelectedIx = (this.rangeSelector &&
+        const curHighlightedIx = this.highlightedRangeSelectorItemIx;
+        const curSelectedIx = (this.rangeSelector &&
             this.rangeSelector.selected);
         // Deselect old
         if (typeof curHighlightedIx !== 'undefined' &&
@@ -474,16 +461,15 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
         return false;
     }
     /**
+     * Build compositions
      * @private
      */
     function compose(ChartClass, RangeSelectorClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.highlightRangeSelectorButton = (chartHighlightRangeSelectorButton);
         }
-        if (composedClasses.indexOf(RangeSelectorClass) === -1) {
-            composedClasses.push(RangeSelectorClass);
+        if (U.pushUnique(composedMembers, RangeSelectorClass)) {
             addEvent(RangeSelector, 'afterBtnClick', rangeSelectorAfterBtnClick);
         }
     }
@@ -494,7 +480,7 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
      * @private
      */
     function rangeSelectorAfterBtnClick() {
-        var a11y = this.chart.accessibility;
+        const a11y = this.chart.accessibility;
         if (a11y && a11y.components.rangeSelector) {
             return a11y.components.rangeSelector.onAfterBtnClick();
         }

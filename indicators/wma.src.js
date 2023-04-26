@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -47,25 +47,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray,
-            merge = U.merge;
+        const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { isArray, merge } = U;
         /* *
          *
          *  Functions
@@ -76,8 +59,7 @@
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i, index) {
-            var xValue = xVal[i],
-                yValue = index < 0 ? yVal[i] : yVal[i][index];
+            const xValue = xVal[i], yValue = index < 0 ? yVal[i] : yVal[i][index];
             points.push([xValue, yValue]);
         }
         /**
@@ -87,7 +69,7 @@
             // The denominator is the sum of the number of days as a triangular number.
             // If there are 5 days, the triangular numbers are 5, 4, 3, 2, and 1.
             // The sum is 5 + 4 + 3 + 2 + 1 = 15.
-            var denominator = (pLen + 1) / 2 * pLen;
+            const denominator = (pLen + 1) / 2 * pLen;
             // reduce VS loop => reduce
             return array.reduce(function (prev, cur, i) {
                 return [null, prev[1] + cur[1] * (i + 1)];
@@ -97,10 +79,7 @@
          * @private
          */
         function populateAverage(points, xVal, yVal, i) {
-            var pLen = points.length,
-                wmaY = weightedSumArray(points,
-                pLen),
-                wmaX = xVal[i - 1];
+            const pLen = points.length, wmaY = weightedSumArray(points, pLen), wmaX = xVal[i - 1];
             points.shift(); // remove point until range < period
             return [wmaX, wmaY];
         }
@@ -118,46 +97,31 @@
          *
          * @augments Highcharts.Series
          */
-        var WMAIndicator = /** @class */ (function (_super) {
-                __extends(WMAIndicator, _super);
-            function WMAIndicator() {
+        class WMAIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            WMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    range = 1,
-                    xValue = xVal[0],
-                    yValue = yVal[0],
-                    WMA = [],
-                    xData = [],
-                    yData = [],
-                    index = -1,
-                    i,
-                    points,
-                    WMAPoint;
+            getValues(series, params) {
+                const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], wma = [], xData = [], yData = [];
+                let range = 1, index = -1, i, wmaPoint, yValue = yVal[0];
                 if (xVal.length < period) {
                     return;
                 }
@@ -167,7 +131,7 @@
                     yValue = yVal[0][index];
                 }
                 // Starting point
-                points = [[xValue, yValue]];
+                const points = [[xValue, yValue]];
                 // Accumulate first N-points
                 while (range !== period) {
                     accumulateAverage(points, xVal, yVal, range, index);
@@ -175,44 +139,43 @@
                 }
                 // Calculate value one-by-one for each period in visible data
                 for (i = range; i < yValLen; i++) {
-                    WMAPoint = populateAverage(points, xVal, yVal, i);
-                    WMA.push(WMAPoint);
-                    xData.push(WMAPoint[0]);
-                    yData.push(WMAPoint[1]);
+                    wmaPoint = populateAverage(points, xVal, yVal, i);
+                    wma.push(wmaPoint);
+                    xData.push(wmaPoint[0]);
+                    yData.push(wmaPoint[1]);
                     accumulateAverage(points, xVal, yVal, i, index);
                 }
-                WMAPoint = populateAverage(points, xVal, yVal, i);
-                WMA.push(WMAPoint);
-                xData.push(WMAPoint[0]);
-                yData.push(WMAPoint[1]);
+                wmaPoint = populateAverage(points, xVal, yVal, i);
+                wma.push(wmaPoint);
+                xData.push(wmaPoint[0]);
+                yData.push(wmaPoint[1]);
                 return {
-                    values: WMA,
+                    values: wma,
                     xData: xData,
                     yData: yData
                 };
-            };
-            /**
-             * Weighted moving average indicator (WMA). This series requires `linkedTo`
-             * option to be set.
-             *
-             * @sample stock/indicators/wma
-             *         Weighted moving average indicator
-             *
-             * @extends      plotOptions.sma
-             * @since        6.0.0
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/wma
-             * @optionparent plotOptions.wma
-             */
-            WMAIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-                params: {
-                    index: 3,
-                    period: 9
-                }
-            });
-            return WMAIndicator;
-        }(SMAIndicator));
+            }
+        }
+        /**
+         * Weighted moving average indicator (WMA). This series requires `linkedTo`
+         * option to be set.
+         *
+         * @sample stock/indicators/wma
+         *         Weighted moving average indicator
+         *
+         * @extends      plotOptions.sma
+         * @since        6.0.0
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/wma
+         * @optionparent plotOptions.wma
+         */
+        WMAIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
+                index: 3,
+                period: 9
+            }
+        });
         SeriesRegistry.registerSeriesType('wma', WMAIndicator);
         /* *
          *

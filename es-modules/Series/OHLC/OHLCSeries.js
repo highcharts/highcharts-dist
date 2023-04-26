@@ -8,33 +8,18 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import OHLCPoint from './OHLCPoint.js';
 import OHLCSeriesDefaults from './OHLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var HLCSeries = SeriesRegistry.seriesTypes.hlc;
+const { seriesTypes: { hlc: HLCSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, merge = U.merge;
+const { addEvent, extend, merge } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedMembers = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -44,7 +29,7 @@ var composedMembers = [];
  * @private
  */
 function onSeriesAfterSetOptions(e) {
-    var options = e.options, dataGrouping = options.dataGrouping;
+    const options = e.options, dataGrouping = options.dataGrouping;
     if (dataGrouping &&
         options.useOhlcData &&
         options.id !== 'highcharts-navigator-series') {
@@ -57,7 +42,7 @@ function onSeriesAfterSetOptions(e) {
  */
 function onSeriesInit(eventOptions) {
     // eslint-disable-next-line no-invalid-this
-    var series = this, options = eventOptions.options;
+    const series = this, options = eventOptions.options;
     if (options.useOhlcData &&
         options.id !== 'highcharts-navigator-series') {
         extend(series, {
@@ -82,63 +67,56 @@ function onSeriesInit(eventOptions) {
  *
  * @augments Highcharts.Series
  */
-var OHLCSeries = /** @class */ (function (_super) {
-    __extends(OHLCSeries, _super);
-    function OHLCSeries() {
+class OHLCSeries extends HLCSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Static Functions
      *
      * */
-    OHLCSeries.compose = function (SeriesClass) {
-        var _args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            _args[_i - 1] = arguments[_i];
-        }
-        if (composedMembers.indexOf(SeriesClass) === -1) {
-            composedMembers.push(SeriesClass);
+    static compose(SeriesClass, ..._args) {
+        if (U.pushUnique(composedMembers, SeriesClass)) {
             addEvent(SeriesClass, 'afterSetOptions', onSeriesAfterSetOptions);
             addEvent(SeriesClass, 'init', onSeriesInit);
         }
-    };
+    }
     /* *
      *
      *  Functions
      *
      * */
-    OHLCSeries.prototype.getPointPath = function (point, graphic) {
-        var path = _super.prototype.getPointPath.call(this, point, graphic), strokeWidth = graphic.strokeWidth(), crispCorr = (strokeWidth % 2) / 2, crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
-        var plotOpen = point.plotOpen;
+    getPointPath(point, graphic) {
+        const path = super.getPointPath(point, graphic), strokeWidth = graphic.strokeWidth(), crispCorr = (strokeWidth % 2) / 2, crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
+        let plotOpen = point.plotOpen;
         // crisp vector coordinates
         if (point.open !== null) {
             plotOpen = Math.round(point.plotOpen) + crispCorr;
             path.push(['M', crispX, plotOpen], ['L', crispX - halfWidth, plotOpen]);
-            _super.prototype.extendStem.call(this, path, strokeWidth / 2, plotOpen);
+            super.extendStem(path, strokeWidth / 2, plotOpen);
         }
         return path;
-    };
+    }
     /**
      * Postprocess mapping between options and SVG attributes
      * @private
      */
-    OHLCSeries.prototype.pointAttribs = function (point, state) {
-        var attribs = _super.prototype.pointAttribs.call(this, point, state), options = this.options;
+    pointAttribs(point, state) {
+        const attribs = super.pointAttribs.call(this, point, state), options = this.options;
         delete attribs.fill;
         if (!point.options.color &&
             options.upColor &&
@@ -146,14 +124,13 @@ var OHLCSeries = /** @class */ (function (_super) {
             attribs.stroke = options.upColor;
         }
         return attribs;
-    };
-    OHLCSeries.prototype.toYData = function (point) {
+    }
+    toYData(point) {
         // return a plain array for speedy calculation
         return [point.open, point.high, point.low, point.close];
-    };
-    OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, OHLCSeriesDefaults);
-    return OHLCSeries;
-}(HLCSeries));
+    }
+}
+OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, OHLCSeriesDefaults);
 extend(OHLCSeries.prototype, {
     pointClass: OHLCPoint,
     pointArrayMap: ['open', 'high', 'low', 'close']

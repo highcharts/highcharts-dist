@@ -12,7 +12,7 @@
 /* eslint no-console: 0 */
 'use strict';
 import U from '../Core/Utilities.js';
-var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+const { extend, isNumber, pick } = U;
 /**
  * Creates an object map from parent id to childrens index.
  *
@@ -28,9 +28,9 @@ var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
  * @return {Highcharts.Dictionary<Array<*>>}
  *         Map from parent id to children index in data
  */
-var getListOfParents = function (data, ids) {
-    var listOfParents = data.reduce(function (prev, curr) {
-        var parent = pick(curr.parent, '');
+const getListOfParents = function (data, ids) {
+    const listOfParents = data.reduce(function (prev, curr) {
+        const parent = pick(curr.parent, '');
         if (typeof prev[parent] === 'undefined') {
             prev[parent] = [];
         }
@@ -39,7 +39,7 @@ var getListOfParents = function (data, ids) {
     }, {}), parents = Object.keys(listOfParents);
     // If parent does not exist, hoist parent to root of tree.
     parents.forEach(function (parent, list) {
-        var children = listOfParents[parent];
+        const children = listOfParents[parent];
         if ((parent !== '') && (ids.indexOf(parent) === -1)) {
             children.forEach(function (child) {
                 list[''].push(child);
@@ -49,8 +49,8 @@ var getListOfParents = function (data, ids) {
     });
     return listOfParents;
 };
-var getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-    var descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
+const getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
+    let descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
         data: data,
         depth: level - 1,
         id: id,
@@ -64,7 +64,7 @@ var getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
     // Call getNode recursively on the children. Calulate the height of the
     // node, and the number of descendants.
     children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-        var node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+        const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
             childStart :
             child.end);
         // Start should be the lowest child.start.
@@ -96,15 +96,15 @@ var getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
     }
     return node;
 };
-var getTree = function (data, options) {
-    var ids = data.map(function (d) {
+const getTree = function (data, options) {
+    const ids = data.map(function (d) {
         return d.id;
     }), mapOfIdToChildren = getListOfParents(data, ids);
     return getNode('', null, 1, null, mapOfIdToChildren, options);
 };
-var Tree = {
-    getListOfParents: getListOfParents,
-    getNode: getNode,
-    getTree: getTree
+const Tree = {
+    getListOfParents,
+    getNode,
+    getTree
 };
 export default Tree;

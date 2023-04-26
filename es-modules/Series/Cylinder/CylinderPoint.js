@@ -12,45 +12,27 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
+const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend;
+const { extend } = U;
 /* *
  *
  *  Class
  *
  * */
-var CylinderPoint = /** @class */ (function (_super) {
-    __extends(CylinderPoint, _super);
-    function CylinderPoint() {
+class CylinderPoint extends ColumnPoint {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.options = void 0;
-        _this.series = void 0;
-        return _this;
+        super(...arguments);
+        this.options = void 0;
+        this.series = void 0;
     }
-    return CylinderPoint;
-}(ColumnPoint));
+}
 extend(CylinderPoint.prototype, {
     shapeType: 'cylinder'
 });

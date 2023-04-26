@@ -9,39 +9,38 @@
  * */
 'use strict';
 import Math3D from '../../Core/Math3D.js';
-var perspective = Math3D.perspective;
+const { perspective } = Math3D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var lineProto = SeriesRegistry.seriesTypes.line.prototype;
+const { seriesTypes: { line: { prototype: lineProto } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var pick = U.pick, wrap = U.wrap;
+const { wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
  *
  * */
 function compose(AreaSeriesClass) {
-    if (composedClasses.indexOf(AreaSeriesClass) === -1) {
-        composedClasses.push(AreaSeriesClass);
+    if (U.pushUnique(composedMembers, AreaSeriesClass)) {
         wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
     }
 }
 function wrapAreaSeriesGetGraphPath(proceed) {
-    var series = this, svgPath = proceed.apply(series, [].slice.call(arguments, 1));
+    const series = this, svgPath = proceed.apply(series, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D
     if (!series.chart.is3d()) {
         return svgPath;
     }
-    var getGraphPath = lineProto.getGraphPath, options = series.options, translatedThreshold = Math.round(// #10909
+    const getGraphPath = lineProto.getGraphPath, options = series.options, translatedThreshold = Math.round(// #10909
     series.yAxis.getThreshold(options.threshold));
-    var bottomPoints = [];
+    let bottomPoints = [];
     if (series.rawPointsX) {
-        for (var i = 0; i < series.points.length; i++) {
+        for (let i = 0; i < series.points.length; i++) {
             bottomPoints.push({
                 x: series.rawPointsX[i],
                 y: options.stacking ?
@@ -50,8 +49,8 @@ function wrapAreaSeriesGetGraphPath(proceed) {
             });
         }
     }
-    var options3d = series.chart.options.chart.options3d;
-    bottomPoints = perspective(bottomPoints, series.chart, true).map(function (point) { return ({ plotX: point.x, plotY: point.y, plotZ: point.z }); });
+    const options3d = series.chart.options.chart.options3d;
+    bottomPoints = perspective(bottomPoints, series.chart, true).map((point) => ({ plotX: point.x, plotY: point.y, plotZ: point.z }));
     if (series.group && options3d && options3d.depth && options3d.beta) {
         // Markers should take the global zIndex of series group.
         if (series.markerGroup) {
@@ -68,13 +67,13 @@ function wrapAreaSeriesGetGraphPath(proceed) {
         });
     }
     bottomPoints.reversed = true;
-    var bottomPath = getGraphPath.call(series, bottomPoints, true, true);
+    const bottomPath = getGraphPath.call(series, bottomPoints, true, true);
     if (bottomPath[0] && bottomPath[0][0] === 'M') {
         bottomPath[0] = ['L', bottomPath[0][1], bottomPath[0][2]];
     }
     if (series.areaPath) {
         // Remove previously used bottomPath and add the new one.
-        var areaPath = series.areaPath.splice(0, series.areaPath.length / 2).concat(bottomPath);
+        const areaPath = series.areaPath.splice(0, series.areaPath.length / 2).concat(bottomPath);
         // Use old xMap in the new areaPath
         areaPath.xMap = series.areaPath.xMap;
         series.areaPath = areaPath;
@@ -86,7 +85,7 @@ function wrapAreaSeriesGetGraphPath(proceed) {
  *  Default Export
  *
  * */
-var Area3DSeries = {
-    compose: compose
+const Area3DSeries = {
+    compose
 };
 export default Area3DSeries;

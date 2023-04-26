@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Parabolic SAR Indicator for Highcharts Stock
  *
@@ -50,22 +50,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge, extend = U.extend;
+        var merge = U.merge;
         /* *
          *
          *  Functions
@@ -156,20 +157,22 @@
          * @augments Highcharts.Series
          */
         var PSARIndicator = /** @class */ (function (_super) {
-            __extends(PSARIndicator, _super);
+                __extends(PSARIndicator, _super);
             function PSARIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
                  *
                  * */
                 _this.data = void 0;
+                _this.nameComponents = void 0;
                 _this.points = void 0;
                 _this.options = void 0;
                 return _this;
@@ -180,12 +183,35 @@
              *
              * */
             PSARIndicator.prototype.getValues = function (series, params) {
-                var xVal = series.xData, yVal = series.yData, 
-                // Extreme point is the lowest low for falling and highest high
-                // for rising psar - and we are starting with falling
-                extremePoint = yVal[0][1], accelerationFactor = params.initialAccelerationFactor, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
-                // Set initial acc factor (for every new trend!)
-                initialAccelerationFactor = params.initialAccelerationFactor, PSAR = yVal[0][2], decimals = params.decimals, index = params.index, PSARArr = [], xData = [], yData = [], previousDirection = 1, direction, EPMinusPSAR, accelerationFactorMultiply, newDirection, prevLow, prevPrevLow, prevHigh, prevPrevHigh, newExtremePoint, high, low, ind;
+                var xVal = series.xData,
+                    yVal = series.yData,
+                    maxAccelerationFactor = params.maxAccelerationFactor,
+                    increment = params.increment, 
+                    // Set initial acc factor (for every new trend!)
+                    initialAccelerationFactor = params.initialAccelerationFactor,
+                    decimals = params.decimals,
+                    index = params.index,
+                    PSARArr = [],
+                    xData = [],
+                    yData = [];
+                var accelerationFactor = params.initialAccelerationFactor,
+                    direction, 
+                    // Extreme point is the lowest low for falling and highest high
+                    // for rising psar - and we are starting with falling
+                    extremePoint = yVal[0][1],
+                    EPMinusPSAR,
+                    accelerationFactorMultiply,
+                    newDirection,
+                    previousDirection = 1,
+                    prevLow,
+                    prevPrevLow,
+                    prevHigh,
+                    prevPrevHigh,
+                    PSAR = yVal[0][2],
+                    newExtremePoint,
+                    high,
+                    low,
+                    ind;
                 if (index >= yVal.length) {
                     return;
                 }
@@ -302,9 +328,6 @@
             });
             return PSARIndicator;
         }(SMAIndicator));
-        extend(PSARIndicator.prototype, {
-            nameComponents: void 0
-        });
         SeriesRegistry.registerSeriesType('psar', PSARIndicator);
         /* *
          *

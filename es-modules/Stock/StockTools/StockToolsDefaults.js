@@ -18,7 +18,7 @@
 /**
  * @optionparent lang
  */
-var lang = {
+const lang = {
     /**
      * Configure the stockTools GUI titles(hints) in the chart. Requires
      * the `stock-tools.js` module to be loaded.
@@ -532,7 +532,7 @@ var lang = {
  * @since        7.0.0
  * @optionparent stockTools
  */
-var stockTools = {
+const stockTools = {
     /**
      * Definitions of buttons in Stock Tools GUI.
      */
@@ -1183,8 +1183,8 @@ var stockTools = {
  *  Default Exports
  *
  * */
-var StockToolsDefaults = {
-    lang: lang,
-    stockTools: stockTools
+const StockToolsDefaults = {
+    lang,
+    stockTools
 };
 export default StockToolsDefaults;

@@ -11,21 +11,21 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 import NBU from '../../Extensions/Annotations/NavigationBindingsUtilities.js';
-var getAssignedAxis = NBU.getAssignedAxis;
+const { getAssignedAxis } = NBU;
 import StockToolsBindings from './StockToolsBindings.js';
 import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
-var isNotNavigatorYAxis = STU.isNotNavigatorYAxis, isPriceIndicatorEnabled = STU.isPriceIndicatorEnabled;
+const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
 import U from '../../Core/Utilities.js';
-var correctFloat = U.correctFloat, defined = U.defined, isNumber = U.isNumber, pick = U.pick;
+const { correctFloat, defined, isNumber, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -35,9 +35,8 @@ var composedClasses = [];
  * @private
  */
 function compose(NavigationBindingsClass) {
-    if (composedClasses.indexOf(NavigationBindingsClass) === -1) {
-        composedClasses.push(NavigationBindingsClass);
-        var navigationProto = NavigationBindingsClass.prototype;
+    if (U.pushUnique(composedMembers, NavigationBindingsClass)) {
+        const navigationProto = NavigationBindingsClass.prototype;
         // Extends NavigationBindings to support indicators and resizers:
         navigationProto.getYAxisPositions = navigationGetYAxisPositions;
         navigationProto.getYAxisResizers = navigationGetYAxisResizers;
@@ -47,13 +46,12 @@ function compose(NavigationBindingsClass) {
         navigationProto.utils = {
             indicatorsWithAxes: STU.indicatorsWithAxes,
             indicatorsWithVolume: STU.indicatorsWithVolume,
-            getAssignedAxis: getAssignedAxis,
-            isPriceIndicatorEnabled: isPriceIndicatorEnabled,
+            getAssignedAxis,
+            isPriceIndicatorEnabled,
             manageIndicators: STU.manageIndicators
         };
     }
-    if (composedClasses.indexOf(setOptions) === -1) {
-        composedClasses.push(setOptions);
+    if (U.pushUnique(composedMembers, setOptions)) {
         setOptions(StockToolsDefaults);
         setOptions({
             navigation: {
@@ -87,7 +85,7 @@ function compose(NavigationBindingsClass) {
  *         and maximum value of top + height of axes.
  */
 function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps) {
-    var allAxesHeight = 0, previousAxisHeight, removedHeight, removedTop;
+    let allAxesHeight = 0, previousAxisHeight, removedHeight, removedTop;
     /** @private */
     function isPercentage(prop) {
         return defined(prop) && !isNumber(prop) && prop.match('%');
@@ -96,8 +94,8 @@ function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYA
         removedTop = correctFloat((parseFloat(removedYAxisProps.top) / 100));
         removedHeight = correctFloat((parseFloat(removedYAxisProps.height) / 100));
     }
-    var positions = yAxes.map(function (yAxis, index) {
-        var height = correctFloat(isPercentage(yAxis.options.height) ?
+    const positions = yAxes.map((yAxis, index) => {
+        let height = correctFloat(isPercentage(yAxis.options.height) ?
             parseFloat(yAxis.options.height) / 100 :
             yAxis.height / plotHeight), top = correctFloat(isPercentage(yAxis.options.top) ?
             parseFloat(yAxis.options.top) / 100 :
@@ -109,7 +107,7 @@ function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYA
                 // Check if the previous axis is the
                 // indicator axis (every indicator inherits from sma)
                 height = yAxes[index - 1].series
-                    .every(function (s) { return s.is('sma'); }) ?
+                    .every((s) => s.is('sma')) ?
                     previousAxisHeight : defaultHeight / 100;
             }
             if (!isNumber(top)) {
@@ -130,7 +128,7 @@ function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYA
             top: top * 100
         };
     });
-    return { positions: positions, allAxesHeight: allAxesHeight };
+    return { positions, allAxesHeight };
 }
 /**
  * Get current resize options for each yAxis. Note that each resize is
@@ -149,9 +147,9 @@ function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYA
  *         Format: `{enabled: Boolean, controlledAxis: { next: [String]}}`
  */
 function navigationGetYAxisResizers(yAxes) {
-    var resizers = [];
+    const resizers = [];
     yAxes.forEach(function (_yAxis, index) {
-        var nextYAxis = yAxes[index + 1];
+        const nextYAxis = yAxes[index + 1];
         // We have next axis, bind them:
         if (nextYAxis) {
             resizers[index] = {
@@ -192,7 +190,7 @@ function navigationGetYAxisResizers(yAxes) {
  */
 function navigationRecalculateYAxisPositions(positions, changedSpace, modifyHeight, adder) {
     positions.forEach(function (position, index) {
-        var prevPosition = positions[index - 1];
+        const prevPosition = positions[index - 1];
         position.top = !prevPosition ? 0 :
             correctFloat(prevPosition.height + prevPosition.top);
         if (modifyHeight) {
@@ -214,12 +212,12 @@ function navigationRecalculateYAxisPositions(positions, changedSpace, modifyHeig
  */
 function navigationResizeYAxes(removedYAxisProps) {
     // The height of the new axis before rescalling. In %, but as a number.
-    var defaultHeight = 20;
-    var chart = this.chart, 
+    const defaultHeight = 20;
+    const chart = this.chart, 
     // Only non-navigator axes
     yAxes = chart.yAxis.filter(isNotNavigatorYAxis), plotHeight = chart.plotHeight, 
     // Gather current heights (in %)
-    _a = this.getYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps), positions = _a.positions, allAxesHeight = _a.allAxesHeight, resizers = this.getYAxisResizers(yAxes);
+    { positions, allAxesHeight } = this.getYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps), resizers = this.getYAxisResizers(yAxes);
     // check if the axis is being either added or removed and
     // if the new indicator axis will fit under existing axes.
     // if so, there is no need to scale them.
@@ -250,7 +248,7 @@ function navigationResizeYAxes(removedYAxisProps) {
  *  Default Export
  *
  * */
-var StockTools = {
-    compose: compose
+const StockTools = {
+    compose
 };
 export default StockTools;

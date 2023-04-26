@@ -10,16 +10,16 @@
  *
  * */
 'use strict';
-import AST from '../../../Core/Renderer/HTML/AST.js';
-import D from '../../../Core/Defaults.js';
-var getOptions = D.getOptions;
+import BaseForm from '../../../Shared/BaseForm.js';
 import H from '../../../Core/Globals.js';
-var doc = H.doc;
+const { doc } = H;
+import D from '../../../Core/Defaults.js';
+const { getOptions } = D;
 import PopupAnnotations from './PopupAnnotations.js';
 import PopupIndicators from './PopupIndicators.js';
 import PopupTabs from './PopupTabs.js';
 import U from '../../../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, extend = U.extend, fireEvent = U.fireEvent, pick = U.pick;
+const { addEvent, createElement, extend, fireEvent, pick } = U;
 /* *
  *
  *  Functions
@@ -37,14 +37,14 @@ var addEvent = U.addEvent, createElement = U.createElement, extend = U.extend, f
  * Type of the popup bookmark (add|edit|remove).
  */
 function getFields(parentDiv, type) {
-    var inputList = Array.prototype.slice.call(parentDiv.querySelectorAll('input')), selectList = Array.prototype.slice.call(parentDiv.querySelectorAll('select')), optionSeries = '#highcharts-select-series > option:checked', optionVolume = '#highcharts-select-volume > option:checked', linkedTo = parentDiv.querySelectorAll(optionSeries)[0], volumeTo = parentDiv.querySelectorAll(optionVolume)[0];
-    var fieldsOutput = {
+    const inputList = Array.prototype.slice.call(parentDiv.querySelectorAll('input')), selectList = Array.prototype.slice.call(parentDiv.querySelectorAll('select')), optionSeries = '#highcharts-select-series > option:checked', optionVolume = '#highcharts-select-volume > option:checked', linkedTo = parentDiv.querySelectorAll(optionSeries)[0], volumeTo = parentDiv.querySelectorAll(optionVolume)[0];
+    const fieldsOutput = {
         actionType: type,
         linkedTo: linkedTo && linkedTo.getAttribute('value') || '',
         fields: {}
     };
-    inputList.forEach(function (input) {
-        var param = input.getAttribute('highcharts-data-name'), seriesId = input.getAttribute('highcharts-data-series-id');
+    inputList.forEach((input) => {
+        const param = input.getAttribute('highcharts-data-name'), seriesId = input.getAttribute('highcharts-data-series-id');
         // params
         if (seriesId) {
             fieldsOutput.seriesId = input.value;
@@ -57,12 +57,12 @@ function getFields(parentDiv, type) {
             fieldsOutput.type = input.value;
         }
     });
-    selectList.forEach(function (select) {
-        var id = select.id;
+    selectList.forEach((select) => {
+        const id = select.id;
         // Get inputs only for the parameters, not for series and volume.
         if (id !== 'highcharts-select-series' &&
             id !== 'highcharts-select-volume') {
-            var parameter = id.split('highcharts-select-')[1];
+            const parameter = id.split('highcharts-select-')[1];
             fieldsOutput.fields[parameter] = select.value;
         }
     });
@@ -77,83 +77,36 @@ function getFields(parentDiv, type) {
  *  Class
  *
  * */
-var Popup = /** @class */ (function () {
+class Popup extends BaseForm {
     /* *
      *
      *  Constructor
      *
      * */
-    function Popup(parentDiv, iconsURL, chart) {
+    constructor(parentDiv, iconsURL, chart) {
+        super(parentDiv, iconsURL);
         this.chart = chart;
-        this.iconsURL = iconsURL;
         this.lang = getOptions().lang.navigation.popup;
-        // create popup div
-        this.container = createElement('div', {
-            className: 'highcharts-popup highcharts-no-tooltip'
-        }, void 0, parentDiv);
-        addEvent(this.container, 'mousedown', function () {
-            var activeAnnotation = chart &&
+        addEvent(this.container, 'mousedown', () => {
+            const activeAnnotation = chart &&
                 chart.navigationBindings &&
                 chart.navigationBindings.activeAnnotation;
             if (activeAnnotation) {
                 activeAnnotation.cancelClick = true;
-                var unbind_1 = addEvent(H.doc, 'click', function () {
-                    setTimeout(function () {
+                const unbind = addEvent(doc, 'click', () => {
+                    setTimeout(() => {
                         activeAnnotation.cancelClick = false;
                     }, 0);
-                    unbind_1();
+                    unbind();
                 });
             }
         });
-        // add close button
-        this.addCloseBtn();
     }
     /* *
      *
      *  Functions
      *
      * */
-    /**
-     * Initialize the popup. Create base div and add close button.
-     * @private
-     * @param {Highcharts.HTMLDOMElement} parentDiv
-     * Container where popup should be placed
-     * @param {string} iconsURL
-     * Icon URL
-     */
-    Popup.prototype.init = function (parentDiv, iconsURL, chart) {
-        Popup.call(this, parentDiv, iconsURL, chart);
-    };
-    /**
-     * Create HTML element and attach click event (close popup).
-     * @private
-     */
-    Popup.prototype.addCloseBtn = function () {
-        var _this = this;
-        var iconsURL = this.iconsURL;
-        // create close popup btn
-        var closeBtn = createElement('div', {
-            className: 'highcharts-popup-close'
-        }, void 0, this.container);
-        closeBtn.style['background-image'] = 'url(' +
-            (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
-                iconsURL : iconsURL + 'close.svg') + ')';
-        ['click', 'touchstart'].forEach(function (eventName) {
-            addEvent(closeBtn, eventName, function () {
-                if (_this.chart) {
-                    var navigationBindings = _this.chart.navigationBindings;
-                    fireEvent(navigationBindings, 'closePopup');
-                    if (navigationBindings &&
-                        navigationBindings.selectedButtonElement) {
-                        fireEvent(navigationBindings, 'deselectButton', { button: navigationBindings.selectedButtonElement });
-                    }
-                }
-                else {
-                    _this.closePopup();
-                }
-            });
-        });
-    };
     /**
      * Create input with label.
      *
@@ -174,8 +127,8 @@ var Popup = /** @class */ (function () {
      * @return {HTMLInputElement}
      *         Return created input element.
      */
-    Popup.prototype.addInput = function (option, indicatorType, parentDiv, inputAttributes) {
-        var optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
+    addInput(option, indicatorType, parentDiv, inputAttributes) {
+        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
         if (!optionName.match(/^\d+$/)) {
             // add label
             createElement('label', {
@@ -184,7 +137,7 @@ var Popup = /** @class */ (function () {
             }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
         }
         // add input
-        var input = createElement('input', {
+        const input = createElement('input', {
             name: inputName,
             value: inputAttributes.value,
             type: inputAttributes.type,
@@ -192,7 +145,20 @@ var Popup = /** @class */ (function () {
         }, void 0, parentDiv);
         input.setAttribute('highcharts-data-name', option);
         return input;
-    };
+    }
+    closeButtonEvents() {
+        if (this.chart) {
+            const navigationBindings = this.chart.navigationBindings;
+            fireEvent(navigationBindings, 'closePopup');
+            if (navigationBindings &&
+                navigationBindings.selectedButtonElement) {
+                fireEvent(navigationBindings, 'deselectButton', { button: navigationBindings.selectedButtonElement });
+            }
+        }
+        else {
+            super.closeButtonEvents();
+        }
+    }
     /**
      * Create button.
      * @private
@@ -209,48 +175,19 @@ var Popup = /** @class */ (function () {
      * @return {Highcharts.HTMLDOMElement}
      * HTML button
      */
-    Popup.prototype.addButton = function (parentDiv, label, type, fieldsDiv, callback) {
-        var _this = this;
-        var button = createElement('button', void 0, void 0, parentDiv);
+    addButton(parentDiv, label, type, fieldsDiv, callback) {
+        const button = createElement('button', void 0, void 0, parentDiv);
         button.appendChild(doc.createTextNode(label));
         if (callback) {
-            ['click', 'touchstart'].forEach(function (eventName) {
-                addEvent(button, eventName, function () {
-                    _this.closePopup();
+            ['click', 'touchstart'].forEach((eventName) => {
+                addEvent(button, eventName, () => {
+                    this.closePopup();
                     return callback(getFields(fieldsDiv, type));
                 });
             });
         }
         return button;
-    };
-    /**
-     * Reset content of the current popup and show.
-     * @private
-     */
-    Popup.prototype.showPopup = function () {
-        var popupDiv = this.container, toolbarClass = 'highcharts-annotation-toolbar', popupCloseBtn = popupDiv
-            .querySelectorAll('.highcharts-popup-close')[0];
-        this.formType = void 0;
-        // reset content
-        popupDiv.innerHTML = AST.emptyHTML;
-        // reset toolbar styles if exists
-        if (popupDiv.className.indexOf(toolbarClass) >= 0) {
-            popupDiv.classList.remove(toolbarClass);
-            // reset toolbar inline styles
-            popupDiv.removeAttribute('style');
-        }
-        // add close button
-        popupDiv.appendChild(popupCloseBtn);
-        popupDiv.style.display = 'block';
-        popupDiv.style.height = '';
-    };
-    /**
-     * Hide popup.
-     * @private
-     */
-    Popup.prototype.closePopup = function () {
-        this.container.style.display = 'none';
-    };
+    }
     /**
      * Create content and show popup.
      * @private
@@ -259,7 +196,7 @@ var Popup = /** @class */ (function () {
      * @param {Highcharts.AnnotationsOptions} - options
      * @param {Function} - on click callback
      */
-    Popup.prototype.showForm = function (type, chart, options, callback) {
+    showForm(type, chart, options, callback) {
         if (!chart) {
             return;
         }
@@ -281,12 +218,11 @@ var Popup = /** @class */ (function () {
         if (type === 'flag') {
             this.annotations.addForm.call(this, chart, options, callback, true);
         }
-        this.formType = type;
+        this.type = type;
         // Explicit height is needed to make inner elements scrollable
         this.container.style.height = this.container.offsetHeight + 'px';
-    };
-    return Popup;
-}());
+    }
+}
 extend(Popup.prototype, {
     annotations: PopupAnnotations,
     indicators: PopupIndicators,

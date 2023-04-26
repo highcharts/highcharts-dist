@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Dependency wheel module
  *
@@ -50,15 +50,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -72,14 +73,15 @@
          *
          * */
         var DependencyWheelPoint = /** @class */ (function (_super) {
-            __extends(DependencyWheelPoint, _super);
+                __extends(DependencyWheelPoint, _super);
             function DependencyWheelPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.angle = void 0;
                 _this.fromNode = void 0;
                 _this.index = void 0;
@@ -104,7 +106,11 @@
              */
             DependencyWheelPoint.prototype.getDataLabelPath = function (label) {
                 var _this = this;
-                var renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
+                var renderer = this.series.chart.renderer,
+                    shapeArgs = this.shapeArgs,
+                    upperHalf = this.angle < 0 || this.angle > Math.PI,
+                    start = shapeArgs.start || 0,
+                    end = shapeArgs.end || 0;
                 // First time
                 if (!this.dataLabelPath) {
                     // Destroy the path with the label
@@ -184,90 +190,93 @@
          * @optionparent plotOptions.dependencywheel
          */
         var DependencyWheelSeriesDefaults = {
-            /**
-             * Distance between the data label and the center of the node.
-             *
-             * @type      {number}
-             * @default   0
-             * @apioption plotOptions.dependencywheel.dataLabels.distance
-             */
-            /**
-             * A format string for data labels of the links between nodes. Available
-             * variables are the same as for `formatter`.
-             *
-             * @see [nodeFormat](#nodeFormat) for formatting node labels
-             *
-             * @apioption plotOptions.dependencywheel.dataLabels.format
-             */
-            /**
-             * Callback to format data labels of the links between nodes. The `format`
-             * option takes precedence over the `formatter` option.
-             *
-             * @see [nodeFormatter](#nodeFormatter) for formatting node labels
-             *
-             * @apioption plotOptions.dependencywheel.dataLabels.formatter
-             */
-            /**
-             * The format string specifying what to show for nodes in the sankey
-             * diagram. By default the nodeFormatter returns `{point.name}`. Available
-             * variables are the same as for `nodeFormatter`.
-             *
-             * @apioption plotOptions.dependencywheel.dataLabels.nodeFormat
-             */
-            /**
-             * Callback to format data labels of nodes in the dependency wheel. The
-             * `nodeFormat` option takes precedence over the `nodeFormatter` option.
-             *
-             * @apioption plotOptions.dependencywheel.dataLabels.nodeFormatter
-             */
-            /**
-             * Size of the wheel in pixel or percent relative to the canvas space.
-             *
-             * @type      {number|string}
-             * @default   100%
-             * @apioption plotOptions.dependencywheel.size
-             */
-            /**
-             * The center of the wheel relative to the plot area. Can be
-             * percentages or pixel values. The default behaviour is to
-             * center the wheel inside the plot area.
-             *
-             * @type    {Array<number|string|null>}
-             * @default [null, null]
-             * @product highcharts
-             */
-            center: [null, null],
-            curveFactor: 0.6,
-            /**
-             * The start angle of the dependency wheel, in degrees where 0 is up.
-             */
-            startAngle: 0,
-            dataLabels: {
-                textPath: {
-                    /**
-                     * Enable or disable `textPath` option for link's or marker's data
-                     * labels.
-                     *
-                     * @type      {boolean}
-                     * @default   false
-                     * @since     7.1.0
-                     * @apioption plotOptions.series.dataLabels.textPath.enabled
-                     */
-                    enabled: false,
-                    attributes: {
+                /**
+                 * Distance between the data label and the center of the node.
+                 *
+                 * @type      {number}
+                 * @default   0
+                 * @apioption plotOptions.dependencywheel.dataLabels.distance
+                 */
+                /**
+                 * A format string for data labels of the links between nodes. Available
+                 * variables are the same as for `formatter`.
+                 *
+                 * @see [nodeFormat](#nodeFormat) for formatting node labels
+                 *
+                 * @apioption plotOptions.dependencywheel.dataLabels.format
+                 */
+                /**
+                 * Callback to format data labels of the links between nodes. The `format`
+                 * option takes precedence over the `formatter` option.
+                 *
+                 * @see [nodeFormatter](#nodeFormatter) for formatting node labels
+                 *
+                 * @apioption plotOptions.dependencywheel.dataLabels.formatter
+                 */
+                /**
+                 * The format string specifying what to show for nodes in the sankey
+                 * diagram. By default the nodeFormatter returns `{point.name}`. Available
+                 * variables are the same as for `nodeFormatter`.
+                 *
+                 * @apioption plotOptions.dependencywheel.dataLabels.nodeFormat
+                 */
+                /**
+                 * Callback to format data labels of nodes in the dependency wheel. The
+                 * `nodeFormat` option takes precedence over the `nodeFormatter` option.
+                 *
+                 * @apioption plotOptions.dependencywheel.dataLabels.nodeFormatter
+                 */
+                /**
+                 * Size of the wheel in pixel or percent relative to the canvas space.
+                 *
+                 * @type      {number|string}
+                 * @default   100%
+                 * @apioption plotOptions.dependencywheel.size
+                 */
+                /**
+                 * The center of the wheel relative to the plot area. Can be
+                 * percentages or pixel values. The default behaviour is to
+                 * center the wheel inside the plot area.
+                 *
+                 * @type    {Array<number|string|null>}
+                 * @default [null,
+            null]
+                 * @product highcharts
+                 */
+                center: [null,
+            null],
+                curveFactor: 0.6,
+                /**
+                 * The start angle of the dependency wheel,
+            in degrees where 0 is up.
+                 */
+                startAngle: 0,
+                dataLabels: {
+                    textPath: {
                         /**
-                        * Text path shift along its y-axis.
-                        *
-                        * @type      {Highcharts.SVGAttributes}
-                        * @default   5
-                        * @since     7.1.0
-                        * @apioption plotOptions.dependencywheel.dataLabels.textPath.attributes.dy
-                        */
-                        dy: 5
+                         * Enable or disable `textPath` option for link's or marker's data
+                         * labels.
+                         *
+                         * @type      {boolean}
+                         * @default   false
+                         * @since     7.1.0
+                         * @apioption plotOptions.series.dataLabels.textPath.enabled
+                         */
+                        enabled: false,
+                        attributes: {
+                            /**
+                            * Text path shift along its y-axis.
+                            *
+                            * @type      {Highcharts.SVGAttributes}
+                            * @default   5
+                            * @since     7.1.0
+                            * @apioption plotOptions.dependencywheel.dataLabels.textPath.attributes.dy
+                            */
+                            dy: 5
+                        }
                     }
                 }
-            }
-        };
+            };
         /* *
          *
          *  Default Export
@@ -350,15 +359,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -366,8 +376,11 @@
         })();
         var animObject = A.animObject;
         var deg2rad = H.deg2rad;
-        var _a = SeriesRegistry.seriesTypes, PieSeries = _a.pie, SankeySeries = _a.sankey;
-        var extend = U.extend, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            PieSeries = _a.pie,
+            SankeySeries = _a.sankey;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -381,14 +394,15 @@
          * @augments Highcharts.seriesTypes.sankey
          */
         var DependencyWheelSeries = /** @class */ (function (_super) {
-            __extends(DependencyWheelSeries, _super);
+                __extends(DependencyWheelSeries, _super);
             function DependencyWheelSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -410,7 +424,8 @@
             /* eslint-disable valid-jsdoc */
             DependencyWheelSeries.prototype.animate = function (init) {
                 if (!init) {
-                    var duration = animObject(this.options.animation).duration, step_1 = (duration / 2) / this.nodes.length;
+                    var duration = animObject(this.options.animation).duration,
+                        step_1 = (duration / 2) / this.nodes.length;
                     this.nodes.forEach(function (point, i) {
                         var graphic = point.graphic;
                         if (graphic) {
@@ -434,7 +449,8 @@
                 }
             };
             DependencyWheelSeries.prototype.createNode = function (id) {
-                var node = SankeySeries.prototype.createNode.call(this, id);
+                var node = SankeySeries.prototype.createNode.call(this,
+                    id);
                 /**
                  * Return the sum of incoming and outgoing links.
                  * @private
@@ -451,7 +467,10 @@
                  * @private
                  */
                 node.offset = function (point) {
-                    var offset = 0, i, links = node.linksFrom.concat(node.linksTo), sliced;
+                    var offset = 0,
+                        i,
+                        links = node.linksFrom.concat(node.linksTo),
+                        sliced;
                     /**
                      * @private
                      */
@@ -490,7 +509,8 @@
              * @private
              */
             DependencyWheelSeries.prototype.createNodeColumns = function () {
-                var columns = [SankeyColumnComposition.compose([], this)];
+                var columns = [SankeyColumnComposition.compose([],
+                    this)];
                 this.nodes.forEach(function (node) {
                     node.column = 0;
                     columns[0].push(node);
@@ -510,14 +530,26 @@
              * functions instead of the whole translate function.
              */
             DependencyWheelSeries.prototype.translate = function () {
-                var options = this.options, factor = 2 * Math.PI /
-                    (this.chart.plotHeight + this.getNodePadding()), center = this.getCenter(), startAngle = (options.startAngle - 90) * deg2rad;
+                var options = this.options,
+                    factor = 2 * Math.PI /
+                        (this.chart.plotHeight + this.getNodePadding()),
+                    center = this.getCenter(),
+                    startAngle = (options.startAngle - 90) * deg2rad,
+                    brOption = options.borderRadius,
+                    borderRadius = typeof brOption === 'object' ?
+                        brOption.radius : brOption;
                 SankeySeries.prototype.translate.call(this);
                 this.nodeColumns[0].forEach(function (node) {
                     // Don't render the nodes if sum is 0 #12453
                     if (node.sum) {
-                        var shapeArgs = node.shapeArgs, centerX_1 = center[0], centerY_1 = center[1], r = center[2] / 2, innerR_1 = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
-                            factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
+                        var shapeArgs = node.shapeArgs,
+                            centerX_1 = center[0],
+                            centerY_1 = center[1],
+                            r = center[2] / 2,
+                            innerR_1 = r - options.nodeWidth,
+                            start = startAngle + factor * (shapeArgs.y || 0),
+                            end = startAngle +
+                                factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                         // Middle angle
                         node.angle = start + (end - start) / 2;
                         node.shapeType = 'arc';
@@ -527,7 +559,8 @@
                             r: r,
                             innerR: innerR_1,
                             start: start,
-                            end: end
+                            end: end,
+                            borderRadius: borderRadius
                         };
                         node.dlBox = {
                             x: centerX_1 + Math.cos((start + end) / 2) * (r + innerR_1) / 2,
@@ -539,8 +572,12 @@
                         node.linksFrom.forEach(function (point) {
                             if (point.linkBase) {
                                 var distance_1;
-                                var corners = point.linkBase.map(function (top, i) {
-                                    var angle = factor * top, x = Math.cos(startAngle + angle) * (innerR_1 + 1), y = Math.sin(startAngle + angle) * (innerR_1 + 1), curveFactor = options.curveFactor || 0;
+                                var corners = point.linkBase.map(function (top,
+                                    i) {
+                                        var angle = factor * top,
+                                    x = Math.cos(startAngle + angle) * (innerR_1 + 1),
+                                    y = Math.sin(startAngle + angle) * (innerR_1 + 1),
+                                    curveFactor = options.curveFactor || 0;
                                     // The distance between the from and to node
                                     // along the perimeter. This affect how curved
                                     // the link is, so that links between neighbours

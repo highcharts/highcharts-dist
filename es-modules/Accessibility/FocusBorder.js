@@ -12,7 +12,7 @@
 'use strict';
 import SVGLabel from '../Core/Renderer/SVG/SVGLabel.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, pick = U.pick;
+const { addEvent, pick } = U;
 /* *
  *
  *  Composition
@@ -30,9 +30,9 @@ var FocusBorderComposition;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     // Attributes that trigger a focus border update
-    var svgElementBorderUpdateTriggers = [
+    const svgElementBorderUpdateTriggers = [
         'x', 'y', 'transform', 'width', 'height', 'r', 'd', 'stroke-width'
     ];
     /* *
@@ -45,15 +45,13 @@ var FocusBorderComposition;
      * @private
      */
     function compose(ChartClass, SVGElementClass) {
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
-            var chartProto = ChartClass.prototype;
+        if (U.pushUnique(composedMembers, ChartClass)) {
+            const chartProto = ChartClass.prototype;
             chartProto.renderFocusBorder = chartRenderFocusBorder;
             chartProto.setFocusToElement = chartSetFocusToElement;
         }
-        if (composedClasses.indexOf(SVGElementClass) === -1) {
-            composedClasses.push(SVGElementClass);
-            var svgElementProto = SVGElementClass.prototype;
+        if (U.pushUnique(composedMembers, SVGElementClass)) {
+            const svgElementProto = SVGElementClass.prototype;
             svgElementProto.addFocusBorder = svgElementAddFocusBorder;
             svgElementProto.removeFocusBorder = svgElementRemoveFocusBorder;
         }
@@ -66,7 +64,7 @@ var FocusBorderComposition;
      * @function Highcharts.Chart#renderFocusBorder
      */
     function chartRenderFocusBorder() {
-        var focusElement = this.focusElement, focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder;
+        const focusElement = this.focusElement, focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder;
         if (focusElement) {
             focusElement.removeFocusBorder();
             if (focusBorderOptions.enabled) {
@@ -93,7 +91,7 @@ var FocusBorderComposition;
      * focusElement.
      */
     function chartSetFocusToElement(svgElement, focusElement) {
-        var focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder, browserFocusElement = focusElement || svgElement.element;
+        const focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder, browserFocusElement = focusElement || svgElement.element;
         // Set browser focus if possible
         if (browserFocusElement &&
             browserFocusElement.focus) {
@@ -125,7 +123,7 @@ var FocusBorderComposition;
         if (el.focusBorderDestroyHook) {
             return;
         }
-        var origDestroy = el.destroy;
+        const origDestroy = el.destroy;
         el.destroy = function () {
             if (el.focusBorder && el.focusBorder.destroy) {
                 el.focusBorder.destroy();
@@ -151,17 +149,17 @@ var FocusBorderComposition;
             this.removeFocusBorder();
         }
         // Add the border rect
-        var bb = this.getBBox(), pad = pick(margin, 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
+        const bb = this.getBBox(), pad = pick(margin, 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
             (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2;
         bb.x += this.translateX ? this.translateX : 0;
         bb.y += this.translateY ? this.translateY : 0;
-        var borderPosX = bb.x - pad, borderPosY = bb.y - pad, borderWidth = bb.width + 2 * pad, borderHeight = bb.height + 2 * pad;
+        let borderPosX = bb.x - pad, borderPosY = bb.y - pad, borderWidth = bb.width + 2 * pad, borderHeight = bb.height + 2 * pad;
         /**
          * For text elements, apply x and y offset, #11397.
          * @private
          */
         function getTextAnchorCorrection(text) {
-            var posXCorrection = 0, posYCorrection = 0;
+            let posXCorrection = 0, posYCorrection = 0;
             if (text.attr('text-anchor') === 'middle') {
                 posXCorrection = posYCorrection = 0.5;
             }
@@ -176,16 +174,16 @@ var FocusBorderComposition;
                 y: posYCorrection
             };
         }
-        var isLabel = this instanceof SVGLabel;
+        const isLabel = this instanceof SVGLabel;
         if (this.element.nodeName === 'text' || isLabel) {
-            var isRotated = !!this.rotation;
-            var correction = !isLabel ? getTextAnchorCorrection(this) :
+            const isRotated = !!this.rotation;
+            const correction = !isLabel ? getTextAnchorCorrection(this) :
                 {
                     x: isRotated ? 1 : 0,
                     y: 0
                 };
-            var attrX = +this.attr('x');
-            var attrY = +this.attr('y');
+            const attrX = +this.attr('x');
+            const attrY = +this.attr('y');
             if (!isNaN(attrX)) {
                 borderPosX = attrX - (bb.width * correction.x) - pad;
             }
@@ -193,7 +191,7 @@ var FocusBorderComposition;
                 borderPosY = attrY - (bb.height * correction.y) - pad;
             }
             if (isLabel && isRotated) {
-                var temp = borderWidth;
+                const temp = borderWidth;
                 borderWidth = borderHeight;
                 borderHeight = temp;
                 if (!isNaN(attrX)) {
@@ -226,21 +224,17 @@ var FocusBorderComposition;
      * @param el Element to add update hooks to
      * @param updateParams Parameters to pass through to addFocusBorder when updating.
      */
-    function avgElementAddUpdateFocusBorderHooks(el) {
-        var updateParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            updateParams[_i - 1] = arguments[_i];
-        }
+    function avgElementAddUpdateFocusBorderHooks(el, ...updateParams) {
         if (el.focusBorderUpdateHooks) {
             return;
         }
         el.focusBorderUpdateHooks = {};
-        svgElementBorderUpdateTriggers.forEach(function (trigger) {
-            var setterKey = trigger + 'Setter';
-            var origSetter = el[setterKey] || el._defaultSetter;
+        svgElementBorderUpdateTriggers.forEach((trigger) => {
+            const setterKey = trigger + 'Setter';
+            const origSetter = el[setterKey] || el._defaultSetter;
             el.focusBorderUpdateHooks[setterKey] = origSetter;
             el[setterKey] = function () {
-                var ret = origSetter.apply(el, arguments);
+                const ret = origSetter.apply(el, arguments);
                 el.addFocusBorder.apply(el, updateParams);
                 return ret;
             };
@@ -283,8 +277,8 @@ var FocusBorderComposition;
         if (!el.focusBorderUpdateHooks) {
             return;
         }
-        Object.keys(el.focusBorderUpdateHooks).forEach(function (setterKey) {
-            var origSetter = el.focusBorderUpdateHooks[setterKey];
+        Object.keys(el.focusBorderUpdateHooks).forEach((setterKey) => {
+            const origSetter = el.focusBorderUpdateHooks[setterKey];
             if (origSetter === el._defaultSetter) {
                 delete el[setterKey];
             }

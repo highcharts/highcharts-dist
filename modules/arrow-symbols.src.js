@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Arrow Symbols
  *
@@ -37,7 +37,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
+    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -48,7 +48,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var symbols = SVGRenderer.prototype.symbols;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -124,6 +129,20 @@
             return arrow(x, y, w / 2, h);
         }
         /**
+         * @private
+         */
+        function compose(SVGRendererClass) {
+            if (U.pushUnique(composedMembers, SVGRendererClass)) {
+                const symbols = SVGRendererClass.prototype.symbols;
+                symbols.arrow = arrow;
+                symbols['arrow-filled'] = triangleLeft;
+                symbols['arrow-filled-half'] = triangleLeftHalf;
+                symbols['arrow-half'] = arrowHalf;
+                symbols['triangle-left'] = triangleLeft;
+                symbols['triangle-left-half'] = triangleLeftHalf;
+            }
+        }
+        /**
          * Creates a left-oriented triangle.
          * ```
          *             o
@@ -190,22 +209,21 @@
         function triangleLeftHalf(x, y, w, h) {
             return triangleLeft(x, y, w / 2, h);
         }
-        symbols.arrow = arrow;
-        symbols['arrow-filled'] = triangleLeft;
-        symbols['arrow-filled-half'] = triangleLeftHalf;
-        symbols['arrow-half'] = arrowHalf;
-        symbols['triangle-left'] = triangleLeft;
-        symbols['triangle-left-half'] = triangleLeftHalf;
         /* *
          *
          *  Default Export
          *
          * */
+        const ArrowSymbols = {
+            compose
+        };
 
-        return symbols;
+        return ArrowSymbols;
     });
-    _registerModule(_modules, 'masters/modules/arrow-symbols.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/arrow-symbols.src.js', [_modules['Core/Globals.js'], _modules['Extensions/ArrowSymbols.js']], function (Highcharts, ArrowSymbols) {
 
+        const G = Highcharts;
+        ArrowSymbols.compose(G.SVGRenderer);
 
     });
 }));

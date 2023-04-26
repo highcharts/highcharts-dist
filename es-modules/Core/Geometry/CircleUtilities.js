@@ -9,7 +9,7 @@
  * */
 'use strict';
 import Geometry from './GeometryUtilities.js';
-var getAngleBetweenPoints = Geometry.getAngleBetweenPoints, getCenterOfPoints = Geometry.getCenterOfPoints, getDistanceBetweenPoints = Geometry.getDistanceBetweenPoints;
+const { getAngleBetweenPoints, getCenterOfPoints, getDistanceBetweenPoints } = Geometry;
 /* *
  *
  *  Namespace
@@ -35,7 +35,7 @@ var CircleUtilities;
      * Rounded number
      */
     function round(x, decimals) {
-        var a = Math.pow(10, decimals);
+        const a = Math.pow(10, decimals);
         return Math.round(x * a) / a;
     }
     CircleUtilities.round = round;
@@ -100,7 +100,7 @@ var CircleUtilities;
      * Returns the area of overlap between the two circles.
      */
     function getOverlapBetweenCircles(r1, r2, d) {
-        var overlap = 0;
+        let overlap = 0;
         // If the distance is larger than the sum of the radiuses then the
         // circles does not overlap.
         if (d < r1 + r2) {
@@ -111,7 +111,7 @@ var CircleUtilities;
             }
             else {
                 // Height of first triangle segment.
-                var d1 = (r1 * r1 - r2 * r2 + d * d) / (2 * d), 
+                const d1 = (r1 * r1 - r2 * r2 + d * d) / (2 * d), 
                 // Height of second triangle segment.
                 d2 = d - d1;
                 overlap = (getCircularSegmentArea(r1, r1 - d1) +
@@ -140,12 +140,12 @@ var CircleUtilities;
      * Returns the resulting intersection points.
      */
     function getCircleCircleIntersection(c1, c2) {
-        var d = getDistanceBetweenPoints(c1, c2), r1 = c1.r, r2 = c2.r;
-        var points = [];
+        const d = getDistanceBetweenPoints(c1, c2), r1 = c1.r, r2 = c2.r;
+        let points = [];
         if (d < r1 + r2 && d > Math.abs(r1 - r2)) {
             // If the circles are overlapping, but not completely overlapping,
             // then it exists intersecting points.
-            var r1Square = r1 * r1, r2Square = r2 * r2, 
+            const r1Square = r1 * r1, r2Square = r2 * r2, 
             // d^2 - r^2 + R^2 / 2d
             x = (r1Square - r2Square + d * d) / (2 * d), 
             // y^2 = R^2 - x^2
@@ -170,12 +170,12 @@ var CircleUtilities;
      * Returns a list of intersection points.
      */
     function getCirclesIntersectionPoints(circles) {
-        return circles.reduce(function (points, c1, i, arr) {
-            var additional = arr
+        return circles.reduce((points, c1, i, arr) => {
+            const additional = arr
                 .slice(i + 1)
-                .reduce(function (points, c2, j, arr) {
-                var indexes = [i, j + i + 1];
-                return points.concat(getCircleCircleIntersection(c1, c2).map(function (p) {
+                .reduce((points, c2, j, arr) => {
+                const indexes = [i, j + i + 1];
+                return points.concat(getCircleCircleIntersection(c1, c2).map((p) => {
                     p.indexes = indexes;
                     return p;
                 }));
@@ -295,27 +295,27 @@ var CircleUtilities;
      * there are no intersection between all the circles.
      */
     function getAreaOfIntersectionBetweenCircles(circles) {
-        var intersectionPoints = getCirclesIntersectionPolygon(circles), result;
+        let intersectionPoints = getCirclesIntersectionPolygon(circles), result;
         if (intersectionPoints.length > 1) {
             // Calculate the center of the intersection points.
-            var center_1 = getCenterOfPoints(intersectionPoints);
+            const center = getCenterOfPoints(intersectionPoints);
             intersectionPoints = intersectionPoints
                 // Calculate the angle between the center and the points.
                 .map(function (p) {
-                p.angle = getAngleBetweenPoints(center_1, p);
+                p.angle = getAngleBetweenPoints(center, p);
                 return p;
             })
                 // Sort the points by the angle to the center.
                 .sort(function (a, b) {
                 return b.angle - a.angle;
             });
-            var startPoint = intersectionPoints[intersectionPoints.length - 1];
-            var arcs = intersectionPoints
+            const startPoint = intersectionPoints[intersectionPoints.length - 1];
+            const arcs = intersectionPoints
                 .reduce(function (data, p1) {
-                var startPoint = data.startPoint, midPoint = getCenterOfPoints([startPoint, p1]);
+                const { startPoint } = data, midPoint = getCenterOfPoints([startPoint, p1]);
                 // Calculate the arc from the intersection points and their
                 // circles.
-                var arc = p1.indexes
+                const arc = p1.indexes
                     // Filter out circles that are not included in both
                     // intersection points.
                     .filter(function (index) {
@@ -324,13 +324,13 @@ var CircleUtilities;
                     // Iterate the circles of the intersection points and
                     // calculate arcs.
                     .reduce(function (arc, index) {
-                    var circle = circles[index], angle1 = getAngleBetweenPoints(circle, p1), angle2 = getAngleBetweenPoints(circle, startPoint), angleDiff = angle2 - angle1 +
+                    const circle = circles[index], angle1 = getAngleBetweenPoints(circle, p1), angle2 = getAngleBetweenPoints(circle, startPoint), angleDiff = angle2 - angle1 +
                         (angle2 < angle1 ? 2 * Math.PI : 0), angle = angle2 - angleDiff / 2;
-                    var width = getDistanceBetweenPoints(midPoint, {
+                    let width = getDistanceBetweenPoints(midPoint, {
                         x: circle.x + circle.r * Math.sin(angle),
                         y: circle.y + circle.r * Math.cos(angle)
                     });
-                    var r = circle.r;
+                    const { r } = circle;
                     // Width can sometimes become to large due to
                     // floating point errors
                     if (width > r * 2) {
@@ -339,9 +339,9 @@ var CircleUtilities;
                     // Get the arc with the smallest width.
                     if (!arc || arc.width > width) {
                         arc = {
-                            r: r,
+                            r,
                             largeArc: width > r ? 1 : 0,
-                            width: width,
+                            width,
                             x: p1.x,
                             y: p1.y
                         };
@@ -351,7 +351,7 @@ var CircleUtilities;
                 }, null);
                 // If we find an arc then add it to the list and update p2.
                 if (arc) {
-                    var r = arc.r;
+                    const { r } = arc;
                     data.arcs.push(['A', r, r, 0, arc.largeArc, 1, arc.x, arc.y]);
                     data.startPoint = p1;
                 }
@@ -369,7 +369,7 @@ var CircleUtilities;
             else {
                 arcs.unshift(['M', startPoint.x, startPoint.y]);
                 result = {
-                    center: center_1,
+                    center,
                     d: arcs
                 };
             }

@@ -10,10 +10,10 @@
 'use strict';
 import H from '../Globals.js';
 import D from '../Defaults.js';
-var defaultOptions = D.defaultOptions;
+const { defaultOptions } = D;
 import Point from './Point.js';
 import U from '../Utilities.js';
-var extendClass = U.extendClass, merge = U.merge;
+const { extendClass, merge } = U;
 /* *
  *
  *  Namespace
@@ -42,7 +42,7 @@ var SeriesRegistry;
      * @private
      */
     function registerSeriesType(seriesType, SeriesClass) {
-        var defaultPlotOptions = defaultOptions.plotOptions || {}, seriesOptions = SeriesClass.defaultOptions, seriesProto = SeriesClass.prototype;
+        const defaultPlotOptions = defaultOptions.plotOptions || {}, seriesOptions = SeriesClass.defaultOptions, seriesProto = SeriesClass.prototype;
         seriesProto.type = seriesType;
         if (!seriesProto.pointClass) {
             seriesProto.pointClass = Point;
@@ -81,7 +81,7 @@ var SeriesRegistry;
      * derivatives.
      */
     function seriesType(type, parent, options, seriesProto, pointProto) {
-        var defaultPlotOptions = defaultOptions.plotOptions || {};
+        const defaultPlotOptions = defaultOptions.plotOptions || {};
         parent = parent || '';
         // Merge the options
         defaultPlotOptions[type] = merge(defaultPlotOptions[parent], options);

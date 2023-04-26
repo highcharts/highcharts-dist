@@ -10,25 +10,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge, error = U.error, isArray = U.isArray;
+const { extend, merge, error, isArray } = U;
 /* *
  *
  *  Functions
@@ -63,35 +48,34 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
  *
  * @augments Highcharts.Series
  */
-var MFIIndicator = /** @class */ (function (_super) {
-    __extends(MFIIndicator, _super);
-    function MFIIndicator() {
+class MFIIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    MFIIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
+    getValues(series, params) {
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = (volumeSeries && volumeSeries.yData), MFI = [], xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [];
+        let newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i, isUp = false, 
         // MFI starts calculations from the second point
         // Cause we need to calculate change between two points
-        range = 1, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = (volumeSeries && volumeSeries.yData), MFI = [], isUp = false, xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [], newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i;
+        range = 1;
         if (!volumeSeries) {
             error('Series ' +
                 params.volumeSeriesID +
@@ -148,41 +132,40 @@ var MFIIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Money Flow Index. This series requires `linkedTo` option to be set and
+ * should be loaded after the `stock/indicators/indicators.js` file.
+ *
+ * @sample stock/indicators/mfi
+ *         Money Flow Index Indicator
+ *
+ * @extends      plotOptions.sma
+ * @since        6.0.0
+ * @product      highstock
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/mfi
+ * @optionparent plotOptions.mfi
+ */
+MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Money Flow Index. This series requires `linkedTo` option to be set and
-     * should be loaded after the `stock/indicators/indicators.js` file.
-     *
-     * @sample stock/indicators/mfi
-     *         Money Flow Index Indicator
-     *
-     * @extends      plotOptions.sma
-     * @since        6.0.0
-     * @product      highstock
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/mfi
-     * @optionparent plotOptions.mfi
+     * @excluding index
      */
-    MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    params: {
+        index: void 0,
         /**
-         * @excluding index
+         * The id of volume series which is mandatory.
+         * For example using OHLC data, volumeSeriesID='volume' means
+         * the indicator will be calculated using OHLC and volume values.
          */
-        params: {
-            index: void 0,
-            /**
-             * The id of volume series which is mandatory.
-             * For example using OHLC data, volumeSeriesID='volume' means
-             * the indicator will be calculated using OHLC and volume values.
-             */
-            volumeSeriesID: 'volume',
-            /**
-             * Number of maximum decimals that are used in MFI calculations.
-             */
-            decimals: 4
-        }
-    });
-    return MFIIndicator;
-}(SMAIndicator));
+        volumeSeriesID: 'volume',
+        /**
+         * Number of maximum decimals that are used in MFI calculations.
+         */
+        decimals: 4
+    }
+});
 extend(MFIIndicator.prototype, {
     nameBase: 'Money Flow Index'
 });

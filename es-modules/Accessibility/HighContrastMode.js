@@ -11,7 +11,7 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-var doc = H.doc, isMS = H.isMS, win = H.win;
+const { doc, isMS, win } = H;
 /* *
  *
  *  Functions
@@ -26,18 +26,18 @@ var doc = H.doc, isMS = H.isMS, win = H.win;
  */
 function isHighContrastModeActive() {
     // Use media query on Edge, but not on IE
-    var isEdge = /(Edg)/.test(win.navigator.userAgent);
+    const isEdge = /(Edg)/.test(win.navigator.userAgent);
     if (win.matchMedia && isEdge) {
         return win.matchMedia('(-ms-high-contrast: active)').matches;
     }
     // Test BG image for IE
     if (isMS && win.getComputedStyle) {
-        var testDiv = doc.createElement('div');
-        var imageSrc = 'data:image/gif;base64,' +
+        const testDiv = doc.createElement('div');
+        const imageSrc = 'data:image/gif;base64,' +
             'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-        testDiv.style.backgroundImage = "url(".concat(imageSrc, ")"); // #13071
+        testDiv.style.backgroundImage = `url(${imageSrc})`; // #13071
         doc.body.appendChild(testDiv);
-        var bi = (testDiv.currentStyle ||
+        const bi = (testDiv.currentStyle ||
             win.getComputedStyle(testDiv)).backgroundImage;
         doc.body.removeChild(testDiv);
         return bi === 'none';
@@ -60,11 +60,11 @@ function setHighContrastTheme(chart) {
     // disabled. For now, the user will have to reload the page.
     chart.highContrastModeActive = true;
     // Apply theme to chart
-    var theme = (chart.options.accessibility.highContrastTheme);
+    const theme = (chart.options.accessibility.highContrastTheme);
     chart.update(theme, false);
     // Force series colors (plotOptions is not enough)
     chart.series.forEach(function (s) {
-        var plotOpts = theme.plotOptions[s.type] || {};
+        const plotOpts = theme.plotOptions[s.type] || {};
         s.update({
             color: plotOpts.color || 'windowText',
             colors: [plotOpts.color || 'windowText'],
@@ -89,8 +89,8 @@ function setHighContrastTheme(chart) {
  *  Default Export
  *
  * */
-var whcm = {
-    isHighContrastModeActive: isHighContrastModeActive,
-    setHighContrastTheme: setHighContrastTheme
+const whcm = {
+    isHighContrastModeActive,
+    setHighContrastTheme
 };
 export default whcm;

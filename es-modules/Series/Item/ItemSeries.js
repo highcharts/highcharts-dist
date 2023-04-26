@@ -10,29 +10,14 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import H from '../../Core/Globals.js';
 import ItemPoint from './ItemPoint.js';
 import D from '../../Core/Defaults.js';
-var defaultOptions = D.defaultOptions;
+const { defaultOptions } = D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var PieSeries = SeriesRegistry.seriesTypes.pie;
+const { seriesTypes: { pie: PieSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { defined, extend, fireEvent, isNumber, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
@@ -51,19 +36,17 @@ var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isNumber = 
  *
  * @augments Highcharts.seriesTypes.pie
  */
-var ItemSeries = /** @class */ (function (_super) {
-    __extends(ItemSeries, _super);
-    function ItemSeries() {
+class ItemSeries extends PieSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        super(...arguments);
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -76,7 +59,7 @@ var ItemSeries = /** @class */ (function (_super) {
      * Fade in the whole chart.
      * @private
      */
-    ItemSeries.prototype.animate = function (init) {
+    animate(init) {
         if (init) {
             this.group.attr({
                 opacity: 0
@@ -87,8 +70,8 @@ var ItemSeries = /** @class */ (function (_super) {
                 opacity: 1
             }, this.options.animation);
         }
-    };
-    ItemSeries.prototype.drawDataLabels = function () {
+    }
+    drawDataLabels() {
         if (this.center && this.slots) {
             H.seriesTypes.pie.prototype.drawDataLabels.call(this);
             // else, it's just a dot chart with no natural place to put the
@@ -99,9 +82,9 @@ var ItemSeries = /** @class */ (function (_super) {
                 point.destroyElements({ dataLabel: 1 });
             });
         }
-    };
-    ItemSeries.prototype.drawPoints = function () {
-        var series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, i = 0, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
+    }
+    drawPoints() {
+        let series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, i = 0, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
         /* @todo: remove if not needed
         this.slots.forEach(slot => {
             this.chart.renderer.circle(slot.x, slot.y, 6)
@@ -112,7 +95,7 @@ var ItemSeries = /** @class */ (function (_super) {
         });
         //*/
         this.points.forEach(function (point) {
-            var attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+            let attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
                 seriesMarkerOptions.symbol), r = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding, x, y, width, height;
             point.graphics = graphics = point.graphics || [];
             if (!series.chart.styledMode) {
@@ -123,11 +106,11 @@ var ItemSeries = /** @class */ (function (_super) {
                     point.graphic = renderer.g('point')
                         .add(series.group);
                 }
-                for (var val = 0; val < (point.y || 0); val++) {
+                for (let val = 0; val < (point.y || 0); val++) {
                     // Semi-circle
                     if (series.center && series.slots) {
                         // Fill up the slots from left to right
-                        var slot = series.slots.shift();
+                        const slot = series.slots.shift();
                         x = slot.x - itemSize / 2;
                         y = slot.y - itemSize / 2;
                     }
@@ -156,14 +139,15 @@ var ItemSeries = /** @class */ (function (_super) {
                     if (typeof r !== 'undefined') {
                         attr.r = r;
                     }
-                    var graphic = graphics[val];
+                    // Circles attributes update (#17257)
+                    if (pointAttr) {
+                        extend(attr, pointAttr);
+                    }
+                    let graphic = graphics[val];
                     if (graphic) {
                         graphic.animate(attr);
                     }
                     else {
-                        if (pointAttr) {
-                            extend(attr, pointAttr);
-                        }
                         graphic = renderer
                             .symbol(symbol, void 0, void 0, void 0, void 0, {
                             backgroundSize: 'within'
@@ -176,7 +160,7 @@ var ItemSeries = /** @class */ (function (_super) {
                     i++;
                 }
             }
-            graphics.forEach(function (graphic, i) {
+            graphics.forEach((graphic, i) => {
                 if (!graphic) {
                     return;
                 }
@@ -189,9 +173,9 @@ var ItemSeries = /** @class */ (function (_super) {
                 }
             });
         });
-    };
-    ItemSeries.prototype.getRows = function () {
-        var rows = this.options.rows, cols, ratio;
+    }
+    getRows() {
+        let rows = this.options.rows, cols, ratio;
         // Get the row count that gives the most square cells
         if (!rows) {
             ratio = this.chart.plotWidth / this.chart.plotHeight;
@@ -218,13 +202,13 @@ var ItemSeries = /** @class */ (function (_super) {
             }
         }
         return rows;
-    };
+    }
     /**
      * Get the semi-circular slots.
      * @private
      */
-    ItemSeries.prototype.getSlots = function () {
-        var center = this.center, diameter = center[2], innerSize = center[3], row, slots = this.slots, x, y, rowRadius, rowLength, colCount, increment, angle, col, itemSize = 0, rowCount, fullAngle = (this.endAngleRad - this.startAngleRad), itemCount = Number.MAX_VALUE, finalItemCount, rows, testRows, rowsOption = this.options.rows, 
+    getSlots() {
+        let center = this.center, diameter = center[2], innerSize = center[3], row, slots = this.slots, x, y, rowRadius, rowLength, colCount, increment, angle, col, itemSize = 0, rowCount, fullAngle = (this.endAngleRad - this.startAngleRad), itemCount = Number.MAX_VALUE, finalItemCount, rows, testRows, rowsOption = this.options.rows, 
         // How many rows (arcs) should be used
         rowFraction = (diameter - innerSize) / diameter, isCircle = fullAngle % (2 * Math.PI) === 0, total = this.total || 0;
         // Increase the itemSize until we find the best fit
@@ -276,7 +260,7 @@ var ItemSeries = /** @class */ (function (_super) {
         // the rows and remove the last slot until the count is correct.
         // For each iteration we sort the last slot by the angle, and
         // remove those with the highest angles.
-        var overshoot = finalItemCount - this.total -
+        let overshoot = finalItemCount - this.total -
             (isCircle ? rows.length : 0);
         /**
          * @private
@@ -310,7 +294,7 @@ var ItemSeries = /** @class */ (function (_super) {
                 .forEach(cutOffRow);
         }
         rows.forEach(function (row) {
-            var rowRadius = row.rowRadius, colCount = row.colCount;
+            const rowRadius = row.rowRadius, colCount = row.colCount;
             increment = colCount ? fullAngle / colCount : 0;
             for (col = 0; col <= colCount; col += 1) {
                 angle = this.startAngleRad + col * increment;
@@ -325,8 +309,8 @@ var ItemSeries = /** @class */ (function (_super) {
         });
         this.itemSize = itemSize;
         return slots;
-    };
-    ItemSeries.prototype.translate = function (_positions) {
+    }
+    translate(_positions) {
         // Initialize chart without setting data, #13379.
         if (this.total === 0 && // check if that is a (semi-)circle
             isNumber(this.options.startAngle) &&
@@ -345,97 +329,96 @@ var ItemSeries = /** @class */ (function (_super) {
             this.generatePoints();
             fireEvent(this, 'afterTranslate');
         }
-    };
+    }
+}
+/**
+ * An item chart is an infographic chart where a number of items are laid
+ * out in either a rectangular or circular pattern. It can be used to
+ * visualize counts within a group, or for the circular pattern, typically
+ * a parliament.
+ *
+ * The circular layout has much in common with a pie chart. Many of the item
+ * series options, like `center`, `size` and data label positioning, are
+ * inherited from the pie series and don't apply for rectangular layouts.
+ *
+ * @sample       highcharts/demo/parliament-chart
+ *               Parliament chart (circular item chart)
+ * @sample       highcharts/series-item/rectangular
+ *               Rectangular item chart
+ * @sample       highcharts/series-item/symbols
+ *               Infographic with symbols
+ *
+ * @extends      plotOptions.pie
+ * @since        7.1.0
+ * @product      highcharts
+ * @excluding    borderColor, borderWidth, depth, linecap, shadow,
+ *               slicedOffset
+ * @requires     modules/item-series
+ * @optionparent plotOptions.item
+ */
+ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, {
     /**
-     * An item chart is an infographic chart where a number of items are laid
-     * out in either a rectangular or circular pattern. It can be used to
-     * visualize counts within a group, or for the circular pattern, typically
-     * a parliament.
+     * In circular view, the end angle of the item layout, in degrees where
+     * 0 is up.
      *
-     * The circular layout has much in common with a pie chart. Many of the item
-     * series options, like `center`, `size` and data label positioning, are
-     * inherited from the pie series and don't apply for rectangular layouts.
-     *
-     * @sample       highcharts/demo/parliament-chart
-     *               Parliament chart (circular item chart)
-     * @sample       highcharts/series-item/rectangular
-     *               Rectangular item chart
-     * @sample       highcharts/series-item/symbols
-     *               Infographic with symbols
-     *
-     * @extends      plotOptions.pie
-     * @since        7.1.0
-     * @product      highcharts
-     * @excluding    borderColor, borderWidth, depth, linecap, shadow,
-     *               slicedOffset
-     * @requires     modules/item-series
-     * @optionparent plotOptions.item
+     * @sample highcharts/demo/parliament-chart
+     *         Parliament chart
+     * @type {undefined|number}
      */
-    ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, {
-        /**
-         * In circular view, the end angle of the item layout, in degrees where
-         * 0 is up.
-         *
-         * @sample highcharts/demo/parliament-chart
-         *         Parliament chart
-         * @type {undefined|number}
-         */
-        endAngle: void 0,
-        /**
-         * In circular view, the size of the inner diameter of the circle. Can
-         * be a percentage or pixel value. Percentages are relative to the outer
-         * perimeter. Pixel values are given as integers.
-         *
-         * If the `rows` option is set, it overrides the `innerSize` setting.
-         *
-         * @sample highcharts/demo/parliament-chart
-         *         Parliament chart
-         * @type {string|number}
-         */
-        innerSize: '40%',
-        /**
-         * The padding between the items, given in relative size where the size
-         * of the item is 1.
-         * @type {number}
-         */
-        itemPadding: 0.1,
-        /**
-         * The layout of the items in rectangular view. Can be either
-         * `horizontal` or `vertical`.
-         * @sample highcharts/series-item/symbols
-         *         Horizontal layout
-         * @type {string}
-         */
-        layout: 'vertical',
-        /**
-         * @extends plotOptions.series.marker
-         */
-        marker: merge(defaultOptions.plotOptions.line.marker, {
-            radius: null
-        }),
-        /**
-         * The number of rows to display in the rectangular or circular view. If
-         * the `innerSize` is set, it will be overridden by the `rows` setting.
-         *
-         * @sample highcharts/series-item/rows-columns
-         *         Fixed row count
-         * @type {number}
-         */
-        rows: void 0,
-        crisp: false,
-        showInLegend: true,
-        /**
-         * In circular view, the start angle of the item layout, in degrees
-         * where 0 is up.
-         *
-         * @sample highcharts/demo/parliament-chart
-         *         Parliament chart
-         * @type {undefined|number}
-         */
-        startAngle: void 0
-    });
-    return ItemSeries;
-}(PieSeries));
+    endAngle: void 0,
+    /**
+     * In circular view, the size of the inner diameter of the circle. Can
+     * be a percentage or pixel value. Percentages are relative to the outer
+     * perimeter. Pixel values are given as integers.
+     *
+     * If the `rows` option is set, it overrides the `innerSize` setting.
+     *
+     * @sample highcharts/demo/parliament-chart
+     *         Parliament chart
+     * @type {string|number}
+     */
+    innerSize: '40%',
+    /**
+     * The padding between the items, given in relative size where the size
+     * of the item is 1.
+     * @type {number}
+     */
+    itemPadding: 0.1,
+    /**
+     * The layout of the items in rectangular view. Can be either
+     * `horizontal` or `vertical`.
+     * @sample highcharts/series-item/symbols
+     *         Horizontal layout
+     * @type {string}
+     */
+    layout: 'vertical',
+    /**
+     * @extends plotOptions.series.marker
+     */
+    marker: merge(defaultOptions.plotOptions.line.marker, {
+        radius: null
+    }),
+    /**
+     * The number of rows to display in the rectangular or circular view. If
+     * the `innerSize` is set, it will be overridden by the `rows` setting.
+     *
+     * @sample highcharts/series-item/rows-columns
+     *         Fixed row count
+     * @type {number}
+     */
+    rows: void 0,
+    crisp: false,
+    showInLegend: true,
+    /**
+     * In circular view, the start angle of the item layout, in degrees
+     * where 0 is up.
+     *
+     * @sample highcharts/demo/parliament-chart
+     *         Parliament chart
+     * @type {undefined|number}
+     */
+    startAngle: void 0
+});
 extend(ItemSeries.prototype, {
     markerAttribs: void 0
 });

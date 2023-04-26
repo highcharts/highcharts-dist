@@ -9,10 +9,10 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-var deg2rad = H.deg2rad;
+const { deg2rad } = H;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-var fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick, relativeLength = U.relativeLength;
+const { fireEvent, isNumber, pick, relativeLength } = U;
 /**
  * @private
  */
@@ -37,15 +37,15 @@ var CenteredUtilities;
      * @function Highcharts.CenteredSeriesMixin.getCenter
      */
     function getCenter() {
-        var options = this.options, chart = this.chart, slicingRoom = 2 * (options.slicedOffset || 0), plotWidth = chart.plotWidth - 2 * slicingRoom, plotHeight = chart.plotHeight - 2 * slicingRoom, centerOption = options.center, smallestSize = Math.min(plotWidth, plotHeight), thickness = options.thickness;
-        var handleSlicingRoom, size = options.size, innerSize = options.innerSize || 0, i, value;
+        const options = this.options, chart = this.chart, slicingRoom = 2 * (options.slicedOffset || 0), plotWidth = chart.plotWidth - 2 * slicingRoom, plotHeight = chart.plotHeight - 2 * slicingRoom, centerOption = options.center, smallestSize = Math.min(plotWidth, plotHeight), thickness = options.thickness;
+        let handleSlicingRoom, size = options.size, innerSize = options.innerSize || 0, i, value;
         if (typeof size === 'string') {
             size = parseFloat(size);
         }
         if (typeof innerSize === 'string') {
             innerSize = parseFloat(innerSize);
         }
-        var positions = [
+        const positions = [
             pick(centerOption[0], '50%'),
             pick(centerOption[1], '50%'),
             // Prevent from negative values
@@ -75,7 +75,7 @@ var CenteredUtilities;
             thickness * 2 < positions[2] && thickness > 0) {
             positions[3] = positions[2] - thickness * 2;
         }
-        fireEvent(this, 'afterGetCenter', { positions: positions });
+        fireEvent(this, 'afterGetCenter', { positions });
         return positions;
     }
     CenteredUtilities.getCenter = getCenter;
@@ -96,7 +96,7 @@ var CenteredUtilities;
      *         Returns an object containing start and end angles as radians.
      */
     function getStartAndEndRadians(start, end) {
-        var startAngle = isNumber(start) ? start : 0, // must be a number
+        const startAngle = isNumber(start) ? start : 0, // must be a number
         endAngle = ((isNumber(end) && // must be a number
             end > startAngle && // must be larger than the start angle
             // difference must be less than 360 degrees

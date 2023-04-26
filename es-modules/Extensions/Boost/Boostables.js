@@ -16,7 +16,7 @@
  *
  * */
 // These are the series we allow boosting for.
-var Boostables = [
+const Boostables = [
     'area',
     'areaspline',
     'arearange',

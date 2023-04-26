@@ -10,30 +10,14 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import AccessibilityComponent from '../../AccessibilityComponent.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
-var hideSeriesFromAT = ChartUtilities.hideSeriesFromAT;
+const { hideSeriesFromAT } = ChartUtilities;
 import ForcedMarkers from './ForcedMarkers.js';
 import NewDataAnnouncer from './NewDataAnnouncer.js';
 import SeriesDescriber from './SeriesDescriber.js';
-var describeSeries = SeriesDescriber.describeSeries;
+const { describeSeries } = SeriesDescriber;
 import SeriesKeyboardNavigation from './SeriesKeyboardNavigation.js';
-import Tooltip from '../../../Core/Tooltip.js';
 /* *
  *
  *  Class
@@ -46,11 +30,7 @@ import Tooltip from '../../../Core/Tooltip.js';
  * @class
  * @name Highcharts.SeriesComponent
  */
-var SeriesComponent = /** @class */ (function (_super) {
-    __extends(SeriesComponent, _super);
-    function SeriesComponent() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class SeriesComponent extends AccessibilityComponent {
     /* *
      *
      *  Static Functions
@@ -60,11 +40,11 @@ var SeriesComponent = /** @class */ (function (_super) {
     /**
      * @private
      */
-    SeriesComponent.compose = function (ChartClass, PointClass, SeriesClass) {
+    static compose(ChartClass, PointClass, SeriesClass) {
         NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
         SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
-    };
+    }
     /* *
      *
      *  Functions
@@ -73,31 +53,33 @@ var SeriesComponent = /** @class */ (function (_super) {
     /**
      * Init the component.
      */
-    SeriesComponent.prototype.init = function () {
+    init() {
         this.newDataAnnouncer = new NewDataAnnouncer(this.chart);
         this.newDataAnnouncer.init();
         this.keyboardNavigation = new SeriesKeyboardNavigation(this.chart, this.keyCodes);
         this.keyboardNavigation.init();
         this.hideTooltipFromATWhenShown();
         this.hideSeriesLabelsFromATWhenShown();
-    };
+    }
     /**
      * @private
      */
-    SeriesComponent.prototype.hideTooltipFromATWhenShown = function () {
-        var component = this;
-        this.addEvent(Tooltip, 'refresh', function () {
-            if (this.chart === component.chart &&
-                this.label &&
-                this.label.element) {
-                this.label.element.setAttribute('aria-hidden', true);
-            }
-        });
-    };
+    hideTooltipFromATWhenShown() {
+        const component = this;
+        if (this.chart.tooltip) {
+            this.addEvent(this.chart.tooltip.constructor, 'refresh', function () {
+                if (this.chart === component.chart &&
+                    this.label &&
+                    this.label.element) {
+                    this.label.element.setAttribute('aria-hidden', true);
+                }
+            });
+        }
+    }
     /**
      * @private
      */
-    SeriesComponent.prototype.hideSeriesLabelsFromATWhenShown = function () {
+    hideSeriesLabelsFromATWhenShown() {
         this.addEvent(this.chart, 'afterDrawSeriesLabels', function () {
             this.series.forEach(function (series) {
                 if (series.labelBySeries) {
@@ -105,15 +87,15 @@ var SeriesComponent = /** @class */ (function (_super) {
                 }
             });
         });
-    };
+    }
     /**
      * Called on chart render. It is necessary to do this for render in case
      * markers change on zoom/pixel density.
      */
-    SeriesComponent.prototype.onChartRender = function () {
-        var chart = this.chart;
+    onChartRender() {
+        const chart = this.chart;
         chart.series.forEach(function (series) {
-            var shouldDescribeSeries = (series.options.accessibility &&
+            const shouldDescribeSeries = (series.options.accessibility &&
                 series.options.accessibility.enabled) !== false &&
                 series.visible;
             if (shouldDescribeSeries) {
@@ -123,24 +105,23 @@ var SeriesComponent = /** @class */ (function (_super) {
                 hideSeriesFromAT(series);
             }
         });
-    };
+    }
     /**
      * Get keyboard navigation handler for this component.
      * @private
      */
-    SeriesComponent.prototype.getKeyboardNavigation = function () {
+    getKeyboardNavigation() {
         return this.keyboardNavigation.getKeyboardNavigationHandler();
-    };
+    }
     /**
      * Remove traces
      * @private
      */
-    SeriesComponent.prototype.destroy = function () {
+    destroy() {
         this.newDataAnnouncer.destroy();
         this.keyboardNavigation.destroy();
-    };
-    return SeriesComponent;
-}(AccessibilityComponent));
+    }
+}
 /* *
  *
  *  Default Export

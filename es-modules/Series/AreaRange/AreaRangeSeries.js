@@ -8,28 +8,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import AreaRangePoint from './AreaRangePoint.js';
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, AreaSeries = _a.area, areaProto = _a.area.prototype, columnProto = _a.column.prototype;
+const { area: AreaSeries, area: { prototype: areaProto }, column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, merge = U.merge;
+const { addEvent, defined, extend, isArray, isNumber, pick, merge } = U;
 /* *
  *
  *  Constants
@@ -52,7 +37,7 @@ var addEvent = U.addEvent, defined = U.defined, extend = U.extend, isArray = U.i
  *
  * @private
  */
-var areaRangeSeriesOptions = {
+const areaRangeSeriesOptions = {
     /**
      * @see [fillColor](#plotOptions.arearange.fillColor)
      * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
@@ -173,35 +158,33 @@ var areaRangeSeriesOptions = {
  *
  * @augments Highcharts.Series
  */
-var AreaRangeSeries = /** @class */ (function (_super) {
-    __extends(AreaRangeSeries, _super);
-    function AreaRangeSeries() {
+class AreaRangeSeries extends AreaSeries {
+    constructor() {
         /**
          *
          *  Static Properties
          *
          */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.lowerStateMarkerGraphic = void 0;
-        _this.xAxis = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
+        this.lowerStateMarkerGraphic = void 0;
+        this.xAxis = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    AreaRangeSeries.prototype.toYData = function (point) {
+    toYData(point) {
         return [point.low, point.high];
-    };
+    }
     /**
      * Translate a point's plotHigh from the internal angle and radius measures
      * to true plotHigh coordinates. This is an addition of the toXY method
@@ -209,21 +192,21 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      * considered (#3419).
      * @private
      */
-    AreaRangeSeries.prototype.highToXY = function (point) {
+    highToXY(point) {
         // Find the polar plotX and plotY
-        var chart = this.chart, xy = this.xAxis.postTranslate(point.rectPlotX || 0, this.yAxis.len - (point.plotHigh || 0));
+        const chart = this.chart, xy = this.xAxis.postTranslate(point.rectPlotX || 0, this.yAxis.len - (point.plotHigh || 0));
         point.plotHighX = xy.x - chart.plotLeft;
         point.plotHigh = xy.y - chart.plotTop;
         point.plotLowX = point.plotX;
-    };
+    }
     /**
      * Extend the line series' getSegmentPath method by applying the segment
      * path to both lower and higher values of the range.
      * @private
      */
-    AreaRangeSeries.prototype.getGraphPath = function (points) {
-        var highPoints = [], highAreaPoints = [], getGraphPath = areaProto.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
-        var i, point, pointShim, step = options.step;
+    getGraphPath(points) {
+        const highPoints = [], highAreaPoints = [], getGraphPath = areaProto.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
+        let i, point, pointShim, step = options.step;
         points = points || this.points;
         // Create the top line and the top part of the area fill. The area fill
         // compensates for null points by drawing down to the lower graph,
@@ -232,7 +215,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         while (i--) {
             point = points[i];
             // Support for polar
-            var highAreaPoint = polar ? {
+            const highAreaPoint = polar ? {
                 plotX: point.rectPlotX,
                 plotY: point.yBottom,
                 doCurve: false // #5186, gaps in areasplinerange fill
@@ -266,7 +249,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             }
         }
         // Get the paths
-        var lowerPath = getGraphPath.call(this, points);
+        const lowerPath = getGraphPath.call(this, points);
         if (step) {
             if (step === true) {
                 step = 'left';
@@ -277,11 +260,11 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                 right: 'left'
             }[step]; // swap for reading in getGraphPath
         }
-        var higherPath = getGraphPath.call(this, highPoints);
-        var higherAreaPath = getGraphPath.call(this, highAreaPoints);
+        const higherPath = getGraphPath.call(this, highPoints);
+        const higherAreaPath = getGraphPath.call(this, highAreaPoints);
         options.step = step;
         // Create a line on both top and bottom of the range
-        var linePath = [].concat(lowerPath, higherPath);
+        const linePath = [].concat(lowerPath, higherPath);
         // For the area path, we need to change the 'move' statement into
         // 'lineTo'
         if (!this.chart.polar &&
@@ -301,15 +284,15 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         linePath.xMap = lowerPath.xMap;
         this.areaPath.xMap = lowerPath.xMap;
         return linePath;
-    };
+    }
     /**
      * Extend the basic drawDataLabels method by running it for both lower and
      * higher values.
      * @private
      */
-    AreaRangeSeries.prototype.drawDataLabels = function () {
-        var data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
-        var i, point, up, upperDataLabelOptions, lowerDataLabelOptions;
+    drawDataLabels() {
+        const data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
+        let i, point, up, upperDataLabelOptions, lowerDataLabelOptions;
         if (dataLabelOptions) {
             // Split into upper and lower options. If data labels is an array,
             // the first element is the upper label, the second is the lower.
@@ -345,7 +328,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                 while (i--) {
                     point = data[i];
                     if (point) {
-                        var _a = point.plotHigh, plotHigh = _a === void 0 ? 0 : _a, _b = point.plotLow, plotLow = _b === void 0 ? 0 : _b;
+                        const { plotHigh = 0, plotLow = 0 } = point;
                         up = upperDataLabelOptions.inside ?
                             plotHigh < plotLow :
                             plotHigh > plotLow;
@@ -399,7 +382,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                 while (i--) {
                     point = data[i];
                     if (point) {
-                        var _c = point.plotHigh, plotHigh = _c === void 0 ? 0 : _c, _d = point.plotLow, plotLow = _d === void 0 ? 0 : _d;
+                        const { plotHigh = 0, plotLow = 0 } = point;
                         up = lowerDataLabelOptions.inside ?
                             plotHigh < plotLow :
                             plotHigh > plotLow;
@@ -443,13 +426,13 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             // Reset options
             this.options.dataLabels = dataLabelOptions;
         }
-    };
-    AreaRangeSeries.prototype.alignDataLabel = function () {
+    }
+    alignDataLabel() {
         columnProto.alignDataLabel.apply(this, arguments);
-    };
-    AreaRangeSeries.prototype.drawPoints = function () {
-        var series = this, pointLength = series.points.length;
-        var i, point;
+    }
+    drawPoints() {
+        const series = this, pointLength = series.points.length;
+        let i, point;
         // Draw bottom points
         areaProto.drawPoints.apply(series, arguments);
         // Prepare drawing top points
@@ -516,27 +499,25 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             }
             i++;
         }
-    };
-    AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
-    return AreaRangeSeries;
-}(AreaSeries));
+    }
+}
+AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
 addEvent(AreaRangeSeries, 'afterTranslate', function () {
     // Set plotLow and plotHigh
-    var _this = this;
     // Rules out lollipop, but lollipop should not inherit range series in the
     // first place
     if (this.pointArrayMap.join(',') === 'low,high') {
-        this.points.forEach(function (point) {
-            var high = point.high, plotY = point.plotY;
+        this.points.forEach((point) => {
+            const high = point.high, plotY = point.plotY;
             if (point.isNull) {
                 point.plotY = void 0;
             }
             else {
                 point.plotLow = plotY;
                 // Calculate plotHigh value based on each yAxis scale (#15752)
-                point.plotHigh = isNumber(high) ? _this.yAxis.translate(_this.dataModify ?
-                    _this.dataModify.modifyValue(high) : high, false, true, void 0, true) : void 0;
-                if (_this.dataModify) {
+                point.plotHigh = isNumber(high) ? this.yAxis.translate(this.dataModify ?
+                    this.dataModify.modifyValue(high) : high, false, true, void 0, true) : void 0;
+                if (this.dataModify) {
                     point.yBottom = point.plotHigh;
                 }
             }
@@ -544,12 +525,11 @@ addEvent(AreaRangeSeries, 'afterTranslate', function () {
     }
 }, { order: 0 });
 addEvent(AreaRangeSeries, 'afterTranslate', function () {
-    var _this = this;
-    var inverted = this.chart.inverted;
-    this.points.forEach(function (point) {
+    const inverted = this.chart.inverted;
+    this.points.forEach((point) => {
         // Postprocessing after the PolarComposition's afterTranslate
-        if (_this.chart.polar) {
-            _this.highToXY(point);
+        if (this.chart.polar) {
+            this.highToXY(point);
             point.plotLow = point.plotY;
             point.tooltipPos = [
                 ((point.plotHighX || 0) + (point.plotLowX || 0)) / 2,
@@ -558,7 +538,7 @@ addEvent(AreaRangeSeries, 'afterTranslate', function () {
             // Put the tooltip in the middle of the range
         }
         else {
-            var tooltipPos = point.pos(false, point.plotLow), posHigh = point.pos(false, point.plotHigh);
+            const tooltipPos = point.pos(false, point.plotLow), posHigh = point.pos(false, point.plotHigh);
             if (tooltipPos && posHigh) {
                 tooltipPos[0] = (tooltipPos[0] + posHigh[0]) / 2;
                 tooltipPos[1] = (tooltipPos[1] + posHigh[1]) / 2;

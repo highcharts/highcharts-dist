@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,22 +46,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, pick = U.pick;
+        var extend = U.extend,
+            merge = U.merge,
+            correctFloat = U.correctFloat,
+            pick = U.pick;
         /* *
          *
          *  Functions
@@ -72,7 +76,8 @@
          * @private
          */
         function accumulatePoints(sum, yVal, i, index, subtract) {
-            var price = pick(yVal[i][index], yVal[i]);
+            var price = pick(yVal[i][index],
+                yVal[i]);
             if (subtract) {
                 return correctFloat(sum - price);
             }
@@ -93,14 +98,15 @@
          * @augments Highcharts.Series
          */
         var DPOIndicator = /** @class */ (function (_super) {
-            __extends(DPOIndicator, _super);
+                __extends(DPOIndicator, _super);
             function DPOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *   Properties
@@ -117,10 +123,24 @@
              *
              * */
             DPOIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, index = params.index, offset = Math.floor(period / 2 + 1), range = period + offset, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, 
-                // 0- date, 1- Detrended Price Oscillator
-                DPO = [], xData = [], yData = [];
-                var oscillator, periodIndex, rangeIndex, price, i, j, sum = 0;
+                var period = params.period,
+                    index = params.index,
+                    offset = Math.floor(period / 2 + 1),
+                    range = period + offset,
+                    xVal = series.xData || [],
+                    yVal = series.yData || [],
+                    yValLen = yVal.length, 
+                    // 0- date, 1- Detrended Price Oscillator
+                    DPO = [],
+                    xData = [],
+                    yData = [];
+                var oscillator,
+                    periodIndex,
+                    rangeIndex,
+                    price,
+                    i,
+                    j,
+                    sum = 0;
                 if (xVal.length <= range) {
                     return;
                 }

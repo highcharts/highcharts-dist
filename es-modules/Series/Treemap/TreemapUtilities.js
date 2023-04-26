@@ -16,7 +16,7 @@
  *
  * */
 import U from '../../Core/Utilities.js';
-var objectEach = U.objectEach;
+const { objectEach } = U;
 /* *
  *
  *  Namespace
@@ -47,9 +47,8 @@ var TreemapUtilities;
      * @todo find correct name for this function.
      * @todo Similar to reduce, this function is likely redundant
      */
-    function recursive(item, func, context) {
-        if (context === void 0) { context = this; }
-        var next;
+    function recursive(item, func, context = this) {
+        let next;
         next = func.call(context, item);
         if (next !== false) {
             recursive(next, func, context);

@@ -10,28 +10,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Math3D from '../../Core/Math3D.js';
-var pointCameraDistance = Math3D.pointCameraDistance;
+const { pointCameraDistance } = Math3D;
 import Scatter3DPoint from './Scatter3DPoint.js';
 import ScatterSeries from '../Scatter/ScatterSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 /* *
  *
  *  Class
@@ -44,60 +29,57 @@ var extend = U.extend, merge = U.merge;
  *
  * @augments Highcharts.Series
  */
-var Scatter3DSeries = /** @class */ (function (_super) {
-    __extends(Scatter3DSeries, _super);
-    function Scatter3DSeries() {
+class Scatter3DSeries extends ScatterSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    Scatter3DSeries.prototype.pointAttribs = function (point) {
-        var attribs = _super.prototype.pointAttribs.apply(this, arguments);
+    pointAttribs(point) {
+        const attribs = super.pointAttribs.apply(this, arguments);
         if (this.chart.is3d() && point) {
             attribs.zIndex =
                 pointCameraDistance(point, this.chart);
         }
         return attribs;
-    };
-    /**
-     * A 3D scatter plot uses x, y and z coordinates to display values for three
-     * variables for a set of data.
-     *
-     * @sample {highcharts} highcharts/3d/scatter/
-     *         Simple 3D scatter
-     * @sample {highcharts} highcharts/demo/3d-scatter-draggable
-     *         Draggable 3d scatter
-     *
-     * @extends      plotOptions.scatter
-     * @excluding    dragDrop, cluster, boostThreshold, boostBlending
-     * @product      highcharts
-     * @requires     highcharts-3d
-     * @optionparent plotOptions.scatter3d
-     */
-    Scatter3DSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-        tooltip: {
-            pointFormat: 'x: <b>{point.x}</b><br/>y: <b>{point.y}</b><br/>z: <b>{point.z}</b><br/>'
-        }
-    });
-    return Scatter3DSeries;
-}(ScatterSeries));
+    }
+}
+/**
+ * A 3D scatter plot uses x, y and z coordinates to display values for three
+ * variables for a set of data.
+ *
+ * @sample {highcharts} highcharts/3d/scatter/
+ *         Simple 3D scatter
+ * @sample {highcharts} highcharts/demo/3d-scatter-draggable
+ *         Draggable 3d scatter
+ *
+ * @extends      plotOptions.scatter
+ * @excluding    dragDrop, cluster, boostThreshold, boostBlending
+ * @product      highcharts
+ * @requires     highcharts-3d
+ * @optionparent plotOptions.scatter3d
+ */
+Scatter3DSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
+    tooltip: {
+        pointFormat: 'x: <b>{point.x}</b><br/>y: <b>{point.y}</b><br/>z: <b>{point.z}</b><br/>'
+    }
+});
 extend(Scatter3DSeries.prototype, {
     axisTypes: ['xAxis', 'yAxis', 'zAxis'],
     // Require direct touch rather than using the k-d-tree, because the

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Boost module
  *
@@ -57,18 +57,18 @@
          * */
         // These are the series we allow boosting for.
         var Boostables = [
-            'area',
-            'areaspline',
-            'arearange',
-            'column',
-            'columnrange',
-            'bar',
-            'line',
-            'scatter',
-            'heatmap',
-            'bubble',
-            'treemap'
-        ];
+                'area',
+                'areaspline',
+                'arearange',
+                'column',
+                'columnrange',
+                'bar',
+                'line',
+                'scatter',
+                'heatmap',
+                'bubble',
+                'treemap'
+            ];
         /* *
          *
          *  Default Export
@@ -124,7 +124,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent, pick = U.pick;
+        var addEvent = U.addEvent,
+            pick = U.pick;
         /* *
          *
          *  Constants
@@ -140,8 +141,7 @@
          * @private
          */
         function compose(ChartClass, wglMode) {
-            if (wglMode && composedClasses.indexOf(ChartClass) === -1) {
-                composedClasses.push(ChartClass);
+            if (wglMode && U.pushUnique(composedClasses, ChartClass)) {
                 ChartClass.prototype.callbacks.push(onChartCallback);
             }
             return ChartClass;
@@ -156,15 +156,16 @@
          */
         function getBoostClipRect(chart, target) {
             var clipBox = {
-                x: chart.plotLeft,
-                y: chart.plotTop,
-                width: chart.plotWidth,
-                height: chart.plotHeight
-            };
+                    x: chart.plotLeft,
+                    y: chart.plotTop,
+                    width: chart.plotWidth,
+                    height: chart.plotHeight
+                };
             if (target === chart) {
                 var verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
-                if (verticalAxes.length <= 1) {
-                    clipBox.y = Math.min(verticalAxes[0].pos, clipBox.y);
+                    if (verticalAxes.length <= 1) {
+                        clipBox.y = Math.min(verticalAxes[0].pos,
+                    clipBox.y);
                     clipBox.height = (verticalAxes[0].pos -
                         chart.plotTop +
                         verticalAxes[0].len);
@@ -187,7 +188,10 @@
          *         true if the chart is in series boost mode
          */
         function isChartSeriesBoosting(chart) {
-            var allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = pick(boostOptions.seriesThreshold, 50);
+            var allSeries = chart.series,
+                boost = chart.boost = chart.boost || {},
+                boostOptions = chart.options.boost || {},
+                threshold = pick(boostOptions.seriesThreshold, 50);
             if (allSeries.length >= threshold) {
                 return true;
             }
@@ -214,7 +218,9 @@
             }
             // If there are more than five series currently boosting,
             // we should boost the whole chart to avoid running out of webgl contexts.
-            var canBoostCount = 0, needBoostCount = 0, seriesOptions;
+            var canBoostCount = 0,
+                needBoostCount = 0,
+                seriesOptions;
             for (var _b = 0, allSeries_1 = allSeries; _b < allSeries_1.length; _b++) {
                 var series = allSeries_1[_b];
                 seriesOptions = series.options;
@@ -350,10 +356,10 @@
          *
          * */
         var BoostChart = {
-            compose: compose,
-            getBoostClipRect: getBoostClipRect,
-            isChartSeriesBoosting: isChartSeriesBoosting
-        };
+                compose: compose,
+                getBoostClipRect: getBoostClipRect,
+                isChartSeriesBoosting: isChartSeriesBoosting
+            };
 
         return BoostChart;
     });
@@ -375,18 +381,18 @@
          *
          * */
         var WGLDrawMode = {
-            'area': 'LINES',
-            'arearange': 'LINES',
-            'areaspline': 'LINES',
-            'column': 'LINES',
-            'columnrange': 'LINES',
-            'bar': 'LINES',
-            'line': 'LINE_STRIP',
-            'scatter': 'POINTS',
-            'heatmap': 'TRIANGLES',
-            'treemap': 'TRIANGLES',
-            'bubble': 'POINTS'
-        };
+                'area': 'LINES',
+                'arearange': 'LINES',
+                'areaspline': 'LINES',
+                'column': 'LINES',
+                'columnrange': 'LINES',
+                'bar': 'LINES',
+                'line': 'LINE_STRIP',
+                'scatter': 'POINTS',
+                'heatmap': 'TRIANGLES',
+                'treemap': 'TRIANGLES',
+                'bubble': 'POINTS'
+            };
         /* *
          *
          *  Default Export
@@ -407,183 +413,185 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var clamp = U.clamp, error = U.error, pick = U.pick;
+        var clamp = U.clamp,
+            error = U.error,
+            pick = U.pick;
         /* *
          *
          *  Constants
          *
          * */
         var fragmentShader = [
-            /* eslint-disable max-len, @typescript-eslint/indent */
-            'precision highp float;',
-            'uniform vec4 fillColor;',
-            'varying highp vec2 position;',
-            'varying highp vec4 vColor;',
-            'uniform sampler2D uSampler;',
-            'uniform bool isCircle;',
-            'uniform bool hasColor;',
-            // 'vec4 toColor(float value, vec2 point) {',
-            //     'return vec4(0.0, 0.0, 0.0, 0.0);',
-            // '}',
-            'void main(void) {',
-            'vec4 col = fillColor;',
-            'vec4 tcol = texture2D(uSampler, gl_PointCoord.st);',
-            'if (hasColor) {',
-            'col = vColor;',
-            '}',
-            'if (isCircle) {',
-            'col *= tcol;',
-            'if (tcol.r < 0.0) {',
-            'discard;',
-            '} else {',
-            'gl_FragColor = col;',
-            '}',
-            '} else {',
-            'gl_FragColor = col;',
-            '}',
-            '}'
-            /* eslint-enable max-len, @typescript-eslint/indent */
-        ].join('\n');
+                /* eslint-disable max-len, @typescript-eslint/indent */
+                'precision highp float;',
+                'uniform vec4 fillColor;',
+                'varying highp vec2 position;',
+                'varying highp vec4 vColor;',
+                'uniform sampler2D uSampler;',
+                'uniform bool isCircle;',
+                'uniform bool hasColor;',
+                // 'vec4 toColor(float value, vec2 point) {',
+                //     'return vec4(0.0, 0.0, 0.0, 0.0);',
+                // '}',
+                'void main(void) {',
+                'vec4 col = fillColor;',
+                'vec4 tcol = texture2D(uSampler, gl_PointCoord.st);',
+                'if (hasColor) {',
+                'col = vColor;',
+                '}',
+                'if (isCircle) {',
+                'col *= tcol;',
+                'if (tcol.r < 0.0) {',
+                'discard;',
+                '} else {',
+                'gl_FragColor = col;',
+                '}',
+                '} else {',
+                'gl_FragColor = col;',
+                '}',
+                '}'
+                /* eslint-enable max-len, @typescript-eslint/indent */
+            ].join('\n');
         var vertexShader = [
-            /* eslint-disable max-len, @typescript-eslint/indent */
-            '#version 100',
-            '#define LN10 2.302585092994046',
-            'precision highp float;',
-            'attribute vec4 aVertexPosition;',
-            'attribute vec4 aColor;',
-            'varying highp vec2 position;',
-            'varying highp vec4 vColor;',
-            'uniform mat4 uPMatrix;',
-            'uniform float pSize;',
-            'uniform float translatedThreshold;',
-            'uniform bool hasThreshold;',
-            'uniform bool skipTranslation;',
-            'uniform float xAxisTrans;',
-            'uniform float xAxisMin;',
-            'uniform float xAxisMinPad;',
-            'uniform float xAxisPointRange;',
-            'uniform float xAxisLen;',
-            'uniform bool  xAxisPostTranslate;',
-            'uniform float xAxisOrdinalSlope;',
-            'uniform float xAxisOrdinalOffset;',
-            'uniform float xAxisPos;',
-            'uniform bool  xAxisCVSCoord;',
-            'uniform bool  xAxisIsLog;',
-            'uniform bool  xAxisReversed;',
-            'uniform float yAxisTrans;',
-            'uniform float yAxisMin;',
-            'uniform float yAxisMinPad;',
-            'uniform float yAxisPointRange;',
-            'uniform float yAxisLen;',
-            'uniform bool  yAxisPostTranslate;',
-            'uniform float yAxisOrdinalSlope;',
-            'uniform float yAxisOrdinalOffset;',
-            'uniform float yAxisPos;',
-            'uniform bool  yAxisCVSCoord;',
-            'uniform bool  yAxisIsLog;',
-            'uniform bool  yAxisReversed;',
-            'uniform bool  isBubble;',
-            'uniform bool  bubbleSizeByArea;',
-            'uniform float bubbleZMin;',
-            'uniform float bubbleZMax;',
-            'uniform float bubbleZThreshold;',
-            'uniform float bubbleMinSize;',
-            'uniform float bubbleMaxSize;',
-            'uniform bool  bubbleSizeAbs;',
-            'uniform bool  isInverted;',
-            'float bubbleRadius(){',
-            'float value = aVertexPosition.w;',
-            'float zMax = bubbleZMax;',
-            'float zMin = bubbleZMin;',
-            'float radius = 0.0;',
-            'float pos = 0.0;',
-            'float zRange = zMax - zMin;',
-            'if (bubbleSizeAbs){',
-            'value = value - bubbleZThreshold;',
-            'zMax = max(zMax - bubbleZThreshold, zMin - bubbleZThreshold);',
-            'zMin = 0.0;',
-            '}',
-            'if (value < zMin){',
-            'radius = bubbleZMin / 2.0 - 1.0;',
-            '} else {',
-            'pos = zRange > 0.0 ? (value - zMin) / zRange : 0.5;',
-            'if (bubbleSizeByArea && pos > 0.0){',
-            'pos = sqrt(pos);',
-            '}',
-            'radius = ceil(bubbleMinSize + pos * (bubbleMaxSize - bubbleMinSize)) / 2.0;',
-            '}',
-            'return radius * 2.0;',
-            '}',
-            'float translate(float val,',
-            'float pointPlacement,',
-            'float localA,',
-            'float localMin,',
-            'float minPixelPadding,',
-            'float pointRange,',
-            'float len,',
-            'bool  cvsCoord,',
-            'bool  isLog,',
-            'bool  reversed',
-            '){',
-            'float sign = 1.0;',
-            'float cvsOffset = 0.0;',
-            'if (cvsCoord) {',
-            'sign *= -1.0;',
-            'cvsOffset = len;',
-            '}',
-            'if (isLog) {',
-            'val = log(val) / LN10;',
-            '}',
-            'if (reversed) {',
-            'sign *= -1.0;',
-            'cvsOffset -= sign * len;',
-            '}',
-            'return sign * (val - localMin) * localA + cvsOffset + ',
-            '(sign * minPixelPadding);',
-            '}',
-            'float xToPixels(float value) {',
-            'if (skipTranslation){',
-            'return value;// + xAxisPos;',
-            '}',
-            'return translate(value, 0.0, xAxisTrans, xAxisMin, xAxisMinPad, xAxisPointRange, xAxisLen, xAxisCVSCoord, xAxisIsLog, xAxisReversed);// + xAxisPos;',
-            '}',
-            'float yToPixels(float value, float checkTreshold) {',
-            'float v;',
-            'if (skipTranslation){',
-            'v = value;// + yAxisPos;',
-            '} else {',
-            'v = translate(value, 0.0, yAxisTrans, yAxisMin, yAxisMinPad, yAxisPointRange, yAxisLen, yAxisCVSCoord, yAxisIsLog, yAxisReversed);// + yAxisPos;',
-            'if (v > yAxisLen) {',
-            'v = yAxisLen;',
-            '}',
-            '}',
-            'if (checkTreshold > 0.0 && hasThreshold) {',
-            'v = min(v, translatedThreshold);',
-            '}',
-            'return v;',
-            '}',
-            'void main(void) {',
-            'if (isBubble){',
-            'gl_PointSize = bubbleRadius();',
-            '} else {',
-            'gl_PointSize = pSize;',
-            '}',
-            // 'gl_PointSize = 10.0;',
-            'vColor = aColor;',
-            'if (skipTranslation && isInverted) {',
-            // If we get translated values from JS, just swap them (x, y)
-            'gl_Position = uPMatrix * vec4(aVertexPosition.y + yAxisPos, aVertexPosition.x + xAxisPos, 0.0, 1.0);',
-            '} else if (isInverted) {',
-            // But when calculating pixel positions directly,
-            // swap axes and values (x, y)
-            'gl_Position = uPMatrix * vec4(yToPixels(aVertexPosition.y, aVertexPosition.z) + yAxisPos, xToPixels(aVertexPosition.x) + xAxisPos, 0.0, 1.0);',
-            '} else {',
-            'gl_Position = uPMatrix * vec4(xToPixels(aVertexPosition.x) + xAxisPos, yToPixels(aVertexPosition.y, aVertexPosition.z) + yAxisPos, 0.0, 1.0);',
-            '}',
-            // 'gl_Position = uPMatrix * vec4(aVertexPosition.x, aVertexPosition.y, 0.0, 1.0);',
-            '}'
-            /* eslint-enable max-len, @typescript-eslint/indent */
-        ].join('\n');
+                /* eslint-disable max-len, @typescript-eslint/indent */
+                '#version 100',
+                '#define LN10 2.302585092994046',
+                'precision highp float;',
+                'attribute vec4 aVertexPosition;',
+                'attribute vec4 aColor;',
+                'varying highp vec2 position;',
+                'varying highp vec4 vColor;',
+                'uniform mat4 uPMatrix;',
+                'uniform float pSize;',
+                'uniform float translatedThreshold;',
+                'uniform bool hasThreshold;',
+                'uniform bool skipTranslation;',
+                'uniform float xAxisTrans;',
+                'uniform float xAxisMin;',
+                'uniform float xAxisMinPad;',
+                'uniform float xAxisPointRange;',
+                'uniform float xAxisLen;',
+                'uniform bool  xAxisPostTranslate;',
+                'uniform float xAxisOrdinalSlope;',
+                'uniform float xAxisOrdinalOffset;',
+                'uniform float xAxisPos;',
+                'uniform bool  xAxisCVSCoord;',
+                'uniform bool  xAxisIsLog;',
+                'uniform bool  xAxisReversed;',
+                'uniform float yAxisTrans;',
+                'uniform float yAxisMin;',
+                'uniform float yAxisMinPad;',
+                'uniform float yAxisPointRange;',
+                'uniform float yAxisLen;',
+                'uniform bool  yAxisPostTranslate;',
+                'uniform float yAxisOrdinalSlope;',
+                'uniform float yAxisOrdinalOffset;',
+                'uniform float yAxisPos;',
+                'uniform bool  yAxisCVSCoord;',
+                'uniform bool  yAxisIsLog;',
+                'uniform bool  yAxisReversed;',
+                'uniform bool  isBubble;',
+                'uniform bool  bubbleSizeByArea;',
+                'uniform float bubbleZMin;',
+                'uniform float bubbleZMax;',
+                'uniform float bubbleZThreshold;',
+                'uniform float bubbleMinSize;',
+                'uniform float bubbleMaxSize;',
+                'uniform bool  bubbleSizeAbs;',
+                'uniform bool  isInverted;',
+                'float bubbleRadius(){',
+                'float value = aVertexPosition.w;',
+                'float zMax = bubbleZMax;',
+                'float zMin = bubbleZMin;',
+                'float radius = 0.0;',
+                'float pos = 0.0;',
+                'float zRange = zMax - zMin;',
+                'if (bubbleSizeAbs){',
+                'value = value - bubbleZThreshold;',
+                'zMax = max(zMax - bubbleZThreshold, zMin - bubbleZThreshold);',
+                'zMin = 0.0;',
+                '}',
+                'if (value < zMin){',
+                'radius = bubbleZMin / 2.0 - 1.0;',
+                '} else {',
+                'pos = zRange > 0.0 ? (value - zMin) / zRange : 0.5;',
+                'if (bubbleSizeByArea && pos > 0.0){',
+                'pos = sqrt(pos);',
+                '}',
+                'radius = ceil(bubbleMinSize + pos * (bubbleMaxSize - bubbleMinSize)) / 2.0;',
+                '}',
+                'return radius * 2.0;',
+                '}',
+                'float translate(float val,',
+                'float pointPlacement,',
+                'float localA,',
+                'float localMin,',
+                'float minPixelPadding,',
+                'float pointRange,',
+                'float len,',
+                'bool  cvsCoord,',
+                'bool  isLog,',
+                'bool  reversed',
+                '){',
+                'float sign = 1.0;',
+                'float cvsOffset = 0.0;',
+                'if (cvsCoord) {',
+                'sign *= -1.0;',
+                'cvsOffset = len;',
+                '}',
+                'if (isLog) {',
+                'val = log(val) / LN10;',
+                '}',
+                'if (reversed) {',
+                'sign *= -1.0;',
+                'cvsOffset -= sign * len;',
+                '}',
+                'return sign * (val - localMin) * localA + cvsOffset + ',
+                '(sign * minPixelPadding);',
+                '}',
+                'float xToPixels(float value) {',
+                'if (skipTranslation){',
+                'return value;// + xAxisPos;',
+                '}',
+                'return translate(value, 0.0, xAxisTrans, xAxisMin, xAxisMinPad, xAxisPointRange, xAxisLen, xAxisCVSCoord, xAxisIsLog, xAxisReversed);// + xAxisPos;',
+                '}',
+                'float yToPixels(float value, float checkTreshold) {',
+                'float v;',
+                'if (skipTranslation){',
+                'v = value;// + yAxisPos;',
+                '} else {',
+                'v = translate(value, 0.0, yAxisTrans, yAxisMin, yAxisMinPad, yAxisPointRange, yAxisLen, yAxisCVSCoord, yAxisIsLog, yAxisReversed);// + yAxisPos;',
+                'if (v > yAxisLen) {',
+                'v = yAxisLen;',
+                '}',
+                '}',
+                'if (checkTreshold > 0.0 && hasThreshold) {',
+                'v = min(v, translatedThreshold);',
+                '}',
+                'return v;',
+                '}',
+                'void main(void) {',
+                'if (isBubble){',
+                'gl_PointSize = bubbleRadius();',
+                '} else {',
+                'gl_PointSize = pSize;',
+                '}',
+                // 'gl_PointSize = 10.0;',
+                'vColor = aColor;',
+                'if (skipTranslation && isInverted) {',
+                // If we get translated values from JS, just swap them (x, y)
+                'gl_Position = uPMatrix * vec4(aVertexPosition.y + yAxisPos, aVertexPosition.x + xAxisPos, 0.0, 1.0);',
+                '} else if (isInverted) {',
+                // But when calculating pixel positions directly,
+                // swap axes and values (x, y)
+                'gl_Position = uPMatrix * vec4(yToPixels(aVertexPosition.y, aVertexPosition.z) + yAxisPos, xToPixels(aVertexPosition.x) + xAxisPos, 0.0, 1.0);',
+                '} else {',
+                'gl_Position = uPMatrix * vec4(xToPixels(aVertexPosition.x) + xAxisPos, yToPixels(aVertexPosition.y, aVertexPosition.z) + yAxisPos, 0.0, 1.0);',
+                '}',
+                // 'gl_Position = uPMatrix * vec4(aVertexPosition.x, aVertexPosition.y, 0.0, 1.0);',
+                '}'
+                /* eslint-enable max-len, @typescript-eslint/indent */
+            ].join('\n');
         /* *
          *
          *  Class
@@ -599,14 +607,14 @@
          * the context in which the shader is active
          */
         var WGLShader = /** @class */ (function () {
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            function WGLShader(gl) {
-                // Error stack
-                this.errors = [];
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
+                function WGLShader(gl) {
+                    // Error stack
+                    this.errors = [];
                 this.uLocations = {};
                 this.gl = gl;
                 if (gl && !this.createShader()) {
@@ -744,7 +752,8 @@
             WGLShader.prototype.setBubbleUniforms = function (series, zCalcMin, zCalcMax, pixelRatio) {
                 if (pixelRatio === void 0) { pixelRatio = 1; }
                 var seriesOptions = series.options;
-                var zMin = Number.MAX_VALUE, zMax = -Number.MAX_VALUE;
+                var zMin = Number.MAX_VALUE,
+                    zMax = -Number.MAX_VALUE;
                 if (this.gl && this.shaderProgram && series.is('bubble')) {
                     var pxSizes = series.getPxExtremes();
                     zMin = pick(seriesOptions.zMin, clamp(zCalcMin, seriesOptions.displayNegative === false ?
@@ -847,7 +856,8 @@
             WGLShader.prototype.setUniform = function (name, val) {
                 if (this.gl && this.shaderProgram) {
                     var u = this.uLocations[name] = (this.uLocations[name] ||
-                        this.gl.getUniformLocation(this.shaderProgram, name));
+                            this.gl.getUniformLocation(this.shaderProgram,
+                        name));
                     this.gl.uniform1f(u, val);
                 }
             };
@@ -893,20 +903,20 @@
          * Shader to use.
          */
         var WGLVertexBuffer = /** @class */ (function () {
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            function WGLVertexBuffer(gl, shader, dataComponents
-            /* , type */
-            ) {
                 /* *
                  *
-                 *  Properties
+                 *  Constructor
                  *
                  * */
-                this.buffer = false;
+                function WGLVertexBuffer(gl, shader, dataComponents
+                /* , type */
+                ) {
+                    /* *
+                     *
+                     *  Properties
+                     *
+                     * */
+                    this.buffer = false;
                 this.iterator = 0;
                 this.preAllocated = false;
                 this.vertAttribute = false;
@@ -1025,7 +1035,7 @@
              */
             WGLVertexBuffer.prototype.render = function (from, to, drawMode) {
                 var length = this.preAllocated ?
-                    this.preAllocated.length : this.data.length;
+                        this.preAllocated.length : this.data.length;
                 if (!this.buffer) {
                     return false;
                 }
@@ -1068,8 +1078,13 @@
          *
          * */
         var color = Color.parse;
-        var doc = H.doc, win = H.win;
-        var isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+        var doc = H.doc,
+            win = H.win;
+        var isNumber = U.isNumber,
+            isObject = U.isObject,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick;
         /* *
          *
          *  Constants
@@ -1077,23 +1092,23 @@
          * */
         // Things to draw as "rectangles" (i.e lines)
         var asBar = {
-            'column': true,
-            'columnrange': true,
-            'bar': true,
-            'area': true,
-            'areaspline': true,
-            'arearange': true
-        };
+                'column': true,
+                'columnrange': true,
+                'bar': true,
+                'area': true,
+                'areaspline': true,
+                'arearange': true
+            };
         var asCircle = {
-            'scatter': true,
-            'bubble': true
-        };
+                'scatter': true,
+                'bubble': true
+            };
         var contexts = [
-            'webgl',
-            'experimental-webgl',
-            'moz-webgl',
-            'webkit-3d'
-        ];
+                'webgl',
+                'experimental-webgl',
+                'moz-webgl',
+                'webkit-3d'
+            ];
         /* *
          *
          *  Class
@@ -1113,14 +1128,14 @@
          * @param {Function} postRenderCallback
          */
         var WGLRenderer = /** @class */ (function () {
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            function WGLRenderer(postRenderCallback) {
-                // The data to render - array of coordinates
-                this.data = [];
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
+                function WGLRenderer(postRenderCallback) {
+                    // The data to render - array of coordinates
+                    this.data = [];
                 // Height of our viewport in pixels
                 this.height = 0;
                 // Is it inited?
@@ -1165,7 +1180,8 @@
              * the height of the viewport in pixels
              */
             WGLRenderer.orthoMatrix = function (width, height) {
-                var near = 0, far = 1;
+                var near = 0,
+                    far = 1;
                 return [
                     2 / width, 0, 0, 0,
                     0, -(2 / height), 0, 0,
@@ -1177,7 +1193,9 @@
              * @private
              */
             WGLRenderer.seriesPointCount = function (series) {
-                var isStacked, xData, s;
+                var isStacked,
+                    xData,
+                    s;
                 if (series.boosted) {
                     isStacked = !!series.options.stacking;
                     xData = (series.xData ||
@@ -1269,28 +1287,50 @@
             WGLRenderer.prototype.pushSeriesData = function (series, inst) {
                 var _this = this;
                 var data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
-                    series.pointArrayMap.join(',') === 'low,high'), chart = series.chart, options = series.options, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
-                    series.processedZData), yAxis = series.yAxis, xAxis = series.xAxis, useRaw = !xData || xData.length === 0, 
-                // threshold = options.threshold,
-                // yBottom = chart.yAxis[0].getThreshold(threshold),
-                // hasThreshold = isNumber(threshold),
-                // colorByPoint = series.options.colorByPoint,
-                // This is required for color by point, so make sure this is
-                // uncommented if enabling that
-                // colorIndex = 0,
-                // Required for color axis support
-                // caxis,
-                connectNulls = options.connectNulls, 
-                // For some reason eslint/TypeScript don't pick up that this is
-                // actually used: --- bre1470: it is never read, just set
-                // maxVal: (number|undefined), // eslint-disable-line no-unused-vars
-                points = series.points || false, sdata = isStacked ? series.data : (xData || rawData), closestLeft = { x: Number.MAX_VALUE, y: 0 }, closestRight = { x: -Number.MAX_VALUE, y: 0 }, cullXThreshold = 1, cullYThreshold = 1, chartDestroyed = typeof chart.index === 'undefined', drawAsBar = asBar[series.type], zoneAxis = options.zoneAxis || 'y', zones = options.zones || false, threshold = options.threshold, pixelRatio = this.getPixelRatio();
+                        series.pointArrayMap.join(',') === 'low,high'), chart = series.chart, options = series.options, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
+                        series.processedZData), yAxis = series.yAxis, xAxis = series.xAxis, useRaw = !xData || xData.length === 0, 
+                    // threshold = options.threshold,
+                    // yBottom = chart.yAxis[0].getThreshold(threshold),
+                    // hasThreshold = isNumber(threshold),
+                    // colorByPoint = series.options.colorByPoint,
+                    // This is required for color by point, so make sure this is
+                    // uncommented if enabling that
+                    // colorIndex = 0,
+                    // Required for color axis support
+                    // caxis,
+                    connectNulls = options.connectNulls, 
+                    // For some reason eslint/TypeScript don't pick up that this is
+                    // actually used: --- bre1470: it is never read, just set
+                    // maxVal: (number|undefined), // eslint-disable-line no-unused-vars
+                    points = series.points || false, sdata = isStacked ? series.data : (xData || rawData), closestLeft = { x: Number.MAX_VALUE, y: 0 }, closestRight = { x: -Number.MAX_VALUE, y: 0 }, cullXThreshold = 1, cullYThreshold = 1, chartDestroyed = typeof chart.index === 'undefined', drawAsBar = asBar[series.type], zoneAxis = options.zoneAxis || 'y', zones = options.zones || false, threshold = options.threshold, pixelRatio = this.getPixelRatio();
                 var // plotHeight = series.chart.plotHeight,
-                plotWidth = series.chart.plotWidth, lastX = false, lastY = false, minVal, scolor, 
-                //
-                skipped = 0, hadPoints = false, 
-                // The following are used in the builder while loop
-                x, y, d, z, i = -1, px = false, nx = false, low, nextInside = false, prevInside = false, pcolor = false, isXInside = false, isYInside = true, firstPoint = true, zoneColors, zoneDefColor = false, gapSize = false, vlen = 0;
+                    plotWidth = series.chart.plotWidth,
+                    lastX = false,
+                    lastY = false,
+                    minVal,
+                    scolor, 
+                    //
+                    skipped = 0,
+                    hadPoints = false, 
+                    // The following are used in the builder while loop
+                    x,
+                    y,
+                    d,
+                    z,
+                    i = -1,
+                    px = false,
+                    nx = false,
+                    low,
+                    nextInside = false,
+                    prevInside = false,
+                    pcolor = false,
+                    isXInside = false,
+                    isYInside = true,
+                    firstPoint = true,
+                    zoneColors,
+                    zoneDefColor = false,
+                    gapSize = false,
+                    vlen = 0;
                 if (options.boostData && options.boostData.length > 0) {
                     return;
                 }
@@ -1315,7 +1355,7 @@
                     });
                     if (!zoneDefColor) {
                         var seriesColor = ((series.pointAttribs && series.pointAttribs().fill) ||
-                            series.color);
+                                series.color);
                         zoneDefColor = color(seriesColor).rgba;
                         zoneDefColor[0] /= 255.0;
                         zoneDefColor[1] /= 255.0;
@@ -1332,8 +1372,8 @@
                  * @private
                  */
                 var pushColor = function (color) {
-                    if (color) {
-                        inst.colorData.push(color[0]);
+                        if (color) {
+                            inst.colorData.push(color[0]);
                         inst.colorData.push(color[1]);
                         inst.colorData.push(color[2]);
                         inst.colorData.push(color[3]);
@@ -1343,9 +1383,13 @@
                  * Push a vertice to the data buffer.
                  * @private
                  */
-                var vertice = function (x, y, checkTreshold, pointSize, color) {
-                    if (pointSize === void 0) { pointSize = 1; }
-                    pushColor(color);
+                var vertice = function (x,
+                    y,
+                    checkTreshold,
+                    pointSize,
+                    color) {
+                        if (pointSize === void 0) { pointSize = 1; }
+                        pushColor(color);
                     // Correct for pixel ratio
                     if (pixelRatio !== 1 && (!settings.useGPUTranslations ||
                         inst.skipTranslation)) {
@@ -1368,8 +1412,8 @@
                  * @private
                  */
                 var closeSegment = function () {
-                    if (inst.segments.length) {
-                        inst.segments[inst.segments.length - 1].to = data.length || vlen;
+                        if (inst.segments.length) {
+                            inst.segments[inst.segments.length - 1].to = data.length || vlen;
                     }
                 };
                 /**
@@ -1377,13 +1421,13 @@
                  * @private
                  */
                 var beginSegment = function () {
-                    // Insert a segment on the series.
-                    // A segment is just a start indice.
-                    // When adding a segment, if one exists from before, it should
-                    // set the previous segment's end
-                    if (inst.segments.length &&
-                        inst.segments[inst.segments.length - 1].from === (data.length || vlen)) {
-                        return;
+                        // Insert a segment on the series.
+                        // A segment is just a start indice.
+                        // When adding a segment, if one exists from before, it should
+                        // set the previous segment's end
+                        if (inst.segments.length &&
+                            inst.segments[inst.segments.length - 1].from === (data.length || vlen)) {
+                            return;
                     }
                     closeSegment();
                     inst.segments.push({
@@ -1394,8 +1438,12 @@
                  * Push a rectangle to the data buffer.
                  * @private
                  */
-                var pushRect = function (x, y, w, h, color) {
-                    pushColor(color);
+                var pushRect = function (x,
+                    y,
+                    w,
+                    h,
+                    color) {
+                        pushColor(color);
                     vertice(x + w, y);
                     pushColor(color);
                     vertice(x, y);
@@ -1435,12 +1483,21 @@
                     }
                     points.forEach(function (point) {
                         var plotY = point.plotY;
-                        var swidth, pointAttr;
+                        var swidth,
+                            pointAttr;
                         if (typeof plotY !== 'undefined' &&
                             !isNaN(plotY) &&
                             point.y !== null &&
                             point.shapeArgs) {
-                            var _a = point.shapeArgs, _b = _a.x, x_1 = _b === void 0 ? 0 : _b, _c = _a.y, y_1 = _c === void 0 ? 0 : _c, _d = _a.width, width = _d === void 0 ? 0 : _d, _e = _a.height, height = _e === void 0 ? 0 : _e;
+                            var _a = point.shapeArgs,
+                                _b = _a.x,
+                                x_1 = _b === void 0 ? 0 : _b,
+                                _c = _a.y,
+                                y_1 = _c === void 0 ? 0 : _c,
+                                _d = _a.width,
+                                width = _d === void 0 ? 0 : _d,
+                                _e = _a.height,
+                                height = _e === void 0 ? 0 : _e;
                             pointAttr = chart.styledMode ?
                                 point.series
                                     .colorAttribs(point) :
@@ -1488,7 +1545,7 @@
                     return;
                 }
                 var _loop_1 = function () {
-                    d = sdata[++i];
+                        d = sdata[++i];
                     if (typeof d === 'undefined') {
                         return "continue";
                     }
@@ -1752,9 +1809,10 @@
                 if (settings.debug.showSkipSummary) {
                     console.log('skipped points:', skipped); // eslint-disable-line no-console
                 }
-                var pushSupplementPoint = function (point, atStart) {
-                    if (!settings.useGPUTranslations) {
-                        inst.skipTranslation = true;
+                var pushSupplementPoint = function (point,
+                    atStart) {
+                        if (!settings.useGPUTranslations) {
+                            inst.skipTranslation = true;
                         point.x = xAxis.toPixels(point.x, true);
                         point.y = yAxis.toPixels(point.y, true);
                     }
@@ -1787,7 +1845,9 @@
              * The series to push.
              */
             WGLRenderer.prototype.pushSeries = function (s) {
-                var markerData = this.markerData, series = this.series, settings = this.settings;
+                var markerData = this.markerData,
+                    series = this.series,
+                    settings = this.settings;
                 if (series.length > 0) {
                     // series[series.length - 1].to = data.length;
                     if (series[series.length - 1].hasMarkers) {
@@ -1798,22 +1858,22 @@
                     console.time('building ' + s.type + ' series'); // eslint-disable-line no-console
                 }
                 var obj = {
-                    segments: [],
-                    // from: data.length,
-                    markerFrom: markerData.length,
-                    // Push RGBA values to this array to use per. point coloring.
-                    // It should be 0-padded, so each component should be pushed in
-                    // succession.
-                    colorData: [],
-                    series: s,
-                    zMin: Number.MAX_VALUE,
-                    zMax: -Number.MAX_VALUE,
-                    hasMarkers: s.options.marker ?
-                        s.options.marker.enabled !== false :
-                        false,
-                    showMarkers: true,
-                    drawMode: WGLDrawMode[s.type] || 'LINE_STRIP'
-                };
+                        segments: [],
+                        // from: data.length,
+                        markerFrom: markerData.length,
+                        // Push RGBA values to this array to use per. point coloring.
+                        // It should be 0-padded, so each component should be pushed in
+                        // succession.
+                        colorData: [],
+                        series: s,
+                        zMin: Number.MAX_VALUE,
+                        zMax: -Number.MAX_VALUE,
+                        hasMarkers: s.options.marker ?
+                            s.options.marker.enabled !== false :
+                            false,
+                        showMarkers: true,
+                        drawMode: WGLDrawMode[s.type] || 'LINE_STRIP'
+                    };
                 if (s.index >= series.length) {
                     series.push(obj);
                 }
@@ -1908,7 +1968,10 @@
              */
             WGLRenderer.prototype.renderChart = function (chart) {
                 var _this = this;
-                var gl = this.gl, settings = this.settings, shader = this.shader, vbuffer = this.vbuffer;
+                var gl = this.gl,
+                    settings = this.settings,
+                    shader = this.shader,
+                    vbuffer = this.vbuffer;
                 var pixelRatio = this.getPixelRatio();
                 if (chart) {
                     this.width = chart.chartWidth * pixelRatio;
@@ -1917,7 +1980,8 @@
                 else {
                     return false;
                 }
-                var height = this.height, width = this.width;
+                var height = this.height,
+                    width = this.width;
                 if (!gl || !shader || !width || !height) {
                     return false;
                 }
@@ -1939,14 +2003,27 @@
                 shader.setInverted(chart.inverted);
                 // Render the series
                 this.series.forEach(function (s, si) {
-                    var options = s.series.options, shapeOptions = options.marker, lineWidth = (typeof options.lineWidth !== 'undefined' ?
-                        options.lineWidth :
-                        1), threshold = options.threshold, hasThreshold = isNumber(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = pick(options.marker ? options.marker.enabled : null, s.series.xAxis.isRadial ? true : null, s.series.closestPointRangePx >
-                        2 * ((options.marker ?
-                            options.marker.radius :
-                            10) || 10)), shapeTexture = _this.textureHandles[(shapeOptions && shapeOptions.symbol) ||
-                        s.series.symbol] || _this.textureHandles.circle;
-                    var sindex, cbuffer, fillColor, scolor = [];
+                    var options = s.series.options,
+                        shapeOptions = options.marker,
+                        lineWidth = (typeof options.lineWidth !== 'undefined' ?
+                            options.lineWidth :
+                            1),
+                        threshold = options.threshold,
+                        hasThreshold = isNumber(threshold),
+                        yBottom = s.series.yAxis.getThreshold(threshold),
+                        translatedThreshold = yBottom,
+                        showMarkers = pick(options.marker ? options.marker.enabled : null,
+                        s.series.xAxis.isRadial ? true : null,
+                        s.series.closestPointRangePx >
+                            2 * ((options.marker ?
+                                options.marker.radius :
+                                10) || 10)),
+                        shapeTexture = _this.textureHandles[(shapeOptions && shapeOptions.symbol) ||
+                            s.series.symbol] || _this.textureHandles.circle;
+                    var sindex,
+                        cbuffer,
+                        fillColor,
+                        scolor = [];
                     if (s.segments.length === 0 ||
                         s.segments[0].from === s.segments[0].to) {
                         return;
@@ -2132,12 +2209,14 @@
                     return false;
                 }
                 this.vbuffer = new WGLVertexBuffer(gl, shader);
-                var createTexture = function (name, fn) {
-                    var props = {
-                        isReady: false,
-                        texture: doc.createElement('canvas'),
-                        handle: gl.createTexture()
-                    }, ctx = props.texture.getContext('2d');
+                var createTexture = function (name,
+                    fn) {
+                        var props = {
+                            isReady: false,
+                            texture: doc.createElement('canvas'),
+                            handle: gl.createTexture()
+                        },
+                    ctx = props.texture.getContext('2d');
                     _this.textureHandles[name] = props;
                     props.texture.width = 512;
                     props.texture.height = 512;
@@ -2215,7 +2294,9 @@
              * @todo use it
              */
             WGLRenderer.prototype.destroy = function () {
-                var gl = this.gl, shader = this.shader, vbuffer = this.vbuffer;
+                var gl = this.gl,
+                    shader = this.shader,
+                    vbuffer = this.vbuffer;
                 this.flush();
                 if (vbuffer) {
                     vbuffer.destroy();
@@ -2255,23 +2336,34 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getBoostClipRect = BoostChart.getBoostClipRect, isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
+        var getBoostClipRect = BoostChart.getBoostClipRect,
+            isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
         var getOptions = D.getOptions;
-        var doc = H.doc, noop = H.noop, win = H.win;
-        var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, wrap = U.wrap;
+        var doc = H.doc,
+            noop = H.noop,
+            win = H.win;
+        var addEvent = U.addEvent,
+            error = U.error,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            pick = U.pick,
+            wrap = U.wrap;
         /* *
          *
          *  Constants
          *
          * */
         var CHUNK_SIZE = 3000;
-        var composedClasses = [];
+        var composedMembers = [];
         /* *
          *
          *  Variables
          *
          * */
-        var index, mainCanvas;
+        var index,
+            mainCanvas;
         /* *
          *
          *  Functions
@@ -2309,8 +2401,7 @@
          * @private
          */
         function compose(SeriesClass, seriesTypes, wglMode) {
-            if (composedClasses.indexOf(SeriesClass) === -1) {
-                composedClasses.push(SeriesClass);
+            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'destroy', onSeriesDestroy);
                 addEvent(SeriesClass, 'hide', onSeriesHide);
                 var seriesProto_1 = SeriesClass.prototype;
@@ -2330,8 +2421,7 @@
                     return wrapSeriesFunctions(seriesProto_1, seriesTypes, method);
                 });
             }
-            if (composedClasses.indexOf(getOptions) === -1) {
-                composedClasses.push(getOptions);
+            if (U.pushUnique(composedMembers, getOptions)) {
                 var plotOptions_1 = getOptions().plotOptions;
                 // Set default options
                 Boostables.forEach(function (type) {
@@ -2344,10 +2434,15 @@
                 });
             }
             if (wglMode) {
-                var AreaSeries = seriesTypes.area, AreaSplineSeries = seriesTypes.areaspline, BubbleSeries = seriesTypes.bubble, ColumnSeries = seriesTypes.column, HeatmapSeries = seriesTypes.heatmap, ScatterSeries = seriesTypes.scatter, TreemapSeries = seriesTypes.treemap;
+                var AreaSeries = seriesTypes.area,
+                    AreaSplineSeries = seriesTypes.areaspline,
+                    BubbleSeries = seriesTypes.bubble,
+                    ColumnSeries = seriesTypes.column,
+                    HeatmapSeries = seriesTypes.heatmap,
+                    ScatterSeries = seriesTypes.scatter,
+                    TreemapSeries = seriesTypes.treemap;
                 if (AreaSeries &&
-                    composedClasses.indexOf(AreaSeries) === -1) {
-                    composedClasses.push(AreaSeries);
+                    U.pushUnique(composedMembers, AreaSeries)) {
                     extend(AreaSeries.prototype, {
                         fill: true,
                         fillOpacity: true,
@@ -2355,8 +2450,7 @@
                     });
                 }
                 if (AreaSplineSeries &&
-                    composedClasses.indexOf(AreaSplineSeries) === -1) {
-                    composedClasses.push(AreaSplineSeries);
+                    U.pushUnique(composedMembers, AreaSplineSeries)) {
                     extend(AreaSplineSeries.prototype, {
                         fill: true,
                         fillOpacity: true,
@@ -2364,8 +2458,7 @@
                     });
                 }
                 if (BubbleSeries &&
-                    composedClasses.indexOf(BubbleSeries) === -1) {
-                    composedClasses.push(BubbleSeries);
+                    U.pushUnique(composedMembers, BubbleSeries)) {
                     var bubbleProto_1 = BubbleSeries.prototype;
                     // By default, the bubble series does not use the KD-tree, so force
                     // it to.
@@ -2380,24 +2473,21 @@
                     });
                 }
                 if (ColumnSeries &&
-                    composedClasses.indexOf(ColumnSeries) === -1) {
-                    composedClasses.push(ColumnSeries);
+                    U.pushUnique(composedMembers, ColumnSeries)) {
                     extend(ColumnSeries.prototype, {
                         fill: true,
                         sampling: true
                     });
                 }
                 if (ScatterSeries &&
-                    composedClasses.indexOf(ScatterSeries) === -1) {
-                    composedClasses.push(ScatterSeries);
+                    U.pushUnique(composedMembers, ScatterSeries)) {
                     ScatterSeries.prototype.fill = true;
                 }
                 // We need to handle heatmaps separatly, since we can't perform the
                 // size/color calculations in the shader easily.
                 // @todo This likely needs future optimization.
                 [HeatmapSeries, TreemapSeries].forEach(function (SC) {
-                    if (SC && composedClasses.indexOf(SC) === -1) {
-                        composedClasses.push(SC);
+                    if (SC && U.pushUnique(composedMembers, SC)) {
                         wrap(SC.prototype, 'drawPoints', wrapSeriesDrawPoints);
                     }
                 });
@@ -2420,8 +2510,13 @@
          * the canvas renderer
          */
         function createAndAttachRenderer(chart, series) {
-            var ChartClass = chart.constructor, targetGroup = chart.seriesGroup || series.group, alpha = 1;
-            var width = chart.chartWidth, height = chart.chartHeight, target = chart, foSupported = typeof SVGForeignObjectElement !== 'undefined';
+            var ChartClass = chart.constructor,
+                targetGroup = chart.seriesGroup || series.group,
+                alpha = 1;
+            var width = chart.chartWidth,
+                height = chart.chartHeight,
+                target = chart,
+                foSupported = typeof SVGForeignObjectElement !== 'undefined';
             if (isChartSeriesBoosting(chart)) {
                 target = chart;
             }
@@ -2429,8 +2524,8 @@
                 target = series;
             }
             var boost = target.boost =
-                target.boost ||
-                    {};
+                    target.boost ||
+                        {};
             // Support for foreignObject is flimsy as best.
             // IE does not support it, and Chrome has a bug which messes up
             // the canvas draw order.
@@ -2549,7 +2644,8 @@
         function destroyGraphics(series) {
             var points = series.points;
             if (points) {
-                var point = void 0, i = void 0;
+                var point = void 0,
+                    i = void 0;
                 for (i = 0; i < points.length; i = i + 1) {
                     point = points[i];
                     if (point && point.destroyElements) {
@@ -2681,7 +2777,11 @@
          * @function Highcharts.Series#hasExtremes
          */
         function hasExtremes(series, checkX) {
-            var options = series.options, data = options.data, xAxis = series.xAxis && series.xAxis.options, yAxis = series.yAxis && series.yAxis.options, colorAxis = series.colorAxis && series.colorAxis.options;
+            var options = series.options,
+                data = options.data,
+                xAxis = series.xAxis && series.xAxis.options,
+                yAxis = series.yAxis && series.yAxis.options,
+                colorAxis = series.colorAxis && series.colorAxis.options;
             return data.length > (options.boostThreshold || Number.MAX_VALUE) &&
                 // Defined yAxis extremes
                 isNumber(yAxis.min) &&
@@ -2700,7 +2800,8 @@
          * @private
          */
         function onSeriesDestroy() {
-            var series = this, chart = series.chart;
+            var series = this,
+                chart = series.chart;
             if (chart.boost &&
                 chart.boost.markerGroup === series.markerGroup) {
                 series.markerGroup = null;
@@ -2754,14 +2855,19 @@
          *         A Point object as per https://api.highcharts.com/highcharts#Point
          */
         function getPoint(series, boostPoint) {
-            var seriesOptions = series.options, xAxis = series.xAxis, PointClass = series.pointClass;
+            var seriesOptions = series.options,
+                xAxis = series.xAxis,
+                PointClass = series.pointClass;
             if (boostPoint instanceof PointClass) {
                 return boostPoint;
             }
             var xData = (series.xData ||
-                seriesOptions.xData ||
-                series.processedXData ||
-                false), point = (new PointClass()).init(series, series.options.data[boostPoint.i], xData ? xData[boostPoint.i] : void 0);
+                    seriesOptions.xData ||
+                    series.processedXData ||
+                    false),
+                point = (new PointClass()).init(series,
+                series.options.data[boostPoint.i],
+                xData ? xData[boostPoint.i] : void 0);
             point.category = pick(xAxis.categories ?
                 xAxis.categories[point.x] :
                 point.x, // @todo simplify
@@ -2782,11 +2888,17 @@
         function seriesRenderCanvas() {
             var _this = this;
             var options = this.options || {}, chart = this.chart, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.processedXData, yData = options.yData || this.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking !== false, threshold = options.threshold, isRange = this.pointArrayMap &&
-                this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = (this.xData ||
-                this.options.xData ||
-                this.processedXData ||
-                false);
-            var renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
+                    this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = (this.xData ||
+                    this.options.xData ||
+                    this.processedXData ||
+                    false);
+            var renderer = false,
+                lastClientX,
+                yBottom = yAxis.getThreshold(threshold),
+                minVal,
+                maxVal,
+                minI,
+                maxI;
             // Get or create the renderer
             renderer = createAndAttachRenderer(chart, this);
             chart.boosted = true;
@@ -2823,11 +2935,15 @@
                     this.renderTarget = this.boost.target = this.boost.target.destroy();
                 }
             }
-            var points = this.points = [], addKDPoint = function (clientX, plotY, i, percentage) {
-                // We need to do ceil on the clientX to make things
-                // snap to pixel values. The renderer will frequently
-                // draw stuff on "sub-pixels".
-                clientX = Math.ceil(clientX);
+            var points = this.points = [],
+                addKDPoint = function (clientX,
+                plotY,
+                i,
+                percentage) {
+                    // We need to do ceil on the clientX to make things
+                    // snap to pixel values. The renderer will frequently
+                    // draw stuff on "sub-pixels".
+                    clientX = Math.ceil(clientX);
                 // Shaves off about 60ms compared to repeated concatenation
                 index = compareX ? clientX : clientX + ',' + plotY;
                 // The k-d tree requires series points.
@@ -2840,6 +2956,7 @@
                         plotY = yAxis.len - plotY;
                     }
                     points.push({
+                        destroy: noop,
                         x: xDataFull ? xDataFull[cropStart + i] : false,
                         clientX: clientX,
                         plotX: clientX,
@@ -2863,7 +2980,13 @@
              */
             function processPoint(d, i) {
                 var chartDestroyed = typeof chart.index === 'undefined';
-                var x, y, clientX, plotY, percentage, low = false, isYInside = true;
+                var x,
+                    y,
+                    clientX,
+                    plotY,
+                    percentage,
+                    low = false,
+                    isYInside = true;
                 if (typeof d === 'undefined') {
                     return true;
                 }
@@ -2894,7 +3017,7 @@
                     if (!requireSorting) {
                         isYInside = (y || 0) >= yMin && y <= yMax;
                     }
-                    if (y !== null && x >= xMin && x <= xMax && isYInside) {
+                    if (x >= xMin && x <= xMax && isYInside) {
                         clientX = xAxis.toPixels(x, true);
                         if (sampling) {
                             if (typeof minI === 'undefined' ||
@@ -2941,8 +3064,9 @@
             /**
              * @private
              */
-            var boostOptions = renderer.settings, doneProcessing = function () {
-                fireEvent(_this, 'renderedCanvas');
+            var boostOptions = renderer.settings,
+                doneProcessing = function () {
+                    fireEvent(_this, 'renderedCanvas');
                 // Go back to prototype, ready to build
                 delete _this.buildKDTree;
                 _this.buildKDTree();
@@ -2975,7 +3099,8 @@
             }
             this.chart.boosted = true;
             // Make sure we have a valid OGL context
-            var renderer = createAndAttachRenderer(this.chart, this);
+            var renderer = createAndAttachRenderer(this.chart,
+                this);
             if (renderer) {
                 allocateIfNotSeriesBoosting(renderer, this);
                 renderer.pushSeries(this);
@@ -2995,7 +3120,7 @@
              */
             function branch(proceed) {
                 var letItPass = this.options.stacking &&
-                    (method === 'translate' || method === 'generatePoints');
+                        (method === 'translate' || method === 'generatePoints');
                 if (!this.boosted ||
                     letItPass ||
                     !boostEnabled(this.chart) ||
@@ -3054,7 +3179,7 @@
              * @private
              */
             var getSeriesBoosting = function (data) {
-                var series = _this;
+                    var series = _this;
                 // Check if will be grouped.
                 if (series.forceCrop) {
                     return false;
@@ -3109,7 +3234,8 @@
          * @private
          */
         function wrapSeriesSearchPoint(proceed) {
-            var result = proceed.apply(this, [].slice.call(arguments, 1));
+            var result = proceed.apply(this,
+                [].slice.call(arguments, 1));
             if (this.boost && result) {
                 return this.boost.getPoint(result);
             }
@@ -3121,10 +3247,10 @@
          *
          * */
         var BoostSeries = {
-            compose: compose,
-            destroyGraphics: destroyGraphics,
-            getPoint: getPoint
-        };
+                compose: compose,
+                destroyGraphics: destroyGraphics,
+                getPoint: getPoint
+            };
 
         return BoostSeries;
     });
@@ -3143,17 +3269,26 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getBoostClipRect = BoostChart.getBoostClipRect, isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
+        var getBoostClipRect = BoostChart.getBoostClipRect,
+            isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
         var destroyGraphics = BoostSeries.destroyGraphics;
         var color = Color.parse;
-        var doc = H.doc, noop = H.noop;
+        var doc = H.doc,
+            noop = H.noop;
         var seriesTypes = SeriesRegistry.seriesTypes;
-        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, wrap = U.wrap;
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            wrap = U.wrap;
         // Use a blank pixel for clearing canvas (#17182)
         var b64BlankPixel = (
-        /* eslint-disable-next-line max-len */
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
-        var CHUNK_SIZE = 50000, destroyLoadingDiv;
+            /* eslint-disable-next-line max-len */
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+        var CHUNK_SIZE = 50000,
+            destroyLoadingDiv;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Initialize the canvas boost.
@@ -3161,18 +3296,32 @@
          * @function Highcharts.initCanvasBoost
          */
         var initCanvasBoost = function () {
-            if (H.seriesTypes.heatmap) {
-                wrap(H.seriesTypes.heatmap.prototype, 'drawPoints', function () {
-                    var chart = this.chart, ctx = this.getContext(), inverted = this.chart.inverted, xAxis = this.xAxis, yAxis = this.yAxis;
+                if (H.seriesTypes.heatmap) {
+                    wrap(H.seriesTypes.heatmap.prototype, 'drawPoints',
+            function () {
+                        var chart = this.chart,
+            ctx = this.getContext(),
+            inverted = this.chart.inverted,
+            xAxis = this.xAxis,
+            yAxis = this.yAxis;
                     if (ctx) {
                         // draw the columns
                         this.points.forEach(function (point) {
-                            var plotY = point.plotY, pointAttr;
+                            var plotY = point.plotY,
+                                pointAttr;
                             if (typeof plotY !== 'undefined' &&
                                 !isNaN(plotY) &&
                                 point.y !== null &&
                                 ctx) {
-                                var _a = point.shapeArgs || {}, _b = _a.x, x = _b === void 0 ? 0 : _b, _c = _a.y, y = _c === void 0 ? 0 : _c, _d = _a.width, width = _d === void 0 ? 0 : _d, _e = _a.height, height = _e === void 0 ? 0 : _e;
+                                var _a = point.shapeArgs || {},
+                                    _b = _a.x,
+                                    x = _b === void 0 ? 0 : _b,
+                                    _c = _a.y,
+                                    y = _c === void 0 ? 0 : _c,
+                                    _d = _a.width,
+                                    width = _d === void 0 ? 0 : _d,
+                                    _e = _a.height,
+                                    height = _e === void 0 ? 0 : _e;
                                 if (!chart.styledMode) {
                                     pointAttr = point.series.pointAttribs(point);
                                 }
@@ -3193,10 +3342,6 @@
                     else {
                         this.chart.showLoading('Your browser doesn\'t support HTML5 canvas, <br>' +
                             'please use a modern browser');
-                        // Uncomment this to provide low-level (slow) support in oldIE.
-                        // It will cause script errors on charts with more than a few
-                        // thousand points.
-                        // arguments[0].call(this);
                     }
                 });
             }
@@ -3209,15 +3354,32 @@
                  * @function Highcharts.Series#getContext
                  */
                 getContext: function () {
-                    var chart = this.chart, target = isChartSeriesBoosting(chart) ? chart : this, targetGroup = (target === chart ?
-                        chart.seriesGroup :
-                        chart.seriesGroup || this.group);
-                    var width = chart.chartWidth, height = chart.chartHeight, ctx, swapXY = function (proceed, x, y, a, b, c, d) {
-                        proceed.call(this, y, x, a, b, c, d);
+                    var chart = this.chart,
+                        target = isChartSeriesBoosting(chart) ? chart : this,
+                        targetGroup = (target === chart ?
+                            chart.seriesGroup :
+                            chart.seriesGroup || this.group);
+                    var width = chart.chartWidth,
+                        height = chart.chartHeight,
+                        ctx,
+                        swapXY = function (proceed,
+                        x,
+                        y,
+                        a,
+                        b,
+                        c,
+                        d) {
+                            proceed.call(this,
+                        y,
+                        x,
+                        a,
+                        b,
+                        c,
+                        d);
                     };
                     var boost = target.boost =
-                        target.boost ||
-                            {};
+                            target.boost ||
+                                {};
                     ctx = boost.targetCtx;
                     if (!boost.canvas) {
                         boost.canvas = doc.createElement('canvas');
@@ -3294,21 +3456,21 @@
                 },
                 renderCanvas: function () {
                     var series = this, options = series.options, chart = series.chart, xAxis = this.xAxis, yAxis = this.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
-                        timeRendering: activeBoostSettings.timeRendering || false,
-                        timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
-                        timeSetup: activeBoostSettings.timeSetup || false
-                    }, ctx, c = 0, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, lastClientX, sampling = !!series.sampling, points, r = options.marker && options.marker.radius, cvsDrawPoint = this.cvsDrawPoint, cvsLineTo = options.lineWidth ? this.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
-                        this.cvsMarkerSquare :
-                        this.cvsMarkerCircle), strokeBatch = this.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking !== false, lastPoint, threshold = options.threshold, yBottom = yAxis.getThreshold(threshold), hasThreshold = isNumber(threshold), translatedThreshold = yBottom, doFill = this.fill, isRange = (series.pointArrayMap &&
-                        series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, wasNull, connectNulls = options.connectNulls, useRaw = !xData, minVal, maxVal, minI, maxI, index, sdata = (isStacked ?
-                        series.data :
-                        (xData || rawData)), fillColor = (series.fillOpacity ?
-                        Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
-                        series.color), 
-                    //
-                    stroke = function () {
-                        if (doFill) {
-                            ctx.fillStyle = fillColor;
+                            timeRendering: activeBoostSettings.timeRendering || false,
+                            timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
+                            timeSetup: activeBoostSettings.timeSetup || false
+                        }, ctx, c = 0, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, lastClientX, sampling = !!series.sampling, points, r = options.marker && options.marker.radius, cvsDrawPoint = this.cvsDrawPoint, cvsLineTo = options.lineWidth ? this.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
+                            this.cvsMarkerSquare :
+                            this.cvsMarkerCircle), strokeBatch = this.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking !== false, lastPoint, threshold = options.threshold, yBottom = yAxis.getThreshold(threshold), hasThreshold = isNumber(threshold), translatedThreshold = yBottom, doFill = this.fill, isRange = (series.pointArrayMap &&
+                            series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, wasNull, connectNulls = options.connectNulls, useRaw = !xData, minVal, maxVal, minI, maxI, index, sdata = (isStacked ?
+                            series.data :
+                            (xData || rawData)), fillColor = (series.fillOpacity ?
+                            Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
+                            series.color), 
+                        //
+                        stroke = function () {
+                            if (doFill) {
+                                ctx.fillStyle = fillColor;
                             ctx.fill();
                         }
                         else {
@@ -3450,7 +3612,18 @@
                     }
                     // Loop over the points
                     H.eachAsync(sdata, function (d, i) {
-                        var x, y, clientX, plotY, isNull, low, isNextInside = false, isPrevInside = false, nx = false, px = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
+                        var x,
+                            y,
+                            clientX,
+                            plotY,
+                            isNull,
+                            low,
+                            isNextInside = false,
+                            isPrevInside = false,
+                            nx = false,
+                            px = false,
+                            chartDestroyed = typeof chart.index === 'undefined',
+                            isYInside = true;
                         if (!chartDestroyed) {
                             if (useRaw) {
                                 x = d[0];
@@ -3554,7 +3727,8 @@
                         }
                         return !chartDestroyed;
                     }, function () {
-                        var loadingDiv = chart.loadingDiv, loadingShown = chart.loadingShown;
+                        var loadingDiv = chart.loadingDiv,
+                            loadingShown = chart.loadingShown;
                         stroke();
                         // if (series.boostCopy || series.chart.boostCopy) {
                         //     (series.boostCopy || series.chart.boostCopy)();

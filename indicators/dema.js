@@ -1,5 +1,5 @@
 /*
- Highstock JS v10.3.3 (2023-01-20)
+ Highstock JS v11.0.0 (2023-04-26)
 
  Indicator series type for Highcharts Stock
 
@@ -7,8 +7,8 @@
 
  License: www.highcharts.com/license
 */
-(function(b){"object"===typeof module&&module.exports?(b["default"]=b,module.exports=b):"function"===typeof define&&define.amd?define("highcharts/indicators/dema",["highcharts","highcharts/modules/stock"],function(d){b(d);b.Highcharts=d;return b}):b("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(b){function d(b,a,d,e){b.hasOwnProperty(a)||(b[a]=e.apply(null,d),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:a,module:b[a]}})))}
-b=b?b._modules:{};d(b,"Stock/Indicators/DEMA/DEMAIndicator.js",[b["Core/Series/SeriesRegistry.js"],b["Core/Utilities.js"]],function(b,a){var d=this&&this.__extends||function(){var b=function(a,c){b=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(b,c){b.__proto__=c}||function(b,c){for(var a in c)c.hasOwnProperty(a)&&(b[a]=c[a])};return b(a,c)};return function(a,c){function k(){this.constructor=a}b(a,c);a.prototype=null===c?Object.create(c):(k.prototype=c.prototype,new k)}}(),e=b.seriesTypes.ema,
-x=a.correctFloat,y=a.isArray,l=a.merge;a=function(b){function a(){var c=null!==b&&b.apply(this,arguments)||this;c.EMApercent=void 0;c.data=void 0;c.options=void 0;c.points=void 0;return c}d(a,b);a.prototype.getEMA=function(c,a,w,d,h,e){return b.prototype.calculateEma.call(this,e||[],c,"undefined"===typeof h?1:h,this.EMApercent,a,"undefined"===typeof d?-1:d,w)};a.prototype.getValues=function(a,d){var c=d.period,e=[],h=2*c,k=a.xData,m=(a=a.yData)?a.length:0,r=[],t=[],u=[],g=0,f,n=-1;this.EMApercent=
-2/(c+1);if(!(m<2*c-1)){y(a[0])&&(n=d.index?d.index:0);d=b.prototype.accumulatePeriodPoints.call(this,c,n,a);var p=d/c;d=0;for(f=c;f<m+2;f++){f<m+1&&(g=this.getEMA(a,l,p,n,f)[1],e.push(g));var l=g;if(f<h)d+=g;else{f===h&&(p=d/c);g=e[f-c-1];var v=this.getEMA([g],v,p)[1];var q=[k[f-2],x(2*g-v)];r.push(q);t.push(q[0]);u.push(q[1])}}return{values:r,xData:t,yData:u}}};a.defaultOptions=l(e.defaultOptions);return a}(e);b.registerSeriesType("dema",a);"";return a});d(b,"masters/indicators/dema.src.js",[],function(){})});
+'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/dema",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,c,b,g){a.hasOwnProperty(c)||(a[c]=g.apply(null,b),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:c,
+module:a[c]}})))}a=a?a._modules:{};b(a,"Stock/Indicators/DEMA/DEMAIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,b){const {ema:c}=a.seriesTypes,{correctFloat:g,isArray:w,merge:l}=b;class f extends c{constructor(){super(...arguments);this.points=this.options=this.data=this.EMApercent=void 0}getEMA(a,x,y,b,c,g){return super.calculateEma(g||[],a,"undefined"===typeof c?1:c,this.EMApercent,x,"undefined"===typeof b?-1:b,y)}getValues(a,b){const c=b.period,f=[],p=2*c,
+l=a.xData,m=(a=a.yData)?a.length:0,q=[],r=[],t=[];let e=0;let u,d,n=-1,h,k;this.EMApercent=2/(c+1);if(!(m<2*c-1)){w(a[0])&&(n=b.index?b.index:0);b=super.accumulatePeriodPoints(c,n,a);k=b/c;b=0;for(d=c;d<m+2;d++)if(d<m+1&&(e=this.getEMA(a,u,k,n,d)[1],f.push(e)),u=e,d<p)b+=e;else{d===p&&(k=b/c);e=f[d-c-1];var v=this.getEMA([e],v,k)[1];h=[l[d-2],g(2*e-v)];q.push(h);r.push(h[0]);t.push(h[1])}return{values:q,xData:r,yData:t}}}}f.defaultOptions=l(c.defaultOptions);a.registerSeriesType("dema",f);"";return f});
+b(a,"masters/indicators/dema.src.js",[],function(){})});
 //# sourceMappingURL=dema.js.map

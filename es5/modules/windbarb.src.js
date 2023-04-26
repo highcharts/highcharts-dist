@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Wind barb series module
  *
@@ -64,8 +64,8 @@
          * @private
          */
         var ApproximationRegistry = {
-        // approximations added programmatically
-        };
+            // approximations added programmatically
+            };
         /* *
          *
          *  Default Export
@@ -86,7 +86,8 @@
          * */
         var columnProto = ColumnSeries.prototype;
         var seriesProto = Series.prototype;
-        var defined = U.defined, stableSort = U.stableSort;
+        var defined = U.defined,
+            stableSort = U.stableSort;
         /* *
          *
          *  Composition
@@ -104,7 +105,7 @@
              *  Properties
              *
              * */
-            var composedClasses = [];
+            var composedMembers = [];
             /* *
              *
              *  Functions
@@ -115,8 +116,7 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
+                if (U.pushUnique(composedMembers, SeriesClass)) {
                     var seriesProto_1 = SeriesClass.prototype;
                     seriesProto_1.getPlotBox = getPlotBox;
                     seriesProto_1.translate = translate;
@@ -142,9 +142,29 @@
              */
             function translate() {
                 columnProto.translate.apply(this);
-                var series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
-                    chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
-                var cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
+                var series = this,
+                    options = series.options,
+                    chart = series.chart,
+                    points = series.points,
+                    optionsOnSeries = options.onSeries,
+                    onSeries = (optionsOnSeries &&
+                        chart.get(optionsOnSeries)),
+                    step = onSeries && onSeries.options.step,
+                    onData = (onSeries && onSeries.points),
+                    inverted = chart.inverted,
+                    xAxis = series.xAxis,
+                    yAxis = series.yAxis;
+                var cursor = points.length - 1,
+                    point,
+                    lastPoint,
+                    onKey = options.onKey || 'y',
+                    i = onData && onData.length,
+                    xOffset = 0,
+                    leftPoint,
+                    lastX,
+                    rightPoint,
+                    currentDataGrouping,
+                    distanceRatio;
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
@@ -254,15 +274,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -275,9 +296,10 @@
          *
          * */
         var WindbarbPoint = /** @class */ (function (_super) {
-            __extends(WindbarbPoint, _super);
+                __extends(WindbarbPoint, _super);
             function WindbarbPoint() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  * Properties
@@ -321,23 +343,27 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var animObject = A.animObject;
-        var Series = SeriesRegistry.series, ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var extend = U.extend, merge = U.merge, pick = U.pick;
+        var Series = SeriesRegistry.series,
+            ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var extend = U.extend,
+            merge = U.merge,
+            pick = U.pick;
         /**
          * @private
          * @class
@@ -346,14 +372,15 @@
          * @augments Highcharts.Series
          */
         var WindbarbSeries = /** @class */ (function (_super) {
-            __extends(WindbarbSeries, _super);
+                __extends(WindbarbSeries, _super);
             function WindbarbSeries() {
                 /* *
                  *
                  * Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  * Properties
@@ -380,7 +407,10 @@
             WindbarbSeries.registerApproximation = function () {
                 if (!ApproximationRegistry.windbarb) {
                     ApproximationRegistry.windbarb = function (values, directions) {
-                        var vectorX = 0, vectorY = 0, i, len = values.length;
+                        var vectorX = 0,
+                            vectorY = 0,
+                            i,
+                            len = values.length;
                         for (i = 0; i < len; i++) {
                             vectorX += values[i] * Math.cos(directions[i] * H.deg2rad);
                             vectorY += values[i] * Math.sin(directions[i] * H.deg2rad);
@@ -407,7 +437,9 @@
             };
             // Get presentational attributes.
             WindbarbSeries.prototype.pointAttribs = function (point, state) {
-                var options = this.options, stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
+                var options = this.options,
+                    stroke = point.color || this.color,
+                    strokeWidth = this.options.lineWidth;
                 if (state) {
                     stroke = options.states[state].color || stroke;
                     strokeWidth =
@@ -422,7 +454,12 @@
             // Create a single wind arrow. It is later rotated around the zero
             // centerpoint.
             WindbarbSeries.prototype.windArrow = function (point) {
-                var knots = point.value * 1.943844, level = point.beaufortLevel, path, barbs, u = this.options.vectorLength / 20, pos = -10;
+                var knots = point.value * 1.943844,
+                    level = point.beaufortLevel,
+                    path,
+                    barbs,
+                    u = this.options.vectorLength / 20,
+                    pos = -10;
                 if (point.isNull) {
                     return [];
                 }
@@ -469,9 +506,13 @@
                 return path;
             };
             WindbarbSeries.prototype.drawPoints = function () {
-                var chart = this.chart, yAxis = this.yAxis, inverted = chart.inverted, shapeOffset = this.options.vectorLength / 2;
+                var chart = this.chart,
+                    yAxis = this.yAxis,
+                    inverted = chart.inverted,
+                    shapeOffset = this.options.vectorLength / 2;
                 this.points.forEach(function (point) {
-                    var plotX = point.plotX, plotY = point.plotY;
+                    var plotX = point.plotX,
+                        plotY = point.plotY;
                     // Check if it's inside the plot area, but only for the X
                     // dimension.
                     if (this.options.clip === false ||
@@ -659,7 +700,8 @@
             pointClass: WindbarbPoint,
             trackerGroups: ['markerGroup'],
             translate: function () {
-                var beaufortFloor = this.beaufortFloor, beaufortName = this.beaufortName;
+                var beaufortFloor = this.beaufortFloor,
+                    beaufortName = this.beaufortName;
                 OnSeriesComposition.translate.call(this);
                 this.points.forEach(function (point) {
                     var level = 0;

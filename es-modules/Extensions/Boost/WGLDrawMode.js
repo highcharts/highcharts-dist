@@ -15,7 +15,7 @@
  *  Constants
  *
  * */
-var WGLDrawMode = {
+const WGLDrawMode = {
     'area': 'LINES',
     'arearange': 'LINES',
     'areaspline': 'LINES',

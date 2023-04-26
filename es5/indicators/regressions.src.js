@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -48,22 +48,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, extend = U.extend, merge = U.merge;
+        var isArray = U.isArray,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -79,14 +82,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionIndicator, _super);
+                __extends(LinearRegressionIndicator, _super);
             function LinearRegressionIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -119,25 +123,32 @@
              */
             LinearRegressionIndicator.prototype.getRegressionLineParameters = function (xData, yData) {
                 // least squares method
-                var yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
-                    return isArray(yValue) ? yValue[yIndex] : yValue;
+                var yIndex = this.options.params.index,
+                    getSingleYValue = function (yValue,
+                    yIndex) {
+                        return isArray(yValue) ? yValue[yIndex] : yValue;
                 }, xSum = xData.reduce(function (accX, val) {
                     return val + accX;
                 }, 0), ySum = yData.reduce(function (accY, val) {
                     return getSingleYValue(val, yIndex) + accY;
-                }, 0), xMean = xSum / xData.length, yMean = ySum / yData.length, xError, yError, formulaNumerator = 0, formulaDenominator = 0, i, slope;
+                }, 0), xMean = xSum / xData.length, yMean = ySum / yData.length;
+                var xError,
+                    yError,
+                    i,
+                    formulaNumerator = 0,
+                    formulaDenominator = 0;
                 for (i = 0; i < xData.length; i++) {
                     xError = xData[i] - xMean;
                     yError = getSingleYValue(yData[i], yIndex) - yMean;
                     formulaNumerator += xError * yError;
                     formulaDenominator += Math.pow(xError, 2);
                 }
-                slope = formulaDenominator ?
-                    formulaNumerator / formulaDenominator : 0; // don't divide by 0
-                return {
-                    slope: slope,
-                    intercept: yMean - slope * xMean
-                };
+                var slope = formulaDenominator ?
+                        formulaNumerator / formulaDenominator : 0; // don't divide by 0
+                    return {
+                        slope: slope,
+                        intercept: yMean - slope * xMean
+                    };
             };
             /**
              * Return the y value on a straight line.
@@ -185,7 +196,9 @@
              * @return {number} - closest distance between points in the base series
              */
             LinearRegressionIndicator.prototype.findClosestDistance = function (xData) {
-                var distance, closestDistance, i;
+                var distance,
+                    closestDistance,
+                    i;
                 for (i = 1; i < xData.length - 1; i++) {
                     distance = xData[i] - xData[i - 1];
                     if (distance > 0 &&
@@ -198,14 +211,26 @@
             };
             // Required to be implemented - starting point for indicator's logic
             LinearRegressionIndicator.prototype.getValues = function (baseSeries, regressionSeriesParams) {
-                var xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, lineParameters, i, periodStart, periodEnd, 
-                // format required to be returned
-                indicatorData = {
-                    xData: [],
-                    yData: [],
-                    values: []
-                }, endPointX, endPointY, periodXData, periodYData, periodTransformedXData, xAxisUnit = this.options.params.xAxisUnit ||
-                    this.findClosestDistance(xData);
+                var xData = baseSeries.xData,
+                    yData = baseSeries.yData,
+                    period = regressionSeriesParams.period, 
+                    // format required to be returned
+                    indicatorData = {
+                        xData: [],
+                        yData: [],
+                        values: []
+                    },
+                    xAxisUnit = this.options.params.xAxisUnit ||
+                        this.findClosestDistance(xData);
+                var lineParameters,
+                    i,
+                    periodStart,
+                    periodEnd,
+                    endPointX,
+                    endPointY,
+                    periodXData,
+                    periodYData,
+                    periodTransformedXData;
                 // Iteration logic: x value of the last point within the period
                 // (end point) is used to represent the y value (regression)
                 // of the entire period.
@@ -342,22 +367,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -373,14 +400,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionSlopesIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionSlopesIndicator, _super);
+                __extends(LinearRegressionSlopesIndicator, _super);
             function LinearRegressionSlopesIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -458,22 +486,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -489,14 +519,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionInterceptIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionInterceptIndicator, _super);
+                __extends(LinearRegressionInterceptIndicator, _super);
             function LinearRegressionInterceptIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -574,22 +605,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -605,14 +638,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionAngleIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionAngleIndicator, _super);
+                __extends(LinearRegressionAngleIndicator, _super);
             function LinearRegressionAngleIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties

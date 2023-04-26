@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -46,22 +46,30 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LineSeries = SeriesRegistry.seriesTypes.line;
-        var addEvent = U.addEvent, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge, pick = U.pick, splat = U.splat;
+        var addEvent = U.addEvent,
+            fireEvent = U.fireEvent,
+            error = U.error,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge,
+            pick = U.pick,
+            splat = U.splat;
         /* *
          *
          *  Class
@@ -73,14 +81,15 @@
          * @private
          */
         var SMAIndicator = /** @class */ (function (_super) {
-            __extends(SMAIndicator, _super);
+                __extends(SMAIndicator, _super);
             function SMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -127,8 +136,18 @@
              * @private
              */
             SMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal.length, SMA = [], xData = [], yData = [];
-                var i, index = -1, range = 0, SMAPoint, sum = 0;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal.length,
+                    SMA = [],
+                    xData = [],
+                    yData = [];
+                var i,
+                    index = -1,
+                    range = 0,
+                    SMAPoint,
+                    sum = 0;
                 if (xVal.length < period) {
                     return;
                 }
@@ -165,7 +184,14 @@
                 var indicator = this;
                 _super.prototype.init.call(indicator, chart, options);
                 // Only after series are linked indicator can be processed.
-                var linkedSeriesUnbiner = addEvent(Chart, 'afterLinkSeries', function () {
+                var linkedSeriesUnbiner = addEvent(Chart, 'afterLinkSeries',
+                    function (_a) {
+                        var isUpdating = _a.isUpdating;
+                    // #18643 indicator shouldn't recalculate
+                    // values while series updating.
+                    if (isUpdating) {
+                        return;
+                    }
                     var hasEvents = !!indicator.dataEventsToUnbind.length;
                     if (indicator.linkedParent) {
                         if (!hasEvents) {
@@ -191,8 +217,10 @@
                         else if (!hasEvents) {
                             // Some indicators (like VBP) has to recalculate their
                             // values after other chart's events (render).
-                            var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn.chart, function () {
-                                indicator.recalculateValues();
+                            var unbinder_1 = addEvent(indicator.chart,
+                                indicator.calculateOn.chart,
+                                function () {
+                                    indicator.recalculateValues();
                                 // Call this just once.
                                 unbinder_1();
                             });
@@ -215,21 +243,32 @@
              * @private
              */
             SMAIndicator.prototype.recalculateValues = function () {
-                var croppedDataValues = [], indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, emptySet = {
-                    values: [],
-                    xData: [],
-                    yData: []
-                };
-                var overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
+                var croppedDataValues = [],
+                    indicator = this,
+                    oldData = indicator.points || [],
+                    oldDataLength = (indicator.xData || []).length,
+                    emptySet = {
+                        values: [],
+                        xData: [],
+                        yData: []
+                    };
+                var overwriteData = true,
+                    oldFirstPointIndex,
+                    oldLastPointIndex,
+                    croppedData,
+                    min,
+                    max,
+                    i;
                 // Updating an indicator with redraw=false may destroy data.
                 // If there will be a following update for the parent series,
                 // we will try to access Series object without any properties
                 // (except for prototyped ones). This is what happens
                 // for example when using Axis.setDataGrouping(). See #16670
                 var processedData = indicator.linkedParent.options &&
-                    indicator.linkedParent.yData && // #18176, #18177 indicators should
-                    indicator.linkedParent.yData.length ? // work with empty dataset
-                    (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
+                        indicator.linkedParent.yData && // #18176, #18177 indicators should
+                        indicator.linkedParent.yData.length ? // work with empty dataset
+                        (indicator.getValues(indicator.linkedParent,
+                    indicator.options.params) || emptySet) : emptySet;
                 // We need to update points to reflect changes in all,
                 // x and y's, values. However, do it only for non-grouped
                 // data - grouping does it for us (#8572)
@@ -260,10 +299,11 @@
                             }
                         }
                         indicator.updateData(croppedDataValues);
-                        // Omit addPoint() and removePoint() cases
                     }
-                    else if (processedData.xData.length !== oldDataLength - 1 &&
-                        processedData.xData.length !== oldDataLength + 1) {
+                    else if (indicator.updateAllPoints || // #18710
+                        // Omit addPoint() and removePoint() cases
+                        processedData.xData.length !== oldDataLength - 1 &&
+                            processedData.xData.length !== oldDataLength + 1) {
                         overwriteData = false;
                         indicator.updateData(processedData.values);
                     }
@@ -280,13 +320,16 @@
                     indicator.isDirty = true;
                     indicator.redraw();
                 }
-                indicator.isDirtyData = !!indicator.linkedSeries;
+                indicator.isDirtyData = !!indicator.linkedSeries.length;
+                fireEvent(indicator, 'updatedData'); // #18689
             };
             /**
              * @private
              */
             SMAIndicator.prototype.processData = function () {
-                var series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
+                var series = this,
+                    compareToMain = series.options.compareToMain,
+                    linkedParent = series.linkedParent;
                 _super.prototype.processData.apply(series, arguments);
                 if (series.dataModify &&
                     linkedParent &&
@@ -423,22 +466,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -454,14 +500,15 @@
          * @augments Highcharts.Series
          */
         var EMAIndicator = /** @class */ (function (_super) {
-            __extends(EMAIndicator, _super);
+                __extends(EMAIndicator, _super);
             function EMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -478,7 +525,9 @@
              *
              * */
             EMAIndicator.prototype.accumulatePeriodPoints = function (period, index, yVal) {
-                var sum = 0, i = 0, y = 0;
+                var sum = 0,
+                    i = 0,
+                    y = 0;
                 while (i < period) {
                     y = index < 0 ? yVal[i] : yVal[i][index];
                     sum = sum + y;
@@ -487,16 +536,30 @@
                 return sum;
             };
             EMAIndicator.prototype.calculateEma = function (xVal, yVal, i, EMApercent, calEMA, index, SMA) {
-                var x = xVal[i - 1], yValue = index < 0 ?
-                    yVal[i - 1] :
-                    yVal[i - 1][index], y = typeof calEMA === 'undefined' ?
-                    SMA : correctFloat((yValue * EMApercent) +
-                    (calEMA * (1 - EMApercent)));
+                var x = xVal[i - 1],
+                    yValue = index < 0 ?
+                        yVal[i - 1] :
+                        yVal[i - 1][index],
+                    y = typeof calEMA === 'undefined' ?
+                        SMA : correctFloat((yValue * EMApercent) +
+                        (calEMA * (1 - EMApercent)));
                 return [x, y];
             };
             EMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
-                var calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    EMApercent = 2 / (period + 1),
+                    EMA = [],
+                    xData = [],
+                    yData = [];
+                var calEMA,
+                    EMAPoint,
+                    i,
+                    index = -1,
+                    sum = 0,
+                    SMA = 0;
                 // Check period, if bigger than points length, skip
                 if (yValLen < period) {
                     return;
@@ -588,22 +651,25 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var error = U.error, extend = U.extend, merge = U.merge;
+        var error = U.error,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -619,14 +685,15 @@
          * @augments Highcharts.Series
          */
         var ADIndicator = /** @class */ (function (_super) {
-            __extends(ADIndicator, _super);
+                __extends(ADIndicator, _super);
             function ADIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -643,9 +710,14 @@
              *
              * */
             ADIndicator.populateAverage = function (xVal, yVal, yValVolume, i, _period) {
-                var high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
-                    0 :
-                    ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];
+                var high = yVal[i][1],
+                    low = yVal[i][2],
+                    close = yVal[i][3],
+                    volume = yValVolume[i],
+                    adY = close === high && close === low || high === low ?
+                        0 :
+                        ((2 * close - low - high) / (high - low)) * volume,
+                    adX = xVal[i];
                 return [adX, adY];
             };
             /* *
@@ -654,7 +726,19 @@
              *
              * */
             ADIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries && volumeSeries.yData, yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [], len, i, ADPoint;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    volumeSeriesID = params.volumeSeriesID,
+                    volumeSeries = series.chart.get(volumeSeriesID),
+                    yValVolume = volumeSeries && volumeSeries.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    AD = [],
+                    xData = [],
+                    yData = [];
+                var len,
+                    i,
+                    ADPoint;
                 if (xVal.length <= period &&
                     yValLen &&
                     yVal[0].length !== 4) {
@@ -756,23 +840,29 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, columnProto = _a.column.prototype, SMAIndicator = _a.sma;
-        var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, isArray = U.isArray;
+        var _a = SeriesRegistry.seriesTypes,
+            columnProto = _a.column.prototype,
+            SMAIndicator = _a.sma;
+        var extend = U.extend,
+            merge = U.merge,
+            correctFloat = U.correctFloat,
+            isArray = U.isArray;
         /* *
          *
          *  Class
@@ -788,14 +878,15 @@
          * @augments Highcharts.Series
          */
         var AOIndicator = /** @class */ (function (_super) {
-            __extends(AOIndicator, _super);
+                __extends(AOIndicator, _super);
             function AOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -812,7 +903,14 @@
              *
              * */
             AOIndicator.prototype.drawGraph = function () {
-                var indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0], i;
+                var indicator = this,
+                    options = indicator.options,
+                    points = indicator.points,
+                    userColor = indicator.userOptions.color,
+                    positiveColor = options.greaterBarColor,
+                    negativeColor = options.lowerBarColor,
+                    firstPoint = points[0];
+                var i;
                 if (!userColor && firstPoint) {
                     firstPoint.color = positiveColor;
                     for (i = 1; i < points.length; i++) {
@@ -829,10 +927,26 @@
                 }
             };
             AOIndicator.prototype.getValues = function (series) {
-                var shortPeriod = 5, longPeriod = 34, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, AO = [], // 0- date, 1- Awesome Oscillator
-                xData = [], yData = [], high = 1, low = 2, shortSum = 0, longSum = 0, shortSMA, // Shorter Period SMA
-                longSMA, // Longer Period SMA
-                awesome, shortLastIndex, longLastIndex, price, i, j;
+                var shortPeriod = 5,
+                    longPeriod = 34,
+                    xVal = series.xData || [],
+                    yVal = series.yData || [],
+                    yValLen = yVal.length,
+                    AO = [], // 0- date, 1- Awesome Oscillator
+                    xData = [],
+                    yData = [],
+                    high = 1,
+                    low = 2;
+                var shortSMA, // Shorter Period SMA
+                    longSMA, // Longer Period SMA
+                    awesome,
+                    shortLastIndex,
+                    longLastIndex,
+                    price,
+                    i,
+                    j,
+                    longSum = 0,
+                    shortSum = 0;
                 if (xVal.length <= longPeriod ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
@@ -981,7 +1095,9 @@
          *
          * */
         var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined, error = U.error, merge = U.merge;
+        var defined = U.defined,
+            error = U.error,
+            merge = U.merge;
         /* *
          *
          *  Composition
@@ -999,7 +1115,7 @@
             *  Constants
             *
             * */
-            var composedClasses = [];
+            var composedMembers = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -1054,8 +1170,7 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (composedClasses.indexOf(IndicatorClass) === -1) {
-                    composedClasses.push(IndicatorClass);
+                if (U.pushUnique(composedMembers, IndicatorClass)) {
                     var proto = IndicatorClass.prototype;
                     proto.linesApiNames = (proto.linesApiNames ||
                         linesApiNames.slice());
@@ -1108,14 +1223,24 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, 
-                // additional lines point place holders:
-                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
-                var pointsLength = mainLinePoints.length, point;
+                var indicator = this,
+                    pointValKey = indicator.pointValKey,
+                    linesApiNames = indicator.linesApiNames,
+                    areaLinesNames = indicator.areaLinesNames,
+                    mainLinePoints = indicator.points,
+                    mainLineOptions = indicator.options,
+                    mainLinePath = indicator.graph,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    }, 
+                    // additional lines point place holders:
+                    secondaryLines = [],
+                    secondaryLinesNames = getTranslatedLinesNames(indicator,
+                    pointValKey);
+                var pointsLength = mainLinePoints.length,
+                    point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach(function (plotLine, index) {
                     // create additional lines point place holders
@@ -1133,9 +1258,12 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
-                        mainLinePoints :
-                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
+                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
+                        secondLinePoints = secondaryLines[index],
+                        firstLinePoints = areaLinesNames.length === 1 ?
+                            mainLinePoints :
+                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
+                        originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -1186,7 +1314,9 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath, path = [], higherAreaPath = [];
+                var areaPath,
+                    path = [],
+                    higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -1228,7 +1358,8 @@
             function indicatorTranslate() {
                 var _this = this;
                 var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [], value;
+                var LinesNames = [],
+                    value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
                 this.points.forEach(function (point) {
@@ -1263,22 +1394,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, merge = U.merge, pick = U.pick;
+        var extend = U.extend,
+            merge = U.merge,
+            pick = U.pick;
         /* *
          *
          *  Functions
@@ -1290,7 +1424,9 @@
          * @private
          */
         function getExtremeIndexInArray(arr, extreme) {
-            var extremeValue = arr[0], valueIndex = 0, i;
+            var extremeValue = arr[0],
+                valueIndex = 0,
+                i;
             for (i = 1; i < arr.length; i++) {
                 if (extreme === 'max' && arr[i] >= extremeValue ||
                     extreme === 'min' && arr[i] <= extremeValue) {
@@ -1315,14 +1451,15 @@
          * @augments Highcharts.Series
          */
         var AroonIndicator = /** @class */ (function (_super) {
-            __extends(AroonIndicator, _super);
+                __extends(AroonIndicator, _super);
             function AroonIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -1339,9 +1476,22 @@
              *
              * */
             AroonIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1- Aroon Up, 2- Aroon Down
-                AR = [], xData = [], yData = [], slicedY, low = 2, high = 1, aroonUp, aroonDown, xLow, xHigh, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1- Aroon Up, 2- Aroon Down
+                    AR = [],
+                    xData = [],
+                    yData = [],
+                    low = 2,
+                    high = 1;
+                var aroonUp,
+                    aroonDown,
+                    xLow,
+                    xHigh,
+                    i,
+                    slicedY;
                 // For a N-period, we start from N-1 point, to calculate Nth point
                 // That is why we later need to comprehend slice() elements list
                 // with (+1)
@@ -1474,22 +1624,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var AroonIndicator = SeriesRegistry.seriesTypes.aroon;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -1505,14 +1657,15 @@
          * @augments Highcharts.Series
          */
         var AroonOscillatorIndicator = /** @class */ (function (_super) {
-            __extends(AroonOscillatorIndicator, _super);
+                __extends(AroonOscillatorIndicator, _super);
             function AroonOscillatorIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -1530,8 +1683,16 @@
              * */
             AroonOscillatorIndicator.prototype.getValues = function (series, params) {
                 // 0- date, 1- Aroon Oscillator
-                var ARO = [], xData = [], yData = [], aroon, aroonUp, aroonDown, oscillator, i;
-                aroon = _super.prototype.getValues.call(this, series, params);
+                var ARO = [],
+                    xData = [],
+                    yData = [];
+                var aroonUp,
+                    aroonDown,
+                    oscillator,
+                    i;
+                var aroon = _super.prototype.getValues.call(this,
+                    series,
+                    params);
                 for (i = 0; i < aroon.yData.length; i++) {
                     aroonUp = aroon.yData[i][0];
                     aroonDown = aroon.yData[i][1];
@@ -1620,22 +1781,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, merge = U.merge;
+        var isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -1646,7 +1809,8 @@
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i) {
-            var xValue = xVal[i], yValue = yVal[i];
+            var xValue = xVal[i],
+                yValue = yVal[i];
             points.push([xValue, yValue]);
         }
         /**
@@ -1660,8 +1824,10 @@
          * @private
          */
         function populateAverage(points, xVal, yVal, i, period, prevATR) {
-            var x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y;
-            y = (((prevATR * (period - 1)) + TR) / period);
+            var x = xVal[i - 1],
+                TR = getTR(yVal[i - 1],
+                yVal[i - 2]),
+                y = (((prevATR * (period - 1)) + TR) / period);
             return [x, y];
         }
         /* *
@@ -1679,14 +1845,15 @@
          * @augments Highcharts.Series
          */
         var ATRIndicator = /** @class */ (function (_super) {
-            __extends(ATRIndicator, _super);
+                __extends(ATRIndicator, _super);
             function ATRIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -1703,8 +1870,22 @@
              *
              * */
             ATRIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], range = 1, prevATR = 0, TR = 0, ATR = [], xData = [], yData = [], point, i, points;
-                points = [[xValue, yValue]];
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    xValue = xVal[0],
+                    yValue = yVal[0],
+                    points = [[xValue,
+                    yValue]],
+                    ATR = [],
+                    xData = [],
+                    yData = [];
+                var point,
+                    i,
+                    prevATR = 0,
+                    range = 1,
+                    TR = 0;
                 if ((xVal.length <= period) ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
@@ -1797,22 +1978,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -1823,7 +2007,11 @@
          * @private
          */
         function getStandardDeviation(arr, index, isOHLC, mean) {
-            var variance = 0, arrLen = arr.length, std = 0, i = 0, value;
+            var arrLen = arr.length;
+            var i = 0,
+                std = 0,
+                value,
+                variance = 0;
             for (; i < arrLen; i++) {
                 value = (isOHLC ? arr[i][index] : arr[i]) - mean;
                 variance += value * value;
@@ -1847,14 +2035,15 @@
          * @augments Highcharts.Series
          */
         var BBIndicator = /** @class */ (function (_super) {
-            __extends(BBIndicator, _super);
+                __extends(BBIndicator, _super);
             function BBIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -1887,15 +2076,29 @@
                 }, this.options);
             };
             BBIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, standardDeviation = params.standardDeviation, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1-middle line, 2-top line, 3-bottom line
-                BB = [], 
+                var period = params.period,
+                    standardDeviation = params.standardDeviation,
+                    xData = [],
+                    yData = [],
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1-middle line, 2-top line, 3-bottom line
+                    BB = [];
                 // middle line, top line and bottom line
-                ML, TL, BL, date, xData = [], yData = [], slicedX, slicedY, stdDev, isOHLC, point, i;
+                var ML,
+                    TL,
+                    BL,
+                    date,
+                    slicedX,
+                    slicedY,
+                    stdDev,
+                    point,
+                    i;
                 if (xVal.length < period) {
                     return;
                 }
-                isOHLC = isArray(yVal[0]);
+                var isOHLC = isArray(yVal[0]);
                 for (i = period; i <= yValLen; i++) {
                     slicedX = xVal.slice(i - period, i);
                     slicedY = yVal.slice(i - period, i);
@@ -2053,22 +2256,24 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, merge = U.merge;
+        var isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -2088,7 +2293,8 @@
          */
         function meanDeviation(arr, sma) {
             var len = arr.length;
-            var sum = 0, i;
+            var sum = 0,
+                i;
             for (i = 0; i < len; i++) {
                 sum += Math.abs(sma - (arr[i]));
             }
@@ -2109,14 +2315,15 @@
          * @augments Highcharts.Series
          */
         var CCIIndicator = /** @class */ (function (_super) {
-            __extends(CCIIndicator, _super);
+                __extends(CCIIndicator, _super);
             function CCIIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -2133,8 +2340,23 @@
              *
              * */
             CCIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
-                var CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    TP = [],
+                    CCI = [],
+                    xData = [],
+                    yData = [];
+                var CCIPoint,
+                    p,
+                    periodTP = [],
+                    len,
+                    range = 1,
+                    smaTP,
+                    TPtemp,
+                    meanDev,
+                    i;
                 // CCI requires close value
                 if (xVal.length <= period ||
                     !isArray(yVal[0]) ||
@@ -2231,15 +2453,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -2262,14 +2485,15 @@
          * @augments Highcharts.Series
          */
         var CMFIndicator = /** @class */ (function (_super) {
-            __extends(CMFIndicator, _super);
+                __extends(CMFIndicator, _super);
             function CMFIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -2298,11 +2522,15 @@
              * otherwise false.
              */
             CMFIndicator.prototype.isValid = function () {
-                var chart = this.chart, options = this.options, series = this.linkedParent, volumeSeries = (this.volumeSeries ||
-                    (this.volumeSeries =
-                        chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series &&
-                    series.yData &&
-                    series.yData[0].length === 4);
+                var chart = this.chart,
+                    options = this.options,
+                    series = this.linkedParent,
+                    volumeSeries = (this.volumeSeries ||
+                        (this.volumeSeries =
+                            chart.get(options.params.volumeSeriesID))),
+                    isSeriesOHLC = (series &&
+                        series.yData &&
+                        series.yData[0].length === 4);
                 /**
                  * @private
                  * @param {Highcharts.Series} serie to check length validity on.
@@ -2351,7 +2579,16 @@
              * object containing computed money flow data
              */
             CMFIndicator.prototype.getMoneyFlow = function (xData, seriesYData, volumeSeriesYData, period) {
-                var len = seriesYData.length, moneyFlowVolume = [], sumVolume = 0, sumMoneyFlowVolume = 0, moneyFlowXData = [], moneyFlowYData = [], values = [], i, point, nullIndex = -1;
+                var len = seriesYData.length,
+                    moneyFlowVolume = [],
+                    moneyFlowXData = [],
+                    moneyFlowYData = [],
+                    values = [];
+                var i,
+                    point,
+                    nullIndex = -1,
+                    sumVolume = 0,
+                    sumMoneyFlowVolume = 0;
                 /**
                  * Calculates money flow volume, changes i, nullIndex vars from
                  * upper scope!
@@ -2368,11 +2605,14 @@
                  * Volume * moneyFlowMultiplier
                  */
                 function getMoneyFlowVolume(ohlc, volume) {
-                    var high = ohlc[1], low = ohlc[2], close = ohlc[3], isValid = volume !== null &&
-                        high !== null &&
-                        low !== null &&
-                        close !== null &&
-                        high !== low;
+                    var high = ohlc[1],
+                        low = ohlc[2],
+                        close = ohlc[3],
+                        isValid = volume !== null &&
+                            high !== null &&
+                            low !== null &&
+                            close !== null &&
+                            high !== low;
                     /**
                      * @private
                      * @param {number} h
@@ -2493,22 +2733,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat, extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -2524,14 +2768,15 @@
          * @augments Highcharts.Series
          */
         var DMIIndicator = /** @class */ (function (_super) {
-            __extends(DMIIndicator, _super);
+                __extends(DMIIndicator, _super);
             function DMIIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -2546,7 +2791,10 @@
              *
              * */
             DMIIndicator.prototype.calculateDM = function (yVal, i, isPositiveDM) {
-                var currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
+                var currentHigh = yVal[i][1],
+                    currentLow = yVal[i][2],
+                    previousHigh = yVal[i - 1][1],
+                    previousLow = yVal[i - 1][2];
                 var DM;
                 if (currentHigh - previousHigh > previousLow - currentLow) {
                     // for +DM
@@ -2577,7 +2825,13 @@
                 !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
             };
             DMIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DMI = [], xData = [], yData = [];
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    DMI = [],
+                    xData = [],
+                    yData = [];
                 if (
                 // Check period, if bigger than points length, skip
                 (xVal.length <= period) ||
@@ -2586,17 +2840,24 @@
                     yVal[0].length !== 4) {
                     return;
                 }
-                var prevSmoothedPlusDM = 0, prevSmoothedMinusDM = 0, prevSmoothedTR = 0, i;
+                var prevSmoothedPlusDM = 0,
+                    prevSmoothedMinusDM = 0,
+                    prevSmoothedTR = 0,
+                    i;
                 for (i = 1; i < yValLen; i++) {
-                    var smoothedPlusDM = void 0, smoothedMinusDM = void 0, smoothedTR = void 0, plusDM = // +DM
-                     void 0, // +DM
-                    minusDM = // -DM
-                     void 0, // -DM
-                    TR = void 0, plusDI = // +DI
-                     void 0, // +DI
-                    minusDI = // -DI
-                     void 0, // -DI
-                    DX = void 0;
+                    var smoothedPlusDM = void 0,
+                        smoothedMinusDM = void 0,
+                        smoothedTR = void 0,
+                        plusDM = // +DM
+                         void 0, // +DM
+                        minusDM = // -DM
+                         void 0, // -DM
+                        TR = void 0,
+                        plusDI = // +DI
+                         void 0, // +DI
+                        minusDI = // -DI
+                         void 0, // -DI
+                        DX = void 0;
                     if (i <= period) {
                         plusDM = this.calculateDM(yVal, i, true);
                         minusDM = this.calculateDM(yVal, i);
@@ -2776,22 +3037,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, pick = U.pick;
+        var extend = U.extend,
+            merge = U.merge,
+            correctFloat = U.correctFloat,
+            pick = U.pick;
         /* *
          *
          *  Functions
@@ -2802,7 +3067,8 @@
          * @private
          */
         function accumulatePoints(sum, yVal, i, index, subtract) {
-            var price = pick(yVal[i][index], yVal[i]);
+            var price = pick(yVal[i][index],
+                yVal[i]);
             if (subtract) {
                 return correctFloat(sum - price);
             }
@@ -2823,14 +3089,15 @@
          * @augments Highcharts.Series
          */
         var DPOIndicator = /** @class */ (function (_super) {
-            __extends(DPOIndicator, _super);
+                __extends(DPOIndicator, _super);
             function DPOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *   Properties
@@ -2847,10 +3114,24 @@
              *
              * */
             DPOIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, index = params.index, offset = Math.floor(period / 2 + 1), range = period + offset, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, 
-                // 0- date, 1- Detrended Price Oscillator
-                DPO = [], xData = [], yData = [];
-                var oscillator, periodIndex, rangeIndex, price, i, j, sum = 0;
+                var period = params.period,
+                    index = params.index,
+                    offset = Math.floor(period / 2 + 1),
+                    range = period + offset,
+                    xVal = series.xData || [],
+                    yVal = series.yData || [],
+                    yValLen = yVal.length, 
+                    // 0- date, 1- Detrended Price Oscillator
+                    DPO = [],
+                    xData = [],
+                    yData = [];
+                var oscillator,
+                    periodIndex,
+                    rangeIndex,
+                    price,
+                    i,
+                    j,
+                    sum = 0;
                 if (xVal.length <= range) {
                     return;
                 }
@@ -2953,22 +3234,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U.error;
+        var correctFloat = U.correctFloat,
+            extend = U.extend,
+            merge = U.merge,
+            error = U.error;
         /* *
          *
          *  Class
@@ -2984,14 +3269,15 @@
          * @augments Highcharts.Series
          */
         var ChaikinIndicator = /** @class */ (function (_super) {
-            __extends(ChaikinIndicator, _super);
+                __extends(ChaikinIndicator, _super);
             function ChaikinIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -3008,40 +3294,45 @@
              *
              * */
             ChaikinIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods, period = params.period, 
-                // Accumulation Distribution Line data
-                ADL, 
-                // 0- date, 1- Chaikin Oscillator
-                CHA = [], xData = [], yData = [], periodsOffset, 
-                // Shorter Period EMA
-                SPE, 
-                // Longer Period EMA
-                LPE, oscillator, i;
+                var periods = params.periods,
+                    period = params.period, 
+                    // 0- date, 1- Chaikin Oscillator
+                    CHA = [],
+                    xData = [],
+                    yData = [];
+                var oscillator,
+                    i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "Chaikin requires two periods. Notice, first ' +
                         'period should be lower than the second one."');
                     return;
                 }
-                ADL = AD.prototype.getValues.call(this, series, {
-                    volumeSeriesID: params.volumeSeriesID,
-                    period: period
-                });
+                // Accumulation Distribution Line data
+                var ADL = AD.prototype.getValues.call(this,
+                    series, {
+                        volumeSeriesID: params.volumeSeriesID,
+                        period: period
+                    });
                 // Check if adl is calculated properly, if not skip
                 if (!ADL) {
                     return;
                 }
-                SPE = EMAIndicator.prototype.getValues.call(this, ADL, {
-                    period: periods[0]
-                });
-                LPE = EMAIndicator.prototype.getValues.call(this, ADL, {
-                    period: periods[1]
-                });
+                // Shorter Period EMA
+                var SPE = _super.prototype.getValues.call(this,
+                    ADL, {
+                        period: periods[0]
+                    });
+                // Longer Period EMA
+                var LPE = _super.prototype.getValues.call(this,
+                    ADL, {
+                        period: periods[1]
+                    });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
                     return;
                 }
-                periodsOffset = periods[1] - periods[0];
+                var periodsOffset = periods[1] - periods[0];
                 for (i = 0; i < LPE.yData.length; i++) {
                     oscillator = correctFloat(SPE.yData[i + periodsOffset] -
                         LPE.yData[i]);
@@ -3146,22 +3437,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isNumber = U.isNumber, merge = U.merge;
+        var isNumber = U.isNumber,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -3177,14 +3470,15 @@
          * @augments Highcharts.Series
          */
         var CMOIndicator = /** @class */ (function (_super) {
-            __extends(CMOIndicator, _super);
+                __extends(CMOIndicator, _super);
             function CMOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -3201,8 +3495,16 @@
              *
              * */
             CMOIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, CMO = [], xData = [], yData = [];
-                var i, index = params.index, values;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    CMO = [],
+                    xData = [],
+                    yData = [];
+                var i,
+                    index = params.index,
+                    values;
                 if (xVal.length < period) {
                     return;
                 }
@@ -3216,7 +3518,10 @@
                     index = Math.min(index, yVal[0].length - 1);
                     values = yVal.map(function (value) { return value[index]; });
                 }
-                var firstAddedSum = 0, sumOfHigherValues = 0, sumOfLowerValues = 0, y;
+                var firstAddedSum = 0,
+                    sumOfHigherValues = 0,
+                    sumOfLowerValues = 0,
+                    y;
                 // Calculate first point, check if the first value
                 // was added to sum of higher/lower values, and what was the value.
                 for (var j = period; j > 0; j--) {
@@ -3328,22 +3633,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -3359,14 +3667,15 @@
          * @augments Highcharts.Series
          */
         var DEMAIndicator = /** @class */ (function (_super) {
-            __extends(DEMAIndicator, _super);
+                __extends(DEMAIndicator, _super);
             function DEMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -3387,14 +3696,27 @@
                 return _super.prototype.calculateEma.call(this, xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
             };
             DEMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, EMAvalues = [], doubledPeriod = 2 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DEMA = [], xDataDema = [], yDataDema = [];
-                var accumulatePeriodPoints = 0, EMA = 0, 
-                // EMA(EMA)
-                EMAlevel2, 
-                // EMA of previous point
-                prevEMA, prevEMAlevel2, 
-                // EMA values array
-                i, index = -1, DEMAPoint, SMA = 0;
+                var period = params.period,
+                    EMAvalues = [],
+                    doubledPeriod = 2 * period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    DEMA = [],
+                    xDataDema = [],
+                    yDataDema = [];
+                var accumulatePeriodPoints = 0,
+                    EMA = 0, 
+                    // EMA(EMA)
+                    EMAlevel2, 
+                    // EMA of previous point
+                    prevEMA,
+                    prevEMAlevel2, 
+                    // EMA values array
+                    i,
+                    index = -1,
+                    DEMAPoint,
+                    SMA = 0;
                 this.EMApercent = (2 / (period + 1));
                 // Check period, if bigger than EMA points length, skip
                 if (yValLen < 2 * period - 1) {
@@ -3505,22 +3827,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -3536,14 +3861,15 @@
          * @augments Highcharts.Series
          */
         var TEMAIndicator = /** @class */ (function (_super) {
-            __extends(TEMAIndicator, _super);
+                __extends(TEMAIndicator, _super);
             function TEMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -3561,27 +3887,42 @@
              *
              * */
             TEMAIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, index, i, xVal) {
-                return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+                return _super.prototype.calculateEma.call(this, xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
             };
             TEMAIndicator.prototype.getTemaPoint = function (xVal, tripledPeriod, EMAlevels, i) {
                 var TEMAPoint = [
-                    xVal[i - 3],
-                    correctFloat(3 * EMAlevels.level1 -
-                        3 * EMAlevels.level2 + EMAlevels.level3)
-                ];
+                        xVal[i - 3],
+                        correctFloat(3 * EMAlevels.level1 -
+                            3 * EMAlevels.level2 + EMAlevels.level3)
+                    ];
                 return TEMAPoint;
             };
             TEMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, doubledPeriod = 2 * period, tripledPeriod = 3 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, index = -1, accumulatePeriodPoints = 0, SMA = 0, TEMA = [], xDataTema = [], yDataTema = [], 
-                // EMA of previous point
-                prevEMA, prevEMAlevel2, 
-                // EMA values array
-                EMAvalues = [], EMAlevel2values = [], i, TEMAPoint, 
-                // This object contains all EMA EMAlevels calculated like below
-                // EMA = level1
-                // EMA(EMA) = level2,
-                // EMA(EMA(EMA)) = level3,
-                EMAlevels = {};
+                var period = params.period,
+                    doubledPeriod = 2 * period,
+                    tripledPeriod = 3 * period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    tema = [],
+                    xDataTema = [],
+                    yDataTema = [], 
+                    // EMA values array
+                    emaValues = [],
+                    emaLevel2Values = [], 
+                    // This object contains all EMA EMAlevels calculated like below
+                    // EMA = level1
+                    // EMA(EMA) = level2,
+                    // EMA(EMA(EMA)) = level3,
+                    emaLevels = {};
+                var index = -1,
+                    accumulatePeriodPoints = 0,
+                    sma = 0, 
+                    // EMA of previous point
+                    prevEMA,
+                    prevEMAlevel2,
+                    i,
+                    temaPoint;
                 this.EMApercent = (2 / (period + 1));
                 // Check period, if bigger than EMA points length, skip
                 if (yValLen < 3 * period - 2) {
@@ -3592,65 +3933,64 @@
                     index = params.index ? params.index : 0;
                 }
                 // Accumulate first N-points
-                accumulatePeriodPoints =
-                    EMAIndicator.prototype.accumulatePeriodPoints(period, index, yVal);
+                accumulatePeriodPoints = _super.prototype.accumulatePeriodPoints.call(this, period, index, yVal);
                 // first point
-                SMA = accumulatePeriodPoints / period;
+                sma = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
                 // Calculate value one-by-one for each period in visible data
                 for (i = period; i < yValLen + 3; i++) {
                     if (i < yValLen + 1) {
-                        EMAlevels.level1 = this.getEMA(yVal, prevEMA, SMA, index, i)[1];
-                        EMAvalues.push(EMAlevels.level1);
+                        emaLevels.level1 = this.getEMA(yVal, prevEMA, sma, index, i)[1];
+                        emaValues.push(emaLevels.level1);
                     }
-                    prevEMA = EMAlevels.level1;
+                    prevEMA = emaLevels.level1;
                     // Summing first period points for ema(ema)
                     if (i < doubledPeriod) {
-                        accumulatePeriodPoints += EMAlevels.level1;
+                        accumulatePeriodPoints += emaLevels.level1;
                     }
                     else {
                         // Calculate dema
                         // First dema point
                         if (i === doubledPeriod) {
-                            SMA = accumulatePeriodPoints / period;
+                            sma = accumulatePeriodPoints / period;
                             accumulatePeriodPoints = 0;
                         }
-                        EMAlevels.level1 = EMAvalues[i - period - 1];
-                        EMAlevels.level2 = this.getEMA([EMAlevels.level1], prevEMAlevel2, SMA)[1];
-                        EMAlevel2values.push(EMAlevels.level2);
-                        prevEMAlevel2 = EMAlevels.level2;
+                        emaLevels.level1 = emaValues[i - period - 1];
+                        emaLevels.level2 = this.getEMA([emaLevels.level1], prevEMAlevel2, sma)[1];
+                        emaLevel2Values.push(emaLevels.level2);
+                        prevEMAlevel2 = emaLevels.level2;
                         // Summing first period points for ema(ema(ema))
                         if (i < tripledPeriod) {
-                            accumulatePeriodPoints += EMAlevels.level2;
+                            accumulatePeriodPoints += emaLevels.level2;
                         }
                         else {
                             // Calculate tema
                             // First tema point
                             if (i === tripledPeriod) {
-                                SMA = accumulatePeriodPoints / period;
+                                sma = accumulatePeriodPoints / period;
                             }
                             if (i === yValLen + 1) {
                                 // Calculate the last ema and emaEMA points
-                                EMAlevels.level1 = EMAvalues[i - period - 1];
-                                EMAlevels.level2 = this.getEMA([EMAlevels.level1], prevEMAlevel2, SMA)[1];
-                                EMAlevel2values.push(EMAlevels.level2);
+                                emaLevels.level1 = emaValues[i - period - 1];
+                                emaLevels.level2 = this.getEMA([emaLevels.level1], prevEMAlevel2, sma)[1];
+                                emaLevel2Values.push(emaLevels.level2);
                             }
-                            EMAlevels.level1 = EMAvalues[i - period - 2];
-                            EMAlevels.level2 = EMAlevel2values[i - 2 * period - 1];
-                            EMAlevels.level3 = this.getEMA([EMAlevels.level2], EMAlevels.prevLevel3, SMA)[1];
-                            TEMAPoint = this.getTemaPoint(xVal, tripledPeriod, EMAlevels, i);
+                            emaLevels.level1 = emaValues[i - period - 2];
+                            emaLevels.level2 = emaLevel2Values[i - 2 * period - 1];
+                            emaLevels.level3 = this.getEMA([emaLevels.level2], emaLevels.prevLevel3, sma)[1];
+                            temaPoint = this.getTemaPoint(xVal, tripledPeriod, emaLevels, i);
                             // Make sure that point exists (for TRIX oscillator)
-                            if (TEMAPoint) {
-                                TEMA.push(TEMAPoint);
-                                xDataTema.push(TEMAPoint[0]);
-                                yDataTema.push(TEMAPoint[1]);
+                            if (temaPoint) {
+                                tema.push(temaPoint);
+                                xDataTema.push(temaPoint[0]);
+                                yDataTema.push(temaPoint[1]);
                             }
-                            EMAlevels.prevLevel3 = EMAlevels.level3;
+                            emaLevels.prevLevel3 = emaLevels.level3;
                         }
                     }
                 }
                 return {
-                    values: TEMA,
+                    values: tema,
                     xData: xDataTema,
                     yData: yDataTema
                 };
@@ -3715,22 +4055,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var TEMAIndicator = SeriesRegistry.seriesTypes.tema;
-        var correctFloat = U.correctFloat, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -3746,14 +4088,15 @@
          * @augments Highcharts.Series
          */
         var TRIXIndicator = /** @class */ (function (_super) {
-            __extends(TRIXIndicator, _super);
+                __extends(TRIXIndicator, _super);
             function TRIXIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -3840,22 +4183,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var extend = U.extend, merge = U.merge, error = U.error;
+        var extend = U.extend,
+            merge = U.merge,
+            error = U.error;
         /* *
          *
          *  Class
@@ -3871,14 +4217,15 @@
          * @augments Highcharts.Series
          */
         var APOIndicator = /** @class */ (function (_super) {
-            __extends(APOIndicator, _super);
+                __extends(APOIndicator, _super);
             function APOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -3895,32 +4242,37 @@
              *
              * */
             APOIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods, index = params.index, 
-                // 0- date, 1- Absolute price oscillator
-                APO = [], xData = [], yData = [], periodsOffset, 
-                // Shorter Period EMA
-                SPE, 
-                // Longer Period EMA
-                LPE, oscillator, i;
+                var periods = params.periods,
+                    index = params.index, 
+                    // 0- date, 1- Absolute price oscillator
+                    APO = [],
+                    xData = [],
+                    yData = [];
+                var oscillator,
+                    i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "APO requires two periods. Notice, first period ' +
                         'should be lower than the second one."');
                     return;
                 }
-                SPE = EMAIndicator.prototype.getValues.call(this, series, {
-                    index: index,
-                    period: periods[0]
-                });
-                LPE = EMAIndicator.prototype.getValues.call(this, series, {
-                    index: index,
-                    period: periods[1]
-                });
+                // Shorter Period EMA
+                var SPE = _super.prototype.getValues.call(this,
+                    series, {
+                        index: index,
+                        period: periods[0]
+                    });
+                // Longer Period EMA
+                var LPE = _super.prototype.getValues.call(this,
+                    series, {
+                        index: index,
+                        period: periods[1]
+                    });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
                     return;
                 }
-                periodsOffset = periods[1] - periods[0];
+                var periodsOffset = periods[1] - periods[0];
                 for (i = 0; i < LPE.yData.length; i++) {
                     oscillator = (SPE.yData[i + periodsOffset] -
                         LPE.yData[i]);
@@ -4014,15 +4366,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -4030,7 +4383,12 @@
         })();
         var color = Color.parse;
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach;
+        var defined = U.defined,
+            extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach;
         /* *
          *
          *  Functions
@@ -4065,7 +4423,11 @@
          * @private
          */
         function getClosestPointRange(axis) {
-            var closestDataRange, loopLength, distance, xData, i;
+            var closestDataRange,
+                loopLength,
+                distance,
+                xData,
+                i;
             axis.series.forEach(function (series) {
                 if (series.xData) {
                     xData = series.xData;
@@ -4089,13 +4451,14 @@
         function checkLineIntersection(a1, a2, b1, b2) {
             if (a1 && a2 && b1 && b2) {
                 var saX = a2.plotX - a1.plotX, // Auxiliary section a2-a1 X
-                saY = a2.plotY - a1.plotY, // Auxiliary section a2-a1 Y
-                sbX = b2.plotX - b1.plotX, // Auxiliary section b2-b1 X
-                sbY = b2.plotY - b1.plotY, // Auxiliary section b2-b1 Y
-                sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
-                sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
-                // First degree Bézier parameters
-                u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY), t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
+                    saY = a2.plotY - a1.plotY, // Auxiliary section a2-a1 Y
+                    sbX = b2.plotX - b1.plotX, // Auxiliary section b2-b1 X
+                    sbY = b2.plotY - b1.plotY, // Auxiliary section b2-b1 Y
+                    sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
+                    sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
+                    // First degree Bézier parameters
+                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY),
+                    t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
                 if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
                     return {
                         plotX: a1.plotX + t * saX,
@@ -4151,14 +4514,15 @@
          * @augments Highcharts.Series
          */
         var IKHIndicator = /** @class */ (function (_super) {
-            __extends(IKHIndicator, _super);
+                __extends(IKHIndicator, _super);
             function IKHIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -4245,39 +4609,65 @@
                 }
             };
             IKHIndicator.prototype.drawGraph = function () {
-                var indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, mainColor = indicator.color, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, pointArrayMapLength = indicator.pointArrayMap.length, allIchimokuPoints = [
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                    []
-                ], ikhMap = {
-                    tenkanLine: allIchimokuPoints[0],
-                    kijunLine: allIchimokuPoints[1],
-                    chikouLine: allIchimokuPoints[2],
-                    senkouSpanA: allIchimokuPoints[3],
-                    senkouSpanB: allIchimokuPoints[4],
-                    senkouSpan: allIchimokuPoints[5]
-                }, intersectIndexColl = [], senkouSpanOptions = indicator
-                    .options.senkouSpan, color = senkouSpanOptions.color ||
-                    senkouSpanOptions.styles.fill, negativeColor = senkouSpanOptions.negativeColor, 
-                // Points to create color and negativeColor senkouSpan
-                points = [
-                    [],
-                    [] // Points negative color
-                ], 
-                // For span, we need an access to the next points, used in
-                // getGraphPath()
-                nextPoints = [
-                    [],
-                    [] // NextPoints negative color
-                ];
-                var pointsLength = mainLinePoints.length, lineIndex = 0, position, point, i, startIntersect, endIntersect, sectionPoints, sectionNextPoints, pointsPlotYSum, nextPointsPlotYSum, senkouSpanTempColor, concatArrIndex, j, k;
+                var indicator = this,
+                    mainLinePoints = indicator.points,
+                    mainLineOptions = indicator.options,
+                    mainLinePath = indicator.graph,
+                    mainColor = indicator.color,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    },
+                    pointArrayMapLength = indicator.pointArrayMap.length,
+                    allIchimokuPoints = [
+                        [],
+                        [],
+                        [],
+                        [],
+                        [],
+                        []
+                    ],
+                    ikhMap = {
+                        tenkanLine: allIchimokuPoints[0],
+                        kijunLine: allIchimokuPoints[1],
+                        chikouLine: allIchimokuPoints[2],
+                        senkouSpanA: allIchimokuPoints[3],
+                        senkouSpanB: allIchimokuPoints[4],
+                        senkouSpan: allIchimokuPoints[5]
+                    },
+                    intersectIndexColl = [],
+                    senkouSpanOptions = indicator
+                        .options.senkouSpan,
+                    color = senkouSpanOptions.color ||
+                        senkouSpanOptions.styles.fill,
+                    negativeColor = senkouSpanOptions.negativeColor, 
+                    // Points to create color and negativeColor senkouSpan
+                    points = [
+                        [],
+                        [] // Points negative color
+                    ], 
+                    // For span, we need an access to the next points, used in
+                    // getGraphPath()
+                    nextPoints = [
+                        [],
+                        [] // NextPoints negative color
+                    ];
+                var pointsLength = mainLinePoints.length,
+                    lineIndex = 0,
+                    position,
+                    point,
+                    i,
+                    startIntersect,
+                    endIntersect,
+                    sectionPoints,
+                    sectionNextPoints,
+                    pointsPlotYSum,
+                    nextPointsPlotYSum,
+                    senkouSpanTempColor,
+                    concatArrIndex,
+                    j,
+                    k;
                 indicator.ikhMap = ikhMap;
                 // Generate points for all lines and spans lines:
                 while (pointsLength--) {
@@ -4294,14 +4684,18 @@
                     }
                     if (negativeColor && pointsLength !== mainLinePoints.length - 1) {
                         // Check if lines intersect
-                        var index = ikhMap.senkouSpanB.length - 1, intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1], ikhMap.senkouSpanA[index], ikhMap.senkouSpanB[index - 1], ikhMap.senkouSpanB[index]);
+                        var index = ikhMap.senkouSpanB.length - 1,
+                            intersect = checkLineIntersection(ikhMap.senkouSpanA[index - 1],
+                            ikhMap.senkouSpanA[index],
+                            ikhMap.senkouSpanB[index - 1],
+                            ikhMap.senkouSpanB[index]);
                         if (intersect) {
                             var intersectPointObj = {
-                                plotX: intersect.plotX,
-                                plotY: intersect.plotY,
-                                isNull: false,
-                                intersectPoint: true
-                            };
+                                    plotX: intersect.plotX,
+                                    plotY: intersect.plotY,
+                                    isNull: false,
+                                    intersectPoint: true
+                                };
                             // Add intersect point to ichimoku points collection
                             // Create senkouSpan sections
                             ikhMap.senkouSpanA.splice(index, 0, intersectPointObj);
@@ -4425,7 +4819,9 @@
             };
             IKHIndicator.prototype.getGraphPath = function (points) {
                 var indicator = this;
-                var path = [], spanA, spanAarr = [];
+                var path = [],
+                    spanA,
+                    spanAarr = [];
                 points = points || this.points;
                 // Render Senkou Span
                 if (indicator.fillGraph && indicator.nextPoints) {
@@ -4449,8 +4845,29 @@
                 return path;
             };
             IKHIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestPointRange(xAxis), IKH = [], xData = [];
-                var date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
+                var period = params.period,
+                    periodTenkan = params.periodTenkan,
+                    periodSenkouSpanB = params.periodSenkouSpanB,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    xAxis = series.xAxis,
+                    yValLen = (yVal && yVal.length) || 0,
+                    closestPointRange = getClosestPointRange(xAxis),
+                    IKH = [],
+                    xData = [];
+                var date,
+                    slicedTSY,
+                    slicedKSY,
+                    slicedSSBY,
+                    pointTS,
+                    pointKS,
+                    pointSSB,
+                    i,
+                    TS,
+                    KS,
+                    CS,
+                    SSA,
+                    SSB;
                 // Ikh requires close value
                 if (xVal.length <= period ||
                     !isArray(yVal[0]) ||
@@ -4745,22 +5162,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -4776,14 +5196,15 @@
          * @augments Highcharts.Series
          */
         var KeltnerChannelsIndicator = /** @class */ (function (_super) {
-            __extends(KeltnerChannelsIndicator, _super);
+                __extends(KeltnerChannelsIndicator, _super);
             function KeltnerChannelsIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -4816,17 +5237,32 @@
                 }, this.options);
             };
             KeltnerChannelsIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, periodATR = params.periodATR, multiplierATR = params.multiplierATR, index = params.index, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // Keltner Channels array structure:
-                // 0-date, 1-top line, 2-middle line, 3-bottom line
-                KC = [], 
+                var period = params.period,
+                    periodATR = params.periodATR,
+                    multiplierATR = params.multiplierATR,
+                    index = params.index,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // Keltner Channels array structure:
+                    // 0-date, 1-top line, 2-middle line, 3-bottom line
+                    KC = [],
+                    seriesEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
+                        period: period,
+                        index: index
+                    }),
+                    seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
+                        period: periodATR
+                    }),
+                    xData = [],
+                    yData = [];
                 // middle line, top line and bottom lineI
-                ML, TL, BL, date, seriesEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
-                    period: period,
-                    index: index
-                }), seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
-                    period: periodATR
-                }), pointEMA, pointATR, xData = [], yData = [], i;
+                var ML,
+                    TL,
+                    BL,
+                    date,
+                    pointEMA,
+                    pointATR,
+                    i;
                 if (yValLen < period) {
                     return;
                 }
@@ -4988,22 +5424,29 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes, EMAIndicator = _a.ema, SMAIndicator = _a.sma;
-        var correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            EMAIndicator = _a.ema,
+            SMAIndicator = _a.sma;
+        var correctFloat = U.correctFloat,
+            error = U.error,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -5019,14 +5462,15 @@
          * @augments Highcharts.Series
          */
         var KlingerIndicator = /** @class */ (function (_super) {
-            __extends(KlingerIndicator, _super);
+                __extends(KlingerIndicator, _super);
             function KlingerIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -5045,24 +5489,29 @@
              * */
             KlingerIndicator.prototype.calculateTrend = function (yVal, i) {
                 var isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
-                    yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
+                        yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
                 return isUpward ? 1 : -1;
             };
             // Checks if the series and volumeSeries are accessible, number of
             // points.x is longer than period, is series has OHLC data
             KlingerIndicator.prototype.isValidData = function (firstYVal) {
-                var chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = isArray(firstYVal) &&
-                    firstYVal.length === 4, volumeSeries = this.volumeSeries ||
-                    (this.volumeSeries =
-                        chart.get(options.params.volumeSeriesID));
+                var chart = this.chart,
+                    options = this.options,
+                    series = this.linkedParent,
+                    isSeriesOHLC = isArray(firstYVal) &&
+                        firstYVal.length === 4,
+                    volumeSeries = this.volumeSeries ||
+                        (this.volumeSeries =
+                            chart.get(options.params.volumeSeriesID));
                 if (!volumeSeries) {
                     error('Series ' +
                         options.params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                 }
-                var isLengthValid = [series, volumeSeries].every(function (series) {
-                    return series && series.xData && series.xData.length >=
-                        options.params.slowAvgPeriod;
+                var isLengthValid = [series,
+                    volumeSeries].every(function (series) {
+                        return series && series.xData && series.xData.length >=
+                            options.params.slowAvgPeriod;
                 });
                 return !!(isLengthValid && isSeriesOHLC);
             };
@@ -5075,10 +5524,13 @@
             KlingerIndicator.prototype.getVolumeForce = function (yVal) {
                 var volumeForce = [];
                 var CM = 0, // cumulative measurement
-                DM, // daily measurement
-                force, i = 1, // start from second point
-                previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // initial DM
-                previousTrend = 0, trend;
+                    DM, // daily measurement
+                    force,
+                    i = 1, // start from second point
+                    previousCM = 0,
+                    previousDM = yVal[0][1] - yVal[0][2], // initial DM
+                    previousTrend = 0,
+                    trend;
                 for (i; i < yVal.length; i++) {
                     trend = this.calculateTrend(yVal, i);
                     DM = this.getDM(yVal[i][1], yVal[i][2]);
@@ -5105,10 +5557,20 @@
                     .accumulatePeriodPoints(period, index, values) / period;
             };
             KlingerIndicator.prototype.getValues = function (series, params) {
-                var Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
-                var KO, i = 0, fastEMA = 0, slowEMA, 
-                // signalEMA: number|undefined = void 0,
-                previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
+                var Klinger = [],
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    xData = [],
+                    yData = [],
+                    calcSingal = [];
+                var KO,
+                    i = 0,
+                    fastEMA = 0,
+                    slowEMA, 
+                    // signalEMA: number|undefined = void 0,
+                    previousFastEMA = void 0,
+                    previousSlowEMA = void 0,
+                    signal = null;
                 // If the necessary conditions are not fulfilled, don't proceed.
                 if (!this.isValidData(yVal[0])) {
                     return;
@@ -5116,9 +5578,13 @@
                 // Calculate the Volume Force array.
                 var volumeForce = this.getVolumeForce(yVal);
                 // Calculate SMA for the first points.
-                var SMAFast = this.getSMA(params.fastAvgPeriod, 0, volumeForce), SMASlow = this.getSMA(params.slowAvgPeriod, 0, volumeForce);
+                var SMAFast = this.getSMA(params.fastAvgPeriod, 0,
+                    volumeForce),
+                    SMASlow = this.getSMA(params.slowAvgPeriod, 0,
+                    volumeForce);
                 // Calculate EMApercent for the first points.
-                var fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
+                var fastEMApercent = 2 / (params.fastAvgPeriod + 1),
+                    slowEMApercent = 2 / (params.slowAvgPeriod + 1);
                 // Calculate KO
                 for (i; i < yVal.length; i++) {
                     // Get EMA for fast period.
@@ -5269,23 +5735,29 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, SMAIndicator = _a.sma;
-        var extend = U.extend, correctFloat = U.correctFloat, defined = U.defined, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            ColumnSeries = _a.column,
+            SMAIndicator = _a.sma;
+        var extend = U.extend,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -5301,26 +5773,19 @@
          * @augments Highcharts.Series
          */
         var MACDIndicator = /** @class */ (function (_super) {
-            __extends(MACDIndicator, _super);
+                __extends(MACDIndicator, _super);
             function MACDIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.data = void 0;
+                _this.macdZones = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
-                _this.currentLineZone = void 0;
-                _this.graphmacd = void 0;
-                _this.graphsignal = void 0;
-                _this.macdZones = void 0;
                 _this.signalZones = void 0;
                 return _this;
             }
@@ -5331,7 +5796,8 @@
              * */
             MACDIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
-                var originalColor = this.color, originalColorIndex = this.userOptions._colorIndex;
+                var originalColor = this.color,
+                    originalColorIndex = this.userOptions._colorIndex;
                 // Check whether series is initialized. It may be not initialized,
                 // when any of required indicators is missing.
                 if (this.options) {
@@ -5394,11 +5860,19 @@
                 SeriesRegistry.seriesTypes.sma.prototype.destroy.apply(this, arguments);
             };
             MACDIndicator.prototype.drawGraph = function () {
-                var indicator = this, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, otherSignals = [[], []], point;
+                var indicator = this,
+                    mainLinePoints = indicator.points,
+                    mainLineOptions = indicator.options,
+                    histogramZones = indicator.zones,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    },
+                    otherSignals = [[],
+                    []];
+                var point,
+                    pointsLength = mainLinePoints.length;
                 // Generate points for top and bottom lines:
                 while (pointsLength--) {
                     point = mainLinePoints[pointsLength];
@@ -5433,11 +5907,13 @@
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
                 indicator.zones = histogramZones;
-                indicator.currentLineZone = null;
+                indicator.currentLineZone = void 0;
                 // indicator.graph = null;
             };
             MACDIndicator.prototype.getZonesGraphs = function (props) {
-                var allZones = _super.prototype.getZonesGraphs.call(this, props), currentZones = allZones;
+                var allZones = _super.prototype.getZonesGraphs.call(this,
+                    props);
+                var currentZones = allZones;
                 if (this.currentLineZone) {
                     currentZones = allZones.splice(this[this.currentLineZone].startIndex + 1);
                     if (!currentZones.length) {
@@ -5466,7 +5942,14 @@
             };
             MACDIndicator.prototype.getValues = function (series, params) {
                 var indexToShift = (params.longPeriod - params.shortPeriod), // #14197
-                j = 0, MACD = [], xMACD = [], yMACD = [], signalLine = [], shortEMA, longEMA, i;
+                    MACD = [],
+                    xMACD = [],
+                    yMACD = [];
+                var shortEMA,
+                    longEMA,
+                    i,
+                    j = 0,
+                    signalLine = [];
                 if (series.xData.length <
                     params.longPeriod + params.signalPeriod) {
                     return;
@@ -5697,22 +6180,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, merge = U.merge, error = U.error, isArray = U.isArray;
+        var extend = U.extend,
+            merge = U.merge,
+            error = U.error,
+            isArray = U.isArray;
         /* *
          *
          *  Functions
@@ -5748,14 +6235,15 @@
          * @augments Highcharts.Series
          */
         var MFIIndicator = /** @class */ (function (_super) {
-            __extends(MFIIndicator, _super);
+                __extends(MFIIndicator, _super);
             function MFIIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -5772,10 +6260,30 @@
              *
              * */
             MFIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
-                // MFI starts calculations from the second point
-                // Cause we need to calculate change between two points
-                range = 1, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = (volumeSeries && volumeSeries.yData), MFI = [], isUp = false, xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [], newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    decimals = params.decimals,
+                    volumeSeries = series.chart.get(params.volumeSeriesID),
+                    yValVolume = (volumeSeries && volumeSeries.yData),
+                    MFI = [],
+                    xData = [],
+                    yData = [],
+                    positiveMoneyFlow = [],
+                    negativeMoneyFlow = [];
+                var newTypicalPrice,
+                    oldTypicalPrice,
+                    rawMoneyFlow,
+                    negativeMoneyFlowSum,
+                    positiveMoneyFlowSum,
+                    moneyFlowRatio,
+                    MFIPoint,
+                    i,
+                    isUp = false, 
+                    // MFI starts calculations from the second point
+                    // Cause we need to calculate change between two points
+                    range = 1;
                 if (!volumeSeries) {
                     error('Series ' +
                         params.volumeSeriesID +
@@ -5906,29 +6414,36 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Functions
          *
          * */
+        /**
+         * @private
+         */
         function populateAverage(xVal, yVal, i, period, index) {
-            var mmY = yVal[i - 1][index] - yVal[i - period - 1][index], mmX = xVal[i - 1];
+            var mmY = yVal[i - 1][index] - yVal[i - period - 1][index],
+                mmX = xVal[i - 1];
             return [mmX, mmY];
         }
         /* *
@@ -5946,14 +6461,15 @@
          * @augments Highcharts.Series
          */
         var MomentumIndicator = /** @class */ (function (_super) {
-            __extends(MomentumIndicator, _super);
+                __extends(MomentumIndicator, _super);
             function MomentumIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -5970,15 +6486,21 @@
              *
              * */
             MomentumIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, yValue = yVal[0], MM = [], xData = [], yData = [], i, MMPoint;
+                var period = params.period,
+                    index = params.index,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    MM = [],
+                    xData = [],
+                    yData = [];
+                var i,
+                    MMPoint;
                 if (xVal.length <= period) {
                     return;
                 }
                 // Switch index for OHLC / Candlestick / Arearange
-                if (isArray(yVal[0])) {
-                    yValue = yVal[0][index];
-                }
-                else {
+                if (!isArray(yVal[0])) {
                     return;
                 }
                 // Calculate value one-by-one for each period in visible data
@@ -6057,15 +6579,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -6088,14 +6611,15 @@
          * @augments Highcharts.Series
          */
         var NATRIndicator = /** @class */ (function (_super) {
-            __extends(NATRIndicator, _super);
+                __extends(NATRIndicator, _super);
             function NATRIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /**
                  * @lends Highcharts.Series#
                  */
@@ -6115,7 +6639,12 @@
              *
              * */
             NATRIndicator.prototype.getValues = function (series, params) {
-                var atrData = (ATRIndicator.prototype.getValues.apply(this, arguments)), atrLength = atrData.values.length, period = params.period - 1, yVal = series.yData, i = 0;
+                var atrData = (_super.prototype.getValues.apply(this,
+                    arguments)),
+                    atrLength = atrData.values.length,
+                    yVal = series.yData;
+                var i = 0,
+                    period = params.period - 1;
                 if (!atrData) {
                     return;
                 }
@@ -6185,22 +6714,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isNumber = U.isNumber, error = U.error, extend = U.extend, merge = U.merge;
+        var isNumber = U.isNumber,
+            error = U.error,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -6216,14 +6749,15 @@
          * @augments Highcharts.Series
          */
         var OBVIndicator = /** @class */ (function (_super) {
-            __extends(OBVIndicator, _super);
+                __extends(OBVIndicator, _super);
             function OBVIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -6240,8 +6774,20 @@
              *
              * */
             OBVIndicator.prototype.getValues = function (series, params) {
-                var volumeSeries = series.chart.get(params.volumeSeriesID), xVal = series.xData, yVal = series.yData, OBV = [], xData = [], yData = [], hasOHLC = !isNumber(yVal[0]);
-                var OBVPoint = [], i = 1, previousOBV = 0, curentOBV = 0, previousClose = 0, curentClose = 0, volume;
+                var volumeSeries = series.chart.get(params.volumeSeriesID),
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    OBV = [],
+                    xData = [],
+                    yData = [],
+                    hasOHLC = !isNumber(yVal[0]);
+                var OBVPoint = [],
+                    i = 1,
+                    previousOBV = 0,
+                    curentOBV = 0,
+                    previousClose = 0,
+                    curentClose = 0,
+                    volume;
                 // Checks if volume series exists.
                 if (volumeSeries) {
                     volume = volumeSeries.yData;
@@ -6367,15 +6913,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -6391,7 +6938,9 @@
          * @private
          */
         function destroyExtraLabels(point, functionName) {
-            var props = point.series.pointArrayMap, prop, i = props.length;
+            var props = point.series.pointArrayMap;
+            var prop,
+                i = props.length;
             SeriesRegistry.seriesTypes.sma.prototype.pointClass.prototype[functionName].call(point);
             while (i--) {
                 prop = 'dataLabel' + props[i];
@@ -6408,14 +6957,15 @@
          *
          * */
         var PivotPointsPoint = /** @class */ (function (_super) {
-            __extends(PivotPointsPoint, _super);
+                __extends(PivotPointsPoint, _super);
             function PivotPointsPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.P = void 0;
                 _this.pivotLine = void 0;
                 _this.series = void 0;
@@ -6452,22 +7002,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge, extend = U.extend, defined = U.defined, isArray = U.isArray;
+        var merge = U.merge,
+            extend = U.extend,
+            defined = U.defined,
+            isArray = U.isArray;
         /**
          *
          *  Class
@@ -6483,14 +7037,15 @@
          * @augments Highcharts.Series
          */
         var PivotPointsIndicator = /** @class */ (function (_super) {
-            __extends(PivotPointsIndicator, _super);
+                __extends(PivotPointsIndicator, _super);
             function PivotPointsIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -6513,7 +7068,7 @@
             };
             PivotPointsIndicator.prototype.translate = function () {
                 var indicator = this;
-                SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
+                _super.prototype.translate.apply(indicator);
                 indicator.points.forEach(function (point) {
                     indicator.pointArrayMap.forEach(function (value) {
                         if (defined(point[value])) {
@@ -6527,7 +7082,23 @@
                 indicator.plotEndPoint = indicator.xAxis.toPixels(indicator.endPoint, true);
             };
             PivotPointsIndicator.prototype.getGraphPath = function (points) {
-                var indicator = this, pointsLength = points.length, allPivotPoints = ([[], [], [], [], [], [], [], [], []]), path = [], endPoint = indicator.plotEndPoint, pointArrayMapLength = indicator.pointArrayMap.length, position, point, i;
+                var indicator = this,
+                    allPivotPoints = ([[],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []]),
+                    pointArrayMapLength = indicator.pointArrayMap.length;
+                var endPoint = indicator.plotEndPoint,
+                    path = [],
+                    position,
+                    point,
+                    pointsLength = points.length,
+                    i;
                 while (pointsLength--) {
                     point = points[pointsLength];
                     for (i = 0; i < pointArrayMapLength; i++) {
@@ -6554,13 +7125,18 @@
                     endPoint = point.plotX;
                 }
                 allPivotPoints.forEach(function (pivotPoints) {
-                    path = path.concat(SeriesRegistry.seriesTypes.sma.prototype.getGraphPath.call(indicator, pivotPoints));
+                    path = path.concat(_super.prototype.getGraphPath.call(indicator, pivotPoints));
                 });
                 return path;
             };
             // TODO: Rewrite this logic to use multiple datalabels
             PivotPointsIndicator.prototype.drawDataLabels = function () {
-                var indicator = this, pointMapping = indicator.pointArrayMap, currentLabel, pointsLength, point, i;
+                var indicator = this,
+                    pointMapping = indicator.pointArrayMap;
+                var currentLabel,
+                    pointsLength,
+                    point,
+                    i;
                 if (indicator.options.dataLabels.enabled) {
                     pointsLength = indicator.points.length;
                     // For every Ressitance/Support group we need to render labels.
@@ -6594,15 +7170,29 @@
                                             null;
                             }
                         }
-                        SeriesRegistry.seriesTypes.sma.prototype.drawDataLabels
+                        _super.prototype.drawDataLabels
                             .call(indicator);
                     });
                 }
             };
             PivotPointsIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, placement = this[params.algorithm + 'Placement'], 
-                // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
-                PP = [], endTimestamp, xData = [], yData = [], slicedXLen, slicedX, slicedY, lastPP, pivot, avg, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    placement = this[params.algorithm + 'Placement'], 
+                    // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
+                    PP = [],
+                    xData = [],
+                    yData = [];
+                var endTimestamp,
+                    slicedXLen,
+                    slicedX,
+                    slicedY,
+                    lastPP,
+                    pivot,
+                    avg,
+                    i;
                 // Pivot Points requires high, low and close values
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
@@ -6634,54 +7224,59 @@
                 };
             };
             PivotPointsIndicator.prototype.getPivotAndHLC = function (values) {
-                var high = -Infinity, low = Infinity, close = values[values.length - 1][3], pivot;
+                var close = values[values.length - 1][3];
+                var high = -Infinity,
+                    low = Infinity;
                 values.forEach(function (p) {
                     high = Math.max(high, p[1]);
                     low = Math.min(low, p[2]);
                 });
-                pivot = (high + low + close) / 3;
+                var pivot = (high + low + close) / 3;
                 return [pivot, high, low, close];
             };
             PivotPointsIndicator.prototype.standardPlacement = function (values) {
-                var diff = values[1] - values[2], avg = [
-                    null,
-                    null,
-                    values[0] + diff,
-                    values[0] * 2 - values[2],
-                    values[0],
-                    values[0] * 2 - values[1],
-                    values[0] - diff,
-                    null,
-                    null
-                ];
+                var diff = values[1] - values[2],
+                    avg = [
+                        null,
+                        null,
+                        values[0] + diff,
+                        values[0] * 2 - values[2],
+                        values[0],
+                        values[0] * 2 - values[1],
+                        values[0] - diff,
+                        null,
+                        null
+                    ];
                 return avg;
             };
             PivotPointsIndicator.prototype.camarillaPlacement = function (values) {
-                var diff = values[1] - values[2], avg = [
-                    values[3] + diff * 1.5,
-                    values[3] + diff * 1.25,
-                    values[3] + diff * 1.1666,
-                    values[3] + diff * 1.0833,
-                    values[0],
-                    values[3] - diff * 1.0833,
-                    values[3] - diff * 1.1666,
-                    values[3] - diff * 1.25,
-                    values[3] - diff * 1.5
-                ];
+                var diff = values[1] - values[2],
+                    avg = [
+                        values[3] + diff * 1.5,
+                        values[3] + diff * 1.25,
+                        values[3] + diff * 1.1666,
+                        values[3] + diff * 1.0833,
+                        values[0],
+                        values[3] - diff * 1.0833,
+                        values[3] - diff * 1.1666,
+                        values[3] - diff * 1.25,
+                        values[3] - diff * 1.5
+                    ];
                 return avg;
             };
             PivotPointsIndicator.prototype.fibonacciPlacement = function (values) {
-                var diff = values[1] - values[2], avg = [
-                    null,
-                    values[0] + diff,
-                    values[0] + diff * 0.618,
-                    values[0] + diff * 0.382,
-                    values[0],
-                    values[0] - diff * 0.382,
-                    values[0] - diff * 0.618,
-                    values[0] - diff,
-                    null
-                ];
+                var diff = values[1] - values[2],
+                    avg = [
+                        null,
+                        values[0] + diff,
+                        values[0] + diff * 0.618,
+                        values[0] + diff * 0.382,
+                        values[0],
+                        values[0] - diff * 0.382,
+                        values[0] - diff * 0.618,
+                        values[0] - diff,
+                        null
+                    ];
                 return avg;
             };
             /**
@@ -6773,22 +7368,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U.error;
+        var correctFloat = U.correctFloat,
+            extend = U.extend,
+            merge = U.merge,
+            error = U.error;
         /* *
          *
          *  Class
@@ -6804,14 +7403,15 @@
          * @augments Highcharts.Series
          */
         var PPOIndicator = /** @class */ (function (_super) {
-            __extends(PPOIndicator, _super);
+                __extends(PPOIndicator, _super);
             function PPOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *   Properties
@@ -6828,32 +7428,37 @@
              *
              * */
             PPOIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods, index = params.index, 
-                // 0- date, 1- Percentage Price Oscillator
-                PPO = [], xData = [], yData = [], periodsOffset, 
-                // Shorter Period EMA
-                SPE, 
-                // Longer Period EMA
-                LPE, oscillator, i;
+                var periods = params.periods,
+                    index = params.index, 
+                    // 0- date, 1- Percentage Price Oscillator
+                    PPO = [],
+                    xData = [],
+                    yData = [];
+                var oscillator,
+                    i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "PPO requires two periods. Notice, first period ' +
                         'should be lower than the second one."');
                     return;
                 }
-                SPE = EMAIndicator.prototype.getValues.call(this, series, {
-                    index: index,
-                    period: periods[0]
-                });
-                LPE = EMAIndicator.prototype.getValues.call(this, series, {
-                    index: index,
-                    period: periods[1]
-                });
+                // Shorter Period EMA
+                var SPE = _super.prototype.getValues.call(this,
+                    series, {
+                        index: index,
+                        period: periods[0]
+                    });
+                // Longer Period EMA
+                var LPE = _super.prototype.getValues.call(this,
+                    series, {
+                        index: index,
+                        period: periods[1]
+                    });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
                     return;
                 }
-                periodsOffset = periods[1] - periods[0];
+                var periodsOffset = periods[1] - periods[0];
                 for (i = 0; i < LPE.yData.length; i++) {
                     oscillator = correctFloat((SPE.yData[i + periodsOffset] -
                         LPE.yData[i]) /
@@ -6984,8 +7589,8 @@
          *
          * */
         var ArrayUtilities = {
-            getArrayExtremes: getArrayExtremes
-        };
+                getArrayExtremes: getArrayExtremes
+            };
 
         return ArrayUtilities;
     });
@@ -6998,22 +7603,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge, extend = U.extend;
+        var merge = U.merge,
+            extend = U.extend;
         /* *
          *
          *  Class
@@ -7029,14 +7636,15 @@
          * @augments Highcharts.Series
          */
         var PCIndicator = /** @class */ (function (_super) {
-            __extends(PCIndicator, _super);
+                __extends(PCIndicator, _super);
             function PCIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -7053,11 +7661,24 @@
              *
              * */
             PCIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1-top line, 2-middle line, 3-bottom line
-                PC = [], 
-                // middle line, top line and bottom line
-                ML, TL, BL, date, low = 2, high = 1, xData = [], yData = [], slicedY, extremes, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1-top line, 2-middle line, 3-bottom line
+                    PC = [], 
+                    // middle line, top line and bottom line
+                    low = 2,
+                    high = 1,
+                    xData = [],
+                    yData = [];
+                var ML,
+                    TL,
+                    BL,
+                    date,
+                    slicedY,
+                    extremes,
+                    i;
                 if (yValLen < period) {
                     return;
                 }
@@ -7190,7 +7811,7 @@
 
         return PCIndicator;
     });
-    _registerModule(_modules, 'Stock/Indicators/PriceEnvelopes/PriceEnvelopesIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/PriceEnvelopes/PriceEnvelopesIndicator.js', [_modules['Stock/Indicators/MultipleLinesComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MultipleLinesComposition, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -7199,22 +7820,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -7230,14 +7854,15 @@
          * @augments Highcharts.Series
          */
         var PriceEnvelopesIndicator = /** @class */ (function (_super) {
-            __extends(PriceEnvelopesIndicator, _super);
+                __extends(PriceEnvelopesIndicator, _super);
             function PriceEnvelopesIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -7254,7 +7879,7 @@
              *
              * */
             PriceEnvelopesIndicator.prototype.init = function () {
-                SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
+                _super.prototype.init.apply(this, arguments);
                 // Set default color for lines:
                 this.options = merge({
                     topLine: {
@@ -7269,63 +7894,26 @@
                     }
                 }, this.options);
             };
-            PriceEnvelopesIndicator.prototype.toYData = function (point) {
-                return [point.top, point.middle, point.bottom];
-            };
-            PriceEnvelopesIndicator.prototype.translate = function () {
-                var indicator = this, translatedEnvelopes = ['plotTop', 'plotMiddle', 'plotBottom'];
-                SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
-                indicator.points.forEach(function (point) {
-                    [point.top, point.middle, point.bottom].forEach(function (value, i) {
-                        if (value !== null) {
-                            point[translatedEnvelopes[i]] =
-                                indicator.yAxis.toPixels(value, true);
-                        }
-                    });
-                });
-            };
-            PriceEnvelopesIndicator.prototype.drawGraph = function () {
-                var indicator = this, middleLinePoints = indicator.points, pointsLength = middleLinePoints.length, middleLineOptions = (indicator.options), middleLinePath = indicator.graph, gappedExtend = {
-                    options: {
-                        gapSize: middleLineOptions.gapSize
-                    }
-                }, deviations = [[], []], // top and bottom point place holders
-                point;
-                // Generate points for top and bottom lines:
-                while (pointsLength--) {
-                    point = middleLinePoints[pointsLength];
-                    deviations[0].push({
-                        plotX: point.plotX,
-                        plotY: point.plotTop,
-                        isNull: point.isNull
-                    });
-                    deviations[1].push({
-                        plotX: point.plotX,
-                        plotY: point.plotBottom,
-                        isNull: point.isNull
-                    });
-                }
-                // Modify options and generate lines:
-                ['topLine', 'bottomLine'].forEach(function (lineName, i) {
-                    indicator.points = deviations[i];
-                    indicator.options = merge(middleLineOptions[lineName].styles, gappedExtend);
-                    indicator.graph = indicator['graph' + lineName];
-                    SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
-                    // Now save lines:
-                    indicator['graph' + lineName] = indicator.graph;
-                });
-                // Restore options and draw a middle line:
-                indicator.points = middleLinePoints;
-                indicator.options = middleLineOptions;
-                indicator.graph = middleLinePath;
-                SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
-            };
             PriceEnvelopesIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, topPercent = params.topBand, botPercent = params.bottomBand, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1-top line, 2-middle line, 3-bottom line
-                PE = [], 
-                // middle line, top line and bottom line
-                ML, TL, BL, date, xData = [], yData = [], slicedX, slicedY, point, i;
+                var period = params.period,
+                    topPercent = params.topBand,
+                    botPercent = params.bottomBand,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1-top line, 2-middle line, 3-bottom line
+                    PE = [], 
+                    // middle line, top line and bottom line
+                    xData = [],
+                    yData = [];
+                var ML,
+                    TL,
+                    BL,
+                    date,
+                    slicedX,
+                    slicedY,
+                    point,
+                    i;
                 // Price envelopes requires close value
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
@@ -7335,7 +7923,7 @@
                 for (i = period; i <= yValLen; i++) {
                     slicedX = xVal.slice(i - period, i);
                     slicedY = yVal.slice(i - period, i);
-                    point = SeriesRegistry.seriesTypes.sma.prototype.getValues.call(this, {
+                    point = _super.prototype.getValues.call(this, {
                         xData: slicedX,
                         yData: slicedY
                     }, params);
@@ -7420,16 +8008,30 @@
                 dataGrouping: {
                     approximation: 'averages'
                 }
+                /**
+                 * Option for fill color between lines in Price Envelopes Indicator.
+                 *
+                 * @sample {highstock} stock/indicators/indicator-area-fill
+                 *      Background fill between lines.
+                 *
+                 * @type      {Highcharts.Color}
+                 * @since 11.0.0
+                 * @apioption plotOptions.priceenvelopes.fillColor
+                 *
+                 */
             });
             return PriceEnvelopesIndicator;
         }(SMAIndicator));
         extend(PriceEnvelopesIndicator.prototype, {
+            areaLinesNames: ['top', 'bottom'],
+            linesApiNames: ['topLine', 'bottomLine'],
             nameComponents: ['period', 'topBand', 'bottomBand'],
             nameBase: 'Price envelopes',
             pointArrayMap: ['top', 'middle', 'bottom'],
             parallelArrays: ['x', 'y', 'top', 'bottom'],
             pointValKey: 'middle'
         });
+        MultipleLinesComposition.compose(PriceEnvelopesIndicator);
         SeriesRegistry.registerSeriesType('priceenvelopes', PriceEnvelopesIndicator);
         /* *
          *
@@ -7470,22 +8072,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge, extend = U.extend;
+        var merge = U.merge;
         /* *
          *
          *  Functions
@@ -7576,20 +8179,22 @@
          * @augments Highcharts.Series
          */
         var PSARIndicator = /** @class */ (function (_super) {
-            __extends(PSARIndicator, _super);
+                __extends(PSARIndicator, _super);
             function PSARIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
                  *
                  * */
                 _this.data = void 0;
+                _this.nameComponents = void 0;
                 _this.points = void 0;
                 _this.options = void 0;
                 return _this;
@@ -7600,12 +8205,35 @@
              *
              * */
             PSARIndicator.prototype.getValues = function (series, params) {
-                var xVal = series.xData, yVal = series.yData, 
-                // Extreme point is the lowest low for falling and highest high
-                // for rising psar - and we are starting with falling
-                extremePoint = yVal[0][1], accelerationFactor = params.initialAccelerationFactor, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
-                // Set initial acc factor (for every new trend!)
-                initialAccelerationFactor = params.initialAccelerationFactor, PSAR = yVal[0][2], decimals = params.decimals, index = params.index, PSARArr = [], xData = [], yData = [], previousDirection = 1, direction, EPMinusPSAR, accelerationFactorMultiply, newDirection, prevLow, prevPrevLow, prevHigh, prevPrevHigh, newExtremePoint, high, low, ind;
+                var xVal = series.xData,
+                    yVal = series.yData,
+                    maxAccelerationFactor = params.maxAccelerationFactor,
+                    increment = params.increment, 
+                    // Set initial acc factor (for every new trend!)
+                    initialAccelerationFactor = params.initialAccelerationFactor,
+                    decimals = params.decimals,
+                    index = params.index,
+                    PSARArr = [],
+                    xData = [],
+                    yData = [];
+                var accelerationFactor = params.initialAccelerationFactor,
+                    direction, 
+                    // Extreme point is the lowest low for falling and highest high
+                    // for rising psar - and we are starting with falling
+                    extremePoint = yVal[0][1],
+                    EPMinusPSAR,
+                    accelerationFactorMultiply,
+                    newDirection,
+                    previousDirection = 1,
+                    prevLow,
+                    prevPrevLow,
+                    prevHigh,
+                    prevPrevHigh,
+                    PSAR = yVal[0][2],
+                    newExtremePoint,
+                    high,
+                    low,
+                    ind;
                 if (index >= yVal.length) {
                     return;
                 }
@@ -7722,9 +8350,6 @@
             });
             return PSARIndicator;
         }(SMAIndicator));
-        extend(PSARIndicator.prototype, {
-            nameComponents: void 0
-        });
         SeriesRegistry.registerSeriesType('psar', PSARIndicator);
         /* *
          *
@@ -7763,22 +8388,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, merge = U.merge, extend = U.extend;
+        var isArray = U.isArray,
+            merge = U.merge,
+            extend = U.extend;
         /* *
          *
          *  Functions
@@ -7792,7 +8420,8 @@
                 Closing Price [n days ago] * 100
 
                Return y as null when avoiding division by zero */
-            var nDaysAgoY, rocY;
+            var nDaysAgoY,
+                rocY;
             if (index < 0) {
                 // y data given as an array of values
                 nDaysAgoY = yVal[i - period];
@@ -7824,14 +8453,15 @@
          * @augments Highcharts.Series
          */
         var ROCIndicator = /** @class */ (function (_super) {
-            __extends(ROCIndicator, _super);
+                __extends(ROCIndicator, _super);
             function ROCIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -7848,7 +8478,16 @@
              *
              * */
             ROCIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, ROC = [], xData = [], yData = [], i, index = -1, ROCPoint;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    ROC = [],
+                    xData = [],
+                    yData = [];
+                var i,
+                    index = -1,
+                    ROCPoint;
                 // Period is used as a number of time periods ago, so we need more
                 // (at least 1 more) data than the period value
                 if (xVal.length <= period) {
@@ -7952,22 +8591,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isNumber = U.isNumber, merge = U.merge;
+        var isNumber = U.isNumber,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -7992,14 +8633,15 @@
          * @augments Highcharts.Series
          */
         var RSIIndicator = /** @class */ (function (_super) {
-            __extends(RSIIndicator, _super);
+                __extends(RSIIndicator, _super);
             function RSIIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -8016,10 +8658,26 @@
              *
              * */
             RSIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
-                // RSI starts calculations from the second point
-                // Cause we need to calculate change between two points
-                range = 1, RSI = [], xData = [], yData = [], index = params.index, gain = 0, loss = 0, RSIPoint, change, avgGain, avgLoss, i, values;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    decimals = params.decimals, 
+                    // RSI starts calculations from the second point
+                    // Cause we need to calculate change between two points
+                    RSI = [],
+                    xData = [],
+                    yData = [];
+                var gain = 0,
+                    loss = 0,
+                    index = params.index,
+                    range = 1,
+                    RSIPoint,
+                    change,
+                    avgGain,
+                    avgLoss,
+                    i,
+                    values;
                 if ((xVal.length < period)) {
                     return;
                 }
@@ -8143,22 +8801,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -8174,14 +8835,15 @@
          * @augments Highcharts.Series
          */
         var StochasticIndicator = /** @class */ (function (_super) {
-            __extends(StochasticIndicator, _super);
+                __extends(StochasticIndicator, _super);
             function StochasticIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -8198,7 +8860,7 @@
              *
              * */
             StochasticIndicator.prototype.init = function () {
-                SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
+                _super.prototype.init.apply(this, arguments);
                 // Set default color for lines:
                 this.options = merge({
                     smoothedLine: {
@@ -8209,15 +8871,37 @@
                 }, this.options);
             };
             StochasticIndicator.prototype.getValues = function (series, params) {
-                var periodK = params.periods[0], periodD = params.periods[1], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1-%K, 2-%D
-                SO = [], xData = [], yData = [], slicedY, close = 3, low = 2, high = 1, CL, HL, LL, K, D = null, points, extremes, i;
+                var periodK = params.periods[0],
+                    periodD = params.periods[1],
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1-%K, 2-%D
+                    SO = [],
+                    xData = [],
+                    yData = [],
+                    close = 3,
+                    low = 2,
+                    high = 1;
+                var slicedY,
+                    CL,
+                    HL,
+                    LL,
+                    K,
+                    D = null,
+                    points,
+                    extremes,
+                    i;
                 // Stochastic requires close value
                 if (yValLen < periodK ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
                     return;
                 }
+                // If the value of initial points is constant, wait until it changes
+                // to calculate correct Stochastic values
+                var constantValues = true,
+                    j = 0;
                 // For a N-period, we start from N-1 point, to calculate Nth point
                 // That is why we later need to comprehend slice() elements list
                 // with (+1)
@@ -8229,12 +8913,31 @@
                     CL = yVal[i][close] - LL;
                     HL = extremes[1] - LL;
                     K = CL / HL * 100;
-                    xData.push(xVal[i]);
-                    yData.push([K, null]);
+                    if (isNaN(K) && constantValues) {
+                        j++;
+                        continue;
+                    }
+                    else if (constantValues && !isNaN(K)) {
+                        constantValues = false;
+                    }
+                    var length_1 = xData.push(xVal[i]);
+                    // If N-period previous values are constant which results in NaN %K,
+                    // we need to use previous %K value if it is a number,
+                    // otherwise we should use null
+                    if (isNaN(K)) {
+                        yData.push([
+                            yData[length_1 - 2] &&
+                                typeof yData[length_1 - 2][0] === 'number' ?
+                                yData[length_1 - 2][0] : null,
+                            null
+                        ]);
+                    }
+                    else {
+                        yData.push([K, null]);
+                    }
                     // Calculate smoothed %D, which is SMA of %K
-                    if (i >= (periodK - 1) + (periodD - 1)) {
-                        points = SeriesRegistry.seriesTypes.sma.prototype.getValues
-                            .call(this, {
+                    if (i >= j + (periodK - 1) + (periodD - 1)) {
+                        points = _super.prototype.getValues.call(this, {
                             xData: xData.slice(-periodD),
                             yData: yData.slice(-periodD)
                         }, {
@@ -8243,7 +8946,7 @@
                         D = points.yData[0];
                     }
                     SO.push([xVal[i], K, D]);
-                    yData[yData.length - 1][1] = D;
+                    yData[length_1 - 1][1] = D;
                 }
                 return {
                     values: SO,
@@ -8366,22 +9069,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes, smaProto = _a.sma.prototype, StochasticIndicator = _a.stochastic;
-        var extend = U.extend, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            SMAIndicator = _a.sma,
+            StochasticIndicator = _a.stochastic;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -8397,14 +9104,15 @@
          * @augments Highcharts.Series
          */
         var SlowStochasticIndicator = /** @class */ (function (_super) {
-            __extends(SlowStochasticIndicator, _super);
+                __extends(SlowStochasticIndicator, _super);
             function SlowStochasticIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -8421,31 +9129,33 @@
              *
              * */
             SlowStochasticIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods, fastValues = _super.prototype.getValues.call(this, series, params), slowValues = {
-                    values: [],
-                    xData: [],
-                    yData: []
-                };
-                var i = 0;
+                var periods = params.periods,
+                    fastValues = _super.prototype.getValues.call(this,
+                    series,
+                    params),
+                    slowValues = {
+                        values: [],
+                        xData: [],
+                        yData: []
+                    };
                 if (!fastValues) {
                     return;
                 }
                 slowValues.xData = fastValues.xData.slice(periods[1] - 1);
                 var fastYData = fastValues.yData.slice(periods[1] - 1);
                 // Get SMA(%D)
-                var smoothedValues = smaProto.getValues.call(this, {
-                    xData: slowValues.xData,
-                    yData: fastYData
-                }, {
-                    index: 1,
-                    period: periods[2]
-                });
+                var smoothedValues = SMAIndicator.prototype.getValues.call(this, {
+                        xData: slowValues.xData,
+                        yData: fastYData
+                    }, {
+                        index: 1,
+                        period: periods[2]
+                    });
                 if (!smoothedValues) {
                     return;
                 }
-                var xDataLen = slowValues.xData.length;
                 // Format data
-                for (; i < xDataLen; i++) {
+                for (var i = 0, xDataLen = slowValues.xData.length; i < xDataLen; i++) {
                     slowValues.yData[i] = [
                         fastYData[i][1],
                         smoothedValues.yData[i - periods[2] + 1] || null
@@ -8526,28 +9236,39 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes, ATRIndicator = _a.atr, SMAIndicator = _a.sma;
-        var addEvent = U.addEvent, correctFloat = U.correctFloat, isArray = U.isArray, extend = U.extend, merge = U.merge, objectEach = U.objectEach;
+        var _a = SeriesRegistry.seriesTypes,
+            ATRIndicator = _a.atr,
+            SMAIndicator = _a.sma;
+        var addEvent = U.addEvent,
+            correctFloat = U.correctFloat,
+            isArray = U.isArray,
+            extend = U.extend,
+            merge = U.merge,
+            objectEach = U.objectEach;
         /* *
          *
          *  Functions
          *
          * */
         // Utils:
+        /**
+         * @private
+         */
         function createPointObj(mainSeries, index, close) {
             return {
                 index: index,
@@ -8570,14 +9291,15 @@
          * @augments Highcharts.Series
          */
         var SupertrendIndicator = /** @class */ (function (_super) {
-            __extends(SupertrendIndicator, _super);
+                __extends(SupertrendIndicator, _super);
             function SupertrendIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -8595,21 +9317,21 @@
              *
              * */
             SupertrendIndicator.prototype.init = function () {
-                var options, parentOptions;
-                SMAIndicator.prototype.init.apply(this, arguments);
                 var indicator = this;
+                _super.prototype.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
-                var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
-                    // Protection for a case where the indicator is being updated,
-                    // for a brief moment the indicator is deleted.
-                    if (indicator.options) {
-                        var options_1 = indicator.options;
-                        parentOptions = indicator.linkedParent.options;
+                var unbinder = addEvent(StockChart, 'afterLinkSeries',
+                    function () {
+                        // Protection for a case where the indicator is being updated,
+                        // for a brief moment the indicator is deleted.
+                        if (indicator.options) {
+                            var options = indicator.options,
+                    parentOptions = indicator.linkedParent.options;
                         // Indicator cropThreshold has to be equal linked series one
                         // reduced by period due to points comparison in drawGraph
                         // (#9787)
-                        options_1.cropThreshold = (parentOptions.cropThreshold -
-                            (options_1.params.period - 1));
+                        options.cropThreshold = (parentOptions.cropThreshold -
+                            (options.params.period - 1));
                     }
                     unbinder();
                 }, {
@@ -8617,56 +9339,66 @@
                 });
             };
             SupertrendIndicator.prototype.drawGraph = function () {
-                var indicator = this, indicOptions = indicator.options, 
-                // Series that indicator is linked to
-                mainSeries = indicator.linkedParent, mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, indicPointsLen = indicPoints.length, 
-                // Points offset between lines
-                tempOffset = mainLinePoints.length - indicPointsLen, offset = tempOffset > 0 ? tempOffset : 0, 
-                // @todo: fix when ichi-moku indicator is merged to master.
-                gappedExtend = {
-                    options: {
-                        gapSize: indicOptions.gapSize
-                    }
-                }, 
-                // Sorted supertrend points array
-                groupedPoitns = {
-                    top: [],
-                    bottom: [],
-                    intersect: [] // Change trend line points
-                }, 
-                // Options for trend lines
-                supertrendLineOptions = {
-                    top: {
-                        styles: {
-                            lineWidth: indicOptions.lineWidth,
-                            lineColor: (indicOptions.fallingTrendColor ||
-                                indicOptions.color),
-                            dashStyle: indicOptions.dashStyle
+                var indicator = this,
+                    indicOptions = indicator.options, 
+                    // Series that indicator is linked to
+                    mainSeries = indicator.linkedParent,
+                    mainLinePoints = (mainSeries ? mainSeries.points : []),
+                    indicPoints = indicator.points,
+                    indicPath = indicator.graph, 
+                    // Points offset between lines
+                    tempOffset = mainLinePoints.length - indicPoints.length,
+                    offset = tempOffset > 0 ? tempOffset : 0, 
+                    // @todo: fix when ichi-moku indicator is merged to master.
+                    gappedExtend = {
+                        options: {
+                            gapSize: indicOptions.gapSize
                         }
+                    }, 
+                    // Sorted supertrend points array
+                    groupedPoitns = {
+                        top: [],
+                        bottom: [],
+                        intersect: [] // Change trend line points
+                    }, 
+                    // Options for trend lines
+                    supertrendLineOptions = {
+                        top: {
+                            styles: {
+                                lineWidth: indicOptions.lineWidth,
+                                lineColor: (indicOptions.fallingTrendColor ||
+                                    indicOptions.color),
+                                dashStyle: indicOptions.dashStyle
+                            }
+                        },
+                        bottom: {
+                            styles: {
+                                lineWidth: indicOptions.lineWidth,
+                                lineColor: (indicOptions.risingTrendColor ||
+                                    indicOptions.color),
+                                dashStyle: indicOptions.dashStyle
+                            }
+                        },
+                        intersect: indicOptions.changeTrendLine
                     },
-                    bottom: {
-                        styles: {
-                            lineWidth: indicOptions.lineWidth,
-                            lineColor: (indicOptions.risingTrendColor ||
-                                indicOptions.color),
-                            dashStyle: indicOptions.dashStyle
-                        }
-                    },
-                    intersect: indicOptions.changeTrendLine
-                }, close = 3, 
-                // Supertrend line point
-                point, 
-                // Supertrend line next point (has smaller x pos than point)
-                nextPoint, 
-                // Main series points
-                mainPoint, nextMainPoint, 
-                // Used when supertrend and main points are shifted
-                // relative to each other
-                prevMainPoint, prevPrevMainPoint, 
-                // Used when particular point color is set
-                pointColor, 
-                // Temporary points that fill groupedPoitns array
-                newPoint, newNextPoint;
+                    close = 3;
+                var // Supertrend line point
+                    point, 
+                    // Supertrend line next point (has smaller x pos than point)
+                    nextPoint, 
+                    // Main series points
+                    mainPoint,
+                    nextMainPoint, 
+                    // Used when supertrend and main points are shifted
+                    // relative to each other
+                    prevMainPoint,
+                    prevPrevMainPoint, 
+                    // Used when particular point color is set
+                    pointColor, 
+                    // Temporary points that fill groupedPoitns array
+                    newPoint,
+                    newNextPoint,
+                    indicPointsLen = indicPoints.length;
                 // Loop which sort supertrend points
                 while (indicPointsLen--) {
                     point = indicPoints[indicPointsLen];
@@ -8835,18 +9567,38 @@
             //      Current Close > Current FINAL LOWERBAND
             //     ) THAN Current FINAL LOWERBAND
             SupertrendIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, ATRData = [], 
-                // 0- date, 1- Supertrend indicator
-                ST = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, basicUp, basicDown, finalUp = [], finalDown = [], supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
-                prevY, y, i;
+                var period = params.period,
+                    multiplier = params.multiplier,
+                    xVal = series.xData,
+                    yVal = series.yData, 
+                    // 0- date, 1- Supertrend indicator
+                    st = [],
+                    xData = [],
+                    yData = [],
+                    close = 3,
+                    low = 2,
+                    high = 1,
+                    periodsOffset = (period === 0) ? 0 : period - 1,
+                    finalUp = [],
+                    finalDown = [];
+                var atrData = [],
+                    basicUp,
+                    basicDown,
+                    supertrend,
+                    prevFinalUp,
+                    prevFinalDown,
+                    prevST, // previous Supertrend
+                    prevY,
+                    y,
+                    i;
                 if ((xVal.length <= period) || !isArray(yVal[0]) ||
                     yVal[0].length !== 4 || period < 0) {
                     return;
                 }
-                ATRData = ATRIndicator.prototype.getValues.call(this, series, {
+                atrData = ATRIndicator.prototype.getValues.call(this, series, {
                     period: period
                 }).yData;
-                for (i = 0; i < ATRData.length; i++) {
+                for (i = 0; i < atrData.length; i++) {
                     y = yVal[periodsOffset + i];
                     prevY = yVal[periodsOffset + i - 1] || [];
                     prevFinalUp = finalUp[i - 1];
@@ -8855,8 +9607,8 @@
                     if (i === 0) {
                         prevFinalUp = prevFinalDown = prevST = 0;
                     }
-                    basicUp = correctFloat((y[high] + y[low]) / 2 + multiplier * ATRData[i]);
-                    basicDown = correctFloat((y[high] + y[low]) / 2 - multiplier * ATRData[i]);
+                    basicUp = correctFloat((y[high] + y[low]) / 2 + multiplier * atrData[i]);
+                    basicDown = correctFloat((y[high] + y[low]) / 2 - multiplier * atrData[i]);
                     if ((basicUp < prevFinalUp) ||
                         (prevY[close] > prevFinalUp)) {
                         finalUp[i] = basicUp;
@@ -8879,12 +9631,12 @@
                         prevST === prevFinalDown && y[close] > finalDown[i]) {
                         supertrend = finalDown[i];
                     }
-                    ST.push([xVal[periodsOffset + i], supertrend]);
+                    st.push([xVal[periodsOffset + i], supertrend]);
                     xData.push(xVal[periodsOffset + i]);
                     yData.push(supertrend);
                 }
                 return {
-                    values: ST,
+                    values: st,
                     xData: xData,
                     yData: yData
                 };
@@ -9025,20 +9777,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var SMAPoint = SeriesRegistry.seriesTypes.sma.prototype.pointClass;
         /* *
          *
@@ -9046,7 +9804,7 @@
          *
          * */
         var VBPPoint = /** @class */ (function (_super) {
-            __extends(VBPPoint, _super);
+                __extends(VBPPoint, _super);
             function VBPPoint() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
@@ -9056,7 +9814,7 @@
                 if (this.negativeGraphic) {
                     this.negativeGraphic = this.negativeGraphic.destroy();
                 }
-                return _super.prototype.destroy.apply(this, arguments);
+                _super.prototype.destroy.apply(this, arguments);
             };
             return VBPPoint;
         }(SMAPoint));
@@ -9081,15 +9839,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -9097,16 +9856,39 @@
         })();
         var animObject = A.animObject;
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, columnProto = _a.column.prototype, SMAIndicator = _a.sma;
-        var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            columnProto = _a.column.prototype,
+            SMAIndicator = _a.sma;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            error = U.error,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var abs = Math.abs;
         /* *
          *
          *  Functions
          *
          * */
         // Utils
+        /**
+         * @private
+         */
         function arrayExtremesOHLC(data) {
-            var dataLength = data.length, min = data[0][3], max = min, i = 1, currentPoint;
+            var dataLength = data.length;
+            var min = data[0][3],
+                max = min,
+                i = 1,
+                currentPoint;
             for (; i < dataLength; i++) {
                 currentPoint = data[i][3];
                 if (currentPoint < min) {
@@ -9121,7 +9903,6 @@
                 max: max
             };
         }
-        var abs = Math.abs;
         /* *
          *
          *  Class
@@ -9137,14 +9918,15 @@
          * @augments Highcharts.Series
          */
         var VBPIndicator = /** @class */ (function (_super) {
-            __extends(VBPIndicator, _super);
+                __extends(VBPIndicator, _super);
             function VBPIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -9168,16 +9950,17 @@
              *
              * */
             VBPIndicator.prototype.init = function (chart) {
-                var indicator = this, params, baseSeries, volumeSeries;
-                H.seriesTypes.sma.prototype.init.apply(indicator, arguments);
+                var indicator = this;
+                _super.prototype.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
-                var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
-                    // Protection for a case where the indicator is being updated,
-                    // for a brief moment the indicator is deleted.
-                    if (indicator.options) {
-                        params = indicator.options.params;
-                        baseSeries = indicator.linkedParent;
-                        volumeSeries = chart.get(params.volumeSeriesID);
+                var unbinder = addEvent(StockChart, 'afterLinkSeries',
+                    function () {
+                        // Protection for a case where the indicator is being updated,
+                        // for a brief moment the indicator is deleted.
+                        if (indicator.options) {
+                            var params = indicator.options.params,
+                    baseSeries = indicator.linkedParent,
+                    volumeSeries = chart.get(params.volumeSeriesID);
                         indicator.addCustomEvents(baseSeries, volumeSeries);
                     }
                     unbinder();
@@ -9188,17 +9971,15 @@
             };
             // Adds events related with removing series
             VBPIndicator.prototype.addCustomEvents = function (baseSeries, volumeSeries) {
-                var indicator = this;
-                /* eslint-disable require-jsdoc */
-                function toEmptyIndicator() {
-                    indicator.chart.redraw();
+                var indicator = this,
+                    toEmptyIndicator = function () {
+                        indicator.chart.redraw();
                     indicator.setData([]);
                     indicator.zoneStarts = [];
                     if (indicator.zoneLinesSVG) {
                         indicator.zoneLinesSVG = indicator.zoneLinesSVG.destroy();
                     }
-                }
-                /* eslint-enable require-jsdoc */
+                };
                 // If base series is deleted, indicator series data is filled with
                 // an empty array
                 indicator.dataEventsToUnbind.push(addEvent(baseSeries, 'remove', function () {
@@ -9215,9 +9996,12 @@
             };
             // Initial animation
             VBPIndicator.prototype.animate = function (init) {
-                var series = this, inverted = series.chart.inverted, group = series.group, attr = {}, position;
+                var series = this,
+                    inverted = series.chart.inverted,
+                    group = series.group,
+                    attr = {};
                 if (!init && group) {
-                    position = inverted ? series.yAxis.top : series.xAxis.left;
+                    var position = inverted ? series.yAxis.top : series.xAxis.left;
                     if (inverted) {
                         group['forceAnimate:translateY'] = true;
                         attr.translateY = position;
@@ -9247,8 +10031,15 @@
             // Function responsible for dividing volume into positive and negative
             VBPIndicator.prototype.posNegVolume = function (initVol, pos) {
                 var indicator = this, signOrder = pos ?
-                    ['positive', 'negative'] :
-                    ['negative', 'positive'], volumeDivision = indicator.options.volumeDivision, pointLength = indicator.points.length, posWidths = [], negWidths = [], i = 0, pointWidth, priceZone, wholeVol, point;
+                        ['positive', 'negative'] :
+                        ['negative', 'positive'], volumeDivision = indicator.options.volumeDivision, pointLength = indicator.points.length;
+                var posWidths = [],
+                    negWidths = [],
+                    i = 0,
+                    pointWidth,
+                    priceZone,
+                    wholeVol,
+                    point;
                 if (initVol) {
                     indicator.posWidths = posWidths;
                     indicator.negWidths = negWidths;
@@ -9286,9 +10077,27 @@
                 }
             };
             VBPIndicator.prototype.translate = function () {
-                var indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones), yBarOffset = 0, indicatorPoints, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
+                var indicator = this,
+                    options = indicator.options,
+                    chart = indicator.chart,
+                    yAxis = indicator.yAxis,
+                    yAxisMin = yAxis.min,
+                    zoneLinesOptions = indicator.options.zoneLines,
+                    priceZones = (indicator.priceZones);
+                var yBarOffset = 0,
+                    volumeDataArray,
+                    maxVolume,
+                    primalBarWidth,
+                    barHeight,
+                    barHeightP,
+                    oldBarHeight,
+                    barWidth,
+                    pointPadding,
+                    chartPlotTop,
+                    barX,
+                    barY;
                 columnProto.translate.apply(indicator);
-                indicatorPoints = indicator.points;
+                var indicatorPoints = indicator.points;
                 // Do translate operation when points exist
                 if (indicatorPoints.length) {
                     pointPadding = options.pointPadding < 0.5 ?
@@ -9330,22 +10139,33 @@
                 }
             };
             VBPIndicator.prototype.getValues = function (series, params) {
-                var indicator = this, xValues = series.processedXData, yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], isOHLC, volumeSeries, priceZones;
+                var indicator = this,
+                    xValues = series.processedXData,
+                    yValues = series.processedYData,
+                    chart = indicator.chart,
+                    ranges = params.ranges,
+                    VBP = [],
+                    xData = [],
+                    yData = [],
+                    volumeSeries = chart.get(params.volumeSeriesID);
                 // Checks if base series exists
                 if (!series.chart) {
                     error('Base series not found! In case it has been removed, add ' +
                         'a new one.', true, chart);
                     return;
                 }
-                // Checks if volume series exists
-                if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
+                // Checks if volume series exists and if it has data
+                if (!volumeSeries ||
+                    !volumeSeries.processedXData.length) {
+                    var errorMessage = volumeSeries && !volumeSeries.processedXData.length ?
+                            ' does not contain any data.' :
+                            ' not found! Check `volumeSeriesID`.';
                     error('Series ' +
-                        params.volumeSeriesID +
-                        ' not found! Check `volumeSeriesID`.', true, chart);
+                        params.volumeSeriesID + errorMessage, true, chart);
                     return;
                 }
                 // Checks if series data fits the OHLC format
-                isOHLC = isArray(yValues[0]);
+                var isOHLC = isArray(yValues[0]);
                 if (isOHLC && yValues[0].length !== 4) {
                     error('Type of ' +
                         series.name +
@@ -9354,7 +10174,11 @@
                 }
                 // Price zones contains all the information about the zones (index,
                 // start, end, volumes, etc.)
-                priceZones = indicator.priceZones = indicator.specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries);
+                var priceZones = indicator.priceZones = indicator.specifyZones(isOHLC,
+                    xValues,
+                    yValues,
+                    ranges,
+                    volumeSeries);
                 priceZones.forEach(function (zone, index) {
                     VBP.push([zone.x, zone.end]);
                     xData.push(VBP[index][0]);
@@ -9368,11 +10192,18 @@
             };
             // Specifing where each zone should start ans end
             VBPIndicator.prototype.specifyZones = function (isOHLC, xValues, yValues, ranges, volumeSeries) {
-                var indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), lowRange = rangeExtremes ?
-                    rangeExtremes.min :
-                    arrayMin(yValues), highRange = rangeExtremes ?
-                    rangeExtremes.max :
-                    arrayMax(yValues), zoneStarts = indicator.zoneStarts = [], priceZones = [], i = 0, j = 1, rangeStep, zoneStartsLength;
+                var indicator = this,
+                    rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false),
+                    zoneStarts = indicator.zoneStarts = [],
+                    priceZones = [];
+                var lowRange = rangeExtremes ?
+                        rangeExtremes.min :
+                        arrayMin(yValues),
+                    highRange = rangeExtremes ?
+                        rangeExtremes.max :
+                        arrayMax(yValues),
+                    i = 0,
+                    j = 1;
                 // If the compare mode is set on the main series, change the VBP
                 // zones to fit new extremes, #16277.
                 var mainSeries = indicator.linkedParent;
@@ -9391,14 +10222,14 @@
                     }
                     return [];
                 }
-                rangeStep = indicator.rangeStep =
-                    correctFloat(highRange - lowRange) / ranges;
+                var rangeStep = indicator.rangeStep =
+                        correctFloat(highRange - lowRange) / ranges;
                 zoneStarts.push(lowRange);
                 for (; i < ranges - 1; i++) {
                     zoneStarts.push(correctFloat(zoneStarts[i] + rangeStep));
                 }
                 zoneStarts.push(highRange);
-                zoneStartsLength = zoneStarts.length;
+                var zoneStartsLength = zoneStarts.length;
                 //    Creating zones
                 for (; j < zoneStartsLength; j++) {
                     priceZones.push({
@@ -9412,7 +10243,17 @@
             };
             // Calculating sum of volume values for a specific zone
             VBPIndicator.prototype.volumePerZone = function (isOHLC, priceZones, volumeSeries, xValues, yValues) {
-                var indicator = this, volumeXData = volumeSeries.processedXData, volumeYData = volumeSeries.processedYData, lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length, previousValue, startFlag, endFlag, value, i;
+                var indicator = this,
+                    volumeXData = volumeSeries.processedXData,
+                    volumeYData = volumeSeries.processedYData,
+                    lastZoneIndex = priceZones.length - 1,
+                    baseSeriesLength = yValues.length,
+                    volumeSeriesLength = volumeYData.length;
+                var previousValue,
+                    startFlag,
+                    endFlag,
+                    value,
+                    i;
                 // Checks if each point has a corresponding volume value
                 if (abs(baseSeriesLength - volumeSeriesLength)) {
                     // If the first point don't have volume, add 0 value at the
@@ -9477,7 +10318,14 @@
             };
             // Function responsoble for drawing additional lines indicating zones
             VBPIndicator.prototype.drawZones = function (chart, yAxis, zonesValues, zonesStyles) {
-                var indicator = this, renderer = chart.renderer, zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop, verticalLinePos;
+                var indicator = this,
+                    renderer = chart.renderer,
+                    leftLinePos = 0,
+                    rightLinePos = chart.plotWidth,
+                    verticalOffset = chart.plotTop;
+                var zoneLinesSVG = indicator.zoneLinesSVG,
+                    zoneLinesPath = [],
+                    verticalLinePos;
                 zonesValues.forEach(function (value) {
                     verticalLinePos = yAxis.toPixels(value) - verticalOffset;
                     zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([[
@@ -9498,7 +10346,9 @@
                 }
                 else {
                     zoneLinesSVG = indicator.zoneLinesSVG =
-                        renderer.path(zoneLinesPath).attr({
+                        renderer
+                            .path(zoneLinesPath)
+                            .attr({
                             'stroke-width': zonesStyles.lineWidth,
                             'stroke': zonesStyles.color,
                             'dashstyle': zonesStyles.dashStyle,
@@ -9603,7 +10453,7 @@
                     padding: 0,
                     style: {
                         /** @internal */
-                        fontSize: '7px'
+                        fontSize: '0.5em'
                     },
                     verticalAlign: 'top'
                 }
@@ -9663,22 +10513,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var error = U.error, isArray = U.isArray, merge = U.merge;
+        var error = U.error,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -9694,14 +10547,15 @@
          * @augments Highcharts.Series
          */
         var VWAPIndicator = /** @class */ (function (_super) {
-            __extends(VWAPIndicator, _super);
+                __extends(VWAPIndicator, _super);
             function VWAPIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -9718,7 +10572,13 @@
              *
              * */
             VWAPIndicator.prototype.getValues = function (series, params) {
-                var indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period, isOHLC = true, volumeSeries;
+                var indicator = this,
+                    chart = series.chart,
+                    xValues = series.xData,
+                    yValues = series.yData,
+                    period = params.period;
+                var isOHLC = true,
+                    volumeSeries;
                 // Checks if volume series exists
                 if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
                     error('Series ' +
@@ -9758,7 +10618,20 @@
              * Object contains computed VWAP
              **/
             VWAPIndicator.prototype.calculateVWAPValues = function (isOHLC, xValues, yValues, volumeSeries, period) {
-                var volumeValues = volumeSeries.yData, volumeLength = volumeSeries.xData.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [], commonLength, typicalPrice, cPrice, cVolume, i, j;
+                var volumeValues = volumeSeries.yData,
+                    volumeLength = volumeSeries.xData.length,
+                    pointsLength = xValues.length,
+                    cumulativePrice = [],
+                    cumulativeVolume = [],
+                    xData = [],
+                    yData = [],
+                    VWAP = [];
+                var commonLength,
+                    typicalPrice,
+                    cPrice,
+                    cVolume,
+                    i,
+                    j;
                 if (pointsLength <= volumeLength) {
                     commonLength = pointsLength;
                 }
@@ -9864,22 +10737,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -9895,20 +10771,48 @@
          * @augments Highcharts.Series
          */
         var WilliamsRIndicator = /** @class */ (function (_super) {
-            __extends(WilliamsRIndicator, _super);
+                __extends(WilliamsRIndicator, _super);
             function WilliamsRIndicator() {
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             WilliamsRIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, WR = [], // 0- date, 1- Williams %R
-                xData = [], yData = [], slicedY, close = 3, low = 2, high = 1, extremes, R, HH, // Highest high value in period
-                LL, // Lowest low value in period
-                CC, // Current close value
-                i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    WR = [], // 0- date, 1- Williams %R
+                    xData = [],
+                    yData = [],
+                    close = 3,
+                    low = 2,
+                    high = 1;
+                var slicedY,
+                    extremes,
+                    R,
+                    HH, // Highest high value in period
+                    LL, // Lowest low value in period
+                    CC, // Current close value
+                    i;
                 // Williams %R requires close value
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
@@ -10012,22 +10916,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, merge = U.merge;
+        var isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -10038,7 +10944,8 @@
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i, index) {
-            var xValue = xVal[i], yValue = index < 0 ? yVal[i] : yVal[i][index];
+            var xValue = xVal[i],
+                yValue = index < 0 ? yVal[i] : yVal[i][index];
             points.push([xValue, yValue]);
         }
         /**
@@ -10058,7 +10965,10 @@
          * @private
          */
         function populateAverage(points, xVal, yVal, i) {
-            var pLen = points.length, wmaY = weightedSumArray(points, pLen), wmaX = xVal[i - 1];
+            var pLen = points.length,
+                wmaY = weightedSumArray(points,
+                pLen),
+                wmaX = xVal[i - 1];
             points.shift(); // remove point until range < period
             return [wmaX, wmaY];
         }
@@ -10077,14 +10987,15 @@
          * @augments Highcharts.Series
          */
         var WMAIndicator = /** @class */ (function (_super) {
-            __extends(WMAIndicator, _super);
+                __extends(WMAIndicator, _super);
             function WMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -10101,7 +11012,19 @@
              *
              * */
             WMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, range = 1, xValue = xVal[0], yValue = yVal[0], WMA = [], xData = [], yData = [], index = -1, i, points, WMAPoint;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    xValue = xVal[0],
+                    wma = [],
+                    xData = [],
+                    yData = [];
+                var range = 1,
+                    index = -1,
+                    i,
+                    wmaPoint,
+                    yValue = yVal[0];
                 if (xVal.length < period) {
                     return;
                 }
@@ -10111,7 +11034,8 @@
                     yValue = yVal[0][index];
                 }
                 // Starting point
-                points = [[xValue, yValue]];
+                var points = [[xValue,
+                    yValue]];
                 // Accumulate first N-points
                 while (range !== period) {
                     accumulateAverage(points, xVal, yVal, range, index);
@@ -10119,18 +11043,18 @@
                 }
                 // Calculate value one-by-one for each period in visible data
                 for (i = range; i < yValLen; i++) {
-                    WMAPoint = populateAverage(points, xVal, yVal, i);
-                    WMA.push(WMAPoint);
-                    xData.push(WMAPoint[0]);
-                    yData.push(WMAPoint[1]);
+                    wmaPoint = populateAverage(points, xVal, yVal, i);
+                    wma.push(wmaPoint);
+                    xData.push(wmaPoint[0]);
+                    yData.push(wmaPoint[1]);
                     accumulateAverage(points, xVal, yVal, i, index);
                 }
-                WMAPoint = populateAverage(points, xVal, yVal, i);
-                WMA.push(WMAPoint);
-                xData.push(WMAPoint[0]);
-                yData.push(WMAPoint[1]);
+                wmaPoint = populateAverage(points, xVal, yVal, i);
+                wma.push(wmaPoint);
+                xData.push(wmaPoint[0]);
+                yData.push(wmaPoint[1]);
                 return {
-                    values: WMA,
+                    values: wma,
                     xData: xData,
                     yData: yData
                 };
@@ -10195,22 +11119,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge, extend = U.extend;
+        var merge = U.merge,
+            extend = U.extend;
         /* *
          *
          *  Class
@@ -10226,14 +11152,15 @@
          * @augments Highcharts.Series
          */
         var ZigzagIndicator = /** @class */ (function (_super) {
-            __extends(ZigzagIndicator, _super);
+                __extends(ZigzagIndicator, _super);
             function ZigzagIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -10250,10 +11177,25 @@
              *
              * */
             ZigzagIndicator.prototype.getValues = function (series, params) {
-                var lowIndex = params.lowIndex, highIndex = params.highIndex, deviation = params.deviation / 100, deviations = {
-                    'low': 1 + deviation,
-                    'high': 1 - deviation
-                }, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, zigzag = [], xData = [], yData = [], i, j, zigzagPoint, firstZigzagLow, firstZigzagHigh, directionUp, zigzagLen, exitLoop = false, yIndex = false;
+                var lowIndex = params.lowIndex,
+                    highIndex = params.highIndex,
+                    deviation = params.deviation / 100,
+                    deviations = {
+                        'low': 1 + deviation,
+                        'high': 1 - deviation
+                    },
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    zigzag = [],
+                    xData = [],
+                    yData = [];
+                var i,
+                    j,
+                    zigzagPoint,
+                    directionUp,
+                    exitLoop = false,
+                    yIndex = false;
                 // Exit if not enught points or no low or high values
                 if (!xVal || xVal.length <= 1 ||
                     (yValLen &&
@@ -10262,8 +11204,8 @@
                     return;
                 }
                 // Set first zigzag point candidate
-                firstZigzagLow = yVal[0][lowIndex];
-                firstZigzagHigh = yVal[0][highIndex];
+                var firstZigzagLow = yVal[0][lowIndex],
+                    firstZigzagHigh = yVal[0][highIndex];
                 // Search for a second zigzag point candidate,
                 // this will also set first zigzag point
                 for (i = 1; i < yValLen; i++) {
@@ -10327,7 +11269,7 @@
                         yIndex = false;
                     }
                 }
-                zigzagLen = zigzag.length;
+                var zigzagLen = zigzag.length;
                 // no zigzag for last point
                 if (zigzagLen !== 0 &&
                     zigzag[zigzagLen - 1][0] < xVal[yValLen - 1]) {
@@ -10435,22 +11377,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, extend = U.extend, merge = U.merge;
+        var isArray = U.isArray,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -10466,14 +11411,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionIndicator, _super);
+                __extends(LinearRegressionIndicator, _super);
             function LinearRegressionIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -10506,25 +11452,32 @@
              */
             LinearRegressionIndicator.prototype.getRegressionLineParameters = function (xData, yData) {
                 // least squares method
-                var yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
-                    return isArray(yValue) ? yValue[yIndex] : yValue;
+                var yIndex = this.options.params.index,
+                    getSingleYValue = function (yValue,
+                    yIndex) {
+                        return isArray(yValue) ? yValue[yIndex] : yValue;
                 }, xSum = xData.reduce(function (accX, val) {
                     return val + accX;
                 }, 0), ySum = yData.reduce(function (accY, val) {
                     return getSingleYValue(val, yIndex) + accY;
-                }, 0), xMean = xSum / xData.length, yMean = ySum / yData.length, xError, yError, formulaNumerator = 0, formulaDenominator = 0, i, slope;
+                }, 0), xMean = xSum / xData.length, yMean = ySum / yData.length;
+                var xError,
+                    yError,
+                    i,
+                    formulaNumerator = 0,
+                    formulaDenominator = 0;
                 for (i = 0; i < xData.length; i++) {
                     xError = xData[i] - xMean;
                     yError = getSingleYValue(yData[i], yIndex) - yMean;
                     formulaNumerator += xError * yError;
                     formulaDenominator += Math.pow(xError, 2);
                 }
-                slope = formulaDenominator ?
-                    formulaNumerator / formulaDenominator : 0; // don't divide by 0
-                return {
-                    slope: slope,
-                    intercept: yMean - slope * xMean
-                };
+                var slope = formulaDenominator ?
+                        formulaNumerator / formulaDenominator : 0; // don't divide by 0
+                    return {
+                        slope: slope,
+                        intercept: yMean - slope * xMean
+                    };
             };
             /**
              * Return the y value on a straight line.
@@ -10572,7 +11525,9 @@
              * @return {number} - closest distance between points in the base series
              */
             LinearRegressionIndicator.prototype.findClosestDistance = function (xData) {
-                var distance, closestDistance, i;
+                var distance,
+                    closestDistance,
+                    i;
                 for (i = 1; i < xData.length - 1; i++) {
                     distance = xData[i] - xData[i - 1];
                     if (distance > 0 &&
@@ -10585,14 +11540,26 @@
             };
             // Required to be implemented - starting point for indicator's logic
             LinearRegressionIndicator.prototype.getValues = function (baseSeries, regressionSeriesParams) {
-                var xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, lineParameters, i, periodStart, periodEnd, 
-                // format required to be returned
-                indicatorData = {
-                    xData: [],
-                    yData: [],
-                    values: []
-                }, endPointX, endPointY, periodXData, periodYData, periodTransformedXData, xAxisUnit = this.options.params.xAxisUnit ||
-                    this.findClosestDistance(xData);
+                var xData = baseSeries.xData,
+                    yData = baseSeries.yData,
+                    period = regressionSeriesParams.period, 
+                    // format required to be returned
+                    indicatorData = {
+                        xData: [],
+                        yData: [],
+                        values: []
+                    },
+                    xAxisUnit = this.options.params.xAxisUnit ||
+                        this.findClosestDistance(xData);
+                var lineParameters,
+                    i,
+                    periodStart,
+                    periodEnd,
+                    endPointX,
+                    endPointY,
+                    periodXData,
+                    periodYData,
+                    periodTransformedXData;
                 // Iteration logic: x value of the last point within the period
                 // (end point) is used to represent the y value (regression)
                 // of the entire period.
@@ -10729,22 +11696,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -10760,14 +11729,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionSlopesIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionSlopesIndicator, _super);
+                __extends(LinearRegressionSlopesIndicator, _super);
             function LinearRegressionSlopesIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -10845,22 +11815,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -10876,14 +11848,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionInterceptIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionInterceptIndicator, _super);
+                __extends(LinearRegressionInterceptIndicator, _super);
             function LinearRegressionInterceptIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -10961,22 +11934,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
-        var extend = U.extend, merge = U.merge;
+        var extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -10992,14 +11967,15 @@
          * @augments Highcharts.Series
          */
         var LinearRegressionAngleIndicator = /** @class */ (function (_super) {
-            __extends(LinearRegressionAngleIndicator, _super);
+                __extends(LinearRegressionAngleIndicator, _super);
             function LinearRegressionAngleIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -11085,22 +12061,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -11140,14 +12119,15 @@
          * @augments Highcharts.Series
          */
         var ABandsIndicator = /** @class */ (function (_super) {
-            __extends(ABandsIndicator, _super);
+                __extends(ABandsIndicator, _super);
             function ABandsIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -11164,16 +12144,35 @@
              *
              * */
             ABandsIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, factor = params.factor, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // Upperbands
-                UB = [], 
-                // Lowerbands
-                LB = [], 
-                // ABANDS array structure:
-                // 0-date, 1-top line, 2-middle line, 3-bottom line
-                ABANDS = [], 
+                var period = params.period,
+                    factor = params.factor,
+                    index = params.index,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // Upperbands
+                    UB = [], 
+                    // Lowerbands
+                    LB = [], 
+                    // ABANDS array structure:
+                    // 0-date, 1-top line, 2-middle line, 3-bottom line
+                    ABANDS = [],
+                    low = 2,
+                    high = 1,
+                    xData = [],
+                    yData = [];
                 // middle line, top line and bottom line
-                ML, TL, BL, date, bandBase, pointSMA, ubSMA, lbSMA, low = 2, high = 1, xData = [], yData = [], slicedX, slicedY, i;
+                var ML,
+                    TL,
+                    BL,
+                    date,
+                    bandBase,
+                    pointSMA,
+                    ubSMA,
+                    lbSMA,
+                    slicedX,
+                    slicedY,
+                    i;
                 if (yValLen < period) {
                     return;
                 }
@@ -11337,22 +12336,25 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend, merge = U.merge, isArray = U.isArray;
+        var extend = U.extend,
+            merge = U.merge,
+            isArray = U.isArray;
         /* *
          *
          *  Class
@@ -11368,14 +12370,15 @@
          * @augments Highcharts.Series
          */
         var TrendLineIndicator = /** @class */ (function (_super) {
-            __extends(TrendLineIndicator, _super);
+                __extends(TrendLineIndicator, _super);
             function TrendLineIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *   Properties
@@ -11384,6 +12387,7 @@
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
+                _this.updateAllPoints = true;
                 return _this;
             }
             /* *
@@ -11392,15 +12396,25 @@
              *
              * */
             TrendLineIndicator.prototype.getValues = function (series, params) {
-                var xVal = series.xData, yVal = series.yData, LR = [], xData = [], yData = [], sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, xValLength = xVal.length, index = params.index, alpha, beta, i, x, y;
+                var xVal = series.xData,
+                    yVal = series.yData,
+                    LR = [],
+                    xData = [],
+                    yData = [],
+                    xValLength = xVal.length,
+                    index = params.index;
+                var sumX = (xValLength - 1) * xValLength / 2,
+                    sumY = 0,
+                    sumXY = 0,
+                    sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6,
+                    alpha,
+                    i,
+                    y;
                 // Get sums:
                 for (i = 0; i < xValLength; i++) {
-                    x = xVal[i];
                     y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];
-                    sumX += x;
                     sumY += y;
-                    sumXY += x * y;
-                    sumX2 += x * x;
+                    sumXY += i * y;
                 }
                 // Get slope and offset:
                 alpha = (xValLength * sumXY - sumX * sumY) /
@@ -11408,14 +12422,13 @@
                 if (isNaN(alpha)) {
                     alpha = 0;
                 }
-                beta = (sumY - alpha * sumX) / xValLength;
+                var beta = (sumY - alpha * sumX) / xValLength;
                 // Calculate linear regression:
                 for (i = 0; i < xValLength; i++) {
-                    x = xVal[i];
-                    y = alpha * x + beta;
+                    y = alpha * i + beta;
                     // Prepare arrays required for getValues() method
-                    LR[i] = [x, y];
-                    xData[i] = x;
+                    LR[i] = [xVal[i], y];
+                    xData[i] = xVal[i];
                     yData[i] = y;
                 }
                 return {
@@ -11500,22 +12513,27 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat, defined = U.defined, extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var correctFloat = U.correctFloat,
+            defined = U.defined,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -11531,14 +12549,15 @@
          * @augments Highcharts.Series
          */
         var DisparityIndexIndicator = /** @class */ (function (_super) {
-            __extends(DisparityIndexIndicator, _super);
+                __extends(DisparityIndexIndicator, _super);
             function DisparityIndexIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -11556,9 +12575,10 @@
              *
              * */
             DisparityIndexIndicator.prototype.init = function () {
-                var args = arguments, ctx = this, // Disparity Index indicator
-                params = args[1].params, // options.params
-                averageType = params && params.average ? params.average : void 0;
+                var args = arguments,
+                    ctx = this, // Disparity Index indicator
+                    params = args[1].params, // options.params
+                    averageType = params && params.average ? params.average : void 0;
                 ctx.averageIndicator = SeriesRegistry
                     .seriesTypes[averageType] || SMAIndicator;
                 ctx.averageIndicator.prototype.init.apply(ctx, args);
@@ -11567,11 +12587,21 @@
                 return correctFloat(curPrice - periodAverage) / periodAverage * 100;
             };
             DisparityIndexIndicator.prototype.getValues = function (series, params) {
-                var index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, disparityIndexPoint = [], xData = [], yData = [], 
-                // "as any" because getValues doesn't exist on typeof Series
-                averageIndicator = this.averageIndicator, isOHLC = isArray(yVal[0]), 
-                // Get the average indicator's values
-                values = averageIndicator.prototype.getValues(series, params), yValues = values.yData, start = xVal.indexOf(values.xData[0]);
+                var index = params.index,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    disparityIndexPoint = [],
+                    xData = [],
+                    yData = [], 
+                    // "as any" because getValues doesn't exist on typeof Series
+                    averageIndicator = this.averageIndicator,
+                    isOHLC = isArray(yVal[0]), 
+                    // Get the average indicator's values
+                    values = averageIndicator.prototype.getValues(series,
+                    params),
+                    yValues = values.yData,
+                    start = xVal.indexOf(values.xData[0]);
                 // Check period, if bigger than points length, skip
                 if (!yValues || yValues.length === 0 ||
                     !defined(index) ||
@@ -11580,7 +12610,8 @@
                 }
                 // Get the Disparity Index indicator's values
                 for (var i = start; i < yValLen; i++) {
-                    var disparityIndexValue = this.calculateDisparityIndex(isOHLC ? yVal[i][index] : yVal[i], yValues[i - start]);
+                    var disparityIndexValue = this.calculateDisparityIndex(isOHLC ? yVal[i][index] : yVal[i],
+                        yValues[i - start]);
                     disparityIndexPoint.push([
                         xVal[i],
                         disparityIndexValue

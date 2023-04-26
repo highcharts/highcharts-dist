@@ -11,9 +11,9 @@
  * */
 'use strict';
 import H from '../../../Core/Globals.js';
-var doc = H.doc, isFirefox = H.isFirefox;
+const { doc, isFirefox } = H;
 import U from '../../../Core/Utilities.js';
-var createElement = U.createElement, isArray = U.isArray, isObject = U.isObject, objectEach = U.objectEach, pick = U.pick, stableSort = U.stableSort;
+const { createElement, isArray, isObject, objectEach, pick, stableSort } = U;
 /* *
  *
  *  Functions
@@ -36,9 +36,9 @@ function addForm(chart, options, callback, isInit) {
     if (!chart) {
         return;
     }
-    var popupDiv = this.container, lang = this.lang;
+    const popupDiv = this.container, lang = this.lang;
     // create title of annotations
-    var lhsCol = createElement('h2', {
+    let lhsCol = createElement('h2', {
         className: 'highcharts-popup-main-title'
     }, void 0, popupDiv);
     lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
@@ -46,7 +46,7 @@ function addForm(chart, options, callback, isInit) {
     lhsCol = createElement('div', {
         className: ('highcharts-popup-lhs-col highcharts-popup-lhs-full')
     }, void 0, popupDiv);
-    var bottomRow = createElement('div', {
+    const bottomRow = createElement('div', {
         className: 'highcharts-popup-bottom-row'
     }, void 0, popupDiv);
     addFormFields.call(this, lhsCol, chart, '', options, [], true);
@@ -63,8 +63,7 @@ function addForm(chart, options, callback, isInit) {
  * @param {Function} - on click callback
  */
 function addToolbar(chart, options, callback) {
-    var _this = this;
-    var lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
+    const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
     // set small size
     if (popupDiv.className.indexOf(toolbarClass) === -1) {
         popupDiv.className += ' ' + toolbarClass;
@@ -80,12 +79,12 @@ function addToolbar(chart, options, callback) {
     // Basic shapes:
     options.shapes && options.shapes[0].type, '')));
     // add buttons
-    var button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
+    let button = this.addButton(popupDiv, lang.removeButton || 'Remove', 'remove', popupDiv, callback);
     button.className += ' highcharts-annotation-remove-button';
     button.style['background-image'] = 'url(' +
         this.iconsURL + 'destroy.svg)';
-    button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, function () {
-        showForm.call(_this, 'annotation-edit', chart, options, callback);
+    button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
+        showForm.call(this, 'annotation-edit', chart, options, callback);
     });
     button.className += ' highcharts-annotation-edit-button';
     button.style['background-image'] = 'url(' +
@@ -108,13 +107,12 @@ function addToolbar(chart, options, callback) {
  * Recursive flag for root
  */
 function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
-    var _this = this;
     if (!chart) {
         return;
     }
-    var addInput = this.addInput, lang = this.lang;
-    var parentFullName, titleName;
-    objectEach(options, function (value, option) {
+    const addInput = this.addInput, lang = this.lang;
+    let parentFullName, titleName;
+    objectEach(options, (value, option) => {
         // create name like params.styles.fontSize
         parentFullName = parentNode !== '' ? parentNode + '.' + option : option;
         if (isObject(value)) {
@@ -131,11 +129,11 @@ function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
                         parentDiv
                     ]);
                 }
-                addFormFields.call(_this, parentDiv, chart, parentFullName, value, storage, false);
+                addFormFields.call(this, parentDiv, chart, parentFullName, value, storage, false);
             }
             else {
                 storage.push([
-                    _this,
+                    this,
                     parentFullName,
                     'annotation',
                     parentDiv,
@@ -145,11 +143,11 @@ function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
         }
     });
     if (isRoot) {
-        stableSort(storage, function (a) { return (a[1].match(/format/g) ? -1 : 1); });
+        stableSort(storage, (a) => (a[1].match(/format/g) ? -1 : 1));
         if (isFirefox) {
             storage.reverse(); // (#14691)
         }
-        storage.forEach(function (genInput) {
+        storage.forEach((genInput) => {
             if (genInput[0] === true) {
                 createElement('span', {
                     className: 'highcharts-annotation-title'
@@ -170,8 +168,8 @@ function addFormFields(parentDiv, chart, parentNode, options, storage, isRoot) {
  *  Default Export
  *
  * */
-var PopupAnnotations = {
-    addForm: addForm,
-    addToolbar: addToolbar
+const PopupAnnotations = {
+    addForm,
+    addToolbar
 };
 export default PopupAnnotations;

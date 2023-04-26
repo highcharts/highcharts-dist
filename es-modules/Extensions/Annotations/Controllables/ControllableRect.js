@@ -4,25 +4,10 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Controllable from './Controllable.js';
 import ControllablePath from './ControllablePath.js';
 import U from '../../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
@@ -46,40 +31,38 @@ var merge = U.merge;
  * @param {number} index
  * Index of the rectangle
  */
-var ControllableRect = /** @class */ (function (_super) {
-    __extends(ControllableRect, _super);
+class ControllableRect extends Controllable {
     /* *
      *
      *  Constructors
      *
      * */
-    function ControllableRect(annotation, options, index) {
-        var _this = _super.call(this, annotation, options, index, 'shape') || this;
+    constructor(annotation, options, index) {
+        super(annotation, options, index, 'shape');
         /* *
          *
          *  Properties
          *
          * */
-        _this.type = 'rect';
-        _this.translate = _super.prototype.translateShape;
-        return _this;
+        this.type = 'rect';
+        this.translate = super.translateShape;
     }
     /* *
      *
      *  Functions
      *
      * */
-    ControllableRect.prototype.render = function (parent) {
-        var attrs = this.attrsFromOptions(this.options);
+    render(parent) {
+        const attrs = this.attrsFromOptions(this.options);
         this.graphic = this.annotation.chart.renderer
             .rect(0, -9e9, 0, 0)
             .attr(attrs)
             .add(parent);
-        _super.prototype.render.call(this);
-    };
-    ControllableRect.prototype.redraw = function (animation) {
+        super.render();
+    }
+    redraw(animation) {
         if (this.graphic) {
-            var position = this.anchor(this.points[0]).absolutePosition;
+            const position = this.anchor(this.points[0]).absolutePosition;
             if (position) {
                 this.graphic[animation ? 'animate' : 'attr']({
                     x: position.x,
@@ -96,24 +79,23 @@ var ControllableRect = /** @class */ (function (_super) {
             }
             this.graphic.placed = Boolean(position);
         }
-        _super.prototype.redraw.call(this, animation);
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    /**
-     * A map object which allows to map options attributes to element attributes
-     *
-     * @type {Annotation.ControllableRect.AttrsMap}
-     */
-    ControllableRect.attrsMap = merge(ControllablePath.attrsMap, {
-        width: 'width',
-        height: 'height'
-    });
-    return ControllableRect;
-}(Controllable));
+        super.redraw(animation);
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+/**
+ * A map object which allows to map options attributes to element attributes
+ *
+ * @type {Annotation.ControllableRect.AttrsMap}
+ */
+ControllableRect.attrsMap = merge(ControllablePath.attrsMap, {
+    width: 'width',
+    height: 'height'
+});
 /* *
  *
  *  Default Export

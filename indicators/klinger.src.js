@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Stock JS v10.3.3 (2023-01-20)
+ * @license Highcharts Stock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -47,10 +47,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined,
-            error = U.error,
-            merge = U.merge;
+        const { sma: { prototype: smaProto } } = SeriesRegistry.seriesTypes;
+        const { defined, error, merge } = U;
         /* *
          *
          *  Composition
@@ -68,7 +66,7 @@
             *  Constants
             *
             * */
-            var composedClasses = [];
+            const composedMembers = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -78,7 +76,7 @@
              * @private
              * @type {Array<string>}
              */
-            var linesApiNames = ['bottomLine'];
+            const linesApiNames = ['bottomLine'];
             /**
              * Lines ids. Required to plot appropriate amount of lines.
              * Notice that pointArrayMap should have more elements than
@@ -89,7 +87,7 @@
              * @private
              * @type {Array<string>}
              */
-            var pointArrayMap = ['top', 'bottom'];
+            const pointArrayMap = ['top', 'bottom'];
             /**
              * Names of the lines, bewteen which the area should be plotted.
              * If the drawing of the area should
@@ -99,14 +97,14 @@
              * @private
              * @type {Array<string>}
              */
-            var areaLinesNames = ['top'];
+            const areaLinesNames = ['top'];
             /**
              * Main line id.
              *
              * @private
              * @type {string}
              */
-            var pointValKey = 'top';
+            const pointValKey = 'top';
             /* *
             *
             *  Functions
@@ -123,9 +121,8 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (composedClasses.indexOf(IndicatorClass) === -1) {
-                    composedClasses.push(IndicatorClass);
-                    var proto = IndicatorClass.prototype;
+                if (U.pushUnique(composedMembers, IndicatorClass)) {
+                    const proto = IndicatorClass.prototype;
                     proto.linesApiNames = (proto.linesApiNames ||
                         linesApiNames.slice());
                     proto.pointArrayMap = (proto.pointArrayMap ||
@@ -163,8 +160,8 @@
              *         Returns translated lines names without excluded value.
              */
             function getTranslatedLinesNames(indicator, excludedValue) {
-                var translatedLines = [];
-                (indicator.pointArrayMap || []).forEach(function (propertyName) {
+                const translatedLines = [];
+                (indicator.pointArrayMap || []).forEach((propertyName) => {
                     if (propertyName !== excludedValue) {
                         translatedLines.push(getLineName(propertyName));
                     }
@@ -177,26 +174,16 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    areaLinesNames = indicator.areaLinesNames,
-                    mainLinePoints = indicator.points,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    }, 
-                    // additional lines point place holders:
-                    secondaryLines = [],
-                    secondaryLinesNames = getTranslatedLinesNames(indicator,
-                    pointValKey);
-                var pointsLength = mainLinePoints.length,
-                    point;
+                const indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
+                let pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
-                secondaryLinesNames.forEach(function (plotLine, index) {
+                secondaryLinesNames.forEach((plotLine, index) => {
                     // create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
@@ -212,12 +199,9 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
-                        secondLinePoints = secondaryLines[index],
-                        firstLinePoints = areaLinesNames.length === 1 ?
-                            mainLinePoints :
-                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
-                        originalColor = indicator.color;
+                    const index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
+                        mainLinePoints :
+                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -232,7 +216,7 @@
                     indicator.color = originalColor;
                 }
                 // Modify options and generate additional lines:
-                linesApiNames.forEach(function (lineName, i) {
+                linesApiNames.forEach((lineName, i) => {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {
@@ -268,9 +252,7 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath,
-                    path = [],
-                    higherAreaPath = [];
+                let areaPath, path = [], higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -280,7 +262,7 @@
                         path = smaProto.getGraphPath.call(this, points);
                         higherAreaPath = areaPath.slice(0, path.length);
                         // Reverse points, so that the areaFill will start from the end:
-                        for (var i = higherAreaPath.length - 1; i >= 0; i--) {
+                        for (let i = higherAreaPath.length - 1; i >= 0; i--) {
                             path.push(higherAreaPath[i]);
                         }
                     }
@@ -298,8 +280,8 @@
              *         Returns point Y value for all lines
              */
             function indicatorToYData(point) {
-                var pointColl = [];
-                (this.pointArrayMap || []).forEach(function (propertyName) {
+                const pointColl = [];
+                (this.pointArrayMap || []).forEach((propertyName) => {
                     pointColl.push(point[propertyName]);
                 });
                 return pointColl;
@@ -310,22 +292,20 @@
              * @private
              */
             function indicatorTranslate() {
-                var _this = this;
-                var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [],
-                    value;
+                const pointArrayMap = this.pointArrayMap;
+                let LinesNames = [], value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
-                this.points.forEach(function (point) {
-                    pointArrayMap.forEach(function (propertyName, i) {
+                this.points.forEach((point) => {
+                    pointArrayMap.forEach((propertyName, i) => {
                         value = point[propertyName];
                         // If the modifier, like for example compare exists,
                         // modified the original value by that method, #15867.
-                        if (_this.dataModify) {
-                            value = _this.dataModify.modifyValue(value);
+                        if (this.dataModify) {
+                            value = this.dataModify.modifyValue(value);
                         }
                         if (value !== null) {
-                            point[LinesNames[i]] = _this.yAxis.toPixels(value, true);
+                            point[LinesNames[i]] = this.yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -347,30 +327,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var _a = SeriesRegistry.seriesTypes,
-            EMAIndicator = _a.ema,
-            SMAIndicator = _a.sma;
-        var correctFloat = U.correctFloat,
-            error = U.error,
-            extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge;
+        const { ema: EMAIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
+        const { correctFloat, error, extend, isArray, merge } = U;
         /* *
          *
          *  Class
@@ -385,76 +343,65 @@
          *
          * @augments Highcharts.Series
          */
-        var KlingerIndicator = /** @class */ (function (_super) {
-                __extends(KlingerIndicator, _super);
-            function KlingerIndicator() {
+        class KlingerIndicator extends SMAIndicator {
+            constructor() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.points = void 0;
-                _this.options = void 0;
-                _this.volumeSeries = void 0;
-                return _this;
+                this.data = void 0;
+                this.points = void 0;
+                this.options = void 0;
+                this.volumeSeries = void 0;
             }
             /* *
              *
              *  Functions
              *
              * */
-            KlingerIndicator.prototype.calculateTrend = function (yVal, i) {
-                var isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
-                        yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
+            calculateTrend(yVal, i) {
+                const isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
+                    yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
                 return isUpward ? 1 : -1;
-            };
+            }
             // Checks if the series and volumeSeries are accessible, number of
             // points.x is longer than period, is series has OHLC data
-            KlingerIndicator.prototype.isValidData = function (firstYVal) {
-                var chart = this.chart,
-                    options = this.options,
-                    series = this.linkedParent,
-                    isSeriesOHLC = isArray(firstYVal) &&
-                        firstYVal.length === 4,
-                    volumeSeries = this.volumeSeries ||
-                        (this.volumeSeries =
-                            chart.get(options.params.volumeSeriesID));
+            isValidData(firstYVal) {
+                const chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = isArray(firstYVal) &&
+                    firstYVal.length === 4, volumeSeries = this.volumeSeries ||
+                    (this.volumeSeries =
+                        chart.get(options.params.volumeSeriesID));
                 if (!volumeSeries) {
                     error('Series ' +
                         options.params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                 }
-                var isLengthValid = [series,
-                    volumeSeries].every(function (series) {
-                        return series && series.xData && series.xData.length >=
-                            options.params.slowAvgPeriod;
+                const isLengthValid = [series, volumeSeries].every(function (series) {
+                    return series && series.xData && series.xData.length >=
+                        options.params.slowAvgPeriod;
                 });
                 return !!(isLengthValid && isSeriesOHLC);
-            };
-            KlingerIndicator.prototype.getCM = function (previousCM, DM, trend, previousTrend, prevoiusDM) {
+            }
+            getCM(previousCM, DM, trend, previousTrend, prevoiusDM) {
                 return correctFloat(DM + (trend === previousTrend ? previousCM : prevoiusDM));
-            };
-            KlingerIndicator.prototype.getDM = function (high, low) {
+            }
+            getDM(high, low) {
                 return correctFloat(high - low);
-            };
-            KlingerIndicator.prototype.getVolumeForce = function (yVal) {
-                var volumeForce = [];
-                var CM = 0, // cumulative measurement
-                    DM, // daily measurement
-                    force,
-                    i = 1, // start from second point
-                    previousCM = 0,
-                    previousDM = yVal[0][1] - yVal[0][2], // initial DM
-                    previousTrend = 0,
-                    trend;
+            }
+            getVolumeForce(yVal) {
+                const volumeForce = [];
+                let CM = 0, // cumulative measurement
+                DM, // daily measurement
+                force, i = 1, // start from second point
+                previousCM = 0, previousDM = yVal[0][1] - yVal[0][2], // initial DM
+                previousTrend = 0, trend;
                 for (i; i < yVal.length; i++) {
                     trend = this.calculateTrend(yVal, i);
                     DM = this.getDM(yVal[i][1], yVal[i][2]);
@@ -472,43 +419,29 @@
                     previousDM = DM;
                 }
                 return volumeForce;
-            };
-            KlingerIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
+            }
+            getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
                 return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
-            };
-            KlingerIndicator.prototype.getSMA = function (period, index, values) {
+            }
+            getSMA(period, index, values) {
                 return EMAIndicator.prototype
                     .accumulatePeriodPoints(period, index, values) / period;
-            };
-            KlingerIndicator.prototype.getValues = function (series, params) {
-                var Klinger = [],
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    xData = [],
-                    yData = [],
-                    calcSingal = [];
-                var KO,
-                    i = 0,
-                    fastEMA = 0,
-                    slowEMA, 
-                    // signalEMA: number|undefined = void 0,
-                    previousFastEMA = void 0,
-                    previousSlowEMA = void 0,
-                    signal = null;
+            }
+            getValues(series, params) {
+                const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSingal = [];
+                let KO, i = 0, fastEMA = 0, slowEMA, 
+                // signalEMA: number|undefined = void 0,
+                previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
                 // If the necessary conditions are not fulfilled, don't proceed.
                 if (!this.isValidData(yVal[0])) {
                     return;
                 }
                 // Calculate the Volume Force array.
-                var volumeForce = this.getVolumeForce(yVal);
+                const volumeForce = this.getVolumeForce(yVal);
                 // Calculate SMA for the first points.
-                var SMAFast = this.getSMA(params.fastAvgPeriod, 0,
-                    volumeForce),
-                    SMASlow = this.getSMA(params.slowAvgPeriod, 0,
-                    volumeForce);
+                const SMAFast = this.getSMA(params.fastAvgPeriod, 0, volumeForce), SMASlow = this.getSMA(params.slowAvgPeriod, 0, volumeForce);
                 // Calculate EMApercent for the first points.
-                var fastEMApercent = 2 / (params.fastAvgPeriod + 1),
-                    slowEMApercent = 2 / (params.slowAvgPeriod + 1);
+                const fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
                 // Calculate KO
                 for (i; i < yVal.length; i++) {
                     // Get EMA for fast period.
@@ -525,9 +458,7 @@
                         // Calculate signal SMA
                         if (calcSingal.length >= params.signalPeriod) {
                             signal = calcSingal.slice(-params.signalPeriod)
-                                .reduce(function (prev, curr) {
-                                return prev + curr;
-                            }) / params.signalPeriod;
+                                .reduce((prev, curr) => prev + curr) / params.signalPeriod;
                         }
                         Klinger.push([xVal[i], KO, signal]);
                         xData.push(xVal[i]);
@@ -539,81 +470,80 @@
                     xData: xData,
                     yData: yData
                 };
-            };
+            }
+        }
+        /**
+         * Klinger oscillator. This series requires the `linkedTo` option to be set
+         * and should be loaded after the `stock/indicators/indicators.js` file.
+         *
+         * @sample stock/indicators/klinger
+         *         Klinger oscillator
+         *
+         * @extends      plotOptions.sma
+         * @since 9.1.0
+         * @product      highstock
+         * @requires     stock/indicators/indicators
+         * @requires     stock/indicators/klinger
+         * @optionparent plotOptions.klinger
+         */
+        KlingerIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
             /**
-             * Klinger oscillator. This series requires the `linkedTo` option to be set
-             * and should be loaded after the `stock/indicators/indicators.js` file.
+             * Paramters used in calculation of Klinger Oscillator.
              *
-             * @sample stock/indicators/klinger
-             *         Klinger oscillator
-             *
-             * @extends      plotOptions.sma
-             * @since 9.1.0
-             * @product      highstock
-             * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/klinger
-             * @optionparent plotOptions.klinger
+             * @excluding index, period
              */
-            KlingerIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            params: {
                 /**
-                 * Paramters used in calculation of Klinger Oscillator.
-                 *
-                 * @excluding index, period
+                 * The fast period for indicator calculations.
                  */
-                params: {
+                fastAvgPeriod: 34,
+                /**
+                 * The slow period for indicator calculations.
+                 */
+                slowAvgPeriod: 55,
+                /**
+                 * The base period for signal calculations.
+                 */
+                signalPeriod: 13,
+                /**
+                 * The id of another series to use its data as volume data for the
+                 * indiator calculation.
+                 */
+                volumeSeriesID: 'volume'
+            },
+            signalLine: {
+                /**
+                 * Styles for a signal line.
+                 */
+                styles: {
                     /**
-                     * The fast period for indicator calculations.
+                     * Pixel width of the line.
                      */
-                    fastAvgPeriod: 34,
+                    lineWidth: 1,
                     /**
-                     * The slow period for indicator calculations.
+                     * Color of the line. If not set, it's inherited from
+                     * [plotOptions.klinger.color
+                     * ](#plotOptions.klinger.color).
+                     *
+                     * @type {Highcharts.ColorString}
                      */
-                    slowAvgPeriod: 55,
-                    /**
-                     * The base period for signal calculations.
-                     */
-                    signalPeriod: 13,
-                    /**
-                     * The id of another series to use its data as volume data for the
-                     * indiator calculation.
-                     */
-                    volumeSeriesID: 'volume'
-                },
-                signalLine: {
-                    /**
-                     * Styles for a signal line.
-                     */
-                    styles: {
-                        /**
-                         * Pixel width of the line.
-                         */
-                        lineWidth: 1,
-                        /**
-                         * Color of the line. If not set, it's inherited from
-                         * [plotOptions.klinger.color
-                         * ](#plotOptions.klinger.color).
-                         *
-                         * @type {Highcharts.ColorString}
-                         */
-                        lineColor: '#ff0000'
-                    }
-                },
-                dataGrouping: {
-                    approximation: 'averages'
-                },
-                tooltip: {
-                    pointFormat: '<span style="color: {point.color}">\u25CF</span>' +
-                        '<b> {series.name}</b><br/>' +
-                        '<span style="color: {point.color}">Klinger</span>: ' +
-                        '{point.y}<br/>' +
-                        '<span style="color: ' +
-                        '{point.series.options.signalLine.styles.lineColor}">' +
-                        'Signal</span>' +
-                        ': {point.signal}<br/>'
+                    lineColor: '#ff0000'
                 }
-            });
-            return KlingerIndicator;
-        }(SMAIndicator));
+            },
+            dataGrouping: {
+                approximation: 'averages'
+            },
+            tooltip: {
+                pointFormat: '<span style="color: {point.color}">\u25CF</span>' +
+                    '<b> {series.name}</b><br/>' +
+                    '<span style="color: {point.color}">Klinger</span>: ' +
+                    '{point.y}<br/>' +
+                    '<span style="color: ' +
+                    '{point.series.options.signalLine.styles.lineColor}">' +
+                    'Signal</span>' +
+                    ': {point.signal}<br/>'
+            }
+        });
         extend(KlingerIndicator.prototype, {
             areaLinesNames: [],
             linesApiNames: ['signalLine'],

@@ -27,7 +27,7 @@
  * @requires     highcharts-more
  * @optionparent legend.bubbleLegend
  */
-var BubbleLegendDefaults = {
+const BubbleLegendDefaults = {
     /**
      * The color of the ranges borders, can be also defined for an
      * individual range.
@@ -163,7 +163,7 @@ var BubbleLegendDefaults = {
          */
         style: {
             /** @ignore-option */
-            fontSize: '10px',
+            fontSize: '0.7em',
             /** @ignore-option */
             color: "#000000" /* Palette.neutralColor100 */
         },

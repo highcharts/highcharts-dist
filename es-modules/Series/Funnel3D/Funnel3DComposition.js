@@ -13,12 +13,12 @@
  * */
 'use strict';
 import Color from '../../Core/Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import H from '../../Core/Globals.js';
-var charts = H.charts;
+const { charts } = H;
 import SVGRenderer3D from '../../Core/Renderer/SVG/SVGRenderer3D.js';
 import U from '../../Core/Utilities.js';
-var error = U.error, extend = U.extend, merge = U.merge;
+const { error, extend, merge } = U;
 import '../../Core/Renderer/SVG/SVGRenderer.js';
 /* *
  *
@@ -58,7 +58,7 @@ var Funnel3DComposition;
             pathType: 'funnel3d',
             // override opacity and color setters to control opacity
             opacitySetter: function (opacity) {
-                var funnel3d = this, parts = funnel3d.parts, chart = H.charts[funnel3d.renderer.chartIndex], filterId = 'group-opacity-' + opacity + '-' + chart.index;
+                const funnel3d = this, parts = funnel3d.parts, chart = H.charts[funnel3d.renderer.chartIndex], filterId = 'group-opacity-' + opacity + '-' + chart.index;
                 // use default for top and bottom
                 funnel3d.parts = funnel3d.mainParts;
                 funnel3d.singleSetterForParts('opacity', opacity);
@@ -102,7 +102,7 @@ var Funnel3DComposition;
             },
             fillSetter: function (fill) {
                 // extract alpha channel to use the opacitySetter
-                var funnel3d = this, fillColor = color(fill), alpha = fillColor.rgba[3], partsWithColor = {
+                let funnel3d = this, fillColor = color(fill), alpha = fillColor.rgba[3], partsWithColor = {
                     // standard color for top and bottom
                     top: color(fill).brighten(0.1).get(),
                     bottom: color(fill).brighten(-0.2).get()
@@ -136,7 +136,7 @@ var Funnel3DComposition;
                 if (fillColor.linearGradient) {
                     // color in steps, as each gradient will generate a key
                     funnel3d.sideGroups.forEach(function (sideGroupName) {
-                        var box = funnel3d[sideGroupName].gradientBox, gradient = fillColor.linearGradient, alteredGradient = merge(fillColor, {
+                        const box = funnel3d[sideGroupName].gradientBox, gradient = fillColor.linearGradient, alteredGradient = merge(fillColor, {
                             linearGradient: {
                                 x1: box.x + gradient.x1 * box.width,
                                 y1: box.y + gradient.y1 * box.height,
@@ -160,7 +160,7 @@ var Funnel3DComposition;
                     });
                     if (fillColor.radialGradient) {
                         funnel3d.sideGroups.forEach(function (sideGroupName) {
-                            var gradBox = funnel3d[sideGroupName].gradientBox, centerX = gradBox.x + gradBox.width / 2, centerY = gradBox.y + gradBox.height / 2, diameter = Math.min(gradBox.width, gradBox.height);
+                            const gradBox = funnel3d[sideGroupName].gradientBox, centerX = gradBox.x + gradBox.width / 2, centerY = gradBox.y + gradBox.height / 2, diameter = Math.min(gradBox.width, gradBox.height);
                             funnel3d.sideParts[sideGroupName].forEach(function (partName) {
                                 funnel3d[partName].setRadialReference([
                                     centerX, centerY, diameter
@@ -176,7 +176,7 @@ var Funnel3DComposition;
                 if (fillColor.linearGradient) {
                     [funnel3d.frontLower, funnel3d.frontUpper]
                         .forEach(function (part) {
-                        var elem = part.element, grad = (elem &&
+                        const elem = part.element, grad = (elem &&
                             funnel3d.renderer.gradients[elem.gradient]);
                         if (grad &&
                             grad.attr('gradientUnits') !== 'userSpaceOnUse') {
@@ -189,10 +189,10 @@ var Funnel3DComposition;
                 return funnel3d;
             },
             adjustForGradient: function () {
-                var funnel3d = this, bbox;
+                let funnel3d = this, bbox;
                 funnel3d.sideGroups.forEach(function (sideGroupName) {
                     // use common extremes for groups for matching gradients
-                    var topLeftEdge = {
+                    let topLeftEdge = {
                         x: Number.MAX_VALUE,
                         y: Number.MAX_VALUE
                     }, bottomRightEdge = {
@@ -201,7 +201,7 @@ var Funnel3DComposition;
                     };
                     // get extremes
                     funnel3d.sideParts[sideGroupName].forEach(function (partName) {
-                        var part = funnel3d[partName];
+                        const part = funnel3d[partName];
                         bbox = part.getBBox(true);
                         topLeftEdge = {
                             x: Math.min(topLeftEdge.x, bbox.x),
@@ -237,10 +237,10 @@ var Funnel3DComposition;
         });
     }
     function wrapRenderer3D(SVGRendererClass) {
-        var rendererProto = SVGRendererClass.prototype;
+        const rendererProto = SVGRendererClass.prototype;
         extend(rendererProto, {
             funnel3d: function (shapeArgs) {
-                var renderer = this, funnel3d = renderer.element3d('funnel3d', shapeArgs), styledMode = renderer.styledMode, 
+                const renderer = this, funnel3d = renderer.element3d('funnel3d', shapeArgs), styledMode = renderer.styledMode, 
                 // hide stroke for Firefox
                 strokeAttrs = {
                     'stroke-width': 1,
@@ -287,7 +287,7 @@ var Funnel3DComposition;
                 if (!this.getCylinderEnd) {
                     error('A required Highcharts module is missing: cylinder.js', true, charts[this.chartIndex]);
                 }
-                var renderer = this, chart = charts[renderer.chartIndex], 
+                let renderer = this, chart = charts[renderer.chartIndex], 
                 // adjust angles for visible edges
                 // based on alpha, selected through visual tests
                 alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -

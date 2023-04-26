@@ -11,13 +11,13 @@
  * */
 'use strict';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent;
+const { addEvent } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -27,8 +27,7 @@ var composedClasses = [];
  * @private
  */
 function compose(ChartClass) {
-    if (composedClasses.indexOf(ChartClass) === -1) {
-        composedClasses.push(ChartClass);
+    if (U.pushUnique(composedMembers, ChartClass)) {
         addEvent(ChartClass, 'load', onChartLoad);
     }
 }
@@ -37,20 +36,20 @@ function compose(ChartClass) {
  * @private
  */
 function onChartLoad() {
-    var chart = this;
-    var mousedownUnbinder, mousemoveUnbinder, mouseupUnbinder;
+    const chart = this;
+    let mousedownUnbinder, mousemoveUnbinder, mouseupUnbinder;
     if (chart.container) {
-        mousedownUnbinder = addEvent(chart.container, 'mousedown', function (event) {
-            var point = chart.hoverPoint;
+        mousedownUnbinder = addEvent(chart.container, 'mousedown', (event) => {
+            const point = chart.hoverPoint;
             if (point &&
                 point.series &&
                 point.series.hasDraggableNodes &&
                 point.series.options.draggable) {
                 point.series.onMouseDown(point, event);
-                mousemoveUnbinder = addEvent(chart.container, 'mousemove', function (e) { return (point &&
+                mousemoveUnbinder = addEvent(chart.container, 'mousemove', (e) => (point &&
                     point.series &&
-                    point.series.onMouseMove(point, e)); });
-                mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', function (e) {
+                    point.series.onMouseMove(point, e)));
+                mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', (e) => {
                     mousemoveUnbinder();
                     mouseupUnbinder();
                     return point &&
@@ -74,7 +73,7 @@ function onChartLoad() {
  *        Browser event, before normalization.
  */
 function onMouseDown(point, event) {
-    var normalizedEvent = this.chart.pointer.normalize(event);
+    const normalizedEvent = this.chart.pointer.normalize(event);
     point.fixedPosition = {
         chartX: normalizedEvent.chartX,
         chartY: normalizedEvent.chartY,
@@ -96,8 +95,8 @@ function onMouseDown(point, event) {
  */
 function onMouseMove(point, event) {
     if (point.fixedPosition && point.inDragMode) {
-        var series = this, chart = series.chart, normalizedEvent = chart.pointer.normalize(event), diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
-        var newPlotX = void 0, newPlotY = void 0;
+        const series = this, chart = series.chart, normalizedEvent = chart.pointer.normalize(event), diffX = point.fixedPosition.chartX - normalizedEvent.chartX, diffY = point.fixedPosition.chartY - normalizedEvent.chartY, graphLayoutsLookup = chart.graphLayoutsLookup;
+        let newPlotX, newPlotY;
         // At least 5px to apply change (avoids simple click):
         if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
             newPlotX = point.fixedPosition.plotX - diffX;
@@ -107,7 +106,7 @@ function onMouseMove(point, event) {
                 point.plotY = newPlotY;
                 point.hasDragged = true;
                 this.redrawHalo(point);
-                graphLayoutsLookup.forEach(function (layout) {
+                graphLayoutsLookup.forEach((layout) => {
                     layout.restartSimulation();
                 });
             }
@@ -156,11 +155,11 @@ function redrawHalo(point) {
  *  Default Export
  *
  * */
-var DragNodesComposition = {
-    compose: compose,
-    onMouseDown: onMouseDown,
-    onMouseMove: onMouseMove,
-    onMouseUp: onMouseUp,
-    redrawHalo: redrawHalo
+const DragNodesComposition = {
+    compose,
+    onMouseDown,
+    onMouseMove,
+    onMouseUp,
+    redrawHalo
 };
 export default DragNodesComposition;

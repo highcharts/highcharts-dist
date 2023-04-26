@@ -36,7 +36,7 @@
  *
  * @optionparent lang
  */
-var lang = {
+const lang = {
     /**
      * The text for the label for the range selector buttons.
      *
@@ -67,7 +67,7 @@ var lang = {
  * @product      highstock gantt
  * @optionparent rangeSelector
  */
-var rangeSelector = {
+const rangeSelector = {
     /**
      * Whether to enable all buttons from the start. By default buttons are
      * only enabled if the corresponding time range exists on the X axis,
@@ -359,7 +359,7 @@ var rangeSelector = {
     inputBoxWidth: void 0,
     /**
      * The date format in the input boxes when not selected for editing.
-     * Defaults to `%b %e, %Y`.
+     * Defaults to `%e %b %Y`.
      *
      * This is used to determine which type of input to show,
      * `datetime-local`, `date` or `time` and falling back to `text` when
@@ -372,7 +372,7 @@ var rangeSelector = {
      *         Milliseconds in the range selector
      *
      */
-    inputDateFormat: '%b %e, %Y',
+    inputDateFormat: '%e %b %Y',
     /**
      * A custom callback function to parse values entered in the input boxes
      * and return a valid JavaScript time as milliseconds since 1970.
@@ -489,9 +489,11 @@ var rangeSelector = {
      */
     inputStyle: {
         /** @ignore */
-        color: "#335cad" /* Palette.highlightColor80 */,
+        color: "#334eff" /* Palette.highlightColor80 */,
         /** @ignore */
-        cursor: 'pointer'
+        cursor: 'pointer',
+        /** @ignore */
+        fontSize: '0.8em'
     },
     /**
      * CSS styles for the labels - the Zoom, From and To texts.
@@ -506,7 +508,9 @@ var rangeSelector = {
      */
     labelStyle: {
         /** @ignore */
-        color: "#666666" /* Palette.neutralColor60 */
+        color: "#666666" /* Palette.neutralColor60 */,
+        /** @ignore */
+        fontSize: '0.8em'
     }
 };
 /* *
@@ -514,8 +518,8 @@ var rangeSelector = {
  *  Default Export
  *
  * */
-var RangeSelectorDefaults = {
-    lang: lang,
-    rangeSelector: rangeSelector
+const RangeSelectorDefaults = {
+    lang,
+    rangeSelector
 };
 export default RangeSelectorDefaults;

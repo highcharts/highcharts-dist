@@ -11,8 +11,8 @@
  * */
 'use strict';
 import Highcharts from '../Core/Globals.js';
-var isSafari = Highcharts.isSafari;
-var win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
+const { isSafari } = Highcharts;
+const win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
 /**
  * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
  * @private
@@ -22,8 +22,8 @@ var win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL 
  * @return {string|undefined}
  *         Blob
  */
-var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-    var parts = dataURL
+const dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
+    const parts = dataURL
         .replace(/filename=.*;/, '')
         .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
     if (parts &&
@@ -34,11 +34,11 @@ var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
         win.Blob &&
         (domurl.createObjectURL)) {
         // Try to convert data URL to Blob
-        var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
-        for (var i = 0; i < binary.length; ++i) {
+        const binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
+        for (let i = 0; i < binary.length; ++i) {
             binary[i] = binStr.charCodeAt(i);
         }
-        var blob = new win.Blob([binary], { 'type': parts[1] });
+        const blob = new win.Blob([binary], { 'type': parts[1] });
         return domurl.createObjectURL(blob);
     }
 };
@@ -53,8 +53,8 @@ var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
  *        The name of the resulting file (w/extension)
  * @return {void}
  */
-var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
-    var nav = win.navigator, a = doc.createElement('a');
+const downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
+    const nav = win.navigator, a = doc.createElement('a');
     // IE specific blob implementation
     // Don't use for normal dataURLs
     if (typeof dataURL !== 'string' &&
@@ -63,12 +63,12 @@ var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
         nav.msSaveOrOpenBlob(dataURL, filename);
         return;
     }
-    dataURL = "".concat(dataURL);
+    dataURL = `${dataURL}`;
     // Some browsers have limitations for data URL lengths. Try to convert to
     // Blob or fall back. Edge always needs that blob.
-    var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+    const isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
     // Safari on iOS needs Blob in order to download PDF
-    var safariBlob = (isSafari &&
+    const safariBlob = (isSafari &&
         typeof dataURL === 'string' &&
         dataURL.indexOf('data:application/pdf') === 0);
     if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
@@ -88,7 +88,7 @@ var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
     else {
         // No download attr, just opening data URI
         try {
-            var windowRef = win.open(dataURL, 'chart');
+            const windowRef = win.open(dataURL, 'chart');
             if (typeof windowRef === 'undefined' || windowRef === null) {
                 throw new Error('Failed to open window');
             }
@@ -99,8 +99,8 @@ var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
         }
     }
 };
-var DownloadURL = {
-    dataURLtoBlob: dataURLtoBlob,
-    downloadURL: downloadURL
+const DownloadURL = {
+    dataURLtoBlob,
+    downloadURL
 };
 export default DownloadURL;

@@ -4,78 +4,59 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Annotation from '../Annotation.js';
 import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Class
  *
  * */
-var Pitchfork = /** @class */ (function (_super) {
-    __extends(Pitchfork, _super);
-    function Pitchfork() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class Pitchfork extends InfinityLine {
     /* *
      *
      *  Static Functions
      *
      * */
-    Pitchfork.outerLineEdgePoint = function (firstPointIndex) {
+    static outerLineEdgePoint(firstPointIndex) {
         return function (target) {
-            var annotation = target.annotation, points = annotation.points;
+            const annotation = target.annotation, points = annotation.points;
             return Pitchfork.findEdgePoint(points[firstPointIndex], points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
         };
-    };
-    Pitchfork.findEdgePoint = function (point, firstAnglePoint, secondAnglePoint) {
-        var angle = Math.atan2((secondAnglePoint.plotY -
+    }
+    static findEdgePoint(point, firstAnglePoint, secondAnglePoint) {
+        const angle = Math.atan2((secondAnglePoint.plotY -
             firstAnglePoint.plotY), secondAnglePoint.plotX - firstAnglePoint.plotX), distance = 1e7;
         return {
             x: point.plotX + distance * Math.cos(angle),
             y: point.plotY + distance * Math.sin(angle)
         };
-    };
-    Pitchfork.middleLineEdgePoint = function (target) {
-        var annotation = target.annotation, points = annotation.points;
+    }
+    static middleLineEdgePoint(target) {
+        const annotation = target.annotation, points = annotation.points;
         return InfinityLine.findEdgePoint(points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
-    };
+    }
     /* *
      *
      *  Functions
      *
      * */
-    Pitchfork.prototype.midPointOptions = function () {
-        var points = this.points;
+    midPointOptions() {
+        const points = this.points;
         return {
             x: (points[1].x + points[2].x) / 2,
             y: (points[1].y + points[2].y) / 2,
             xAxis: points[0].series.xAxis,
             yAxis: points[0].series.yAxis
         };
-    };
-    Pitchfork.prototype.addShapes = function () {
+    }
+    addShapes() {
         this.addLines();
         this.addBackgrounds();
-    };
-    Pitchfork.prototype.addLines = function () {
+    }
+    addLines() {
         this.initShape({
             type: 'path',
             points: [
@@ -97,14 +78,14 @@ var Pitchfork = /** @class */ (function (_super) {
                 Pitchfork.bottomLineEdgePoint
             ]
         }, 2);
-    };
-    Pitchfork.prototype.addBackgrounds = function () {
-        var shapes = this.shapes, typeOptions = this.options.typeOptions;
-        var innerBackground = this.initShape(merge(typeOptions.innerBackground, {
+    }
+    addBackgrounds() {
+        const shapes = this.shapes, typeOptions = this.options.typeOptions;
+        const innerBackground = this.initShape(merge(typeOptions.innerBackground, {
             type: 'path',
             points: [
                 function (target) {
-                    var annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
+                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
                     return {
                         x: (points[1].x + midPointOptions.x) / 2,
                         y: (points[1].y + midPointOptions.y) / 2,
@@ -115,7 +96,7 @@ var Pitchfork = /** @class */ (function (_super) {
                 shapes[1].points[1],
                 shapes[2].points[1],
                 function (target) {
-                    var annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
+                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
                     return {
                         x: (midPointOptions.x + points[2].x) / 2,
                         y: (midPointOptions.y + points[2].y) / 2,
@@ -125,7 +106,7 @@ var Pitchfork = /** @class */ (function (_super) {
                 }
             ]
         }), 3);
-        var outerBackground = this.initShape(merge(typeOptions.outerBackground, {
+        const outerBackground = this.initShape(merge(typeOptions.outerBackground, {
             type: 'path',
             points: [
                 this.points[1],
@@ -136,16 +117,15 @@ var Pitchfork = /** @class */ (function (_super) {
         }), 4);
         typeOptions.innerBackground = innerBackground.options;
         typeOptions.outerBackground = outerBackground.options;
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    Pitchfork.topLineEdgePoint = Pitchfork.outerLineEdgePoint(1);
-    Pitchfork.bottomLineEdgePoint = Pitchfork.outerLineEdgePoint(0);
-    return Pitchfork;
-}(InfinityLine));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+Pitchfork.topLineEdgePoint = Pitchfork.outerLineEdgePoint(1);
+Pitchfork.bottomLineEdgePoint = Pitchfork.outerLineEdgePoint(0);
 Pitchfork.prototype.defaultOptions = merge(InfinityLine.prototype.defaultOptions, 
 /**
  * A pitchfork annotation.

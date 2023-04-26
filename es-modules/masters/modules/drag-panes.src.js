@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  * @module highcharts/modules/drag-panes
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,4 +12,9 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/DragPanes.js';
+import Highcharts from '../../Core/Globals.js';
+import AxisResizer from '../../Extensions/DragPanes/AxisResizer.js';
+import DragPanes from '../../Extensions/DragPanes/DragPanes.js';
+const G = Highcharts;
+G.AxisResizer = AxisResizer;
+DragPanes.compose(G.Axis, G.Pointer);

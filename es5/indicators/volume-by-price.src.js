@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,20 +46,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var SMAPoint = SeriesRegistry.seriesTypes.sma.prototype.pointClass;
         /* *
          *
@@ -67,7 +73,7 @@
          *
          * */
         var VBPPoint = /** @class */ (function (_super) {
-            __extends(VBPPoint, _super);
+                __extends(VBPPoint, _super);
             function VBPPoint() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
@@ -77,7 +83,7 @@
                 if (this.negativeGraphic) {
                     this.negativeGraphic = this.negativeGraphic.destroy();
                 }
-                return _super.prototype.destroy.apply(this, arguments);
+                _super.prototype.destroy.apply(this, arguments);
             };
             return VBPPoint;
         }(SMAPoint));
@@ -102,15 +108,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -118,16 +125,39 @@
         })();
         var animObject = A.animObject;
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes, columnProto = _a.column.prototype, SMAIndicator = _a.sma;
-        var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes,
+            columnProto = _a.column.prototype,
+            SMAIndicator = _a.sma;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            error = U.error,
+            extend = U.extend,
+            isArray = U.isArray,
+            merge = U.merge;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var abs = Math.abs;
         /* *
          *
          *  Functions
          *
          * */
         // Utils
+        /**
+         * @private
+         */
         function arrayExtremesOHLC(data) {
-            var dataLength = data.length, min = data[0][3], max = min, i = 1, currentPoint;
+            var dataLength = data.length;
+            var min = data[0][3],
+                max = min,
+                i = 1,
+                currentPoint;
             for (; i < dataLength; i++) {
                 currentPoint = data[i][3];
                 if (currentPoint < min) {
@@ -142,7 +172,6 @@
                 max: max
             };
         }
-        var abs = Math.abs;
         /* *
          *
          *  Class
@@ -158,14 +187,15 @@
          * @augments Highcharts.Series
          */
         var VBPIndicator = /** @class */ (function (_super) {
-            __extends(VBPIndicator, _super);
+                __extends(VBPIndicator, _super);
             function VBPIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -189,16 +219,17 @@
              *
              * */
             VBPIndicator.prototype.init = function (chart) {
-                var indicator = this, params, baseSeries, volumeSeries;
-                H.seriesTypes.sma.prototype.init.apply(indicator, arguments);
+                var indicator = this;
+                _super.prototype.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
-                var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
-                    // Protection for a case where the indicator is being updated,
-                    // for a brief moment the indicator is deleted.
-                    if (indicator.options) {
-                        params = indicator.options.params;
-                        baseSeries = indicator.linkedParent;
-                        volumeSeries = chart.get(params.volumeSeriesID);
+                var unbinder = addEvent(StockChart, 'afterLinkSeries',
+                    function () {
+                        // Protection for a case where the indicator is being updated,
+                        // for a brief moment the indicator is deleted.
+                        if (indicator.options) {
+                            var params = indicator.options.params,
+                    baseSeries = indicator.linkedParent,
+                    volumeSeries = chart.get(params.volumeSeriesID);
                         indicator.addCustomEvents(baseSeries, volumeSeries);
                     }
                     unbinder();
@@ -209,17 +240,15 @@
             };
             // Adds events related with removing series
             VBPIndicator.prototype.addCustomEvents = function (baseSeries, volumeSeries) {
-                var indicator = this;
-                /* eslint-disable require-jsdoc */
-                function toEmptyIndicator() {
-                    indicator.chart.redraw();
+                var indicator = this,
+                    toEmptyIndicator = function () {
+                        indicator.chart.redraw();
                     indicator.setData([]);
                     indicator.zoneStarts = [];
                     if (indicator.zoneLinesSVG) {
                         indicator.zoneLinesSVG = indicator.zoneLinesSVG.destroy();
                     }
-                }
-                /* eslint-enable require-jsdoc */
+                };
                 // If base series is deleted, indicator series data is filled with
                 // an empty array
                 indicator.dataEventsToUnbind.push(addEvent(baseSeries, 'remove', function () {
@@ -236,9 +265,12 @@
             };
             // Initial animation
             VBPIndicator.prototype.animate = function (init) {
-                var series = this, inverted = series.chart.inverted, group = series.group, attr = {}, position;
+                var series = this,
+                    inverted = series.chart.inverted,
+                    group = series.group,
+                    attr = {};
                 if (!init && group) {
-                    position = inverted ? series.yAxis.top : series.xAxis.left;
+                    var position = inverted ? series.yAxis.top : series.xAxis.left;
                     if (inverted) {
                         group['forceAnimate:translateY'] = true;
                         attr.translateY = position;
@@ -268,8 +300,15 @@
             // Function responsible for dividing volume into positive and negative
             VBPIndicator.prototype.posNegVolume = function (initVol, pos) {
                 var indicator = this, signOrder = pos ?
-                    ['positive', 'negative'] :
-                    ['negative', 'positive'], volumeDivision = indicator.options.volumeDivision, pointLength = indicator.points.length, posWidths = [], negWidths = [], i = 0, pointWidth, priceZone, wholeVol, point;
+                        ['positive', 'negative'] :
+                        ['negative', 'positive'], volumeDivision = indicator.options.volumeDivision, pointLength = indicator.points.length;
+                var posWidths = [],
+                    negWidths = [],
+                    i = 0,
+                    pointWidth,
+                    priceZone,
+                    wholeVol,
+                    point;
                 if (initVol) {
                     indicator.posWidths = posWidths;
                     indicator.negWidths = negWidths;
@@ -307,9 +346,27 @@
                 }
             };
             VBPIndicator.prototype.translate = function () {
-                var indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones), yBarOffset = 0, indicatorPoints, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
+                var indicator = this,
+                    options = indicator.options,
+                    chart = indicator.chart,
+                    yAxis = indicator.yAxis,
+                    yAxisMin = yAxis.min,
+                    zoneLinesOptions = indicator.options.zoneLines,
+                    priceZones = (indicator.priceZones);
+                var yBarOffset = 0,
+                    volumeDataArray,
+                    maxVolume,
+                    primalBarWidth,
+                    barHeight,
+                    barHeightP,
+                    oldBarHeight,
+                    barWidth,
+                    pointPadding,
+                    chartPlotTop,
+                    barX,
+                    barY;
                 columnProto.translate.apply(indicator);
-                indicatorPoints = indicator.points;
+                var indicatorPoints = indicator.points;
                 // Do translate operation when points exist
                 if (indicatorPoints.length) {
                     pointPadding = options.pointPadding < 0.5 ?
@@ -351,22 +408,33 @@
                 }
             };
             VBPIndicator.prototype.getValues = function (series, params) {
-                var indicator = this, xValues = series.processedXData, yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], isOHLC, volumeSeries, priceZones;
+                var indicator = this,
+                    xValues = series.processedXData,
+                    yValues = series.processedYData,
+                    chart = indicator.chart,
+                    ranges = params.ranges,
+                    VBP = [],
+                    xData = [],
+                    yData = [],
+                    volumeSeries = chart.get(params.volumeSeriesID);
                 // Checks if base series exists
                 if (!series.chart) {
                     error('Base series not found! In case it has been removed, add ' +
                         'a new one.', true, chart);
                     return;
                 }
-                // Checks if volume series exists
-                if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
+                // Checks if volume series exists and if it has data
+                if (!volumeSeries ||
+                    !volumeSeries.processedXData.length) {
+                    var errorMessage = volumeSeries && !volumeSeries.processedXData.length ?
+                            ' does not contain any data.' :
+                            ' not found! Check `volumeSeriesID`.';
                     error('Series ' +
-                        params.volumeSeriesID +
-                        ' not found! Check `volumeSeriesID`.', true, chart);
+                        params.volumeSeriesID + errorMessage, true, chart);
                     return;
                 }
                 // Checks if series data fits the OHLC format
-                isOHLC = isArray(yValues[0]);
+                var isOHLC = isArray(yValues[0]);
                 if (isOHLC && yValues[0].length !== 4) {
                     error('Type of ' +
                         series.name +
@@ -375,7 +443,11 @@
                 }
                 // Price zones contains all the information about the zones (index,
                 // start, end, volumes, etc.)
-                priceZones = indicator.priceZones = indicator.specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries);
+                var priceZones = indicator.priceZones = indicator.specifyZones(isOHLC,
+                    xValues,
+                    yValues,
+                    ranges,
+                    volumeSeries);
                 priceZones.forEach(function (zone, index) {
                     VBP.push([zone.x, zone.end]);
                     xData.push(VBP[index][0]);
@@ -389,11 +461,18 @@
             };
             // Specifing where each zone should start ans end
             VBPIndicator.prototype.specifyZones = function (isOHLC, xValues, yValues, ranges, volumeSeries) {
-                var indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), lowRange = rangeExtremes ?
-                    rangeExtremes.min :
-                    arrayMin(yValues), highRange = rangeExtremes ?
-                    rangeExtremes.max :
-                    arrayMax(yValues), zoneStarts = indicator.zoneStarts = [], priceZones = [], i = 0, j = 1, rangeStep, zoneStartsLength;
+                var indicator = this,
+                    rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false),
+                    zoneStarts = indicator.zoneStarts = [],
+                    priceZones = [];
+                var lowRange = rangeExtremes ?
+                        rangeExtremes.min :
+                        arrayMin(yValues),
+                    highRange = rangeExtremes ?
+                        rangeExtremes.max :
+                        arrayMax(yValues),
+                    i = 0,
+                    j = 1;
                 // If the compare mode is set on the main series, change the VBP
                 // zones to fit new extremes, #16277.
                 var mainSeries = indicator.linkedParent;
@@ -412,14 +491,14 @@
                     }
                     return [];
                 }
-                rangeStep = indicator.rangeStep =
-                    correctFloat(highRange - lowRange) / ranges;
+                var rangeStep = indicator.rangeStep =
+                        correctFloat(highRange - lowRange) / ranges;
                 zoneStarts.push(lowRange);
                 for (; i < ranges - 1; i++) {
                     zoneStarts.push(correctFloat(zoneStarts[i] + rangeStep));
                 }
                 zoneStarts.push(highRange);
-                zoneStartsLength = zoneStarts.length;
+                var zoneStartsLength = zoneStarts.length;
                 //    Creating zones
                 for (; j < zoneStartsLength; j++) {
                     priceZones.push({
@@ -433,7 +512,17 @@
             };
             // Calculating sum of volume values for a specific zone
             VBPIndicator.prototype.volumePerZone = function (isOHLC, priceZones, volumeSeries, xValues, yValues) {
-                var indicator = this, volumeXData = volumeSeries.processedXData, volumeYData = volumeSeries.processedYData, lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length, previousValue, startFlag, endFlag, value, i;
+                var indicator = this,
+                    volumeXData = volumeSeries.processedXData,
+                    volumeYData = volumeSeries.processedYData,
+                    lastZoneIndex = priceZones.length - 1,
+                    baseSeriesLength = yValues.length,
+                    volumeSeriesLength = volumeYData.length;
+                var previousValue,
+                    startFlag,
+                    endFlag,
+                    value,
+                    i;
                 // Checks if each point has a corresponding volume value
                 if (abs(baseSeriesLength - volumeSeriesLength)) {
                     // If the first point don't have volume, add 0 value at the
@@ -498,7 +587,14 @@
             };
             // Function responsoble for drawing additional lines indicating zones
             VBPIndicator.prototype.drawZones = function (chart, yAxis, zonesValues, zonesStyles) {
-                var indicator = this, renderer = chart.renderer, zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop, verticalLinePos;
+                var indicator = this,
+                    renderer = chart.renderer,
+                    leftLinePos = 0,
+                    rightLinePos = chart.plotWidth,
+                    verticalOffset = chart.plotTop;
+                var zoneLinesSVG = indicator.zoneLinesSVG,
+                    zoneLinesPath = [],
+                    verticalLinePos;
                 zonesValues.forEach(function (value) {
                     verticalLinePos = yAxis.toPixels(value) - verticalOffset;
                     zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([[
@@ -519,7 +615,9 @@
                 }
                 else {
                     zoneLinesSVG = indicator.zoneLinesSVG =
-                        renderer.path(zoneLinesPath).attr({
+                        renderer
+                            .path(zoneLinesPath)
+                            .attr({
                             'stroke-width': zonesStyles.lineWidth,
                             'stroke': zonesStyles.color,
                             'dashstyle': zonesStyles.dashStyle,
@@ -624,7 +722,7 @@
                     padding: 0,
                     style: {
                         /** @internal */
-                        fontSize: '7px'
+                        fontSize: '0.5em'
                     },
                     verticalAlign: 'top'
                 }

@@ -18,7 +18,7 @@
  *
  * @optionparent chart
  */
-var ChartDefaults = {
+const ChartDefaults = {
     /**
      * Default `mapData` for all series, in terms of a GeoJSON or TopoJSON
      * object. If set to a string, it functions as an index into the
@@ -130,7 +130,7 @@ var ChartDefaults = {
      *         With a longer duration
      *
      * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
-     * @default   undefined
+     * @default   true
      * @apioption chart.animation
      */
     /**
@@ -211,6 +211,8 @@ var ChartDefaults = {
      *
      * @sample {highcharts} highcharts/chart/events-load/
      *         Alert on chart load
+     * @sample {highcharts} highcharts/chart/events-render/
+     *         Load vs Redraw vs Render
      * @sample {highstock} stock/chart/events-load/
      *         Alert on chart load
      * @sample {highmaps} maps/chart/events-load/
@@ -228,6 +230,8 @@ var ChartDefaults = {
      *
      * @sample {highcharts} highcharts/chart/events-redraw/
      *         Alert on chart redraw
+     * @sample {highcharts} highcharts/chart/events-render/
+     *         Load vs Redraw vs Render
      * @sample {highstock} stock/chart/events-redraw/
      *         Alert on chart redraw when adding a series or moving the
      *         zoomed range
@@ -242,6 +246,9 @@ var ChartDefaults = {
     /**
      * Fires after initial load of the chart (directly after the `load`
      * event), and after each redraw (directly after the `redraw` event).
+     *
+     * @sample {highcharts} highcharts/chart/events-render/
+     *         Load vs Redraw vs Render
      *
      * @type      {Highcharts.ChartRenderCallbackFunction}
      * @since     5.0.7
@@ -423,6 +430,9 @@ var ChartDefaults = {
          * Decides in what dimensions the user can pan the chart. Can be
          * one of `x`, `y`, or `xy`.
          *
+         * When this option is set to `y` or `xy`, [yAxis.startOnTick](#yAxis.startOnTick)
+         * and [yAxis.endOnTick](#yAxis.endOnTick) are overwritten to `false`.
+         *
          * @sample {highcharts} highcharts/chart/panning-type
          *         Zooming and xy panning
          *
@@ -458,6 +468,13 @@ var ChartDefaults = {
      * are required to style the chart. The default style sheet is
      * available from `https://code.highcharts.com/css/highcharts.css`.
      *
+     * [Read more in the docs](https://www.highcharts.com/docs/chart-design-and-style/style-by-css)
+     * on what classes and variables are available.
+     *
+     * @sample highcharts/css/colors
+     *         Color theming with CSS
+     * @sample highcharts/css/prefers-color-scheme
+     *         Dynamic theme based on system settings
      * @type       {boolean}
      * @default    false
      * @since      7.0
@@ -497,17 +514,6 @@ var ChartDefaults = {
      * @since 10.1.0
      */
     allowMutatingData: true,
-    /**
-     * Alias of `type`.
-     *
-     * @sample {highcharts} highcharts/chart/defaultseriestype/
-     *         Bar
-     *
-     * @deprecated
-     *
-     * @product highcharts
-     */
-    defaultSeriesType: 'line',
     /**
      * If true, the axes will scale to the remaining visible series once
      * one series is hidden. If false, hiding and showing a series will
@@ -665,7 +671,7 @@ var ChartDefaults = {
      * @sample {highmaps} maps/chart/plotborder/
      *         Plot border options
      *
-     * @type      {boolean|Highcharts.CSSObject}
+     * @type      {boolean|Highcharts.ShadowOptionsObject}
      * @default   false
      * @apioption chart.plotShadow
      */
@@ -707,11 +713,9 @@ var ChartDefaults = {
      * @sample {highmaps} maps/chart/reflow-false/
      *         False
      *
-     * @type      {boolean}
-     * @default   true
      * @since     2.1
-     * @apioption chart.reflow
      */
+    reflow: true,
     /**
      * The HTML element where the chart will be rendered. If it is a string,
      * the element by that id is used. The HTML element can also be passed
@@ -743,6 +747,19 @@ var ChartDefaults = {
      * @apioption chart.selectionMarkerFill
      */
     /**
+     * Whether to apply a drop shadow to the global series group. This causes
+     * all the series to have the same shadow. Contrary to the `series.shadow`
+     * option, this prevents items from casting shadows on each other, like for
+     * others series in a stack. The shadow can be an object configuration
+     * containing `color`, `offsetX`, `offsetY`, `opacity` and `width`.
+     *
+     * @sample highcharts/chart/seriesgroupshadow/ Shadow
+     *
+     * @type      {boolean|Highcharts.ShadowOptionsObject}
+     * @default   false
+     * @apioption chart.shadow
+     */
+    /**
      * Whether to apply a drop shadow to the outer chart area. Requires
      * that backgroundColor be set. The shadow can be an object
      * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
@@ -755,7 +772,7 @@ var ChartDefaults = {
      * @sample {highmaps} maps/chart/border/
      *         Chart border and shadow
      *
-     * @type      {boolean|Highcharts.CSSObject}
+     * @type      {boolean|Highcharts.ShadowOptionsObject}
      * @default   false
      * @apioption chart.shadow
      */
@@ -848,16 +865,19 @@ var ChartDefaults = {
      * @apioption chart.spacingTop
      */
     /**
-     * Additional CSS styles to apply inline to the container `div`. Note
-     * that since the default font styles are applied in the renderer, it
-     * is ignorant of the individual chart options and must be set globally.
-     * Also note that changing the font size in the `chart.style` options only
-     * applies to those elements that do not have a specific `fontSize` setting.
+     * Additional CSS styles to apply inline to the container `div` and the root
+     * SVG.
+     *
+     * Since v11, the root font size is 1rem by default, and all child element
+     * are given a relative `em` font size by default. This allows implementers
+     * to control all the chart's font sizes by only setting the root level.
      *
      * @see    In styled mode, general chart styles can be set with the
      *         `.highcharts-root` class.
      * @sample {highcharts} highcharts/chart/style-serif-font/
      *         Using a serif type font
+     * @sample {highcharts} highcharts/members/relative-font-size/
+     *         Relative font sizes
      * @sample {highcharts} highcharts/css/em/
      *         Styled mode with relative font sizes
      * @sample {highstock} stock/chart/style/
@@ -866,7 +886,7 @@ var ChartDefaults = {
      *         Using a serif type font
      *
      * @type      {Highcharts.CSSObject}
-     * @default   {"fontFamily": "\"Lucida Grande\", \"Lucida Sans Unicode\", Verdana, Arial, Helvetica, sans-serif","fontSize":"12px"}
+     * @default   {"fontFamily": Helvetica, Arial, sans-serif","fontSize":"1rem"}
      * @apioption chart.style
      */
     /**
@@ -891,6 +911,7 @@ var ChartDefaults = {
      * @since      2.1.0
      * @apioption  chart.type
      */
+    type: 'line',
     /**
      * Decides in what dimensions the user can zoom by dragging the mouse.
      * Can be one of `x`, `y` or `xy`.
@@ -1120,7 +1141,7 @@ var ChartDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    borderColor: "#335cad" /* Palette.highlightColor80 */,
+    borderColor: "#334eff" /* Palette.highlightColor80 */,
     /**
      * The pixel width of the outer chart border.
      *

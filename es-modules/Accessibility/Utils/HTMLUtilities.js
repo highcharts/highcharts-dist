@@ -11,15 +11,15 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-var doc = H.doc, win = H.win;
+const { doc, win } = H;
 import U from '../../Core/Utilities.js';
-var css = U.css;
+const { css } = U;
 /* *
  *
  *  Constants
  *
  * */
-var simulatedEventTarget = win.EventTarget && new win.EventTarget() || 'none';
+const simulatedEventTarget = win.EventTarget && new win.EventTarget() || 'none';
 /* *
  *
  *  Functions
@@ -69,7 +69,7 @@ function cloneMouseEvent(e) {
     }
     // No MouseEvent support, try using initMouseEvent
     if (doc.createEvent) {
-        var evt = doc.createEvent('MouseEvent');
+        const evt = doc.createEvent('MouseEvent');
         if (evt.initMouseEvent) {
             evt.initMouseEvent(e.type, e.bubbles, // #10561, #12161
             e.cancelable, e.view || win, e.detail, e.screenX, e.screenY, e.clientX, e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.button, e.relatedTarget);
@@ -83,10 +83,10 @@ function cloneMouseEvent(e) {
  * @private
  */
 function cloneTouchEvent(e) {
-    var touchListToTouchArray = function (l) {
-        var touchArray = [];
-        for (var i = 0; i < l.length; ++i) {
-            var item = l.item(i);
+    const touchListToTouchArray = (l) => {
+        const touchArray = [];
+        for (let i = 0; i < l.length; ++i) {
+            const item = l.item(i);
             if (item) {
                 touchArray.push(item);
             }
@@ -94,7 +94,7 @@ function cloneTouchEvent(e) {
         return touchArray;
     };
     if (typeof win.TouchEvent === 'function') {
-        var newEvent = new win.TouchEvent(e.type, {
+        const newEvent = new win.TouchEvent(e.type, {
             touches: touchListToTouchArray(e.touches),
             targetTouches: touchListToTouchArray(e.targetTouches),
             changedTouches: touchListToTouchArray(e.changedTouches),
@@ -113,7 +113,7 @@ function cloneTouchEvent(e) {
         }
         return newEvent;
     }
-    var fakeEvt = cloneMouseEvent(e);
+    const fakeEvt = cloneMouseEvent(e);
     fakeEvt.touches = e.touches;
     fakeEvt.changedTouches = e.changedTouches;
     fakeEvt.targetTouches = e.targetTouches;
@@ -145,7 +145,7 @@ function getElement(id) {
  * @private
  */
 function getFakeMouseEvent(type, position, relatedTarget) {
-    var pos = position || {
+    const pos = position || {
         x: 0,
         y: 0
     };
@@ -167,7 +167,7 @@ function getFakeMouseEvent(type, position, relatedTarget) {
     }
     // No MouseEvent support, try using initMouseEvent
     if (doc.createEvent) {
-        var evt = doc.createEvent('MouseEvent');
+        const evt = doc.createEvent('MouseEvent');
         if (evt.initMouseEvent) {
             evt.initMouseEvent(type, true, // Bubble
             true, // Cancel
@@ -200,32 +200,32 @@ function getFakeMouseEvent(type, position, relatedTarget) {
  * If no nearest heading is found, "p" is returned.
  */
 function getHeadingTagNameForElement(element) {
-    var getIncreasedHeadingLevel = function (tagName) {
-        var headingLevel = parseInt(tagName.slice(1), 10), newLevel = Math.min(6, headingLevel + 1);
+    const getIncreasedHeadingLevel = (tagName) => {
+        const headingLevel = parseInt(tagName.slice(1), 10), newLevel = Math.min(6, headingLevel + 1);
         return 'h' + newLevel;
     };
-    var isHeading = function (tagName) { return /H[1-6]/.test(tagName); };
-    var getPreviousSiblingsHeading = function (el) {
-        var sibling = el;
+    const isHeading = (tagName) => /H[1-6]/.test(tagName);
+    const getPreviousSiblingsHeading = (el) => {
+        let sibling = el;
         while (sibling = sibling.previousSibling) { // eslint-disable-line
-            var tagName = sibling.tagName || '';
+            const tagName = sibling.tagName || '';
             if (isHeading(tagName)) {
                 return tagName;
             }
         }
         return '';
     };
-    var getHeadingRecursive = function (el) {
-        var prevSiblingsHeading = getPreviousSiblingsHeading(el);
+    const getHeadingRecursive = (el) => {
+        const prevSiblingsHeading = getPreviousSiblingsHeading(el);
         if (prevSiblingsHeading) {
             return getIncreasedHeadingLevel(prevSiblingsHeading);
         }
         // No previous siblings are headings, try parent node
-        var parent = el.parentElement;
+        const parent = el.parentElement;
         if (!parent) {
             return 'p';
         }
-        var parentTagName = parent.tagName;
+        const parentTagName = parent.tagName;
         if (isHeading(parentTagName)) {
             return getIncreasedHeadingLevel(parentTagName);
         }
@@ -260,7 +260,7 @@ function removeChildNodes(element) {
  * @private
  */
 function reverseChildNodes(node) {
-    var i = node.childNodes.length;
+    let i = node.childNodes.length;
     while (i--) {
         node.appendChild(node.childNodes[i]);
     }
@@ -298,20 +298,20 @@ function visuallyHideElement(element) {
  *  Default Export
  *
  * */
-var HTMLUtilities = {
-    addClass: addClass,
-    cloneMouseEvent: cloneMouseEvent,
-    cloneTouchEvent: cloneTouchEvent,
-    escapeStringForHTML: escapeStringForHTML,
-    getElement: getElement,
-    getFakeMouseEvent: getFakeMouseEvent,
-    getHeadingTagNameForElement: getHeadingTagNameForElement,
-    removeChildNodes: removeChildNodes,
-    removeClass: removeClass,
-    removeElement: removeElement,
-    reverseChildNodes: reverseChildNodes,
-    simulatedEventTarget: simulatedEventTarget,
-    stripHTMLTagsFromString: stripHTMLTagsFromString,
-    visuallyHideElement: visuallyHideElement
+const HTMLUtilities = {
+    addClass,
+    cloneMouseEvent,
+    cloneTouchEvent,
+    escapeStringForHTML,
+    getElement,
+    getFakeMouseEvent,
+    getHeadingTagNameForElement,
+    removeChildNodes,
+    removeClass,
+    removeElement,
+    reverseChildNodes,
+    simulatedEventTarget,
+    stripHTMLTagsFromString,
+    visuallyHideElement
 };
 export default HTMLUtilities;

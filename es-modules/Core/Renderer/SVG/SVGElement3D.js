@@ -11,16 +11,16 @@
  * */
 'use strict';
 import Color from '../../Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import SVGElement from './SVGElement.js';
 import U from '../../Utilities.js';
-var defined = U.defined, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { defined, merge, objectEach, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var SVGElement3D = {};
+const SVGElement3D = {};
 SVGElement3D.base = {
     /* eslint-disable valid-jsdoc */
     /**
@@ -28,10 +28,10 @@ SVGElement3D.base = {
      * @private
      */
     initArgs: function (args) {
-        var elem3d = this, renderer = elem3d.renderer, paths = renderer[elem3d.pathType + 'Path'](args), zIndexes = paths.zIndexes;
+        const elem3d = this, renderer = elem3d.renderer, paths = renderer[elem3d.pathType + 'Path'](args), zIndexes = paths.zIndexes;
         // build parts
         elem3d.parts.forEach(function (part) {
-            var attribs = {
+            const attribs = {
                 'class': 'highcharts-3d-' + part,
                 zIndex: zIndexes[part] || 0
             };
@@ -62,7 +62,7 @@ SVGElement3D.base = {
      * @private
      */
     singleSetterForParts: function (prop, val, values, verb, duration, complete) {
-        var elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values && values.zIndexes;
+        const elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values && values.zIndexes;
         if (!values) {
             newAttr[prop] = val;
             optionsToApply[0] = newAttr;
@@ -92,7 +92,7 @@ SVGElement3D.base = {
      * @private
      */
     processParts: function (props, partsProps, verb, duration, complete) {
-        var elem3d = this;
+        const elem3d = this;
         elem3d.parts.forEach(function (part) {
             // if different props for different parts
             if (partsProps) {
@@ -121,7 +121,7 @@ SVGElement3D.cuboid = merge(SVGElement3D.base, {
     attr: function (args, val, complete, continueAnimation) {
         // Resolve setting attributes by string name
         if (typeof args === 'string' && typeof val !== 'undefined') {
-            var key = args;
+            const key = args;
             args = {};
             args[key] = val;
         }
@@ -132,7 +132,7 @@ SVGElement3D.cuboid = merge(SVGElement3D.base, {
     },
     animate: function (args, duration, complete) {
         if (defined(args.x) && defined(args.y)) {
-            var paths = this.renderer[this.pathType + 'Path'](args), forcedSides = paths.forcedSides;
+            const paths = this.renderer[this.pathType + 'Path'](args), forcedSides = paths.forcedSides;
             this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
             this.attr({
                 zIndex: paths.zIndexes.group
@@ -151,7 +151,7 @@ SVGElement3D.cuboid = merge(SVGElement3D.base, {
         return this;
     },
     fillSetter: function (fill) {
-        var elem3d = this;
+        const elem3d = this;
         elem3d.forcedSides = elem3d.forcedSides || [];
         elem3d.singleSetterForParts('fill', null, {
             front: fill,

@@ -13,7 +13,7 @@ import CU from '../Series/CenteredUtilities.js';
 import H from '../Core/Globals.js';
 import Pointer from '../Core/Pointer.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, extend = U.extend, merge = U.merge, pick = U.pick, splat = U.splat;
+const { addEvent, correctFloat, defined, extend, merge, pick, splat } = U;
 /**
  * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
  */
@@ -30,8 +30,8 @@ Chart.prototype.collectionsWithUpdate.push('pane');
  * @param {Highcharts.PaneOptions} options
  * @param {Highcharts.Chart} chart
  */
-var Pane = /** @class */ (function () {
-    function Pane(options, chart) {
+class Pane {
+    constructor(options, chart) {
         this.background = void 0;
         this.center = void 0;
         this.chart = void 0;
@@ -211,30 +211,30 @@ var Pane = /** @class */ (function () {
      *
      * @param {Highcharts.Chart} chart
      */
-    Pane.prototype.init = function (options, chart) {
+    init(options, chart) {
         this.chart = chart;
         this.background = [];
         chart.pane.push(this);
         this.setOptions(options);
-    };
+    }
     /**
      * @private
      * @function Highcharts.Pane#setOptions
      *
      * @param {Highcharts.PaneOptions} options
      */
-    Pane.prototype.setOptions = function (options) {
+    setOptions(options) {
         // Set options. Angular charts have a default background (#3318)
         this.options = options = merge(this.defaultOptions, this.chart.angular ? { background: {} } : void 0, options);
-    };
+    }
     /**
      * Render the pane with its backgrounds.
      *
      * @private
      * @function Highcharts.Pane#render
      */
-    Pane.prototype.render = function () {
-        var options = this.options, backgroundOption = this.options.background, renderer = this.chart.renderer, len, i;
+    render() {
+        let options = this.options, backgroundOption = this.options.background, renderer = this.chart.renderer, len, i;
         if (!this.group) {
             this.group = renderer.g('pane-group')
                 .attr({ zIndex: options.zIndex || 0 })
@@ -257,7 +257,7 @@ var Pane = /** @class */ (function () {
                 }
             }
         }
-    };
+    }
     /**
      * Render an individual pane background.
      *
@@ -270,8 +270,8 @@ var Pane = /** @class */ (function () {
      * @param {number} i
      *        The index of the background in this.backgrounds
      */
-    Pane.prototype.renderBackground = function (backgroundOptions, i) {
-        var method = 'animate', attribs = {
+    renderBackground(backgroundOptions, i) {
+        let method = 'animate', attribs = {
             'class': 'highcharts-pane ' + (backgroundOptions.className || '')
         };
         if (!this.chart.styledMode) {
@@ -290,7 +290,7 @@ var Pane = /** @class */ (function () {
         this.background[i][method]({
             'd': this.axis.getPlotBandPath(backgroundOptions.from, backgroundOptions.to, backgroundOptions)
         }).attr(attribs);
-    };
+    }
     /**
      * Gets the center for the pane and its axis.
      *
@@ -298,11 +298,11 @@ var Pane = /** @class */ (function () {
      * @function Highcharts.Pane#updateCenter
      * @param {Highcharts.Axis} [axis]
      */
-    Pane.prototype.updateCenter = function (axis) {
+    updateCenter(axis) {
         this.center = (axis ||
             this.axis ||
             {}).center = CU.getCenter.call(this);
-    };
+    }
     /**
      * Destroy the pane item
      *
@@ -328,7 +328,7 @@ var Pane = /** @class */ (function () {
      *        New pane options
      * @param {boolean} [redraw]
      */
-    Pane.prototype.update = function (options, redraw) {
+    update(options, redraw) {
         merge(true, this.options, options);
         this.setOptions(this.options);
         this.render();
@@ -338,9 +338,8 @@ var Pane = /** @class */ (function () {
                 axis.update({}, redraw);
             }
         }, this);
-    };
-    return Pane;
-}());
+    }
+}
 /**
  * Check whether element is inside or outside pane.
  * @private
@@ -358,12 +357,12 @@ var Pane = /** @class */ (function () {
  * Pane's normalized end angle in radians (<-PI, PI>)
  */
 function isInsidePane(x, y, center, startAngle, endAngle) {
-    var insideSlice = true;
-    var cx = center[0], cy = center[1];
-    var distance = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
+    let insideSlice = true;
+    const cx = center[0], cy = center[1];
+    const distance = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
     if (defined(startAngle) && defined(endAngle)) {
         // Round angle to N-decimals to avoid numeric errors
-        var angle = Math.atan2(correctFloat(y - cy, 8), correctFloat(x - cx, 8));
+        const angle = Math.atan2(correctFloat(y - cy, 8), correctFloat(x - cx, 8));
         // Ignore full circle panes:
         if (endAngle !== startAngle) {
             // If normalized start angle is bigger than normalized end,
@@ -386,11 +385,11 @@ function isInsidePane(x, y, center, startAngle, endAngle) {
     return distance <= Math.ceil(center[2] / 2) && insideSlice;
 }
 Chart.prototype.getHoverPane = function (eventArgs) {
-    var chart = this;
-    var hoverPane;
+    const chart = this;
+    let hoverPane;
     if (eventArgs) {
-        chart.pane.forEach(function (pane) {
-            var x = eventArgs.chartX - chart.plotLeft, y = eventArgs.chartY - chart.plotTop;
+        chart.pane.forEach((pane) => {
+            const x = eventArgs.chartX - chart.plotLeft, y = eventArgs.chartY - chart.plotTop;
             if (isInsidePane(x, y, pane.center)) {
                 hoverPane = pane;
             }
@@ -400,17 +399,16 @@ Chart.prototype.getHoverPane = function (eventArgs) {
 };
 // Check if (x, y) position is within pane for polar
 addEvent(Chart, 'afterIsInsidePlot', function (e) {
-    var _a;
-    var chart = this;
+    const chart = this;
     if (chart.polar) {
         if (e.options.inverted) {
-            _a = [e.y, e.x], e.x = _a[0], e.y = _a[1];
+            [e.x, e.y] = [e.y, e.x];
         }
-        e.isInsidePlot = chart.pane.some(function (pane) { return isInsidePane(e.x, e.y, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad); });
+        e.isInsidePlot = chart.pane.some((pane) => isInsidePane(e.x, e.y, pane.center, pane.axis && pane.axis.normalizedStartAngleRad, pane.axis && pane.axis.normalizedEndAngleRad));
     }
 });
 addEvent(Pointer, 'beforeGetHoverData', function (eventArgs) {
-    var chart = this.chart;
+    const chart = this.chart;
     if (chart.polar) {
         // Find pane we are currently hovering over.
         chart.hoverPane = chart.getHoverPane(eventArgs);
@@ -427,7 +425,7 @@ addEvent(Pointer, 'beforeGetHoverData', function (eventArgs) {
     }
 });
 addEvent(Pointer, 'afterGetHoverData', function (eventArgs) {
-    var chart = this.chart;
+    const chart = this.chart;
     if (eventArgs.hoverPoint &&
         eventArgs.hoverPoint.plotX &&
         eventArgs.hoverPoint.plotY &&

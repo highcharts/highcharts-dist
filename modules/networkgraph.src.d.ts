@@ -12,6 +12,18 @@ import * as _Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {}
+declare module "../highcharts.src" {
+    /**
+     * Callback that fires after the end of Networkgraph series simulation when
+     * the layout is stable.
+     *
+     * @param this
+     *        The series where the event occured.
+     *
+     * @param event
+     *        The event that occured.
+     */
+    type NetworkgraphAfterSimulationCallbackFunction = (this: Series, event: Event) => void;
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

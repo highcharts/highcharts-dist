@@ -8,28 +8,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import ColumnRangePoint from './ColumnRangePoint.js';
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, ColumnSeries = _a.column, columnProto = _a.column.prototype;
+const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
+const { addEvent, clamp, extend, isNumber, merge, pick } = U;
 /* *
  *
  *  Constants
@@ -50,7 +35,10 @@ var clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, merge = U.merge, 
  * @requires     highcharts-more
  * @optionparent plotOptions.columnrange
  */
-var columnRangeOptions = {
+const columnRangeOptions = {
+    borderRadius: {
+        where: 'all'
+    },
     /**
      * Extended data labels for range series types. Range series data labels
      * have no `x` and `y` options. Instead, they have `xLow`, `xHigh`,
@@ -87,86 +75,22 @@ var columnRangeOptions = {
  *
  * @augments Highcharts.Series
  */
-var ColumnRangeSeries = /** @class */ (function (_super) {
-    __extends(ColumnRangeSeries, _super);
-    function ColumnRangeSeries() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class ColumnRangeSeries extends AreaRangeSeries {
     /* *
      *
      *  Functions
      *
      * */
-    ColumnRangeSeries.prototype.setOptions = function () {
+    setOptions() {
         // #14359 Prevent side-effect from stacking.
         merge(true, arguments[0], { stacking: void 0 });
         return AreaRangeSeries.prototype.setOptions.apply(this, arguments);
-    };
-    // eslint-disable-next-line valid-jsdoc
-    /**
-     * Translate data points from raw values x and y to plotX and plotY
-     * @private
-     */
-    ColumnRangeSeries.prototype.translate = function () {
-        var _this = this;
-        var yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
-        var height, heightDifference, start, plotHigh, y;
-        // eslint-disable-next-line valid-jsdoc
-        /**
-         * Don't draw too far outside plot area (#6835)
-         * @private
-         */
-        function safeBounds(pixelPos) {
-            return clamp(pixelPos, -safeDistance, safeDistance);
-        }
-        columnProto.translate.apply(this);
-        // Set plotLow and plotHigh
-        this.points.forEach(function (point) {
-            var shapeArgs = point.shapeArgs || {}, minPointLength = _this.options.minPointLength, plotY = point.plotY, plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
-            if (isNumber(plotHigh) && isNumber(plotY)) {
-                point.plotHigh = safeBounds(plotHigh);
-                point.plotLow = safeBounds(plotY);
-                // adjust shape
-                y = point.plotHigh;
-                height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
-                // Adjust for minPointLength
-                if (Math.abs(height) < minPointLength) {
-                    heightDifference = (minPointLength - height);
-                    height += heightDifference;
-                    y -= heightDifference / 2;
-                    // Adjust for negative ranges or reversed Y axis (#1457)
-                }
-                else if (height < 0) {
-                    height *= -1;
-                    y -= height;
-                }
-                if (isRadial && _this.polar) {
-                    start = point.barX + startAngleRad;
-                    point.shapeType = 'arc';
-                    point.shapeArgs = _this.polar.arc(y + height, y, start, start + point.pointWidth);
-                }
-                else {
-                    shapeArgs.height = height;
-                    shapeArgs.y = y;
-                    var _a = shapeArgs.x, x = _a === void 0 ? 0 : _a, _b = shapeArgs.width, width = _b === void 0 ? 0 : _b;
-                    point.tooltipPos = chart.inverted ?
-                        [
-                            yAxis.len + yAxis.pos - chart.plotLeft - y -
-                                height / 2,
-                            xAxis.len + xAxis.pos - chart.plotTop - x -
-                                width / 2,
-                            height
-                        ] : [
-                        xAxis.left - chart.plotLeft + x + width / 2,
-                        yAxis.pos - chart.plotTop + y + height / 2,
-                        height
-                    ]; // don't inherit from column tooltip position - #3372
-                }
-            }
-        });
-    };
+    }
     // Overrides from modules that may be loaded after this module
     // @todo move to compositions
+    translate() {
+        return columnProto.translate.apply(this);
+    }
     // public crispCol(): BBoxObject {
     //     return columnProto.crispCol.apply(this, arguments as any);
     // }
@@ -179,29 +103,91 @@ var ColumnRangeSeries = /** @class */ (function (_super) {
     // public getColumnMetrics(): ColumnMetricsObject {
     //     return columnProto.getColumnMetrics.apply(this, arguments as any);
     // }
-    ColumnRangeSeries.prototype.pointAttribs = function () {
+    pointAttribs() {
         return columnProto.pointAttribs.apply(this, arguments);
-    };
+    }
     // public adjustForMissingColumns(): number {
     //     return columnProto.adjustForMissingColumns.apply(this, arguments);
     // }
     // public animate(): void {
     //     return columnProto.animate.apply(this, arguments as any);
     // }
-    ColumnRangeSeries.prototype.translate3dPoints = function () {
+    translate3dPoints() {
         return columnProto.translate3dPoints.apply(this, arguments);
-    };
-    ColumnRangeSeries.prototype.translate3dShapes = function () {
+    }
+    translate3dShapes() {
         return columnProto.translate3dShapes.apply(this, arguments);
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, columnRangeOptions);
-    return ColumnRangeSeries;
-}(AreaRangeSeries));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, columnRangeOptions);
+addEvent(ColumnRangeSeries, 'afterColumnTranslate', function () {
+    /**
+     * Translate data points from raw values x and y to plotX and plotY
+     * @private
+     */
+    const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
+    let height, heightDifference, start, plotHigh, y;
+    // eslint-disable-next-line valid-jsdoc
+    /**
+     * Don't draw too far outside plot area (#6835)
+     * @private
+     */
+    function safeBounds(pixelPos) {
+        return clamp(pixelPos, -safeDistance, safeDistance);
+    }
+    // Set plotLow and plotHigh
+    this.points.forEach((point) => {
+        const shapeArgs = point.shapeArgs || {}, minPointLength = this.options.minPointLength, plotY = point.plotY, plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
+        if (isNumber(plotHigh) && isNumber(plotY)) {
+            point.plotHigh = safeBounds(plotHigh);
+            point.plotLow = safeBounds(plotY);
+            // adjust shape
+            y = point.plotHigh;
+            height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
+            // Adjust for minPointLength
+            if (Math.abs(height) < minPointLength) {
+                heightDifference = (minPointLength - height);
+                height += heightDifference;
+                y -= heightDifference / 2;
+                // Adjust for negative ranges or reversed Y axis (#1457)
+            }
+            else if (height < 0) {
+                height *= -1;
+                y -= height;
+            }
+            if (isRadial && this.polar) {
+                start = point.barX + startAngleRad;
+                point.shapeType = 'arc';
+                point.shapeArgs = this.polar.arc(y + height, y, start, start + point.pointWidth);
+            }
+            else {
+                shapeArgs.height = height;
+                shapeArgs.y = y;
+                const { x = 0, width = 0 } = shapeArgs;
+                // #17912, aligning column range points
+                // merge if shapeArgs contains more properties e.g. for 3d
+                point.shapeArgs = merge(point.shapeArgs, this.crispCol(x, y, width, height));
+                point.tooltipPos = chart.inverted ?
+                    [
+                        yAxis.len + yAxis.pos - chart.plotLeft - y -
+                            height / 2,
+                        xAxis.len + xAxis.pos - chart.plotTop - x -
+                            width / 2,
+                        height
+                    ] : [
+                    xAxis.left - chart.plotLeft + x + width / 2,
+                    yAxis.pos - chart.plotTop + y + height / 2,
+                    height
+                ]; // don't inherit from column tooltip position - #3372
+            }
+        }
+    });
+}, { order: 5 });
 extend(ColumnRangeSeries.prototype, {
     directTouch: true,
     pointClass: ColumnRangePoint,

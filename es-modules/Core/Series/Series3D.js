@@ -10,54 +10,35 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Math3D from '../Math3D.js';
-var perspective = Math3D.perspective;
+const { perspective } = Math3D;
 import Series from '../Series/Series.js';
 import U from '../Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, merge = U.merge, pick = U.pick, isNumber = U.isNumber;
+const { addEvent, extend, merge, pick, isNumber } = U;
 /* *
  *
  *  Class
  *
  * */
-var Series3D = /** @class */ (function (_super) {
-    __extends(Series3D, _super);
-    function Series3D() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class Series3D extends Series {
     /* *
      *
      *  Functions
      *
      * */
     /* eslint-disable valid-jsdoc */
-    Series3D.prototype.translate = function () {
-        _super.prototype.translate.apply(this, arguments);
+    translate() {
+        super.translate.apply(this, arguments);
         if (this.chart.is3d()) {
             this.translate3dPoints();
         }
-    };
+    }
     /**
      * Translate the plotX, plotY properties and add plotZ.
      * @private
      */
-    Series3D.prototype.translate3dPoints = function () {
-        var series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPoint, projectedPoints, projectedPoint, zValue, i, rawPointsX = [], stack = seriesOptions.stacking ?
+    translate3dPoints() {
+        let series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPoint, projectedPoints, projectedPoint, zValue, i, rawPointsX = [], stack = seriesOptions.stacking ?
             (isNumber(seriesOptions.stack) ? seriesOptions.stack : 0) :
             series.index || 0;
         series.zPadding = stack *
@@ -96,15 +77,14 @@ var Series3D = /** @class */ (function (_super) {
             rawPoint.plotY = projectedPoint.y;
             rawPoint.plotZ = projectedPoint.z;
         }
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    Series3D.defaultOptions = merge(Series.defaultOptions);
-    return Series3D;
-}(Series));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+Series3D.defaultOptions = merge(Series.defaultOptions);
 /* *
  *
  *  Compatibility

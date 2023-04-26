@@ -9,7 +9,7 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-var isTouchDevice = H.isTouchDevice;
+const { isTouchDevice } = H;
 /* *
  *
  *  Constant
@@ -37,26 +37,25 @@ var isTouchDevice = H.isTouchDevice;
  *
  * @private
  */
-var ScrollbarDefaults = {
+const ScrollbarDefaults = {
     /**
-     * The height of the scrollbar. The height also applies to the width
-     * of the scroll arrows so that they are always squares. Defaults to
-     * 20 for touch devices and 14 for mouse devices.
+     * The height of the scrollbar. If `buttonsEnabled` is true , the height
+     * also applies to the width of the scroll arrows so that they are always
+     * squares.
      *
-     * @sample stock/scrollbar/height/
-     *         A 30px scrollbar
+     * @sample stock/scrollbar/style/
+     *         Non-default height
      *
      * @type    {number}
-     * @default 20/14
      */
-    height: isTouchDevice ? 20 : 14,
+    height: 10,
     /**
      * The border rounding radius of the bar.
      *
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      */
-    barBorderRadius: 0,
+    barBorderRadius: 5,
     /**
      * The corner radius of the scrollbar buttons.
      *
@@ -64,6 +63,12 @@ var ScrollbarDefaults = {
      *         Scrollbar styling
      */
     buttonBorderRadius: 0,
+    /**
+     * Enable or disable the buttons at the end of the scrollbar.
+     *
+     * @since 11.0.0
+     */
+    buttonsEnabled: false,
     /**
      * Enable or disable the scrollbar.
      *
@@ -88,9 +93,12 @@ var ScrollbarDefaults = {
     liveRedraw: void 0,
     /**
      * The margin between the scrollbar and its axis when the scrollbar is
-     * applied directly to an axis.
+     * applied directly to an axis, or the navigator in case that is enabled.
+     * Defaults to 10 for axis, 0 for navigator.
+     *
+     * @type {number|undefined}
      */
-    margin: 10,
+    margin: void 0,
     /**
      * The minimum width of the scrollbar.
      *
@@ -127,7 +135,7 @@ var ScrollbarDefaults = {
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
      */
-    barBorderWidth: 1,
+    barBorderWidth: 0,
     /**
      * The color of the scrollbar's border.
      *
@@ -173,7 +181,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    rifleColor: "#333333" /* Palette.neutralColor80 */,
+    rifleColor: 'none',
     /**
      * The color of the track background.
      *
@@ -182,7 +190,7 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    trackBackgroundColor: "#f2f2f2" /* Palette.neutralColor5 */,
+    trackBackgroundColor: 'none',
     /**
      * The color of the border of the scrollbar track.
      *
@@ -191,17 +199,14 @@ var ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    trackBorderColor: "#f2f2f2" /* Palette.neutralColor5 */,
+    trackBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The corner radius of the border of the scrollbar track.
      *
      * @sample stock/scrollbar/style/
      *         Scrollbar styling
-     *
-     * @type      {number}
-     * @default   0
-     * @apioption scrollbar.trackBorderRadius
      */
+    trackBorderRadius: 5,
     /**
      * The width of the border of the scrollbar track.
      *

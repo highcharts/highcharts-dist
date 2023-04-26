@@ -8,28 +8,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Color from '../../Core/Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var LineSeries = SeriesRegistry.seriesTypes.line;
+const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { extend, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
@@ -44,19 +29,17 @@ var extend = U.extend, merge = U.merge, objectEach = U.objectEach, pick = U.pick
  *
  * @augments LineSeries
  */
-var AreaSeries = /** @class */ (function (_super) {
-    __extends(AreaSeries, _super);
-    function AreaSeries() {
+class AreaSeries extends LineSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        super(...arguments);
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -71,13 +54,13 @@ var AreaSeries = /** @class */ (function (_super) {
      * getSegmentPath method called from Series.prototype.drawGraph.
      * @private
      */
-    AreaSeries.prototype.drawGraph = function () {
+    drawGraph() {
         // Define or reset areaPath
         this.areaPath = [];
         // Call the base method
-        _super.prototype.drawGraph.apply(this);
+        super.drawGraph.apply(this);
         // Define local variables
-        var series = this, areaPath = this.areaPath, options = this.options, zones = this.zones, props = [[
+        const series = this, areaPath = this.areaPath, options = this.options, zones = this.zones, props = [[
                 'area',
                 'highcharts-area',
                 this.color,
@@ -93,9 +76,9 @@ var AreaSeries = /** @class */ (function (_super) {
             ]);
         });
         props.forEach(function (prop) {
-            var areaKey = prop[0], attribs = {};
-            var area = series[areaKey];
-            var verb = area ? 'animate' : 'attr';
+            const areaKey = prop[0], attribs = {};
+            let area = series[areaKey];
+            const verb = area ? 'animate' : 'attr';
             // Create or update the area
             if (area) { // update
                 area.endX = series.preventGraphAnimation ?
@@ -120,21 +103,21 @@ var AreaSeries = /** @class */ (function (_super) {
             area.startX = areaPath.xMap;
             area.shiftUnit = options.step ? 2 : 1;
         });
-    };
+    }
     /**
      * @private
      */
-    AreaSeries.prototype.getGraphPath = function (points) {
-        var getGraphPath = LineSeries.prototype.getGraphPath, options = this.options, stacking = options.stacking, yAxis = this.yAxis, bottomPoints = [], graphPoints = [], seriesIndex = this.index, stacks = yAxis.stacking.stacks[this.stackKey], threshold = options.threshold, translatedThreshold = Math.round(// #10909
+    getGraphPath(points) {
+        const getGraphPath = LineSeries.prototype.getGraphPath, options = this.options, stacking = options.stacking, yAxis = this.yAxis, bottomPoints = [], graphPoints = [], seriesIndex = this.index, stacks = yAxis.stacking.stacks[this.stackKey], threshold = options.threshold, translatedThreshold = Math.round(// #10909
         yAxis.getThreshold(options.threshold)), connectNulls = pick(// #10574
         options.connectNulls, stacking === 'percent'), 
         // To display null points in underlying stacked series, this
         // series graph must be broken, and the area also fall down to
         // fill the gap left by the null point. #2069
         addDummyPoints = function (i, otherI, side) {
-            var point = points[i], stackedValues = stacking &&
+            const point = points[i], stackedValues = stacking &&
                 stacks[point.x].points[seriesIndex], nullVal = point[side + 'Null'] || 0, cliffVal = point[side + 'Cliff'] || 0;
-            var top, bottom, isNull = true;
+            let top, bottom, isNull = true;
             if (cliffVal || nullVal) {
                 top = (nullVal ?
                     stackedValues[0] :
@@ -166,14 +149,14 @@ var AreaSeries = /** @class */ (function (_super) {
                 });
             }
         };
-        var plotX, isNull, yBottom;
+        let plotX, isNull, yBottom;
         // Find what points to use
         points = points || this.points;
         // Fill in missing points
         if (stacking) {
             points = this.getStackPoints(points);
         }
-        for (var i = 0, iEnd = points.length; i < iEnd; ++i) {
+        for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
             // Reset after series.update of stacking property (#12033)
             if (!stacking) {
                 points[i].leftCliff = points[i].rightCliff =
@@ -203,35 +186,35 @@ var AreaSeries = /** @class */ (function (_super) {
                 }
             }
         }
-        var topPath = getGraphPath.call(this, graphPoints, true, true);
+        const topPath = getGraphPath.call(this, graphPoints, true, true);
         bottomPoints.reversed = true;
-        var bottomPath = getGraphPath.call(this, bottomPoints, true, true);
-        var firstBottomPoint = bottomPath[0];
+        const bottomPath = getGraphPath.call(this, bottomPoints, true, true);
+        const firstBottomPoint = bottomPath[0];
         if (firstBottomPoint && firstBottomPoint[0] === 'M') {
             bottomPath[0] = ['L', firstBottomPoint[1], firstBottomPoint[2]];
         }
-        var areaPath = topPath.concat(bottomPath);
+        const areaPath = topPath.concat(bottomPath);
         if (areaPath.length) {
             areaPath.push(['Z']);
         }
         // TODO: don't set leftCliff and rightCliff when connectNulls?
-        var graphPath = getGraphPath
+        const graphPath = getGraphPath
             .call(this, graphPoints, false, connectNulls);
         areaPath.xMap = topPath.xMap;
         this.areaPath = areaPath;
         return graphPath;
-    };
+    }
     /**
      * Return an array of stacked points, where null and missing points are
      * replaced by dummy points in order for gaps to be drawn correctly in
      * stacks.
      * @private
      */
-    AreaSeries.prototype.getStackPoints = function (points) {
-        var series = this, segment = [], keys = [], xAxis = this.xAxis, yAxis = this.yAxis, stack = yAxis.stacking.stacks[this.stackKey], pointMap = {}, yAxisSeries = yAxis.series, seriesLength = yAxisSeries.length, upOrDown = yAxis.options.reversedStacks ? 1 : -1, seriesIndex = yAxisSeries.indexOf(series);
+    getStackPoints(points) {
+        const series = this, segment = [], keys = [], xAxis = this.xAxis, yAxis = this.yAxis, stack = yAxis.stacking.stacks[this.stackKey], pointMap = {}, yAxisSeries = yAxis.series, seriesLength = yAxisSeries.length, upOrDown = yAxis.options.reversedStacks ? 1 : -1, seriesIndex = yAxisSeries.indexOf(series);
         points = points || this.points;
         if (this.options.stacking) {
-            for (var i = 0; i < points.length; i++) {
+            for (let i = 0; i < points.length; i++) {
                 // Reset after point update (#7326)
                 points[i].leftNull = points[i].rightNull = void 0;
                 // Create a map where we can quickly look up the points by
@@ -249,28 +232,28 @@ var AreaSeries = /** @class */ (function (_super) {
             keys.sort(function (a, b) {
                 return a - b;
             });
-            var visibleSeries_1 = yAxisSeries.map(function (s) { return s.visible; });
+            const visibleSeries = yAxisSeries.map((s) => s.visible);
             keys.forEach(function (x, idx) {
-                var y = 0, stackPoint, stackedValues;
+                let y = 0, stackPoint, stackedValues;
                 if (pointMap[x] && !pointMap[x].isNull) {
                     segment.push(pointMap[x]);
                     // Find left and right cliff. -1 goes left, 1 goes
                     // right.
                     [-1, 1].forEach(function (direction) {
-                        var nullName = direction === 1 ?
+                        const nullName = direction === 1 ?
                             'rightNull' :
                             'leftNull', cliffName = direction === 1 ?
                             'rightCliff' :
                             'leftCliff', otherStack = stack[keys[idx + direction]];
-                        var cliff = 0;
+                        let cliff = 0;
                         // If there is a stack next to this one,
                         // to the left or to the right...
                         if (otherStack) {
-                            var i = seriesIndex;
+                            let i = seriesIndex;
                             // Can go either up or down,
                             // depending on reversedStacks
                             while (i >= 0 && i < seriesLength) {
-                                var si = yAxisSeries[i].index;
+                                const si = yAxisSeries[i].index;
                                 stackPoint = otherStack.points[si];
                                 if (!stackPoint) {
                                     // If the next point in this series is
@@ -284,7 +267,7 @@ var AreaSeries = /** @class */ (function (_super) {
                                         // values and add a hiatus to the left or
                                         // right.
                                     }
-                                    else if (visibleSeries_1[i]) {
+                                    else if (visibleSeries[i]) {
                                         stackedValues = stack[x].points[si];
                                         if (stackedValues) {
                                             cliff -= (stackedValues[1] -
@@ -306,9 +289,9 @@ var AreaSeries = /** @class */ (function (_super) {
                 else {
                     // Loop down the stack to find the series below this
                     // one that has a value (#1991)
-                    var i = seriesIndex;
+                    let i = seriesIndex;
                     while (i >= 0 && i < seriesLength) {
-                        var si = yAxisSeries[i].index;
+                        const si = yAxisSeries[i].index;
                         stackPoint = stack[x].points[si];
                         if (stackPoint) {
                             y = stackPoint[1];
@@ -333,136 +316,135 @@ var AreaSeries = /** @class */ (function (_super) {
             });
         }
         return segment;
-    };
+    }
+}
+/**
+ * The area series type.
+ *
+ * @sample {highcharts} highcharts/demo/area-basic/
+ *         Area chart
+ * @sample {highstock} stock/demo/area/
+ *         Area chart
+ *
+ * @extends      plotOptions.line
+ * @excluding    useOhlcData
+ * @product      highcharts highstock
+ * @optionparent plotOptions.area
+ */
+AreaSeries.defaultOptions = merge(LineSeries.defaultOptions, {
     /**
-     * The area series type.
+     * @see [fillColor](#plotOptions.area.fillColor)
+     * @see [fillOpacity](#plotOptions.area.fillOpacity)
      *
-     * @sample {highcharts} highcharts/demo/area-basic/
-     *         Area chart
-     * @sample {highstock} stock/demo/area/
-     *         Area chart
-     *
-     * @extends      plotOptions.line
-     * @excluding    useOhlcData
-     * @product      highcharts highstock
-     * @optionparent plotOptions.area
+     * @apioption plotOptions.area.color
      */
-    AreaSeries.defaultOptions = merge(LineSeries.defaultOptions, {
-        /**
-         * @see [fillColor](#plotOptions.area.fillColor)
-         * @see [fillOpacity](#plotOptions.area.fillOpacity)
-         *
-         * @apioption plotOptions.area.color
-         */
-        /**
-         * Fill color or gradient for the area. When `null`, the series' `color`
-         * is used with the series' `fillOpacity`.
-         *
-         * In styled mode, the fill color can be set with the `.highcharts-area`
-         * class name.
-         *
-         * @see [color](#plotOptions.area.color)
-         * @see [fillOpacity](#plotOptions.area.fillOpacity)
-         *
-         * @sample {highcharts} highcharts/plotoptions/area-fillcolor-default/
-         *         Null by default
-         * @sample {highcharts} highcharts/plotoptions/area-fillcolor-gradient/
-         *         Gradient
-         *
-         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         * @product   highcharts highstock
-         * @apioption plotOptions.area.fillColor
-         */
-        /**
-         * Fill opacity for the area. When you set an explicit `fillColor`,
-         * the `fillOpacity` is not applied. Instead, you should define the
-         * opacity in the `fillColor` with an rgba color definition. The
-         * `fillOpacity` setting, also the default setting, overrides the alpha
-         * component of the `color` setting.
-         *
-         * In styled mode, the fill opacity can be set with the
-         * `.highcharts-area` class name.
-         *
-         * @see [color](#plotOptions.area.color)
-         * @see [fillColor](#plotOptions.area.fillColor)
-         *
-         * @sample {highcharts} highcharts/plotoptions/area-fillopacity/
-         *         Automatic fill color and fill opacity of 0.1
-         *
-         * @type      {number}
-         * @default   {highcharts} 0.75
-         * @default   {highstock} 0.75
-         * @product   highcharts highstock
-         * @apioption plotOptions.area.fillOpacity
-         */
-        /**
-         * A separate color for the graph line. By default the line takes the
-         * `color` of the series, but the lineColor setting allows setting a
-         * separate color for the line without altering the `fillColor`.
-         *
-         * In styled mode, the line stroke can be set with the
-         * `.highcharts-graph` class name.
-         *
-         * @sample {highcharts} highcharts/plotoptions/area-linecolor/
-         *         Dark gray line
-         *
-         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         * @product   highcharts highstock
-         * @apioption plotOptions.area.lineColor
-         */
-        /**
-         * A separate color for the negative part of the area.
-         *
-         * In styled mode, a negative color is set with the
-         * `.highcharts-negative` class name.
-         *
-         * @see [negativeColor](#plotOptions.area.negativeColor)
-         *
-         * @sample {highcharts} highcharts/css/series-negative-color/
-         *         Negative color in styled mode
-         *
-         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         * @since     3.0
-         * @product   highcharts
-         * @apioption plotOptions.area.negativeFillColor
-         */
-        /**
-         * Whether the whole area or just the line should respond to mouseover
-         * tooltips and other mouse or touch events.
-         *
-         * @sample {highcharts|highstock} highcharts/plotoptions/area-trackbyarea/
-         *         Display the tooltip when the area is hovered
-         *
-         * @type      {boolean}
-         * @default   false
-         * @since     1.1.6
-         * @product   highcharts highstock
-         * @apioption plotOptions.area.trackByArea
-         */
-        /**
-         * The Y axis value to serve as the base for the area, for
-         * distinguishing between values above and below a threshold. The area
-         * between the graph and the threshold is filled.
-         *
-         * * If a number is given, the Y axis will scale to the threshold.
-         * * If `null`, the scaling behaves like a line series with fill between
-         *   the graph and the Y axis minimum.
-         * * If `Infinity` or `-Infinity`, the area between the graph and the
-         *   corresponding Y axis extreme is filled (since v6.1.0).
-         *
-         * @sample {highcharts} highcharts/plotoptions/area-threshold/
-         *         A threshold of 100
-         * @sample {highcharts} highcharts/plotoptions/area-threshold-infinity/
-         *         A threshold of Infinity
-         *
-         * @type    {number|null}
-         * @since   2.0
-         * @product highcharts highstock
-         */
-        threshold: 0
-    });
-    return AreaSeries;
-}(LineSeries));
+    /**
+     * Fill color or gradient for the area. When `null`, the series' `color`
+     * is used with the series' `fillOpacity`.
+     *
+     * In styled mode, the fill color can be set with the `.highcharts-area`
+     * class name.
+     *
+     * @see [color](#plotOptions.area.color)
+     * @see [fillOpacity](#plotOptions.area.fillOpacity)
+     *
+     * @sample {highcharts} highcharts/plotoptions/area-fillcolor-default/
+     *         Null by default
+     * @sample {highcharts} highcharts/plotoptions/area-fillcolor-gradient/
+     *         Gradient
+     *
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @product   highcharts highstock
+     * @apioption plotOptions.area.fillColor
+     */
+    /**
+     * Fill opacity for the area. When you set an explicit `fillColor`,
+     * the `fillOpacity` is not applied. Instead, you should define the
+     * opacity in the `fillColor` with an rgba color definition. The
+     * `fillOpacity` setting, also the default setting, overrides the alpha
+     * component of the `color` setting.
+     *
+     * In styled mode, the fill opacity can be set with the
+     * `.highcharts-area` class name.
+     *
+     * @see [color](#plotOptions.area.color)
+     * @see [fillColor](#plotOptions.area.fillColor)
+     *
+     * @sample {highcharts} highcharts/plotoptions/area-fillopacity/
+     *         Automatic fill color and fill opacity of 0.1
+     *
+     * @type      {number}
+     * @default   {highcharts} 0.75
+     * @default   {highstock} 0.75
+     * @product   highcharts highstock
+     * @apioption plotOptions.area.fillOpacity
+     */
+    /**
+     * A separate color for the graph line. By default the line takes the
+     * `color` of the series, but the lineColor setting allows setting a
+     * separate color for the line without altering the `fillColor`.
+     *
+     * In styled mode, the line stroke can be set with the
+     * `.highcharts-graph` class name.
+     *
+     * @sample {highcharts} highcharts/plotoptions/area-linecolor/
+     *         Dark gray line
+     *
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @product   highcharts highstock
+     * @apioption plotOptions.area.lineColor
+     */
+    /**
+     * A separate color for the negative part of the area.
+     *
+     * In styled mode, a negative color is set with the
+     * `.highcharts-negative` class name.
+     *
+     * @see [negativeColor](#plotOptions.area.negativeColor)
+     *
+     * @sample {highcharts} highcharts/css/series-negative-color/
+     *         Negative color in styled mode
+     *
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @since     3.0
+     * @product   highcharts
+     * @apioption plotOptions.area.negativeFillColor
+     */
+    /**
+     * Whether the whole area or just the line should respond to mouseover
+     * tooltips and other mouse or touch events.
+     *
+     * @sample {highcharts|highstock} highcharts/plotoptions/area-trackbyarea/
+     *         Display the tooltip when the area is hovered
+     *
+     * @type      {boolean}
+     * @default   false
+     * @since     1.1.6
+     * @product   highcharts highstock
+     * @apioption plotOptions.area.trackByArea
+     */
+    /**
+     * The Y axis value to serve as the base for the area, for
+     * distinguishing between values above and below a threshold. The area
+     * between the graph and the threshold is filled.
+     *
+     * * If a number is given, the Y axis will scale to the threshold.
+     * * If `null`, the scaling behaves like a line series with fill between
+     *   the graph and the Y axis minimum.
+     * * If `Infinity` or `-Infinity`, the area between the graph and the
+     *   corresponding Y axis extreme is filled (since v6.1.0).
+     *
+     * @sample {highcharts} highcharts/plotoptions/area-threshold/
+     *         A threshold of 100
+     * @sample {highcharts} highcharts/plotoptions/area-threshold-infinity/
+     *         A threshold of Infinity
+     *
+     * @type    {number|null}
+     * @since   2.0
+     * @product highcharts highstock
+     */
+    threshold: 0
+});
 extend(AreaSeries.prototype, {
     singleStacks: false,
     drawLegendSymbol: LegendSymbol.drawRectangle

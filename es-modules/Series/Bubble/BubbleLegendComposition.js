@@ -13,15 +13,15 @@
 import BubbleLegendDefaults from './BubbleLegendDefaults.js';
 import BubbleLegendItem from './BubbleLegendItem.js';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, objectEach = U.objectEach, wrap = U.wrap;
+const { addEvent, objectEach, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -32,8 +32,8 @@ var composedClasses = [];
  * and render legend again.
  */
 function chartDrawChartBox(proceed, options, callback) {
-    var chart = this, legend = chart.legend, bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
-    var bubbleLegendOptions, bubbleSizes, legendItem;
+    const chart = this, legend = chart.legend, bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
+    let bubbleLegendOptions, bubbleSizes, legendItem;
     if (legend && legend.options.enabled && legend.bubbleLegend &&
         legend.options.bubbleLegend.autoRanges && bubbleSeries) {
         bubbleLegendOptions = legend.bubbleLegend.options;
@@ -42,7 +42,7 @@ function chartDrawChartBox(proceed, options, callback) {
         // Disable animation on init
         if (!bubbleLegendOptions.placed) {
             legend.group.placed = false;
-            legend.allItems.forEach(function (item) {
+            legend.allItems.forEach((item) => {
                 legendItem = item.legendItem || {};
                 if (legendItem.group) {
                     legendItem.group.translateY = null;
@@ -99,8 +99,7 @@ function chartDrawChartBox(proceed, options, callback) {
  * Core series class to use with Bubble series.
  */
 function compose(ChartClass, LegendClass, SeriesClass) {
-    if (composedClasses.indexOf(ChartClass) === -1) {
-        composedClasses.push(ChartClass);
+    if (U.pushUnique(composedMembers, ChartClass)) {
         setOptions({
             // Set default bubble legend options
             legend: {
@@ -109,12 +108,10 @@ function compose(ChartClass, LegendClass, SeriesClass) {
         });
         wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
     }
-    if (composedClasses.indexOf(LegendClass) === -1) {
-        composedClasses.push(LegendClass);
+    if (U.pushUnique(composedMembers, LegendClass)) {
         addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
     }
-    if (composedClasses.indexOf(SeriesClass) === -1) {
-        composedClasses.push(SeriesClass);
+    if (U.pushUnique(composedMembers, SeriesClass)) {
         addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
     }
 }
@@ -129,8 +126,8 @@ function compose(ChartClass, LegendClass, SeriesClass) {
  * First visible bubble series index
  */
 function getVisibleBubbleSeriesIndex(chart) {
-    var series = chart.series;
-    var i = 0;
+    const series = chart.series;
+    let i = 0;
     while (i < series.length) {
         if (series[i] &&
             series[i].isBubble &&
@@ -155,8 +152,8 @@ function getVisibleBubbleSeriesIndex(chart) {
  * Informations about line height and items amount
  */
 function getLinesHeights(legend) {
-    var items = legend.allItems, lines = [], length = items.length;
-    var lastLine, legendItem, legendItem2, i = 0, j = 0;
+    const items = legend.allItems, lines = [], length = items.length;
+    let lastLine, legendItem, legendItem2, i = 0, j = 0;
     for (i = 0; i < length; i++) {
         legendItem = items[i].legendItem || {};
         legendItem2 = (items[i + 1] || {}).legendItem || {};
@@ -184,7 +181,7 @@ function getLinesHeights(legend) {
  * Start the bubble legend creation process.
  */
 function onLegendAfterGetAllItems(e) {
-    var legend = this, bubbleLegend = legend.bubbleLegend, legendOptions = legend.options, options = legendOptions.bubbleLegend, bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
+    const legend = this, bubbleLegend = legend.bubbleLegend, legendOptions = legend.options, options = legendOptions.bubbleLegend, bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
     // Remove unnecessary element
     if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
         // Allow change the way of calculating ranges in update
@@ -207,9 +204,13 @@ function onLegendAfterGetAllItems(e) {
 /**
  * Toggle bubble legend depending on the visible status of bubble series.
  */
-function onSeriesLegendItemClick() {
-    var series = this, chart = series.chart, visible = series.visible, legend = series.chart.legend;
-    var status;
+function onSeriesLegendItemClick(e) {
+    // #14080 don't fire this code if click function is prevented
+    if (e.defaultPrevented) {
+        return false;
+    }
+    const series = this, chart = series.chart, visible = series.visible, legend = series.chart.legend;
+    let status;
     if (legend && legend.bubbleLegend) {
         // Temporary correct 'visible' property
         series.visible = !visible;
@@ -241,9 +242,9 @@ function onSeriesLegendItemClick() {
  * Informations about line height and items amount
  */
 function retranslateItems(legend, lines) {
-    var items = legend.allItems, rtl = legend.options.rtl;
-    var orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
-    items.forEach(function (item, index) {
+    const items = legend.allItems, rtl = legend.options.rtl;
+    let orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
+    items.forEach((item, index) => {
         legendItem = item.legendItem || {};
         if (!legendItem.group) {
             return;
@@ -271,7 +272,7 @@ function retranslateItems(legend, lines) {
  *  Default Export
  *
  * */
-var BubbleLegendComposition = {
-    compose: compose
+const BubbleLegendComposition = {
+    compose
 };
 export default BubbleLegendComposition;

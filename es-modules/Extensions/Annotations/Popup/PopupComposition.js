@@ -12,13 +12,13 @@
 'use strict';
 import Popup from './Popup.js';
 import U from '../../../Core/Utilities.js';
-var addEvent = U.addEvent, wrap = U.wrap;
+const { addEvent, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -28,13 +28,11 @@ var composedClasses = [];
  * @private
  */
 function compose(NagivationBindingsClass, PointerClass) {
-    if (composedClasses.indexOf(NagivationBindingsClass) === -1) {
-        composedClasses.push(NagivationBindingsClass);
+    if (U.pushUnique(composedMembers, NagivationBindingsClass)) {
         addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
         addEvent(NagivationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
     }
-    if (composedClasses.indexOf(PointerClass) === -1) {
-        composedClasses.push(PointerClass);
+    if (U.pushUnique(composedMembers, PointerClass)) {
         wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
     }
 }
@@ -55,7 +53,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/10.3.3/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/11.0.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }
@@ -75,7 +73,7 @@ function wrapPointerOnContainerMouserDown(proceed, e) {
  *  Default Export
  *
  * */
-var PopupComposition = {
-    compose: compose
+const PopupComposition = {
+    compose
 };
 export default PopupComposition;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Arc diagram module
  *
@@ -49,49 +49,30 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var SankeyPoint = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
-        var extend = U.extend;
+        const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
+        const { extend } = U;
         /* *
          *
          *  Class
          *
          * */
-        var ArcDiagramPoint = /** @class */ (function (_super) {
-                __extends(ArcDiagramPoint, _super);
-            function ArcDiagramPoint() {
+        class ArcDiagramPoint extends SankeyPoint {
+            constructor() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
-                _this.fromNode = void 0;
-                _this.index = void 0;
-                _this.linksFrom = void 0;
-                _this.linksTo = void 0;
-                _this.options = void 0;
-                _this.series = void 0;
-                _this.scale = void 0;
-                _this.shapeArgs = void 0;
-                _this.toNode = void 0;
-                return _this;
+                super(...arguments);
+                this.fromNode = void 0;
+                this.index = void 0;
+                this.linksFrom = void 0;
+                this.linksTo = void 0;
+                this.options = void 0;
+                this.series = void 0;
+                this.scale = void 0;
+                this.shapeArgs = void 0;
+                this.toNode = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -100,12 +81,11 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
-            ArcDiagramPoint.prototype.isValid = function () {
+            isValid() {
                 // No null points here
                 return true;
-            };
-            return ArcDiagramPoint;
-        }(SankeyPoint));
+            }
+        }
         extend(ArcDiagramPoint.prototype, {
             setState: NodesComposition.setNodeState
         });
@@ -129,22 +109,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
         var __rest = (this && this.__rest) || function (s,
             e) {
                 var t = {};
@@ -157,14 +121,9 @@
                 }
             return t;
         };
-        var symbols = SVGRenderer.prototype.symbols;
-        var _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
-            SankeySeries = _a.sankey;
-        var extend = U.extend,
-            merge = U.merge,
-            pick = U.pick,
-            relativeLength = U.relativeLength;
+        const { prototype: { symbols } } = SVGRenderer;
+        const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = SeriesRegistry;
+        const { extend, merge, pick, relativeLength } = U;
         /* *
          *
          *  Class
@@ -177,22 +136,19 @@
          *
          * @augments Highcharts.seriesTypes.sankey
          */
-        var ArcDiagramSeries = /** @class */ (function (_super) {
-                __extends(ArcDiagramSeries, _super);
-            function ArcDiagramSeries() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+        class ArcDiagramSeries extends SankeySeries {
+            constructor() {
+                super(...arguments);
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.nodeColumns = void 0;
-                _this.nodes = void 0;
-                _this.points = void 0;
-                return _this;
+                this.data = void 0;
+                this.options = void 0;
+                this.nodeColumns = void 0;
+                this.nodes = void 0;
+                this.points = void 0;
                 /* eslint-enable valid-jsdoc */
             }
             /* *
@@ -205,32 +161,21 @@
              * incoming and outgoing links.
              * @private
              */
-            ArcDiagramSeries.prototype.createNodeColumns = function () {
-                var _this = this;
-                var series = this,
-                    chart = series.chart, 
-                    // column needs casting, to much methods required at the same time
-                    column = SankeyColumnComposition.compose([],
-                    series);
+            createNodeColumns() {
+                const series = this, chart = series.chart, 
+                // column needs casting, to much methods required at the same time
+                column = SankeyColumnComposition.compose([], series);
                 column.sankeyColumn.maxLength = chart.inverted ?
                     chart.plotHeight : chart.plotWidth;
                 // Get the translation factor needed for each column to fill up the plot
                 // height
-                column.sankeyColumn.getTranslationFactor = function (series) {
-                    var nodes = column.slice(),
-                        minLinkWidth = _this.options.minLinkWidth || 0;
-                    var skipPoint,
-                        factor = 0,
-                        i,
-                        radius,
-                        maxRadius = 0,
-                        scale = 1,
-                        additionalSpace = 0,
-                        remainingWidth = (chart.plotSizeX || 0) -
-                            (series.options.marker &&
-                                series.options.marker.lineWidth || 0) -
-                            (column.length - 1) *
-                                series.nodePadding;
+                column.sankeyColumn.getTranslationFactor = (series) => {
+                    const nodes = column.slice(), minLinkWidth = this.options.minLinkWidth || 0;
+                    let skipPoint, factor = 0, i, radius, maxRadius = 0, scale = 1, additionalSpace = 0, remainingWidth = (chart.plotSizeX || 0) -
+                        (series.options.marker &&
+                            series.options.marker.lineWidth || 0) -
+                        (column.length - 1) *
+                            series.nodePadding;
                     // Because the minLinkWidth option doesn't obey the direct
                     // translation, we need to run translation iteratively, check node
                     // heights, remove those nodes affected by minLinkWidth, check
@@ -241,8 +186,7 @@
                         i = column.length;
                         while (i--) {
                             radius = (column[i].getSum()) * factor * scale;
-                            var plotArea = Math.min(chart.plotHeight,
-                                chart.plotWidth);
+                            let plotArea = Math.min(chart.plotHeight, chart.plotWidth);
                             if (radius > plotArea) {
                                 scale = Math.min(plotArea / radius, scale);
                             }
@@ -261,7 +205,7 @@
                     }
                     // Re-insert original nodes
                     column.length = 0;
-                    nodes.forEach(function (node) {
+                    nodes.forEach((node) => {
                         node.scale = scale;
                         column.push(node);
                     });
@@ -271,20 +215,15 @@
                     return factor;
                 };
                 column.sankeyColumn.offset = function (node, factor) {
-                    var equalNodes = node.series.options.equalNodes;
-                    var offset = column.sankeyColumn.additionalSpace || 0,
-                        totalNodeOffset,
-                        nodePadding = series.nodePadding,
-                        maxRadius = Math.min(chart.plotWidth,
-                        chart.plotHeight, (column.sankeyColumn.maxLength || 0) /
-                            series.nodes.length - nodePadding);
-                    for (var i = 0; i < column.length; i++) {
-                        var sum = column[i].getSum() *
-                                (column.sankeyColumn.scale || 0);
-                        var width = equalNodes ?
-                                maxRadius :
-                                Math.max(sum * factor,
-                            series.options.minLinkWidth || 0);
+                    const equalNodes = node.series.options.equalNodes;
+                    let offset = column.sankeyColumn.additionalSpace || 0, totalNodeOffset, nodePadding = series.nodePadding, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, (column.sankeyColumn.maxLength || 0) /
+                        series.nodes.length - nodePadding);
+                    for (let i = 0; i < column.length; i++) {
+                        const sum = column[i].getSum() *
+                            (column.sankeyColumn.scale || 0);
+                        const width = equalNodes ?
+                            maxRadius :
+                            Math.max(sum * factor, series.options.minLinkWidth || 0);
                         if (sum) {
                             totalNodeOffset = width + nodePadding;
                         }
@@ -306,52 +245,34 @@
                     column.push(node);
                 });
                 return [column];
-            };
+            }
             /**
              * Run translation operations for one link.
              * @private
              */
-            ArcDiagramSeries.prototype.translateLink = function (point) {
-                var _a,
-                    _b;
-                var series = this,
-                    fromNode = point.fromNode,
-                    toNode = point.toNode,
-                    chart = this.chart,
-                    translationFactor = series.translationFactor,
-                    pointOptions = point.options,
-                    seriesOptions = series.options,
-                    linkWeight = pick(pointOptions.linkWeight,
-                    seriesOptions.linkWeight,
-                    Math.max((point.weight || 0) *
-                        translationFactor *
-                        fromNode.scale, (series.options.minLinkWidth || 0))),
-                    centeredLinks = point.series.options.centeredLinks,
-                    nodeTop = fromNode.nodeY;
-                var getX = function (node,
-                    fromOrTo) {
-                        var linkLeft = ((node.offset(point,
-                    fromOrTo) || 0) *
-                            translationFactor);
-                    var x = Math.min(node.nodeX + linkLeft, 
-                        // Prevent links from spilling below the node (#12014)
-                        node.nodeX + (node.shapeArgs && node.shapeArgs.height || 0) - linkWeight);
+            translateLink(point) {
+                const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = pick(pointOptions.linkWeight, seriesOptions.linkWeight, Math.max((point.weight || 0) *
+                    translationFactor *
+                    fromNode.scale, (series.options.minLinkWidth || 0))), centeredLinks = point.series.options.centeredLinks, nodeTop = fromNode.nodeY;
+                const getX = (node, fromOrTo) => {
+                    const linkLeft = ((node.offset(point, fromOrTo) || 0) *
+                        translationFactor);
+                    const x = Math.min(node.nodeX + linkLeft, 
+                    // Prevent links from spilling below the node (#12014)
+                    node.nodeX + (node.shapeArgs && node.shapeArgs.height || 0) - linkWeight);
                     return x;
                 };
-                var fromX = centeredLinks ?
-                        fromNode.nodeX +
-                            ((fromNode.shapeArgs.height || 0) - linkWeight) / 2 :
-                        getX(fromNode, 'linksFrom'),
-                    toX = centeredLinks ? toNode.nodeX +
-                        ((toNode.shapeArgs.height || 0) - linkWeight) / 2 :
-                        getX(toNode, 'linksTo'),
-                    bottom = nodeTop,
-                    linkWidth = linkWeight;
+                let fromX = centeredLinks ?
+                    fromNode.nodeX +
+                        ((fromNode.shapeArgs.height || 0) - linkWeight) / 2 :
+                    getX(fromNode, 'linksFrom'), toX = centeredLinks ? toNode.nodeX +
+                    ((toNode.shapeArgs.height || 0) - linkWeight) / 2 :
+                    getX(toNode, 'linksTo'), bottom = nodeTop, linkWidth = linkWeight;
                 if (fromX > toX) {
-                    _a = [toX, fromX], fromX = _a[0], toX = _a[1];
+                    [fromX, toX] = [toX, fromX];
                 }
                 if (seriesOptions.reversed) {
-                    _b = [toX, fromX], fromX = _b[0], toX = _b[1];
+                    [fromX, toX] = [toX, fromX];
                     bottom = (chart.plotSizeY || 0) - bottom;
                     linkWidth = -linkWidth;
                 }
@@ -362,9 +283,7 @@
                     toX,
                     toX + linkWeight
                 ];
-                var linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * pick(seriesOptions.linkRadius,
-                    Math.min(Math.abs(toX + linkWeight - fromX) / 2,
-                    fromNode.nodeY - Math.abs(linkWeight)));
+                const linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * pick(seriesOptions.linkRadius, Math.min(Math.abs(toX + linkWeight - fromX) / 2, fromNode.nodeY - Math.abs(linkWeight)));
                 point.shapeArgs = {
                     d: [
                         ['M', fromX, bottom],
@@ -412,53 +331,31 @@
                 if (!point.color) {
                     point.color = fromNode.color;
                 }
-            };
+            }
             /**
              * Run translation operations for one node.
              * @private
              */
-            ArcDiagramSeries.prototype.translateNode = function (node, column) {
-                var series = this,
-                    translationFactor = series.translationFactor,
-                    chart = series.chart,
-                    maxNodesLength = chart.inverted ?
-                        chart.plotWidth : chart.plotHeight,
-                    options = series.options,
-                    maxRadius = Math.min(chart.plotWidth,
-                    chart.plotHeight,
-                    maxNodesLength / node.series.nodes.length - this.nodePadding),
-                    sum = node.getSum() * (column.sankeyColumn.scale || 0),
-                    equalNodes = options.equalNodes,
-                    nodeHeight = equalNodes ?
-                        maxRadius :
-                        Math.max(sum * translationFactor,
-                    this.options.minLinkWidth || 0),
-                    crisp = Math.round(options.marker &&
-                        options.marker.lineWidth || 0) % 2 / 2,
-                    nodeOffset = column.sankeyColumn.offset(node,
-                    translationFactor),
-                    fromNodeLeft = Math.floor(pick(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
-                        (nodeOffset && nodeOffset.relativeLeft || 0)))) + crisp,
-                    markerOptions = merge(options.marker,
-                    node.options.marker),
-                    symbol = markerOptions.symbol,
-                    markerRadius = markerOptions.radius,
-                    top = parseInt(options.offset, 10) *
-                        ((chart.inverted ?
-                            chart.plotWidth : chart.plotHeight) - (Math.floor(this.colDistance * (node.column || 0) +
-                            (markerOptions.lineWidth || 0) / 2) + crisp +
-                            (column.sankeyColumn.scale || 0) *
-                                (column.sankeyColumn.maxRadius || 0) / 2)) / 100;
+            translateNode(node, column) {
+                const series = this, translationFactor = series.translationFactor, chart = series.chart, maxNodesLength = chart.inverted ?
+                    chart.plotWidth : chart.plotHeight, options = series.options, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, maxNodesLength / node.series.nodes.length - this.nodePadding), sum = node.getSum() * (column.sankeyColumn.scale || 0), equalNodes = options.equalNodes, nodeHeight = equalNodes ?
+                    maxRadius :
+                    Math.max(sum * translationFactor, this.options.minLinkWidth || 0), crisp = Math.round(options.marker &&
+                    options.marker.lineWidth || 0) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = Math.floor(pick(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
+                    (nodeOffset && nodeOffset.relativeLeft || 0)))) + crisp, markerOptions = merge(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset, 10) *
+                    ((chart.inverted ?
+                        chart.plotWidth : chart.plotHeight) - (Math.floor(this.colDistance * (node.column || 0) +
+                        (markerOptions.lineWidth || 0) / 2) + crisp +
+                        (column.sankeyColumn.scale || 0) *
+                            (column.sankeyColumn.maxRadius || 0) / 2)) / 100;
                 node.sum = sum;
                 // If node sum is 0, don’t render the rect #12453
                 if (sum) {
                     // Draw the node
                     node.nodeX = fromNodeLeft;
                     node.nodeY = top;
-                    var x = fromNodeLeft,
-                        width = node.options.width || options.width || nodeHeight,
-                        height = node.options.height || options.height || nodeHeight;
-                    var y = top;
+                    const x = fromNodeLeft, width = node.options.width || options.width || nodeHeight, height = node.options.height || options.height || nodeHeight;
+                    let y = top;
                     if (options.reversed) {
                         y = (chart.plotSizeY || 0) - top;
                         if (chart.inverted) {
@@ -501,12 +398,12 @@
                         enabled: false
                     };
                 }
-            };
+            }
             // Networkgraph has two separate collecions of nodes and lines, render
             // dataLabels for both sets:
-            ArcDiagramSeries.prototype.drawDataLabels = function () {
+            drawDataLabels() {
                 if (this.options.dataLabels) {
-                    var textPath = this.options.dataLabels.textPath;
+                    const textPath = this.options.dataLabels.textPath;
                     // Render node labels:
                     ColumnSeries.prototype.drawDataLabels.call(this, this.nodes);
                     // Render link labels:
@@ -516,163 +413,158 @@
                     // Restore nodes
                     this.options.dataLabels.textPath = textPath;
                 }
-            };
-            ArcDiagramSeries.prototype.pointAttribs = function (point, state) {
+            }
+            pointAttribs(point, state) {
                 if (point && point.isNode) {
-                    var _a = Series.prototype.pointAttribs
-                            .apply(this,
-                        arguments),
-                        opacity = _a.opacity,
-                        attrs = __rest(_a,
-                        ["opacity"]);
+                    const _a = Series.prototype.pointAttribs
+                        .apply(this, arguments), { opacity } = _a, attrs = __rest(_a, ["opacity"]);
                     return attrs;
                 }
-                return _super.prototype.pointAttribs.apply(this, arguments);
-            };
-            ArcDiagramSeries.prototype.markerAttribs = function (point) {
+                return super.pointAttribs.apply(this, arguments);
+            }
+            markerAttribs(point) {
                 if (point.isNode) {
-                    return _super.prototype.markerAttribs.apply(this, arguments);
+                    return super.markerAttribs.apply(this, arguments);
                 }
                 return {};
-            };
+            }
+        }
+        /**
+         *  Arc diagram series is a chart drawing style in which
+         *  the vertices of the chart are positioned along a line
+         *  on the Euclidean plane and the edges are drawn as a semicircle
+         *  in one of the two half-planes delimited by the line,
+         *  or as smooth curves formed by sequences of semicircles.
+         *
+         * @sample highcharts/demo/arc-diagram/
+         *         Arc Diagram
+         *
+         * @extends      plotOptions.sankey
+         * @since 10.0.0
+         * @product      highcharts
+         * @requires     modules/arc-diagram
+         * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
+         *               dataSorting, dragDrop, getExtremesFromAll, nodePadding,
+         *               centerInCategory, pointInterval, pointIntervalUnit,
+         *               pointPlacement, pointStart, relativeXValue, softThreshold,
+         *               stack, stacking, step, xAxis, yAxis
+         * @optionparent plotOptions.arcdiagram
+         */
+        ArcDiagramSeries.defaultOptions = merge(SankeySeries.defaultOptions, {
             /**
-             *  Arc diagram series is a chart drawing style in which
-             *  the vertices of the chart are positioned along a line
-             *  on the Euclidean plane and the edges are drawn as a semicircle
-             *  in one of the two half-planes delimited by the line,
-             *  or as smooth curves formed by sequences of semicircles.
+             * The option to center links rather than position them one after
+             * another
              *
-             * @sample highcharts/demo/arc-diagram/
-             *         Arc Diagram
-             *
-             * @extends      plotOptions.sankey
+             * @type    {boolean}
              * @since 10.0.0
-             * @product      highcharts
-             * @requires     modules/arc-diagram
-             * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
-             *               dataSorting, dragDrop, getExtremesFromAll, nodePadding,
-             *               centerInCategory, pointInterval, pointIntervalUnit,
-             *               pointPlacement, pointStart, relativeXValue, softThreshold,
-             *               stack, stacking, step, xAxis, yAxis
-             * @optionparent plotOptions.arcdiagram
+             * @default false
+             * @product highcharts
              */
-            ArcDiagramSeries.defaultOptions = merge(SankeySeries.defaultOptions, {
+            centeredLinks: false,
+            /**
+             * The radius of the link arc. If not set, series renders a semi-circle
+             * between the nodes, except when overflowing the edge of the plot area,
+             * in which case an arc touching the edge is rendered. If `linkRadius`
+             * is set, an arc extending to the given value is rendered.
+             *
+             * @type    {number}
+             * @since 10.0.0
+             * @default undefined
+             * @product highcharts
+             * @apioption series.arcdiagram.linkRadius
+             */
+            /**
+             * The offset of an arc diagram nodes column in relation to the
+             * `plotArea`. The offset equal to 50% places nodes in the center of a
+             * chart. By default the series is placed so that the biggest node is
+             * touching the bottom border of the `plotArea`.
+             *
+             * @type    {string}
+             * @since 10.0.0
+             * @default '100%'
+             * @product highcharts
+             * @apioption series.arcdiagram.offset
+             */
+            offset: '100%',
+            /**
+             * The global link weight. If not set, width is calculated per link,
+             * depending on the weight value.
+             *
+             * @type    {number}
+             * @since 10.0.0
+             * @default undefined
+             * @product highcharts
+             * @apioption series.arcdiagram.linkWeight
+             */
+            /**
+             * Whether nodes with different values should have the same size. If set
+             * to true, all nodes are calculated based on the `nodePadding` and
+             * current `plotArea`. It is possible to override it using the
+             * `marker.radius` option.
+             *
+             * @type    {boolean}
+             * @since 10.0.0
+             * @default false
+             * @product highcharts
+             */
+            equalNodes: false,
+            /**
+             * Whether the series should be placed on the other side of the
+             * `plotArea`.
+             *
+             * @type    {boolean}
+             * @since 10.0.0
+             * @default false
+             * @product highcharts
+             */
+            reversed: false,
+            /**
+             * Options for the data labels appearing on top of the nodes and links.
+             * For arc diagram charts, data labels are visible for the nodes by
+             * default, but hidden for links. This is controlled by modifying the
+             * `nodeFormat`, and the `format` that applies to links and is an empty
+             * string by default.
+             *
+             * @declare Highcharts.SeriesArcDiagramDataLabelsOptionsObject
+             *
+             * @private
+             */
+            dataLabels: {
                 /**
-                 * The option to center links rather than position them one after
-                 * another
+                 * Options for a _link_ label text which should follow link
+                 * connection. Border and background are disabled for a label that
+                 * follows a path.
                  *
-                 * @type    {boolean}
+                 * **Note:** Only SVG-based renderer supports this option. Setting
+                 * `useHTML` to true will disable this option.
+                 *
+                 * @extends plotOptions.networkgraph.dataLabels.linkTextPath
                  * @since 10.0.0
-                 * @default false
-                 * @product highcharts
                  */
-                centeredLinks: false,
-                /**
-                 * The radius of the link arc. If not set, series renders a semi-circle
-                 * between the nodes, except when overflowing the edge of the plot area,
-                 * in which case an arc touching the edge is rendered. If `linkRadius`
-                 * is set, an arc extending to the given value is rendered.
-                 *
-                 * @type    {number}
-                 * @since 10.0.0
-                 * @default undefined
-                 * @product highcharts
-                 * @apioption series.arcdiagram.linkRadius
-                 */
-                /**
-                 * The offset of an arc diagram nodes column in relation to the
-                 * `plotArea`. The offset equal to 50% places nodes in the center of a
-                 * chart. By default the series is placed so that the biggest node is
-                 * touching the bottom border of the `plotArea`.
-                 *
-                 * @type    {string}
-                 * @since 10.0.0
-                 * @default '100%'
-                 * @product highcharts
-                 * @apioption series.arcdiagram.offset
-                 */
-                offset: '100%',
-                /**
-                 * The global link weight. If not set, width is calculated per link,
-                 * depending on the weight value.
-                 *
-                 * @type    {number}
-                 * @since 10.0.0
-                 * @default undefined
-                 * @product highcharts
-                 * @apioption series.arcdiagram.linkWeight
-                 */
-                /**
-                 * Whether nodes with different values should have the same size. If set
-                 * to true, all nodes are calculated based on the `nodePadding` and
-                 * current `plotArea`. It is possible to override it using the
-                 * `marker.radius` option.
-                 *
-                 * @type    {boolean}
-                 * @since 10.0.0
-                 * @default false
-                 * @product highcharts
-                 */
-                equalNodes: false,
-                /**
-                 * Whether the series should be placed on the other side of the
-                 * `plotArea`.
-                 *
-                 * @type    {boolean}
-                 * @since 10.0.0
-                 * @default false
-                 * @product highcharts
-                 */
-                reversed: false,
-                /**
-                 * Options for the data labels appearing on top of the nodes and links.
-                 * For arc diagram charts, data labels are visible for the nodes by
-                 * default, but hidden for links. This is controlled by modifying the
-                 * `nodeFormat`, and the `format` that applies to links and is an empty
-                 * string by default.
-                 *
-                 * @declare Highcharts.SeriesArcDiagramDataLabelsOptionsObject
-                 *
-                 * @private
-                 */
-                dataLabels: {
+                linkTextPath: {
                     /**
-                     * Options for a _link_ label text which should follow link
-                     * connection. Border and background are disabled for a label that
-                     * follows a path.
-                     *
-                     * **Note:** Only SVG-based renderer supports this option. Setting
-                     * `useHTML` to true will disable this option.
-                     *
-                     * @extends plotOptions.networkgraph.dataLabels.linkTextPath
-                     * @since 10.0.0
+                     * @type    {Highcharts.SVGAttributes}
+                     * @default {"startOffset":"25%"}
                      */
-                    linkTextPath: {
+                    attributes: {
                         /**
-                         * @type    {Highcharts.SVGAttributes}
-                         * @default {"startOffset":"25%"}
+                         * @ignore-option
                          */
-                        attributes: {
-                            /**
-                             * @ignore-option
-                             */
-                            startOffset: '25%'
-                        }
+                        startOffset: '25%'
                     }
-                },
-                /**
-                 * @extends   plotOptions.series.marker
-                 * @excluding enabled, enabledThreshold, height, width
-                 */
-                marker: {
-                    symbol: 'circle',
-                    fillOpacity: 1,
-                    lineWidth: 0,
-                    states: {}
                 }
-            });
-            return ArcDiagramSeries;
-        }(SankeySeries));
+            },
+            /**
+             * @extends   plotOptions.series.marker
+             * @excluding enabled, enabledThreshold, height, width
+             */
+            marker: {
+                symbol: 'circle',
+                fillOpacity: 1,
+                lineWidth: 0,
+                states: {}
+            }
+        });
         extend(ArcDiagramSeries.prototype, {
             orderNodes: false
         });

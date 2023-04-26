@@ -15,7 +15,7 @@
  *  API Options
  *
  * */
-var langOptions = {
+const langOptions = {
     /**
      * Configure the accessibility strings in the chart. Requires the
      * [accessibility module](https://code.highcharts.com/modules/accessibility.js)

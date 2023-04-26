@@ -9,9 +9,9 @@
  * */
 'use strict';
 import D from './Defaults.js';
-var defaultOptions = D.defaultOptions, defaultTime = D.defaultTime;
+const { defaultOptions, defaultTime } = D;
 import U from './Utilities.js';
-var getNestedProperty = U.getNestedProperty, isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
+const { getNestedProperty, isNumber, pick, pInt } = U;
 /* *
  *
  *  Functions
@@ -94,13 +94,13 @@ function dateFormat(format, timestamp, capitalize) {
  *         The formatted string.
  */
 function format(str, ctx, chart) {
-    var splitter = '{', isInside = false, segment, valueAndFormat, val, index;
-    var floatRegex = /f$/;
-    var decRegex = /\.([0-9])/;
-    var lang = defaultOptions.lang;
-    var time = chart && chart.time || defaultTime;
-    var numberFormatter = chart && chart.numberFormatter || numberFormat;
-    var ret = [];
+    let splitter = '{', isInside = false, segment, valueAndFormat, val, index;
+    const floatRegex = /f$/;
+    const decRegex = /\.([0-9])/;
+    const lang = defaultOptions.lang;
+    const time = chart && chart.time || defaultTime;
+    const numberFormatter = chart && chart.numberFormatter || numberFormat;
+    const ret = [];
     while (str) {
         index = str.indexOf(splitter);
         if (index === -1) {
@@ -114,7 +114,7 @@ function format(str, ctx, chart) {
             if (valueAndFormat.length && typeof val === 'number') {
                 segment = valueAndFormat.join(':');
                 if (floatRegex.test(segment)) { // float
-                    var decimals = parseInt((segment.match(decRegex) || ['', '-1'])[1], 10);
+                    const decimals = parseInt((segment.match(decRegex) || ['', '-1'])[1], 10);
                     if (val !== null) {
                         val = numberFormatter(val, decimals, lang.decimalPoint, segment.indexOf(',') > -1 ? lang.thousandsSep : '');
                     }
@@ -165,8 +165,8 @@ function format(str, ctx, chart) {
 function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     number = +number || 0;
     decimals = +decimals;
-    var ret, fractionDigits;
-    var lang = defaultOptions.lang, origDec = (number.toString().split('.')[1] || '').split('e')[0].length, exponent = number.toString().split('e'), firstDecimals = decimals;
+    let ret, fractionDigits;
+    const lang = defaultOptions.lang, origDec = (number.toString().split('.')[1] || '').split('e')[0].length, exponent = number.toString().split('e'), firstDecimals = decimals;
     if (decimals === -1) {
         // Preserve decimals. Not huge numbers (#3793).
         decimals = Math.min(origDec, 20);
@@ -200,12 +200,12 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     }
     // Add another decimal to avoid rounding errors of float numbers. (#4573)
     // Then use toFixed to handle rounding.
-    var roundedNumber = (Math.abs(exponent[1] ? exponent[0] : number) +
+    const roundedNumber = (Math.abs(exponent[1] ? exponent[0] : number) +
         Math.pow(10, -Math.max(decimals, origDec) - 1)).toFixed(decimals);
     // A string containing the positive integer component of the number
-    var strinteger = String(pInt(roundedNumber));
+    const strinteger = String(pInt(roundedNumber));
     // Leftover after grouping into thousands. Can be 0, 1 or 2.
-    var thousands = strinteger.length > 3 ? strinteger.length % 3 : 0;
+    const thousands = strinteger.length > 3 ? strinteger.length % 3 : 0;
     // Language
     decimalPoint = pick(decimalPoint, lang.decimalPoint);
     thousandsSep = pick(thousandsSep, lang.thousandsSep);
@@ -238,9 +238,9 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
  *  Default Export
  *
  * */
-var FormatUtilities = {
-    dateFormat: dateFormat,
-    format: format,
-    numberFormat: numberFormat
+const FormatUtilities = {
+    dateFormat,
+    format,
+    numberFormat
 };
 export default FormatUtilities;

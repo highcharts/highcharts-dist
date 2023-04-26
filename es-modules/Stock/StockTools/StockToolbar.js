@@ -11,7 +11,7 @@
  * */
 'use strict';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, css = U.css, fireEvent = U.fireEvent, getStyle = U.getStyle, isArray = U.isArray, merge = U.merge, pick = U.pick;
+const { addEvent, createElement, css, fireEvent, getStyle, isArray, merge, pick } = U;
 /* *
  *
  *  Classes
@@ -32,13 +32,13 @@ var addEvent = U.addEvent, createElement = U.createElement, css = U.css, fireEve
  * @param {Highcharts.Chart} chart
  *        Reference to chart
  */
-var Toolbar = /** @class */ (function () {
+class Toolbar {
     /* *
      *
      *  Constructor
      *
      * */
-    function Toolbar(options, langOptions, chart) {
+    constructor(options, langOptions, chart) {
         /* *
          *
          *  Properties
@@ -80,19 +80,18 @@ var Toolbar = /** @class */ (function () {
      * defined in `stockTools.gui`.
      * @private
      */
-    Toolbar.prototype.init = function () {
-        var _this = this;
-        var lang = this.lang, guiOptions = this.options, toolbar = this.toolbar, buttons = guiOptions.buttons, defs = guiOptions.definitions, allButtons = toolbar.childNodes;
+    init() {
+        const lang = this.lang, guiOptions = this.options, toolbar = this.toolbar, buttons = guiOptions.buttons, defs = guiOptions.definitions, allButtons = toolbar.childNodes;
         // create buttons
-        buttons.forEach(function (btnName) {
-            var button = _this.addButton(toolbar, defs, btnName, lang);
-            _this.eventsToUnbind.push(addEvent(button.buttonWrapper, 'click', function () { return _this.eraseActiveButtons(allButtons, button.buttonWrapper); }));
+        buttons.forEach((btnName) => {
+            const button = this.addButton(toolbar, defs, btnName, lang);
+            this.eventsToUnbind.push(addEvent(button.buttonWrapper, 'click', () => this.eraseActiveButtons(allButtons, button.buttonWrapper)));
             if (isArray(defs[btnName].items)) {
                 // create submenu buttons
-                _this.addSubmenu(button, defs[btnName]);
+                this.addSubmenu(button, defs[btnName]);
             }
         });
-    };
+    }
     /**
      * Create submenu (list of buttons) for the option. In example main button
      * is Line, in submenu will be buttons with types of lines.
@@ -105,9 +104,8 @@ var Toolbar = /** @class */ (function () {
      * @param {Highcharts.StockToolsGuiDefinitionsButtonsOptions} button
      *        List of all buttons
      */
-    Toolbar.prototype.addSubmenu = function (parentBtn, button) {
-        var _this = this;
-        var submenuArrow = parentBtn.submenuArrow, buttonWrapper = parentBtn.buttonWrapper, buttonWidth = getStyle(buttonWrapper, 'width'), wrapper = this.wrapper, menuWrapper = this.listWrapper, allButtons = this.toolbar.childNodes, 
+    addSubmenu(parentBtn, button) {
+        const submenuArrow = parentBtn.submenuArrow, buttonWrapper = parentBtn.buttonWrapper, buttonWidth = getStyle(buttonWrapper, 'width'), wrapper = this.wrapper, menuWrapper = this.listWrapper, allButtons = this.toolbar.childNodes, 
         // create submenu container
         submenuWrapper = this.submenu = createElement('ul', {
             className: 'highcharts-submenu-wrapper'
@@ -115,10 +113,10 @@ var Toolbar = /** @class */ (function () {
         // create submenu buttons and select the first one
         this.addSubmenuItems(buttonWrapper, button);
         // show / hide submenu
-        this.eventsToUnbind.push(addEvent(submenuArrow, 'click', function (e) {
+        this.eventsToUnbind.push(addEvent(submenuArrow, 'click', (e) => {
             e.stopPropagation();
             // Erase active class on all other buttons
-            _this.eraseActiveButtons(allButtons, buttonWrapper);
+            this.eraseActiveButtons(allButtons, buttonWrapper);
             // hide menu
             if (buttonWrapper.className
                 .indexOf('highcharts-current') >= 0) {
@@ -131,7 +129,7 @@ var Toolbar = /** @class */ (function () {
                 // show menu
                 // to calculate height of element
                 submenuWrapper.style.display = 'block';
-                var topMargin = submenuWrapper.offsetHeight -
+                let topMargin = submenuWrapper.offsetHeight -
                     buttonWrapper.offsetHeight - 3;
                 // calculate position of submenu in the box
                 // if submenu is inside, reset top margin
@@ -156,7 +154,7 @@ var Toolbar = /** @class */ (function () {
                     submenuWrapper.offsetWidth + 3 + 'px';
             }
         }));
-    };
+    }
     /**
      * Create buttons in submenu
      *
@@ -168,15 +166,14 @@ var Toolbar = /** @class */ (function () {
      * @param {Highcharts.StockToolsGuiDefinitionsButtonsOptions} button
      *        List of all buttons options
      */
-    Toolbar.prototype.addSubmenuItems = function (buttonWrapper, button) {
-        var _this = this;
-        var _self = this, submenuWrapper = this.submenu, lang = this.lang, menuWrapper = this.listWrapper, items = button.items;
-        var submenuBtn;
+    addSubmenuItems(buttonWrapper, button) {
+        const _self = this, submenuWrapper = this.submenu, lang = this.lang, menuWrapper = this.listWrapper, items = button.items;
+        let submenuBtn;
         // add items to submenu
-        items.forEach(function (btnName) {
+        items.forEach((btnName) => {
             // add buttons to submenu
-            submenuBtn = _this.addButton(submenuWrapper, button, btnName, lang);
-            _this.eventsToUnbind.push(addEvent(submenuBtn.mainButton, 'click', function () {
+            submenuBtn = this.addButton(submenuWrapper, button, btnName, lang);
+            this.eventsToUnbind.push(addEvent(submenuBtn.mainButton, 'click', function () {
                 _self.switchSymbol(this, buttonWrapper, true);
                 menuWrapper.style.width =
                     menuWrapper.startWidth + 'px';
@@ -184,16 +181,16 @@ var Toolbar = /** @class */ (function () {
             }));
         });
         // select first submenu item
-        var firstSubmenuItem = submenuWrapper.querySelectorAll('li > .highcharts-menu-item-btn')[0];
+        const firstSubmenuItem = submenuWrapper.querySelectorAll('li > .highcharts-menu-item-btn')[0];
         // replace current symbol, in main button, with submenu's button style
         this.switchSymbol(firstSubmenuItem, false);
-    };
+    }
     /**
      * Erase active class on all other buttons.
      * @private
      */
-    Toolbar.prototype.eraseActiveButtons = function (buttons, currentButton, submenuItems) {
-        [].forEach.call(buttons, function (btn) {
+    eraseActiveButtons(buttons, currentButton, submenuItems) {
+        [].forEach.call(buttons, (btn) => {
             if (btn !== currentButton) {
                 btn.classList.remove('highcharts-current');
                 btn.classList.remove('highcharts-active');
@@ -205,7 +202,7 @@ var Toolbar = /** @class */ (function () {
                 }
             }
         });
-    };
+    }
     /**
      * Create single button. Consist of HTML elements `li`, `span`, and (if
      * exists) submenu container.
@@ -227,46 +224,45 @@ var Toolbar = /** @class */ (function () {
      * @return {object}
      *         References to all created HTML elements
      */
-    Toolbar.prototype.addButton = function (target, options, btnName, lang) {
-        if (lang === void 0) { lang = {}; }
-        var btnOptions = options[btnName], items = btnOptions.items, classMapping = Toolbar.prototype.classMapping, userClassName = btnOptions.className || '';
+    addButton(target, options, btnName, lang = {}) {
+        const btnOptions = options[btnName], items = btnOptions.items, classMapping = Toolbar.prototype.classMapping, userClassName = btnOptions.className || '';
         // main button wrapper
-        var buttonWrapper = createElement('li', {
+        const buttonWrapper = createElement('li', {
             className: pick(classMapping[btnName], '') + ' ' + userClassName,
             title: lang[btnName] || btnName
         }, void 0, target);
         // single button
-        var mainButton = createElement('span', {
+        const mainButton = createElement('span', {
             className: 'highcharts-menu-item-btn'
         }, void 0, buttonWrapper);
         // submenu
         if (items && items.length) {
             // arrow is a hook to show / hide submenu
-            var submenuArrow = createElement('span', {
+            const submenuArrow = createElement('span', {
                 className: 'highcharts-submenu-item-arrow ' +
                     'highcharts-arrow-right'
             }, void 0, buttonWrapper);
             submenuArrow.style.backgroundImage = 'url(' +
                 this.iconsURL + 'arrow-bottom.svg)';
             return {
-                buttonWrapper: buttonWrapper,
-                mainButton: mainButton,
-                submenuArrow: submenuArrow
+                buttonWrapper,
+                mainButton,
+                submenuArrow
             };
         }
         mainButton.style.backgroundImage = 'url(' +
             this.iconsURL + btnOptions.symbol + ')';
         return {
-            buttonWrapper: buttonWrapper,
-            mainButton: mainButton
+            buttonWrapper,
+            mainButton
         };
-    };
+    }
     /**
      * Create navigation's HTML elements: container and arrows.
      * @private
      */
-    Toolbar.prototype.addNavigation = function () {
-        var wrapper = this.wrapper;
+    addNavigation() {
+        const wrapper = this.wrapper;
         // arrow wrapper
         this.arrowWrapper = createElement('div', {
             className: 'highcharts-arrow-wrapper'
@@ -284,38 +280,38 @@ var Toolbar = /** @class */ (function () {
         wrapper.insertBefore(this.arrowWrapper, wrapper.childNodes[0]);
         // attach scroll events
         this.scrollButtons();
-    };
+    }
     /**
      * Add events to navigation (two arrows) which allows user to scroll
      * top/down GUI buttons, if container's height is not enough.
      * @private
      */
-    Toolbar.prototype.scrollButtons = function () {
-        var wrapper = this.wrapper, toolbar = this.toolbar, step = 0.1 * wrapper.offsetHeight; // 0.1 = 10%
-        var targetY = 0;
-        this.eventsToUnbind.push(addEvent(this.arrowUp, 'click', function () {
+    scrollButtons() {
+        const wrapper = this.wrapper, toolbar = this.toolbar, step = 0.1 * wrapper.offsetHeight; // 0.1 = 10%
+        let targetY = 0;
+        this.eventsToUnbind.push(addEvent(this.arrowUp, 'click', () => {
             if (targetY > 0) {
                 targetY -= step;
                 toolbar.style.marginTop = -targetY + 'px';
             }
         }));
-        this.eventsToUnbind.push(addEvent(this.arrowDown, 'click', function () {
+        this.eventsToUnbind.push(addEvent(this.arrowDown, 'click', () => {
             if (wrapper.offsetHeight + targetY <=
                 toolbar.offsetHeight + step) {
                 targetY += step;
                 toolbar.style.marginTop = -targetY + 'px';
             }
         }));
-    };
+    }
     /*
      * Create stockTools HTML main elements.
      *
      */
-    Toolbar.prototype.createHTML = function () {
-        var chart = this.chart, guiOptions = this.options, container = chart.container, navigation = chart.options.navigation, bindingsClassName = navigation && navigation.bindingsClassName;
-        var listWrapper, toolbar;
+    createHTML() {
+        const chart = this.chart, guiOptions = this.options, container = chart.container, navigation = chart.options.navigation, bindingsClassName = navigation && navigation.bindingsClassName;
+        let listWrapper, toolbar;
         // create main container
-        var wrapper = this.wrapper = createElement('div', {
+        const wrapper = this.wrapper = createElement('div', {
             className: 'highcharts-stocktools-wrapper ' +
                 guiOptions.className + ' ' + bindingsClassName
         });
@@ -326,14 +322,10 @@ var Toolbar = /** @class */ (function () {
             'mousemove',
             'click',
             'touchstart'
-        ].forEach(function (eventType) {
-            addEvent(wrapper, eventType, function (e) {
-                return e.stopPropagation();
-            });
+        ].forEach((eventType) => {
+            addEvent(wrapper, eventType, (e) => e.stopPropagation());
         });
-        addEvent(wrapper, 'mouseover', function (e) {
-            return chart.pointer.onContainerMouseLeave(e);
-        });
+        addEvent(wrapper, 'mouseover', (e) => chart.pointer.onContainerMouseLeave(e));
         // toolbar
         this.toolbar = toolbar = createElement('ul', {
             className: 'highcharts-stocktools-toolbar ' +
@@ -348,12 +340,12 @@ var Toolbar = /** @class */ (function () {
         this.showHideToolbar();
         // add navigation which allows user to scroll down / top GUI buttons
         this.addNavigation();
-    };
+    }
     /**
      * Function called in redraw verifies if the navigation should be visible.
      * @private
      */
-    Toolbar.prototype.showHideNavigatorion = function () {
+    showHideNavigatorion() {
         // arrows
         // 50px space for arrows
         if (this.visible &&
@@ -366,18 +358,18 @@ var Toolbar = /** @class */ (function () {
             // hide arrows
             this.arrowWrapper.style.display = 'none';
         }
-    };
+    }
     /**
      * Create button which shows or hides GUI toolbar.
      * @private
      */
-    Toolbar.prototype.showHideToolbar = function () {
-        var chart = this.chart, wrapper = this.wrapper, toolbar = this.listWrapper, submenu = this.submenu, 
+    showHideToolbar() {
+        const chart = this.chart, wrapper = this.wrapper, toolbar = this.listWrapper, submenu = this.submenu, 
         // Show hide toolbar
         showhideBtn = this.showhideBtn = createElement('div', {
             className: 'highcharts-toggle-toolbar highcharts-arrow-left'
         }, void 0, wrapper);
-        var visible = this.visible;
+        let visible = this.visible;
         showhideBtn.style.backgroundImage =
             'url(' + this.iconsURL + 'arrow-right.svg)';
         if (!visible) {
@@ -398,7 +390,7 @@ var Toolbar = /** @class */ (function () {
                 getStyle(toolbar, 'padding-left')) + 'px';
         }
         // Toggle menu
-        this.eventsToUnbind.push(addEvent(showhideBtn, 'click', function () {
+        this.eventsToUnbind.push(addEvent(showhideBtn, 'click', () => {
             chart.update({
                 stockTools: {
                     gui: {
@@ -408,7 +400,7 @@ var Toolbar = /** @class */ (function () {
                 }
             });
         }));
-    };
+    }
     /*
      * In main GUI button, replace icon and class with submenu button's
      * class / symbol.
@@ -417,8 +409,8 @@ var Toolbar = /** @class */ (function () {
      * @param {Boolean} - true or false
      *
      */
-    Toolbar.prototype.switchSymbol = function (button, redraw) {
-        var buttonWrapper = button.parentNode, buttonWrapperClass = buttonWrapper.className, 
+    switchSymbol(button, redraw) {
+        const buttonWrapper = button.parentNode, buttonWrapperClass = buttonWrapper.className, 
         // main button in first level og GUI
         mainNavButton = buttonWrapper.parentNode.parentNode;
         // if the button is disabled, don't do anything
@@ -439,38 +431,38 @@ var Toolbar = /** @class */ (function () {
         if (redraw) {
             this.toggleButtonActiveClass(mainNavButton);
         }
-    };
+    }
     /**
      * Set select state (active class) on button.
      * @private
      */
-    Toolbar.prototype.toggleButtonActiveClass = function (button) {
-        var classList = button.classList;
+    toggleButtonActiveClass(button) {
+        const classList = button.classList;
         if (classList.contains('highcharts-active')) {
             classList.remove('highcharts-active');
         }
         else {
             classList.add('highcharts-active');
         }
-    };
+    }
     /**
      * Remove active class from all buttons except defined.
      * @private
      */
-    Toolbar.prototype.unselectAllButtons = function (button) {
-        var activeBtns = button.parentNode
+    unselectAllButtons(button) {
+        const activeBtns = button.parentNode
             .querySelectorAll('.highcharts-active');
-        [].forEach.call(activeBtns, function (activeBtn) {
+        [].forEach.call(activeBtns, (activeBtn) => {
             if (activeBtn !== button) {
                 activeBtn.classList.remove('highcharts-active');
             }
         });
-    };
+    }
     /**
      * Update GUI with given options.
      * @private
      */
-    Toolbar.prototype.update = function (options, redraw) {
+    update(options, redraw) {
         merge(true, this.chart.options.stockTools, options);
         this.destroy();
         this.chart.setStockTools(options);
@@ -482,36 +474,35 @@ var Toolbar = /** @class */ (function () {
         if (pick(redraw, true)) {
             this.chart.redraw();
         }
-    };
+    }
     /**
      * Destroy all HTML GUI elements.
      * @private
      */
-    Toolbar.prototype.destroy = function () {
-        var stockToolsDiv = this.wrapper, parent = stockToolsDiv && stockToolsDiv.parentNode;
-        this.eventsToUnbind.forEach(function (unbinder) { return unbinder(); });
+    destroy() {
+        const stockToolsDiv = this.wrapper, parent = stockToolsDiv && stockToolsDiv.parentNode;
+        this.eventsToUnbind.forEach((unbinder) => unbinder());
         // Remove the empty element
         if (parent) {
             parent.removeChild(stockToolsDiv);
         }
-    };
+    }
     /**
      * Redraw, GUI requires to verify if the navigation should be visible.
      * @private
      */
-    Toolbar.prototype.redraw = function () {
+    redraw() {
         this.showHideNavigatorion();
-    };
+    }
     /**
      * @private
      */
-    Toolbar.prototype.getIconsURL = function () {
+    getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/10.3.3/gfx/stock-icons/';
-    };
-    return Toolbar;
-}());
+            'https://code.highcharts.com/11.0.0/gfx/stock-icons/';
+    }
+}
 Toolbar.prototype.classMapping = {
     circle: 'highcharts-circle-annotation',
     ellipse: 'highcharts-ellipse-annotation',

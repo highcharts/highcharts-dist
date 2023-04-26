@@ -4,7 +4,7 @@
  *
  * */
 import U from '../../Core/Utilities.js';
-var isNumber = U.isNumber;
+const { isNumber } = U;
 /* *
  *
  *  Constants
@@ -33,7 +33,7 @@ var isNumber = U.isNumber;
  *
  * @private
  */
-var PackedBubbleSeriesDefaults = {
+const PackedBubbleSeriesDefaults = {
     /**
      * Minimum bubble size. Bubbles will automatically size between the
      * `minSize` and `maxSize` to reflect the value of each bubble.
@@ -140,8 +140,8 @@ var PackedBubbleSeriesDefaults = {
          * @since 7.0.0
          */
         formatter: function () {
-            var numberFormatter = this.series.chart.numberFormatter;
-            var value = this.point.value;
+            const { numberFormatter } = this.series.chart;
+            const { value } = this.point;
             return isNumber(value) ? numberFormatter(value, -1) : '';
         },
         /**

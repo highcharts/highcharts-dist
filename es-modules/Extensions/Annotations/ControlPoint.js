@@ -4,24 +4,9 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import EventEmitter from './EventEmitter.js';
 import U from '../../Core/Utilities.js';
-var merge = U.merge, pick = U.pick;
+const { merge, pick } = U;
 /* *
  *
  *  Class
@@ -50,16 +35,15 @@ var merge = U.merge, pick = U.pick;
  * @param {number} [index]
  * Point index.
  */
-var ControlPoint = /** @class */ (function (_super) {
-    __extends(ControlPoint, _super);
+class ControlPoint extends EventEmitter {
     /* *
      *
      *  Constructor
      *
      * */
-    function ControlPoint(chart, target, options, index) {
-        var _this = _super.call(this) || this;
-        _this.graphic = void 0;
+    constructor(chart, target, options, index) {
+        super();
+        this.graphic = void 0;
         /**
          * List of events for `anntation.options.events` that should not be
          * added to `annotation.graphic` but to the `annotation`.
@@ -67,12 +51,11 @@ var ControlPoint = /** @class */ (function (_super) {
          * @name Highcharts.AnnotationControlPoint#nonDOMEvents
          * @type {Array<string>}
          */
-        _this.nonDOMEvents = ['drag'];
-        _this.chart = chart;
-        _this.target = target;
-        _this.options = options;
-        _this.index = pick(options.index, index);
-        return _this;
+        this.nonDOMEvents = ['drag'];
+        this.chart = chart;
+        this.target = target;
+        this.options = options;
+        this.index = pick(options.index, index);
     }
     /* *
      *
@@ -83,29 +66,29 @@ var ControlPoint = /** @class */ (function (_super) {
      * Destroy the control point.
      * @private
      */
-    ControlPoint.prototype.destroy = function () {
-        _super.prototype.destroy.call(this);
+    destroy() {
+        super.destroy();
         if (this.graphic) {
             this.graphic = this.graphic.destroy();
         }
         this.chart = null;
         this.target = null;
         this.options = null;
-    };
+    }
     /**
      * Redraw the control point.
      * @private
      * @param {boolean} [animation]
      */
-    ControlPoint.prototype.redraw = function (animation) {
+    redraw(animation) {
         this.graphic[animation ? 'animate' : 'attr'](this.options.positioner.call(this, this.target));
-    };
+    }
     /**
      * Render the control point.
      * @private
      */
-    ControlPoint.prototype.render = function () {
-        var chart = this.chart, options = this.options;
+    render() {
+        const chart = this.chart, options = this.options;
         this.graphic = chart.renderer
             .symbol(options.symbol, 0, 0, options.width, options.height)
             .add(chart.controlPointsGroup)
@@ -113,7 +96,7 @@ var ControlPoint = /** @class */ (function (_super) {
         this.setVisibility(options.visible);
         // npm test -- --tests "highcharts/annotations-advanced/*"
         this.addEvents();
-    };
+    }
     /**
      * Set the visibility of the control point.
      *
@@ -123,10 +106,10 @@ var ControlPoint = /** @class */ (function (_super) {
      * Visibility of the control point.
      *
      */
-    ControlPoint.prototype.setVisibility = function (visible) {
+    setVisibility(visible) {
         this.graphic[visible ? 'show' : 'hide']();
         this.options.visible = visible;
-    };
+    }
     /**
      * Update the control point.
      *
@@ -135,15 +118,14 @@ var ControlPoint = /** @class */ (function (_super) {
      * @param {Partial<Highcharts.AnnotationControlPointOptionsObject>} userOptions
      * New options for the control point.
      */
-    ControlPoint.prototype.update = function (userOptions) {
-        var chart = this.chart, target = this.target, index = this.index, options = merge(true, this.options, userOptions);
+    update(userOptions) {
+        const chart = this.chart, target = this.target, index = this.index, options = merge(true, this.options, userOptions);
         this.destroy();
         this.constructor(chart, target, options, index);
         this.render(chart.controlPointsGroup);
         this.redraw();
-    };
-    return ControlPoint;
-}(EventEmitter));
+    }
+}
 /* *
  *
  *  Default Export

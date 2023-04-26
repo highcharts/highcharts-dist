@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Hollow Candlestick series type for Highcharts Stock
  *
@@ -48,15 +48,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -74,14 +75,15 @@
          *
          * */
         var HollowCandlestickPoint = /** @class */ (function (_super) {
-            __extends(HollowCandlestickPoint, _super);
+                __extends(HollowCandlestickPoint, _super);
             function HollowCandlestickPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.series = void 0;
                 return _this;
                 /* eslint-enable valid-jsdoc */
@@ -99,7 +101,9 @@
              */
             HollowCandlestickPoint.prototype.getClassName = function () {
                 var className = _super.prototype.getClassName.apply(this);
-                var point = this, index = point.index, currentPoint = point.series.hollowCandlestickData[index];
+                var point = this,
+                    index = point.index,
+                    currentPoint = point.series.hollowCandlestickData[index];
                 if (!currentPoint.isBullish && currentPoint.trendDirection === 'up') {
                     className += '-bearish-up';
                 }
@@ -131,15 +135,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -151,7 +156,8 @@
          *
          * */
         var CandlestickSeries = SeriesRegistry.seriesTypes.candlestick;
-        var addEvent = U.addEvent, merge = U.merge;
+        var addEvent = U.addEvent,
+            merge = U.merge;
         /* *
          *
          *  Code
@@ -167,14 +173,15 @@
          * @augments Highcharts.seriesTypes.candlestick
          */
         var HollowCandlestickSeries = /** @class */ (function (_super) {
-            __extends(HollowCandlestickSeries, _super);
+                __extends(HollowCandlestickSeries, _super);
             function HollowCandlestickSeries() {
                 /* *
                  *
                  * Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  * Properties
@@ -202,8 +209,9 @@
              */
             HollowCandlestickSeries.prototype.getPriceMovement = function () {
                 var series = this, 
-                // procesed and grouped data
-                processedYData = series.allGroupedData || series.yData, hollowCandlestickData = this.hollowCandlestickData;
+                    // procesed and grouped data
+                    processedYData = series.allGroupedData || series.yData,
+                    hollowCandlestickData = this.hollowCandlestickData;
                 if (!hollowCandlestickData.length &&
                     processedYData &&
                     processedYData.length) {
@@ -213,7 +221,8 @@
                         trendDirection: 'up'
                     });
                     for (var i = 1; i < processedYData.length; i++) {
-                        var dataPoint = processedYData[i], previousDataPoint = processedYData[i - 1];
+                        var dataPoint = processedYData[i],
+                            previousDataPoint = processedYData[i - 1];
                         hollowCandlestickData.push(series.isBullish(dataPoint, previousDataPoint));
                     }
                 }
@@ -301,8 +310,12 @@
              * Current point state.
              */
             HollowCandlestickSeries.prototype.pointAttribs = function (point, state) {
-                var attribs = _super.prototype.pointAttribs.call(this, point, state), stateOptions;
-                var index = point.index, hollowcandleInfo = this.hollowCandlestickData[index];
+                var attribs = _super.prototype.pointAttribs.call(this,
+                    point,
+                    state),
+                    stateOptions;
+                var index = point.index,
+                    hollowcandleInfo = this.hollowCandlestickData[index];
                 attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
                 attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
                     attribs.stroke;
@@ -398,7 +411,8 @@
         // check if the candle is bearish or bullish.
         // Required for further calculation.
         addEvent(Axis, 'postProcessData', function () {
-            var axis = this, series = axis.series;
+            var axis = this,
+                series = axis.series;
             series.forEach(function (series) {
                 if (series.is('hollowcandlestick')) {
                     var hollowcandlestickSeries = series;

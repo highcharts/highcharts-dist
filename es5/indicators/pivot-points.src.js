@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,15 +46,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -70,7 +71,9 @@
          * @private
          */
         function destroyExtraLabels(point, functionName) {
-            var props = point.series.pointArrayMap, prop, i = props.length;
+            var props = point.series.pointArrayMap;
+            var prop,
+                i = props.length;
             SeriesRegistry.seriesTypes.sma.prototype.pointClass.prototype[functionName].call(point);
             while (i--) {
                 prop = 'dataLabel' + props[i];
@@ -87,14 +90,15 @@
          *
          * */
         var PivotPointsPoint = /** @class */ (function (_super) {
-            __extends(PivotPointsPoint, _super);
+                __extends(PivotPointsPoint, _super);
             function PivotPointsPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.P = void 0;
                 _this.pivotLine = void 0;
                 _this.series = void 0;
@@ -131,22 +135,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge, extend = U.extend, defined = U.defined, isArray = U.isArray;
+        var merge = U.merge,
+            extend = U.extend,
+            defined = U.defined,
+            isArray = U.isArray;
         /**
          *
          *  Class
@@ -162,14 +170,15 @@
          * @augments Highcharts.Series
          */
         var PivotPointsIndicator = /** @class */ (function (_super) {
-            __extends(PivotPointsIndicator, _super);
+                __extends(PivotPointsIndicator, _super);
             function PivotPointsIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -192,7 +201,7 @@
             };
             PivotPointsIndicator.prototype.translate = function () {
                 var indicator = this;
-                SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
+                _super.prototype.translate.apply(indicator);
                 indicator.points.forEach(function (point) {
                     indicator.pointArrayMap.forEach(function (value) {
                         if (defined(point[value])) {
@@ -206,7 +215,23 @@
                 indicator.plotEndPoint = indicator.xAxis.toPixels(indicator.endPoint, true);
             };
             PivotPointsIndicator.prototype.getGraphPath = function (points) {
-                var indicator = this, pointsLength = points.length, allPivotPoints = ([[], [], [], [], [], [], [], [], []]), path = [], endPoint = indicator.plotEndPoint, pointArrayMapLength = indicator.pointArrayMap.length, position, point, i;
+                var indicator = this,
+                    allPivotPoints = ([[],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []]),
+                    pointArrayMapLength = indicator.pointArrayMap.length;
+                var endPoint = indicator.plotEndPoint,
+                    path = [],
+                    position,
+                    point,
+                    pointsLength = points.length,
+                    i;
                 while (pointsLength--) {
                     point = points[pointsLength];
                     for (i = 0; i < pointArrayMapLength; i++) {
@@ -233,13 +258,18 @@
                     endPoint = point.plotX;
                 }
                 allPivotPoints.forEach(function (pivotPoints) {
-                    path = path.concat(SeriesRegistry.seriesTypes.sma.prototype.getGraphPath.call(indicator, pivotPoints));
+                    path = path.concat(_super.prototype.getGraphPath.call(indicator, pivotPoints));
                 });
                 return path;
             };
             // TODO: Rewrite this logic to use multiple datalabels
             PivotPointsIndicator.prototype.drawDataLabels = function () {
-                var indicator = this, pointMapping = indicator.pointArrayMap, currentLabel, pointsLength, point, i;
+                var indicator = this,
+                    pointMapping = indicator.pointArrayMap;
+                var currentLabel,
+                    pointsLength,
+                    point,
+                    i;
                 if (indicator.options.dataLabels.enabled) {
                     pointsLength = indicator.points.length;
                     // For every Ressitance/Support group we need to render labels.
@@ -273,15 +303,29 @@
                                             null;
                             }
                         }
-                        SeriesRegistry.seriesTypes.sma.prototype.drawDataLabels
+                        _super.prototype.drawDataLabels
                             .call(indicator);
                     });
                 }
             };
             PivotPointsIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, placement = this[params.algorithm + 'Placement'], 
-                // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
-                PP = [], endTimestamp, xData = [], yData = [], slicedXLen, slicedX, slicedY, lastPP, pivot, avg, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    placement = this[params.algorithm + 'Placement'], 
+                    // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
+                    PP = [],
+                    xData = [],
+                    yData = [];
+                var endTimestamp,
+                    slicedXLen,
+                    slicedX,
+                    slicedY,
+                    lastPP,
+                    pivot,
+                    avg,
+                    i;
                 // Pivot Points requires high, low and close values
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
@@ -313,54 +357,59 @@
                 };
             };
             PivotPointsIndicator.prototype.getPivotAndHLC = function (values) {
-                var high = -Infinity, low = Infinity, close = values[values.length - 1][3], pivot;
+                var close = values[values.length - 1][3];
+                var high = -Infinity,
+                    low = Infinity;
                 values.forEach(function (p) {
                     high = Math.max(high, p[1]);
                     low = Math.min(low, p[2]);
                 });
-                pivot = (high + low + close) / 3;
+                var pivot = (high + low + close) / 3;
                 return [pivot, high, low, close];
             };
             PivotPointsIndicator.prototype.standardPlacement = function (values) {
-                var diff = values[1] - values[2], avg = [
-                    null,
-                    null,
-                    values[0] + diff,
-                    values[0] * 2 - values[2],
-                    values[0],
-                    values[0] * 2 - values[1],
-                    values[0] - diff,
-                    null,
-                    null
-                ];
+                var diff = values[1] - values[2],
+                    avg = [
+                        null,
+                        null,
+                        values[0] + diff,
+                        values[0] * 2 - values[2],
+                        values[0],
+                        values[0] * 2 - values[1],
+                        values[0] - diff,
+                        null,
+                        null
+                    ];
                 return avg;
             };
             PivotPointsIndicator.prototype.camarillaPlacement = function (values) {
-                var diff = values[1] - values[2], avg = [
-                    values[3] + diff * 1.5,
-                    values[3] + diff * 1.25,
-                    values[3] + diff * 1.1666,
-                    values[3] + diff * 1.0833,
-                    values[0],
-                    values[3] - diff * 1.0833,
-                    values[3] - diff * 1.1666,
-                    values[3] - diff * 1.25,
-                    values[3] - diff * 1.5
-                ];
+                var diff = values[1] - values[2],
+                    avg = [
+                        values[3] + diff * 1.5,
+                        values[3] + diff * 1.25,
+                        values[3] + diff * 1.1666,
+                        values[3] + diff * 1.0833,
+                        values[0],
+                        values[3] - diff * 1.0833,
+                        values[3] - diff * 1.1666,
+                        values[3] - diff * 1.25,
+                        values[3] - diff * 1.5
+                    ];
                 return avg;
             };
             PivotPointsIndicator.prototype.fibonacciPlacement = function (values) {
-                var diff = values[1] - values[2], avg = [
-                    null,
-                    values[0] + diff,
-                    values[0] + diff * 0.618,
-                    values[0] + diff * 0.382,
-                    values[0],
-                    values[0] - diff * 0.382,
-                    values[0] - diff * 0.618,
-                    values[0] - diff,
-                    null
-                ];
+                var diff = values[1] - values[2],
+                    avg = [
+                        null,
+                        values[0] + diff,
+                        values[0] + diff * 0.618,
+                        values[0] + diff * 0.382,
+                        values[0],
+                        values[0] - diff * 0.382,
+                        values[0] - diff * 0.618,
+                        values[0] - diff,
+                        null
+                    ];
                 return avg;
             };
             /**

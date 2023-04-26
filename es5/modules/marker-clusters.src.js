@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Marker clusters module for Highcharts
  *
@@ -55,7 +55,17 @@
         var defaultOptions = D.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
         var symbols = SVGRenderer.prototype.symbols;
-        var addEvent = U.addEvent, defined = U.defined, error = U.error, isArray = U.isArray, isFunction = U.isFunction, isObject = U.isObject, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, relativeLength = U.relativeLength, syncTimeout = U.syncTimeout;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            error = U.error,
+            isArray = U.isArray,
+            isFunction = U.isFunction,
+            isObject = U.isObject,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            relativeLength = U.relativeLength,
+            syncTimeout = U.syncTimeout;
         /**
          * Function callback when a cluster is clicked.
          *
@@ -69,10 +79,12 @@
          */
         ''; // detach doclets from following code
         /* eslint-disable no-invalid-this */
-        var Scatter = seriesTypes.scatter, baseGeneratePoints = Series.prototype.generatePoints;
+        var Scatter = seriesTypes.scatter,
+            baseGeneratePoints = Series.prototype.generatePoints;
         // Points that ids are included in the oldPointsStateId array
         // are hidden before animation. Other ones are destroyed.
-        var oldPointsStateId = [], stateIdCounter = 0;
+        var oldPointsStateId = [],
+            stateIdCounter = 0;
         /**
          * Options for marker clusters, the concept of sampling the data
          * values into larger blocks in order to ease readability and
@@ -100,265 +112,280 @@
          * @private
          */
         var clusterDefaultOptions = {
-            /**
-             * Whether to enable the marker-clusters module.
-             *
-             * @sample maps/marker-clusters/basic
-             *         Maps marker clusters
-             * @sample highcharts/marker-clusters/basic
-             *         Scatter marker clusters
-             */
-            enabled: false,
-            /**
-             * When set to `false` prevent cluster overlapping - this option
-             * works only when `layoutAlgorithm.type = "grid"`.
-             *
-             * @sample highcharts/marker-clusters/grid
-             *         Prevent overlapping
-             */
-            allowOverlap: true,
-            /**
-             * Options for the cluster marker animation.
-             * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
-             * @default { "duration": 500 }
-             */
-            animation: {
-                /** @ignore-option */
-                duration: 500
-            },
-            /**
-             * Zoom the plot area to the cluster points range when a cluster is clicked.
-             */
-            drillToCluster: true,
-            /**
-             * The minimum amount of points to be combined into a cluster.
-             * This value has to be greater or equal to 2.
-             *
-             * @sample highcharts/marker-clusters/basic
-             *         At least three points in the cluster
-             */
-            minimumClusterSize: 2,
-            /**
-             * Options for layout algorithm. Inside there
-             * are options to change the type of the algorithm, gridSize,
-             * distance or iterations.
-             */
-            layoutAlgorithm: {
                 /**
-                 * Type of the algorithm used to combine points into a cluster.
-                 * There are three available algorithms:
+                 * Whether to enable the marker-clusters module.
                  *
-                 * 1) `grid` - grid-based clustering technique. Points are assigned
-                 * to squares of set size depending on their position on the plot
-                 * area. Points inside the grid square are combined into a cluster.
-                 * The grid size can be controlled by `gridSize` property
-                 * (grid size changes at certain zoom levels).
+                 * @sample maps/marker-clusters/basic
+                 *         Maps marker clusters
+                 * @sample highcharts/marker-clusters/basic
+                 *         Scatter marker clusters
+                 */
+                enabled: false,
+                /**
+                 * When set to `false` prevent cluster overlapping - this option
+                 * works only when `layoutAlgorithm.type = "grid"`.
                  *
-                 * 2) `kmeans` - based on K-Means clustering technique. In the
-                 * first step, points are divided using the grid method (distance
-                 * property is a grid size) to find the initial amount of clusters.
-                 * Next, each point is classified by computing the distance between
-                 * each cluster center and that point. When the closest cluster
-                 * distance is lower than distance property set by a user the point
-                 * is added to this cluster otherwise is classified as `noise`. The
-                 * algorithm is repeated until each cluster center not change its
-                 * previous position more than one pixel. This technique is more
-                 * accurate but also more time consuming than the `grid` algorithm,
-                 * especially for big datasets.
-                 *
-                 * 3) `optimizedKmeans` - based on K-Means clustering technique. This
-                 * algorithm uses k-means algorithm only on the chart initialization
-                 * or when chart extremes have greater range than on initialization.
-                 * When a chart is redrawn the algorithm checks only clustered points
-                 * distance from the cluster center and rebuild it when the point is
-                 * spaced enough to be outside the cluster. It provides performance
-                 * improvement and more stable clusters position yet can be used rather
-                 * on small and sparse datasets.
-                 *
-                 * By default, the algorithm depends on visible quantity of points
-                 * and `kmeansThreshold`. When there are more visible points than the
-                 * `kmeansThreshold` the `grid` algorithm is used, otherwise `kmeans`.
-                 *
-                 * The custom clustering algorithm can be added by assigning a callback
-                 * function as the type property. This function takes an array of
-                 * `processedXData`, `processedYData`, `processedXData` indexes and
-                 * `layoutAlgorithm` options as arguments and should return an object
-                 * with grouped data.
-                 *
-                 * The algorithm should return an object like that:
-                 * <pre>{
-                 *  clusterId1: [{
-                 *      x: 573,
-                 *      y: 285,
-                 *      index: 1 // point index in the data array
-                 *  }, {
-                 *      x: 521,
-                 *      y: 197,
-                 *      index: 2
-                 *  }],
-                 *  clusterId2: [{
-                 *      ...
-                 *  }]
-                 *  ...
-                 * }</pre>
-                 *
-                 * `clusterId` (example above - unique id of a cluster or noise)
-                 * is an array of points belonging to a cluster. If the
-                 * array has only one point or fewer points than set in
-                 * `cluster.minimumClusterSize` it won't be combined into a cluster.
-                 *
-                 * @sample maps/marker-clusters/optimized-kmeans
-                 *         Optimized K-Means algorithm
-                 * @sample highcharts/marker-clusters/kmeans
-                 *         K-Means algorithm
                  * @sample highcharts/marker-clusters/grid
-                 *         Grid algorithm
-                 * @sample maps/marker-clusters/custom-alg
-                 *         Custom algorithm
-                 *
-                 * @type {string|Function}
-                 * @see [cluster.minimumClusterSize](#plotOptions.scatter.marker.cluster.minimumClusterSize)
-                 * @apioption plotOptions.scatter.cluster.layoutAlgorithm.type
+                 *         Prevent overlapping
                  */
+                allowOverlap: true,
                 /**
-                 * When `type` is set to the `grid`,
-                 * `gridSize` is a size of a grid square element either as a number
-                 * defining pixels, or a percentage defining a percentage
-                 * of the plot area width.
-                 *
-                 * @type    {number|string}
+                 * Options for the cluster marker animation.
+                 * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
+                 * @default { "duration": 500 }
                  */
-                gridSize: 50,
-                /**
-                 * When `type` is set to `kmeans`,
-                 * `iterations` are the number of iterations that this algorithm will be
-                 * repeated to find clusters positions.
-                 *
-                 * @type    {number}
-                 * @apioption plotOptions.scatter.cluster.layoutAlgorithm.iterations
-                 */
-                /**
-                 * When `type` is set to `kmeans`,
-                 * `distance` is a maximum distance between point and cluster center
-                 * so that this point will be inside the cluster. The distance
-                 * is either a number defining pixels or a percentage
-                 * defining a percentage of the plot area width.
-                 *
-                 * @type    {number|string}
-                 */
-                distance: 40,
-                /**
-                 * When `type` is set to `undefined` and there are more visible points
-                 * than the kmeansThreshold the `grid` algorithm is used to find
-                 * clusters, otherwise `kmeans`. It ensures good performance on
-                 * large datasets and better clusters arrangement after the zoom.
-                 */
-                kmeansThreshold: 100
-            },
-            /**
-             * Options for the cluster marker.
-             * @extends   plotOptions.series.marker
-             * @excluding enabledThreshold, states
-             * @type      {Highcharts.PointMarkerOptionsObject}
-             */
-            marker: {
-                /** @internal */
-                symbol: 'cluster',
-                /** @internal */
-                radius: 15,
-                /** @internal */
-                lineWidth: 0,
-                /** @internal */
-                lineColor: "#ffffff" /* Palette.backgroundColor */
-            },
-            /**
-             * Fires when the cluster point is clicked and `drillToCluster` is enabled.
-             * One parameter, `event`, is passed to the function. The default action
-             * is to zoom to the cluster points range. This can be prevented
-             * by calling `event.preventDefault()`.
-             *
-             * @type      {Highcharts.MarkerClusterDrillCallbackFunction}
-             * @product   highcharts highmaps
-             * @see [cluster.drillToCluster](#plotOptions.scatter.marker.cluster.drillToCluster)
-             * @apioption plotOptions.scatter.cluster.events.drillToCluster
-             */
-            /**
-             * An array defining zones within marker clusters.
-             *
-             * In styled mode, the color zones are styled with the
-             * `.highcharts-cluster-zone-{n}` class, or custom
-             * classed from the `className`
-             * option.
-             *
-             * @sample highcharts/marker-clusters/basic
-             *         Marker clusters zones
-             * @sample maps/marker-clusters/custom-alg
-             *         Zones on maps
-             *
-             * @type      {Array<*>}
-             * @product   highcharts highmaps
-             * @apioption plotOptions.scatter.cluster.zones
-             */
-            /**
-             * Styled mode only. A custom class name for the zone.
-             *
-             * @sample highcharts/css/color-zones/
-             *         Zones styled by class name
-             *
-             * @type      {string}
-             * @apioption plotOptions.scatter.cluster.zones.className
-             */
-            /**
-             * Settings for the cluster marker belonging to the zone.
-             *
-             * @see [cluster.marker](#plotOptions.scatter.cluster.marker)
-             * @extends   plotOptions.scatter.cluster.marker
-             * @product   highcharts highmaps
-             * @apioption plotOptions.scatter.cluster.zones.marker
-             */
-            /**
-             * The value where the zone starts.
-             *
-             * @type      {number}
-             * @product   highcharts highmaps
-             * @apioption plotOptions.scatter.cluster.zones.from
-             */
-            /**
-             * The value where the zone ends.
-             *
-             * @type      {number}
-             * @product   highcharts highmaps
-             * @apioption plotOptions.scatter.cluster.zones.to
-             */
-            /**
-             * The fill color of the cluster marker in hover state. When
-             * `undefined`, the series' or point's fillColor for normal
-             * state is used.
-             *
-             * @type      {Highcharts.ColorType}
-             * @apioption plotOptions.scatter.cluster.states.hover.fillColor
-             */
-            /**
-             * Options for the cluster data labels.
-             * @type    {Highcharts.DataLabelsOptions}
-             */
-            dataLabels: {
-                /** @internal */
-                enabled: true,
-                /** @internal */
-                format: '{point.clusterPointsAmount}',
-                /** @internal */
-                verticalAlign: 'middle',
-                /** @internal */
-                align: 'center',
-                /** @internal */
-                style: {
-                    color: 'contrast'
+                animation: {
+                    /** @ignore-option */
+                    duration: 500
                 },
-                /** @internal */
-                inside: true
-            }
-        };
+                /**
+                 * Zoom the plot area to the cluster points range when a cluster is clicked.
+                 */
+                drillToCluster: true,
+                /**
+                 * The minimum amount of points to be combined into a cluster.
+                 * This value has to be greater or equal to 2.
+                 *
+                 * @sample highcharts/marker-clusters/basic
+                 *         At least three points in the cluster
+                 */
+                minimumClusterSize: 2,
+                /**
+                 * Options for layout algorithm. Inside there
+                 * are options to change the type of the algorithm,
+            gridSize,
+                 * distance or iterations.
+                 */
+                layoutAlgorithm: {
+                    /**
+                     * Type of the algorithm used to combine points into a cluster.
+                     * There are three available algorithms:
+                     *
+                     * 1) `grid` - grid-based clustering technique. Points are assigned
+                     * to squares of set size depending on their position on the plot
+                     * area. Points inside the grid square are combined into a cluster.
+                     * The grid size can be controlled by `gridSize` property
+                     * (grid size changes at certain zoom levels).
+                     *
+                     * 2) `kmeans` - based on K-Means clustering technique. In the
+                     * first step,
+            points are divided using the grid method (distance
+                     * property is a grid size) to find the initial amount of clusters.
+                     * Next,
+            each point is classified by computing the distance between
+                     * each cluster center and that point. When the closest cluster
+                     * distance is lower than distance property set by a user the point
+                     * is added to this cluster otherwise is classified as `noise`. The
+                     * algorithm is repeated until each cluster center not change its
+                     * previous position more than one pixel. This technique is more
+                     * accurate but also more time consuming than the `grid` algorithm,
+                     * especially for big datasets.
+                     *
+                     * 3) `optimizedKmeans` - based on K-Means clustering technique. This
+                     * algorithm uses k-means algorithm only on the chart initialization
+                     * or when chart extremes have greater range than on initialization.
+                     * When a chart is redrawn the algorithm checks only clustered points
+                     * distance from the cluster center and rebuild it when the point is
+                     * spaced enough to be outside the cluster. It provides performance
+                     * improvement and more stable clusters position yet can be used rather
+                     * on small and sparse datasets.
+                     *
+                     * By default,
+            the algorithm depends on visible quantity of points
+                     * and `kmeansThreshold`. When there are more visible points than the
+                     * `kmeansThreshold` the `grid` algorithm is used,
+            otherwise `kmeans`.
+                     *
+                     * The custom clustering algorithm can be added by assigning a callback
+                     * function as the type property. This function takes an array of
+                     * `processedXData`,
+            `processedYData`,
+            `processedXData` indexes and
+                     * `layoutAlgorithm` options as arguments and should return an object
+                     * with grouped data.
+                     *
+                     * The algorithm should return an object like that:
+                     * <pre>{
+                     *  clusterId1: [{
+                     *      x: 573,
+                     *      y: 285,
+                     *      index: 1 // point index in the data array
+                     *  }, {
+                     *      x: 521,
+                     *      y: 197,
+                     *      index: 2
+                     *  }],
+                     *  clusterId2: [{
+                     *      ...
+                     *  }]
+                     *  ...
+                     * }</pre>
+                     *
+                     * `clusterId` (example above - unique id of a cluster or noise)
+                     * is an array of points belonging to a cluster. If the
+                     * array has only one point or fewer points than set in
+                     * `cluster.minimumClusterSize` it won't be combined into a cluster.
+                     *
+                     * @sample maps/marker-clusters/optimized-kmeans
+                     *         Optimized K-Means algorithm
+                     * @sample highcharts/marker-clusters/kmeans
+                     *         K-Means algorithm
+                     * @sample highcharts/marker-clusters/grid
+                     *         Grid algorithm
+                     * @sample maps/marker-clusters/custom-alg
+                     *         Custom algorithm
+                     *
+                     * @type {string|Function}
+                     * @see [cluster.minimumClusterSize](#plotOptions.scatter.cluster.minimumClusterSize)
+                     * @apioption plotOptions.scatter.cluster.layoutAlgorithm.type
+                     */
+                    /**
+                     * When `type` is set to the `grid`,
+                     * `gridSize` is a size of a grid square element either as a number
+                     * defining pixels,
+            or a percentage defining a percentage
+                     * of the plot area width.
+                     *
+                     * @type    {number|string}
+                     */
+                    gridSize: 50,
+                    /**
+                     * When `type` is set to `kmeans`,
+                     * `iterations` are the number of iterations that this algorithm will be
+                     * repeated to find clusters positions.
+                     *
+                     * @type    {number}
+                     * @apioption plotOptions.scatter.cluster.layoutAlgorithm.iterations
+                     */
+                    /**
+                     * When `type` is set to `kmeans`,
+                     * `distance` is a maximum distance between point and cluster center
+                     * so that this point will be inside the cluster. The distance
+                     * is either a number defining pixels or a percentage
+                     * defining a percentage of the plot area width.
+                     *
+                     * @type    {number|string}
+                     */
+                    distance: 40,
+                    /**
+                     * When `type` is set to `undefined` and there are more visible points
+                     * than the kmeansThreshold the `grid` algorithm is used to find
+                     * clusters,
+            otherwise `kmeans`. It ensures good performance on
+                     * large datasets and better clusters arrangement after the zoom.
+                     */
+                    kmeansThreshold: 100
+                },
+                /**
+                 * Options for the cluster marker.
+                 * @type      {Highcharts.PointMarkerOptionsObject}
+                 * @extends   plotOptions.series.marker
+                 * @excluding enabledThreshold,
+            states
+                 */
+                marker: {
+                    /** @internal */
+                    symbol: 'cluster',
+                    /** @internal */
+                    radius: 15,
+                    /** @internal */
+                    lineWidth: 0,
+                    /** @internal */
+                    lineColor: "#ffffff" /* Palette.backgroundColor */
+                },
+                /**
+                 * Fires when the cluster point is clicked and `drillToCluster` is enabled.
+                 * One parameter,
+            `event`,
+            is passed to the function. The default action
+                 * is to zoom to the cluster points range. This can be prevented
+                 * by calling `event.preventDefault()`.
+                 *
+                 * @type      {Highcharts.MarkerClusterDrillCallbackFunction}
+                 * @product   highcharts highmaps
+                 * @see [cluster.drillToCluster](#plotOptions.scatter.cluster.drillToCluster)
+                 * @apioption plotOptions.scatter.cluster.events.drillToCluster
+                 */
+                /**
+                 * An array defining zones within marker clusters.
+                 *
+                 * In styled mode,
+            the color zones are styled with the
+                 * `.highcharts-cluster-zone-{n}` class,
+            or custom
+                 * classed from the `className`
+                 * option.
+                 *
+                 * @sample highcharts/marker-clusters/basic
+                 *         Marker clusters zones
+                 * @sample maps/marker-clusters/custom-alg
+                 *         Zones on maps
+                 *
+                 * @type      {Array<*>}
+                 * @product   highcharts highmaps
+                 * @apioption plotOptions.scatter.cluster.zones
+                 */
+                /**
+                 * Styled mode only. A custom class name for the zone.
+                 *
+                 * @sample highcharts/css/color-zones/
+                 *         Zones styled by class name
+                 *
+                 * @type      {string}
+                 * @apioption plotOptions.scatter.cluster.zones.className
+                 */
+                /**
+                 * Settings for the cluster marker belonging to the zone.
+                 *
+                 * @see [cluster.marker](#plotOptions.scatter.cluster.marker)
+                 * @extends   plotOptions.scatter.cluster.marker
+                 * @product   highcharts highmaps
+                 * @apioption plotOptions.scatter.cluster.zones.marker
+                 */
+                /**
+                 * The value where the zone starts.
+                 *
+                 * @type      {number}
+                 * @product   highcharts highmaps
+                 * @apioption plotOptions.scatter.cluster.zones.from
+                 */
+                /**
+                 * The value where the zone ends.
+                 *
+                 * @type      {number}
+                 * @product   highcharts highmaps
+                 * @apioption plotOptions.scatter.cluster.zones.to
+                 */
+                /**
+                 * The fill color of the cluster marker in hover state. When
+                 * `undefined`,
+            the series' or point's fillColor for normal
+                 * state is used.
+                 *
+                 * @type      {Highcharts.ColorType}
+                 * @apioption plotOptions.scatter.cluster.states.hover.fillColor
+                 */
+                /**
+                 * Options for the cluster data labels.
+                 * @type    {Highcharts.DataLabelsOptions}
+                 */
+                dataLabels: {
+                    /** @internal */
+                    enabled: true,
+                    /** @internal */
+                    format: '{point.clusterPointsAmount}',
+                    /** @internal */
+                    verticalAlign: 'middle',
+                    /** @internal */
+                    align: 'center',
+                    /** @internal */
+                    style: {
+                        color: 'contrast'
+                    },
+                    /** @internal */
+                    inside: true
+                }
+            };
         (defaultOptions.plotOptions || {}).series = merge((defaultOptions.plotOptions || {}).series, {
             cluster: clusterDefaultOptions,
             tooltip: {
@@ -385,8 +412,11 @@
             }
         });
         // Utils.
-        var pixelsToValues = function (series, pos) {
-            var chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis;
+        var pixelsToValues = function (series,
+            pos) {
+                var chart = series.chart,
+            xAxis = series.xAxis,
+            yAxis = series.yAxis;
             if (chart.mapView) {
                 return chart.mapView.pixelsToProjectedUnits(pos);
             }
@@ -395,8 +425,11 @@
                 y: yAxis ? yAxis.toValue(pos.y) : 0
             };
         };
-        var valuesToPixels = function (series, pos) {
-            var chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis;
+        var valuesToPixels = function (series,
+            pos) {
+                var chart = series.chart,
+            xAxis = series.xAxis,
+            yAxis = series.yAxis;
             if (chart.mapView) {
                 return chart.mapView.projectedUnitsToPixels(pos);
             }
@@ -407,7 +440,10 @@
         };
         /* eslint-disable require-jsdoc */
         function getClusterPosition(points) {
-            var pointsLen = points.length, sumX = 0, sumY = 0, i;
+            var pointsLen = points.length,
+                sumX = 0,
+                sumY = 0,
+                i;
             for (i = 0; i < pointsLen; i++) {
                 sumX += points[i].x;
                 sumY += points[i].y;
@@ -488,29 +524,62 @@
         }
         // Cluster symbol.
         symbols.cluster = function (x, y, width, height) {
-            var w = width / 2, h = height / 2, outerWidth = 1, space = 1, inner = symbols.arc(x + w, y + h, w - space * 4, h - space * 4, {
-                start: Math.PI * 0.5,
-                end: Math.PI * 2.5,
-                open: false
-            }), outer1 = symbols.arc(x + w, y + h, w - space * 3, h - space * 3, {
-                start: Math.PI * 0.5,
-                end: Math.PI * 2.5,
-                innerR: w - outerWidth * 2,
-                open: false
-            }), outer2 = symbols.arc(x + w, y + h, w - space, h - space, {
-                start: Math.PI * 0.5,
-                end: Math.PI * 2.5,
-                innerR: w,
-                open: false
-            });
+            var w = width / 2,
+                h = height / 2,
+                outerWidth = 1,
+                space = 1,
+                inner = symbols.arc(x + w,
+                y + h,
+                w - space * 4,
+                h - space * 4, {
+                    start: Math.PI * 0.5,
+                    end: Math.PI * 2.5,
+                    open: false
+                }),
+                outer1 = symbols.arc(x + w,
+                y + h,
+                w - space * 3,
+                h - space * 3, {
+                    start: Math.PI * 0.5,
+                    end: Math.PI * 2.5,
+                    innerR: w - outerWidth * 2,
+                    open: false
+                }),
+                outer2 = symbols.arc(x + w,
+                y + h,
+                w - space,
+                h - space, {
+                    start: Math.PI * 0.5,
+                    end: Math.PI * 2.5,
+                    innerR: w,
+                    open: false
+                });
             return outer2.concat(outer1, inner);
         };
         Scatter.prototype.animateClusterPoint = function (clusterObj) {
-            var series = this, chart = series.chart, mapView = chart.mapView, clusterOptions = series.options.cluster, animation = animObject((clusterOptions || {}).animation), animDuration = animation.duration || 500, pointsState = (series.markerClusterInfo || {}).pointsState, newState = (pointsState || {}).newState, oldState = (pointsState || {}).oldState, oldPoints = [];
-            var parentId, oldPointObj, newPointObj, newPointBBox, offset = 0, newX = 0, newY = 0, isOldPointGrahic = false, isCbHandled = false;
+            var series = this,
+                chart = series.chart,
+                mapView = chart.mapView,
+                clusterOptions = series.options.cluster,
+                animation = animObject((clusterOptions || {}).animation),
+                animDuration = animation.duration || 500,
+                pointsState = (series.markerClusterInfo || {}).pointsState,
+                newState = (pointsState || {}).newState,
+                oldState = (pointsState || {}).oldState,
+                oldPoints = [];
+            var parentId,
+                oldPointObj,
+                newPointObj,
+                newPointBBox,
+                offset = 0,
+                newX = 0,
+                newY = 0,
+                isOldPointGrahic = false,
+                isCbHandled = false;
             if (oldState && newState) {
                 newPointObj = newState[clusterObj.stateId];
-                var newPos = valuesToPixels(series, newPointObj);
+                var newPos = valuesToPixels(series,
+                    newPointObj);
                 newX = newPos.x - (mapView ? 0 : chart.plotLeft);
                 newY = newPos.y - (mapView ? 0 : chart.plotTop);
                 // Point has one ancestor.
@@ -620,7 +689,12 @@
             }
         };
         Scatter.prototype.getGridOffset = function () {
-            var series = this, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, plotLeft = 0, plotTop = 0;
+            var series = this,
+                chart = series.chart,
+                xAxis = series.xAxis,
+                yAxis = series.yAxis,
+                plotLeft = 0,
+                plotTop = 0;
             if (xAxis && series.dataMinX && series.dataMaxX) {
                 plotLeft = xAxis.reversed ?
                     xAxis.toPixels(series.dataMaxX) : xAxis.toPixels(series.dataMinX);
@@ -638,9 +712,14 @@
             return { plotLeft: plotLeft, plotTop: plotTop };
         };
         Scatter.prototype.getScaledGridSize = function (options) {
-            var series = this, xAxis = series.xAxis, mapView = this.chart.mapView, processedGridSize = options.processedGridSize ||
-                clusterDefaultOptions.layoutAlgorithm.gridSize;
-            var search = true, k = 1, divider = 1;
+            var series = this,
+                xAxis = series.xAxis,
+                mapView = this.chart.mapView,
+                processedGridSize = options.processedGridSize ||
+                    clusterDefaultOptions.layoutAlgorithm.gridSize;
+            var search = true,
+                k = 1,
+                divider = 1;
             if (!series.gridValueSize) {
                 if (mapView) {
                     series.gridValueSize = processedGridSize / mapView.getScale();
@@ -650,12 +729,13 @@
                 }
             }
             var gridSize = mapView ?
-                series.gridValueSize * mapView.getScale() :
-                xAxis.toPixels(series.gridValueSize) - xAxis.toPixels(0);
+                    series.gridValueSize * mapView.getScale() :
+                    xAxis.toPixels(series.gridValueSize) - xAxis.toPixels(0);
             var scale = +(processedGridSize / gridSize).toFixed(14);
             // Find the level and its divider.
             while (search && scale !== 1) {
-                var level = Math.pow(2, k);
+                var level = Math.pow(2,
+                    k);
                 if (scale > 0.75 && scale < 1.25) {
                     search = false;
                 }
@@ -672,13 +752,21 @@
             return (processedGridSize / divider) / scale;
         };
         Scatter.prototype.getRealExtremes = function () {
-            var chart = this.chart, x = chart.mapView ? 0 : chart.plotLeft, y = chart.mapView ? 0 : chart.plotTop, p1 = pixelsToValues(this, {
-                x: x,
-                y: y
-            }), p2 = pixelsToValues(this, {
-                x: x + chart.plotWidth,
-                y: x + chart.plotHeight
-            }), realMinX = p1.x, realMaxX = p2.x, realMinY = p1.y, realMaxY = p2.y;
+            var chart = this.chart,
+                x = chart.mapView ? 0 : chart.plotLeft,
+                y = chart.mapView ? 0 : chart.plotTop,
+                p1 = pixelsToValues(this, {
+                    x: x,
+                    y: y
+                }),
+                p2 = pixelsToValues(this, {
+                    x: x + chart.plotWidth,
+                    y: x + chart.plotHeight
+                }),
+                realMinX = p1.x,
+                realMaxX = p2.x,
+                realMinY = p1.y,
+                realMaxY = p2.y;
             return {
                 minX: Math.min(realMinX, realMaxX),
                 maxX: Math.max(realMinX, realMaxX),
@@ -689,13 +777,37 @@
         Scatter.prototype.onDrillToCluster = function (event) {
             var point = event.point || event.target;
             point.firePointEvent('drillToCluster', event, function (e) {
-                var point = e.point || e.target, series = point.series, xAxis = point.series.xAxis, yAxis = point.series.yAxis, chart = point.series.chart, mapView = chart.mapView, clusterOptions = series.options.cluster, drillToCluster = (clusterOptions || {}).drillToCluster;
+                var point = e.point || e.target,
+                    series = point.series,
+                    xAxis = point.series.xAxis,
+                    yAxis = point.series.yAxis,
+                    chart = point.series.chart,
+                    mapView = chart.mapView,
+                    clusterOptions = series.options.cluster,
+                    drillToCluster = (clusterOptions || {}).drillToCluster;
                 if (drillToCluster && point.clusteredData) {
                     var sortedDataX = point.clusteredData
-                        .map(function (data) { return data.x; })
-                        .sort(function (a, b) { return a - b; }), sortedDataY = point.clusteredData
-                        .map(function (data) { return data.y; })
-                        .sort(function (a, b) { return a - b; }), minX = sortedDataX[0], maxX = sortedDataX[sortedDataX.length - 1], minY = sortedDataY[0], maxY = sortedDataY[sortedDataY.length - 1], offsetX = Math.abs((maxX - minX) * 0.1), offsetY = Math.abs((maxY - minY) * 0.1), x1 = Math.min(minX, maxX) - offsetX, x2 = Math.max(minX, maxX) + offsetX, y1 = Math.min(minY, maxY) - offsetY, y2 = Math.max(minY, maxY) + offsetY;
+                            .map(function (data) { return data.x; })
+                            .sort(function (a,
+                        b) { return a - b; }),
+                        sortedDataY = point.clusteredData
+                            .map(function (data) { return data.y; })
+                            .sort(function (a,
+                        b) { return a - b; }),
+                        minX = sortedDataX[0],
+                        maxX = sortedDataX[sortedDataX.length - 1],
+                        minY = sortedDataY[0],
+                        maxY = sortedDataY[sortedDataY.length - 1],
+                        offsetX = Math.abs((maxX - minX) * 0.1),
+                        offsetY = Math.abs((maxY - minY) * 0.1),
+                        x1 = Math.min(minX,
+                        maxX) - offsetX,
+                        x2 = Math.max(minX,
+                        maxX) + offsetX,
+                        y1 = Math.min(minY,
+                        maxY) - offsetY,
+                        y2 = Math.max(minY,
+                        maxY) + offsetY;
                     if (mapView) {
                         mapView.fitToBounds({ x1: x1, x2: x2, y1: y1, y2: y2 });
                     }
@@ -722,11 +834,14 @@
         Scatter.prototype.getClusterDistancesFromPoint = function (clusters, pointX, pointY) {
             var pointClusterDistance = [];
             for (var clusterIndex = 0; clusterIndex < clusters.length; clusterIndex++) {
-                var p1 = valuesToPixels(this, { x: pointX, y: pointY }), p2 = valuesToPixels(this, {
-                    x: clusters[clusterIndex].posX,
-                    y: clusters[clusterIndex].posY
-                }), distance = Math.sqrt(Math.pow(p1.x - p2.x, 2) +
-                    Math.pow(p1.y - p2.y, 2));
+                var p1 = valuesToPixels(this, { x: pointX,
+                    y: pointY }),
+                    p2 = valuesToPixels(this, {
+                        x: clusters[clusterIndex].posX,
+                        y: clusters[clusterIndex].posY
+                    }),
+                    distance = Math.sqrt(Math.pow(p1.x - p2.x, 2) +
+                        Math.pow(p1.y - p2.y, 2));
                 pointClusterDistance.push({ clusterIndex: clusterIndex, distance: distance });
             }
             return pointClusterDistance.sort(function (a, b) { return a.distance - b.distance; });
@@ -735,7 +850,14 @@
         // and bind old points with new ones.
         Scatter.prototype.getPointsState = function (clusteredData, oldMarkerClusterInfo, dataLength) {
             var oldDataStateArr = oldMarkerClusterInfo ?
-                getDataState(oldMarkerClusterInfo, dataLength) : [], newDataStateArr = getDataState(clusteredData, dataLength), state = {}, newState, oldState, i;
+                    getDataState(oldMarkerClusterInfo,
+                dataLength) : [],
+                newDataStateArr = getDataState(clusteredData,
+                dataLength),
+                state = {},
+                newState,
+                oldState,
+                i;
             // Clear global array before populate with new ids.
             oldPointsStateId = [];
             // Build points state structure.
@@ -777,12 +899,19 @@
         };
         Scatter.prototype.markerClusterAlgorithms = {
             grid: function (dataX, dataY, dataIndexes, options) {
-                var grid = {}, gridOffset = this.getGridOffset();
-                var x, y, gridX, gridY, key, i;
+                var grid = {},
+                    gridOffset = this.getGridOffset();
+                var x,
+                    y,
+                    gridX,
+                    gridY,
+                    key,
+                    i;
                 // drawGridLines(series, options);
                 var scaledGridSize = this.getScaledGridSize(options);
                 for (i = 0; i < dataX.length; i++) {
-                    var p = valuesToPixels(this, { x: dataX[i], y: dataY[i] });
+                    var p = valuesToPixels(this, { x: dataX[i],
+                        y: dataY[i] });
                     x = p.x - gridOffset.plotLeft;
                     y = p.y - gridOffset.plotTop;
                     gridX = Math.floor(x / scaledGridSize);
@@ -800,10 +929,25 @@
                 return grid;
             },
             kmeans: function (dataX, dataY, dataIndexes, options) {
-                var series = this, clusters = [], noise = [], group = {}, pointMaxDistance = options.processedDistance ||
-                    clusterDefaultOptions.layoutAlgorithm.distance, iterations = options.iterations, 
-                // Max pixel difference beetwen new and old cluster position.
-                maxClusterShift = 1, currentIteration = 0, repeat = true, pointX = 0, pointY = 0, tempPos, pointClusterDistance = [], groupedData, key, i, j;
+                var series = this,
+                    clusters = [],
+                    noise = [],
+                    group = {},
+                    pointMaxDistance = options.processedDistance ||
+                        clusterDefaultOptions.layoutAlgorithm.distance,
+                    iterations = options.iterations, 
+                    // Max pixel difference beetwen new and old cluster position.
+                    maxClusterShift = 1,
+                    currentIteration = 0,
+                    repeat = true,
+                    pointX = 0,
+                    pointY = 0,
+                    tempPos,
+                    pointClusterDistance = [],
+                    groupedData,
+                    key,
+                    i,
+                    j;
                 options.processedGridSize = options.processedDistance;
                 // Use grid method to get groupedData object.
                 groupedData = series.markerClusterAlgorithms ?
@@ -900,8 +1044,15 @@
                 return group;
             },
             optimizedKmeans: function (processedXData, processedYData, dataIndexes, options) {
-                var series = this, pointMaxDistance = options.processedDistance ||
-                    clusterDefaultOptions.layoutAlgorithm.gridSize, group = {}, extremes = series.getRealExtremes(), clusterMarkerOptions = (series.options.cluster || {}).marker, offset, distance, radius;
+                var series = this,
+                    pointMaxDistance = options.processedDistance ||
+                        clusterDefaultOptions.layoutAlgorithm.gridSize,
+                    group = {},
+                    extremes = series.getRealExtremes(),
+                    clusterMarkerOptions = (series.options.cluster || {}).marker,
+                    offset,
+                    distance,
+                    radius;
                 if (!series.markerClusterInfo || (series.initMaxX && series.initMaxX < extremes.maxX ||
                     series.initMinX && series.initMinX > extremes.minX ||
                     series.initMaxY && series.initMaxY < extremes.maxY ||
@@ -925,7 +1076,10 @@
                         cluster.pointsOutside = [];
                         cluster.pointsInside = [];
                         cluster.data.forEach(function (dataPoint) {
-                            var dataPointPx = valuesToPixels(series, dataPoint), clusterPx = valuesToPixels(series, cluster);
+                            var dataPointPx = valuesToPixels(series,
+                                dataPoint),
+                                clusterPx = valuesToPixels(series,
+                                cluster);
                             distance = Math.sqrt(Math.pow(dataPointPx.x - clusterPx.x, 2) +
                                 Math.pow(dataPointPx.y - clusterPx.y, 2));
                             if (cluster.clusterZone &&
@@ -965,7 +1119,39 @@
             }
         };
         Scatter.prototype.preventClusterCollisions = function (props) {
-            var series = this, _a = props.key.split('-').map(parseFloat), gridY = _a[0], gridX = _a[1], gridSize = props.gridSize, groupedData = props.groupedData, defaultRadius = props.defaultRadius, clusterRadius = props.clusterRadius, gridXPx = gridX * gridSize, gridYPx = gridY * gridSize, propsPx = valuesToPixels(series, props), xPixel = propsPx.x, yPixel = propsPx.y, gridsToCheckCollision = [], pointsLen = 0, radius = 0, clusterMarkerOptions = (series.options.cluster || {}).marker, zoneOptions = (series.options.cluster || {}).zones, gridOffset = series.getGridOffset(), nextXPixel, nextYPixel, signX, signY, cornerGridX, cornerGridY, i, j, itemX, itemY, nextClusterPos, maxDist, keys;
+            var series = this,
+                _a = props.key.split('-').map(parseFloat),
+                gridY = _a[0],
+                gridX = _a[1],
+                gridSize = props.gridSize,
+                groupedData = props.groupedData,
+                defaultRadius = props.defaultRadius,
+                clusterRadius = props.clusterRadius,
+                gridXPx = gridX * gridSize,
+                gridYPx = gridY * gridSize,
+                propsPx = valuesToPixels(series,
+                props),
+                xPixel = propsPx.x,
+                yPixel = propsPx.y,
+                gridsToCheckCollision = [],
+                pointsLen = 0,
+                radius = 0,
+                clusterMarkerOptions = (series.options.cluster || {}).marker,
+                zoneOptions = (series.options.cluster || {}).zones,
+                gridOffset = series.getGridOffset(),
+                nextXPixel,
+                nextYPixel,
+                signX,
+                signY,
+                cornerGridX,
+                cornerGridY,
+                i,
+                j,
+                itemX,
+                itemY,
+                nextClusterPos,
+                maxDist,
+                keys;
             // Distance to the grid start.
             xPixel -= gridOffset.plotLeft;
             yPixel -= gridOffset.plotTop;
@@ -996,9 +1182,9 @@
                         groupedData[item].posY = nextClusterPos.y;
                     }
                     var pos_1 = valuesToPixels(series, {
-                        x: groupedData[item].posX || 0,
-                        y: groupedData[item].posY || 0
-                    });
+                            x: groupedData[item].posX || 0,
+                            y: groupedData[item].posY || 0
+                        });
                     nextXPixel = pos_1.x - gridOffset.plotLeft;
                     nextYPixel = pos_1.y - gridOffset.plotTop;
                     _a = item.split('-').map(parseFloat), itemY = _a[0], itemX = _a[1];
@@ -1044,16 +1230,17 @@
                 }
             });
             var pos = pixelsToValues(series, {
-                x: xPixel + gridOffset.plotLeft,
-                y: yPixel + gridOffset.plotTop
-            });
+                    x: xPixel + gridOffset.plotLeft,
+                    y: yPixel + gridOffset.plotTop
+                });
             groupedData[props.key].posX = pos.x;
             groupedData[props.key].posY = pos.y;
             return pos;
         };
         // Check if user algorithm result is valid groupedDataObject.
         Scatter.prototype.isValidGroupedDataObject = function (groupedData) {
-            var result = false, i;
+            var result = false,
+                i;
             if (!isObject(groupedData)) {
                 return false;
             }
@@ -1073,11 +1260,30 @@
             return result;
         };
         Scatter.prototype.getClusteredData = function (groupedData, options) {
-            var series = this, groupedXData = [], groupedYData = [], clusters = [], // Container for clusters.
-            noise = [], // Container for points not belonging to any cluster.
-            groupMap = [], index = 0, 
-            // Prevent minimumClusterSize lower than 2.
-            minimumClusterSize = Math.max(2, options.minimumClusterSize || 2), stateId, point, points, pointUserOptions, pointsLen, marker, clusterPos, pointOptions, clusterTempPos, zoneOptions, clusterZone, clusterZoneClassName, i, k;
+            var series = this,
+                groupedXData = [],
+                groupedYData = [],
+                clusters = [], // Container for clusters.
+                noise = [], // Container for points not belonging to any cluster.
+                groupMap = [],
+                index = 0, 
+                // Prevent minimumClusterSize lower than 2.
+                minimumClusterSize = Math.max(2,
+                options.minimumClusterSize || 2),
+                stateId,
+                point,
+                points,
+                pointUserOptions,
+                pointsLen,
+                marker,
+                clusterPos,
+                pointOptions,
+                clusterTempPos,
+                zoneOptions,
+                clusterZone,
+                clusterZoneClassName,
+                i,
+                k;
             // Check if groupedData is valid when user uses a custom algorithm.
             if (isFunction(options.layoutAlgorithm.type) &&
                 !series.isValidGroupedDataObject(groupedData)) {
@@ -1218,8 +1424,11 @@
         };
         // Hide clustered data points.
         Scatter.prototype.hideClusteredData = function () {
-            var series = this, clusteredSeriesData = this.markerClusterSeriesData, oldState = ((series.markerClusterInfo || {}).pointsState || {}).oldState || {}, oldPointsId = oldPointsStateId.map(function (elem) {
-                return (oldState[elem].point || {}).id || '';
+            var series = this,
+                clusteredSeriesData = this.markerClusterSeriesData,
+                oldState = ((series.markerClusterInfo || {}).pointsState || {}).oldState || {},
+                oldPointsId = oldPointsStateId.map(function (elem) {
+                    return (oldState[elem].point || {}).id || '';
             });
             (clusteredSeriesData || []).forEach(function (point) {
                 // If an old point is used in animation hide it, otherwise destroy.
@@ -1241,8 +1450,33 @@
         };
         // Override the generatePoints method by adding a reference to grouped data.
         Scatter.prototype.generatePoints = function () {
-            var series = this, chart = series.chart, mapView = chart.mapView, xData = series.xData, yData = series.yData, clusterOptions = series.options.cluster, realExtremes = series.getRealExtremes(), visibleXData = [], visibleYData = [], visibleDataIndexes = [];
-            var oldPointsState, oldDataLen, oldMarkerClusterInfo, kmeansThreshold, cropDataOffsetX, cropDataOffsetY, seriesMinX, seriesMaxX, seriesMinY, seriesMaxY, type, algorithm, clusteredData, groupedData, layoutAlgOptions, point, i;
+            var series = this,
+                chart = series.chart,
+                mapView = chart.mapView,
+                xData = series.xData,
+                yData = series.yData,
+                clusterOptions = series.options.cluster,
+                realExtremes = series.getRealExtremes(),
+                visibleXData = [],
+                visibleYData = [],
+                visibleDataIndexes = [];
+            var oldPointsState,
+                oldDataLen,
+                oldMarkerClusterInfo,
+                kmeansThreshold,
+                cropDataOffsetX,
+                cropDataOffsetY,
+                seriesMinX,
+                seriesMaxX,
+                seriesMinY,
+                seriesMaxY,
+                type,
+                algorithm,
+                clusteredData,
+                groupedData,
+                layoutAlgOptions,
+                point,
+                i;
             // For map point series, we need to resolve lon, lat and geometry options
             // and project them on the plane in order to get x and y. In the regular
             // series flow, this is not done until the `translate` method because the
@@ -1273,7 +1507,11 @@
                 kmeansThreshold = layoutAlgOptions.kmeansThreshold ||
                     clusterDefaultOptions.layoutAlgorithm.kmeansThreshold;
                 // Offset to prevent cluster size changes.
-                var halfGrid = layoutAlgOptions.processedGridSize / 2, p1 = pixelsToValues(series, { x: 0, y: 0 }), p2 = pixelsToValues(series, { x: halfGrid, y: halfGrid });
+                var halfGrid = layoutAlgOptions.processedGridSize / 2,
+                    p1 = pixelsToValues(series, { x: 0,
+                    y: 0 }),
+                    p2 = pixelsToValues(series, { x: halfGrid,
+                    y: halfGrid });
                 cropDataOffsetX = Math.abs(p1.x - p2.x);
                 cropDataOffsetY = Math.abs(p1.y - p2.y);
                 // Get only visible data.
@@ -1403,7 +1641,9 @@
             var chart = this;
             (chart.series || []).forEach(function (series) {
                 if (series.markerClusterInfo) {
-                    var options = series.options.cluster, pointsState = (series.markerClusterInfo || {}).pointsState, oldState = (pointsState || {}).oldState;
+                    var options = series.options.cluster,
+                        pointsState = (series.markerClusterInfo || {}).pointsState,
+                        oldState = (pointsState || {}).oldState;
                     if ((options || {}).animation &&
                         series.markerClusterInfo &&
                         series.chart.pointer.pinchDown.length === 0 &&
@@ -1434,7 +1674,8 @@
         addEvent(Series, 'destroy', Scatter.prototype.destroyClusteredData);
         // Add classes, change mouse cursor.
         addEvent(Series, 'afterRender', function () {
-            var series = this, clusterZoomEnabled = (series.options.cluster || {}).drillToCluster;
+            var series = this,
+                clusterZoomEnabled = (series.options.cluster || {}).drillToCluster;
             if (series.markerClusterInfo && series.markerClusterInfo.clusters) {
                 series.markerClusterInfo.clusters.forEach(function (cluster) {
                     if (cluster.point && cluster.point.graphic) {
@@ -1460,14 +1701,19 @@
             }
         });
         addEvent(Point, 'drillToCluster', function (event) {
-            var point = event.point || event.target, series = point.series, clusterOptions = series.options.cluster, onDrillToCluster = ((clusterOptions || {}).events || {}).drillToCluster;
+            var point = event.point || event.target,
+                series = point.series,
+                clusterOptions = series.options.cluster,
+                onDrillToCluster = ((clusterOptions || {}).events || {}).drillToCluster;
             if (isFunction(onDrillToCluster)) {
                 onDrillToCluster.call(this, event);
             }
         });
         // Destroy the old tooltip after zoom.
         addEvent(Axis, 'setExtremes', function () {
-            var chart = this.chart, animationDuration = 0, animation;
+            var chart = this.chart,
+                animationDuration = 0,
+                animation;
             chart.series.forEach(function (series) {
                 if (series.markerClusterInfo) {
                     animation = animObject((series.options.cluster || {}).animation);

@@ -9,55 +9,37 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import U from '../../Core/Utilities.js';
-var isNumber = U.isNumber;
+const { isNumber } = U;
 import ColumnSeries from '../Column/ColumnSeries.js';
 /* *
  *
  * Class
  *
  * */
-var WindbarbPoint = /** @class */ (function (_super) {
-    __extends(WindbarbPoint, _super);
-    function WindbarbPoint() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+class WindbarbPoint extends ColumnSeries.prototype.pointClass {
+    constructor() {
+        super(...arguments);
         /* *
          *
          * Properties
          *
          * */
-        _this.beaufort = void 0;
-        _this.beaufortLevel = void 0;
-        _this.direction = void 0;
-        _this.options = void 0;
-        _this.series = void 0;
-        return _this;
+        this.beaufort = void 0;
+        this.beaufortLevel = void 0;
+        this.direction = void 0;
+        this.options = void 0;
+        this.series = void 0;
     }
     /* *
      *
      * Functions
      *
      * */
-    WindbarbPoint.prototype.isValid = function () {
+    isValid() {
         return isNumber(this.value) && this.value >= 0;
-    };
-    return WindbarbPoint;
-}(ColumnSeries.prototype.pointClass));
+    }
+}
 /* *
  *
  * Default export

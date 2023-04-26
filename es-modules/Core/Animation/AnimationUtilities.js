@@ -10,7 +10,7 @@
 'use strict';
 import Fx from './Fx.js';
 import U from '../Utilities.js';
-var defined = U.defined, getStyle = U.getStyle, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } = U;
 /* *
  *
  *  Functions
@@ -72,10 +72,10 @@ function animObject(animation) {
  *        The numeric value.
  */
 function getDeferredAnimation(chart, animation, series) {
-    var labelAnimation = animObject(animation), s = series ? [series] : chart.series;
-    var defer = 0, duration = 0;
-    s.forEach(function (series) {
-        var seriesAnim = animObject(series.options.animation);
+    const labelAnimation = animObject(animation), s = series ? [series] : chart.series;
+    let defer = 0, duration = 0;
+    s.forEach((series) => {
+        const seriesAnim = animObject(series.options.animation);
         defer = animation && defined(animation.defer) ?
             labelAnimation.defer :
             Math.max(defer, seriesAnim.duration + seriesAnim.defer);
@@ -85,7 +85,7 @@ function getDeferredAnimation(chart, animation, series) {
     if (chart.renderer.forExport) {
         defer = 0;
     }
-    var anim = {
+    const anim = {
         defer: Math.max(0, defer - duration),
         duration: Math.min(defer, duration)
     };
@@ -110,7 +110,7 @@ function getDeferredAnimation(chart, animation, series) {
  * @return {void}
  */
 function animate(el, params, opt) {
-    var start, unit = '', end, fx, args;
+    let start, unit = '', end, fx, args;
     if (!isObject(opt)) { // Number or undefined/null
         args = arguments;
         opt = {
@@ -177,7 +177,7 @@ function animate(el, params, opt) {
  * stopping everything, we can just stop the actual attributes we're setting.
  */
 function stop(el, prop) {
-    var i = Fx.timers.length;
+    let i = Fx.timers.length;
     // Remove timers related to this element (#4519)
     while (i--) {
         if (Fx.timers[i].elem === el && (!prop || prop === Fx.timers[i].prop)) {
@@ -185,12 +185,12 @@ function stop(el, prop) {
         }
     }
 }
-var animationExports = {
-    animate: animate,
-    animObject: animObject,
-    getDeferredAnimation: getDeferredAnimation,
-    setAnimation: setAnimation,
-    stop: stop
+const animationExports = {
+    animate,
+    animObject,
+    getDeferredAnimation,
+    setAnimation,
+    stop
 };
 /* *
  *

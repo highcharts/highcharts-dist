@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
@@ -53,8 +53,10 @@
          *
          * */
         var getOptions = D.getOptions;
-        var addEvent = U.addEvent, extend = U.extend;
-        var chartPrototype = Chart.prototype, defaultOptions = getOptions();
+        var addEvent = U.addEvent,
+            extend = U.extend;
+        var chartPrototype = Chart.prototype,
+            defaultOptions = getOptions();
         // Add language option
         extend(defaultOptions.lang, 
         /**
@@ -152,7 +154,7 @@
                 /** @ignore */
                 fontWeight: 'bold',
                 /** @ignore */
-                fontSize: '12px',
+                fontSize: '0.8em',
                 /** @ignore */
                 color: "#666666" /* Palette.neutralColor60 */
             }
@@ -167,7 +169,10 @@
          * @requires modules/no-data-to-display
          */
         chartPrototype.showNoData = function (str) {
-            var chart = this, options = chart.options, text = str || (options && options.lang.noData) || '', noDataOptions = options && (options.noData || {});
+            var chart = this,
+                options = chart.options,
+                text = str || (options && options.lang.noData) || '',
+                noDataOptions = options && (options.noData || {});
             if (chart.renderer) { // Meaning chart is not destroyed
                 if (!chart.noDataLabel) {
                     chart.noDataLabel = chart.renderer
@@ -206,7 +211,9 @@
          * @requires modules/no-data-to-display
          */
         chartPrototype.hasData = function () {
-            var chart = this, series = chart.series || [], i = series.length;
+            var chart = this,
+                series = chart.series || [],
+                i = series.length;
             while (i--) {
                 if (series[i].hasData() && !series[i].options.isInternal) {
                     return true;

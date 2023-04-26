@@ -9,26 +9,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import DerivedComposition from '../DerivedComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var ColumnSeries = SeriesRegistry.seriesTypes.column;
+const { seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach;
+const { arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach } = U;
 /* ************************************************************************** *
  *  HISTOGRAM
  * ************************************************************************** */
@@ -36,7 +21,7 @@ var arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat,
  * A dictionary with formulas for calculating number of bins based on the
  * base series
  **/
-var binsNumberFormulas = {
+const binsNumberFormulas = {
     'square-root': function (baseSeries) {
         return Math.ceil(Math.sqrt(baseSeries.options.data.length));
     },
@@ -55,7 +40,7 @@ var binsNumberFormulas = {
  */
 function fitToBinLeftClosed(bins) {
     return function (y) {
-        var i = 1;
+        let i = 1;
         while (bins[i] <= y) {
             i++;
         }
@@ -74,20 +59,18 @@ function fitToBinLeftClosed(bins) {
  * @name Highcharts.seriesTypes.histogram
  * @augments Highcharts.Series
  */
-var HistogramSeries = /** @class */ (function (_super) {
-    __extends(HistogramSeries, _super);
-    function HistogramSeries() {
+class HistogramSeries extends ColumnSeries {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        _this.userOptions = void 0;
-        return _this;
+        super(...arguments);
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
+        this.userOptions = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -96,18 +79,18 @@ var HistogramSeries = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    HistogramSeries.prototype.binsNumber = function () {
-        var binsNumberOption = this.options.binsNumber;
-        var binsNumber = binsNumberFormulas[binsNumberOption] ||
+    binsNumber() {
+        const binsNumberOption = this.options.binsNumber;
+        const binsNumber = binsNumberFormulas[binsNumberOption] ||
             // #7457
             (typeof binsNumberOption === 'function' && binsNumberOption);
         return Math.ceil((binsNumber && binsNumber(this.baseSeries)) ||
             (isNumber(binsNumberOption) ?
                 binsNumberOption :
                 binsNumberFormulas['square-root'](this.baseSeries)));
-    };
-    HistogramSeries.prototype.derivedData = function (baseData, binsNumber, binWidth) {
-        var series = this, max = correctFloat(arrayMax(baseData)), 
+    }
+    derivedData(baseData, binsNumber, binWidth) {
+        let series = this, max = correctFloat(arrayMax(baseData)), 
         // Float correction needed, because first frequency value is not
         // corrected when generating frequencies (within for loop).
         min = correctFloat(arrayMin(baseData)), frequencies = [], bins = {}, data = [], x, fitToBin;
@@ -143,7 +126,7 @@ var HistogramSeries = /** @class */ (function (_super) {
             return parseFloat(elem);
         }));
         baseData.forEach(function (y) {
-            var x = correctFloat(fitToBin(y));
+            const x = correctFloat(fitToBin(y));
             bins[x]++;
         });
         objectEach(bins, function (frequency, x) {
@@ -158,66 +141,65 @@ var HistogramSeries = /** @class */ (function (_super) {
         });
         data[data.length - 1].x2 = max;
         return data;
-    };
-    HistogramSeries.prototype.setDerivedData = function () {
-        var yData = this.baseSeries.yData;
+    }
+    setDerivedData() {
+        const yData = this.baseSeries.yData;
         if (!yData.length) {
             this.setData([]);
             return;
         }
-        var data = this.derivedData(yData, this.binsNumber(), this.options.binWidth);
+        const data = this.derivedData(yData, this.binsNumber(), this.options.binWidth);
         this.setData(data, false);
-    };
+    }
+}
+/**
+ * A histogram is a column series which represents the distribution of the
+ * data set in the base series. Histogram splits data into bins and shows
+ * their frequencies.
+ *
+ * @sample {highcharts} highcharts/demo/histogram/
+ *         Histogram
+ *
+ * @extends      plotOptions.column
+ * @excluding    boostThreshold, dragDrop, pointInterval, pointIntervalUnit,
+ *               stacking, boostBlending
+ * @product      highcharts
+ * @since        6.0.0
+ * @requires     modules/histogram
+ * @optionparent plotOptions.histogram
+ */
+HistogramSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
     /**
-     * A histogram is a column series which represents the distribution of the
-     * data set in the base series. Histogram splits data into bins and shows
-     * their frequencies.
+     * A preferable number of bins. It is a suggestion, so a histogram may
+     * have a different number of bins. By default it is set to the square
+     * root of the base series' data length. Available options are:
+     * `square-root`, `sturges`, `rice`. You can also define a function
+     * which takes a `baseSeries` as a parameter and should return a
+     * positive integer.
      *
-     * @sample {highcharts} highcharts/demo/histogram/
-     *         Histogram
-     *
-     * @extends      plotOptions.column
-     * @excluding    boostThreshold, dragDrop, pointInterval, pointIntervalUnit,
-     *               stacking, boostBlending
-     * @product      highcharts
-     * @since        6.0.0
-     * @requires     modules/histogram
-     * @optionparent plotOptions.histogram
+     * @type {"square-root"|"sturges"|"rice"|number|Function}
      */
-    HistogramSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-        /**
-         * A preferable number of bins. It is a suggestion, so a histogram may
-         * have a different number of bins. By default it is set to the square
-         * root of the base series' data length. Available options are:
-         * `square-root`, `sturges`, `rice`. You can also define a function
-         * which takes a `baseSeries` as a parameter and should return a
-         * positive integer.
-         *
-         * @type {"square-root"|"sturges"|"rice"|number|Function}
-         */
-        binsNumber: 'square-root',
-        /**
-         * Width of each bin. By default the bin's width is calculated as
-         * `(max - min) / number of bins`. This option takes precedence over
-         * [binsNumber](#plotOptions.histogram.binsNumber).
-         *
-         * @type {number}
-         */
-        binWidth: void 0,
-        pointPadding: 0,
-        groupPadding: 0,
-        grouping: false,
-        pointPlacement: 'between',
-        tooltip: {
-            headerFormat: '',
-            pointFormat: ('<span style="font-size: 10px">{point.x} - {point.x2}' +
-                '</span><br/>' +
-                '<span style="color:{point.color}">\u25CF</span>' +
-                ' {series.name} <b>{point.y}</b><br/>')
-        }
-    });
-    return HistogramSeries;
-}(ColumnSeries));
+    binsNumber: 'square-root',
+    /**
+     * Width of each bin. By default the bin's width is calculated as
+     * `(max - min) / number of bins`. This option takes precedence over
+     * [binsNumber](#plotOptions.histogram.binsNumber).
+     *
+     * @type {number}
+     */
+    binWidth: void 0,
+    pointPadding: 0,
+    groupPadding: 0,
+    grouping: false,
+    pointPlacement: 'between',
+    tooltip: {
+        headerFormat: '',
+        pointFormat: ('<span style="font-size: 0.8em">{point.x} - {point.x2}' +
+            '</span><br/>' +
+            '<span style="color:{point.color}">\u25CF</span>' +
+            ' {series.name} <b>{point.y}</b><br/>')
+    }
+});
 extend(HistogramSeries.prototype, {
     hasDerivedData: DerivedComposition.hasDerivedData
 });

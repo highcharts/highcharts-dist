@@ -9,9 +9,9 @@
  * */
 'use strict';
 import Color from '../Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import U from '../Utilities.js';
-var extend = U.extend, merge = U.merge;
+const { extend, merge } = U;
 /**
  * @private
  */
@@ -34,12 +34,12 @@ var SolidGaugeAxis;
      * @todo
      * If we implement an AMD system we should make ColorAxis a dependency.
      */
-    var methods = {
+    const methods = {
         initDataClasses: function (userOptions) {
-            var chart = this.chart, dataClasses, colorCounter = 0, options = this.options;
+            let chart = this.chart, dataClasses, colorCounter = 0, options = this.options;
             this.dataClasses = dataClasses = [];
             userOptions.dataClasses.forEach(function (dataClass, i) {
-                var colors;
+                let colors;
                 dataClass = merge(dataClass);
                 dataClasses.push(dataClass);
                 if (!dataClass.color) {
@@ -68,7 +68,7 @@ var SolidGaugeAxis;
         },
         // Translate from a value to a color
         toColor: function (value, point) {
-            var pos, stops = this.stops, from, to, color, dataClasses = this.dataClasses, dataClass, i;
+            let pos, stops = this.stops, from, to, color, dataClasses = this.dataClasses, dataClass, i;
             if (dataClasses) {
                 i = dataClasses.length;
                 while (i--) {

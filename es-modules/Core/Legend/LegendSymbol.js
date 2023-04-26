@@ -9,7 +9,7 @@
  * */
 'use strict';
 import U from '../Utilities.js';
-var extend = U.extend, merge = U.merge, pick = U.pick;
+const { extend, merge, pick } = U;
 /* *
  *
  *  Namespace
@@ -36,9 +36,9 @@ var LegendSymbol;
      * The legend object.
      */
     function drawLineMarker(legend) {
-        var legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
+        const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
             Math.round(legend.fontMetrics.b * 0.3);
-        var attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
+        let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
         // Draw the line
         if (!this.chart.styledMode) {
             attr = {
@@ -59,17 +59,19 @@ var LegendSymbol;
         if (attr['stroke-linecap']) {
             lineSizer = Math.min(legendItem.line.strokeWidth(), symbolWidth) / 2;
         }
-        legendItem.line
-            .attr({
-            d: [
-                ['M', lineSizer, verticalCenter],
-                ['L', symbolWidth - lineSizer, verticalCenter]
-            ]
-        });
+        if (symbolWidth) {
+            legendItem.line
+                .attr({
+                d: [
+                    ['M', lineSizer, verticalCenter],
+                    ['L', symbolWidth - lineSizer, verticalCenter]
+                ]
+            });
+        }
         // Draw the marker
         if (markerOptions && markerOptions.enabled !== false && symbolWidth) {
             // Do not allow the marker to be larger than the symbolHeight
-            var radius = Math.min(pick(markerOptions.radius, generalRadius), generalRadius);
+            let radius = Math.min(pick(markerOptions.radius, generalRadius), generalRadius);
             // Restrict symbol markers size
             if (this.symbol.indexOf('url') === 0) {
                 markerOptions = merge(markerOptions, {
@@ -102,7 +104,7 @@ var LegendSymbol;
      * The series (this) or point
      */
     function drawRectangle(legend, item) {
-        var legendItem = item.legendItem || {}, options = legend.options, symbolHeight = legend.symbolHeight, square = options.squareSymbol, symbolWidth = square ? symbolHeight : legend.symbolWidth;
+        const legendItem = item.legendItem || {}, options = legend.options, symbolHeight = legend.symbolHeight, square = options.squareSymbol, symbolWidth = square ? symbolHeight : legend.symbolWidth;
         legendItem.symbol = this.chart.renderer
             .rect(square ? (legend.symbolWidth - symbolHeight) / 2 : 0, legend.baseline - symbolHeight + 1, // #3988
         symbolWidth, symbolHeight, pick(legend.options.symbolRadius, symbolHeight / 2))

@@ -12,9 +12,9 @@ import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
-var _a = SeriesRegistry.seriesTypes, bubble = _a.bubble, pie = _a.pie, sunburst = _a.sunburst;
+const { bubble, pie, sunburst } = SeriesRegistry.seriesTypes;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, find = U.find, isNumber = U.isNumber;
+const { addEvent, defined, find, isNumber } = U;
 /* *
  *
  *  Composition
@@ -32,7 +32,7 @@ var SeriesOnPointComposition;
      *  Constants
      *
      * */
-    var composedClasses = [];
+    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -51,7 +51,7 @@ var SeriesOnPointComposition;
      * Chart class to use.
      */
     function compose(SeriesClass, ChartClass) {
-        var _a = Additions.prototype, chartGetZData = _a.chartGetZData, seriesAfterInit = _a.seriesAfterInit, seriesAfterRender = _a.seriesAfterRender, seriesGetCenter = _a.seriesGetCenter, seriesShowOrHide = _a.seriesShowOrHide, seriesTranslate = _a.seriesTranslate;
+        const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
         // We can mark support for pie series here because it's in the core.
         // But all other series outside the core should be marked in its module.
         // This is crucial when loading series-on-point before loading a
@@ -60,8 +60,7 @@ var SeriesOnPointComposition;
         // - pie
         // - sunburst
         pie.prototype.onPointSupported = true;
-        if (composedClasses.indexOf(SeriesClass) === -1) {
-            composedClasses.push(SeriesClass);
+        if (U.pushUnique(composedMembers, SeriesClass)) {
             addEvent(Series, 'afterInit', seriesAfterInit);
             addEvent(Series, 'afterRender', seriesAfterRender);
             addEvent(Series, 'afterGetCenter', seriesGetCenter);
@@ -69,8 +68,7 @@ var SeriesOnPointComposition;
             addEvent(Series, 'show', seriesShowOrHide);
             addEvent(Series, 'translate', seriesTranslate);
         }
-        if (composedClasses.indexOf(ChartClass) === -1) {
-            composedClasses.push(ChartClass);
+        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'beforeRender', chartGetZData);
             addEvent(ChartClass, 'beforeRedraw', chartGetZData);
         }
@@ -85,7 +83,7 @@ var SeriesOnPointComposition;
     /**
      * @private
      */
-    var Additions = /** @class */ (function () {
+    class Additions {
         /* *
          *
          *  Constructors
@@ -94,7 +92,7 @@ var SeriesOnPointComposition;
         /**
          * @private
          */
-        function Additions(series) {
+        constructor(series) {
             /**
              * @ignore
              */
@@ -120,7 +118,7 @@ var SeriesOnPointComposition;
          * and ends in the center of the series.
          * @private
          */
-        Additions.prototype.drawConnector = function () {
+        drawConnector() {
             if (!this.connector) {
                 this.connector = this.series.chart.renderer.path()
                     .addClass('highcharts-connector-seriesonpoint')
@@ -129,9 +127,9 @@ var SeriesOnPointComposition;
                 })
                     .add(this.series.markerGroup);
             }
-            var attribs = this.getConnectorAttributes();
+            const attribs = this.getConnectorAttributes();
             attribs && this.connector.animate(attribs);
-        };
+        }
         /**
          * Get connector line path and styles that connects series and point.
          *
@@ -139,19 +137,19 @@ var SeriesOnPointComposition;
          *
          * @return {Highcharts.SVGAttributes} attribs - the path and styles.
          */
-        Additions.prototype.getConnectorAttributes = function () {
-            var chart = this.series.chart, onPointOptions = this.options;
+        getConnectorAttributes() {
+            const chart = this.series.chart, onPointOptions = this.options;
             if (!onPointOptions) {
                 return;
             }
-            var connectorOpts = onPointOptions.connectorOptions || {}, position = onPointOptions.position, connectedPoint = chart.get(onPointOptions.id);
+            const connectorOpts = onPointOptions.connectorOptions || {}, position = onPointOptions.position, connectedPoint = chart.get(onPointOptions.id);
             if (!(connectedPoint instanceof Point) ||
                 !position ||
                 !defined(connectedPoint.plotX) ||
                 !defined(connectedPoint.plotY)) {
                 return;
             }
-            var xFrom = defined(position.x) ?
+            const xFrom = defined(position.x) ?
                 position.x :
                 connectedPoint.plotX, yFrom = defined(position.y) ?
                 position.y :
@@ -167,43 +165,43 @@ var SeriesOnPointComposition;
                 attribs.dashstyle = dashStyle;
             }
             return attribs;
-        };
+        }
         /**
          * Initialize Series on point on series init.
          *
          * @ignore
          */
-        Additions.prototype.seriesAfterInit = function () {
+        seriesAfterInit() {
             if (this.onPointSupported && this.options.onPoint) {
                 this.bubblePadding = true;
                 this.useMapGeometry = true;
                 this.onPoint = new Additions(this);
             }
-        };
+        }
         /**
          * @ignore
          */
-        Additions.prototype.seriesAfterRender = function () {
+        seriesAfterRender() {
             // Clear bubbleZExtremes to reset z calculations on update.
             delete this.chart.bubbleZExtremes;
             this.onPoint && this.onPoint.drawConnector();
-        };
+        }
         /**
          * Recalculate series.center (x, y and size).
          *
          * @ignore
          */
-        Additions.prototype.seriesGetCenter = function (e) {
-            var onPointOptions = this.options.onPoint, center = e.positions;
+        seriesGetCenter(e) {
+            const onPointOptions = this.options.onPoint, center = e.positions;
             if (onPointOptions) {
-                var connectedPoint = this.chart.get(onPointOptions.id);
+                const connectedPoint = this.chart.get(onPointOptions.id);
                 if (connectedPoint instanceof Point &&
                     defined(connectedPoint.plotX) &&
                     defined(connectedPoint.plotY)) {
                     center[0] = connectedPoint.plotX;
                     center[1] = connectedPoint.plotY;
                 }
-                var position = onPointOptions.position;
+                const position = onPointOptions.position;
                 if (position) {
                     if (defined(position.x)) {
                         center[0] = position.x;
@@ -220,22 +218,22 @@ var SeriesOnPointComposition;
                 }
             }
             // Get and set the size
-            var radius = this.radii && this.radii[this.index];
+            const radius = this.radii && this.radii[this.index];
             if (isNumber(radius)) {
                 center[2] = radius * 2;
             }
             e.positions = center;
-        };
+        }
         /**
          * @ignore
          */
-        Additions.prototype.seriesShowOrHide = function () {
-            var allSeries = this.chart.series;
+        seriesShowOrHide() {
+            const allSeries = this.chart.series;
             // When toggling a series visibility, loop through all points
-            this.points.forEach(function (point) {
+            this.points.forEach((point) => {
                 // Find all series that are on toggled points
-                var series = find(allSeries, function (series) {
-                    var id = ((series.onPoint || {}).options || {}).id;
+                const series = find(allSeries, (series) => {
+                    const id = ((series.onPoint || {}).options || {}).id;
                     if (!id) {
                         return false;
                     }
@@ -245,37 +243,36 @@ var SeriesOnPointComposition;
                 // not needed because it's fired later after showOrhide event
                 series && series.setVisible(!series.visible, false);
             });
-        };
+        }
         /**
          * Calculate required radius (z data) before original translate.
          *
          * @ignore
          * @function Highcharts.Series#translate
          */
-        Additions.prototype.seriesTranslate = function () {
+        seriesTranslate() {
             if (this.onPoint) {
                 this.onPoint.getRadii();
                 this.radii = this.onPoint.radii;
             }
-        };
+        }
         /**
          * @ignore
          */
-        Additions.prototype.chartGetZData = function () {
-            var zData = [];
-            this.series.forEach(function (series) {
-                var onPointOpts = series.options.onPoint;
+        chartGetZData() {
+            const zData = [];
+            this.series.forEach((series) => {
+                const onPointOpts = series.options.onPoint;
                 zData.push(onPointOpts && onPointOpts.z ? onPointOpts.z : null);
             });
-            this.series.forEach(function (series) {
+            this.series.forEach((series) => {
                 // Save z values of all the series
                 if (series.onPoint) {
                     series.onPoint.zData = series.zData = zData;
                 }
             });
-        };
-        return Additions;
-    }());
+        }
+    }
     SeriesOnPointComposition.Additions = Additions;
 })(SeriesOnPointComposition || (SeriesOnPointComposition = {}));
 /* *

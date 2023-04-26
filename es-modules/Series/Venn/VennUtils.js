@@ -16,11 +16,11 @@
  * */
 'use strict';
 import CU from '../../Core/Geometry/CircleUtilities.js';
-var getAreaOfCircle = CU.getAreaOfCircle, getCircleCircleIntersection = CU.getCircleCircleIntersection, getOverlapBetweenCirclesByDistance = CU.getOverlapBetweenCircles, isPointInsideAllCircles = CU.isPointInsideAllCircles, isPointInsideCircle = CU.isPointInsideCircle, isPointOutsideAllCircles = CU.isPointOutsideAllCircles;
+const { getAreaOfCircle, getCircleCircleIntersection, getOverlapBetweenCircles: getOverlapBetweenCirclesByDistance, isPointInsideAllCircles, isPointInsideCircle, isPointOutsideAllCircles } = CU;
 import GU from '../../Core/Geometry/GeometryUtilities.js';
-var getDistanceBetweenPoints = GU.getDistanceBetweenPoints;
+const { getDistanceBetweenPoints } = GU;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString;
+const { extend, isArray, isNumber, isObject, isString } = U;
 /* *
  *
  *  Functions
@@ -42,29 +42,32 @@ var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.
  */
 function addOverlapToSets(relations) {
     // Calculate the amount of overlap per set.
-    var mapOfIdToProps = relations
+    const mapOfIdToProps = {};
+    relations
         // Filter out relations consisting of 2 sets.
-        .filter(function (relation) { return (relation.sets.length === 2); })
+        .filter((relation) => (relation.sets.length === 2))
         // Sum up the amount of overlap for each set.
-        .reduce(function (map, relation) {
-        relation.sets.forEach(function (set, i, arr) {
-            if (!isObject(map[set])) {
-                map[set] = {
-                    overlapping: {},
-                    totalOverlap: 0
+        .forEach((relation) => {
+        relation.sets.forEach((set, i, arr) => {
+            if (!isObject(mapOfIdToProps[set])) {
+                mapOfIdToProps[set] = {
+                    totalOverlap: 0,
+                    overlapping: {}
                 };
             }
-            map[set].totalOverlap += relation.value;
-            map[set].overlapping[arr[1 - i]] = relation.value;
+            mapOfIdToProps[set] = {
+                totalOverlap: (mapOfIdToProps[set].totalOverlap || 0) +
+                    relation.value,
+                overlapping: Object.assign(Object.assign({}, (mapOfIdToProps[set].overlapping || {})), { [arr[1 - i]]: relation.value })
+            };
         });
-        return map;
-    }, {});
+    });
     relations
         // Filter out single sets
         .filter(isSet)
         // Extend the set with the calculated properties.
-        .forEach(function (set) {
-        var properties = mapOfIdToProps[set.sets[0]];
+        .forEach((set) => {
+        const properties = mapOfIdToProps[set.sets[0]];
         extend(set, properties);
     });
     // Returns the modified relations.
@@ -92,7 +95,7 @@ function addOverlapToSets(relations) {
  * Root number.
  */
 function bisect(f, a, b, tolerance, maxIterations) {
-    var fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10, delta = b - a, n = 1, x, fX;
+    let fA = f(a), fB = f(b), nMax = maxIterations || 100, tol = tolerance || 1e-10, delta = b - a, n = 1, x, fX;
     if (a >= b) {
         throw new Error('a must be smaller than b.');
     }
@@ -125,11 +128,11 @@ function bisect(f, a, b, tolerance, maxIterations) {
  * @private
  */
 function getCentroid(simplex) {
-    var arr = simplex.slice(0, -1), length = arr.length, result = [], sum = function (data, point) {
+    const arr = simplex.slice(0, -1), length = arr.length, result = [], sum = function (data, point) {
         data.sum += point[data.i];
         return data;
     };
-    for (var i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
         result[i] = arr.reduce(sum, { sum: 0, i: i }).sum / length;
     }
     return result;
@@ -151,7 +154,7 @@ function getCentroid(simplex) {
  * circles.
  */
 function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
-    var maxDistance = r1 + r2, distance;
+    let maxDistance = r1 + r2, distance;
     if (overlap <= 0) {
         // If overlap is below or equal to zero, then there is no overlap.
         distance = maxDistance;
@@ -162,8 +165,8 @@ function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
         distance = 0;
     }
     else {
-        distance = bisect(function (x) {
-            var actualOverlap = getOverlapBetweenCirclesByDistance(r1, r2, x);
+        distance = bisect((x) => {
+            const actualOverlap = getOverlapBetweenCirclesByDistance(r1, r2, x);
             // Return the differance between wanted and actual overlap.
             return overlap - actualOverlap;
         }, 0, maxDistance);
@@ -186,14 +189,14 @@ function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
  * Returns available width for the label.
  */
 function getLabelWidth(pos, internal, external) {
-    var radius = internal.reduce(function (min, circle) { return Math.min(circle.r, min); }, Infinity), 
+    const radius = internal.reduce((min, circle) => Math.min(circle.r, min), Infinity), 
     // Filter out external circles that are completely overlapping.
     filteredExternals = external.filter(function (circle) {
         return !isPointInsideCircle(pos, circle);
     });
-    var findDistance = function (maxDistance, direction) {
+    const findDistance = function (maxDistance, direction) {
         return bisect(function (x) {
-            var testPos = {
+            const testPos = {
                 x: pos.x + (direction * x),
                 y: pos.y
             }, isValid = (isPointInsideAllCircles(testPos, internal) &&
@@ -223,12 +226,12 @@ function getLabelWidth(pos, internal, external) {
  * Returns the margin.
  */
 function getMarginFromCircles(point, internal, external) {
-    var margin = internal.reduce(function (margin, circle) {
-        var m = circle.r - getDistanceBetweenPoints(point, circle);
+    let margin = internal.reduce(function (margin, circle) {
+        const m = circle.r - getDistanceBetweenPoints(point, circle);
         return (m <= margin) ? m : margin;
     }, Number.MAX_VALUE);
     margin = external.reduce(function (margin, circle) {
-        var m = getDistanceBetweenPoints(point, circle) - circle.r;
+        const m = getDistanceBetweenPoints(point, circle) - circle.r;
         return (m <= margin) ? m : margin;
     }, margin);
     return margin;
@@ -243,12 +246,12 @@ function getMarginFromCircles(point, internal, external) {
  * Returns the area of overlap between all the circles.
  */
 function getOverlapBetweenCircles(circles) {
-    var overlap = 0;
+    let overlap = 0;
     // When there is only two circles we can find the overlap by using their
     // radiuses and the distance between them.
     if (circles.length === 2) {
-        var circle1 = circles[0];
-        var circle2 = circles[1];
+        const circle1 = circles[0];
+        const circle2 = circles[1];
         overlap = getOverlapBetweenCirclesByDistance(circle1.r, circle2.r, getDistanceBetweenPoints(circle1, circle2));
     }
     return overlap;
@@ -259,12 +262,12 @@ function isSet(x) {
 }
 // eslint-disable-next-line require-jsdoc
 function isValidRelation(x) {
-    var map = {};
+    const map = {};
     return (isObject(x) &&
         (isNumber(x.value) && x.value > -1) &&
         (isArray(x.sets) && x.sets.length > 0) &&
         !x.sets.some(function (set) {
-            var invalid = false;
+            let invalid = false;
             if (!map[set] && isString(set)) {
                 map[set] = true;
             }
@@ -287,7 +290,7 @@ function isValidSet(x) {
  * @return {Array<object>} List of circles and their calculated positions.
  */
 function layoutGreedyVenn(relations) {
-    var positionedSets = [], mapOfIdToCircles = {};
+    const positionedSets = [], mapOfIdToCircles = {};
     // Define a circle for each set.
     relations
         .filter(function (relation) {
@@ -308,34 +311,44 @@ function layoutGreedyVenn(relations) {
      * @param {Object} coordinates
      * The coordinates to position the set at.
      */
-    var positionSet = function positionSet(set, coordinates) {
-        var circle = set.circle;
-        circle.x = coordinates.x;
-        circle.y = coordinates.y;
+    const positionSet = function positionSet(set, coordinates) {
+        const circle = set.circle;
+        if (circle) {
+            circle.x = coordinates.x;
+            circle.y = coordinates.y;
+        }
         positionedSets.push(set);
     };
     // Find overlap between sets. Ignore relations with more then 2 sets.
     addOverlapToSets(relations);
     // Sort sets by the sum of their size from large to small.
-    var sortedByOverlap = relations
+    const sortedByOverlap = relations
         .filter(isSet)
         .sort(sortByTotalOverlap);
     // Position the most overlapped set at 0,0.
     positionSet(sortedByOverlap.shift(), { x: 0, y: 0 });
-    var relationsWithTwoSets = relations.filter(function (x) {
+    const relationsWithTwoSets = relations.filter(function (x) {
         return x.sets.length === 2;
     });
     // Iterate and position the remaining sets.
     sortedByOverlap.forEach(function (set) {
-        var circle = set.circle, radius = circle.r, overlapping = set.overlapping;
-        var bestPosition = positionedSets.reduce(function (best, positionedSet, i) {
-            var positionedCircle = positionedSet.circle, overlap = overlapping[positionedSet.sets[0]];
+        const circle = set.circle;
+        if (!circle) {
+            return;
+        }
+        const radius = circle.r, overlapping = set.overlapping;
+        const bestPosition = positionedSets.reduce((best, positionedSet, i) => {
+            const positionedCircle = positionedSet.circle;
+            if (!positionedCircle || !overlapping) {
+                return best;
+            }
+            const overlap = overlapping[positionedSet.sets[0]];
             // Calculate the distance between the sets to get the
             // correct overlap
-            var distance = getDistanceBetweenCirclesByOverlap(radius, positionedCircle.r, overlap);
+            const distance = getDistanceBetweenCirclesByOverlap(radius, positionedCircle.r, overlap);
             // Create a list of possible coordinates calculated from
             // distance.
-            var possibleCoordinates = [
+            let possibleCoordinates = [
                 { x: positionedCircle.x + distance, y: positionedCircle.y },
                 { x: positionedCircle.x - distance, y: positionedCircle.y },
                 { x: positionedCircle.x, y: positionedCircle.y + distance },
@@ -344,7 +357,11 @@ function layoutGreedyVenn(relations) {
             // If there are more circles overlapping, then add the
             // intersection points as possible positions.
             positionedSets.slice(i + 1).forEach(function (positionedSet2) {
-                var positionedCircle2 = positionedSet2.circle, overlap2 = overlapping[positionedSet2.sets[0]], distance2 = getDistanceBetweenCirclesByOverlap(radius, positionedCircle2.r, overlap2);
+                const positionedCircle2 = positionedSet2.circle, overlap2 = overlapping[positionedSet2.sets[0]];
+                if (!positionedCircle2) {
+                    return;
+                }
+                const distance2 = getDistanceBetweenCirclesByOverlap(radius, positionedCircle2.r, overlap2);
                 // Add intersections to list of coordinates.
                 possibleCoordinates = possibleCoordinates.concat(getCircleCircleIntersection({
                     x: positionedCircle.x,
@@ -361,7 +378,7 @@ function layoutGreedyVenn(relations) {
                 circle.x = coordinates.x;
                 circle.y = coordinates.y;
                 // Calculate loss for the suggested coordinates.
-                var currentLoss = loss(mapOfIdToCircles, relationsWithTwoSets);
+                const currentLoss = loss(mapOfIdToCircles, relationsWithTwoSets);
                 // If the loss is better, then use these new coordinates
                 if (currentLoss < best.loss) {
                     best.loss = currentLoss;
@@ -393,19 +410,19 @@ function layoutGreedyVenn(relations) {
  * relations.
  */
 function loss(mapOfIdToCircle, relations) {
-    var precision = 10e10;
+    const precision = 10e10;
     // Iterate all the relations and calculate their individual loss.
     return relations.reduce(function (totalLoss, relation) {
-        var loss = 0;
+        let loss = 0;
         if (relation.sets.length > 1) {
-            var wantedOverlap = relation.value;
+            const wantedOverlap = relation.value;
             // Calculate the actual overlap between the sets.
-            var actualOverlap = getOverlapBetweenCircles(
+            const actualOverlap = getOverlapBetweenCircles(
             // Get the circles for the given sets.
             relation.sets.map(function (set) {
                 return mapOfIdToCircle[set];
             }));
-            var diff = wantedOverlap - actualOverlap;
+            const diff = wantedOverlap - actualOverlap;
             loss = Math.round((diff * diff) * precision) / precision;
         }
         // Add calculated loss to the sum.
@@ -425,7 +442,7 @@ function loss(mapOfIdToCircle, relations) {
  *         Returns the opimized position of a point.
  */
 function nelderMead(fn, initial) {
-    var maxIterations = 100, sortByFx = function (a, b) {
+    const maxIterations = 100, sortByFx = function (a, b) {
         return a.fx - b.fx;
     }, pRef = 1, // Reflection parameter
     pExp = 2, // Expansion parameter
@@ -435,62 +452,62 @@ function nelderMead(fn, initial) {
     /**
      * @private
      */
-    var weightedSum = function (weight1, v1, weight2, v2) { return v1.map(function (x, i) { return weight1 * x + weight2 * v2[i]; }); };
+    const weightedSum = (weight1, v1, weight2, v2) => v1.map((x, i) => weight1 * x + weight2 * v2[i]);
     /**
      * @private
      */
-    var getSimplex = function (initial) {
-        var n = initial.length, simplex = new Array(n + 1);
+    const getSimplex = (initial) => {
+        const n = initial.length, simplex = new Array(n + 1);
         // Initial point to the simplex.
         simplex[0] = initial;
         simplex[0].fx = fn(initial);
         // Create a set of extra points based on the initial.
-        for (var i = 0; i < n; ++i) {
-            var point = initial.slice();
+        for (let i = 0; i < n; ++i) {
+            const point = initial.slice();
             point[i] = point[i] ? point[i] * 1.05 : 0.001;
             point.fx = fn(point);
             simplex[i + 1] = point;
         }
         return simplex;
     };
-    var updateSimplex = function (simplex, point) {
+    const updateSimplex = (simplex, point) => {
         point.fx = fn(point);
         simplex[simplex.length - 1] = point;
         return simplex;
     };
-    var shrinkSimplex = function (simplex) {
-        var best = simplex[0];
-        return simplex.map(function (point) {
-            var p = weightedSum(1 - pShrink, best, pShrink, point);
+    const shrinkSimplex = (simplex) => {
+        const best = simplex[0];
+        return simplex.map((point) => {
+            const p = weightedSum(1 - pShrink, best, pShrink, point);
             p.fx = fn(p);
             return p;
         });
     };
-    var getPoint = function (centroid, worst, a, b) {
-        var point = weightedSum(a, centroid, b, worst);
+    const getPoint = (centroid, worst, a, b) => {
+        const point = weightedSum(a, centroid, b, worst);
         point.fx = fn(point);
         return point;
     };
     // Create a simplex
-    var simplex = getSimplex(initial);
+    let simplex = getSimplex(initial);
     // Iterate from 0 to max iterations
-    for (var i = 0; i < maxIterations; i++) {
+    for (let i = 0; i < maxIterations; i++) {
         // Sort the simplex
         simplex.sort(sortByFx);
         // Create a centroid from the simplex
-        var worst = simplex[simplex.length - 1];
-        var centroid = getCentroid(simplex);
+        const worst = simplex[simplex.length - 1];
+        const centroid = getCentroid(simplex);
         // Calculate the reflected point.
-        var reflected = getPoint(centroid, worst, 1 + pRef, -pRef);
+        const reflected = getPoint(centroid, worst, 1 + pRef, -pRef);
         if (reflected.fx < simplex[0].fx) {
             // If reflected point is the best, then possibly expand.
-            var expanded = getPoint(centroid, worst, 1 + pExp, -pExp);
+            const expanded = getPoint(centroid, worst, 1 + pExp, -pExp);
             simplex = updateSimplex(simplex, (expanded.fx < reflected.fx) ? expanded : reflected);
         }
         else if (reflected.fx >= simplex[simplex.length - 2].fx) {
             // If the reflected point is worse than the second worse, then
             // contract.
-            var contracted = void 0;
+            let contracted;
             if (reflected.fx > worst.fx) {
                 // If the reflected is worse than the worst point, do a
                 // contraction
@@ -528,37 +545,40 @@ function nelderMead(fn, initial) {
  * @param {Array<object>} data The raw input data.
  * @return {Array<object>} Returns an array of valid venn data.
  */
-function processVennData(data) {
-    var d = isArray(data) ? data : [];
-    var validSets = d
+function processVennData(data, splitter) {
+    const d = isArray(data) ? data : [];
+    const validSets = d
         .reduce(function (arr, x) {
         // Check if x is a valid set, and that it is not an duplicate.
-        if (isValidSet(x) && arr.indexOf(x.sets[0]) === -1) {
+        if (x.sets && isValidSet(x) && arr.indexOf(x.sets[0]) === -1) {
             arr.push(x.sets[0]);
         }
         return arr;
     }, [])
         .sort();
-    var mapOfIdToRelation = d.reduce(function (mapOfIdToRelation, relation) {
-        if (isValidRelation(relation) &&
+    const mapOfIdToRelation = d.reduce(function (mapOfIdToRelation, relation) {
+        if (relation.sets &&
+            isValidRelation(relation) &&
             !relation.sets.some(function (set) {
                 return validSets.indexOf(set) === -1;
             })) {
-            mapOfIdToRelation[relation.sets.sort().join()] =
-                relation;
+            mapOfIdToRelation[relation.sets.sort().join(splitter)] = {
+                sets: relation.sets,
+                value: relation.value || 0
+            };
         }
         return mapOfIdToRelation;
     }, {});
     validSets.reduce(function (combinations, set, i, arr) {
-        var remaining = arr.slice(i + 1);
+        const remaining = arr.slice(i + 1);
         remaining.forEach(function (set2) {
-            combinations.push(set + ',' + set2);
+            combinations.push(set + splitter + set2);
         });
         return combinations;
     }, []).forEach(function (combination) {
         if (!mapOfIdToRelation[combination]) {
-            var obj = {
-                sets: combination.split(','),
+            const obj = {
+                sets: combination.split(splitter),
                 value: 0
             };
             mapOfIdToRelation[combination] = obj;
@@ -582,26 +602,30 @@ function processVennData(data) {
  * Returns 0 if a and b are equal, <0 if a is greater, >0 if b is greater.
  */
 function sortByTotalOverlap(a, b) {
-    return b.totalOverlap - a.totalOverlap;
+    if (typeof b.totalOverlap !== 'undefined' &&
+        typeof a.totalOverlap !== 'undefined') {
+        return b.totalOverlap - a.totalOverlap;
+    }
+    return NaN;
 }
 /* *
  *
  *  Default Export
  *
  * */
-var VennUtils = {
+const VennUtils = {
     geometry: GU,
     geometryCircles: CU,
-    addOverlapToSets: addOverlapToSets,
-    getCentroid: getCentroid,
-    getDistanceBetweenCirclesByOverlap: getDistanceBetweenCirclesByOverlap,
-    getLabelWidth: getLabelWidth,
-    getMarginFromCircles: getMarginFromCircles,
-    isSet: isSet,
-    layoutGreedyVenn: layoutGreedyVenn,
-    loss: loss,
-    nelderMead: nelderMead,
-    processVennData: processVennData,
-    sortByTotalOverlap: sortByTotalOverlap
+    addOverlapToSets,
+    getCentroid,
+    getDistanceBetweenCirclesByOverlap,
+    getLabelWidth,
+    getMarginFromCircles,
+    isSet,
+    layoutGreedyVenn,
+    loss,
+    nelderMead,
+    processVennData,
+    sortByTotalOverlap
 };
 export default VennUtils;

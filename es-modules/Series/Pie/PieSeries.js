@@ -8,26 +8,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import CU from '../CenteredUtilities.js';
-var getStartAndEndRadians = CU.getStartAndEndRadians;
+const { getStartAndEndRadians } = CU;
 import ColumnSeries from '../Column/ColumnSeries.js';
 import H from '../../Core/Globals.js';
-var noop = H.noop;
+const { noop } = H;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import PiePoint from './PiePoint.js';
 import PieSeriesDefaults from './PieSeriesDefaults.js';
@@ -35,7 +20,7 @@ import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Symbols from '../../Core/Renderer/SVG/Symbols.js';
 import U from '../../Core/Utilities.js';
-var clamp = U.clamp, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
+const { clamp, extend, fireEvent, merge, pick, relativeLength } = U;
 /* *
  *
  *  Class
@@ -50,26 +35,24 @@ var clamp = U.clamp, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge
  *
  * @augments Highcharts.Series
  */
-var PieSeries = /** @class */ (function (_super) {
-    __extends(PieSeries, _super);
-    function PieSeries() {
+class PieSeries extends Series {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.center = void 0;
-        _this.data = void 0;
-        _this.maxLabelDistance = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.center = void 0;
+        this.data = void 0;
+        this.maxLabelDistance = void 0;
+        this.options = void 0;
+        this.points = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -82,11 +65,11 @@ var PieSeries = /** @class */ (function (_super) {
      * Animates the pies in.
      * @private
      */
-    PieSeries.prototype.animate = function (init) {
-        var series = this, points = series.points, startAngleRad = series.startAngleRad;
+    animate(init) {
+        const series = this, points = series.points, startAngleRad = series.startAngleRad;
         if (!init) {
             points.forEach(function (point) {
-                var graphic = point.graphic, args = point.shapeArgs;
+                const graphic = point.graphic, args = point.shapeArgs;
                 if (graphic && args) {
                     // start values
                     graphic.attr({
@@ -104,7 +87,7 @@ var PieSeries = /** @class */ (function (_super) {
                 }
             });
         }
-    };
+    }
     /**
      * Called internally to draw auxiliary graph in pie-like series in
      * situtation when the default graph is not sufficient enough to present
@@ -112,9 +95,9 @@ var PieSeries = /** @class */ (function (_super) {
      * regular graph.
      * @private
      */
-    PieSeries.prototype.drawEmpty = function () {
-        var start = this.startAngleRad, end = this.endAngleRad, options = this.options;
-        var centerX, centerY;
+    drawEmpty() {
+        const start = this.startAngleRad, end = this.endAngleRad, options = this.options;
+        let centerX, centerY;
         // Draw auxiliary graph if there're no visible points.
         if (this.total === 0 && this.center) {
             centerX = this.center[0];
@@ -127,8 +110,8 @@ var PieSeries = /** @class */ (function (_super) {
             }
             this.graph.attr({
                 d: Symbols.arc(centerX, centerY, this.center[2] / 2, 0, {
-                    start: start,
-                    end: end,
+                    start,
+                    end,
                     innerR: this.center[3] / 2
                 })
             });
@@ -143,14 +126,14 @@ var PieSeries = /** @class */ (function (_super) {
         else if (this.graph) { // Destroy the graph object.
             this.graph = this.graph.destroy();
         }
-    };
+    }
     /**
      * Slices in pie chart are initialized in DOM, but it's shapes and
      * animations are normally run in `drawPoints()`.
      * @private
      */
-    PieSeries.prototype.drawPoints = function () {
-        var renderer = this.chart.renderer;
+    drawPoints() {
+        const renderer = this.chart.renderer;
         this.points.forEach(function (point) {
             // When updating a series between 2d and 3d or cartesian and
             // polar, the shape type changes.
@@ -163,80 +146,68 @@ var PieSeries = /** @class */ (function (_super) {
                 point.delayedRendering = true;
             }
         });
-    };
+    }
     /**
      * Extend the generatePoints method by adding total and percentage
      * properties to each point
      * @private
      */
-    PieSeries.prototype.generatePoints = function () {
-        _super.prototype.generatePoints.call(this);
+    generatePoints() {
+        super.generatePoints();
         this.updateTotals();
-    };
+    }
     /**
      * Utility for getting the x value from a given y, used for
      * anticollision logic in data labels. Added point for using specific
      * points' label distance.
      * @private
      */
-    PieSeries.prototype.getX = function (y, left, point) {
-        var center = this.center, 
+    getX(y, left, point) {
+        const center = this.center, 
         // Variable pie has individual radius
         radius = this.radii ?
             this.radii[point.index] || 0 :
             center[2] / 2;
-        var angle = Math.asin(clamp((y - center[1]) / (radius + point.labelDistance), -1, 1));
-        var x = center[0] +
+        const angle = Math.asin(clamp((y - center[1]) / (radius + point.labelDistance), -1, 1));
+        const x = center[0] +
             (left ? -1 : 1) *
                 (Math.cos(angle) * (radius + point.labelDistance)) +
             (point.labelDistance > 0 ?
                 (left ? -1 : 1) * this.options.dataLabels.padding :
                 0);
         return x;
-    };
+    }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
      * @private
      */
-    PieSeries.prototype.hasData = function () {
+    hasData() {
         return !!this.processedXData.length; // != 0
-    };
+    }
     /**
      * Draw the data points
      * @private
      */
-    PieSeries.prototype.redrawPoints = function () {
-        var series = this, chart = series.chart, renderer = chart.renderer, shadow = series.options.shadow;
-        var groupTranslation, graphic, pointAttr, shapeArgs;
+    redrawPoints() {
+        const series = this, chart = series.chart;
+        let groupTranslation, graphic, pointAttr, shapeArgs;
         this.drawEmpty();
-        if (shadow && !series.shadowGroup && !chart.styledMode) {
-            series.shadowGroup = renderer
-                .g('shadow')
-                .attr({ zIndex: -1 })
-                .add(series.group);
+        // Apply the drop-shadow to the group because otherwise each element
+        // would cast a shadow on others
+        if (series.group && !chart.styledMode) {
+            series.group.shadow(series.options.shadow);
         }
         // draw the slices
         series.points.forEach(function (point) {
-            var animateTo = {};
+            const animateTo = {};
             graphic = point.graphic;
             if (!point.isNull && graphic) {
-                var shadowGroup = void 0;
                 shapeArgs = point.shapeArgs;
                 // If the point is sliced, use special translation, else use
                 // plot area translation
                 groupTranslation = point.getTranslate();
                 if (!chart.styledMode) {
-                    // Put the shadow behind all points
-                    shadowGroup = point.shadowGroup;
-                    if (shadow && !shadowGroup) {
-                        shadowGroup = point.shadowGroup = renderer
-                            .g('shadow')
-                            .add(series.shadowGroup);
-                    }
-                    if (shadowGroup) {
-                        shadowGroup.attr(groupTranslation);
-                    }
                     pointAttr = series.pointAttribs(point, (point.selected && 'select'));
                 }
                 // Draw the slice
@@ -257,12 +228,12 @@ var PieSeries = /** @class */ (function (_super) {
                     if (!chart.styledMode) {
                         graphic
                             .attr(pointAttr)
-                            .attr({ 'stroke-linejoin': 'round' })
-                            .shadow(shadow, shadowGroup);
+                            .attr({ 'stroke-linejoin': 'round' });
                     }
                     point.delayedRendering = false;
                 }
-                graphic.attr({
+                graphic
+                    .attr({
                     visibility: point.visible ? 'inherit' : 'hidden'
                 });
                 graphic.addClass(point.getClassName(), true);
@@ -271,28 +242,28 @@ var PieSeries = /** @class */ (function (_super) {
                 point.graphic = graphic.destroy();
             }
         });
-    };
+    }
     /**
      * Utility for sorting data labels.
      * @private
      */
-    PieSeries.prototype.sortByAngle = function (points, sign) {
+    sortByAngle(points, sign) {
         points.sort(function (a, b) {
             return ((typeof a.angle !== 'undefined') &&
                 (b.angle - a.angle) * sign);
         });
-    };
+    }
     /**
      * Do translation for pie slices
      * @private
      */
-    PieSeries.prototype.translate = function (positions) {
+    translate(positions) {
         fireEvent(this, 'translate');
         this.generatePoints();
-        var series = this, precision = 1000, // issue #172
+        const series = this, precision = 1000, // issue #172
         options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
         points = series.points, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
-        var finalConnectorOffset, start, end, angle, 
+        let finalConnectorOffset, start, end, angle, 
         // the x component of the radius vector for a given point
         radiusX, radiusY, i, point, cumulative = 0;
         // Get positions - either an integer or a percentage string must be
@@ -312,7 +283,7 @@ var PieSeries = /** @class */ (function (_super) {
             }
             end = startAngleRad + (cumulative * circ);
             // set the shape
-            var shapeArgs = {
+            const shapeArgs = {
                 x: positions[0],
                 y: positions[1],
                 r: positions[2] / 2,
@@ -367,7 +338,7 @@ var PieSeries = /** @class */ (function (_super) {
                     y: positions[1] + radiusY + Math.sin(angle) *
                         point.labelDistance
                 },
-                'final': {
+                computed: {
                 // used for generating connector path -
                 // initialized later in drawDataLabels function
                 // x: undefined,
@@ -393,14 +364,14 @@ var PieSeries = /** @class */ (function (_super) {
             };
         }
         fireEvent(series, 'afterTranslate');
-    };
+    }
     /**
      * Recompute total chart sum and update percentages of points.
      * @private
      */
-    PieSeries.prototype.updateTotals = function () {
-        var points = this.points, len = points.length, ignoreHiddenPoint = this.options.ignoreHiddenPoint;
-        var i, point, total = 0;
+    updateTotals() {
+        const points = this.points, len = points.length, ignoreHiddenPoint = this.options.ignoreHiddenPoint;
+        let i, point, total = 0;
         // Get the total sum
         for (i = 0; i < len; i++) {
             point = points[i];
@@ -419,10 +390,9 @@ var PieSeries = /** @class */ (function (_super) {
                     0;
             point.total = total;
         }
-    };
-    PieSeries.defaultOptions = merge(Series.defaultOptions, PieSeriesDefaults);
-    return PieSeries;
-}(Series));
+    }
+}
+PieSeries.defaultOptions = merge(Series.defaultOptions, PieSeriesDefaults);
 extend(PieSeries.prototype, {
     axisTypes: [],
     directTouch: true,

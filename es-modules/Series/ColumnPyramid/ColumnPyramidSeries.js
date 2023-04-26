@@ -8,26 +8,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import ColumnSeries from '../Column/ColumnSeries.js';
-var colProto = ColumnSeries.prototype;
+const { prototype: colProto } = ColumnSeries;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-var clamp = U.clamp, extend = U.extend, merge = U.merge, pick = U.pick;
+const { clamp, extend, merge, pick } = U;
 /**
  * The ColumnPyramidSeries class
  *
@@ -37,24 +22,22 @@ var clamp = U.clamp, extend = U.extend, merge = U.merge, pick = U.pick;
  *
  * @augments Highcharts.Series
  */
-var ColumnPyramidSeries = /** @class */ (function (_super) {
-    __extends(ColumnPyramidSeries, _super);
-    function ColumnPyramidSeries() {
+class ColumnPyramidSeries extends ColumnSeries {
+    constructor() {
         /* *
          *
          * Static properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          * Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
@@ -66,8 +49,8 @@ var ColumnPyramidSeries = /** @class */ (function (_super) {
      * Overrides the column translate method
      * @private
      */
-    ColumnPyramidSeries.prototype.translate = function () {
-        var series = this, chart = series.chart, options = series.options, dense = series.dense =
+    translate() {
+        let series = this, chart = series.chart, options = series.options, dense = series.dense =
             series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
         ), yAxis = series.yAxis, threshold = options.threshold, translatedThreshold = series.translatedThreshold =
             yAxis.getThreshold(threshold), minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, 
@@ -88,7 +71,7 @@ var ColumnPyramidSeries = /** @class */ (function (_super) {
         colProto.translate.apply(series);
         // Record the new values
         series.points.forEach(function (point) {
-            var yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
+            let yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
             // Don't draw too far outside plot area
             // (#1303, #2241, #4264)
             barX = point.plotX + pointXOffset, barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
@@ -187,33 +170,32 @@ var ColumnPyramidSeries = /** @class */ (function (_super) {
                 ]
             };
         });
-    };
-    /**
-     * Column pyramid series display one pyramid per value along an X axis.
-     * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
-     * `true`.
-     *
-     * @sample {highcharts|highstock} highcharts/demo/column-pyramid/
-     *         Column pyramid
-     * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-stacked/
-     *         Column pyramid stacked
-     * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-inverted/
-     *         Column pyramid inverted
-     *
-     * @extends      plotOptions.column
-     * @since        7.0.0
-     * @product      highcharts highstock
-     * @excluding    boostThreshold, borderRadius, crisp, depth, edgeColor,
-     *               edgeWidth, groupZPadding, negativeColor, softThreshold,
-     *               threshold, zoneAxis, zones, boostBlending
-     * @requires     highcharts-more
-     * @optionparent plotOptions.columnpyramid
-     */
-    ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-    // Nothing here
-    });
-    return ColumnPyramidSeries;
-}(ColumnSeries));
+    }
+}
+/**
+ * Column pyramid series display one pyramid per value along an X axis.
+ * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
+ * `true`.
+ *
+ * @sample {highcharts|highstock} highcharts/demo/column-pyramid/
+ *         Column pyramid
+ * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-stacked/
+ *         Column pyramid stacked
+ * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-inverted/
+ *         Column pyramid inverted
+ *
+ * @extends      plotOptions.column
+ * @since        7.0.0
+ * @product      highcharts highstock
+ * @excluding    boostThreshold, borderRadius, crisp, depth, edgeColor,
+ *               edgeWidth, groupZPadding, negativeColor, softThreshold,
+ *               threshold, zoneAxis, zones, boostBlending
+ * @requires     highcharts-more
+ * @optionparent plotOptions.columnpyramid
+ */
+ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+// Nothing here
+});
 SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
 /* *
  *

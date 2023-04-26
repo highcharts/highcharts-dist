@@ -9,12 +9,12 @@
  * */
 'use strict';
 import A from '../../Animation/AnimationUtilities.js';
-var animate = A.animate, animObject = A.animObject, stop = A.stop;
+const { animate, animObject, stop } = A;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
-var deg2rad = H.deg2rad, doc = H.doc, noop = H.noop, svg = H.svg, SVG_NS = H.SVG_NS, win = H.win;
+const { deg2rad, doc, noop, svg, SVG_NS, win } = H;
 import U from '../../Utilities.js';
-var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, removeEvent = U.removeEvent, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
+const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, isArray, isFunction, isObject, isString, merge, objectEach, pick, pInt, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -43,8 +43,8 @@ var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css =
  * @class
  * @name Highcharts.SVGElement
  */
-var SVGElement = /** @class */ (function () {
-    function SVGElement() {
+class SVGElement {
+    constructor() {
         /* *
          *
          *  Properties
@@ -55,21 +55,6 @@ var SVGElement = /** @class */ (function () {
         this.opacity = 1; // Default base for animation
         this.renderer = void 0;
         this.SVG_NS = SVG_NS;
-        // Custom attributes used for symbols, these should be filtered out when
-        // setting SVGElement attributes (#9375).
-        this.symbolCustomAttribs = [
-            'x',
-            'y',
-            'width',
-            'height',
-            'r',
-            'start',
-            'end',
-            'innerR',
-            'anchorX',
-            'anchorY',
-            'rounded'
-        ];
     }
     // @todo public zIndex?: number;
     /* *
@@ -91,14 +76,14 @@ var SVGElement = /** @class */ (function () {
      * @return {number|string}
      *         Property value.
      */
-    SVGElement.prototype._defaultGetter = function (key) {
-        var ret = pick(this[key + 'Value'], // align getter
+    _defaultGetter(key) {
+        let ret = pick(this[key + 'Value'], // align getter
         this[key], this.element ? this.element.getAttribute(key) : null, 0);
         if (/^[\-0-9\.]+$/.test(ret)) { // is numerical
             ret = parseFloat(ret);
         }
         return ret;
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#_defaultSetter
@@ -110,9 +95,9 @@ var SVGElement = /** @class */ (function () {
      * @param {Highcharts.SVGDOMElement} element
      *
      */
-    SVGElement.prototype._defaultSetter = function (value, key, element) {
+    _defaultSetter(value, key, element) {
         element.setAttribute(key, value);
-    };
+    }
     /**
      * Add the element to the DOM. All elements must be added this way.
      *
@@ -128,9 +113,9 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.add = function (parent) {
-        var renderer = this.renderer, element = this.element;
-        var inserted;
+    add(parent) {
+        const renderer = this.renderer, element = this.element;
+        let inserted;
         if (parent) {
             this.parentGroup = parent;
         }
@@ -158,7 +143,7 @@ var SVGElement = /** @class */ (function () {
             this.onAdd();
         }
         return this;
-    };
+    }
     /**
      * Add a class name to an element.
      *
@@ -174,8 +159,8 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * Return the SVG element for chainability.
      */
-    SVGElement.prototype.addClass = function (className, replace) {
-        var currentClassName = replace ? '' : (this.attr('class') || '');
+    addClass(className, replace) {
+        const currentClassName = replace ? '' : (this.attr('class') || '');
         // Trim the string and remove duplicates
         className = (className || '')
             .split(/ /g)
@@ -192,7 +177,7 @@ var SVGElement = /** @class */ (function () {
             this.attr('class', className);
         }
         return this;
-    };
+    }
     /**
      * This method is executed in the end of `attr()`, after setting all
      * attributes in the hash. In can be used to efficiently consolidate
@@ -202,14 +187,14 @@ var SVGElement = /** @class */ (function () {
      * @private
      * @function Highcharts.SVGElement#afterSetters
      */
-    SVGElement.prototype.afterSetters = function () {
+    afterSetters() {
         // Update transform. Do this outside the loop to prevent redundant
         // updating for batch setting of attributes.
         if (this.doTransform) {
             this.updateTransform();
             this.doTransform = false;
         }
-    };
+    }
     /**
      * Align the element relative to the chart or another box.
      *
@@ -231,9 +216,9 @@ var SVGElement = /** @class */ (function () {
      *
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.align = function (alignOptions, alignByTranslate, box) {
-        var attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects;
-        var x, y, alignTo, alignFactor, vAlignFactor;
+    align(alignOptions, alignByTranslate, box) {
+        const attribs = {}, renderer = this.renderer, alignedObjects = renderer.alignedObjects;
+        let x, y, alignTo, alignFactor, vAlignFactor;
         // First call on instanciate
         if (alignOptions) {
             this.alignOptions = alignOptions;
@@ -255,7 +240,7 @@ var SVGElement = /** @class */ (function () {
         box = pick(box, renderer[alignTo], alignTo === 'scrollablePlotBox' ?
             renderer.plotBox : void 0, renderer);
         // Assign variables
-        var align = alignOptions.align, vAlign = alignOptions.verticalAlign;
+        const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
         // default: left align
         x = (box.x || 0) + (alignOptions.x || 0);
         // default: top align
@@ -289,14 +274,14 @@ var SVGElement = /** @class */ (function () {
         this.placed = true;
         this.alignAttr = attribs;
         return this;
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#alignSetter
      * @param {"left"|"center"|"right"} value
      */
-    SVGElement.prototype.alignSetter = function (value) {
-        var convert = {
+    alignSetter(value) {
+        const convert = {
             left: 'start',
             center: 'middle',
             right: 'end'
@@ -305,7 +290,7 @@ var SVGElement = /** @class */ (function () {
             this.alignValue = value;
             this.element.setAttribute('text-anchor', convert[value]);
         }
-    };
+    }
     /**
      * Animate to given attributes or CSS properties.
      *
@@ -326,12 +311,11 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.animate = function (params, options, complete) {
-        var _this = this;
-        var animOptions = animObject(pick(options, this.renderer.globalAnimation, true)), deferTime = animOptions.defer;
+    animate(params, options, complete) {
+        const animOptions = animObject(pick(options, this.renderer.globalAnimation, true)), deferTime = animOptions.defer;
         // When the page is hidden save resources in the background by not
         // running animation at all (#9749).
-        if (pick(doc.hidden, doc.msHidden, doc.webkitHidden, false)) {
+        if (doc.hidden) {
             animOptions.duration = 0;
         }
         if (animOptions.duration !== 0) {
@@ -341,9 +325,9 @@ var SVGElement = /** @class */ (function () {
                 animOptions.complete = complete;
             }
             // If defer option is defined delay the animation #12901
-            syncTimeout(function () {
-                if (_this.element) {
-                    animate(_this, params, animOptions);
+            syncTimeout(() => {
+                if (this.element) {
+                    animate(this, params, animOptions);
                 }
             }, deferTime);
         }
@@ -357,7 +341,7 @@ var SVGElement = /** @class */ (function () {
             }, this);
         }
         return this;
-    };
+    }
     /**
      * Apply a text outline through a custom CSS property, by copying the text
      * element and apply stroke to the copy. Used internally. Contrast checks at
@@ -380,17 +364,17 @@ var SVGElement = /** @class */ (function () {
      * @param {string} textOutline
      *        A custom CSS `text-outline` setting, defined by `width color`.
      */
-    SVGElement.prototype.applyTextOutline = function (textOutline) {
-        var elem = this.element, hasContrast = textOutline.indexOf('contrast') !== -1, styles = {};
+    applyTextOutline(textOutline) {
+        const elem = this.element, hasContrast = textOutline.indexOf('contrast') !== -1, styles = {};
         // When the text shadow is set to contrast, use dark stroke for light
         // text and vice versa.
         if (hasContrast) {
             styles.textOutline = textOutline = textOutline.replace(/contrast/g, this.renderer.getContrast(elem.style.fill));
         }
         // Extract the stroke width and color
-        var parts = textOutline.split(' ');
-        var color = parts[parts.length - 1];
-        var strokeWidth = parts[0];
+        const parts = textOutline.split(' ');
+        const color = parts[parts.length - 1];
+        let strokeWidth = parts[0];
         if (strokeWidth && strokeWidth !== 'none' && H.svg) {
             this.fakeTS = true; // Fake text shadow
             // Since the stroke is applied on center of the actual outline, we
@@ -401,8 +385,8 @@ var SVGElement = /** @class */ (function () {
             });
             // Remove shadows from previous runs.
             this.removeTextOutline();
-            var outline_1 = doc.createElementNS(SVG_NS, 'tspan');
-            attr(outline_1, {
+            const outline = doc.createElementNS(SVG_NS, 'tspan');
+            attr(outline, {
                 'class': 'highcharts-text-outline',
                 fill: color,
                 stroke: color,
@@ -411,34 +395,34 @@ var SVGElement = /** @class */ (function () {
             });
             // For each of the tspans and text nodes, create a copy in the
             // outline.
-            var parentElem = elem.querySelector('textPath') || elem;
-            [].forEach.call(parentElem.childNodes, function (childNode) {
-                var clone = childNode.cloneNode(true);
+            const parentElem = elem.querySelector('textPath') || elem;
+            [].forEach.call(parentElem.childNodes, (childNode) => {
+                const clone = childNode.cloneNode(true);
                 if (clone.removeAttribute) {
-                    ['fill', 'stroke', 'stroke-width', 'stroke'].forEach(function (prop) { return clone
-                        .removeAttribute(prop); });
+                    ['fill', 'stroke', 'stroke-width', 'stroke'].forEach((prop) => clone
+                        .removeAttribute(prop));
                 }
-                outline_1.appendChild(clone);
+                outline.appendChild(clone);
             });
             // Collect the sum of dy from all children, included nested ones
-            var totalHeight_1 = 0;
-            [].forEach.call(parentElem.querySelectorAll('text tspan'), function (element) {
-                totalHeight_1 += Number(element.getAttribute('dy'));
+            let totalHeight = 0;
+            [].forEach.call(parentElem.querySelectorAll('text tspan'), (element) => {
+                totalHeight += Number(element.getAttribute('dy'));
             });
             // Insert an absolutely positioned break before the original text
             // to keep it in place
-            var br = doc.createElementNS(SVG_NS, 'tspan');
+            const br = doc.createElementNS(SVG_NS, 'tspan');
             br.textContent = '\u200B';
             // Reset the position for the following text
             attr(br, {
                 x: Number(elem.getAttribute('x')),
-                dy: -totalHeight_1
+                dy: -totalHeight
             });
             // Insert the outline
-            outline_1.appendChild(br);
-            parentElem.insertBefore(outline_1, parentElem.firstChild);
+            outline.appendChild(br);
+            parentElem.insertBefore(outline, parentElem.firstChild);
         }
-    };
+    }
     /**
      * @function Highcharts.SVGElement#attr
      * @param {string} key
@@ -498,9 +482,9 @@ var SVGElement = /** @class */ (function () {
     *         {@link Highcharts.SVGElement} so the calls can be chained. If
     *         used as a getter, the current value of the attribute is returned.
     */
-    SVGElement.prototype.attr = function (hash, val, complete, continueAnimation) {
-        var element = this.element, symbolCustomAttribs = this.symbolCustomAttribs;
-        var key, hasSetSymbolSize, ret = this, skipAttr, setter;
+    attr(hash, val, complete, continueAnimation) {
+        const element = this.element, symbolCustomAttribs = SVGElement.symbolCustomAttribs;
+        let key, hasSetSymbolSize, ret = this, skipAttr, setter;
         // single key-value pair
         if (typeof hash === 'string' && typeof val !== 'undefined') {
             key = hash;
@@ -537,13 +521,6 @@ var SVGElement = /** @class */ (function () {
                     setter = (this[key + 'Setter'] ||
                         this._defaultSetter);
                     setter.call(this, val, key, element);
-                    // Let the shadow follow the main element
-                    if (!this.styledMode &&
-                        this.shadows &&
-                        /^(width|height|visibility|x|y|d|transform|cx|cy|r)$/
-                            .test(key)) {
-                        this.updateShadows(key, val, setter);
-                    }
                 }
             }, this);
             this.afterSetters();
@@ -553,7 +530,7 @@ var SVGElement = /** @class */ (function () {
             complete.call(this);
         }
         return ret;
-    };
+    }
     /**
      * Apply a clipping rectangle to this element.
      *
@@ -565,11 +542,11 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         Returns the SVG element to allow chaining.
      */
-    SVGElement.prototype.clip = function (clipRect) {
+    clip(clipRect) {
         return this.attr('clip-path', clipRect ?
             'url(' + this.renderer.url + '#' + clipRect.id + ')' :
             'none');
-    };
+    }
     /**
      * Calculate the coordinates needed for drawing a rectangle crisply and
      * return the calculated attributes.
@@ -586,11 +563,11 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.RectangleObject}
      * The modified rectangle arguments.
      */
-    SVGElement.prototype.crisp = function (rect, strokeWidth) {
-        var wrapper = this;
+    crisp(rect, strokeWidth) {
+        const wrapper = this;
         strokeWidth = strokeWidth || rect.strokeWidth || 0;
         // Math.round because strokeWidth can sometimes have roundoff errors
-        var normalizer = Math.round(strokeWidth) % 2 / 2;
+        const normalizer = Math.round(strokeWidth) % 2 / 2;
         // normalize for crisp edges
         rect.x = Math.floor(rect.x || wrapper.x || 0) + normalizer;
         rect.y = Math.floor(rect.y || wrapper.y || 0) + normalizer;
@@ -600,7 +577,7 @@ var SVGElement = /** @class */ (function () {
             rect.strokeWidth = strokeWidth;
         }
         return rect;
-    };
+    }
     /**
      * Build and apply an SVG gradient out of a common JavaScript configuration
      * object. This function is called from the attribute setters. An event
@@ -618,9 +595,9 @@ var SVGElement = /** @class */ (function () {
      * @param {Highcharts.SVGDOMElement} elem
      * SVG element to apply the gradient on.
      */
-    SVGElement.prototype.complexColor = function (colorOptions, prop, elem) {
-        var renderer = this.renderer;
-        var colorObject, gradName, gradAttr, radAttr, gradients, stops, stopColor, stopOpacity, radialReference, id, key = [], value;
+    complexColor(colorOptions, prop, elem) {
+        const renderer = this.renderer;
+        let colorObject, gradName, gradAttr, radAttr, gradients, stops, stopColor, stopOpacity, radialReference, id, key = [], value;
         fireEvent(this.renderer, 'complexColor', {
             args: arguments
         }, function () {
@@ -673,14 +650,14 @@ var SVGElement = /** @class */ (function () {
                 else {
                     // Set the id and create the element
                     gradAttr.id = id = uniqueKey();
-                    var gradientObject_1 = gradients[key] =
+                    const gradientObject = gradients[key] =
                         renderer.createElement(gradName)
                             .attr(gradAttr)
                             .add(renderer.defs);
-                    gradientObject_1.radAttr = radAttr;
+                    gradientObject.radAttr = radAttr;
                     // The gradient needs to keep a list of stops to be able to
                     // destroy them
-                    gradientObject_1.stops = [];
+                    gradientObject.stops = [];
                     stops.forEach(function (stop) {
                         if (stop[1].indexOf('rgba') === 0) {
                             colorObject = Color.parse(stop[1]);
@@ -691,13 +668,13 @@ var SVGElement = /** @class */ (function () {
                             stopColor = stop[1];
                             stopOpacity = 1;
                         }
-                        var stopObject = renderer.createElement('stop').attr({
+                        const stopObject = renderer.createElement('stop').attr({
                             offset: stop[0],
                             'stop-color': stopColor,
                             'stop-opacity': stopOpacity
-                        }).add(gradientObject_1);
+                        }).add(gradientObject);
                         // Add the stop element to the gradient
-                        gradientObject_1.stops.push(stopObject);
+                        gradientObject.stops.push(stopObject);
                     });
                 }
                 // Set the reference to the gradient object
@@ -711,7 +688,7 @@ var SVGElement = /** @class */ (function () {
                 };
             }
         });
-    };
+    }
     /**
      * Set styles for the element. In addition to CSS styles supported by
      * native SVG and HTML elements, there are also some custom made for
@@ -729,9 +706,9 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         Return the SVG element for chaining.
      */
-    SVGElement.prototype.css = function (styles) {
-        var oldStyles = this.styles, newStyles = {}, elem = this.element;
-        var textWidth, hasNew = !oldStyles;
+    css(styles) {
+        const oldStyles = this.styles, newStyles = {}, elem = this.element;
+        let textWidth, hasNew = !oldStyles;
         // convert legacy
         if (styles.color) {
             styles.fill = styles.color;
@@ -765,37 +742,37 @@ var SVGElement = /** @class */ (function () {
             if (textWidth && (!svg && this.renderer.forExport)) {
                 delete styles.width;
             }
-            var stylesToApply_1 = merge(styles);
+            const stylesToApply = merge(styles);
             if (elem.namespaceURI === this.SVG_NS) {
                 // These CSS properties are interpreted internally by the SVG
                 // renderer, but are not supported by SVG and should not be
                 // added to the DOM. In styled mode, no CSS should find its way
                 // to the DOM whatsoever (#6173, #6474).
-                ['textOutline', 'textOverflow', 'width'].forEach(function (key) { return (stylesToApply_1 &&
-                    delete stylesToApply_1[key]); });
+                ['textOutline', 'textOverflow', 'width'].forEach((key) => (stylesToApply &&
+                    delete stylesToApply[key]));
             }
-            css(elem, stylesToApply_1);
-            if (this.added) {
-                // Rebuild text after added. Cache mechanisms in the buildText
-                // will prevent building if there are no significant changes.
-                if (this.element.nodeName === 'text') {
-                    this.renderer.buildText(this);
-                }
-                // Apply text outline after added
-                if (styles.textOutline) {
-                    this.applyTextOutline(styles.textOutline);
-                }
+            css(elem, stylesToApply);
+        }
+        if (this.added) {
+            // Rebuild text after added. Cache mechanisms in the buildText will
+            // prevent building if there are no significant changes.
+            if (this.element.nodeName === 'text') {
+                this.renderer.buildText(this);
+            }
+            // Apply text outline after added
+            if (styles.textOutline) {
+                this.applyTextOutline(styles.textOutline);
             }
         }
         return this;
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#dashstyleSetter
      * @param {string} value
      */
-    SVGElement.prototype.dashstyleSetter = function (value) {
-        var i, strokeWidth = this['stroke-width'];
+    dashstyleSetter(value) {
+        let i, strokeWidth = this['stroke-width'];
         // If "inherit", like maps in IE, assume 1 (#4981). With HC5 and the new
         // strokeWidth function, we should be able to use that instead.
         if (strokeWidth === 'inherit') {
@@ -803,7 +780,7 @@ var SVGElement = /** @class */ (function () {
         }
         value = value && value.toLowerCase();
         if (value) {
-            var v = value
+            const v = value
                 .replace('shortdashdotdot', '3,1,1,1,1,1,')
                 .replace('shortdashdot', '3,1,1,1')
                 .replace('shortdot', '1,1,')
@@ -820,17 +797,16 @@ var SVGElement = /** @class */ (function () {
             value = v.join(',').replace(/NaN/g, 'none'); // #3226
             this.element.setAttribute('stroke-dasharray', value);
         }
-    };
+    }
     /**
      * Destroy the element and element wrapper and clear up the DOM and event
      * hooks.
      *
      * @function Highcharts.SVGElement#destroy
      */
-    SVGElement.prototype.destroy = function () {
-        var wrapper = this, element = wrapper.element || {}, renderer = wrapper.renderer, ownerSVGElement = element.ownerSVGElement;
-        var parentToClean = (renderer.isSVG &&
-            element.nodeName === 'SPAN' &&
+    destroy() {
+        const wrapper = this, element = wrapper.element || {}, renderer = wrapper.renderer, ownerSVGElement = element.ownerSVGElement;
+        let parentToClean = (element.nodeName === 'SPAN' &&
             wrapper.parentGroup ||
             void 0), grandParent, i;
         // remove events
@@ -838,16 +814,16 @@ var SVGElement = /** @class */ (function () {
             element.onmousemove = element.point = null;
         stop(wrapper); // stop running animations
         if (wrapper.clipPath && ownerSVGElement) {
-            var clipPath_1 = wrapper.clipPath;
+            const clipPath = wrapper.clipPath;
             // Look for existing references to this clipPath and remove them
             // before destroying the element (#6196).
             // The upper case version is for Edge
             [].forEach.call(ownerSVGElement.querySelectorAll('[clip-path],[CLIP-PATH]'), function (el) {
-                if (el.getAttribute('clip-path').indexOf(clipPath_1.element.id) > -1) {
+                if (el.getAttribute('clip-path').indexOf(clipPath.element.id) > -1) {
                     el.removeAttribute('clip-path');
                 }
             });
-            wrapper.clipPath = clipPath_1.destroy();
+            wrapper.clipPath = clipPath.destroy();
         }
         // Destroy stops in case this is a gradient object @todo old code?
         if (wrapper.stops) {
@@ -859,9 +835,6 @@ var SVGElement = /** @class */ (function () {
         }
         // remove element
         wrapper.safeRemoveChild(element);
-        if (!renderer.styledMode) {
-            wrapper.destroyShadows();
-        }
         // In case of useHTML, clean up empty containers emulating SVG groups
         // (#1960, #2393, #2697).
         while (parentToClean &&
@@ -887,20 +860,7 @@ var SVGElement = /** @class */ (function () {
             delete wrapper[key];
         });
         return;
-    };
-    /**
-     * Destroy shadows on the element.
-     *
-     * @private
-     * @function Highcharts.SVGElement#destroyShadows
-     *
-     */
-    SVGElement.prototype.destroyShadows = function () {
-        (this.shadows || []).forEach(function (shadow) {
-            this.safeRemoveChild(shadow);
-        }, this);
-        this.shadows = void 0;
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#dSettter
@@ -908,7 +868,7 @@ var SVGElement = /** @class */ (function () {
      * @param {string} key
      * @param {Highcharts.SVGDOMElement} element
      */
-    SVGElement.prototype.dSetter = function (value, key, element) {
+    dSetter(value, key, element) {
         if (isArray(value)) {
             // Backwards compatibility, convert one-dimensional array into an
             // array of segments
@@ -916,7 +876,7 @@ var SVGElement = /** @class */ (function () {
                 value = this.renderer.pathToSegments(value);
             }
             this.pathArray = value;
-            value = value.reduce(function (acc, seg, i) {
+            value = value.reduce((acc, seg, i) => {
                 if (!seg || !seg.join) {
                     return (seg || '').toString();
                 }
@@ -933,7 +893,7 @@ var SVGElement = /** @class */ (function () {
             element.setAttribute(key, value);
             this[key] = value;
         }
-    };
+    }
     /**
      * Fade out an element by animating its opacity down to 0, and hide it on
      * complete. Used internally for the tooltip.
@@ -943,8 +903,8 @@ var SVGElement = /** @class */ (function () {
      * @param {number} [duration=150]
      * The fade duration in milliseconds.
      */
-    SVGElement.prototype.fadeOut = function (duration) {
-        var elemWrapper = this;
+    fadeOut(duration) {
+        const elemWrapper = this;
         elemWrapper.animate({
             opacity: 0
         }, {
@@ -954,7 +914,7 @@ var SVGElement = /** @class */ (function () {
                 elemWrapper.hide();
             }
         });
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#fillSetter
@@ -962,14 +922,14 @@ var SVGElement = /** @class */ (function () {
      * @param {string} key
      * @param {Highcharts.SVGDOMElement} element
      */
-    SVGElement.prototype.fillSetter = function (value, key, element) {
+    fillSetter(value, key, element) {
         if (typeof value === 'string') {
             element.setAttribute(key, value);
         }
         else if (value) {
             this.complexColor(value, key, element);
         }
-    };
+    }
     /**
      * Get the bounding box (width, height, x and y) for the element. Generally
      * used to get rendered text size. Since this is called a lot in charts,
@@ -994,10 +954,10 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.BBoxObject}
      *         The bounding box with `x`, `y`, `width` and `height` properties.
      */
-    SVGElement.prototype.getBBox = function (reload, rot) {
-        var wrapper = this, alignValue = wrapper.alignValue, element = wrapper.element, renderer = wrapper.renderer, styles = wrapper.styles, textStr = wrapper.textStr, cache = renderer.cache, cacheKeys = renderer.cacheKeys, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
+    getBBox(reload, rot) {
+        const wrapper = this, { alignValue, element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
             SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles && styles.fontSize);
-        var bBox, width, height, toggleTextShadowShim, cacheKey;
+        let bBox, width, height, toggleTextShadowShim, cacheKey;
         // Avoid undefined and null (#7316)
         if (defined(textStr)) {
             cacheKey = textStr.toString();
@@ -1011,8 +971,9 @@ var SVGElement = /** @class */ (function () {
             // Properties that affect bounding box
             cacheKey += [
                 '',
-                rotation,
+                renderer.rootFontSize,
                 fontSize,
+                rotation,
                 wrapper.textWidth,
                 alignValue,
                 styles && styles.textOverflow,
@@ -1030,9 +991,9 @@ var SVGElement = /** @class */ (function () {
                     // When the text shadow shim is used, we need to hide the
                     // fake shadows to get the correct bounding box (#3872)
                     toggleTextShadowShim = this.fakeTS && function (display) {
-                        var outline = element.querySelector('.highcharts-text-outline');
+                        const outline = element.querySelector('.highcharts-text-outline');
                         if (outline) {
-                            css(outline, { display: display });
+                            css(outline, { display });
                         }
                     };
                     // Workaround for #3842, Firefox reporting wrong bounding
@@ -1065,64 +1026,62 @@ var SVGElement = /** @class */ (function () {
                 if (!bBox || bBox.width < 0) {
                     bBox = { x: 0, y: 0, width: 0, height: 0 };
                 }
-                // VML Renderer or useHTML within SVG
+                // useHTML within SVG
             }
             else {
                 bBox = wrapper.htmlGetBBox();
             }
             // True SVG elements as well as HTML elements in modern browsers
             // using the .useHTML option need to compensated for rotation
-            if (renderer.isSVG) {
-                width = bBox.width;
-                height = bBox.height;
-                // Workaround for wrong bounding box in IE, Edge and Chrome on
-                // Windows. With Highcharts' default font, IE and Edge report
-                // a box height of 16.899 and Chrome rounds it to 17. If this
-                // stands uncorrected, it results in more padding added below
-                // the text than above when adding a label border or background.
-                // Also vertical positioning is affected.
-                // https://jsfiddle.net/highcharts/em37nvuj/
-                // (#1101, #1505, #1669, #2568, #6213).
-                if (isSVG) {
-                    bBox.height = height = ({
-                        '11px,17': 14,
-                        '13px,20': 16
-                    }["".concat(fontSize || '', ",").concat(Math.round(height))] ||
-                        height);
-                }
-                // Adjust for rotated text
-                if (rotation) {
-                    var baseline = Number(element.getAttribute('y') || 0) - bBox.y, alignFactor = {
-                        'right': 1,
-                        'center': 0.5
-                    }[alignValue || 0] || 0, rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, wCosRad = width * Math.cos(rad), wSinRad = width * Math.sin(rad), cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), 
-                    // Find the starting point on the left side baseline of
-                    // the text
-                    pX = bBox.x + alignFactor * (width - wCosRad), pY = bBox.y + baseline - alignFactor * wSinRad, 
-                    // Find all corners
-                    aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
-                    // Deduct the bounding box from the corners
-                    bBox.x = Math.min(aX, bX, cX, dX);
-                    bBox.y = Math.min(aY, bY, cY, dY);
-                    bBox.width = Math.max(aX, bX, cX, dX) - bBox.x;
-                    bBox.height = Math.max(aY, bY, cY, dY) - bBox.y;
-                }
+            width = bBox.width;
+            height = bBox.height;
+            // Workaround for wrong bounding box in IE, Edge and Chrome on
+            // Windows. With Highcharts' default font, IE and Edge report
+            // a box height of 16.899 and Chrome rounds it to 17. If this
+            // stands uncorrected, it results in more padding added below
+            // the text than above when adding a label border or background.
+            // Also vertical positioning is affected.
+            // https://jsfiddle.net/highcharts/em37nvuj/
+            // (#1101, #1505, #1669, #2568, #6213).
+            if (isSVG) {
+                bBox.height = height = ({
+                    '11px,17': 14,
+                    '13px,20': 16
+                }[`${fontSize || ''},${Math.round(height)}`] ||
+                    height);
             }
-            // Cache it. When loading a chart in a hidden iframe in Firefox and
-            // IE/Edge, the bounding box height is 0, so don't cache it (#5620).
-            if (cacheKey && (textStr === '' || bBox.height > 0)) {
-                // Rotate (#4681)
-                while (cacheKeys.length > 250) {
-                    delete cache[cacheKeys.shift()];
-                }
-                if (!cache[cacheKey]) {
-                    cacheKeys.push(cacheKey);
-                }
-                cache[cacheKey] = bBox;
+            // Adjust for rotated text
+            if (rotation) {
+                const baseline = Number(element.getAttribute('y') || 0) - bBox.y, alignFactor = {
+                    'right': 1,
+                    'center': 0.5
+                }[alignValue || 0] || 0, rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, wCosRad = width * Math.cos(rad), wSinRad = width * Math.sin(rad), cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), 
+                // Find the starting point on the left side baseline of
+                // the text
+                pX = bBox.x + alignFactor * (width - wCosRad), pY = bBox.y + baseline - alignFactor * wSinRad, 
+                // Find all corners
+                aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
+                // Deduct the bounding box from the corners
+                bBox.x = Math.min(aX, bX, cX, dX);
+                bBox.y = Math.min(aY, bY, cY, dY);
+                bBox.width = Math.max(aX, bX, cX, dX) - bBox.x;
+                bBox.height = Math.max(aY, bY, cY, dY) - bBox.y;
             }
         }
+        // Cache it. When loading a chart in a hidden iframe in Firefox and
+        // IE/Edge, the bounding box height is 0, so don't cache it (#5620).
+        if (cacheKey && (textStr === '' || bBox.height > 0)) {
+            // Rotate (#4681)
+            while (cacheKeys.length > 250) {
+                delete cache[cacheKeys.shift()];
+            }
+            if (!cache[cacheKey]) {
+                cacheKeys.push(cacheKey);
+            }
+            cache[cacheKey] = bBox;
+        }
         return bBox;
-    };
+    }
     /**
      * Get the computed style. Only in styled mode.
      *
@@ -1137,11 +1096,11 @@ var SVGElement = /** @class */ (function () {
      * @return {string}
      *         The current computed value.
      */
-    SVGElement.prototype.getStyle = function (prop) {
+    getStyle(prop) {
         return win
             .getComputedStyle(this.element || this, '')
             .getPropertyValue(prop);
-    };
+    }
     /**
      * Check if an element has the given class name.
      *
@@ -1153,11 +1112,11 @@ var SVGElement = /** @class */ (function () {
      * @return {boolean}
      * Whether the class name is found.
      */
-    SVGElement.prototype.hasClass = function (className) {
+    hasClass(className) {
         return ('' + this.attr('class'))
             .split(' ')
             .indexOf(className) !== -1;
-    };
+    }
     /**
      * Hide the element, similar to setting the `visibility` attribute to
      * `hidden`.
@@ -1167,15 +1126,15 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.hide = function () {
+    hide() {
         return this.attr({ visibility: 'hidden' });
-    };
+    }
     /**
      * @private
      */
-    SVGElement.prototype.htmlGetBBox = function () {
+    htmlGetBBox() {
         return { height: 0, width: 0, x: 0, y: 0 };
-    };
+    }
     /**
      * Initialize the SVG element. This function only exists to make the
      * initialization process overridable. It should not be called directly.
@@ -1188,7 +1147,7 @@ var SVGElement = /** @class */ (function () {
      * @param {string} nodeName
      * The SVG node name.
      */
-    SVGElement.prototype.init = function (renderer, nodeName) {
+    init(renderer, nodeName) {
         /**
          * The primary DOM node. Each `SVGElement` instance wraps a main DOM
          * node, but may also represent more nodes.
@@ -1207,7 +1166,7 @@ var SVGElement = /** @class */ (function () {
          */
         this.renderer = renderer;
         fireEvent(this, 'afterInit');
-    };
+    }
     /**
      * Add an event listener. This is a simple setter that replaces the
      * previous event of the same type added by this function, as opposed to
@@ -1227,15 +1186,15 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * The SVGElement for chaining.
      */
-    SVGElement.prototype.on = function (eventType, handler) {
-        var onEvents = this.onEvents;
+    on(eventType, handler) {
+        const { onEvents } = this;
         if (onEvents[eventType]) {
             // Unbind existing event
             onEvents[eventType]();
         }
         onEvents[eventType] = addEvent(this.element, eventType, handler);
         return this;
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#opacitySetter
@@ -1243,13 +1202,13 @@ var SVGElement = /** @class */ (function () {
      * @param {string} key
      * @param {Highcharts.SVGDOMElement} element
      */
-    SVGElement.prototype.opacitySetter = function (value, key, element) {
+    opacitySetter(value, key, element) {
         // Round off to avoid float errors, like tests where opacity lands on
         // 9.86957e-06 instead of 0
-        var opacity = Number(Number(value).toFixed(3));
+        const opacity = Number(Number(value).toFixed(3));
         this.opacity = opacity;
         element.setAttribute(key, opacity);
-    };
+    }
     /**
      * Remove a class name from the element.
      *
@@ -1260,25 +1219,25 @@ var SVGElement = /** @class */ (function () {
      *
      * @return {Highcharts.SVGElement} Returns the SVG element for chainability.
      */
-    SVGElement.prototype.removeClass = function (className) {
+    removeClass(className) {
         return this.attr('class', ('' + this.attr('class'))
             .replace(isString(className) ?
-            new RegExp("(^| )".concat(className, "( |$)")) : // #12064, #13590
+            new RegExp(`(^| )${className}( |$)`) : // #12064, #13590
             className, ' ')
             .replace(/ +/g, ' ')
             .trim());
-    };
+    }
     /**
      *
      * @private
      */
-    SVGElement.prototype.removeTextOutline = function () {
-        var outline = this.element
+    removeTextOutline() {
+        const outline = this.element
             .querySelector('tspan.highcharts-text-outline');
         if (outline) {
             this.safeRemoveChild(outline);
         }
-    };
+    }
     /**
      * Removes an element from the DOM.
      *
@@ -1288,12 +1247,12 @@ var SVGElement = /** @class */ (function () {
      * @param {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement} element
      * The DOM node to remove.
      */
-    SVGElement.prototype.safeRemoveChild = function (element) {
-        var parentNode = element.parentNode;
+    safeRemoveChild(element) {
+        const parentNode = element.parentNode;
         if (parentNode) {
             parentNode.removeChild(element);
         }
-    };
+    }
     /**
      * Set the coordinates needed to draw a consistent radial gradient across
      * a shape regardless of positioning inside the chart. Used on pie slices
@@ -1308,8 +1267,8 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.setRadialReference = function (coordinates) {
-        var existingGradient = (this.element.gradient &&
+    setRadialReference(coordinates) {
+        const existingGradient = (this.element.gradient &&
             this.renderer.gradients[this.element.gradient]);
         this.element.radialReference = coordinates;
         // On redrawing objects with an existing gradient, the gradient needs
@@ -1318,7 +1277,7 @@ var SVGElement = /** @class */ (function () {
             existingGradient.animate(this.renderer.getRadialAttr(coordinates, existingGradient.radAttr));
         }
         return this;
-    };
+    }
     /**
      * Set a text path for a `text` or `label` element, allowing the text to
      * flow along a path.
@@ -1339,8 +1298,7 @@ var SVGElement = /** @class */ (function () {
      *
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.setTextPath = function (path, textPathOptions) {
-        var _this = this;
+    setTextPath(path, textPathOptions) {
         // Defaults
         textPathOptions = merge(true, {
             enabled: true,
@@ -1350,22 +1308,22 @@ var SVGElement = /** @class */ (function () {
                 textAnchor: 'middle'
             }
         }, textPathOptions);
-        var url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, attributes = textPathOptions.attributes, enabled = textPathOptions.enabled;
+        const url = this.renderer.url, textWrapper = this.text || this, textPath = textWrapper.textPath, { attributes, enabled } = textPathOptions;
         path = path || (textPath && textPath.path);
         // Remove previously added event
         if (textPath) {
             textPath.undo();
         }
         if (path && enabled) {
-            var undo = addEvent(textWrapper, 'afterModifyTree', function (e) {
+            const undo = addEvent(textWrapper, 'afterModifyTree', (e) => {
                 if (path && enabled) {
                     // Set ID for the path
-                    var textPathId = path.attr('id');
+                    let textPathId = path.attr('id');
                     if (!textPathId) {
                         path.attr('id', textPathId = uniqueKey());
                     }
                     // Set attributes for the <text>
-                    var textAttribs = {
+                    const textAttribs = {
                         // dx/dy options must by set on <text> (parent), the
                         // rest should be set on <textPath>
                         x: 0,
@@ -1381,25 +1339,25 @@ var SVGElement = /** @class */ (function () {
                     }
                     textWrapper.attr(textAttribs);
                     // Handle label properties
-                    _this.attr({ transform: '' });
-                    if (_this.box) {
-                        _this.box = _this.box.destroy();
+                    this.attr({ transform: '' });
+                    if (this.box) {
+                        this.box = this.box.destroy();
                     }
                     // Wrap the nodes in a textPath
-                    var children = e.nodes.slice(0);
+                    const children = e.nodes.slice(0);
                     e.nodes.length = 0;
                     e.nodes[0] = {
                         tagName: 'textPath',
                         attributes: extend(attributes, {
                             'text-anchor': attributes.textAnchor,
-                            href: "".concat(url, "#").concat(textPathId)
+                            href: `${url}#${textPathId}`
                         }),
-                        children: children
+                        children
                     };
                 }
             });
             // Set the reference
-            textWrapper.textPath = { path: path, undo: undo };
+            textWrapper.textPath = { path, undo };
         }
         else {
             textWrapper.attr({ dx: 0, dy: 0 });
@@ -1411,11 +1369,10 @@ var SVGElement = /** @class */ (function () {
             this.renderer.buildText(textWrapper);
         }
         return this;
-    };
+    }
     /**
-     * Add a shadow to the element. Must be called after the element is added to
-     * the DOM. In styled mode, this method is not used, instead use `defs` and
-     * filters.
+     * Add a shadow to the element. In styled mode, this method is not used,
+     * instead use `defs` and filters.
      *
      * @example
      * renderer.rect(10, 100, 100, 100)
@@ -1424,90 +1381,24 @@ var SVGElement = /** @class */ (function () {
      *
      * @function Highcharts.SVGElement#shadow
      *
-     * @param {boolean|Highcharts.ShadowOptionsObject} [shadowOptions]
-     *        The shadow options. If `true`, the default options are applied. If
+     * @param {boolean|Highcharts.ShadowOptionsObject} [shadowOptions] The
+     *        shadow options. If `true`, the default options are applied. If
      *        `false`, the current shadow will be removed.
      *
-     * @param {Highcharts.SVGElement} [group]
-     *        The SVG group element where the shadows will be applied. The
-     *        default is to add it to the same parent as the current element.
-     *        Internally, this is ised for pie slices, where all the shadows are
-     *        added to an element behind all the slices.
-     *
-     * @param {boolean} [cutOff]
-     *        Used internally for column shadows.
-     *
-     * @return {Highcharts.SVGElement}
-     *         Returns the SVGElement for chaining.
+     * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.shadow = function (shadowOptions, group, cutOff) {
-        var shadows = [], _a = this, element = _a.element, oldShadowOptions = _a.oldShadowOptions, parentGroup = _a.parentGroup, parentInverted = parentGroup && parentGroup.rotation === 90, defaultShadowOptions = {
-            color: "#000000" /* Palette.neutralColor100 */,
-            offsetX: parentInverted ? -1 : 1,
-            offsetY: parentInverted ? -1 : 1,
-            opacity: 0.15,
-            width: 3
-        };
-        var i, shadow, strokeWidth, shadowElementOpacity, update = false, 
-        // compensate for inverted plot area
-        transform, options;
-        if (shadowOptions === true) {
-            options = defaultShadowOptions;
-        }
-        else if (typeof shadowOptions === 'object') {
-            options = extend(defaultShadowOptions, shadowOptions);
-        }
-        // Update shadow when options change (#12091).
-        if (options) {
-            // Go over each key to look for change
-            if (options && oldShadowOptions) {
-                objectEach(options, function (value, key) {
-                    if (value !== oldShadowOptions[key]) {
-                        update = true;
-                    }
-                });
-            }
-            if (update) {
-                this.destroyShadows();
-            }
-            this.oldShadowOptions = options;
-        }
-        if (!options) {
-            this.destroyShadows();
-        }
-        else if (!this.shadows) {
-            shadowElementOpacity = options.opacity / options.width;
-            transform = parentInverted ?
-                "translate(".concat(options.offsetY, ", ").concat(options.offsetX, ")") :
-                "translate(".concat(options.offsetX, ", ").concat(options.offsetY, ")");
-            for (i = 1; i <= options.width; i++) {
-                shadow = element.cloneNode(false);
-                strokeWidth = (options.width * 2) + 1 - (2 * i);
-                attr(shadow, {
-                    stroke: (shadowOptions.color ||
-                        "#000000" /* Palette.neutralColor100 */),
-                    'stroke-opacity': shadowElementOpacity * i,
-                    'stroke-width': strokeWidth,
-                    transform: transform,
-                    fill: 'none'
-                });
-                shadow.setAttribute('class', (shadow.getAttribute('class') || '') + ' highcharts-shadow');
-                if (cutOff) {
-                    attr(shadow, 'height', Math.max(attr(shadow, 'height') - strokeWidth, 0));
-                    shadow.cutHeight = strokeWidth;
-                }
-                if (group) {
-                    group.element.appendChild(shadow);
-                }
-                else if (element.parentNode) {
-                    element.parentNode.insertBefore(shadow, element);
-                }
-                shadows.push(shadow);
-            }
-            this.shadows = shadows;
-        }
-        return this;
-    };
+    shadow(shadowOptions) {
+        var _a;
+        const { renderer } = this, options = merge(((_a = this.parentGroup) === null || _a === void 0 ? void 0 : _a.rotation) === 90 ? {
+            offsetX: -1,
+            offsetY: -1
+        } : {}, isObject(shadowOptions) ? shadowOptions : {}), id = renderer.shadowDefinition(options);
+        return this.attr({
+            filter: shadowOptions ?
+                `url(${renderer.url}#${id})` :
+                'none'
+        });
+    }
     /**
      * Show the element after it has been hidden.
      *
@@ -1521,10 +1412,9 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.show = function (inherit) {
-        if (inherit === void 0) { inherit = true; }
+    show(inherit = true) {
         return this.attr({ visibility: inherit ? 'inherit' : 'visible' });
-    };
+    }
     /**
      * Set the stroke-width and record it on the SVGElement
      *
@@ -1534,11 +1424,11 @@ var SVGElement = /** @class */ (function () {
      * @param {string} key
      * @param {Highcharts.SVGDOMElement} element
      */
-    SVGElement.prototype['stroke-widthSetter'] = function (value, key, element) {
+    'stroke-widthSetter'(value, key, element) {
         // Record it for quick access in getter
         this[key] = value;
         element.setAttribute(key, value);
-    };
+    }
     /**
      * Get the computed stroke width in pixel values. This is used extensively
      * when drawing shapes to ensure the shapes are rendered crisp and
@@ -1560,14 +1450,14 @@ var SVGElement = /** @class */ (function () {
      * The stroke width in pixels. Even if the given stroke widtch (in CSS or by
      * attributes) is based on `em` or other units, the pixel size is returned.
      */
-    SVGElement.prototype.strokeWidth = function () {
+    strokeWidth() {
         // In non-styled mode, read the stroke width as set by .attr
         if (!this.renderer.styledMode) {
             return this['stroke-width'] || 0;
         }
         // In styled mode, read computed stroke width
-        var val = this.getStyle('stroke-width');
-        var ret = 0, dummy;
+        const val = this.getStyle('stroke-width');
+        let ret = 0, dummy;
         // Read pixel values directly
         if (val.indexOf('px') === val.length - 2) {
             ret = pInt(val);
@@ -1584,7 +1474,7 @@ var SVGElement = /** @class */ (function () {
             dummy.parentNode.removeChild(dummy);
         }
         return ret;
-    };
+    }
     /**
      * If one of the symbol size affecting parameters are changed,
      * check all the others only once for each call to an element's
@@ -1596,33 +1486,21 @@ var SVGElement = /** @class */ (function () {
      * @param {Highcharts.SVGAttributes} hash
      * The attributes to set.
      */
-    SVGElement.prototype.symbolAttr = function (hash) {
-        var wrapper = this;
-        [
-            'x',
-            'y',
-            'r',
-            'start',
-            'end',
-            'width',
-            'height',
-            'innerR',
-            'anchorX',
-            'anchorY',
-            'clockwise'
-        ].forEach(function (key) {
+    symbolAttr(hash) {
+        const wrapper = this;
+        SVGElement.symbolCustomAttribs.forEach(function (key) {
             wrapper[key] = pick(hash[key], wrapper[key]);
         });
         wrapper.attr({
             d: wrapper.renderer.symbols[wrapper.symbolName](wrapper.x, wrapper.y, wrapper.width, wrapper.height, wrapper)
         });
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#textSetter
      * @param {string} value
      */
-    SVGElement.prototype.textSetter = function (value) {
+    textSetter(value) {
         if (value !== this.textStr) {
             // Delete size caches when the text changes
             // delete this.bBox; // old code in series-label
@@ -1632,15 +1510,15 @@ var SVGElement = /** @class */ (function () {
                 this.renderer.buildText(this);
             }
         }
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#titleSetter
      * @param {string} value
      */
-    SVGElement.prototype.titleSetter = function (value) {
-        var el = this.element;
-        var titleNode = el.getElementsByTagName('title')[0] ||
+    titleSetter(value) {
+        const el = this.element;
+        const titleNode = el.getElementsByTagName('title')[0] ||
             doc.createElementNS(this.SVG_NS, 'title');
         // Move to first child
         if (el.insertBefore) {
@@ -1656,7 +1534,7 @@ var SVGElement = /** @class */ (function () {
                 .replace(/<[^>]*>/g, '')
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>');
-    };
+    }
     /**
      * Bring the element to the front. Alternatively, a new zIndex can be set.
      *
@@ -1668,11 +1546,11 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.toFront = function () {
-        var element = this.element;
+    toFront() {
+        const element = this.element;
         element.parentNode.appendChild(element);
         return this;
-    };
+    }
     /**
      * Move an object and its children by x and y values.
      *
@@ -1687,38 +1565,12 @@ var SVGElement = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * Translated element.
      */
-    SVGElement.prototype.translate = function (x, y) {
+    translate(x, y) {
         return this.attr({
             translateX: x,
             translateY: y
         });
-    };
-    /**
-     * Update the shadow elements with new attributes.
-     *
-     * @private
-     * @function Highcharts.SVGElement#updateShadows
-     *
-     * @param {string} key
-     * The attribute name.
-     *
-     * @param {number} value
-     * The value of the attribute.
-     *
-     * @param {Function} setter
-     * The setter function, inherited from the parent wrapper.
-     */
-    SVGElement.prototype.updateShadows = function (key, value, setter) {
-        var shadows = this.shadows;
-        if (shadows) {
-            var i = shadows.length;
-            while (i--) {
-                setter.call(shadows[i], key === 'height' ?
-                    Math.max(value - (shadows[i].cutHeight || 0), 0) :
-                    key === 'd' ? this.d : value, key, shadows[i]);
-            }
-        }
-    };
+    }
     /**
      * Update the transform attribute based on internal properties. Deals with
      * the custom `translateX`, `translateY`, `rotation`, `scaleX` and `scaleY`
@@ -1727,12 +1579,12 @@ var SVGElement = /** @class */ (function () {
      * @private
      * @function Highcharts.SVGElement#updateTransform
      */
-    SVGElement.prototype.updateTransform = function () {
-        var _a = this, element = _a.element, matrix = _a.matrix, _b = _a.rotation, rotation = _b === void 0 ? 0 : _b, scaleX = _a.scaleX, scaleY = _a.scaleY, _c = _a.translateX, translateX = _c === void 0 ? 0 : _c, _d = _a.translateY, translateY = _d === void 0 ? 0 : _d;
+    updateTransform() {
+        const { element, matrix, rotation = 0, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
-        var transform = ['translate(' + translateX + ',' + translateY + ')'];
+        const transform = ['translate(' + translateX + ',' + translateY + ')'];
         // apply matrix
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
@@ -1751,7 +1603,7 @@ var SVGElement = /** @class */ (function () {
         if (transform.length && !(this.text || this).textPath) {
             element.setAttribute('transform', transform.join(' '));
         }
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#visibilitySetter
@@ -1763,7 +1615,7 @@ var SVGElement = /** @class */ (function () {
      * @param {Highcharts.SVGDOMElement} element
      *
      */
-    SVGElement.prototype.visibilitySetter = function (value, key, element) {
+    visibilitySetter(value, key, element) {
         // IE9-11 doesn't handle visibilty:inherit well, so we remove the
         // attribute instead (#2881, #3909)
         if (value === 'inherit') {
@@ -1773,12 +1625,12 @@ var SVGElement = /** @class */ (function () {
             element.setAttribute(key, value);
         }
         this[key] = value;
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#xGetter
      */
-    SVGElement.prototype.xGetter = function (key) {
+    xGetter(key) {
         if (this.element.nodeName === 'circle') {
             if (key === 'x') {
                 key = 'cx';
@@ -1788,14 +1640,14 @@ var SVGElement = /** @class */ (function () {
             }
         }
         return this._defaultGetter(key);
-    };
+    }
     /**
      * @private
      * @function Highcharts.SVGElement#zIndexSetter
      */
-    SVGElement.prototype.zIndexSetter = function (value, key) {
-        var renderer = this.renderer, parentGroup = this.parentGroup, parentWrapper = parentGroup || renderer, parentNode = parentWrapper.element || renderer.box, element = this.element, svgParent = parentNode === renderer.box;
-        var childNodes, otherElement, otherZIndex, inserted = false, undefinedOtherZIndex, run = this.added, i;
+    zIndexSetter(value, key) {
+        const renderer = this.renderer, parentGroup = this.parentGroup, parentWrapper = parentGroup || renderer, parentNode = parentWrapper.element || renderer.box, element = this.element, svgParent = parentNode === renderer.box;
+        let childNodes, otherElement, otherZIndex, inserted = false, undefinedOtherZIndex, run = this.added, i;
         if (defined(value)) {
             // So we can read it for other elements in the group
             element.setAttribute('data-z-index', value);
@@ -1842,22 +1694,34 @@ var SVGElement = /** @class */ (function () {
                         // zIndex element
                         (undefinedOtherZIndex &&
                             (!defined(value) || value >= 0))) {
-                        parentNode.insertBefore(element, childNodes[i + 1] || null // null for oldIE export
-                        );
+                        parentNode.insertBefore(element, childNodes[i + 1]);
                         inserted = true;
                     }
                 }
             }
             if (!inserted) {
-                parentNode.insertBefore(element, childNodes[svgParent ? 3 : 0] || null // null for oldIE
-                );
+                parentNode.insertBefore(element, childNodes[svgParent ? 3 : 0]);
                 inserted = true;
             }
         }
         return inserted;
-    };
-    return SVGElement;
-}());
+    }
+}
+// Custom attributes used for symbols, these should be filtered out when
+// setting SVGElement attributes (#9375).
+SVGElement.symbolCustomAttribs = [
+    'anchorX',
+    'anchorY',
+    'clockwise',
+    'end',
+    'height',
+    'innerR',
+    'r',
+    'start',
+    'width',
+    'x',
+    'y'
+];
 // Some shared setters and getters
 SVGElement.prototype.strokeSetter = SVGElement.prototype.fillSetter;
 SVGElement.prototype.yGetter = SVGElement.prototype.xGetter;

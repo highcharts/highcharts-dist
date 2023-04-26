@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -47,7 +47,8 @@
          *
          * */
         var columnProto = SeriesRegistry.seriesTypes.column.prototype;
-        var addEvent = U.addEvent, defined = U.defined;
+        var addEvent = U.addEvent,
+            defined = U.defined;
         /* *
          *
          *  Composition
@@ -60,7 +61,7 @@
              *  Constants
              *
              * */
-            var composedClasses = [];
+            var composedMembers = [];
             ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
@@ -85,8 +86,7 @@
              */
             function compose(SeriesClass) {
                 var PointClass = SeriesClass.prototype.pointClass;
-                if (composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
+                if (U.pushUnique(composedMembers, PointClass)) {
                     addEvent(PointClass, 'afterSetState', onPointAfterSetState);
                 }
                 return SeriesClass;
@@ -160,13 +160,13 @@
          *
          * */
         var TreemapAlgorithmGroup = /** @class */ (function () {
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            function TreemapAlgorithmGroup(h, w, d, p) {
-                this.height = h;
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
+                function TreemapAlgorithmGroup(h, w, d, p) {
+                    this.height = h;
                 this.width = w;
                 this.plot = p;
                 this.direction = d;
@@ -243,6 +243,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __assign = (this && this.__assign) || function () {
+                __assign = Object.assign || function(t) {
+                    for (var s,
+            i = 1,
+            n = arguments.length; i < n; i++) {
+                        s = arguments[i];
+                    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                        t[p] = s[p];
+                }
+                return t;
+            };
+            return __assign.apply(this, arguments);
+        };
         var isNumber = U.isNumber;
         /* *
          *
@@ -260,18 +273,18 @@
          * @todo export this function to enable usage
          */
         function draw(point, params) {
-            var animatableAttribs = params.animatableAttribs, onComplete = params.onComplete, css = params.css, renderer = params.renderer;
+            var animatableAttribs = params.animatableAttribs,
+                onComplete = params.onComplete,
+                css = params.css,
+                renderer = params.renderer;
             var animation = (point.series && point.series.chart.hasRendered) ?
-                // Chart-level animation on updates
-                void 0 :
-                // Series-level animation on new points
-                (point.series &&
-                    point.series.options.animation);
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (point.series &&
+                        point.series.options.animation);
             var graphic = point.graphic;
-            params.attribs = params.attribs || {};
-            // Assigning class in dot notation does go well in IE8
-            // eslint-disable-next-line dot-notation
-            params.attribs['class'] = point.getClassName();
+            params.attribs = __assign(__assign({}, params.attribs), { 'class': point.getClassName() }) || {};
             if ((point.shouldDraw())) {
                 if (!graphic) {
                     point.graphic = graphic = params.shapeType === 'text' ?
@@ -288,7 +301,7 @@
             }
             else if (graphic) {
                 var destroy_1 = function () {
-                    point.graphic = graphic = (graphic && graphic.destroy());
+                        point.graphic = graphic = (graphic && graphic.destroy());
                     if (typeof onComplete === 'function') {
                         onComplete();
                     }
@@ -308,8 +321,8 @@
          *
          * */
         var DrawPointUtilities = {
-            draw: draw
-        };
+                draw: draw
+            };
 
         return DrawPointUtilities;
     });
@@ -326,36 +339,43 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var Point = SeriesRegistry.series.prototype.pointClass, _a = SeriesRegistry.seriesTypes, PiePoint = _a.pie.prototype.pointClass, ScatterPoint = _a.scatter.prototype.pointClass;
-        var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+        var Point = SeriesRegistry.series.prototype.pointClass,
+            _a = SeriesRegistry.seriesTypes,
+            PiePoint = _a.pie.prototype.pointClass,
+            ScatterPoint = _a.scatter.prototype.pointClass;
+        var extend = U.extend,
+            isNumber = U.isNumber,
+            pick = U.pick;
         /* *
          *
          *  Class
          *
          * */
         var TreemapPoint = /** @class */ (function (_super) {
-            __extends(TreemapPoint, _super);
+                __extends(TreemapPoint, _super);
             function TreemapPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.name = void 0;
                 _this.node = void 0;
                 _this.options = void 0;
@@ -375,7 +395,9 @@
                 DPU.draw(this, params);
             };
             TreemapPoint.prototype.getClassName = function () {
-                var className = Point.prototype.getClassName.call(this), series = this.series, options = series.options;
+                var className = Point.prototype.getClassName.call(this),
+                    series = this.series,
+                    options = series.options;
                 // Above the current level
                 if (this.node.level <= series.nodeMap[series.rootNode].level) {
                     className += ' highcharts-above-level';
@@ -502,7 +524,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, pick = U.pick;
+        var extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject,
+            merge = U.merge,
+            pick = U.pick;
         /* *
          *
          *  Functions
@@ -513,13 +540,27 @@
          * @private
          */
         function getColor(node, options) {
-            var index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
-            var getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
+            var index = options.index,
+                mapOptionsToLevel = options.mapOptionsToLevel,
+                parentColor = options.parentColor,
+                parentColorIndex = options.parentColorIndex,
+                series = options.series,
+                colors = options.colors,
+                siblings = options.siblings,
+                points = series.points,
+                chartOptionsChart = series.chart.options.chart;
+            var getColorByPoint,
+                point,
+                level,
+                colorByPoint,
+                colorIndexByPoint,
+                color,
+                colorIndex;
             /**
              * @private
              */
             var variateColor = function (color) {
-                var colorVariation = level && level.colorVariation;
+                    var colorVariation = level && level.colorVariation;
                 if (colorVariation &&
                     colorVariation.key === 'brightness' &&
                     index &&
@@ -567,7 +608,13 @@
          * Returns a map from level number to its given options.
          */
         function getLevelOptions(params) {
-            var result = {}, defaults, converted, i, from, to, levels;
+            var result = {},
+                defaults,
+                converted,
+                i,
+                from,
+                to,
+                levels;
             if (isObject(params)) {
                 from = isNumber(params.from) ? params.from : 1;
                 levels = params.levels;
@@ -575,7 +622,9 @@
                 defaults = isObject(params.defaults) ? params.defaults : {};
                 if (isArray(levels)) {
                     converted = levels.reduce(function (obj, item) {
-                        var level, levelIsConstant, options;
+                        var level,
+                            levelIsConstant,
+                            options;
                         if (isObject(item) && isNumber(item.level)) {
                             options = merge({}, item);
                             levelIsConstant = pick(options.levelIsConstant, defaults.levelIsConstant);
@@ -607,7 +656,15 @@
          * @todo Remove logic from Treemap and make it utilize this mixin.
          */
         function setTreeValues(tree, options) {
-            var before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
+            var before = options.before,
+                idRoot = options.idRoot,
+                mapIdToNode = options.mapIdToNode,
+                nodeRoot = mapIdToNode[idRoot],
+                levelIsConstant = (options.levelIsConstant !== false),
+                points = options.points,
+                point = points[tree.i],
+                optionsPoint = point && point.options || {},
+                children = [];
             var childrenTotal = 0;
             tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
             tree.name = pick(point && point.name, '');
@@ -618,7 +675,8 @@
             }
             // First give the children some values
             tree.children.forEach(function (child, i) {
-                var newOptions = extend({}, options);
+                var newOptions = extend({},
+                    options);
                 extend(newOptions, {
                     index: i,
                     siblings: tree.children.length,
@@ -631,7 +689,8 @@
                 }
             });
             // Set the values
-            var value = pick(optionsPoint.value, childrenTotal);
+            var value = pick(optionsPoint.value,
+                childrenTotal);
             tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
@@ -652,7 +711,8 @@
          * Returns the resulting rootId after update.
          */
         function updateRootId(series) {
-            var rootId, options;
+            var rootId,
+                options;
             if (isObject(series)) {
                 // Get the series options.
                 options = isObject(series.options) ? series.options : {};
@@ -673,15 +733,15 @@
          *
          * */
         var TreeUtilities = {
-            getColor: getColor,
-            getLevelOptions: getLevelOptions,
-            setTreeValues: setTreeValues,
-            updateRootId: updateRootId
-        };
+                getColor: getColor,
+                getLevelOptions: getLevelOptions,
+                setTreeValues: setTreeValues,
+                updateRootId: updateRootId
+            };
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/FormatUtilities.js']], function (Chart, D, H, U, F) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/BreadcrumbsDefaults.js', [], function () {
         /* *
          *
          *  Highcharts Breadcrumbs module
@@ -693,25 +753,379 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defaultOptions = D.defaultOptions;
-        var format = F.format;
-        var addEvent = U.addEvent, objectEach = U.objectEach, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, pick = U.pick, defined = U.defined, isString = U.isString;
-        // Add language support.
-        extend(defaultOptions.lang, 
+        /* *
+         *
+         *  Constants
+         *
+         * */
         /**
          * @optionparent lang
+         */
+        var lang = {
+                /**
+                 * @since   10.0.0
+                 * @product highcharts
+                 *
+                 * @private
+                 */
+                mainBreadcrumb: 'Main'
+            };
+        /**
+         * Options for breadcrumbs. Breadcrumbs general options are defined in
+         * `navigation.breadcrumbs`. Specific options for drilldown are set in
+         * `drilldown.breadcrumbs` and for tree-like series traversing, in
+         * `plotOptions[series].breadcrumbs`.
          *
+         * @since        10.0.0
+         * @product      highcharts
+         * @optionparent navigation.breadcrumbs
+         */
+        var options = {
+                /**
+                 * A collection of attributes for the buttons. The object takes SVG
+                 * attributes like `fill`,
+            `stroke`,
+            `stroke-width`,
+            as well as `style`,
+                 * a collection of CSS properties for the text.
+                 *
+                 * The object can also be extended with states,
+            so you can set
+                 * presentational options for `hover`,
+            `select` or `disabled` button
+                 * states.
+                 *
+                 * @sample {highcharts} highcharts/breadcrumbs/single-button
+                 *         Themed,
+            single button
+                 *
+                 * @type    {Highcharts.SVGAttributes}
+                 * @since   10.0.0
+                 * @product highcharts
+                 */
+                buttonTheme: {
+                    /** @ignore */
+                    fill: 'none',
+                    /** @ignore */
+                    height: 18,
+                    /** @ignore */
+                    padding: 2,
+                    /** @ignore */
+                    'stroke-width': 0,
+                    /** @ignore */
+                    zIndex: 7,
+                    /** @ignore */
+                    states: {
+                        select: {
+                            fill: 'none'
+                        }
+                    },
+                    style: {
+                        color: "#334eff" /* Palette.highlightColor80 */
+                    }
+                },
+                /**
+                 * The default padding for each button and separator in each direction.
+                 *
+                 * @type  {number}
+                 * @since 10.0.0
+                 */
+                buttonSpacing: 5,
+                /**
+                 * Fires when clicking on the breadcrumbs button. Two arguments are
+                 * passed to the function. First breadcrumb button as an SVG element.
+                 * Second is the breadcrumbs class,
+            containing reference to the chart,
+                 * series etc.
+                 *
+                 * ```js
+                 * click: function(button,
+            breadcrumbs) {
+                 *   console.log(button);
+             * }
+             * ```
+             *
+             * Return false to stop default buttons click action.
+             *
+             * @type      {Highcharts.BreadcrumbsClickCallbackFunction}
+             * @since     10.0.0
+             * @apioption navigation.breadcrumbs.events.click
+             */
+            /**
+             * When the breadcrumbs are floating, the plot area will not move to
+             * make space for it. By default, the chart will not make space for the
+             * buttons. This property won't work when positioned in the middle.
+             *
+             * @sample highcharts/breadcrumbs/single-button
+             *         Floating button
+             *
+             * @type  {boolean}
+             * @since 10.0.0
+             */
+            floating: false,
+            /**
+             * A format string for the breadcrumbs button. Variables are enclosed by
+             * curly brackets. Available values are passed in the declared point
+             * options.
+             *
+             * @type      {string|undefined}
+             * @since 10.0.0
+             * @default   undefined
+             * @sample {highcharts} highcharts/breadcrumbs/format Display custom
+             *          values in breadcrumb button.
+             */
+            format: void 0,
+            /**
+             * Callback function to format the breadcrumb text from scratch.
+             *
+             * @type      {Highcharts.BreadcrumbsFormatterCallbackFunction}
+             * @since     10.0.0
+             * @default   undefined
+             * @apioption navigation.breadcrumbs.formatter
+             */
+            /**
+             * What box to align the button to. Can be either `plotBox` or
+             * `spacingBox`.
+             *
+             * @type    {Highcharts.ButtonRelativeToValue}
+             * @default plotBox
+             * @since   10.0.0
+             * @product highcharts highmaps
+             */
+            relativeTo: 'plotBox',
+            /**
+             * Whether to reverse the order of buttons. This is common in Arabic
+             * and Hebrew.
+             *
+             * @sample {highcharts} highcharts/breadcrumbs/rtl
+             *         Breadcrumbs in RTL
+             *
+             * @type  {boolean}
+             * @since 10.2.0
+             */
+            rtl: false,
+            /**
+             * Positioning for the button row. The breadcrumbs buttons will be
+             * aligned properly for the default chart layout (title,  subtitle,
+             * legend, range selector) for the custom chart layout set the position
+             * properties.
+             *
+             * @sample  {highcharts} highcharts/breadcrumbs/single-button
+             *          Single, right aligned button
+             *
+             * @type    {Highcharts.BreadcrumbsAlignOptions}
+             * @since   10.0.0
+             * @product highcharts highmaps
+             */
+            position: {
+                /**
+                 * Horizontal alignment of the breadcrumbs buttons.
+                 *
+                 * @type {Highcharts.AlignValue}
+                 */
+                align: 'left',
+                /**
+                 * Vertical alignment of the breadcrumbs buttons.
+                 *
+                 * @type {Highcharts.VerticalAlignValue}
+                 */
+                verticalAlign: 'top',
+                /**
+                 * The X offset of the breadcrumbs button group.
+                 *
+                 * @type {number}
+                 */
+                x: 0,
+                /**
+                 * The Y offset of the breadcrumbs button group. When `undefined`,
+                 * and `floating` is `false`, the `y` position is adapted so that
+                 * the breadcrumbs are rendered outside the target area.
+                 *
+                 * @type {number|undefined}
+                 */
+                y: void 0
+            },
+            /**
+             * Options object for Breadcrumbs separator.
+             *
+             * @since 10.0.0
+             */
+            separator: {
+                /**
+                 * @type    {string}
+                 * @since   10.0.0
+                 * @product highcharts
+                 */
+                text: '/',
+                /**
+                 * CSS styles for the breadcrumbs separator.
+                 *
+                 * In styled mode, the breadcrumbs separators are styled by the
+                 * `.highcharts-separator` rule with its different states.
+                 *  @type  {Highcharts.CSSObject}
+                 *  @since 10.0.0
+                 */
+                style: {
+                    color: "#666666" /* Palette.neutralColor60 */,
+                    fontSize: '0.8em'
+                }
+            },
+            /**
+             * Show full path or only a single button.
+             *
+             * @sample {highcharts} highcharts/breadcrumbs/single-button
+             *         Single, styled button
+             *
+             * @type  {boolean}
+             * @since 10.0.0
+             */
+            showFullPath: true,
+            /**
+             * CSS styles for all breadcrumbs.
+             *
+             * In styled mode, the breadcrumbs buttons are styled by the
+             * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
+             * different states.
+             *
+             * @type  {Highcharts.SVGAttributes}
+             * @since 10.0.0
+             */
+            style: {},
+            /**
+             * Whether to use HTML to render the breadcrumbs items texts.
+             *
+             * @type  {boolean}
+             * @since 10.0.0
+             */
+            useHTML: false,
+            /**
+             * The z index of the breadcrumbs group.
+             *
+             * @type  {number}
+             * @since 10.0.0
+             */
+            zIndex: 7
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var BreadcrumbsDefaults = {
+                lang: lang,
+                options: options
+            };
+
+        return BreadcrumbsDefaults;
+    });
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+        /* *
+         *
+         *  Highcharts Breadcrumbs module
+         *
+         *  Authors: Grzegorz Blachlinski, Karol Kolodziej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var format = F.format;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isString = U.isString,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Shift the drillUpButton to make the space for resetZoomButton, #8095.
          * @private
          */
-        {
-            /**
-             * @since 10.0.0
-             * @product  highcharts
-             *
-             * @private
-             */
-            mainBreadcrumb: 'Main'
-        });
+        function onChartAfterShowResetZoom() {
+            var chart = this;
+            if (chart.breadcrumbs) {
+                var bbox = chart.resetZoomButton &&
+                        chart.resetZoomButton.getBBox(),
+                    breadcrumbsOptions = chart.breadcrumbs.options;
+                if (bbox &&
+                    breadcrumbsOptions.position.align === 'right' &&
+                    breadcrumbsOptions.relativeTo === 'plotBox') {
+                    chart.breadcrumbs.alignBreadcrumbsGroup(-bbox.width - breadcrumbsOptions.buttonSpacing);
+                }
+            }
+        }
+        /**
+         * Remove resize/afterSetExtremes at chart destroy.
+         * @private
+         */
+        function onChartDestroy() {
+            if (this.breadcrumbs) {
+                this.breadcrumbs.destroy();
+                this.breadcrumbs = void 0;
+            }
+        }
+        /**
+         * Logic for making space for the buttons above the plot area
+         * @private
+         */
+        function onChartGetMargins() {
+            var breadcrumbs = this.breadcrumbs;
+            if (breadcrumbs &&
+                !breadcrumbs.options.floating &&
+                breadcrumbs.level) {
+                var breadcrumbsOptions = breadcrumbs.options,
+                    buttonTheme = breadcrumbsOptions.buttonTheme,
+                    breadcrumbsHeight = ((buttonTheme.height || 0) +
+                        2 * (buttonTheme.padding || 0) +
+                        breadcrumbsOptions.buttonSpacing),
+                    verticalAlign = breadcrumbsOptions.position.verticalAlign;
+                if (verticalAlign === 'bottom') {
+                    this.marginBottom = (this.marginBottom || 0) + breadcrumbsHeight;
+                    breadcrumbs.yOffset = breadcrumbsHeight;
+                }
+                else if (verticalAlign !== 'middle') {
+                    this.plotTop += breadcrumbsHeight;
+                    breadcrumbs.yOffset = -breadcrumbsHeight;
+                }
+                else {
+                    breadcrumbs.yOffset = void 0;
+                }
+            }
+        }
+        /**
+         * @private
+         */
+        function onChartRedraw() {
+            this.breadcrumbs && this.breadcrumbs.redraw();
+        }
+        /**
+         * After zooming out, shift the drillUpButton to the previous position, #8095.
+         * @private
+         */
+        function onChartSelection(event) {
+            if (event.resetSelection === true &&
+                this.breadcrumbs) {
+                this.breadcrumbs.alignBreadcrumbsGroup();
+            }
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Breadcrumbs class
          *
@@ -725,23 +1139,47 @@
          *        User options
          */
         var Breadcrumbs = /** @class */ (function () {
-            function Breadcrumbs(chart, userOptions) {
                 /* *
                  *
-                 * Properties
+                 *  Constructor
                  *
                  * */
-                this.group = void 0;
-                this.list = [];
-                this.elementList = {};
+                function Breadcrumbs(chart, userOptions) {
+                    this.elementList = {};
                 this.isDirty = true;
                 this.level = 0;
-                this.options = void 0;
+                this.list = [];
                 var chartOptions = merge(chart.options.drilldown &&
-                    chart.options.drilldown.drillUpButton, Breadcrumbs.defaultBreadcrumbsOptions, chart.options.navigation && chart.options.navigation.breadcrumbs, userOptions);
+                        chart.options.drilldown.drillUpButton,
+                    Breadcrumbs.defaultOptions,
+                    chart.options.navigation && chart.options.navigation.breadcrumbs,
+                    userOptions);
                 this.chart = chart;
                 this.options = chartOptions || {};
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            Breadcrumbs.compose = function (ChartClass, highchartsDefaultOptions) {
+                if (U.pushUnique(composedMembers, ChartClass)) {
+                    addEvent(Chart, 'destroy', onChartDestroy);
+                    addEvent(Chart, 'afterShowResetZoom', onChartAfterShowResetZoom);
+                    addEvent(Chart, 'getMargins', onChartGetMargins);
+                    addEvent(Chart, 'redraw', onChartRedraw);
+                    addEvent(Chart, 'selection', onChartSelection);
+                }
+                if (U.pushUnique(composedMembers, highchartsDefaultOptions)) {
+                    // Add language support.
+                    extend(highchartsDefaultOptions.lang, BreadcrumbsDefaults.lang);
+                }
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Update Breadcrumbs properties, like level and list.
              *
@@ -808,11 +1246,19 @@
              *         Formatted text.
              */
             Breadcrumbs.prototype.getButtonText = function (breadcrumb) {
-                var breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = pick(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
-                    '{level.name}' : '← {level.name}'), defaultText = lang && pick(lang.drillUpText, lang.mainBreadcrumb);
+                var breadcrumbs = this,
+                    chart = breadcrumbs.chart,
+                    breadcrumbsOptions = breadcrumbs.options,
+                    lang = chart.options.lang,
+                    textFormat = pick(breadcrumbsOptions.format,
+                    breadcrumbsOptions.showFullPath ?
+                        '{level.name}' : '← {level.name}'),
+                    defaultText = lang && pick(lang.drillUpText,
+                    lang.mainBreadcrumb);
                 var returnText = breadcrumbsOptions.formatter &&
-                    breadcrumbsOptions.formatter(breadcrumb) ||
-                    format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
+                        breadcrumbsOptions.formatter(breadcrumb) ||
+                        format(textFormat, { level: breadcrumb.levelOptions },
+                    chart) || '';
                 if (((isString(returnText) &&
                     !returnText.length) ||
                     returnText === '← ') &&
@@ -851,7 +1297,9 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.render = function () {
-                var breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options;
+                var breadcrumbs = this,
+                    chart = breadcrumbs.chart,
+                    breadcrumbsOptions = breadcrumbs.options;
                 // A main group for the breadcrumbs.
                 if (!breadcrumbs.group && breadcrumbsOptions) {
                     breadcrumbs.group = chart.renderer
@@ -897,14 +1345,19 @@
              * @param {Highcharts.Breadcrumbs} this Breadcrumbs class.
              */
             Breadcrumbs.prototype.renderSingleButton = function () {
-                var breadcrumbs = this, chart = breadcrumbs.chart, list = breadcrumbs.list, breadcrumbsOptions = breadcrumbs.options, buttonSpacing = breadcrumbsOptions.buttonSpacing;
+                var breadcrumbs = this,
+                    chart = breadcrumbs.chart,
+                    list = breadcrumbs.list,
+                    breadcrumbsOptions = breadcrumbs.options,
+                    buttonSpacing = breadcrumbsOptions.buttonSpacing;
                 // Make sure that only one type of button is visible.
                 this.destroyListElements();
                 // Draw breadcrumbs. Inital position for calculating the breadcrumbs
                 // group.
                 var posX = breadcrumbs.group ?
-                    breadcrumbs.group.getBBox().width :
-                    buttonSpacing, posY = buttonSpacing;
+                        breadcrumbs.group.getBBox().width :
+                        buttonSpacing,
+                    posY = buttonSpacing;
                 var previousBreadcrumb = list[list.length - 2];
                 if (!chart.drillUpButton && (this.level > 0)) {
                     chart.drillUpButton = breadcrumbs.renderButton(previousBreadcrumb, posX, posY);
@@ -931,11 +1384,16 @@
             Breadcrumbs.prototype.alignBreadcrumbsGroup = function (xOffset) {
                 var breadcrumbs = this;
                 if (breadcrumbs.group) {
-                    var breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, positionOptions = breadcrumbsOptions.position, alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
-                        breadcrumbsOptions.relativeTo === 'spacingBox' ?
-                        void 0 :
-                        'scrollablePlotBox'), bBox = breadcrumbs.group.getBBox(), additionalSpace = 2 * (buttonTheme.padding || 0) +
-                        breadcrumbsOptions.buttonSpacing;
+                    var breadcrumbsOptions = breadcrumbs.options,
+                        buttonTheme = breadcrumbsOptions.buttonTheme,
+                        positionOptions = breadcrumbsOptions.position,
+                        alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
+                            breadcrumbsOptions.relativeTo === 'spacingBox' ?
+                            void 0 :
+                            'scrollablePlotBox'),
+                        bBox = breadcrumbs.group.getBBox(),
+                        additionalSpace = 2 * (buttonTheme.padding || 0) +
+                            breadcrumbsOptions.buttonSpacing;
                     // Store positionOptions
                     positionOptions.width = bBox.width + additionalSpace;
                     positionOptions.height = bBox.height + additionalSpace;
@@ -969,12 +1427,18 @@
              *        Returns the SVG button
              */
             Breadcrumbs.prototype.renderButton = function (breadcrumb, posX, posY) {
-                var breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
+                var breadcrumbs = this,
+                    chart = this.chart,
+                    breadcrumbsOptions = breadcrumbs.options,
+                    buttonTheme = merge(breadcrumbsOptions.buttonTheme);
                 var button = chart.renderer
-                    .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
-                    // Extract events from button object and call
-                    var buttonEvents = breadcrumbsOptions.events &&
-                        breadcrumbsOptions.events.click;
+                        .button(breadcrumbs.getButtonText(breadcrumb),
+                    posX,
+                    posY,
+                    function (e) {
+                        // Extract events from button object and call
+                        var buttonEvents = breadcrumbsOptions.events &&
+                            breadcrumbsOptions.events.click;
                     var callDefaultEvent;
                     if (buttonEvents) {
                         callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb);
@@ -1015,11 +1479,20 @@
              *        Returns the SVG button
              */
             Breadcrumbs.prototype.renderSeparator = function (posX, posY) {
-                var breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, separatorOptions = breadcrumbsOptions.separator;
+                var breadcrumbs = this,
+                    chart = this.chart,
+                    breadcrumbsOptions = breadcrumbs.options,
+                    separatorOptions = breadcrumbsOptions.separator;
                 var separator = chart.renderer
-                    .label(separatorOptions.text, posX, posY, void 0, void 0, void 0, false)
-                    .addClass('highcharts-breadcrumbs-separator')
-                    .add(breadcrumbs.group);
+                        .label(separatorOptions.text,
+                    posX,
+                    posY,
+                    void 0,
+                    void 0,
+                    void 0,
+                    false)
+                        .addClass('highcharts-breadcrumbs-separator')
+                        .add(breadcrumbs.group);
                 if (!chart.styledMode) {
                     separator.css(separatorOptions.style);
                 }
@@ -1053,7 +1526,8 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.updateSingleButton = function () {
-                var chart = this.chart, currentBreadcrumb = this.list[this.level - 1];
+                var chart = this.chart,
+                    currentBreadcrumb = this.list[this.level - 1];
                 if (chart.drillUpButton) {
                     chart.drillUpButton.attr({
                         text: this.getButtonText(currentBreadcrumb)
@@ -1141,23 +1615,37 @@
              * @requires  modules/breadcrumbs
              *
              * @function Highcharts.Breadcrumbs#updateListElements
+             *
              * @param {Highcharts.Breadcrumbs} this
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.updateListElements = function () {
-                var breadcrumbs = this, elementList = breadcrumbs.elementList, buttonSpacing = breadcrumbs.options.buttonSpacing, list = breadcrumbs.list, rtl = breadcrumbs.options.rtl, rtlFactor = rtl ? -1 : 1, updateXPosition = function (element, spacing) {
-                    return rtlFactor * element.getBBox().width +
-                        rtlFactor * spacing;
+                var breadcrumbs = this,
+                    elementList = breadcrumbs.elementList,
+                    buttonSpacing = breadcrumbs.options.buttonSpacing,
+                    posY = buttonSpacing,
+                    list = breadcrumbs.list,
+                    rtl = breadcrumbs.options.rtl,
+                    rtlFactor = rtl ? -1 : 1,
+                    updateXPosition = function (element,
+                    spacing) {
+                        return rtlFactor * element.getBBox().width +
+                            rtlFactor * spacing;
                 }, adjustToRTL = function (element, posX, posY) {
                     element.translate(posX - element.getBBox().width, posY);
                 };
                 // Inital position for calculating the breadcrumbs group.
                 var posX = breadcrumbs.group ?
-                    updateXPosition(breadcrumbs.group, buttonSpacing) :
-                    buttonSpacing, posY = buttonSpacing, currentBreadcrumb;
-                list.forEach(function (breadcrumb, index) {
-                    var isLast = index === list.length - 1;
-                    var button, separator;
+                        updateXPosition(breadcrumbs.group,
+                    buttonSpacing) :
+                        buttonSpacing,
+                    currentBreadcrumb,
+                    breadcrumb;
+                for (var i = 0, iEnd = list.length; i < iEnd; ++i) {
+                    var isLast = i === iEnd - 1;
+                    var button = void 0,
+                        separator = void 0;
+                    breadcrumb = list[i];
                     if (elementList[breadcrumb.level]) {
                         currentBreadcrumb = elementList[breadcrumb.level];
                         button = currentBreadcrumb.button;
@@ -1204,288 +1692,16 @@
                     if (button) {
                         button.setState(isLast ? 2 : 0);
                     }
-                });
+                }
             };
-            /**
-             * Options for breadcrumbs. Breadcrumbs general options are defined in
-             * `navigation.breadcrumbs`. Specific options for drilldown are set in
-             * `drilldown.breadcrumbs` and for tree-like series traversing, in
-             * `plotOptions[series].breadcrumbs`.
+            /* *
              *
-             * @since 10.0.0
-             * @product highcharts
-             * @optionparent navigation.breadcrumbs
-             */
-            Breadcrumbs.defaultBreadcrumbsOptions = {
-                /**
-                 * A collection of attributes for the buttons. The object takes SVG
-                 * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
-                 * a collection of CSS properties for the text.
-                 *
-                 * The object can also be extended with states, so you can set
-                 * presentational options for `hover`, `select` or `disabled` button
-                 * states.
-                 *
-                 * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *         Themed, single button
-                 *
-                 * @type       {Highcharts.SVGAttributes}
-                 * @since 10.0.0
-                 * @product    highcharts
-                 */
-                buttonTheme: {
-                    /** @ignore */
-                    fill: 'none',
-                    /** @ignore */
-                    height: 18,
-                    /** @ignore */
-                    padding: 2,
-                    /** @ignore */
-                    'stroke-width': 0,
-                    /** @ignore */
-                    zIndex: 7,
-                    /** @ignore */
-                    states: {
-                        select: {
-                            fill: 'none'
-                        }
-                    },
-                    style: {
-                        color: "#335cad" /* Palette.highlightColor80 */
-                    }
-                },
-                /**
-                 * The default padding for each button and separator in each direction.
-                 *
-                 * @type      {number}
-                 * @since 10.0.0
-                 */
-                buttonSpacing: 5,
-                /**
-                 * Fires when clicking on the breadcrumbs button. Two arguments are
-                 * passed to the function. First breadcrumb button as an SVG element.
-                 * Second is the breadcrumbs class, containing reference to the chart,
-                 * series etc.
-                 *
-                 * ```js
-                 * click: function(button, breadcrumbs) {
-                 *   console.log(button);
-                 * }
-                 * ```
-                 *
-                 * Return false to stop default buttons click action.
-                 *
-                 * @type      {Highcharts.BreadcrumbsClickCallbackFunction}
-                 * @since 10.0.0
-                 * @apioption navigation.breadcrumbs.events.click
-                 */
-                /**
-                 * When the breadcrumbs are floating, the plot area will not move to
-                 * make space for it. By default, the chart will not make space for the
-                 * buttons. This property won't work when positioned in the middle.
-                 *
-                 * @sample highcharts/breadcrumbs/single-button
-                 *         Floating button
-                 * @type      {boolean}
-                 * @since 10.0.0
-                 */
-                floating: false,
-                /**
-                 * A format string for the breadcrumbs button. Variables are enclosed by
-                 * curly brackets. Available values are passed in the declared point
-                 * options.
-                 *
-                 * @type      {string|undefined}
-                 * @since 10.0.0
-                 * @default   undefined
-                 * @sample {highcharts} highcharts/breadcrumbs/format Display custom
-                 *          values in breadcrumb button.
-                 */
-                format: void 0,
-                /**
-                 * Callback function to format the breadcrumb text from scratch.
-                 *
-                 * @type      {Highcharts.BreadcrumbsFormatterCallbackFunction}
-                 * @since 10.0.0
-                 * @default   undefined
-                 * @apioption navigation.breadcrumbs.formatter
-                 */
-                /**
-                 * What box to align the button to. Can be either `plotBox` or
-                 * `spacingBox`.
-                 *
-                 * @type       {Highcharts.ButtonRelativeToValue}
-                 * @default    plotBox
-                 * @since 10.0.0
-                 * @product    highcharts highmaps
-                 */
-                relativeTo: 'plotBox',
-                /**
-                 * Whether to reverse the order of buttons. This is common in Arabic
-                 * and Hebrew.
-                 *
-                 * @type       {boolean}
-                 * @since 10.2.0
-                 * @sample     {highcharts} highcharts/breadcrumbs/rtl
-                 *             Breadcrumbs in RTL
-                 */
-                rtl: false,
-                /**
-                 * Positioning for the button row. The breadcrumbs buttons will be
-                 * aligned properly for the default chart layout (title,  subtitle,
-                 * legend, range selector) for the custom chart layout set the position
-                 * properties.
-                 * @type       {Highcharts.BreadcrumbsAlignOptions}
-                 * @since 10.0.0
-                 * @product    highcharts highmaps
-                 * @sample     {highcharts} highcharts/breadcrumbs/single-button
-                 *             Single, right aligned button
-                 */
-                position: {
-                    /**
-                     * Horizontal alignment of the breadcrumbs buttons.
-                     *
-                     * @type {Highcharts.AlignValue}
-                     */
-                    align: 'left',
-                    /**
-                     * Vertical alignment of the breadcrumbs buttons.
-                     *
-                     * @type {Highcharts.VerticalAlignValue}
-                     */
-                    verticalAlign: 'top',
-                    /**
-                     * The X offset of the breadcrumbs button group.
-                     *
-                     * @type {number}
-                     */
-                    x: 0,
-                    /**
-                     * The Y offset of the breadcrumbs button group. When `undefined`,
-                     * and `floating` is `false`, the `y` position is adapted so that
-                     * the breadcrumbs are rendered outside the target area.
-                     *
-                     * @type {number|undefined}
-                     */
-                    y: void 0
-                },
-                /**
-                 * Options object for Breadcrumbs separator.
-                 *
-                 * @since 10.0.0
-                 */
-                separator: {
-                    /**
-                     * @type {string}
-                     * @since 10.0.0
-                     * @product highcharts
-                     */
-                    text: '/',
-                    /**
-                     * CSS styles for the breadcrumbs separator.
-                     *
-                     * In styled mode, the breadcrumbs separators are styled by the
-                     * `.highcharts-separator` rule with its different states.
-                     *  @type {Highcharts.CSSObject}
-                     *  @since 10.0.0
-                     */
-                    style: {
-                        color: "#666666" /* Palette.neutralColor60 */
-                    }
-                },
-                /**
-                 * Show full path or only a single button.
-                 *
-                 * @type      {boolean}
-                 * @since 10.0.0
-                 * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *          Single, styled button
-                 */
-                showFullPath: true,
-                /**
-                 * CSS styles for all breadcrumbs.
-                 *
-                 * In styled mode, the breadcrumbs buttons are styled by the
-                 * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
-                 * different states.
-                 *  @type {Highcharts.SVGAttributes}
-                 *  @since 10.0.0
-                 */
-                style: {},
-                /**
-                 * Whether to use HTML to render the breadcrumbs items texts.
-                 *
-                 * @type      {boolean}
-                 * @since 10.0.0
-                 */
-                useHTML: false,
-                /**
-                 * The z index of the breadcrumbs group.
-                 *
-                 * @type      {number}
-                 * @since 10.0.0
-                 */
-                zIndex: 7
-            };
+             *  Static Properties
+             *
+             * */
+            Breadcrumbs.defaultOptions = BreadcrumbsDefaults.options;
             return Breadcrumbs;
         }());
-        /* eslint-disable no-invalid-this */
-        if (!H.Breadcrumbs) {
-            H.Breadcrumbs = Breadcrumbs;
-            // Logic for making space for the buttons above the plot area
-            addEvent(Chart, 'getMargins', function () {
-                var breadcrumbs = this.breadcrumbs;
-                if (breadcrumbs &&
-                    !breadcrumbs.options.floating &&
-                    breadcrumbs.level) {
-                    var breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, breadcrumbsHeight = ((buttonTheme.height || 0) +
-                        2 * (buttonTheme.padding || 0) +
-                        breadcrumbsOptions.buttonSpacing), verticalAlign = breadcrumbsOptions.position.verticalAlign;
-                    if (verticalAlign === 'bottom') {
-                        this.marginBottom = (this.marginBottom || 0) + breadcrumbsHeight;
-                        breadcrumbs.yOffset = breadcrumbsHeight;
-                    }
-                    else if (verticalAlign !== 'middle') {
-                        this.plotTop += breadcrumbsHeight;
-                        breadcrumbs.yOffset = -breadcrumbsHeight;
-                    }
-                    else {
-                        breadcrumbs.yOffset = void 0;
-                    }
-                }
-            });
-            addEvent(Chart, 'redraw', function () {
-                this.breadcrumbs && this.breadcrumbs.redraw();
-            });
-            // Remove resize/afterSetExtremes at chart destroy
-            addEvent(Chart, 'destroy', function destroyEvents() {
-                if (this.breadcrumbs) {
-                    this.breadcrumbs.destroy();
-                    this.breadcrumbs = void 0;
-                }
-            });
-            // Shift the drillUpButton to make the space for resetZoomButton, #8095.
-            addEvent(Chart, 'afterShowResetZoom', function () {
-                var chart = this;
-                if (chart.breadcrumbs) {
-                    var bbox = chart.resetZoomButton &&
-                        chart.resetZoomButton.getBBox(), breadcrumbsOptions = chart.breadcrumbs.options;
-                    if (bbox &&
-                        breadcrumbsOptions.position.align === 'right' &&
-                        breadcrumbsOptions.relativeTo === 'plotBox') {
-                        chart.breadcrumbs.alignBreadcrumbsGroup(-bbox.width - breadcrumbsOptions.buttonSpacing);
-                    }
-                }
-            });
-            // After zooming out, shift the drillUpButton
-            // to the previous position, #8095.
-            addEvent(Chart, 'selection', function (event) {
-                if (event.resetSelection === true &&
-                    this.breadcrumbs) {
-                    this.breadcrumbs.alignBreadcrumbsGroup();
-                }
-            });
-        }
         /* *
          *
          *  Default Export
@@ -1598,7 +1814,8 @@
          *
          * */
         var Series = SeriesRegistry.series;
-        var addEvent = U.addEvent, extend = U.extend;
+        var addEvent = U.addEvent,
+            extend = U.extend;
         /* *
          *
          *  Composition
@@ -1607,7 +1824,10 @@
         var treemapAxisDefaultValues = false;
         addEvent(Series, 'afterBindAxes', function () {
             // eslint-disable-next-line no-invalid-this
-            var series = this, xAxis = series.xAxis, yAxis = series.yAxis, treeAxis;
+            var series = this,
+                xAxis = series.xAxis,
+                yAxis = series.yAxis,
+                treeAxis;
             if (xAxis && yAxis) {
                 if (series.is('treemap')) {
                     treeAxis = {
@@ -1653,13 +1873,13 @@
         *
         * */
         var TreemapNode = /** @class */ (function () {
-            function TreemapNode() {
-                /* *
-                *
-                *  Properties
-                *
-                * */
-                this.childrenTotal = 0;
+                function TreemapNode() {
+                    /* *
+                    *
+                    *  Properties
+                    *
+                    * */
+                    this.childrenTotal = 0;
                 this.visible = false;
             }
             /* *
@@ -1687,7 +1907,7 @@
 
         return TreemapNode;
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs.js'], _modules['Core/Utilities.js'], _modules['Series/Treemap/TreemapNode.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U, TreemapNode) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js'], _modules['Core/Utilities.js'], _modules['Series/Treemap/TreemapNode.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U, TreemapNode) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -1700,15 +1920,16 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -1716,9 +1937,27 @@
         })();
         var color = Color.parse;
         var noop = H.noop;
-        var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, HeatmapSeries = _a.heatmap, ScatterSeries = _a.scatter;
-        var getColor = TU.getColor, getLevelOptions = TU.getLevelOptions, updateRootId = TU.updateRootId;
-        var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, stableSort = U.stableSort;
+        var Series = SeriesRegistry.series,
+            _a = SeriesRegistry.seriesTypes,
+            ColumnSeries = _a.column,
+            HeatmapSeries = _a.heatmap,
+            ScatterSeries = _a.scatter;
+        var getColor = TU.getColor,
+            getLevelOptions = TU.getLevelOptions,
+            updateRootId = TU.updateRootId;
+        var addEvent = U.addEvent,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            error = U.error,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject,
+            isString = U.isString,
+            merge = U.merge,
+            pick = U.pick,
+            stableSort = U.stableSort;
         /* *
          *
          *  Class
@@ -1732,14 +1971,15 @@
          * @augments Highcharts.Series
          */
         var TreemapSeries = /** @class */ (function (_super) {
-            __extends(TreemapSeries, _super);
+                __extends(TreemapSeries, _super);
             function TreemapSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -1765,7 +2005,16 @@
              * */
             /* eslint-disable valid-jsdoc */
             TreemapSeries.prototype.algorithmCalcPoints = function (directionChange, last, group, childrenArea) {
-                var pX, pY, pW, pH, gW = group.lW, gH = group.lH, plot = group.plot, keep, i = 0, end = group.elArr.length - 1;
+                var pX,
+                    pY,
+                    pW,
+                    pH,
+                    gW = group.lW,
+                    gH = group.lH,
+                    plot = group.plot,
+                    keep,
+                    i = 0,
+                    end = group.elArr.length - 1;
                 if (last) {
                     gW = group.nW;
                     gH = group.nH;
@@ -1821,7 +2070,17 @@
                 }
             };
             TreemapSeries.prototype.algorithmFill = function (directionChange, parent, children) {
-                var childrenArea = [], pTot, direction = parent.direction, x = parent.x, y = parent.y, width = parent.width, height = parent.height, pX, pY, pW, pH;
+                var childrenArea = [],
+                    pTot,
+                    direction = parent.direction,
+                    x = parent.x,
+                    y = parent.y,
+                    width = parent.width,
+                    height = parent.height,
+                    pX,
+                    pY,
+                    pW,
+                    pH;
                 children.forEach(function (child) {
                     pTot =
                         (parent.width * parent.height) * (child.val / parent.val);
@@ -1852,11 +2111,21 @@
                 return childrenArea;
             };
             TreemapSeries.prototype.algorithmLowAspectRatio = function (directionChange, parent, children) {
-                var childrenArea = [], series = this, pTot, plot = {
-                    x: parent.x,
-                    y: parent.y,
-                    parent: parent
-                }, direction = parent.direction, i = 0, end = children.length - 1, group = new TreemapAlgorithmGroup(parent.height, parent.width, direction, plot);
+                var childrenArea = [],
+                    series = this,
+                    pTot,
+                    plot = {
+                        x: parent.x,
+                        y: parent.y,
+                        parent: parent
+                    },
+                    direction = parent.direction,
+                    i = 0,
+                    end = children.length - 1,
+                    group = new TreemapAlgorithmGroup(parent.height,
+                    parent.width,
+                    direction,
+                    plot);
                 // Loop through and calculate all areas
                 children.forEach(function (child) {
                     pTot =
@@ -1915,8 +2184,16 @@
              * The rectangular area of the parent.
              */
             TreemapSeries.prototype.calculateChildrenAreas = function (parent, area) {
-                var series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = pick((series[(level && level.layoutAlgorithm)] &&
-                    level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, childrenValues = [], children;
+                var series = this,
+                    options = series.options,
+                    mapOptionsToLevel = series.mapOptionsToLevel,
+                    level = mapOptionsToLevel[parent.level + 1],
+                    algorithm = pick((series[(level && level.layoutAlgorithm)] &&
+                        level.layoutAlgorithm),
+                    options.layoutAlgorithm),
+                    alternate = options.alternateStartingDirection,
+                    childrenValues = [],
+                    children;
                 // Collect all children which should be included
                 children = parent.children.filter(function (n) {
                     return !n.ignore;
@@ -1956,7 +2233,9 @@
             *        Treemap Series class.
             */
             TreemapSeries.prototype.createList = function (e) {
-                var chart = this.chart, breadcrumbs = chart.breadcrumbs, list = [];
+                var chart = this.chart,
+                    breadcrumbs = chart.breadcrumbs,
+                    list = [];
                 if (breadcrumbs) {
                     var currentLevelNumber_1 = 0;
                     list.push({
@@ -1999,8 +2278,10 @@
              * @private
              */
             TreemapSeries.prototype.drawDataLabels = function () {
-                var series = this, mapOptionsToLevel = series.mapOptionsToLevel, points = series.points.filter(function (n) {
-                    return n.node.visible;
+                var series = this,
+                    mapOptionsToLevel = series.mapOptionsToLevel,
+                    points = series.points.filter(function (n) {
+                        return n.node.visible;
                 }), options, level;
                 points.forEach(function (point) {
                     level = mapOptionsToLevel[point.node.level];
@@ -2035,9 +2316,24 @@
              */
             TreemapSeries.prototype.drawPoints = function (points) {
                 if (points === void 0) { points = this.points; }
-                var series = this, chart = series.chart, renderer = chart.renderer, styledMode = chart.styledMode, options = series.options, shadow = styledMode ? {} : options.shadow, borderRadius = options.borderRadius, withinAnimationLimit = chart.pointCount < options.animationLimit, allowTraversingTree = options.allowTraversingTree;
+                var series = this,
+                    chart = series.chart,
+                    renderer = chart.renderer,
+                    styledMode = chart.styledMode,
+                    options = series.options,
+                    shadow = styledMode ? {} : options.shadow,
+                    borderRadius = options.borderRadius,
+                    withinAnimationLimit = chart.pointCount < options.animationLimit,
+                    allowTraversingTree = options.allowTraversingTree;
                 points.forEach(function (point) {
-                    var levelDynamic = point.node.levelDynamic, animatableAttribs = {}, attribs = {}, css = {}, groupKey = 'level-group-' + point.node.level, hasGraphic = !!point.graphic, shouldAnimate = withinAnimationLimit && hasGraphic, shapeArgs = point.shapeArgs;
+                    var levelDynamic = point.node.levelDynamic,
+                        animatableAttribs = {},
+                        attribs = {},
+                        css = {},
+                        groupKey = 'level-group-' + point.node.level,
+                        hasGraphic = !!point.graphic,
+                        shouldAnimate = withinAnimationLimit && hasGraphic,
+                        shapeArgs = point.shapeArgs;
                     // Don't bother with calculate styling if the point is not drawn
                     if (point.shouldDraw()) {
                         point.isInside = true;
@@ -2097,7 +2393,8 @@
              * @private
              */
             TreemapSeries.prototype.drillToByGroup = function (point) {
-                var series = this, drillId = false;
+                var series = this,
+                    drillId = false;
                 if ((point.node.level - series.nodeMap[series.rootNode].level) ===
                     1 &&
                     !point.node.isLeaf) {
@@ -2111,7 +2408,9 @@
              * @private
              */
             TreemapSeries.prototype.drillToByLeaf = function (point) {
-                var series = this, drillId = false, nodeParent;
+                var series = this,
+                    drillId = false,
+                    nodeParent;
                 if ((point.node.parent !== series.rootNode) &&
                     point.node.isLeaf) {
                     nodeParent = point.node;
@@ -2133,7 +2432,8 @@
                 this.setRootNode(id, redraw);
             };
             TreemapSeries.prototype.drillUp = function () {
-                var series = this, node = series.nodeMap[series.rootNode];
+                var series = this,
+                    node = series.nodeMap[series.rootNode];
                 if (node && isString(node.parent)) {
                     series.setRootNode(node.parent, true, { trigger: 'traverseUpButton' });
                 }
@@ -2141,7 +2441,10 @@
             TreemapSeries.prototype.getExtremes = function () {
                 // Get the extremes from the value data
                 var _a = Series.prototype.getExtremes
-                    .call(this, this.colorValueData), dataMin = _a.dataMin, dataMax = _a.dataMax;
+                        .call(this,
+                    this.colorValueData),
+                    dataMin = _a.dataMin,
+                    dataMax = _a.dataMax;
                 this.valueMin = dataMin;
                 this.valueMax = dataMax;
                 // Get the extremes from the y data
@@ -2163,8 +2466,12 @@
              *         Map from parent id to children index in data.
              */
             TreemapSeries.prototype.getListOfParents = function (data, existingIds) {
-                var arr = isArray(data) ? data : [], ids = isArray(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
-                    var parent = pick(curr.parent, '');
+                var arr = isArray(data) ? data : [],
+                    ids = isArray(existingIds) ? existingIds : [],
+                    listOfParents = arr.reduce(function (prev,
+                    curr,
+                    i) {
+                        var parent = pick(curr.parent, '');
                     if (typeof prev[parent] === 'undefined') {
                         prev[parent] = [];
                     }
@@ -2189,15 +2496,21 @@
              * @private
              */
             TreemapSeries.prototype.getTree = function () {
-                var series = this, allIds = this.data.map(function (d) {
-                    return d.id;
+                var series = this,
+                    allIds = this.data.map(function (d) {
+                        return d.id;
                 }), parentList = series.getListOfParents(this.data, allIds);
                 series.nodeMap = {};
                 series.nodeList = [];
                 return series.buildTree('', -1, 0, parentList);
             };
             TreemapSeries.prototype.buildTree = function (id, index, level, list, parent) {
-                var series = this, children = [], point = series.points[index], height = 0, node, child;
+                var series = this,
+                    children = [],
+                    point = series.points[index],
+                    height = 0,
+                    node,
+                    child;
                 // Actions
                 (list[id] || []).forEach(function (i) {
                     child = series.buildTree(series.points[i].id, i, level + 1, list, id);
@@ -2225,7 +2538,9 @@
                 return !!this.processedXData.length; // != 0
             };
             TreemapSeries.prototype.init = function (chart, options) {
-                var series = this, breadcrumbsOptions = merge(options.drillUpButton, options.breadcrumbs);
+                var series = this,
+                    breadcrumbsOptions = merge(options.drillUpButton,
+                    options.breadcrumbs);
                 var setOptionsEvent;
                 setOptionsEvent = addEvent(series, 'setOptions', function (event) {
                     var options = event.userOptions;
@@ -2285,7 +2600,9 @@
              * @private
              */
             TreemapSeries.prototype.onClickDrillToNode = function (event) {
-                var series = this, point = event.point, drillId = point && point.drillId;
+                var series = this,
+                    point = event.point,
+                    drillId = point && point.drillId;
                 // If a drill id is returned, add click event and cursor.
                 if (isString(drillId)) {
                     point.setState(''); // Remove hover
@@ -2297,9 +2614,16 @@
              * @private
              */
             TreemapSeries.prototype.pointAttribs = function (point, state) {
-                var series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
-                    series.mapOptionsToLevel :
-                    {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, attr, stateOptions = state && options.states && options.states[state] || {}, className = (point && point.getClassName()) || '', opacity;
+                var series = this,
+                    mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
+                        series.mapOptionsToLevel :
+                        {}),
+                    level = point && mapOptionsToLevel[point.node.level] || {},
+                    options = this.options,
+                    attr,
+                    stateOptions = state && options.states && options.states[state] || {},
+                    className = (point && point.getClassName()) || '',
+                    opacity;
                 // Set attributes by precedence. Point trumps level trumps series.
                 // Stroke width uses pick because it can be 0.
                 attr = {
@@ -2342,7 +2666,11 @@
              * @private
              */
             TreemapSeries.prototype.setColorRecursive = function (node, parentColor, colorIndex, index, siblings) {
-                var series = this, chart = series && series.chart, colors = chart && chart.options && chart.options.colors, colorInfo, point;
+                var series = this,
+                    chart = series && series.chart,
+                    colors = chart && chart.options && chart.options.colors,
+                    colorInfo,
+                    point;
                 if (node) {
                     colorInfo = getColor(node, {
                         colors: colors,
@@ -2366,7 +2694,9 @@
             };
             TreemapSeries.prototype.setPointValues = function () {
                 var series = this;
-                var points = series.points, xAxis = series.xAxis, yAxis = series.yAxis;
+                var points = series.points,
+                    xAxis = series.xAxis,
+                    yAxis = series.yAxis;
                 var styledMode = series.chart.styledMode;
                 // Get the crisp correction in classic mode. For this to work in
                 // styled mode, we would need to first add the shape (without x,
@@ -2375,25 +2705,36 @@
                 // shapeArgs. This applies also to column series, but the
                 // downside is performance and code complexity.
                 var getCrispCorrection = function (point) { return (styledMode ?
-                    0 :
-                    ((series.pointAttribs(point)['stroke-width'] || 0) % 2) / 2); };
+                        0 :
+                        ((series.pointAttribs(point)['stroke-width'] || 0) % 2) / 2); };
                 points.forEach(function (point) {
-                    var _a = point.node, values = _a.pointValues, visible = _a.visible;
+                    var _a = point.node,
+                        values = _a.pointValues,
+                        visible = _a.visible;
                     // Points which is ignored, have no values.
                     if (values && visible) {
-                        var height = values.height, width = values.width, x = values.x, y = values.y;
+                        var height = values.height,
+                            width = values.width,
+                            x = values.x,
+                            y = values.y;
                         var crispCorr = getCrispCorrection(point);
-                        var x1 = Math.round(xAxis.toPixels(x, true)) - crispCorr;
-                        var x2 = Math.round(xAxis.toPixels(x + width, true)) - crispCorr;
-                        var y1 = Math.round(yAxis.toPixels(y, true)) - crispCorr;
-                        var y2 = Math.round(yAxis.toPixels(y + height, true)) - crispCorr;
+                        var x1 = Math.round(xAxis.toPixels(x,
+                            true)) - crispCorr;
+                        var x2 = Math.round(xAxis.toPixels(x + width,
+                            true)) - crispCorr;
+                        var y1 = Math.round(yAxis.toPixels(y,
+                            true)) - crispCorr;
+                        var y2 = Math.round(yAxis.toPixels(y + height,
+                            true)) - crispCorr;
                         // Set point values
                         var shapeArgs = {
-                            x: Math.min(x1, x2),
-                            y: Math.min(y1, y2),
-                            width: Math.abs(x2 - x1),
-                            height: Math.abs(y2 - y1)
-                        };
+                                x: Math.min(x1,
+                            x2),
+                                y: Math.min(y1,
+                            y2),
+                                width: Math.abs(x2 - x1),
+                                height: Math.abs(y2 - y1)
+                            };
                         point.plotX = shapeArgs.x + (shapeArgs.width / 2);
                         point.plotY = shapeArgs.y + (shapeArgs.height / 2);
                         point.shapeArgs = shapeArgs;
@@ -2439,12 +2780,15 @@
              * @emits Highcharts.Series#event:setRootNode
              */
             TreemapSeries.prototype.setRootNode = function (id, redraw, eventArguments) {
-                var series = this, eventArgs = extend({
-                    newRootId: id,
-                    previousRootId: series.rootNode,
-                    redraw: pick(redraw, true),
-                    series: series
-                }, eventArguments);
+                var series = this,
+                    eventArgs = extend({
+                        newRootId: id,
+                        previousRootId: series.rootNode,
+                        redraw: pick(redraw,
+                    true),
+                        series: series
+                    },
+                    eventArguments);
                 /**
                  * The default functionality of the setRootNode event.
                  *
@@ -2459,7 +2803,7 @@
                  * directly.
                      */
                 var defaultFn = function (args) {
-                    var series = args.series;
+                        var series = args.series;
                     // Store previous and new root ids on the series.
                     series.idPreviousRoot = args.previousRootId;
                     series.rootNode = args.newRootId;
@@ -2484,9 +2828,18 @@
                 this.options.inactiveOtherPoints = false;
             };
             TreemapSeries.prototype.setTreeValues = function (tree) {
-                var series = this, options = series.options, idRoot = series.rootNode, mapIdToNode = series.nodeMap, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (TreemapUtilities.isBoolean(options.levelIsConstant) ?
-                    options.levelIsConstant :
-                    true), childrenTotal = 0, children = [], val, point = series.points[tree.i];
+                var series = this,
+                    options = series.options,
+                    idRoot = series.rootNode,
+                    mapIdToNode = series.nodeMap,
+                    nodeRoot = mapIdToNode[idRoot],
+                    levelIsConstant = (TreemapUtilities.isBoolean(options.levelIsConstant) ?
+                        options.levelIsConstant :
+                        true),
+                    childrenTotal = 0,
+                    children = [],
+                    val,
+                    point = series.points[tree.i];
                 // First give the children some values
                 tree.children.forEach(function (child) {
                     child = series.setTreeValues(child);
@@ -2530,9 +2883,15 @@
                 return this.algorithmFill(false, parent, children);
             };
             TreemapSeries.prototype.translate = function () {
-                var series = this, options = series.options, 
-                // NOTE: updateRootId modifies series.
-                rootId = updateRootId(series), rootNode, pointValues, seriesArea, tree, val;
+                var series = this,
+                    options = series.options, 
+                    // NOTE: updateRootId modifies series.
+                    rootId = updateRootId(series),
+                    rootNode,
+                    pointValues,
+                    seriesArea,
+                    tree,
+                    val;
                 // Call prototype function
                 Series.prototype.translate.call(series);
                 // @todo Only if series.isDirtyData is true
@@ -2555,7 +2914,8 @@
                 });
                 // Parents of the root node is by default visible
                 TreemapUtilities.recursive(series.nodeMap[series.rootNode], function (node) {
-                    var next = false, p = node.parent;
+                    var next = false,
+                        p = node.parent;
                     node.visible = true;
                     if (p || p === '') {
                         next = series.nodeMap[p];
@@ -2756,8 +3116,9 @@
                     enabled: true,
                     formatter: function () {
                         var point = this && this.point ?
-                            this.point :
-                            {}, name = isString(point.name) ? point.name : '';
+                                this.point :
+                                {},
+                            name = isString(point.name) ? point.name : '';
                         return name;
                     },
                     inside: true,
@@ -2917,6 +3278,9 @@
                  *
                  * @sample highcharts/demo/sunburst/
                  *         Sunburst with color variation
+                 *
+                 * @sample highcharts/series-treegraph/color-variation
+                 *         Treegraph nodes with color variation
                  *
                  * @since     6.0.0
                  * @product   highcharts
@@ -3161,10 +3525,11 @@
 
         return TreemapSeries;
     });
-    _registerModule(_modules, 'masters/modules/treemap.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Breadcrumbs.js']], function (Highcharts, Breadcrumbs) {
+    _registerModule(_modules, 'masters/modules/treemap.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js']], function (Highcharts, Breadcrumbs) {
 
         var G = Highcharts;
         G.Breadcrumbs = Breadcrumbs;
+        Breadcrumbs.compose(G.Chart, G.defaultOptions);
 
     });
 }));

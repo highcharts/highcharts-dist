@@ -1,5 +1,5 @@
 /*
- Highstock JS v10.3.3 (2023-01-20)
+ Highstock JS v11.0.0 (2023-04-26)
 
  Indicator series type for Highcharts Stock
 
@@ -7,8 +7,8 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/cmo",["highcharts","highcharts/modules/stock"],function(g){a(g);a.Highcharts=g;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function g(a,b,g,l){a.hasOwnProperty(b)||(a[b]=l.apply(null,g),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:b,module:a[b]}})))}
-a=a?a._modules:{};g(a,"Stock/Indicators/CMO/CMOIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,b){var g=this&&this.__extends||function(){var a=function(b,e){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(c,a){c.__proto__=a}||function(c,a){for(var e in a)a.hasOwnProperty(e)&&(c[e]=a[e])};return a(b,e)};return function(b,e){function c(){this.constructor=b}a(b,e);b.prototype=null===e?Object.create(e):(c.prototype=e.prototype,new c)}}(),l=a.seriesTypes.sma,
-p=b.isNumber,q=b.merge;b=function(a){function b(){var b=null!==a&&a.apply(this,arguments)||this;b.data=void 0;b.options=void 0;b.points=void 0;return b}g(b,a);b.prototype.getValues=function(a,c){var b=c.period,e=a.xData,f=a.yData;a=f?f.length:0;var g=[],l=[],m=[],d,n=c.index;if(!(e.length<b)){p(f[0])?c=f:(n=Math.min(n,f[0].length-1),c=f.map(function(a){return a[n]}));var h=0,k=f=0;for(d=b;0<d;d--)c[d]>c[d-1]?f+=c[d]-c[d-1]:c[d]<c[d-1]&&(k+=c[d-1]-c[d]);h=0<f+k?100*(f-k)/(f+k):0;l.push(e[b]);m.push(h);
-g.push([e[b],h]);for(d=b+1;d<a;d++)h=Math.abs(c[d-b-1]-c[d-b]),c[d]>c[d-1]?f+=c[d]-c[d-1]:c[d]<c[d-1]&&(k+=c[d-1]-c[d]),c[d-b]>c[d-b-1]?f-=h:k-=h,h=0<f+k?100*(f-k)/(f+k):0,l.push(e[d]),m.push(h),g.push([e[d],h]);return{values:g,xData:l,yData:m}}};b.defaultOptions=q(l.defaultOptions,{params:{period:20,index:3}});return b}(l);a.registerSeriesType("cmo",b);"";return b});g(a,"masters/indicators/cmo.src.js",[],function(){})});
+'use strict';(function(b){"object"===typeof module&&module.exports?(b["default"]=b,module.exports=b):"function"===typeof define&&define.amd?define("highcharts/indicators/cmo",["highcharts","highcharts/modules/stock"],function(d){b(d);b.Highcharts=d;return b}):b("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(b){function d(b,f,d,l){b.hasOwnProperty(f)||(b[f]=l.apply(null,d),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:f,
+module:b[f]}})))}b=b?b._modules:{};d(b,"Stock/Indicators/CMO/CMOIndicator.js",[b["Core/Series/SeriesRegistry.js"],b["Core/Utilities.js"]],function(b,d){const {sma:f}=b.seriesTypes,{isNumber:l,merge:q}=d;class k extends f{constructor(){super(...arguments);this.points=this.options=this.data=void 0}getValues(b,c){const d=c.period,f=b.xData;var e=b.yData;b=e?e.length:0;const k=[],m=[],n=[];var a;let p=c.index;if(!(f.length<d)){l(e[0])?c=e:(p=Math.min(p,e[0].length-1),c=e.map(a=>a[p]));var g=0,h=e=0;for(a=
+d;0<a;a--)c[a]>c[a-1]?e+=c[a]-c[a-1]:c[a]<c[a-1]&&(h+=c[a-1]-c[a]);g=0<e+h?100*(e-h)/(e+h):0;m.push(f[d]);n.push(g);k.push([f[d],g]);for(a=d+1;a<b;a++)g=Math.abs(c[a-d-1]-c[a-d]),c[a]>c[a-1]?e+=c[a]-c[a-1]:c[a]<c[a-1]&&(h+=c[a-1]-c[a]),c[a-d]>c[a-d-1]?e-=g:h-=g,g=0<e+h?100*(e-h)/(e+h):0,m.push(f[a]),n.push(g),k.push([f[a],g]);return{values:k,xData:m,yData:n}}}}k.defaultOptions=q(f.defaultOptions,{params:{period:20,index:3}});b.registerSeriesType("cmo",k);"";return k});d(b,"masters/indicators/cmo.src.js",
+[],function(){})});
 //# sourceMappingURL=cmo.js.map

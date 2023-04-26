@@ -10,19 +10,19 @@
 'use strict';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, merge = U.merge, pick = U.pick;
+const { addEvent, extend, merge, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedMembers = [];
+const composedMembers = [];
 /* *
  *
  *  Variables
  *
  * */
-var AxisConstructor;
+let AxisConstructor;
 /* *
  *
  *  Functions
@@ -37,7 +37,7 @@ var AxisConstructor;
  * @function Highcharts.Axis#applyGrouping
  */
 function applyGrouping(e) {
-    var axis = this, series = axis.series;
+    const axis = this, series = axis.series;
     // Reset the groupPixelWidth for all series, #17141.
     series.forEach(function (series) {
         series.groupPixelWidth = void 0; // #2110
@@ -58,16 +58,15 @@ function applyGrouping(e) {
  */
 function compose(AxisClass) {
     AxisConstructor = AxisClass;
-    if (composedMembers.indexOf(AxisClass) === -1) {
-        composedMembers.push(AxisClass);
+    if (U.pushUnique(composedMembers, AxisClass)) {
         addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
         // When all series are processed, calculate the group pixel width and
         // then if this value is different than zero apply groupings.
         addEvent(AxisClass, 'postProcessData', applyGrouping);
         extend(AxisClass.prototype, {
-            applyGrouping: applyGrouping,
-            getGroupPixelWidth: getGroupPixelWidth,
-            setDataGrouping: setDataGrouping
+            applyGrouping,
+            getGroupPixelWidth,
+            setDataGrouping
         });
     }
 }
@@ -77,8 +76,8 @@ function compose(AxisClass) {
  * @private
  */
 function getGroupPixelWidth() {
-    var series = this.series;
-    var i = series.length, groupPixelWidth = 0, doGrouping = false, dataLength, dgOptions;
+    const series = this.series;
+    let i = series.length, groupPixelWidth = 0, doGrouping = false, dataLength, dgOptions;
     // If one of the series needs grouping, apply it to all (#1634)
     while (i--) {
         dgOptions = series[i].options.dataGrouping;
@@ -128,8 +127,8 @@ function onAfterSetScale() {
  *        {@link Chart#redraw}.
  */
 function setDataGrouping(dataGrouping, redraw) {
-    var axis = this;
-    var i;
+    const axis = this;
+    let i;
     redraw = pick(redraw, true);
     if (!dataGrouping) {
         dataGrouping = {
@@ -168,7 +167,7 @@ function setDataGrouping(dataGrouping, redraw) {
  *  Default Export
  *
  * */
-var DataGroupingAxisComposition = {
-    compose: compose
+const DataGroupingAxisComposition = {
+    compose
 };
 export default DataGroupingAxisComposition;

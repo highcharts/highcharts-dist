@@ -9,7 +9,7 @@
  * */
 'use strict';
 import U from './Utilities.js';
-var addEvent = U.addEvent, isFunction = U.isFunction, objectEach = U.objectEach, removeEvent = U.removeEvent;
+const { addEvent, isFunction, objectEach, removeEvent } = U;
 /* *
  *
  *  Class Namespace
@@ -46,7 +46,9 @@ var Foundation;
                 }
                 if (isFunction(event)) {
                     component.eventOptions[eventType] = event;
-                    addEvent(component, eventType, event);
+                    addEvent(component, eventType, event, {
+                        order: 0 // #14080 fire those events as firsts
+                    });
                 }
             }
         });

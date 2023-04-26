@@ -10,49 +10,32 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var SankeyPoint = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
+const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var wrap = U.wrap;
+const { wrap } = U;
 /* *
  *
  *  Class
  *
  * */
-var DependencyWheelPoint = /** @class */ (function (_super) {
-    __extends(DependencyWheelPoint, _super);
-    function DependencyWheelPoint() {
+class DependencyWheelPoint extends SankeyPoint {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.angle = void 0;
-        _this.fromNode = void 0;
-        _this.index = void 0;
-        _this.linksFrom = void 0;
-        _this.linksTo = void 0;
-        _this.options = void 0;
-        _this.series = void 0;
-        _this.shapeArgs = void 0;
-        _this.toNode = void 0;
-        return _this;
+        super(...arguments);
+        this.angle = void 0;
+        this.fromNode = void 0;
+        this.index = void 0;
+        this.linksFrom = void 0;
+        this.linksTo = void 0;
+        this.options = void 0;
+        this.series = void 0;
+        this.shapeArgs = void 0;
+        this.toNode = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -65,15 +48,14 @@ var DependencyWheelPoint = /** @class */ (function (_super) {
      * Return a text path that the data label uses.
      * @private
      */
-    DependencyWheelPoint.prototype.getDataLabelPath = function (label) {
-        var _this = this;
-        var renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
+    getDataLabelPath(label) {
+        const renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
         // First time
         if (!this.dataLabelPath) {
             // Destroy the path with the label
-            wrap(label, 'destroy', function (proceed) {
-                if (_this.dataLabelPath) {
-                    _this.dataLabelPath = _this.dataLabelPath.destroy();
+            wrap(label, 'destroy', (proceed) => {
+                if (this.dataLabelPath) {
+                    this.dataLabelPath = this.dataLabelPath.destroy();
                 }
                 return proceed.call(label);
             });
@@ -100,13 +82,12 @@ var DependencyWheelPoint = /** @class */ (function (_super) {
         })
             .add(renderer.defs);
         return this.dataLabelPath;
-    };
-    DependencyWheelPoint.prototype.isValid = function () {
+    }
+    isValid() {
         // No null points here
         return true;
-    };
-    return DependencyWheelPoint;
-}(SankeyPoint));
+    }
+}
 /* *
  *
  *  Default Export

@@ -8,55 +8,38 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes.area.prototype, AreaPoint = _a.pointClass, areaProto = _a.pointClass.prototype;
+const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-var defined = U.defined, isNumber = U.isNumber;
+const { defined, isNumber } = U;
 /* *
  *
  *  Class
  *
  * */
-var AreaRangePoint = /** @class */ (function (_super) {
-    __extends(AreaRangePoint, _super);
-    function AreaRangePoint() {
+class AreaRangePoint extends AreaPoint {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /**
          * Range series only. The high or maximum value for each data point.
          * @name Highcharts.Point#high
          * @type {number|undefined}
          */
-        _this.high = void 0;
+        this.high = void 0;
         /**
          * Range series only. The low or minimum value for each data point.
          * @name Highcharts.Point#low
          * @type {number|undefined}
          */
-        _this.low = void 0;
-        _this.options = void 0;
-        _this.plotX = void 0;
-        _this.series = void 0;
-        return _this;
+        this.low = void 0;
+        this.options = void 0;
+        this.plotX = void 0;
+        this.series = void 0;
     }
     /* *
      *
@@ -66,8 +49,8 @@ var AreaRangePoint = /** @class */ (function (_super) {
     /**
      * @private
      */
-    AreaRangePoint.prototype.setState = function () {
-        var prevState = this.state, series = this.series, isPolar = series.chart.polar;
+    setState() {
+        const prevState = this.state, series = this.series, isPolar = series.chart.polar;
         if (!defined(this.plotHigh)) {
             // Boost doesn't calculate plotHigh
             this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -103,10 +86,10 @@ var AreaRangePoint = /** @class */ (function (_super) {
             series.lowerStateMarkerGraphic = void 0;
         }
         areaProto.setState.apply(this, arguments);
-    };
-    AreaRangePoint.prototype.haloPath = function () {
-        var isPolar = this.series.chart.polar;
-        var path = [];
+    }
+    haloPath() {
+        const isPolar = this.series.chart.polar;
+        let path = [];
         // Bottom halo
         this.plotY = this.plotLow;
         if (isPolar && isNumber(this.plotLowX)) {
@@ -124,12 +107,11 @@ var AreaRangePoint = /** @class */ (function (_super) {
             path = path.concat(areaProto.haloPath.apply(this, arguments));
         }
         return path;
-    };
-    AreaRangePoint.prototype.isValid = function () {
+    }
+    isValid() {
         return isNumber(this.low) && isNumber(this.high);
-    };
-    return AreaRangePoint;
-}(AreaPoint));
+    }
+}
 /* *
  *
  *  Default Export

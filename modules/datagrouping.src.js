@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Data grouping module
  *
@@ -63,9 +63,9 @@
          *
          * @private
          */
-        var ApproximationRegistry = {
-            // approximations added programmatically
-            };
+        const ApproximationRegistry = {
+        // approximations added programmatically
+        };
         /* *
          *
          *  Default Export
@@ -84,11 +84,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            correctFloat = U.correctFloat,
-            extend = U.extend,
-            isNumber = U.isNumber;
+        const { arrayMax, arrayMin, correctFloat, extend, isNumber } = U;
         /* *
          *
          *  Functions
@@ -98,8 +94,8 @@
          * @private
          */
         function average(arr) {
-            var len = arr.length;
-            var ret = sum(arr);
+            const len = arr.length;
+            let ret = sum(arr);
             // If we have a number, return it divided by the length. If not,
             // return null or undefined based on what the sum method finds.
             if (isNumber(ret) && len) {
@@ -112,7 +108,7 @@
          * @private
          */
         function averages() {
-            var ret = [];
+            const ret = [];
             [].forEach.call(arguments, function (arr) {
                 ret.push(average(arr));
             });
@@ -198,8 +194,7 @@
          * @private
          */
         function sum(arr) {
-            var len = arr.length,
-                ret;
+            let len = arr.length, ret;
             // 1. it consists of nulls exclusive
             if (!len && arr.hasNulls) {
                 ret = null;
@@ -220,18 +215,18 @@
          *  Default Export
          *
          * */
-        var ApproximationDefaults = {
-                average: average,
-                averages: averages,
-                close: close,
-                high: high,
-                hlc: hlc,
-                low: low,
-                ohlc: ohlc,
-                open: open,
-                range: range,
-                sum: sum
-            };
+        const ApproximationDefaults = {
+            average,
+            averages,
+            close,
+            high,
+            hlc,
+            low,
+            ohlc,
+            open,
+            range,
+            sum
+        };
         extend(ApproximationRegistry, ApproximationDefaults);
 
         return ApproximationDefaults;
@@ -255,136 +250,129 @@
          * Common options
          * @private
          */
-        var common = {
-                // enabled: null, // (true for stock charts, false for basic),
-                // forced: undefined,
-                groupPixelWidth: 2,
-                // the first one is the point or start value, the second is the start
-                // value if we're dealing with range, the third one is the end value if
-                // dealing with a range
-                dateTimeLabelFormats: {
-                    millisecond: [
-                        '%A, %b %e, %H:%M:%S.%L',
-                        '%A, %b %e, %H:%M:%S.%L',
-                        '-%H:%M:%S.%L'
-                    ],
-                    second: [
-                        '%A, %b %e, %H:%M:%S',
-                        '%A, %b %e, %H:%M:%S',
-                        '-%H:%M:%S'
-                    ],
-                    minute: [
-                        '%A, %b %e, %H:%M',
-                        '%A, %b %e, %H:%M',
-                        '-%H:%M'
-                    ],
-                    hour: [
-                        '%A, %b %e, %H:%M',
-                        '%A, %b %e, %H:%M',
-                        '-%H:%M'
-                    ],
-                    day: [
-                        '%A, %b %e, %Y',
-                        '%A, %b %e',
-                        '-%A, %b %e, %Y'
-                    ],
-                    week: [
-                        'Week from %A, %b %e, %Y',
-                        '%A, %b %e',
-                        '-%A, %b %e, %Y'
-                    ],
-                    month: [
-                        '%B %Y',
-                        '%B',
-                        '-%B %Y'
-                    ],
-                    year: [
-                        '%Y',
-                        '%Y',
-                        '-%Y'
-                    ]
-                }
-                // smoothed = false, // enable this for navigator series only
-            };
+        const common = {
+            // enabled: null, // (true for stock charts, false for basic),
+            // forced: undefined,
+            groupPixelWidth: 2,
+            // the first one is the point or start value, the second is the start
+            // value if we're dealing with range, the third one is the end value if
+            // dealing with a range
+            dateTimeLabelFormats: {
+                millisecond: [
+                    '%A, %e %b, %H:%M:%S.%L',
+                    '%A, %e %b, %H:%M:%S.%L',
+                    '-%H:%M:%S.%L'
+                ],
+                second: [
+                    '%A, %e %b, %H:%M:%S',
+                    '%A, %e %b, %H:%M:%S',
+                    '-%H:%M:%S'
+                ],
+                minute: [
+                    '%A, %e %b, %H:%M',
+                    '%A, %e %b, %H:%M',
+                    '-%H:%M'
+                ],
+                hour: [
+                    '%A, %e %b, %H:%M',
+                    '%A, %e %b, %H:%M',
+                    '-%H:%M'
+                ],
+                day: [
+                    '%A, %e %b %Y',
+                    '%A, %e %b',
+                    '-%A, %e %b %Y'
+                ],
+                week: [
+                    'Week from %A, %e %b %Y',
+                    '%A, %e %b',
+                    '-%A, %e %b %Y'
+                ],
+                month: [
+                    '%B %Y',
+                    '%B',
+                    '-%B %Y'
+                ],
+                year: [
+                    '%Y',
+                    '%Y',
+                    '-%Y'
+                ]
+            }
+            // smoothed = false, // enable this for navigator series only
+        };
         /**
          * Extends common options
          * @private
          */
-        var seriesSpecific = {
-                line: {},
-                spline: {},
-                area: {},
-                areaspline: {},
-                arearange: {},
-                column: {
-                    groupPixelWidth: 10
-                },
-                columnrange: {
-                    groupPixelWidth: 10
-                },
-                candlestick: {
-                    groupPixelWidth: 10
-                },
-                ohlc: {
-                    groupPixelWidth: 5
-                },
-                hlc: {
-                    groupPixelWidth: 5
-                    // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
-                },
-                heikinashi: {
-                    groupPixelWidth: 10
-                }
-            };
+        const seriesSpecific = {
+            line: {},
+            spline: {},
+            area: {},
+            areaspline: {},
+            arearange: {},
+            column: {
+                groupPixelWidth: 10
+            },
+            columnrange: {
+                groupPixelWidth: 10
+            },
+            candlestick: {
+                groupPixelWidth: 10
+            },
+            ohlc: {
+                groupPixelWidth: 5
+            },
+            hlc: {
+                groupPixelWidth: 5
+                // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
+            },
+            heikinashi: {
+                groupPixelWidth: 10
+            }
+        };
         /**
          * Units are defined in a separate array to allow complete overriding in
          * case of a user option.
          * @private
          */
-        var units = [
-                [
-                    'millisecond',
-                    [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
-                ],
+        const units = [
             [
-                    'second',
-                    [1, 2, 5, 10, 15, 30]
-                ],
-            [
-                    'minute',
-                    [1, 2, 5, 10, 15, 30]
-                ],
-            [
-                    'hour',
-                    [1, 2, 3, 4, 6, 8, 12]
-                ],
-            [
-                    'day',
-                    [1]
-                ],
-            [
-                    'week',
-                    [1]
-                ],
-            [
-                    'month',
-                    [1, 3, 6]
-                ],
-            [
-                    'year',
-                    null
-                ]
-            ];
+                'millisecond',
+                [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
+            ], [
+                'second',
+                [1, 2, 5, 10, 15, 30]
+            ], [
+                'minute',
+                [1, 2, 5, 10, 15, 30]
+            ], [
+                'hour',
+                [1, 2, 3, 4, 6, 8, 12]
+            ], [
+                'day',
+                [1]
+            ], [
+                'week',
+                [1]
+            ], [
+                'month',
+                [1, 3, 6]
+            ], [
+                'year',
+                null
+            ]
+        ];
         /* *
          *
          *  Default Export
          *
          * */
-        var DataGroupingDefaults = {
-                common: common,
-                seriesSpecific: seriesSpecific,
-                units: units
-            };
+        const DataGroupingDefaults = {
+            common,
+            seriesSpecific,
+            units
+        };
 
         return DataGroupingDefaults;
     });
@@ -398,22 +386,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        const { addEvent, extend, merge, pick } = U;
         /* *
          *
          *  Constants
          *
          * */
-        var composedMembers = [];
+        const composedMembers = [];
         /* *
          *
          *  Variables
          *
          * */
-        var AxisConstructor;
+        let AxisConstructor;
         /* *
          *
          *  Functions
@@ -428,8 +413,7 @@
          * @function Highcharts.Axis#applyGrouping
          */
         function applyGrouping(e) {
-            var axis = this,
-                series = axis.series;
+            const axis = this, series = axis.series;
             // Reset the groupPixelWidth for all series, #17141.
             series.forEach(function (series) {
                 series.groupPixelWidth = void 0; // #2110
@@ -450,16 +434,15 @@
          */
         function compose(AxisClass) {
             AxisConstructor = AxisClass;
-            if (composedMembers.indexOf(AxisClass) === -1) {
-                composedMembers.push(AxisClass);
+            if (U.pushUnique(composedMembers, AxisClass)) {
                 addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
                 // When all series are processed, calculate the group pixel width and
                 // then if this value is different than zero apply groupings.
                 addEvent(AxisClass, 'postProcessData', applyGrouping);
                 extend(AxisClass.prototype, {
-                    applyGrouping: applyGrouping,
-                    getGroupPixelWidth: getGroupPixelWidth,
-                    setDataGrouping: setDataGrouping
+                    applyGrouping,
+                    getGroupPixelWidth,
+                    setDataGrouping
                 });
             }
         }
@@ -469,12 +452,8 @@
          * @private
          */
         function getGroupPixelWidth() {
-            var series = this.series;
-            var i = series.length,
-                groupPixelWidth = 0,
-                doGrouping = false,
-                dataLength,
-                dgOptions;
+            const series = this.series;
+            let i = series.length, groupPixelWidth = 0, doGrouping = false, dataLength, dgOptions;
             // If one of the series needs grouping, apply it to all (#1634)
             while (i--) {
                 dgOptions = series[i].options.dataGrouping;
@@ -524,8 +503,8 @@
          *        {@link Chart#redraw}.
          */
         function setDataGrouping(dataGrouping, redraw) {
-            var axis = this;
-            var i;
+            const axis = this;
+            let i;
             redraw = pick(redraw, true);
             if (!dataGrouping) {
                 dataGrouping = {
@@ -564,9 +543,9 @@
          *  Default Export
          *
          * */
-        var DataGroupingAxisComposition = {
-                compose: compose
-            };
+        const DataGroupingAxisComposition = {
+            compose
+        };
 
         return DataGroupingAxisComposition;
     });
@@ -580,21 +559,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesProto = SeriesRegistry.series.prototype;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            error = U.error,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick;
+        const { series: { prototype: seriesProto } } = SeriesRegistry;
+        const { addEvent, defined, error, extend, isNumber, merge, pick } = U;
         /* *
          *
          *  Constants
          *
          * */
-        var baseGeneratePoints = seriesProto.generatePoints;
-        var composedMembers = [];
+        const baseGeneratePoints = seriesProto.generatePoints;
+        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -635,23 +608,15 @@
          * @private
          */
         function anchorPoints(series, groupedXData, xMax) {
-            var options = series.options,
-                dataGroupingOptions = options.dataGrouping,
-                totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
-            var i;
+            const options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
+            let i;
             // DataGrouping x-coordinates.
             if (dataGroupingOptions && series.xData && totalRange && series.groupMap) {
-                var groupedDataLength = groupedXData.length - 1,
-                    anchor = dataGroupingOptions.anchor,
-                    firstAnchor = pick(dataGroupingOptions.firstAnchor,
-                    anchor),
-                    lastAnchor = pick(dataGroupingOptions.lastAnchor,
-                    anchor);
+                const groupedDataLength = groupedXData.length - 1, anchor = dataGroupingOptions.anchor, firstAnchor = pick(dataGroupingOptions.firstAnchor, anchor), lastAnchor = pick(dataGroupingOptions.lastAnchor, anchor);
                 // Anchor points that are not extremes.
                 if (anchor && anchor !== 'start') {
-                    var shiftInterval = (totalRange *
-                            { middle: 0.5,
-                        end: 1 }[anchor]);
+                    const shiftInterval = (totalRange *
+                        { middle: 0.5, end: 1 }[anchor]);
                     i = groupedXData.length - 1;
                     while (i-- && i > 0) {
                         groupedXData[i] += shiftInterval;
@@ -662,9 +627,8 @@
                 if (firstAnchor &&
                     firstAnchor !== 'start' &&
                     series.xData[0] >= groupedXData[0]) {
-                    var groupStart = series.groupMap[0].start,
-                        groupLength = series.groupMap[0].length;
-                    var firstGroupstEnd = void 0;
+                    const groupStart = series.groupMap[0].start, groupLength = series.groupMap[0].length;
+                    let firstGroupstEnd;
                     if (isNumber(groupStart) && isNumber(groupLength)) {
                         firstGroupstEnd = groupStart + (groupLength - 1);
                     }
@@ -681,7 +645,7 @@
                     lastAnchor !== 'start' &&
                     totalRange &&
                     groupedXData[groupedDataLength] >= xMax - totalRange) {
-                    var lastGroupStart = series.groupMap[series.groupMap.length - 1].start;
+                    const lastGroupStart = series.groupMap[series.groupMap.length - 1].start;
                     groupedXData[groupedDataLength] = {
                         middle: groupedXData[groupedDataLength] + 0.5 * totalRange,
                         end: groupedXData[groupedDataLength] + totalRange,
@@ -698,44 +662,28 @@
          * @function Highcharts.Series#applyGrouping
          */
         function applyGrouping(hasExtremesChanged) {
-            var series = this,
-                chart = series.chart,
-                options = series.options,
-                dataGroupingOptions = options.dataGrouping,
-                groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
-                    pick(dataGroupingOptions.enabled,
-                chart.options.isStock),
-                visible = (series.visible || !chart.options.chart.ignoreHiddenSeries),
-                lastDataGrouping = this.currentDataGrouping;
-            var currentDataGrouping,
-                croppedData,
-                revertRequireSorting = false;
+            const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
+                pick(dataGroupingOptions.enabled, chart.options.isStock), visible = (series.visible || !chart.options.chart.ignoreHiddenSeries), lastDataGrouping = this.currentDataGrouping;
+            let currentDataGrouping, croppedData, revertRequireSorting = false;
             // Data needs to be sorted for dataGrouping
             if (groupingEnabled && !series.requireSorting) {
                 series.requireSorting = revertRequireSorting = true;
             }
             // Skip if skipDataGrouping method returns false or if grouping is disabled
             // (in that order).
-            var skip = skipDataGrouping(series,
-                hasExtremesChanged) === false || !groupingEnabled;
+            const skip = skipDataGrouping(series, hasExtremesChanged) === false || !groupingEnabled;
             // Revert original requireSorting value if changed
             if (revertRequireSorting) {
                 series.requireSorting = false;
             }
             if (!skip) {
                 series.destroyGroupedData();
-                var processedXData = dataGroupingOptions.groupAll ?
-                        series.xData :
-                        series.processedXData,
-                    processedYData = dataGroupingOptions.groupAll ?
-                        series.yData :
-                        series.processedYData,
-                    plotSizeX = chart.plotSizeX,
-                    xAxis = series.xAxis,
-                    ordinal = xAxis.options.ordinal,
-                    groupPixelWidth = series.groupPixelWidth;
-                var i = void 0,
-                    hasGroupedData = void 0;
+                const processedXData = dataGroupingOptions.groupAll ?
+                    series.xData :
+                    series.processedXData, processedYData = dataGroupingOptions.groupAll ?
+                    series.yData :
+                    series.processedYData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
+                let i, hasGroupedData;
                 // Execute grouping if the amount of points is greater than the limit
                 // defined in groupPixelWidth
                 if (groupPixelWidth &&
@@ -746,37 +694,19 @@
                     // Force recreation of point instances in series.translate, #5699
                     series.isDirty = true;
                     series.points = null; // #6709
-                    var extremes = xAxis.getExtremes(),
-                        xMin = extremes.min,
-                        xMax = extremes.max,
-                        groupIntervalFactor = (ordinal &&
-                            xAxis.ordinal &&
-                            xAxis.ordinal.getGroupIntervalFactor(xMin,
-                        xMax,
-                        series)) || 1,
-                        interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
-                            groupIntervalFactor,
-                        groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval,
-                        dataGroupingOptions.units ||
-                            DataGroupingDefaults.units), 
-                        // Processed data may extend beyond axis (#4907)
-                        Math.min(xMin,
-                        processedXData[0]),
-                        Math.max(xMax,
-                        processedXData[processedXData.length - 1]),
-                        xAxis.options.startOfWeek,
+                    const extremes = xAxis.getExtremes(), xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+                        xAxis.ordinal &&
+                        xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
+                        groupIntervalFactor, groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
+                        DataGroupingDefaults.units), 
+                    // Processed data may extend beyond axis (#4907)
+                    Math.min(xMin, processedXData[0]), Math.max(xMax, processedXData[processedXData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = seriesProto.groupData.apply(series, [
                         processedXData,
-                        series.closestPointRange),
-                        groupedData = seriesProto.groupData.apply(series,
-                        [
-                            processedXData,
-                            processedYData,
-                            groupPositions,
-                            dataGroupingOptions.approximation
-                        ]);
-                    var groupedXData = groupedData.groupedXData,
-                        groupedYData = groupedData.groupedYData,
-                        gapSize = 0;
+                        processedYData,
+                        groupPositions,
+                        dataGroupingOptions.approximation
+                    ]);
+                    let groupedXData = groupedData.groupedXData, groupedYData = groupedData.groupedYData, gapSize = 0;
                     // The smoothed option is deprecated, instead, there is a fallback
                     // to the new anchoring mechanism. #12455.
                     if (dataGroupingOptions &&
@@ -838,9 +768,8 @@
          * @private
          */
         function compose(SeriesClass) {
-            var PointClass = SeriesClass.prototype.pointClass;
-            if (composedMembers.indexOf(PointClass) === -1) {
-                composedMembers.push(PointClass);
+            const PointClass = SeriesClass.prototype.pointClass;
+            if (U.pushUnique(composedMembers, PointClass)) {
                 // Override point prototype to throw a warning when trying to update
                 // grouped points.
                 addEvent(PointClass, 'update', function () {
@@ -850,16 +779,15 @@
                     }
                 });
             }
-            if (composedMembers.indexOf(SeriesClass) === -1) {
-                composedMembers.push(SeriesClass);
+            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterSetOptions', onAfterSetOptions);
                 addEvent(SeriesClass, 'destroy', destroyGroupedData);
                 extend(SeriesClass.prototype, {
-                    applyGrouping: applyGrouping,
-                    destroyGroupedData: destroyGroupedData,
-                    generatePoints: generatePoints,
-                    getDGApproximation: getDGApproximation,
-                    groupData: groupData
+                    applyGrouping,
+                    destroyGroupedData,
+                    generatePoints,
+                    getDGApproximation,
+                    groupData
                 });
             }
         }
@@ -934,36 +862,21 @@
          *         Mapped groups.
          */
         function groupData(xData, yData, groupPositions, approximation) {
-            var series = this,
-                data = series.data,
-                dataOptions = series.options && series.options.data,
-                groupedXData = [],
-                groupedYData = [],
-                groupMap = [],
-                dataLength = xData.length, 
-                // when grouping the fake extended axis for panning,
-                // we don't need to consider y
-                handleYData = !!yData,
-                values = [],
-                pointArrayMap = series.pointArrayMap,
-                pointArrayMapLength = pointArrayMap && pointArrayMap.length,
-                extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
-                groupAll = (this.options.dataGrouping &&
-                    this.options.dataGrouping.groupAll);
-            var pointX,
-                pointY,
-                groupedY,
-                pos = 0,
-                start = 0;
-            var approximationFn = (typeof approximation === 'function' ?
-                    approximation :
-                    approximation && ApproximationRegistry[approximation] ?
-                        ApproximationRegistry[approximation] :
-                        ApproximationRegistry[(series.getDGApproximation && series.getDGApproximation() ||
-                            'average')]);
+            const series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], groupedYData = [], groupMap = [], dataLength = xData.length, 
+            // when grouping the fake extended axis for panning,
+            // we don't need to consider y
+            handleYData = !!yData, values = [], pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), groupAll = (this.options.dataGrouping &&
+                this.options.dataGrouping.groupAll);
+            let pointX, pointY, groupedY, pos = 0, start = 0;
+            const approximationFn = (typeof approximation === 'function' ?
+                approximation :
+                approximation && ApproximationRegistry[approximation] ?
+                    ApproximationRegistry[approximation] :
+                    ApproximationRegistry[(series.getDGApproximation && series.getDGApproximation() ||
+                        'average')]);
             // Calculate values array size from pointArrayMap length
             if (pointArrayMapLength) {
-                var len = pointArrayMap.length;
+                let len = pointArrayMap.length;
                 while (len--) {
                     values.push([]);
                 }
@@ -971,8 +884,8 @@
             else {
                 values.push([]);
             }
-            var valuesLen = pointArrayMapLength || 1;
-            for (var i = 0; i <= dataLength; i++) {
+            const valuesLen = pointArrayMapLength || 1;
+            for (let i = 0; i <= dataLength; i++) {
                 // Start with the first point within the X axis range (#2696)
                 if (xData[i] < groupPositions[0]) {
                     continue; // with next point
@@ -1012,7 +925,7 @@
                     }
                     // reset the aggregate arrays
                     start = i;
-                    for (var j = 0; j < valuesLen; j++) {
+                    for (let j = 0; j < valuesLen; j++) {
                         values[j].length = 0; // faster than values[j] = []
                         values[j].hasNulls = false;
                     }
@@ -1030,16 +943,14 @@
                 // for each raw data point, push it to an array that contains all values
                 // for this specific group
                 if (pointArrayMap) {
-                    var index = (series.options.dataGrouping &&
-                            series.options.dataGrouping.groupAll ?
-                            i : series.cropStart + i),
-                        point = (data && data[index]) ||
-                            series.pointClass.prototype.applyOptions.apply({
-                                series: series
-                            },
-                        [dataOptions[index]]);
-                    var val = void 0;
-                    for (var j = 0; j < pointArrayMapLength; j++) {
+                    const index = (series.options.dataGrouping &&
+                        series.options.dataGrouping.groupAll ?
+                        i : series.cropStart + i), point = (data && data[index]) ||
+                        series.pointClass.prototype.applyOptions.apply({
+                            series: series
+                        }, [dataOptions[index]]);
+                    let val;
+                    for (let j = 0; j < pointArrayMapLength; j++) {
                         val = point[pointArrayMap[j]];
                         if (isNumber(val)) {
                             values[j].push(val);
@@ -1060,9 +971,9 @@
                 }
             }
             return {
-                groupedXData: groupedXData,
-                groupedYData: groupedYData,
-                groupMap: groupMap
+                groupedXData,
+                groupedYData,
+                groupMap
             };
         }
         /**
@@ -1071,17 +982,14 @@
          * @private
          */
         function onAfterSetOptions(e) {
-            var options = e.options,
-                type = this.type,
-                plotOptions = this.chart.options.plotOptions, 
-                // External series, for example technical indicators should also inherit
-                // commonOptions which are not available outside this module
-                baseOptions = (this.useCommonDataGrouping &&
-                    DataGroupingDefaults.common),
-                seriesSpecific = DataGroupingDefaults.seriesSpecific;
-            var defaultOptions = D.defaultOptions.plotOptions[type].dataGrouping;
+            const options = e.options, type = this.type, plotOptions = this.chart.options.plotOptions, 
+            // External series, for example technical indicators should also inherit
+            // commonOptions which are not available outside this module
+            baseOptions = (this.useCommonDataGrouping &&
+                DataGroupingDefaults.common), seriesSpecific = DataGroupingDefaults.seriesSpecific;
+            let defaultOptions = D.defaultOptions.plotOptions[type].dataGrouping;
             if (plotOptions && (seriesSpecific[type] || baseOptions)) { // #1284
-                var rangeSelector = this.chart.rangeSelector;
+                const rangeSelector = this.chart.rangeSelector;
                 if (!defaultOptions) {
                     defaultOptions = merge(DataGroupingDefaults.common, seriesSpecific[type]);
                 }
@@ -1108,10 +1016,10 @@
          *  Default Export
          *
          * */
-        var DataGroupingSeriesComposition = {
-                compose: compose,
-                groupData: groupData
-            };
+        const DataGroupingSeriesComposition = {
+            compose,
+            groupData
+        };
 
         return DataGroupingSeriesComposition;
     });
@@ -1125,16 +1033,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var format = F.format;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            isNumber = U.isNumber;
+        const { format } = F;
+        const { addEvent, extend, isNumber } = U;
         /* *
          *
          *  Constants
          *
          * */
-        var composedMembers = [];
+        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -1146,8 +1052,8 @@
         function compose(AxisClass, SeriesClass, TooltipClass) {
             DataGroupingAxisComposition.compose(AxisClass);
             DataGroupingSeriesComposition.compose(SeriesClass);
-            if (composedMembers.indexOf(TooltipClass) === -1) {
-                composedMembers.push(TooltipClass);
+            if (TooltipClass &&
+                U.pushUnique(composedMembers, TooltipClass)) {
                 addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
             }
         }
@@ -1157,21 +1063,8 @@
          * @private
          */
         function onTooltipHeaderFormatter(e) {
-            var chart = this.chart,
-                time = chart.time,
-                labelConfig = e.labelConfig,
-                series = labelConfig.series,
-                options = series.options,
-                tooltipOptions = series.tooltipOptions,
-                dataGroupingOptions = options.dataGrouping,
-                xAxis = series.xAxis;
-            var xDateFormat = tooltipOptions.xDateFormat,
-                xDateFormatEnd,
-                currentDataGrouping,
-                dateTimeLabelFormats,
-                labelFormats,
-                formattedKey,
-                formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
+            const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
+            let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
             // apply only to grouped series
             if (xAxis &&
                 xAxis.options.type === 'datetime' &&
@@ -1223,10 +1116,10 @@
          *  Default Export
          *
          * */
-        var DataGroupingComposition = {
-                compose: compose,
-                groupData: DataGroupingSeriesComposition.groupData
-            };
+        const DataGroupingComposition = {
+            compose,
+            groupData: DataGroupingSeriesComposition.groupData
+        };
         /* *
          *
          *  API Declarations
@@ -1391,13 +1284,13 @@
          * ```js
          * {
          *     millisecond: [
-         *         '%A, %b %e, %H:%M:%S.%L', '%A, %b %e, %H:%M:%S.%L', '-%H:%M:%S.%L'
+         *         '%A, %e %b, %H:%M:%S.%L', '%A, %e %b, %H:%M:%S.%L', '-%H:%M:%S.%L'
          *     ],
-         *     second: ['%A, %b %e, %H:%M:%S', '%A, %b %e, %H:%M:%S', '-%H:%M:%S'],
-         *     minute: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M', '-%H:%M'],
-         *     hour: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M', '-%H:%M'],
-         *     day: ['%A, %b %e, %Y', '%A, %b %e', '-%A, %b %e, %Y'],
-         *     week: ['Week from %A, %b %e, %Y', '%A, %b %e', '-%A, %b %e, %Y'],
+         *     second: ['%A, %e %b, %H:%M:%S', '%A, %e %b, %H:%M:%S', '-%H:%M:%S'],
+         *     minute: ['%A, %e %b, %H:%M', '%A, %e %b, %H:%M', '-%H:%M'],
+         *     hour: ['%A, %e %b, %H:%M', '%A, %e %b, %H:%M', '-%H:%M'],
+         *     day: ['%A, %e %b %Y', '%A, %e %b', '-%A, %e %b %Y'],
+         *     week: ['Week from %A, %e %b %Y', '%A, %e %b', '-%A, %e %b %Y'],
          *     month: ['%B %Y', '%B', '-%B %Y'],
          *     year: ['%Y', '%Y', '-%Y']
          * }
@@ -1598,7 +1491,7 @@
     });
     _registerModule(_modules, 'masters/modules/datagrouping.src.js', [_modules['Core/Globals.js'], _modules['Extensions/DataGrouping/ApproximationDefaults.js'], _modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Extensions/DataGrouping/DataGrouping.js']], function (Highcharts, ApproximationDefaults, ApproximationRegistry, DataGrouping) {
 
-        var G = Highcharts;
+        const G = Highcharts;
         G.dataGrouping = {
             approximationDefaults: ApproximationDefaults,
             approximations: ApproximationRegistry

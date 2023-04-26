@@ -12,15 +12,15 @@ import DataGroupingAxisComposition from './DataGroupingAxisComposition.js';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
 import DataGroupingSeriesComposition from './DataGroupingSeriesComposition.js';
 import F from '../../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, isNumber = U.isNumber;
+const { addEvent, extend, isNumber } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedMembers = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -32,8 +32,8 @@ var composedMembers = [];
 function compose(AxisClass, SeriesClass, TooltipClass) {
     DataGroupingAxisComposition.compose(AxisClass);
     DataGroupingSeriesComposition.compose(SeriesClass);
-    if (composedMembers.indexOf(TooltipClass) === -1) {
-        composedMembers.push(TooltipClass);
+    if (TooltipClass &&
+        U.pushUnique(composedMembers, TooltipClass)) {
         addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
     }
 }
@@ -43,8 +43,8 @@ function compose(AxisClass, SeriesClass, TooltipClass) {
  * @private
  */
 function onTooltipHeaderFormatter(e) {
-    var chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
-    var xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
+    const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
+    let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
     // apply only to grouped series
     if (xAxis &&
         xAxis.options.type === 'datetime' &&
@@ -96,8 +96,8 @@ function onTooltipHeaderFormatter(e) {
  *  Default Export
  *
  * */
-var DataGroupingComposition = {
-    compose: compose,
+const DataGroupingComposition = {
+    compose,
     groupData: DataGroupingSeriesComposition.groupData
 };
 export default DataGroupingComposition;
@@ -265,13 +265,13 @@ export default DataGroupingComposition;
  * ```js
  * {
  *     millisecond: [
- *         '%A, %b %e, %H:%M:%S.%L', '%A, %b %e, %H:%M:%S.%L', '-%H:%M:%S.%L'
+ *         '%A, %e %b, %H:%M:%S.%L', '%A, %e %b, %H:%M:%S.%L', '-%H:%M:%S.%L'
  *     ],
- *     second: ['%A, %b %e, %H:%M:%S', '%A, %b %e, %H:%M:%S', '-%H:%M:%S'],
- *     minute: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M', '-%H:%M'],
- *     hour: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M', '-%H:%M'],
- *     day: ['%A, %b %e, %Y', '%A, %b %e', '-%A, %b %e, %Y'],
- *     week: ['Week from %A, %b %e, %Y', '%A, %b %e', '-%A, %b %e, %Y'],
+ *     second: ['%A, %e %b, %H:%M:%S', '%A, %e %b, %H:%M:%S', '-%H:%M:%S'],
+ *     minute: ['%A, %e %b, %H:%M', '%A, %e %b, %H:%M', '-%H:%M'],
+ *     hour: ['%A, %e %b, %H:%M', '%A, %e %b, %H:%M', '-%H:%M'],
+ *     day: ['%A, %e %b %Y', '%A, %e %b', '-%A, %e %b %Y'],
+ *     week: ['Week from %A, %e %b %Y', '%A, %e %b', '-%A, %e %b %Y'],
  *     month: ['%B %Y', '%B', '-%B %Y'],
  *     year: ['%Y', '%Y', '-%Y']
  * }

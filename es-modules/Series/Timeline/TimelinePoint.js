@@ -12,43 +12,26 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var Series = SeriesRegistry.series, PiePoint = SeriesRegistry.seriesTypes.pie.prototype.pointClass;
+const { series: Series, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var defined = U.defined, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+const { defined, isNumber, merge, objectEach, pick } = U;
 /* *
  *
  *  Class
  *
  * */
-var TimelinePoint = /** @class */ (function (_super) {
-    __extends(TimelinePoint, _super);
-    function TimelinePoint() {
+class TimelinePoint extends Series.prototype.pointClass {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.options = void 0;
-        _this.series = void 0;
-        return _this;
+        super(...arguments);
+        this.options = void 0;
+        this.series = void 0;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -57,8 +40,8 @@ var TimelinePoint = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    TimelinePoint.prototype.alignConnector = function () {
-        var point = this, series = point.series, connector = point.connector, dl = point.dataLabel, dlOptions = point.dataLabel.options = merge(series.options.dataLabels, point.options.dataLabels), chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
+    alignConnector() {
+        let point = this, series = point.series, connector = point.connector, dl = point.dataLabel, dlOptions = point.dataLabel.options = merge(series.options.dataLabels, point.options.dataLabels), chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
             x: bBox.x + dl.translateX,
             y: bBox.y + dl.translateY
         }, isVisible;
@@ -74,6 +57,7 @@ var TimelinePoint = /** @class */ (function (_super) {
         connector[isVisible ? 'animate' : 'attr']({
             d: point.getConnectorPath()
         });
+        connector.addClass(`highcharts-color-${point.colorIndex}`);
         if (!series.chart.styledMode) {
             connector.attr({
                 stroke: dlOptions.connectorColor || point.color,
@@ -81,9 +65,9 @@ var TimelinePoint = /** @class */ (function (_super) {
                 opacity: dl[defined(dl.newOpacity) ? 'newOpacity' : 'opacity']
             });
         }
-    };
-    TimelinePoint.prototype.drawConnector = function () {
-        var point = this, series = point.series;
+    }
+    drawConnector() {
+        const point = this, series = point.series;
         if (!point.connector) {
             point.connector = series.chart.renderer
                 .path(point.getConnectorPath())
@@ -96,9 +80,9 @@ var TimelinePoint = /** @class */ (function (_super) {
         point.dataLabel.x, point.dataLabel.y)) {
             point.alignConnector();
         }
-    };
-    TimelinePoint.prototype.getConnectorPath = function () {
-        var point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
+    }
+    getConnectorPath() {
+        let point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
             x1: point.plotX,
             y1: point.plotY,
             x2: point.plotX,
@@ -128,25 +112,25 @@ var TimelinePoint = /** @class */ (function (_super) {
             ['L', coords.x2, coords.y2]
         ], dl.options.connectorWidth);
         return path;
-    };
-    TimelinePoint.prototype.init = function () {
-        var point = _super.prototype.init.apply(this, arguments);
+    }
+    init() {
+        const point = super.init.apply(this, arguments);
         point.name = pick(point.name, 'Event');
         point.y = 1;
         return point;
-    };
-    TimelinePoint.prototype.isValid = function () {
+    }
+    isValid() {
         return this.options.y !== null;
-    };
-    TimelinePoint.prototype.setState = function () {
-        var proceed = _super.prototype.setState;
+    }
+    setState() {
+        const proceed = super.setState;
         // Prevent triggering the setState method on null points.
         if (!this.isNull) {
             proceed.apply(this, arguments);
         }
-    };
-    TimelinePoint.prototype.setVisible = function (visible, redraw) {
-        var point = this, series = point.series;
+    }
+    setVisible(visible, redraw) {
+        const point = this, series = point.series;
         redraw = pick(redraw, series.options.ignoreHiddenPoint);
         PiePoint.prototype.setVisible.call(point, visible, false);
         // Process new data
@@ -154,14 +138,13 @@ var TimelinePoint = /** @class */ (function (_super) {
         if (redraw) {
             series.chart.redraw();
         }
-    };
-    TimelinePoint.prototype.applyOptions = function (options, x) {
+    }
+    applyOptions(options, x) {
         options = Point.prototype.optionsToObject.call(this, options);
         this.userDLOptions = merge(this.userDLOptions, options.dataLabels);
-        return _super.prototype.applyOptions.call(this, options, x);
-    };
-    return TimelinePoint;
-}(Series.prototype.pointClass));
+        return super.applyOptions(options, x);
+    }
+}
 /* *
  *
  *  Default Export

@@ -67,7 +67,7 @@
  * @type         {*|Array<*>}
  * @optionparent colorAxis
  */
-var colorAxisDefaults = {
+const colorAxisDefaults = {
     /**
      * Whether to allow decimals on the color axis.
      * @type      {boolean}
@@ -219,10 +219,9 @@ var colorAxisDefaults = {
      *         Grid lines demonstrated
      *
      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-     * @default   #e6e6e6
      * @product   highcharts highstock highmaps
-     * @apioption colorAxis.gridLineColor
      */
+    gridLineColor: "#ffffff" /* Palette.backgroundColor */,
     /**
      * The width of the grid lines extending from the axis across the
      * gradient of a scalar color axis.
@@ -309,6 +308,7 @@ var colorAxisDefaults = {
      * @product highcharts highstock highmaps
      */
     labels: {
+        distance: 8,
         /**
          * How to handle overflowing labels on horizontal color axis. If set
          * to `"allow"`, it will not be aligned at all. By default it
@@ -339,7 +339,7 @@ var colorAxisDefaults = {
      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @product highcharts highstock highmaps
      */
-    minColor: "#e6ebf5" /* Palette.highlightColor10 */,
+    minColor: "#e6e9ff" /* Palette.highlightColor10 */,
     /**
      * The color to represent the maximum of the color axis. Unless
      * [dataClasses](#colorAxis.dataClasses) or
@@ -358,7 +358,7 @@ var colorAxisDefaults = {
      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @product highcharts highstock highmaps
      */
-    maxColor: "#003399" /* Palette.highlightColor100 */,
+    maxColor: "#0022ff" /* Palette.highlightColor100 */,
     /**
      * Color stops for the gradient of a scalar color axis. Use this in
      * cases where a linear gradient between a `minColor` and `maxColor`

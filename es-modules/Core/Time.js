@@ -9,19 +9,19 @@
  * */
 'use strict';
 import H from './Globals.js';
-var win = H.win;
+const { win } = H;
 import U from './Utilities.js';
-var defined = U.defined, error = U.error, extend = U.extend, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pad = U.pad, pick = U.pick, splat = U.splat, timeUnits = U.timeUnits;
+const { defined, error, extend, isObject, merge, objectEach, pad, pick, splat, timeUnits } = U;
 /* *
  *
  *  Constants
  *
  * */
-var hasNewSafariBug = H.isSafari &&
+const hasNewSafariBug = H.isSafari &&
     win.Intl &&
     win.Intl.DateTimeFormat.prototype.formatRange;
 // To do: Remove this when we no longer need support for Safari < v14.1
-var hasOldSafariBug = H.isSafari &&
+const hasOldSafariBug = H.isSafari &&
     win.Intl &&
     !win.Intl.DateTimeFormat.prototype.formatRange;
 /* *
@@ -71,13 +71,13 @@ var hasOldSafariBug = H.isSafari &&
  * @param {Highcharts.TimeOptions} [options]
  * Time options as defined in [chart.options.time](/highcharts/time).
  */
-var Time = /** @class */ (function () {
+class Time {
     /* *
      *
      *  Constructors
      *
      * */
-    function Time(options) {
+    constructor(options) {
         /* *
          *
          *  Properties
@@ -127,12 +127,12 @@ var Time = /** @class */ (function () {
      * @return {number}
      *        The given time unit
      */
-    Time.prototype.get = function (unit, date) {
+    get(unit, date) {
         if (this.variableTimezone || this.timezoneOffset) {
-            var realMs = date.getTime();
-            var ms = realMs - this.getTimezoneOffset(date);
+            const realMs = date.getTime();
+            const ms = realMs - this.getTimezoneOffset(date);
             date.setTime(ms); // Temporary adjust to timezone
-            var ret = date['getUTC' + unit]();
+            const ret = date['getUTC' + unit]();
             date.setTime(realMs); // Reset
             return ret;
         }
@@ -142,7 +142,7 @@ var Time = /** @class */ (function () {
         }
         // Else, local time
         return date['get' + unit]();
-    };
+    }
     /**
      * Set the value of a date object in given units, and subject to the Time
      * object's current timezone settings. This function corresponds directly to
@@ -159,7 +159,7 @@ var Time = /** @class */ (function () {
      * @return {number}
      *        The epoch milliseconds of the updated date
      */
-    Time.prototype.set = function (unit, date, value) {
+    set(unit, date, value) {
         // UTC time with timezone handling
         if (this.variableTimezone || this.timezoneOffset) {
             // For lower order time units, just set it directly using UTC
@@ -174,11 +174,11 @@ var Time = /** @class */ (function () {
             // Higher order time units need to take the time zone into
             // account
             // Adjust by timezone
-            var offset = this.getTimezoneOffset(date);
-            var ms = date.getTime() - offset;
+            const offset = this.getTimezoneOffset(date);
+            let ms = date.getTime() - offset;
             date.setTime(ms);
             date['setUTC' + unit](value);
-            var newOffset = this.getTimezoneOffset(date);
+            const newOffset = this.getTimezoneOffset(date);
             ms = date.getTime() + newOffset;
             return date.setTime(ms);
         }
@@ -190,7 +190,7 @@ var Time = /** @class */ (function () {
         }
         // Else, local time
         return date['set' + unit](value);
-    };
+    }
     /**
      * Update the Time object with current options. It is called internally on
      * initializing Highcharts, after running `Highcharts.setOptions` and on
@@ -202,9 +202,8 @@ var Time = /** @class */ (function () {
      * @param {Highcharts.TimeOptions} [options]
      *
      */
-    Time.prototype.update = function (options) {
-        if (options === void 0) { options = {}; }
-        var useUTC = pick(options.useUTC, true);
+    update(options = {}) {
+        const useUTC = pick(options.useUTC, true);
         this.options = options = merge(true, this.options, options);
         // Allow using a different Date class
         this.Date = options.Date || win.Date || Date;
@@ -217,7 +216,7 @@ var Time = /** @class */ (function () {
          */
         this.variableTimezone = useUTC && !!(options.getTimezoneOffset ||
             options.timezone);
-    };
+    }
     /**
      * Make a time and returns milliseconds. Interprets the inputs as UTC time,
      * local time or a specific timezone time depending on the current time
@@ -246,8 +245,8 @@ var Time = /** @class */ (function () {
      * @return {number}
      *         The time in milliseconds since January 1st 1970.
      */
-    Time.prototype.makeTime = function (year, month, date, hours, minutes, seconds) {
-        var d, offset, newOffset;
+    makeTime(year, month, date, hours, minutes, seconds) {
+        let d, offset, newOffset;
         if (this.useUTC) {
             d = this.Date.UTC.apply(0, arguments);
             offset = this.getTimezoneOffset(d);
@@ -269,7 +268,7 @@ var Time = /** @class */ (function () {
             d = new this.Date(year, month, pick(date, 1), pick(hours, 0), pick(minutes, 0), pick(seconds, 0)).getTime();
         }
         return d;
-    };
+    }
     /**
      * Sets the getTimezoneOffset function. If the `timezone` option is set, a
      * default getTimezoneOffset function with that timezone is returned. If
@@ -283,8 +282,8 @@ var Time = /** @class */ (function () {
      * @return {Function}
      *         A getTimezoneOffset function
      */
-    Time.prototype.timezoneOffsetFunction = function () {
-        var time = this, options = this.options, getTimezoneOffset = options.getTimezoneOffset, moment = options.moment || win.moment;
+    timezoneOffsetFunction() {
+        const time = this, options = this.options, getTimezoneOffset = options.getTimezoneOffset, moment = options.moment || win.moment;
         if (!this.useUTC) {
             return function (timestamp) {
                 return new Date(timestamp.toString()).getTimezoneOffset() * 60000;
@@ -312,7 +311,7 @@ var Time = /** @class */ (function () {
         return function () {
             return (time.timezoneOffset || 0) * 60000;
         };
-    };
+    }
     /**
      * Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970)
      * into a human readable date string. The available format keys are listed
@@ -360,14 +359,14 @@ var Time = /** @class */ (function () {
      * @return {string}
      *         The formatted date.
      */
-    Time.prototype.dateFormat = function (format, timestamp, capitalize) {
+    dateFormat(format, timestamp, capitalize) {
         if (!defined(timestamp) || isNaN(timestamp)) {
             return (H.defaultOptions.lang &&
                 H.defaultOptions.lang.invalidDate ||
                 '');
         }
         format = pick(format, '%Y-%m-%d %H:%M:%S');
-        var time = this, date = new this.Date(timestamp), 
+        const time = this, date = new this.Date(timestamp), 
         // get the basic time values
         hours = this.get('Hours', date), day = this.get('Day', date), dayOfMonth = this.get('Date', date), month = this.get('Month', date), fullYear = this.get('FullYear', date), lang = H.defaultOptions.lang, langWeekdays = (lang && lang.weekdays), shortWeekdays = (lang && lang.shortWeekdays), 
         // List all format keys. Custom formats can be added from the
@@ -434,7 +433,7 @@ var Time = /** @class */ (function () {
             (format.substr(0, 1).toUpperCase() +
                 format.substr(1)) :
             format;
-    };
+    }
     /**
      * Resolve legacy formats of dateTimeLabelFormats (strings and arrays) into
      * an object.
@@ -444,7 +443,7 @@ var Time = /** @class */ (function () {
      * @return {Highcharts.Dictionary<T>}
      * The object definition
      */
-    Time.prototype.resolveDTLFormat = function (f) {
+    resolveDTLFormat(f) {
         if (!isObject(f, true)) { // check for string or array
             f = splat(f);
             return {
@@ -454,7 +453,7 @@ var Time = /** @class */ (function () {
             };
         }
         return f;
-    };
+    }
     /**
      * Return an array with time positions distributed on round time values
      * right and right after min and max. Used in datetime axes as well as for
@@ -476,11 +475,11 @@ var Time = /** @class */ (function () {
      * @return {Highcharts.AxisTickPositionsArray}
      * Time positions
      */
-    Time.prototype.getTimeTicks = function (normalizedInterval, min, max, startOfWeek) {
-        var time = this, Date = time.Date, tickPositions = [], higherRanks = {}, 
+    getTimeTicks(normalizedInterval, min, max, startOfWeek) {
+        const time = this, Date = time.Date, tickPositions = [], higherRanks = {}, 
         // When crossing DST, use the max. Resolves #6278.
         minDate = new Date(min), interval = normalizedInterval.unitRange, count = normalizedInterval.count || 1;
-        var i, minYear, // used in months and years as a basis for Date.UTC()
+        let i, minYear, // used in months and years as a basis for Date.UTC()
         variableDayLength, minDay;
         startOfWeek = pick(startOfWeek, 1);
         if (defined(min)) { // #1300
@@ -528,7 +527,7 @@ var Time = /** @class */ (function () {
             }
             // Get basics for variable time spans
             minYear = time.get('FullYear', minDate);
-            var minMonth = time.get('Month', minDate), minDateDate = time.get('Date', minDate), minHours = time.get('Hours', minDate);
+            const minMonth = time.get('Month', minDate), minDateDate = time.get('Date', minDate), minHours = time.get('Hours', minDate);
             // Redefine min to the floored/rounded minimum time (#7432)
             min = minDate.getTime();
             // Handle local timezone offset
@@ -547,7 +546,7 @@ var Time = /** @class */ (function () {
                         time.getTimezoneOffset(max));
             }
             // Iterate and add tick positions at appropriate values
-            var t = minDate.getTime();
+            let t = minDate.getTime();
             i = 1;
             while (t < max) {
                 tickPositions.push(t);
@@ -599,11 +598,11 @@ var Time = /** @class */ (function () {
         }
         // record information on the chosen unit - for dynamic label formatter
         tickPositions.info = extend(normalizedInterval, {
-            higherRanks: higherRanks,
+            higherRanks,
             totalRange: interval * count
         });
         return tickPositions;
-    };
+    }
     /**
      * Get the optimal date format for a point, based on a range.
      *
@@ -626,15 +625,15 @@ var Time = /** @class */ (function () {
      * @return {string}
      *         The optimal date format for a point.
      */
-    Time.prototype.getDateFormat = function (range, timestamp, startOfWeek, dateTimeLabelFormats) {
-        var dateStr = this.dateFormat('%m-%d %H:%M:%S.%L', timestamp), blank = '01-01 00:00:00.000', strpos = {
+    getDateFormat(range, timestamp, startOfWeek, dateTimeLabelFormats) {
+        const dateStr = this.dateFormat('%m-%d %H:%M:%S.%L', timestamp), blank = '01-01 00:00:00.000', strpos = {
             millisecond: 15,
             second: 12,
             minute: 9,
             hour: 6,
             day: 3
         };
-        var n = 'millisecond', 
+        let n = 'millisecond', 
         // for sub-millisecond data, #4223
         lastN = n;
         for (n in timeUnits) { // eslint-disable-line guard-for-in
@@ -664,9 +663,8 @@ var Time = /** @class */ (function () {
             }
         }
         return this.resolveDTLFormat(dateTimeLabelFormats[n]).main;
-    };
-    return Time;
-}());
+    }
+}
 /* *
  *
  * Default export

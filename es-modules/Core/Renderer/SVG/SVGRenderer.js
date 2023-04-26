@@ -11,20 +11,20 @@
 import AST from '../HTML/AST.js';
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
-var charts = H.charts, deg2rad = H.deg2rad, doc = H.doc, isFirefox = H.isFirefox, isMS = H.isMS, isWebKit = H.isWebKit, noop = H.noop, SVG_NS = H.SVG_NS, symbolSizes = H.symbolSizes, win = H.win;
+const { charts, deg2rad, doc, isFirefox, isMS, isWebKit, noop, SVG_NS, symbolSizes, win } = H;
 import RendererRegistry from '../RendererRegistry.js';
 import SVGElement from './SVGElement.js';
 import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
 import TextBuilder from './TextBuilder.js';
 import U from '../../Utilities.js';
-var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, pInt = U.pInt, uniqueKey = U.uniqueKey;
+const { addEvent, attr, createElement, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, uniqueKey } = U;
 /* *
  *
  *  Variables
  *
  * */
-var hasInternalReferenceBug;
+let hasInternalReferenceBug;
 /* *
  *
  *  Class
@@ -35,8 +35,7 @@ var hasInternalReferenceBug;
  * Allows direct access to the Highcharts rendering layer in order to draw
  * primitive shapes like circles, rectangles, paths or text directly on a chart,
  * or independent from any chart. The SVGRenderer represents a wrapper object
- * for SVG in modern browsers. Through the VMLRenderer, part of the `oldie.js`
- * module, it also brings vector graphics to IE <= 8.
+ * for SVG in modern browsers.
  *
  * An existing chart's renderer can be accessed through {@link Chart.renderer}.
  * The renderer can also be used completely decoupled from a chart.
@@ -78,13 +77,13 @@ var hasInternalReferenceBug;
  *        some cases, but not when set explicitly through `.attr` and `.css`
  *        etc.
  */
-var SVGRenderer = /** @class */ (function () {
+class SVGRenderer {
     /* *
      *
      *  Constructors
      *
      * */
-    function SVGRenderer(container, width, height, style, forExport, allowHTML, styledMode) {
+    constructor(container, width, height, style, forExport, allowHTML, styledMode) {
         /* *
          *
          *  Properties
@@ -119,7 +118,6 @@ var SVGRenderer = /** @class */ (function () {
         this.gradients = void 0;
         this.height = void 0;
         this.imgCount = void 0;
-        this.isSVG = void 0;
         this.style = void 0;
         /**
          * Page url used for internal references.
@@ -167,8 +165,8 @@ var SVGRenderer = /** @class */ (function () {
      * does, it will avoid setting presentational attributes in some cases, but
      * not when set explicitly through `.attr` and `.css` etc.
      */
-    SVGRenderer.prototype.init = function (container, width, height, style, forExport, allowHTML, styledMode) {
-        var renderer = this, boxWrapper = renderer
+    init(container, width, height, style, forExport, allowHTML, styledMode) {
+        const renderer = this, boxWrapper = renderer
             .createElement('svg')
             .attr({
             version: '1.1',
@@ -185,15 +183,13 @@ var SVGRenderer = /** @class */ (function () {
         if (container.innerHTML.indexOf('xmlns') === -1) {
             attr(element, 'xmlns', this.SVG_NS);
         }
-        // object properties
-        renderer.isSVG = true;
         this.box = element;
         this.boxWrapper = boxWrapper;
         renderer.alignedObjects = [];
         this.url = this.getReferenceURL();
         // Add description
-        var desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.3.3'));
+        const desc = this.createElement('desc').add();
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.0.0'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -202,6 +198,7 @@ var SVGRenderer = /** @class */ (function () {
         renderer.cache = {}; // Cache for numerical bounding boxes
         renderer.cacheKeys = [];
         renderer.imgCount = 0;
+        renderer.rootFontSize = boxWrapper.getStyle('font-size');
         renderer.setSize(width, height, false);
         // Issue 110 workaround:
         // In Firefox, if a div is positioned by percentage, its pixel position
@@ -210,7 +207,7 @@ var SVGRenderer = /** @class */ (function () {
         // precision. In order to draw sharp lines, this must be compensated
         // for. This doesn't seem to work inside iframes though (like in
         // jsFiddle).
-        var subPixelFix, rect;
+        let subPixelFix, rect;
         if (isFirefox && container.getBoundingClientRect) {
             subPixelFix = function () {
                 css(container, { left: 0, top: 0 });
@@ -225,7 +222,7 @@ var SVGRenderer = /** @class */ (function () {
             // run it on resize
             renderer.unSubPixelFix = addEvent(win, 'resize', subPixelFix);
         }
-    };
+    }
     /**
      * General method for adding a definition to the SVG `defs` tag. Can be used
      * for gradients, fills, filters etc. Styled mode only. A hook for adding
@@ -242,10 +239,10 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * The inserted node.
      */
-    SVGRenderer.prototype.definition = function (def) {
-        var ast = new AST([def]);
+    definition(def) {
+        const ast = new AST([def]);
         return ast.addToDOM(this.defs.element);
-    };
+    }
     /**
      * Get the prefix needed for internal URL references to work in certain
      * cases. Some older browser versions had a bug where internal url
@@ -268,7 +265,7 @@ var SVGRenderer = /** @class */ (function () {
      * @return {string}
      * The prefix to use. An empty string for modern browsers.
      */
-    SVGRenderer.prototype.getReferenceURL = function () {
+    getReferenceURL() {
         if ((isFirefox || isWebKit) &&
             doc.getElementsByTagName('base').length) {
             // Detect if a clip path is taking effect by performing a hit test
@@ -277,8 +274,8 @@ var SVGRenderer = /** @class */ (function () {
             // has to be performed once per page load, so we store the result
             // locally in the module.
             if (!defined(hasInternalReferenceBug)) {
-                var id = uniqueKey();
-                var ast = new AST([{
+                const id = uniqueKey();
+                const ast = new AST([{
                         tagName: 'svg',
                         attributes: {
                             width: 8,
@@ -289,7 +286,7 @@ var SVGRenderer = /** @class */ (function () {
                                 children: [{
                                         tagName: 'clipPath',
                                         attributes: {
-                                            id: id
+                                            id
                                         },
                                         children: [{
                                                 tagName: 'rect',
@@ -305,19 +302,19 @@ var SVGRenderer = /** @class */ (function () {
                                     id: 'hitme',
                                     width: 8,
                                     height: 8,
-                                    'clip-path': "url(#".concat(id, ")"),
+                                    'clip-path': `url(#${id})`,
                                     fill: 'rgba(0,0,0,0.001)'
                                 }
                             }]
                     }]);
-                var svg = ast.addToDOM(doc.body);
+                const svg = ast.addToDOM(doc.body);
                 css(svg, {
                     position: 'fixed',
                     top: 0,
                     left: 0,
                     zIndex: 9e5
                 });
-                var hitElement = doc.elementFromPoint(6, 6);
+                const hitElement = doc.elementFromPoint(6, 6);
                 hasInternalReferenceBug = (hitElement && hitElement.id) === 'hitme';
                 doc.body.removeChild(svg);
             }
@@ -332,7 +329,7 @@ var SVGRenderer = /** @class */ (function () {
             }
         }
         return '';
-    };
+    }
     /**
      * Get the global style setting for the renderer.
      *
@@ -345,14 +342,13 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.CSSObject}
      * The style settings mixed with defaults.
      */
-    SVGRenderer.prototype.getStyle = function (style) {
+    getStyle(style) {
         this.style = extend({
-            fontFamily: '"Lucida Grande", "Lucida Sans Unicode", ' +
-                'Arial, Helvetica, sans-serif',
-            fontSize: '12px'
+            fontFamily: 'Helvetica, Arial, sans-serif',
+            fontSize: '1rem'
         }, style);
         return this.style;
-    };
+    }
     /**
      * Apply the global style on the renderer, mixed with the default styles.
      *
@@ -361,9 +357,9 @@ var SVGRenderer = /** @class */ (function () {
      * @param {Highcharts.CSSObject} style
      * CSS to apply.
      */
-    SVGRenderer.prototype.setStyle = function (style) {
+    setStyle(style) {
         this.boxWrapper.css(this.getStyle(style));
-    };
+    }
     /**
      * Detect whether the renderer is hidden. This happens when one of the
      * parent elements has `display: none`. Used internally to detect when we
@@ -375,9 +371,9 @@ var SVGRenderer = /** @class */ (function () {
      * @return {boolean}
      * True if it is hidden.
      */
-    SVGRenderer.prototype.isHidden = function () {
+    isHidden() {
         return !this.boxWrapper.getBBox().width;
-    };
+    }
     /**
      * Destroys the renderer and its allocated members.
      *
@@ -386,25 +382,21 @@ var SVGRenderer = /** @class */ (function () {
      * @return {null}
      * Pass through value.
      */
-    SVGRenderer.prototype.destroy = function () {
-        var renderer = this, rendererDefs = renderer.defs;
+    destroy() {
+        const renderer = this, rendererDefs = renderer.defs;
         renderer.box = null;
         renderer.boxWrapper = renderer.boxWrapper.destroy();
         // Call destroy on all gradient elements
         destroyObjectProperties(renderer.gradients || {});
         renderer.gradients = null;
-        // Defs are null in VMLRenderer
-        // Otherwise, destroy them here.
-        if (rendererDefs) {
-            renderer.defs = rendererDefs.destroy();
-        }
+        renderer.defs = rendererDefs.destroy();
         // Remove sub pixel fix handler (#982)
         if (renderer.unSubPixelFix) {
             renderer.unSubPixelFix();
         }
         renderer.alignedObjects = null;
         return null;
-    };
+    }
     /**
      * Create a wrapper for an SVG element. Serves as a factory for
      * {@link SVGElement}, but this function is itself mostly called from
@@ -419,11 +411,11 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * The generated SVGElement.
      */
-    SVGRenderer.prototype.createElement = function (nodeName) {
-        var wrapper = new this.Element();
+    createElement(nodeName) {
+        const wrapper = new this.Element();
         wrapper.init(this, nodeName);
         return wrapper;
-    };
+    }
     /**
      * Get converted radial gradient attributes according to the radial
      * reference. Used internally from the {@link SVGElement#colorGradient}
@@ -432,7 +424,7 @@ var SVGRenderer = /** @class */ (function () {
      * @private
      * @function Highcharts.SVGRenderer#getRadialAttr
      */
-    SVGRenderer.prototype.getRadialAttr = function (radialReference, gradAttr) {
+    getRadialAttr(radialReference, gradAttr) {
         return {
             cx: (radialReference[0] - radialReference[2] / 2) +
                 (gradAttr.cx || 0) * radialReference[2],
@@ -440,7 +432,50 @@ var SVGRenderer = /** @class */ (function () {
                 (gradAttr.cy || 0) * radialReference[2],
             r: (gradAttr.r || 0) * radialReference[2]
         };
-    };
+    }
+    /**
+     * Create a drop shadow definition and return its id
+     *
+     * @private
+     * @function Highcharts.SVGRenderer#shadowDefinition
+     *
+     * @param {boolean|Highcharts.ShadowOptionsObject} [shadowOptions] The
+     *        shadow options. If `true`, the default options are applied
+     */
+    shadowDefinition(shadowOptions) {
+        const id = [
+            'drop-shadow',
+            ...Object.keys(shadowOptions)
+                .map((key) => shadowOptions[key])
+        ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({
+            color: '#000000',
+            offsetX: 1,
+            offsetY: 1,
+            opacity: 0.15,
+            width: 5
+        }, shadowOptions);
+        if (!this.defs.element.querySelector(`#${id}`)) {
+            this.definition({
+                tagName: 'filter',
+                attributes: {
+                    id
+                },
+                children: [{
+                        tagName: 'feDropShadow',
+                        attributes: {
+                            dx: options.offsetX,
+                            dy: options.offsetY,
+                            'flood-color': options.color,
+                            // Tuned and modified to keep a preserve compatibility
+                            // with the old settings
+                            'flood-opacity': Math.min(options.opacity * 5, 1),
+                            stdDeviation: options.width / 2
+                        }
+                    }]
+            });
+        }
+        return id;
+    }
     /**
      * Parse a simple HTML string into SVG tspans. Called internally when text
      * is set on an SVGElement. The function supports a subset of HTML tags, CSS
@@ -453,9 +488,9 @@ var SVGRenderer = /** @class */ (function () {
      * @param {Highcharts.SVGElement} wrapper
      * The parent SVGElement.
      */
-    SVGRenderer.prototype.buildText = function (wrapper) {
+    buildText(wrapper) {
         new TextBuilder(wrapper).buildSVG();
-    };
+    }
     /**
      * Returns white for dark colors and black for bright colors, based on W3C's
      * definition of [Relative luminance](
@@ -469,20 +504,20 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.ColorString}
      * The contrast color, either `#000000` or `#FFFFFF`.
      */
-    SVGRenderer.prototype.getContrast = function (color) {
+    getContrast(color) {
         // #6216, #17273
-        var rgba = Color.parse(color).rgba
-            .map(function (b8) {
-            var c = b8 / 255;
+        const rgba = Color.parse(color).rgba
+            .map((b8) => {
+            const c = b8 / 255;
             return c <= 0.03928 ?
                 c / 12.92 :
                 Math.pow((c + 0.055) / 1.055, 2.4);
         });
         // Relative luminance
-        var l = 0.2126 * rgba[0] + 0.7152 * rgba[1] + 0.0722 * rgba[2];
+        const l = 0.2126 * rgba[0] + 0.7152 * rgba[1] + 0.0722 * rgba[2];
         // Use white or black based on which provides more contrast
         return 1.05 / (l + 0.05) > (l + 0.05) / 0.05 ? '#FFFFFF' : '#000000';
-    };
+    }
     /**
      * Create a button with preset states.
      *
@@ -521,26 +556,26 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * The button element.
      */
-    SVGRenderer.prototype.button = function (text, x, y, callback, theme, hoverState, selectState, disabledState, shape, useHTML) {
-        if (theme === void 0) { theme = {}; }
-        var label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, states = theme.states || {};
-        var curState = 0;
+    button(text, x, y, callback, theme = {}, hoverState, selectState, disabledState, shape, useHTML) {
+        const label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, states = theme.states || {};
+        let curState = 0;
         theme = merge(theme);
         delete theme.states;
-        var normalStyle = merge({
+        const normalStyle = merge({
             color: "#333333" /* Palette.neutralColor80 */,
             cursor: 'pointer',
+            fontSize: '0.8em',
             fontWeight: 'normal'
         }, theme.style);
         delete theme.style;
         // Remove stylable attributes. Pass in the ButtonThemeObject and get the
         // SVGAttributes subset back.
-        var normalState = AST.filterUserAttributes(theme);
+        let normalState = AST.filterUserAttributes(theme);
         // Default, non-stylable attributes
         label.attr(merge({ padding: 8, r: 2 }, normalState));
         // Presentational. The string type is a mistake, it is just for
         // compliance with SVGAttribute and is not used in button theme.
-        var hoverStyle, selectStyle, disabledStyle;
+        let hoverStyle, selectStyle, disabledStyle;
         if (!styledMode) {
             // Normal state - prepare the attributes
             normalState = merge({
@@ -556,7 +591,7 @@ var SVGRenderer = /** @class */ (function () {
             delete hoverState.style;
             // Pressed state
             selectState = merge(normalState, {
-                fill: "#e6ebf5" /* Palette.highlightColor10 */,
+                fill: "#e6e9ff" /* Palette.highlightColor10 */,
                 style: {
                     color: "#000000" /* Palette.neutralColor100 */,
                     fontWeight: 'bold'
@@ -603,14 +638,14 @@ var SVGRenderer = /** @class */ (function () {
                     selectState,
                     disabledState
                 ][state || 0]);
-                var css_1 = [
+                const css = [
                     normalStyle,
                     hoverStyle,
                     selectStyle,
                     disabledStyle
                 ][state || 0];
-                if (isObject(css_1)) {
-                    label.css(css_1);
+                if (isObject(css)) {
+                    label.css(css);
                 }
             }
         };
@@ -630,13 +665,13 @@ var SVGRenderer = /** @class */ (function () {
             }
         }
         return label
-            .on('touchstart', function (e) { return e.stopPropagation(); })
+            .on('touchstart', (e) => e.stopPropagation())
             .on('click', function (e) {
             if (curState !== 3) {
                 callback.call(label, e);
             }
         });
-    };
+    }
     /**
      * Make a straight line crisper by not spilling out to neighbour pixels.
      *
@@ -655,10 +690,9 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGPathArray}
      *         The original points array, but modified to render crisply.
      */
-    SVGRenderer.prototype.crispLine = function (points, width, roundingFunction) {
-        if (roundingFunction === void 0) { roundingFunction = 'round'; }
-        var start = points[0];
-        var end = points[1];
+    crispLine(points, width, roundingFunction = 'round') {
+        const start = points[0];
+        const end = points[1];
         // Normalize to a crisp line
         if (defined(start[1]) && start[1] === end[1]) {
             // Substract due to #1129. Now bottom and left axis gridlines behave
@@ -671,7 +705,7 @@ var SVGRenderer = /** @class */ (function () {
                 Math[roundingFunction](start[2]) + (width % 2 / 2);
         }
         return points;
-    };
+    }
     /**
      * Draw a path, wraps the SVG `path` element.
      *
@@ -704,8 +738,8 @@ var SVGRenderer = /** @class */ (function () {
     * @return {Highcharts.SVGElement}
     * The generated wrapper element.
     */
-    SVGRenderer.prototype.path = function (path) {
-        var attribs = (this.styledMode ? {} : {
+    path(path) {
+        const attribs = (this.styledMode ? {} : {
             fill: 'none'
         });
         if (isArray(path)) {
@@ -715,7 +749,7 @@ var SVGRenderer = /** @class */ (function () {
             extend(attribs, path);
         }
         return this.createElement('path').attr(attribs);
-    };
+    }
     /**
      * Draw a circle, wraps the SVG `circle` element.
      *
@@ -746,8 +780,8 @@ var SVGRenderer = /** @class */ (function () {
     * @return {Highcharts.SVGElement}
     * The generated wrapper element.
     */
-    SVGRenderer.prototype.circle = function (x, y, r) {
-        var attribs = (isObject(x) ?
+    circle(x, y, r) {
+        const attribs = (isObject(x) ?
             x :
             typeof x === 'undefined' ? {} : { x: x, y: y, r: r }), wrapper = this.createElement('circle');
         // Setting x or y translates to cx and cy
@@ -755,7 +789,7 @@ var SVGRenderer = /** @class */ (function () {
             element.setAttribute('c' + key, value);
         };
         return wrapper.attr(attribs);
-    };
+    }
     /**
      * Draw and return an arc.
      *
@@ -797,8 +831,8 @@ var SVGRenderer = /** @class */ (function () {
     * @return {Highcharts.SVGElement}
     * The generated wrapper element.
     */
-    SVGRenderer.prototype.arc = function (x, y, r, innerR, start, end) {
-        var options;
+    arc(x, y, r, innerR, start, end) {
+        let options;
         if (isObject(x)) {
             options = x;
             y = options.y;
@@ -809,14 +843,14 @@ var SVGRenderer = /** @class */ (function () {
             x = options.x;
         }
         else {
-            options = { innerR: innerR, start: start, end: end };
+            options = { innerR, start, end };
         }
         // Arcs are defined as symbols for the ability to set
         // attributes in attr and animate
-        var arc = this.symbol('arc', x, y, r, r, options);
+        const arc = this.symbol('arc', x, y, r, r, options);
         arc.r = r; // #959
         return arc;
-    };
+    }
     /**
      * Draw and return a rectangle.
      *
@@ -858,28 +892,24 @@ var SVGRenderer = /** @class */ (function () {
     * @return {Highcharts.SVGElement}
     * The generated wrapper element.
     */
-    SVGRenderer.prototype.rect = function (x, y, width, height, r, strokeWidth) {
-        r = isObject(x) ? x.r : r;
-        var wrapper = this.createElement('rect');
-        var attribs = (isObject(x) ?
+    rect(x, y, width, height, r, strokeWidth) {
+        const attribs = (isObject(x) ?
             x :
             typeof x === 'undefined' ?
                 {} :
                 {
-                    x: x,
-                    y: y,
-                    width: Math.max(width, 0),
-                    height: Math.max(height, 0)
-                });
+                    x,
+                    y,
+                    r,
+                    width: Math.max(width || 0, 0),
+                    height: Math.max(height || 0, 0)
+                }), wrapper = this.createElement('rect');
         if (!this.styledMode) {
             if (typeof strokeWidth !== 'undefined') {
                 attribs['stroke-width'] = strokeWidth;
-                attribs = wrapper.crisp(attribs);
+                extend(attribs, wrapper.crisp(attribs));
             }
             attribs.fill = 'none';
-        }
-        if (r) {
-            attribs.r = r;
         }
         wrapper.rSetter = function (value, _key, element) {
             wrapper.r = value;
@@ -892,7 +922,20 @@ var SVGRenderer = /** @class */ (function () {
             return wrapper.r || 0;
         };
         return wrapper.attr(attribs);
-    };
+    }
+    /**
+     * Draw and return a rectangle with advanced corner rounding options.
+     *
+     * @function Highcharts.SVGRenderer#roundedRect
+     *
+     * @param {Highcharts.SVGAttributes} attribs
+     *      Attributes
+     * @return {Highcharts.SVGElement}
+     * The generated wrapper element.
+     */
+    roundedRect(attribs) {
+        return this.symbol('roundedRect').attr(attribs);
+    }
     /**
      * Resize the {@link SVGRenderer#box} and re-align all aligned child
      * elements.
@@ -911,8 +954,8 @@ var SVGRenderer = /** @class */ (function () {
      * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animate=true]
      * Whether and how to animate.
      */
-    SVGRenderer.prototype.setSize = function (width, height, animate) {
-        var renderer = this;
+    setSize(width, height, animate) {
+        const renderer = this;
         renderer.width = width;
         renderer.height = height;
         renderer.boxWrapper.animate({
@@ -928,7 +971,7 @@ var SVGRenderer = /** @class */ (function () {
             duration: pick(animate, true) ? void 0 : 0
         });
         renderer.alignElements();
-    };
+    }
     /**
      * Create and return an svg group element. Child
      * {@link Highcharts.SVGElement} objects are added to the group by using the
@@ -943,12 +986,12 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         The generated wrapper element.
      */
-    SVGRenderer.prototype.g = function (name) {
-        var elem = this.createElement('g');
+    g(name) {
+        const elem = this.createElement('g');
         return name ?
             elem.attr({ 'class': 'highcharts-' + name }) :
             elem;
-    };
+    }
     /**
      * Display an image.
      *
@@ -981,8 +1024,8 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         The generated wrapper element.
      */
-    SVGRenderer.prototype.image = function (src, x, y, width, height, onload) {
-        var attribs = { preserveAspectRatio: 'none' }, setSVGImageSource = function (el, src) {
+    image(src, x, y, width, height, onload) {
+        const attribs = { preserveAspectRatio: 'none' }, setSVGImageSource = function (el, src) {
             // Set the href in the xlink namespace
             if (el.setAttributeNS) {
                 el.setAttributeNS('http://www.w3.org/1999/xlink', 'href', src);
@@ -1007,7 +1050,7 @@ var SVGRenderer = /** @class */ (function () {
         if (isNumber(height)) {
             attribs.height = height;
         }
-        var elemWrapper = this.createElement('image').attr(attribs), onDummyLoad = function (e) {
+        const elemWrapper = this.createElement('image').attr(attribs), onDummyLoad = function (e) {
             setSVGImageSource(elemWrapper.element, src);
             onload.call(elemWrapper, e);
         };
@@ -1017,7 +1060,7 @@ var SVGRenderer = /** @class */ (function () {
             // load events is very buggy. First set a transparent src, wait for
             // dummy to load, and then add the real src to the SVG image.
             setSVGImageSource(elemWrapper.element, 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /* eslint-disable-line */);
-            var dummy = new win.Image();
+            const dummy = new win.Image();
             addEvent(dummy, 'load', onDummyLoad);
             dummy.src = src;
             if (dummy.complete) {
@@ -1028,7 +1071,7 @@ var SVGRenderer = /** @class */ (function () {
             setSVGImageSource(elemWrapper.element, src);
         }
         return elemWrapper;
-    };
+    }
     /**
      * Draw a symbol out of pre-defined shape paths from
      * {@link SVGRenderer#symbols}.
@@ -1058,11 +1101,11 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * SVG symbol.
      */
-    SVGRenderer.prototype.symbol = function (symbol, x, y, width, height, options) {
-        var ren = this, imageRegex = /^url\((.*?)\)$/, isImage = imageRegex.test(symbol), sym = (!isImage && (this.symbols[symbol] ? symbol : 'circle')), 
+    symbol(symbol, x, y, width, height, options) {
+        const ren = this, imageRegex = /^url\((.*?)\)$/, isImage = imageRegex.test(symbol), sym = (!isImage && (this.symbols[symbol] ? symbol : 'circle')), 
         // get the symbol definition function
         symbolFn = (sym && this.symbols[sym]);
-        var obj, path, imageSrc, centerImage;
+        let obj, path, imageSrc, centerImage;
         if (symbolFn) {
             // Check if there's a path defined for this symbol
             if (typeof x === 'number') {
@@ -1088,31 +1131,31 @@ var SVGRenderer = /** @class */ (function () {
         else if (isImage) {
             imageSrc = symbol.match(imageRegex)[1];
             // Create the image synchronously, add attribs async
-            var img_1 = obj = this.image(imageSrc);
+            const img = obj = this.image(imageSrc);
             // The image width is not always the same as the symbol width. The
             // image may be centered within the symbol, as is the case when
             // image shapes are used as label backgrounds, for example in flags.
-            img_1.imgwidth = pick(symbolSizes[imageSrc] && symbolSizes[imageSrc].width, options && options.width);
-            img_1.imgheight = pick(symbolSizes[imageSrc] && symbolSizes[imageSrc].height, options && options.height);
+            img.imgwidth = pick(options && options.width, symbolSizes[imageSrc] && symbolSizes[imageSrc].width);
+            img.imgheight = pick(options && options.height, symbolSizes[imageSrc] && symbolSizes[imageSrc].height);
             /**
              * Set the size and position
              */
-            centerImage = function (obj) { return obj.attr({
+            centerImage = (obj) => obj.attr({
                 width: obj.width,
                 height: obj.height
-            }); };
+            });
             /**
              * Width and height setters that take both the image's physical size
              * and the label size into consideration, and translates the image
              * to center within the label.
              */
             ['width', 'height'].forEach(function (key) {
-                img_1[key + 'Setter'] = function (value, key) {
+                img[key + 'Setter'] = function (value, key) {
                     this[key] = value;
-                    var _a = this, alignByTranslate = _a.alignByTranslate, element = _a.element, width = _a.width, height = _a.height, imgwidth = _a.imgwidth, imgheight = _a.imgheight;
-                    var imgSize = this['img' + key];
+                    const { alignByTranslate, element, width, height, imgwidth, imgheight } = this;
+                    let imgSize = this['img' + key];
                     if (defined(imgSize)) {
-                        var scale = 1;
+                        let scale = 1;
                         // Scale and center the image within its container.
                         // The name `backgroundSize` is taken from the CSS spec,
                         // but the value `within` is made up. Other possible
@@ -1135,29 +1178,29 @@ var SVGRenderer = /** @class */ (function () {
                             element.setAttribute(key, imgSize);
                         }
                         if (!alignByTranslate) {
-                            this.translate(((width || 0) - (imgSize * scale)) / 2, ((height || 0) - (imgSize * scale)) / 2);
+                            this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
                         }
                     }
                 };
             });
             if (defined(x)) {
-                img_1.attr({
+                img.attr({
                     x: x,
                     y: y
                 });
             }
-            img_1.isImg = true;
-            if (defined(img_1.imgwidth) && defined(img_1.imgheight)) {
-                centerImage(img_1);
+            img.isImg = true;
+            if (defined(img.imgwidth) && defined(img.imgheight)) {
+                centerImage(img);
             }
             else {
                 // Initialize image to be 0 size so export will still function
                 // if there's no cached sizes.
-                img_1.attr({ width: 0, height: 0 });
+                img.attr({ width: 0, height: 0 });
                 // Create a dummy JavaScript image to get the width and height.
                 createElement('img', {
                     onload: function () {
-                        var chart = charts[ren.chartIndex];
+                        const chart = charts[ren.chartIndex];
                         // Special case for SVGs on IE11, the width is not
                         // accessible until the image is part of the DOM
                         // (#2854).
@@ -1173,10 +1216,10 @@ var SVGRenderer = /** @class */ (function () {
                             width: this.width,
                             height: this.height
                         };
-                        img_1.imgwidth = this.width;
-                        img_1.imgheight = this.height;
-                        if (img_1.element) {
-                            centerImage(img_1);
+                        img.imgwidth = this.width;
+                        img.imgheight = this.height;
+                        if (img.element) {
+                            centerImage(img);
                         }
                         // Clean up after #2854 workaround.
                         if (this.parentNode) {
@@ -1195,7 +1238,7 @@ var SVGRenderer = /** @class */ (function () {
             }
         }
         return obj;
-    };
+    }
     /**
      * Define a clipping rectangle. The clipping rectangle is later applied
      * to {@link SVGElement} objects through the {@link SVGElement#clip}
@@ -1223,8 +1266,8 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.ClipRectElement}
      *         A clipping rectangle.
      */
-    SVGRenderer.prototype.clipRect = function (x, y, width, height) {
-        var 
+    clipRect(x, y, width, height) {
+        const 
         // Add a hyphen at the end to avoid confusion in testing indexes
         // -1 and -10, -11 etc (#6550)
         id = uniqueKey() + '-', clipPath = this.createElement('clipPath').attr({
@@ -1234,7 +1277,7 @@ var SVGRenderer = /** @class */ (function () {
         wrapper.clipPath = clipPath;
         wrapper.count = 0;
         return wrapper;
-    };
+    }
     /**
      * Draw text. The text can contain a subset of HTML, like spans and anchors
      * and some basic text styling of these. For more advanced features like
@@ -1265,8 +1308,8 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * The text object.
      */
-    SVGRenderer.prototype.text = function (str, x, y, useHTML) {
-        var renderer = this, attribs = {};
+    text(str, x, y, useHTML) {
+        const renderer = this, attribs = {};
         if (useHTML && (renderer.allowHTML || !renderer.forExport)) {
             return renderer.html(str, x, y);
         }
@@ -1277,11 +1320,11 @@ var SVGRenderer = /** @class */ (function () {
         if (defined(str)) {
             attribs.text = str;
         }
-        var wrapper = renderer.createElement('text').attr(attribs);
+        const wrapper = renderer.createElement('text').attr(attribs);
         if (!useHTML || (renderer.forExport && !renderer.allowHTML)) {
             wrapper.xSetter = function (value, key, element) {
-                var tspans = element.getElementsByTagName('tspan'), parentVal = element.getAttribute(key);
-                for (var i = 0, tspan = void 0; i < tspans.length; i++) {
+                const tspans = element.getElementsByTagName('tspan'), parentVal = element.getAttribute(key);
+                for (let i = 0, tspan; i < tspans.length; i++) {
                     tspan = tspans[i];
                     // If the x values are equal, the tspan represents a line
                     // break
@@ -1293,63 +1336,43 @@ var SVGRenderer = /** @class */ (function () {
             };
         }
         return wrapper;
-    };
+    }
     /**
      * Utility to return the baseline offset and total line height from the font
      * size.
      *
      * @function Highcharts.SVGRenderer#fontMetrics
      *
-     * @param {number|string} [fontSize]
-     *        The current font size to inspect. If not given, the font size
-     *        will be found from the DOM element.
-     *
-     * @param {Highcharts.SVGElement|Highcharts.SVGDOMElement} [elem]
-     *        The element to inspect for a current font size.
+     * @param {Highcharts.SVGElement|Highcharts.SVGDOMElement|number} [element]
+     *        The element to inspect for a current font size. If a number is
+     *        given, it's used as a fall back for direct font size in pixels.
      *
      * @return {Highcharts.FontMetricsObject}
      *         The font metrics.
      */
-    SVGRenderer.prototype.fontMetrics = function (fontSize, elem) {
-        if ((this.styledMode || !/px/.test(fontSize)) &&
-            (win.getComputedStyle) // old IE doesn't support it
-        ) {
-            fontSize = elem && SVGElement.prototype.getStyle.call(elem, 'font-size');
-        }
-        else {
-            fontSize = fontSize ||
-                // When the elem is a DOM element (#5932)
-                (elem && elem.style && elem.style.fontSize) ||
-                // Fall back on the renderer style default
-                (this.style && this.style.fontSize);
-        }
-        // Handle different units
-        if (/px/.test(fontSize)) {
-            fontSize = pInt(fontSize);
-        }
-        else {
-            fontSize = 12;
-        }
+    fontMetrics(element) {
+        const f = pInt(SVGElement.prototype.getStyle.call(element, 'font-size') || 0);
         // Empirical values found by comparing font size and bounding box
         // height. Applies to the default font family.
         // https://jsfiddle.net/highcharts/7xvn7/
-        var lineHeight = (fontSize < 24 ?
-            fontSize + 3 :
-            Math.round(fontSize * 1.2)), baseline = Math.round(lineHeight * 0.8);
+        const h = f < 24 ? f + 3 : Math.round(f * 1.2), b = Math.round(h * 0.8);
         return {
-            h: lineHeight,
-            b: baseline,
-            f: fontSize
+            // Line height
+            h,
+            // Baseline
+            b,
+            // Font size
+            f
         };
-    };
+    }
     /**
      * Correct X and Y positioning of a label for rotation (#1764).
      *
      * @private
      * @function Highcharts.SVGRenderer#rotCorr
      */
-    SVGRenderer.prototype.rotCorr = function (baseline, rotation, alterY) {
-        var y = baseline;
+    rotCorr(baseline, rotation, alterY) {
+        let y = baseline;
         if (rotation && alterY) {
             y = Math.max(y * Math.cos(rotation * deg2rad), 4);
         }
@@ -1357,7 +1380,7 @@ var SVGRenderer = /** @class */ (function () {
             x: (-baseline / 3) * Math.sin(rotation * deg2rad),
             y: y
         };
-    };
+    }
     /**
      * Compatibility function to convert the legacy one-dimensional path array
      * into an array of segments.
@@ -1368,10 +1391,10 @@ var SVGRenderer = /** @class */ (function () {
      * @private
      * @function Highcharts.SVGRenderer#pathToSegments
      */
-    SVGRenderer.prototype.pathToSegments = function (path) {
-        var ret = [];
-        var segment = [];
-        var commandLength = {
+    pathToSegments(path) {
+        const ret = [];
+        const segment = [];
+        const commandLength = {
             A: 8,
             C: 7,
             H: 2,
@@ -1386,7 +1409,7 @@ var SVGRenderer = /** @class */ (function () {
         // the path on any string. This is not type checked against the tuple
         // types, but is shorter, and doesn't require specific checks for any
         // command type in SVG.
-        for (var i = 0; i < path.length; i++) {
+        for (let i = 0; i < path.length; i++) {
             // Command skipped, repeat previous or insert L/l for M/m
             if (isString(segment[0]) &&
                 isNumber(path[i]) &&
@@ -1591,7 +1614,7 @@ var SVGRenderer = /** @class */ (function () {
         }
         return ret;
         */
-    };
+    }
     /**
      * Draw a label, which is an extended text element with support for border
      * and background. Highcharts creates a `g` element with a text and a `path`
@@ -1642,30 +1665,28 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      *         The generated label.
      */
-    SVGRenderer.prototype.label = function (str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
+    label(str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
         return new SVGLabel(this, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className);
-    };
+    }
     /**
      * Re-align all aligned elements.
      *
      * @private
      * @function Highcharts.SVGRenderer#alignElements
      */
-    SVGRenderer.prototype.alignElements = function () {
-        this.alignedObjects.forEach(function (el) { return el.align(); });
-    };
-    return SVGRenderer;
-}());
+    alignElements() {
+        this.alignedObjects.forEach((el) => el.align());
+    }
+}
 extend(SVGRenderer.prototype, {
     /**
-     * A pointer to the renderer's associated Element class. The VMLRenderer
-     * will have a pointer to VMLElement here.
+     * A pointer to the renderer's associated Element class.
      *
      * @name Highcharts.SVGRenderer#Element
      * @type {Highcharts.SVGElement}
      */
     Element: SVGElement,
-    SVG_NS: SVG_NS,
+    SVG_NS,
     /**
      * A collection of characters mapped to HTML entities. When `useHTML` on an
      * element is true, these entities will be rendered correctly by HTML. In

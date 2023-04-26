@@ -9,28 +9,28 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var defaultOptions = D.defaultOptions, setOptions = D.setOptions;
+const { defaultOptions, setOptions } = D;
 import H from '../../Core/Globals.js';
-var isTouchDevice = H.isTouchDevice;
+const { isTouchDevice } = H;
 import NavigatorAxisAdditions from '../../Core/Axis/NavigatorAxisComposition.js';
 import NavigatorDefaults from './NavigatorDefaults.js';
 import NavigatorSymbols from './NavigatorSymbols.js';
 import RendererRegistry from '../../Core/Renderer/RendererRegistry.js';
-var getRendererType = RendererRegistry.getRendererType;
+const { getRendererType } = RendererRegistry;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, merge = U.merge, pick = U.pick;
+const { addEvent, extend, merge, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Variables
  *
  * */
-var NavigatorConstructor;
+let NavigatorConstructor;
 /* *
  *
  *  Functions
@@ -42,9 +42,8 @@ var NavigatorConstructor;
 function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
     NavigatorAxisAdditions.compose(AxisClass);
     NavigatorConstructor = NavigatorClass;
-    if (composedClasses.indexOf(ChartClass) === -1) {
-        composedClasses.push(ChartClass);
-        var chartProto = ChartClass.prototype;
+    if (U.pushUnique(composedMembers, ChartClass)) {
+        const chartProto = ChartClass.prototype;
         chartProto.callbacks.push(onChartCallback);
         addEvent(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
         addEvent(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
@@ -53,16 +52,13 @@ function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
         addEvent(ChartClass, 'beforeShowResetZoom', onChartBeforeShowResetZoom);
         addEvent(ChartClass, 'update', onChartUpdate);
     }
-    if (composedClasses.indexOf(SeriesClass) === -1) {
-        composedClasses.push(SeriesClass);
+    if (U.pushUnique(composedMembers, SeriesClass)) {
         addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
     }
-    if (composedClasses.indexOf(getRendererType) === -1) {
-        composedClasses.push(getRendererType);
+    if (U.pushUnique(composedMembers, getRendererType)) {
         extend(getRendererType().prototype.symbols, NavigatorSymbols);
     }
-    if (composedClasses.indexOf(setOptions) === -1) {
-        composedClasses.push(setOptions);
+    if (U.pushUnique(composedMembers, setOptions)) {
         extend(defaultOptions, { navigator: NavigatorDefaults });
     }
 }
@@ -84,27 +80,29 @@ function onChartAfterAddSeries() {
  * @private
  */
 function onChartAfterSetChartSize() {
-    var legend = this.legend, navigator = this.navigator;
-    var scrollbarHeight, legendOptions, xAxis, yAxis;
+    var _a;
+    const legend = this.legend, navigator = this.navigator;
+    let legendOptions, xAxis, yAxis;
     if (navigator) {
         legendOptions = legend && legend.options;
         xAxis = navigator.xAxis;
         yAxis = navigator.yAxis;
-        scrollbarHeight = navigator.scrollbarHeight;
+        const { scrollbarHeight, scrollButtonSize } = navigator;
         // Compute the top position
         if (this.inverted) {
             navigator.left = navigator.opposite ?
                 this.chartWidth - scrollbarHeight -
                     navigator.height :
                 this.spacing[3] + scrollbarHeight;
-            navigator.top = this.plotTop + scrollbarHeight;
+            navigator.top = this.plotTop + scrollButtonSize;
         }
         else {
-            navigator.left = pick(xAxis.left, this.plotLeft + scrollbarHeight);
+            navigator.left = pick(xAxis.left, this.plotLeft + scrollButtonSize);
             navigator.top = navigator.navigatorOptions.top ||
                 this.chartHeight -
                     navigator.height -
                     scrollbarHeight -
+                    (((_a = this.scrollbar) === null || _a === void 0 ? void 0 : _a.options.margin) || 0) -
                     this.spacing[2] -
                     (this.rangeSelector && this.extraBottomMargin ?
                         this.rangeSelector.getHeight() :
@@ -150,7 +148,7 @@ function onChartAfterUpdate(event) {
  * @private
  */
 function onChartBeforeRender() {
-    var options = this.options;
+    const options = this.options;
     if (options.navigator.enabled ||
         options.scrollbar.enabled) {
         this.scroller = this.navigator = new NavigatorConstructor(this);
@@ -163,7 +161,7 @@ function onChartBeforeRender() {
  * @private
  */
 function onChartBeforeShowResetZoom() {
-    var chartOptions = this.options, navigator = chartOptions.navigator, rangeSelector = chartOptions.rangeSelector;
+    const chartOptions = this.options, navigator = chartOptions.navigator, rangeSelector = chartOptions.rangeSelector;
     if (((navigator && navigator.enabled) ||
         (rangeSelector && rangeSelector.enabled)) &&
         ((!isTouchDevice &&
@@ -177,10 +175,10 @@ function onChartBeforeShowResetZoom() {
  * @private
  */
 function onChartCallback(chart) {
-    var navigator = chart.navigator;
+    const navigator = chart.navigator;
     // Initialize the navigator
     if (navigator && chart.xAxis[0]) {
-        var extremes = chart.xAxis[0].getExtremes();
+        const extremes = chart.xAxis[0].getExtremes();
         navigator.render(extremes.min, extremes.max);
     }
 }
@@ -189,7 +187,7 @@ function onChartCallback(chart) {
  * @private
  */
 function onChartUpdate(e) {
-    var navigatorOptions = (e.options.navigator || {}), scrollbarOptions = (e.options.scrollbar || {});
+    const navigatorOptions = (e.options.navigator || {}), scrollbarOptions = (e.options.scrollbar || {});
     if (!this.navigator && !this.scroller &&
         (navigatorOptions.enabled || scrollbarOptions.enabled)) {
         merge(true, this.options.navigator, navigatorOptions);
@@ -212,7 +210,7 @@ function onSeriesAfterUpdate() {
  *  Default Export
  *
  * */
-var NavigatorComposition = {
-    compose: compose
+const NavigatorComposition = {
+    compose
 };
 export default NavigatorComposition;

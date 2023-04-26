@@ -11,7 +11,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 /* *
  *
  *  Theme
@@ -104,11 +104,6 @@ var GridTheme;
             },
             itemHiddenStyle: {
                 color: 'gray'
-            }
-        },
-        labels: {
-            style: {
-                color: '#99b'
             }
         },
         navigation: {

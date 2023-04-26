@@ -12,18 +12,18 @@
 'use strict';
 import Axis3DDefaults from './Axis3DDefaults.js';
 import H from '../Globals.js';
-var deg2rad = H.deg2rad;
+const { deg2rad } = H;
 import Math3D from '../Math3D.js';
-var perspective = Math3D.perspective, perspective3D = Math3D.perspective3D, shapeArea = Math3D.shapeArea;
+const { perspective, perspective3D, shapeArea } = Math3D;
 import Tick3D from './Tick3DComposition.js';
 import U from '../Utilities.js';
-var addEvent = U.addEvent, merge = U.merge, pick = U.pick, wrap = U.wrap;
+const { addEvent, merge, pick, wrap } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -33,7 +33,7 @@ var composedClasses = [];
  * @private
  */
 function onAxisAfterSetOptions() {
-    var axis = this, chart = axis.chart, options = axis.options;
+    const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d && chart.is3d() && axis.coll !== 'colorAxis') {
         options.tickWidth = pick(options.tickWidth, 0);
         options.gridLineWidth = pick(options.gridLineWidth, 1);
@@ -43,7 +43,7 @@ function onAxisAfterSetOptions() {
  * @private
  */
 function onAxisDrawCrosshair(e) {
-    var axis = this;
+    const axis = this;
     if (axis.chart.is3d() &&
         axis.coll !== 'colorAxis') {
         if (e.point) {
@@ -57,7 +57,7 @@ function onAxisDrawCrosshair(e) {
  * @private
  */
 function onAxisInit() {
-    var axis = this;
+    const axis = this;
     if (!axis.axis3D) {
         axis.axis3D = new Axis3DAdditions(axis);
     }
@@ -67,7 +67,7 @@ function onAxisInit() {
  * @private
  */
 function wrapAxisGetLinePath(proceed) {
-    var axis = this;
+    const axis = this;
     // Do not do this if the chart is not 3D
     if (!axis.chart.is3d() || axis.coll === 'colorAxis') {
         return proceed.apply(axis, [].slice.call(arguments, 1));
@@ -82,10 +82,10 @@ function wrapAxisGetPlotBandPath(proceed) {
     if (!this.chart.is3d() || this.coll === 'colorAxis') {
         return proceed.apply(this, [].slice.call(arguments, 1));
     }
-    var args = arguments, from = args[1], to = args[2], path = [], fromPath = this.getPlotLinePath({ value: from }), toPath = this.getPlotLinePath({ value: to });
+    const args = arguments, from = args[1], to = args[2], path = [], fromPath = this.getPlotLinePath({ value: from }), toPath = this.getPlotLinePath({ value: to });
     if (fromPath && toPath) {
-        for (var i = 0; i < fromPath.length; i += 2) {
-            var fromStartSeg = fromPath[i], fromEndSeg = fromPath[i + 1], toStartSeg = toPath[i], toEndSeg = toPath[i + 1];
+        for (let i = 0; i < fromPath.length; i += 2) {
+            const fromStartSeg = fromPath[i], fromEndSeg = fromPath[i + 1], toStartSeg = toPath[i], toEndSeg = toPath[i + 1];
             if (fromStartSeg[0] === 'M' &&
                 fromEndSeg[0] === 'L' &&
                 toStartSeg[0] === 'M' &&
@@ -102,7 +102,7 @@ function wrapAxisGetPlotBandPath(proceed) {
  * @private
  */
 function wrapAxisGetPlotLinePath(proceed) {
-    var axis = this, axis3D = axis.axis3D, chart = axis.chart, path = proceed.apply(axis, [].slice.call(arguments, 1));
+    const axis = this, axis3D = axis.axis3D, chart = axis.chart, path = proceed.apply(axis, [].slice.call(arguments, 1));
     // Do not do this if the chart is not 3D
     if (axis.coll === 'colorAxis' ||
         !chart.chart3d ||
@@ -112,8 +112,8 @@ function wrapAxisGetPlotLinePath(proceed) {
     if (path === null) {
         return path;
     }
-    var options3d = chart.options.chart.options3d, d = axis.isZAxis ? chart.plotWidth : options3d.depth, frame = chart.chart3d.frame3d, startSegment = path[0], endSegment = path[1];
-    var pArr, pathSegments = [];
+    const options3d = chart.options.chart.options3d, d = axis.isZAxis ? chart.plotWidth : options3d.depth, frame = chart.chart3d.frame3d, startSegment = path[0], endSegment = path[1];
+    let pArr, pathSegments = [];
     if (startSegment[0] === 'M' && endSegment[0] === 'L') {
         pArr = [
             axis3D.swapZ({ x: startSegment[1], y: startSegment[2], z: 0 }),
@@ -173,21 +173,21 @@ function wrapAxisGetPlotLinePath(proceed) {
  * @private
  */
 function wrapAxisGetSlotWidth(proceed, tick) {
-    var axis = this, chart = axis.chart, ticks = axis.ticks, gridGroup = axis.gridGroup;
+    const axis = this, chart = axis.chart, ticks = axis.ticks, gridGroup = axis.gridGroup;
     if (axis.categories &&
         chart.frameShapes &&
         chart.is3d() &&
         gridGroup &&
         tick &&
         tick.label) {
-        var firstGridLine = (gridGroup.element.childNodes[0].getBBox()), frame3DLeft = chart.frameShapes.left.getBBox(), options3d = chart.options.chart.options3d, origin_1 = {
+        const firstGridLine = (gridGroup.element.childNodes[0].getBBox()), frame3DLeft = chart.frameShapes.left.getBBox(), options3d = chart.options.chart.options3d, origin = {
             x: chart.plotWidth / 2,
             y: chart.plotHeight / 2,
             z: options3d.depth / 2,
             vd: (pick(options3d.depth, 1) *
                 pick(options3d.viewDistance, 0))
         }, tickId = tick.pos, prevTick = ticks[tickId - 1], nextTick = ticks[tickId + 1];
-        var labelPos = void 0, prevLabelPos = void 0, nextLabelPos = void 0;
+        let labelPos, prevLabelPos, nextLabelPos;
         // Check whether the tick is not the first one and previous tick
         // exists, then calculate position of previous label.
         if (tickId !== 0 &&
@@ -198,7 +198,7 @@ function wrapAxisGetSlotWidth(proceed, tick) {
                 x: prevTick.label.xy.x,
                 y: prevTick.label.xy.y,
                 z: null
-            }, origin_1, origin_1.vd);
+            }, origin, origin.vd);
         }
         // If next label position is defined, then recalculate its position
         // basing on the perspective.
@@ -207,14 +207,14 @@ function wrapAxisGetSlotWidth(proceed, tick) {
                 x: nextTick.label.xy.x,
                 y: nextTick.label.xy.y,
                 z: null
-            }, origin_1, origin_1.vd);
+            }, origin, origin.vd);
         }
         labelPos = {
             x: tick.label.xy.x,
             y: tick.label.xy.y,
             z: null
         };
-        labelPos = perspective3D(labelPos, origin_1, origin_1.vd);
+        labelPos = perspective3D(labelPos, origin, origin.vd);
         // If tick is first one, check whether next label position is
         // already calculated, then return difference between the first and
         // the second label. If there is no next label position calculated,
@@ -231,7 +231,7 @@ function wrapAxisGetSlotWidth(proceed, tick) {
  * @private
  */
 function wrapAxisGetTitlePosition(proceed) {
-    var pos = proceed.apply(this, [].slice.call(arguments, 1));
+    const pos = proceed.apply(this, [].slice.call(arguments, 1));
     return this.axis3D ?
         this.axis3D.fix3dPosition(pos, true) :
         pos;
@@ -246,18 +246,7 @@ function wrapAxisGetTitlePosition(proceed) {
  * @private
  * @class
  */
-var Axis3DAdditions = /** @class */ (function () {
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    /**
-     * @private
-     */
-    function Axis3DAdditions(axis) {
-        this.axis = axis;
-    }
+class Axis3DAdditions {
     /* *
      *
      *  Functions
@@ -267,23 +256,33 @@ var Axis3DAdditions = /** @class */ (function () {
      * Extends axis class with 3D support.
      * @private
      */
-    Axis3DAdditions.compose = function (AxisClass, TickClass) {
+    static compose(AxisClass, TickClass) {
         Tick3D.compose(TickClass);
-        if (composedClasses.indexOf(AxisClass) === -1) {
-            composedClasses.push(AxisClass);
+        if (U.pushUnique(composedMembers, AxisClass)) {
             merge(true, AxisClass.defaultOptions, Axis3DDefaults);
             AxisClass.keepProps.push('axis3D');
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
             addEvent(AxisClass, 'drawCrosshair', onAxisDrawCrosshair);
-            var axisProto = AxisClass.prototype;
+            const axisProto = AxisClass.prototype;
             wrap(axisProto, 'getLinePath', wrapAxisGetLinePath);
             wrap(axisProto, 'getPlotBandPath', wrapAxisGetPlotBandPath);
             wrap(axisProto, 'getPlotLinePath', wrapAxisGetPlotLinePath);
             wrap(axisProto, 'getSlotWidth', wrapAxisGetSlotWidth);
             wrap(axisProto, 'getTitlePosition', wrapAxisGetTitlePosition);
         }
-    };
+    }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
+    /**
+     * @private
+     */
+    constructor(axis) {
+        this.axis = axis;
+    }
     /* *
      *
      *  Functions
@@ -300,18 +299,18 @@ var Axis3DAdditions = /** @class */ (function () {
      * @return {Highcharts.Position3DObject}
      * Fixed position.
      */
-    Axis3DAdditions.prototype.fix3dPosition = function (pos, isTitle) {
-        var axis3D = this;
-        var axis = axis3D.axis;
-        var chart = axis.chart;
+    fix3dPosition(pos, isTitle) {
+        const axis3D = this;
+        const axis = axis3D.axis;
+        const chart = axis.chart;
         // Do not do this if the chart is not 3D
         if (axis.coll === 'colorAxis' ||
             !chart.chart3d ||
             !chart.is3d()) {
             return pos;
         }
-        var alpha = deg2rad * chart.options.chart.options3d.alpha, beta = deg2rad * chart.options.chart.options3d.beta, positionMode = pick(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = pick(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
-        var offsetX = 0, offsetY = 0, vecX, vecY = { x: 0, y: 1, z: 0 }, 
+        const alpha = deg2rad * chart.options.chart.options3d.alpha, beta = deg2rad * chart.options.chart.options3d.beta, positionMode = pick(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = pick(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
+        let offsetX = 0, offsetY = 0, vecX, vecY = { x: 0, y: 1, z: 0 }, 
         // Indicates that we are labelling an X or Z axis on the "back" of
         // the chart
         reverseFlap = false;
@@ -392,8 +391,8 @@ var Axis3DAdditions = /** @class */ (function () {
                 vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
             }
             else { // X and Z Axis
-                var sin = Math.sin(alpha);
-                var cos = Math.cos(alpha);
+                let sin = Math.sin(alpha);
+                const cos = Math.cos(alpha);
                 if (axis.opposite) {
                     sin = -sin;
                 }
@@ -409,17 +408,17 @@ var Axis3DAdditions = /** @class */ (function () {
                 vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
             }
             else { // X and Z Axis
-                var sina = Math.sin(alpha);
-                var cosa = Math.cos(alpha);
-                var sinb = Math.sin(beta);
-                var cosb = Math.cos(beta);
-                var vecZ = { x: sinb * cosa, y: -sina, z: -cosa * cosb };
+                const sina = Math.sin(alpha);
+                const cosa = Math.cos(alpha);
+                const sinb = Math.sin(beta);
+                const cosb = Math.cos(beta);
+                const vecZ = { x: sinb * cosa, y: -sina, z: -cosa * cosb };
                 vecY = {
                     x: vecX.y * vecZ.z - vecX.z * vecZ.y,
                     y: vecX.z * vecZ.x - vecX.x * vecZ.z,
                     z: vecX.x * vecZ.y - vecX.y * vecZ.x
                 };
-                var scale = 1 / Math.sqrt(vecY.x * vecY.x + vecY.y * vecY.y + vecY.z * vecY.z);
+                let scale = 1 / Math.sqrt(vecY.x * vecY.x + vecY.y * vecY.y + vecY.z * vecY.z);
                 if (reverseFlap) {
                     scale = -scale;
                 }
@@ -445,10 +444,10 @@ var Axis3DAdditions = /** @class */ (function () {
         pos.x += offsetX * vecX.x + offsetY * vecY.x;
         pos.y += offsetX * vecX.y + offsetY * vecY.y;
         pos.z += offsetX * vecX.z + offsetY * vecY.z;
-        var projected = perspective([pos], axis.chart)[0];
+        const projected = perspective([pos], axis.chart)[0];
         if (skew) {
             // Check if the label text would be mirrored
-            var isMirrored = shapeArea(perspective([
+            const isMirrored = shapeArea(perspective([
                 pos,
                 { x: pos.x + vecX.x, y: pos.y + vecX.y, z: pos.z + vecX.z },
                 { x: pos.x + vecY.x, y: pos.y + vecY.y, z: pos.z + vecY.z }
@@ -456,7 +455,7 @@ var Axis3DAdditions = /** @class */ (function () {
             if (isMirrored) {
                 vecX = { x: -vecX.x, y: -vecX.y, z: -vecX.z };
             }
-            var pointsProjected = perspective([
+            const pointsProjected = perspective([
                 { x: pos.x, y: pos.y, z: pos.z },
                 { x: pos.x + vecX.x, y: pos.y + vecX.y, z: pos.z + vecX.z },
                 { x: pos.x + vecY.x, y: pos.y + vecY.y, z: pos.z + vecY.z }
@@ -475,14 +474,14 @@ var Axis3DAdditions = /** @class */ (function () {
                 projected.y * projected.matrix[3];
         }
         return projected;
-    };
+    }
     /**
      * @private
      */
-    Axis3DAdditions.prototype.swapZ = function (p, insidePlotArea) {
-        var axis = this.axis;
+    swapZ(p, insidePlotArea) {
+        const axis = this.axis;
         if (axis.isZAxis) {
-            var plotLeft = insidePlotArea ? 0 : axis.chart.plotLeft;
+            const plotLeft = insidePlotArea ? 0 : axis.chart.plotLeft;
             return {
                 x: plotLeft + p.z,
                 y: p.y,
@@ -490,9 +489,8 @@ var Axis3DAdditions = /** @class */ (function () {
             };
         }
         return p;
-    };
-    return Axis3DAdditions;
-}());
+    }
+}
 /* *
  *
  *  Default Export

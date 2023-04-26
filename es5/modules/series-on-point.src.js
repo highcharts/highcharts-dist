@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * Series on point module
  *
@@ -48,8 +48,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var _a = SeriesRegistry.seriesTypes, bubble = _a.bubble, pie = _a.pie, sunburst = _a.sunburst;
-        var addEvent = U.addEvent, defined = U.defined, find = U.find, isNumber = U.isNumber;
+        var _a = SeriesRegistry.seriesTypes,
+            bubble = _a.bubble,
+            pie = _a.pie,
+            sunburst = _a.sunburst;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            find = U.find,
+            isNumber = U.isNumber;
         /* *
          *
          *  Composition
@@ -67,7 +73,7 @@
              *  Constants
              *
              * */
-            var composedClasses = [];
+            var composedMembers = [];
             /* *
              *
              *  Functions
@@ -86,7 +92,13 @@
              * Chart class to use.
              */
             function compose(SeriesClass, ChartClass) {
-                var _a = Additions.prototype, chartGetZData = _a.chartGetZData, seriesAfterInit = _a.seriesAfterInit, seriesAfterRender = _a.seriesAfterRender, seriesGetCenter = _a.seriesGetCenter, seriesShowOrHide = _a.seriesShowOrHide, seriesTranslate = _a.seriesTranslate;
+                var _a = Additions.prototype,
+                    chartGetZData = _a.chartGetZData,
+                    seriesAfterInit = _a.seriesAfterInit,
+                    seriesAfterRender = _a.seriesAfterRender,
+                    seriesGetCenter = _a.seriesGetCenter,
+                    seriesShowOrHide = _a.seriesShowOrHide,
+                    seriesTranslate = _a.seriesTranslate;
                 // We can mark support for pie series here because it's in the core.
                 // But all other series outside the core should be marked in its module.
                 // This is crucial when loading series-on-point before loading a
@@ -95,8 +107,7 @@
                 // - pie
                 // - sunburst
                 pie.prototype.onPointSupported = true;
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
+                if (U.pushUnique(composedMembers, SeriesClass)) {
                     addEvent(Series, 'afterInit', seriesAfterInit);
                     addEvent(Series, 'afterRender', seriesAfterRender);
                     addEvent(Series, 'afterGetCenter', seriesGetCenter);
@@ -104,8 +115,7 @@
                     addEvent(Series, 'show', seriesShowOrHide);
                     addEvent(Series, 'translate', seriesTranslate);
                 }
-                if (composedClasses.indexOf(ChartClass) === -1) {
-                    composedClasses.push(ChartClass);
+                if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'beforeRender', chartGetZData);
                     addEvent(ChartClass, 'beforeRedraw', chartGetZData);
                 }
@@ -121,19 +131,19 @@
              * @private
              */
             var Additions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                /**
-                 * @private
-                 */
-                function Additions(series) {
+                    /* *
+                     *
+                     *  Constructors
+                     *
+                     * */
                     /**
-                     * @ignore
+                     * @private
                      */
-                    this.getRadii = bubble.prototype.getRadii;
+                    function Additions(series) {
+                        /**
+                         * @ignore
+                         */
+                        this.getRadii = bubble.prototype.getRadii;
                     /**
                      * @ignore
                      */
@@ -175,11 +185,14 @@
                  * @return {Highcharts.SVGAttributes} attribs - the path and styles.
                  */
                 Additions.prototype.getConnectorAttributes = function () {
-                    var chart = this.series.chart, onPointOptions = this.options;
+                    var chart = this.series.chart,
+                        onPointOptions = this.options;
                     if (!onPointOptions) {
                         return;
                     }
-                    var connectorOpts = onPointOptions.connectorOptions || {}, position = onPointOptions.position, connectedPoint = chart.get(onPointOptions.id);
+                    var connectorOpts = onPointOptions.connectorOptions || {},
+                        position = onPointOptions.position,
+                        connectedPoint = chart.get(onPointOptions.id);
                     if (!(connectedPoint instanceof Point) ||
                         !position ||
                         !defined(connectedPoint.plotX) ||
@@ -187,16 +200,28 @@
                         return;
                     }
                     var xFrom = defined(position.x) ?
-                        position.x :
-                        connectedPoint.plotX, yFrom = defined(position.y) ?
-                        position.y :
-                        connectedPoint.plotY, xTo = xFrom + (position.offsetX || 0), yTo = yFrom + (position.offsetY || 0), width = connectorOpts.width || 1, color = connectorOpts.stroke || this.series.color, dashStyle = connectorOpts.dashstyle, attribs = {
-                        d: SVGRenderer.prototype.crispLine([
-                            ['M', xFrom, yFrom],
-                            ['L', xTo, yTo]
-                        ], width, 'ceil'),
-                        'stroke-width': width
-                    };
+                            position.x :
+                            connectedPoint.plotX,
+                        yFrom = defined(position.y) ?
+                            position.y :
+                            connectedPoint.plotY,
+                        xTo = xFrom + (position.offsetX || 0),
+                        yTo = yFrom + (position.offsetY || 0),
+                        width = connectorOpts.width || 1,
+                        color = connectorOpts.stroke || this.series.color,
+                        dashStyle = connectorOpts.dashstyle,
+                        attribs = {
+                            d: SVGRenderer.prototype.crispLine([
+                                ['M',
+                        xFrom,
+                        yFrom],
+                                ['L',
+                        xTo,
+                        yTo]
+                            ],
+                        width, 'ceil'),
+                            'stroke-width': width
+                        };
                     if (!chart.styledMode) {
                         attribs.stroke = color;
                         attribs.dashstyle = dashStyle;
@@ -229,7 +254,8 @@
                  * @ignore
                  */
                 Additions.prototype.seriesGetCenter = function (e) {
-                    var onPointOptions = this.options.onPoint, center = e.positions;
+                    var onPointOptions = this.options.onPoint,
+                        center = e.positions;
                     if (onPointOptions) {
                         var connectedPoint = this.chart.get(onPointOptions.id);
                         if (connectedPoint instanceof Point &&
@@ -269,8 +295,9 @@
                     // When toggling a series visibility, loop through all points
                     this.points.forEach(function (point) {
                         // Find all series that are on toggled points
-                        var series = find(allSeries, function (series) {
-                            var id = ((series.onPoint || {}).options || {}).id;
+                        var series = find(allSeries,
+                            function (series) {
+                                var id = ((series.onPoint || {}).options || {}).id;
                             if (!id) {
                                 return false;
                             }

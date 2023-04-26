@@ -8,43 +8,26 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import AreaRangePoint from '../AreaRange/AreaRangePoint.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, pick = U.pick;
+const { extend, pick } = U;
 /* *
  *
  *  Class
  *
  * */
-var DumbbellPoint = /** @class */ (function (_super) {
-    __extends(DumbbellPoint, _super);
-    function DumbbellPoint() {
+class DumbbellPoint extends AreaRangePoint {
+    constructor() {
         /* *
          *
          *  Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.series = void 0;
-        _this.options = void 0;
-        _this.connector = void 0;
-        _this.pointWidth = void 0;
-        return _this;
+        super(...arguments);
+        this.series = void 0;
+        this.options = void 0;
+        this.connector = void 0;
+        this.pointWidth = void 0;
     }
     /* *
      *
@@ -59,12 +42,12 @@ var DumbbellPoint = /** @class */ (function (_super) {
      * @param {Highcharts.Point} this The point to inspect.
      *
      */
-    DumbbellPoint.prototype.setState = function () {
-        var point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
+    setState() {
+        let point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
         this.pointSetState.apply(this, arguments);
         if (!point.state) {
             verb = 'animate';
-            var _a = point.graphics || [], lowerGraphic = _a[0], upperGraphic = _a[1];
+            const [lowerGraphic, upperGraphic] = point.graphics || [];
             if (lowerGraphic && !chart.styledMode) {
                 lowerGraphic.attr({
                     fill: lowerGraphicColor
@@ -85,17 +68,16 @@ var DumbbellPoint = /** @class */ (function (_super) {
             }
         }
         point.connector[verb](series.getConnectorAttribs(point));
-    };
-    DumbbellPoint.prototype.destroy = function () {
+    }
+    destroy() {
         // #15560
         if (!this.graphic) {
             this.graphic = this.connector;
             this.connector = void 0;
         }
-        return _super.prototype.destroy.call(this);
-    };
-    return DumbbellPoint;
-}(AreaRangePoint));
+        return super.destroy();
+    }
+}
 extend(DumbbellPoint.prototype, {
     pointSetState: AreaRangePoint.prototype.setState
 });

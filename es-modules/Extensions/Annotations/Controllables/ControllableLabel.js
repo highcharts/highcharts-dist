@@ -4,34 +4,18 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Controllable from './Controllable.js';
 import F from '../../../Core/FormatUtilities.js';
-var format = F.format;
+const { format } = F;
 import MockPoint from '../MockPoint.js';
-import Tooltip from '../../../Core/Tooltip.js';
 import U from '../../../Core/Utilities.js';
-var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+const { extend, isNumber, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var composedClasses = [];
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -42,8 +26,8 @@ var composedClasses = [];
  * @private
  */
 function symbolConnector(x, y, w, h, options) {
-    var anchorX = options && options.anchorX, anchorY = options && options.anchorY;
-    var path, yOffset, lateral = w / 2;
+    const anchorX = options && options.anchorX, anchorY = options && options.anchorY;
+    let path, yOffset, lateral = w / 2;
     if (isNumber(anchorX) && isNumber(anchorY)) {
         path = [['M', anchorX, anchorY]];
         // Prefer 45 deg connectors
@@ -94,16 +78,7 @@ function symbolConnector(x, y, w, h, options) {
  * @param {number} index
  * Index of the label.
  */
-var ControllableLabel = /** @class */ (function (_super) {
-    __extends(ControllableLabel, _super);
-    /* *
-     *
-     *  Constructors
-     *
-     * */
-    function ControllableLabel(annotation, options, index) {
-        return _super.call(this, annotation, options, index, 'label') || this;
-    }
+class ControllableLabel extends Controllable {
     /* *
      *
      *  Static Functions
@@ -121,9 +96,9 @@ var ControllableLabel = /** @class */ (function (_super) {
      * @return {Highcharts.PositionObject}
      * Aligned position.
      */
-    ControllableLabel.alignedPosition = function (alignOptions, box) {
-        var align = alignOptions.align, vAlign = alignOptions.verticalAlign;
-        var x = (box.x || 0) + (alignOptions.x || 0), y = (box.y || 0) + (alignOptions.y || 0), alignFactor, vAlignFactor;
+    static alignedPosition(alignOptions, box) {
+        const align = alignOptions.align, vAlign = alignOptions.verticalAlign;
+        let x = (box.x || 0) + (alignOptions.x || 0), y = (box.y || 0) + (alignOptions.y || 0), alignFactor, vAlignFactor;
         if (align === 'right') {
             alignFactor = 1;
         }
@@ -146,22 +121,21 @@ var ControllableLabel = /** @class */ (function (_super) {
             x: Math.round(x),
             y: Math.round(y)
         };
-    };
-    ControllableLabel.compose = function (SVGRendererClass) {
-        if (composedClasses.indexOf(SVGRendererClass) === -1) {
-            composedClasses.push(SVGRendererClass);
-            var svgRendererProto = SVGRendererClass.prototype;
+    }
+    static compose(SVGRendererClass) {
+        if (U.pushUnique(composedMembers, SVGRendererClass)) {
+            const svgRendererProto = SVGRendererClass.prototype;
             svgRendererProto.symbols.connector = symbolConnector;
         }
-    };
+    }
     /**
      * Returns new alignment options for a label if the label is outside the
      * plot area. It is almost a one-to-one copy from
      * Series.prototype.justifyDataLabel except it does not mutate the label and
      * it works with absolute instead of relative position.
      */
-    ControllableLabel.justifiedOptions = function (chart, label, alignOptions, alignAttr) {
-        var align = alignOptions.align, verticalAlign = alignOptions.verticalAlign, padding = label.box ? 0 : (label.padding || 0), bBox = label.getBBox(), 
+    static justifiedOptions(chart, label, alignOptions, alignAttr) {
+        const align = alignOptions.align, verticalAlign = alignOptions.verticalAlign, padding = label.box ? 0 : (label.padding || 0), bBox = label.getBBox(), 
         //
         options = {
             align: align,
@@ -173,7 +147,7 @@ var ControllableLabel = /** @class */ (function (_super) {
         }, 
         //
         x = (alignAttr.x || 0) - chart.plotLeft, y = (alignAttr.y || 0) - chart.plotTop;
-        var off;
+        let off;
         // Off left
         off = x + padding;
         if (off < 0) {
@@ -215,7 +189,15 @@ var ControllableLabel = /** @class */ (function (_super) {
             }
         }
         return options;
-    };
+    }
+    /* *
+     *
+     *  Constructors
+     *
+     * */
+    constructor(annotation, options, index) {
+        super(annotation, options, index, 'label');
+    }
     /* *
      *
      *  Functions
@@ -228,23 +210,23 @@ var ControllableLabel = /** @class */ (function (_super) {
      * @param {number} dx translation for x coordinate
      * @param {number} dy translation for y coordinate
      */
-    ControllableLabel.prototype.translatePoint = function (dx, dy) {
-        _super.prototype.translatePoint.call(this, dx, dy, 0);
-    };
+    translatePoint(dx, dy) {
+        super.translatePoint(dx, dy, 0);
+    }
     /**
      * Translate x and y position relative to the label's anchor.
      *
      * @param {number} dx translation for x coordinate
      * @param {number} dy translation for y coordinate
      */
-    ControllableLabel.prototype.translate = function (dx, dy) {
-        var chart = this.annotation.chart, 
+    translate(dx, dy) {
+        const chart = this.annotation.chart, 
         // Annotation.options
         labelOptions = this.annotation.userOptions, 
         // Chart.options.annotations
         annotationIndex = chart.annotations.indexOf(this.annotation), chartAnnotations = chart.options.annotations, chartOptions = chartAnnotations[annotationIndex];
         if (chart.inverted) {
-            var temp = dx;
+            const temp = dx;
             dx = dy;
             dy = temp;
         }
@@ -256,9 +238,9 @@ var ControllableLabel = /** @class */ (function (_super) {
         chartOptions[this.collection][this.index].y = this.options.y;
         labelOptions[this.collection][this.index].x = this.options.x;
         labelOptions[this.collection][this.index].y = this.options.y;
-    };
-    ControllableLabel.prototype.render = function (parent) {
-        var options = this.options, attrs = this.attrsFromOptions(options), style = options.style;
+    }
+    render(parent) {
+        const options = this.options, attrs = this.attrsFromOptions(options), style = options.style;
         this.graphic = this.annotation.chart.renderer
             .label('', 0, -9999, // #10055
         options.shape, null, null, options.useHTML, null, 'annotation-label')
@@ -276,10 +258,10 @@ var ControllableLabel = /** @class */ (function (_super) {
             this.graphic.addClass(options.className);
         }
         this.graphic.labelrank = options.labelrank;
-        _super.prototype.render.call(this);
-    };
-    ControllableLabel.prototype.redraw = function (animation) {
-        var options = this.options, text = this.text || options.format || options.text, label = this.graphic, point = this.points[0];
+        super.render();
+    }
+    redraw(animation) {
+        const options = this.options, text = this.text || options.format || options.text, label = this.graphic, point = this.points[0];
         if (!label) {
             this.redraw(animation);
             return;
@@ -289,8 +271,8 @@ var ControllableLabel = /** @class */ (function (_super) {
                 format(String(text), point.getLabelConfig(), this.annotation.chart) :
                 options.formatter.call(point, this)
         });
-        var anchor = this.anchor(point);
-        var attrs = this.position(anchor);
+        const anchor = this.anchor(point);
+        const attrs = this.position(anchor);
         if (attrs) {
             label.alignAttr = attrs;
             attrs.anchorX = anchor.absolutePosition.x;
@@ -304,34 +286,35 @@ var ControllableLabel = /** @class */ (function (_super) {
             });
         }
         label.placed = !!attrs;
-        _super.prototype.redraw.call(this, animation);
-    };
+        super.redraw(animation);
+    }
     /**
      * All basic shapes don't support alignTo() method except label.
      * For a controllable label, we need to subtract translation from
      * options.
      */
-    ControllableLabel.prototype.anchor = function (_point) {
-        var anchor = _super.prototype.anchor.apply(this, arguments), x = this.options.x || 0, y = this.options.y || 0;
+    anchor(_point) {
+        const anchor = super.anchor.apply(this, arguments), x = this.options.x || 0, y = this.options.y || 0;
         anchor.absolutePosition.x -= x;
         anchor.absolutePosition.y -= y;
         anchor.relativePosition.x -= x;
         anchor.relativePosition.y -= y;
         return anchor;
-    };
+    }
     /**
      * Returns the label position relative to its anchor.
      */
-    ControllableLabel.prototype.position = function (anchor) {
-        var item = this.graphic, chart = this.annotation.chart, point = this.points[0], itemOptions = this.options, anchorAbsolutePosition = anchor.absolutePosition, anchorRelativePosition = anchor.relativePosition;
-        var itemPosition, alignTo, itemPosRelativeX, itemPosRelativeY, showItem = point.series.visible &&
+    position(anchor) {
+        const item = this.graphic, chart = this.annotation.chart, tooltip = chart.tooltip, point = this.points[0], itemOptions = this.options, anchorAbsolutePosition = anchor.absolutePosition, anchorRelativePosition = anchor.relativePosition;
+        let itemPosition, alignTo, itemPosRelativeX, itemPosRelativeY, showItem = point.series.visible &&
             MockPoint.prototype.isInsidePlot.call(point);
         if (item && showItem) {
-            var _a = item.width, width = _a === void 0 ? 0 : _a, _b = item.height, height = _b === void 0 ? 0 : _b;
-            if (itemOptions.distance) {
-                itemPosition = Tooltip.prototype.getPosition.call({
-                    chart: chart,
-                    distance: pick(itemOptions.distance, 16)
+            const { width = 0, height = 0 } = item;
+            if (itemOptions.distance && tooltip) {
+                itemPosition = tooltip.getPosition.call({
+                    chart,
+                    distance: pick(itemOptions.distance, 16),
+                    getPlayingField: tooltip.getPlayingField
                 }, width, height, {
                     plotX: anchorRelativePosition.x,
                     plotY: anchorRelativePosition.y,
@@ -352,8 +335,8 @@ var ControllableLabel = /** @class */ (function (_super) {
                     height: 0
                 };
                 itemPosition = ControllableLabel.alignedPosition(extend(itemOptions, {
-                    width: width,
-                    height: height
+                    width,
+                    height
                 }), alignTo);
                 if (this.options.overflow === 'justify') {
                     itemPosition = ControllableLabel.alignedPosition(ControllableLabel.justifiedOptions(chart, item, itemOptions, itemPosition), alignTo);
@@ -368,34 +351,33 @@ var ControllableLabel = /** @class */ (function (_super) {
             }
         }
         return showItem ? itemPosition : null;
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    /**
-     * A map object which allows to map options attributes to element attributes
-     *
-     * @type {Highcharts.Dictionary<string>}
-     */
-    ControllableLabel.attrsMap = {
-        backgroundColor: 'fill',
-        borderColor: 'stroke',
-        borderWidth: 'stroke-width',
-        zIndex: 'zIndex',
-        borderRadius: 'r',
-        padding: 'padding'
-    };
-    /**
-     * Shapes which do not have background - the object is used for proper
-     * setting of the contrast color.
-     *
-     * @type {Array<string>}
-     */
-    ControllableLabel.shapesWithoutBackground = ['connector'];
-    return ControllableLabel;
-}(Controllable));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+/**
+ * A map object which allows to map options attributes to element attributes
+ *
+ * @type {Highcharts.Dictionary<string>}
+ */
+ControllableLabel.attrsMap = {
+    backgroundColor: 'fill',
+    borderColor: 'stroke',
+    borderWidth: 'stroke-width',
+    zIndex: 'zIndex',
+    borderRadius: 'r',
+    padding: 'padding'
+};
+/**
+ * Shapes which do not have background - the object is used for proper
+ * setting of the contrast color.
+ *
+ * @type {Array<string>}
+ */
+ControllableLabel.shapesWithoutBackground = ['connector'];
 /* *
  *
  *  Default Export

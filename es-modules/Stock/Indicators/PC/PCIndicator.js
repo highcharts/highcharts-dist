@@ -6,28 +6,13 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import AU from '../ArrayUtilities.js';
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import Palettes from '../../../Core/Color/Palettes.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-var merge = U.merge, extend = U.extend;
+const { merge, extend } = U;
 /* *
  *
  *  Class
@@ -42,36 +27,35 @@ var merge = U.merge, extend = U.extend;
  *
  * @augments Highcharts.Series
  */
-var PCIndicator = /** @class */ (function (_super) {
-    __extends(PCIndicator, _super);
-    function PCIndicator() {
+class PCIndicator extends SMAIndicator {
+    constructor() {
         /* *
          *
          *  Static Properties
          *
          * */
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+        super(...arguments);
         /* *
          *
          *  Properties
          *
          * */
-        _this.data = void 0;
-        _this.options = void 0;
-        _this.points = void 0;
-        return _this;
+        this.data = void 0;
+        this.options = void 0;
+        this.points = void 0;
     }
     /* *
      *
      *  Functions
      *
      * */
-    PCIndicator.prototype.getValues = function (series, params) {
-        var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
+    getValues(series, params) {
+        const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
         PC = [], 
         // middle line, top line and bottom line
-        ML, TL, BL, date, low = 2, high = 1, xData = [], yData = [], slicedY, extremes, i;
+        low = 2, high = 1, xData = [], yData = [];
+        let ML, TL, BL, date, slicedY, extremes, i;
         if (yValLen < period) {
             return;
         }
@@ -91,80 +75,79 @@ var PCIndicator = /** @class */ (function (_super) {
             xData: xData,
             yData: yData
         };
-    };
+    }
+}
+/**
+ * Price channel (PC). This series requires the `linkedTo` option to be
+ * set and should be loaded after the `stock/indicators/indicators.js`.
+ *
+ * @sample {highstock} stock/indicators/price-channel
+ *         Price Channel
+ *
+ * @extends      plotOptions.sma
+ * @since        7.0.0
+ * @product      highstock
+ * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+ *               navigatorOptions, pointInterval, pointIntervalUnit,
+ *               pointPlacement, pointRange, pointStart, showInNavigator,
+ *               stacking
+ * @requires     stock/indicators/indicators
+ * @requires     stock/indicators/price-channel
+ * @optionparent plotOptions.pc
+ */
+PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
-     * Price channel (PC). This series requires the `linkedTo` option to be
-     * set and should be loaded after the `stock/indicators/indicators.js`.
+     * Option for fill color between lines in Price channel Indicator.
      *
-     * @sample {highstock} stock/indicators/price-channel
-     *         Price Channel
+     * @sample {highstock} stock/indicators/indicator-area-fill
+     *      background fill between lines
      *
-     * @extends      plotOptions.sma
-     * @since        7.0.0
-     * @product      highstock
-     * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-     *               navigatorOptions, pointInterval, pointIntervalUnit,
-     *               pointPlacement, pointRange, pointStart, showInNavigator,
-     *               stacking
-     * @requires     stock/indicators/indicators
-     * @requires     stock/indicators/price-channel
-     * @optionparent plotOptions.pc
+     * @type {Highcharts.Color}
+     * @apioption plotOptions.pc.fillColor
+     *
      */
-    PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
-        /**
-         * Option for fill color between lines in Price channel Indicator.
-         *
-         * @sample {highstock} stock/indicators/indicator-area-fill
-         *      background fill between lines
-         *
-         * @type {Highcharts.Color}
-         * @apioption plotOptions.pc.fillColor
-         *
-         */
-        /**
-         * @excluding index
-         */
-        params: {
-            index: void 0,
-            period: 20
-        },
-        lineWidth: 1,
-        topLine: {
-            styles: {
-                /**
-                 * Color of the top line. If not set, it's inherited from
-                 * [plotOptions.pc.color](#plotOptions.pc.color).
-                 *
-                 * @type {Highcharts.ColorString}
-                 */
-                lineColor: Palettes.colors[2],
-                /**
-                 * Pixel width of the line.
-                 */
-                lineWidth: 1
-            }
-        },
-        bottomLine: {
-            styles: {
-                /**
-                 * Color of the bottom line. If not set, it's inherited from
-                 * [plotOptions.pc.color](#plotOptions.pc.color).
-                 *
-                 * @type {Highcharts.ColorString}
-                 */
-                lineColor: Palettes.colors[8],
-                /**
-                 * Pixel width of the line.
-                 */
-                lineWidth: 1
-            }
-        },
-        dataGrouping: {
-            approximation: 'averages'
+    /**
+     * @excluding index
+     */
+    params: {
+        index: void 0,
+        period: 20
+    },
+    lineWidth: 1,
+    topLine: {
+        styles: {
+            /**
+             * Color of the top line. If not set, it's inherited from
+             * [plotOptions.pc.color](#plotOptions.pc.color).
+             *
+             * @type {Highcharts.ColorString}
+             */
+            lineColor: Palettes.colors[2],
+            /**
+             * Pixel width of the line.
+             */
+            lineWidth: 1
         }
-    });
-    return PCIndicator;
-}(SMAIndicator));
+    },
+    bottomLine: {
+        styles: {
+            /**
+             * Color of the bottom line. If not set, it's inherited from
+             * [plotOptions.pc.color](#plotOptions.pc.color).
+             *
+             * @type {Highcharts.ColorString}
+             */
+            lineColor: Palettes.colors[8],
+            /**
+             * Pixel width of the line.
+             */
+            lineWidth: 1
+        }
+    },
+    dataGrouping: {
+        approximation: 'averages'
+    }
+});
 extend(PCIndicator.prototype, {
     areaLinesNames: ['top', 'bottom'],
     nameBase: 'Price Channel',

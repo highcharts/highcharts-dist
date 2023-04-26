@@ -10,19 +10,19 @@
 'use strict';
 import Pointer from '../Core/Pointer.js';
 import U from '../Core/Utilities.js';
-var defined = U.defined, extend = U.extend, pick = U.pick, wrap = U.wrap;
+const { defined, extend, pick, wrap } = U;
 /* eslint-disable no-invalid-this */
-var normalize = Pointer.prototype.normalize;
-var totalWheelDelta = 0;
-var totalWheelDeltaTimer;
+const normalize = Pointer.prototype.normalize;
+let totalWheelDelta = 0;
+let totalWheelDeltaTimer;
 // Extend the Pointer
 extend(Pointer.prototype, {
     // Add lon and lat information to pointer events
     normalize: function (e, chartPosition) {
-        var chart = this.chart;
+        const chart = this.chart;
         e = normalize.call(this, e, chartPosition);
         if (chart && chart.mapView) {
-            var lonLat = chart.mapView.pixelsToLonLat({
+            const lonLat = chart.mapView.pixelsToLonLat({
                 x: e.chartX - chart.plotLeft,
                 y: e.chartY - chart.plotTop
             });
@@ -34,7 +34,7 @@ extend(Pointer.prototype, {
     },
     // The event handler for the doubleclick event
     onContainerDblClick: function (e) {
-        var chart = this.chart;
+        const chart = this.chart;
         e = this.normalize(e);
         if (chart.options.mapNavigation.enableDoubleClickZoomTo) {
             if (chart.pointer.inClass(e.target, 'highcharts-tracker') &&
@@ -48,11 +48,11 @@ extend(Pointer.prototype, {
     },
     // The event handler for the mouse scroll event
     onContainerMouseWheel: function (e) {
-        var chart = this.chart;
+        const chart = this.chart;
         e = this.normalize(e);
         // Firefox uses e.deltaY or e.detail, WebKit and IE uses wheelDelta
         // try wheelDelta first #15656
-        var delta = (defined(e.wheelDelta) && -e.wheelDelta / 120) ||
+        const delta = (defined(e.wheelDelta) && -e.wheelDelta / 120) ||
             e.deltaY || e.detail;
         // Wheel zooming on trackpads have different behaviours in Firefox vs
         // WebKit. In Firefox the delta increments in steps by 1, so it is not
@@ -65,7 +65,7 @@ extend(Pointer.prototype, {
             if (totalWheelDeltaTimer) {
                 clearTimeout(totalWheelDeltaTimer);
             }
-            totalWheelDeltaTimer = setTimeout(function () {
+            totalWheelDeltaTimer = setTimeout(() => {
                 totalWheelDelta = 0;
             }, 50);
         }
@@ -80,7 +80,7 @@ extend(Pointer.prototype, {
 });
 // The pinchType is inferred from mapNavigation options.
 wrap(Pointer.prototype, 'zoomOption', function (proceed) {
-    var mapNavigation = this.chart.options.mapNavigation;
+    const mapNavigation = this.chart.options.mapNavigation;
     // Pinch status
     if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
         this.chart.options.chart.zooming.pinchType = 'xy';
@@ -89,7 +89,7 @@ wrap(Pointer.prototype, 'zoomOption', function (proceed) {
 });
 // Extend the pinchTranslate method to preserve fixed ratio when zooming
 wrap(Pointer.prototype, 'pinchTranslate', function (proceed, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch) {
-    var xBigger;
+    let xBigger;
     proceed.call(this, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
     // Keep ratio
     if (this.chart.options.chart.type === 'map' && this.hasZoom) {

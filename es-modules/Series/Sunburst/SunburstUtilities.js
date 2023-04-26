@@ -13,9 +13,9 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var TreemapSeries = SeriesRegistry.seriesTypes.treemap;
+const { seriesTypes: { treemap: TreemapSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var isNumber = U.isNumber, isObject = U.isObject, merge = U.merge;
+const { isNumber, isObject, merge } = U;
 /* *
  *
  *  Namespace
@@ -49,7 +49,7 @@ var SunburstUtilities;
      * Returns the modified options, or undefined.
      */
     function calculateLevelSizes(levelOptions, params) {
-        var result, p = isObject(params) ? params : {}, totalWeight = 0, diffRadius, levels, levelsNotIncluded, remainingSize, from, to;
+        let result, p = isObject(params) ? params : {}, totalWeight = 0, diffRadius, levels, levelsNotIncluded, remainingSize, from, to;
         if (isObject(levelOptions)) {
             result = merge({}, levelOptions);
             from = isNumber(p.from) ? p.from : 0;
@@ -65,7 +65,7 @@ var SunburstUtilities;
             // Calculate total weight to use in convertion from weight to
             // pixels.
             levels.forEach(function (level) {
-                var options = result[level], unit = options.levelSize.unit, value = options.levelSize.value;
+                const options = result[level], unit = options.levelSize.unit, value = options.levelSize.value;
                 if (unit === 'weight') {
                     totalWeight += value;
                 }
@@ -82,7 +82,7 @@ var SunburstUtilities;
             });
             // Convert weight to pixels.
             levels.forEach(function (level) {
-                var options = result[level], weight;
+                let options = result[level], weight;
                 if (options.levelSize.unit === 'weight') {
                     weight = options.levelSize.value;
                     result[level].levelSize = {
@@ -106,12 +106,11 @@ var SunburstUtilities;
     /**
      * @private
      */
-    function getLevelFromAndTo(_a) {
-        var level = _a.level, height = _a.height;
+    function getLevelFromAndTo({ level, height }) {
         //  Never displays level below 1
-        var from = level > 0 ? level : 1;
-        var to = level + height;
-        return { from: from, to: to };
+        const from = level > 0 ? level : 1;
+        const to = level + height;
+        return { from, to };
     }
     SunburstUtilities.getLevelFromAndTo = getLevelFromAndTo;
     /**
@@ -119,7 +118,7 @@ var SunburstUtilities;
      * @private
      */
     function range(from, to) {
-        var result = [], i;
+        let result = [], i;
         if (isNumber(from) && isNumber(to) && from <= to) {
             for (i = from; i <= to; i++) {
                 result.push(i);

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.3.3 (2023-01-20)
+ * @license Highcharts JS v11.0.0 (2023-04-26)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -48,7 +48,8 @@
          *
          * */
         var setOptions = D.setOptions;
-        var addEvent = U.addEvent, createElement = U.createElement;
+        var addEvent = U.addEvent,
+            createElement = U.createElement;
         /* *
          *
          *  Theme
@@ -84,11 +85,6 @@
                 },
                 tooltip: {
                     borderWidth: 0
-                },
-                labels: {
-                    style: {
-                        color: '#6e6e70'
-                    }
                 },
                 legend: {
                     backgroundColor: '#E0E0E8',

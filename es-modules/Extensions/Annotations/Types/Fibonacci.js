@@ -4,26 +4,11 @@
  *
  * */
 'use strict';
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 import Annotation from '../Annotation.js';
 import MockPoint from '../MockPoint.js';
 import Tunnel from './Tunnel.js';
 import U from '../../../Core/Utilities.js';
-var merge = U.merge;
+const { merge } = U;
 /* *
  *
  *  Functions
@@ -34,17 +19,17 @@ var merge = U.merge;
  */
 function createPathDGenerator(retracementIndex, isBackground) {
     return function () {
-        var annotation = this.annotation;
+        const annotation = this.annotation;
         if (!annotation.startRetracements || !annotation.endRetracements) {
             return [];
         }
-        var leftTop = this.anchor(annotation.startRetracements[retracementIndex]).absolutePosition, rightTop = this.anchor(annotation.endRetracements[retracementIndex]).absolutePosition, d = [
+        const leftTop = this.anchor(annotation.startRetracements[retracementIndex]).absolutePosition, rightTop = this.anchor(annotation.endRetracements[retracementIndex]).absolutePosition, d = [
             ['M', Math.round(leftTop.x), Math.round(leftTop.y)],
             ['L', Math.round(rightTop.x), Math.round(rightTop.y)]
         ];
         if (isBackground) {
-            var rightBottom = this.anchor(annotation.endRetracements[retracementIndex - 1]).absolutePosition;
-            var leftBottom = this.anchor(annotation.startRetracements[retracementIndex - 1]).absolutePosition;
+            const rightBottom = this.anchor(annotation.endRetracements[retracementIndex - 1]).absolutePosition;
+            const leftBottom = this.anchor(annotation.startRetracements[retracementIndex - 1]).absolutePosition;
             d.push(['L', Math.round(rightBottom.x), Math.round(rightBottom.y)], ['L', Math.round(leftBottom.x), Math.round(leftBottom.y)]);
         }
         return d;
@@ -55,34 +40,29 @@ function createPathDGenerator(retracementIndex, isBackground) {
  *  Class
  *
  * */
-var Fibonacci = /** @class */ (function (_super) {
-    __extends(Fibonacci, _super);
-    function Fibonacci() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
+class Fibonacci extends Tunnel {
     /* *
      *
      *  Functions
      *
      * */
-    Fibonacci.prototype.linkPoints = function () {
-        _super.prototype.linkPoints.call(this);
+    linkPoints() {
+        super.linkPoints();
         this.linkRetracementsPoints();
         return;
-    };
-    Fibonacci.prototype.linkRetracementsPoints = function () {
-        var _this = this;
-        var points = this.points, startDiff = points[0].y - points[3].y, endDiff = points[1].y - points[2].y, startX = points[0].x, endX = points[1].x;
-        Fibonacci.levels.forEach(function (level, i) {
-            var startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level;
-            _this.startRetracements = _this.startRetracements || [];
-            _this.endRetracements = _this.endRetracements || [];
-            _this.linkRetracementPoint(i, startX, startRetracement, _this.startRetracements);
-            _this.linkRetracementPoint(i, endX, endRetracement, _this.endRetracements);
+    }
+    linkRetracementsPoints() {
+        const points = this.points, startDiff = points[0].y - points[3].y, endDiff = points[1].y - points[2].y, startX = points[0].x, endX = points[1].x;
+        Fibonacci.levels.forEach((level, i) => {
+            const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level;
+            this.startRetracements = this.startRetracements || [];
+            this.endRetracements = this.endRetracements || [];
+            this.linkRetracementPoint(i, startX, startRetracement, this.startRetracements);
+            this.linkRetracementPoint(i, endX, endRetracement, this.endRetracements);
         });
-    };
-    Fibonacci.prototype.linkRetracementPoint = function (pointIndex, x, y, retracements) {
-        var point = retracements[pointIndex], typeOptions = this.options.typeOptions;
+    }
+    linkRetracementPoint(pointIndex, x, y, retracements) {
+        const point = retracements[pointIndex], typeOptions = this.options.typeOptions;
         if (!point) {
             retracements[pointIndex] = new MockPoint(this.chart, this, {
                 x: x,
@@ -96,10 +76,10 @@ var Fibonacci = /** @class */ (function (_super) {
             point.options.y = y;
             point.refresh();
         }
-    };
-    Fibonacci.prototype.addShapes = function () {
+    }
+    addShapes() {
         Fibonacci.levels.forEach(function (_level, i) {
-            var _a = this.options.typeOptions, backgroundColors = _a.backgroundColors, lineColor = _a.lineColor, lineColors = _a.lineColors;
+            const { backgroundColors, lineColor, lineColors } = this.options.typeOptions;
             this.initShape({
                 type: 'path',
                 d: createPathDGenerator(i),
@@ -114,27 +94,26 @@ var Fibonacci = /** @class */ (function (_super) {
                 });
             }
         }, this);
-    };
-    Fibonacci.prototype.addLabels = function () {
+    }
+    addLabels() {
         Fibonacci.levels.forEach(function (level, i) {
-            var options = this.options.typeOptions, label = this.initLabel(merge(options.labels[i], {
+            const options = this.options.typeOptions, label = this.initLabel(merge(options.labels[i], {
                 point: function (target) {
-                    var point = MockPoint.pointToOptions(target.annotation.startRetracements[i]);
+                    const point = MockPoint.pointToOptions(target.annotation.startRetracements[i]);
                     return point;
                 },
                 text: level.toString()
             }));
             options.labels[i] = label.options;
         }, this);
-    };
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    Fibonacci.levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
-    return Fibonacci;
-}(Tunnel));
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+Fibonacci.levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 Fibonacci.prototype.defaultOptions = merge(Tunnel.prototype.defaultOptions, 
 /**
  * A fibonacci annotation.

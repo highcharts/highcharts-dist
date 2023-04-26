@@ -10,7 +10,7 @@
 'use strict';
 import ApproximationRegistry from './ApproximationRegistry.js';
 import U from '../../Core/Utilities.js';
-var arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber;
+const { arrayMax, arrayMin, correctFloat, extend, isNumber } = U;
 /* *
  *
  *  Functions
@@ -20,8 +20,8 @@ var arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat,
  * @private
  */
 function average(arr) {
-    var len = arr.length;
-    var ret = sum(arr);
+    const len = arr.length;
+    let ret = sum(arr);
     // If we have a number, return it divided by the length. If not,
     // return null or undefined based on what the sum method finds.
     if (isNumber(ret) && len) {
@@ -34,7 +34,7 @@ function average(arr) {
  * @private
  */
 function averages() {
-    var ret = [];
+    const ret = [];
     [].forEach.call(arguments, function (arr) {
         ret.push(average(arr));
     });
@@ -120,7 +120,7 @@ function range(low, high) {
  * @private
  */
 function sum(arr) {
-    var len = arr.length, ret;
+    let len = arr.length, ret;
     // 1. it consists of nulls exclusive
     if (!len && arr.hasNulls) {
         ret = null;
@@ -141,17 +141,17 @@ function sum(arr) {
  *  Default Export
  *
  * */
-var ApproximationDefaults = {
-    average: average,
-    averages: averages,
-    close: close,
-    high: high,
-    hlc: hlc,
-    low: low,
-    ohlc: ohlc,
-    open: open,
-    range: range,
-    sum: sum
+const ApproximationDefaults = {
+    average,
+    averages,
+    close,
+    high,
+    hlc,
+    low,
+    ohlc,
+    open,
+    range,
+    sum
 };
 extend(ApproximationRegistry, ApproximationDefaults);
 export default ApproximationDefaults;

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -46,22 +46,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray, merge = U.merge;
+        var isArray = U.isArray,
+            merge = U.merge;
         /* *
          *
          *  Functions
@@ -72,7 +74,8 @@
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i) {
-            var xValue = xVal[i], yValue = yVal[i];
+            var xValue = xVal[i],
+                yValue = yVal[i];
             points.push([xValue, yValue]);
         }
         /**
@@ -86,8 +89,10 @@
          * @private
          */
         function populateAverage(points, xVal, yVal, i, period, prevATR) {
-            var x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y;
-            y = (((prevATR * (period - 1)) + TR) / period);
+            var x = xVal[i - 1],
+                TR = getTR(yVal[i - 1],
+                yVal[i - 2]),
+                y = (((prevATR * (period - 1)) + TR) / period);
             return [x, y];
         }
         /* *
@@ -105,14 +110,15 @@
          * @augments Highcharts.Series
          */
         var ATRIndicator = /** @class */ (function (_super) {
-            __extends(ATRIndicator, _super);
+                __extends(ATRIndicator, _super);
             function ATRIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -129,8 +135,22 @@
              *
              * */
             ATRIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], range = 1, prevATR = 0, TR = 0, ATR = [], xData = [], yData = [], point, i, points;
-                points = [[xValue, yValue]];
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    xValue = xVal[0],
+                    yValue = yVal[0],
+                    points = [[xValue,
+                    yValue]],
+                    ATR = [],
+                    xData = [],
+                    yData = [];
+                var point,
+                    i,
+                    prevATR = 0,
+                    range = 1,
+                    TR = 0;
                 if ((xVal.length <= period) ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {

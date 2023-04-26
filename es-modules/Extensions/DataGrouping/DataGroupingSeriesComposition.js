@@ -13,16 +13,16 @@ import DataGroupingDefaults from './DataGroupingDefaults.js';
 import DateTimeAxis from '../../Core/Axis/DateTimeAxis.js';
 import D from '../../Core/Defaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var seriesProto = SeriesRegistry.series.prototype;
+const { series: { prototype: seriesProto } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, error = U.error, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
+const { addEvent, defined, error, extend, isNumber, merge, pick } = U;
 /* *
  *
  *  Constants
  *
  * */
-var baseGeneratePoints = seriesProto.generatePoints;
-var composedMembers = [];
+const baseGeneratePoints = seriesProto.generatePoints;
+const composedMembers = [];
 /* *
  *
  *  Functions
@@ -63,14 +63,14 @@ function adjustExtremes(xAxis, groupedXData) {
  * @private
  */
 function anchorPoints(series, groupedXData, xMax) {
-    var options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
-    var i;
+    const options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
+    let i;
     // DataGrouping x-coordinates.
     if (dataGroupingOptions && series.xData && totalRange && series.groupMap) {
-        var groupedDataLength = groupedXData.length - 1, anchor = dataGroupingOptions.anchor, firstAnchor = pick(dataGroupingOptions.firstAnchor, anchor), lastAnchor = pick(dataGroupingOptions.lastAnchor, anchor);
+        const groupedDataLength = groupedXData.length - 1, anchor = dataGroupingOptions.anchor, firstAnchor = pick(dataGroupingOptions.firstAnchor, anchor), lastAnchor = pick(dataGroupingOptions.lastAnchor, anchor);
         // Anchor points that are not extremes.
         if (anchor && anchor !== 'start') {
-            var shiftInterval = (totalRange *
+            const shiftInterval = (totalRange *
                 { middle: 0.5, end: 1 }[anchor]);
             i = groupedXData.length - 1;
             while (i-- && i > 0) {
@@ -82,8 +82,8 @@ function anchorPoints(series, groupedXData, xMax) {
         if (firstAnchor &&
             firstAnchor !== 'start' &&
             series.xData[0] >= groupedXData[0]) {
-            var groupStart = series.groupMap[0].start, groupLength = series.groupMap[0].length;
-            var firstGroupstEnd = void 0;
+            const groupStart = series.groupMap[0].start, groupLength = series.groupMap[0].length;
+            let firstGroupstEnd;
             if (isNumber(groupStart) && isNumber(groupLength)) {
                 firstGroupstEnd = groupStart + (groupLength - 1);
             }
@@ -100,7 +100,7 @@ function anchorPoints(series, groupedXData, xMax) {
             lastAnchor !== 'start' &&
             totalRange &&
             groupedXData[groupedDataLength] >= xMax - totalRange) {
-            var lastGroupStart = series.groupMap[series.groupMap.length - 1].start;
+            const lastGroupStart = series.groupMap[series.groupMap.length - 1].start;
             groupedXData[groupedDataLength] = {
                 middle: groupedXData[groupedDataLength] + 0.5 * totalRange,
                 end: groupedXData[groupedDataLength] + totalRange,
@@ -117,28 +117,28 @@ function anchorPoints(series, groupedXData, xMax) {
  * @function Highcharts.Series#applyGrouping
  */
 function applyGrouping(hasExtremesChanged) {
-    var series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
+    const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
         pick(dataGroupingOptions.enabled, chart.options.isStock), visible = (series.visible || !chart.options.chart.ignoreHiddenSeries), lastDataGrouping = this.currentDataGrouping;
-    var currentDataGrouping, croppedData, revertRequireSorting = false;
+    let currentDataGrouping, croppedData, revertRequireSorting = false;
     // Data needs to be sorted for dataGrouping
     if (groupingEnabled && !series.requireSorting) {
         series.requireSorting = revertRequireSorting = true;
     }
     // Skip if skipDataGrouping method returns false or if grouping is disabled
     // (in that order).
-    var skip = skipDataGrouping(series, hasExtremesChanged) === false || !groupingEnabled;
+    const skip = skipDataGrouping(series, hasExtremesChanged) === false || !groupingEnabled;
     // Revert original requireSorting value if changed
     if (revertRequireSorting) {
         series.requireSorting = false;
     }
     if (!skip) {
         series.destroyGroupedData();
-        var processedXData = dataGroupingOptions.groupAll ?
+        const processedXData = dataGroupingOptions.groupAll ?
             series.xData :
             series.processedXData, processedYData = dataGroupingOptions.groupAll ?
             series.yData :
             series.processedYData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
-        var i = void 0, hasGroupedData = void 0;
+        let i, hasGroupedData;
         // Execute grouping if the amount of points is greater than the limit
         // defined in groupPixelWidth
         if (groupPixelWidth &&
@@ -149,7 +149,7 @@ function applyGrouping(hasExtremesChanged) {
             // Force recreation of point instances in series.translate, #5699
             series.isDirty = true;
             series.points = null; // #6709
-            var extremes = xAxis.getExtremes(), xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+            const extremes = xAxis.getExtremes(), xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
                 xAxis.ordinal &&
                 xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
                 groupIntervalFactor, groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
@@ -161,7 +161,7 @@ function applyGrouping(hasExtremesChanged) {
                 groupPositions,
                 dataGroupingOptions.approximation
             ]);
-            var groupedXData = groupedData.groupedXData, groupedYData = groupedData.groupedYData, gapSize = 0;
+            let groupedXData = groupedData.groupedXData, groupedYData = groupedData.groupedYData, gapSize = 0;
             // The smoothed option is deprecated, instead, there is a fallback
             // to the new anchoring mechanism. #12455.
             if (dataGroupingOptions &&
@@ -223,9 +223,8 @@ function applyGrouping(hasExtremesChanged) {
  * @private
  */
 function compose(SeriesClass) {
-    var PointClass = SeriesClass.prototype.pointClass;
-    if (composedMembers.indexOf(PointClass) === -1) {
-        composedMembers.push(PointClass);
+    const PointClass = SeriesClass.prototype.pointClass;
+    if (U.pushUnique(composedMembers, PointClass)) {
         // Override point prototype to throw a warning when trying to update
         // grouped points.
         addEvent(PointClass, 'update', function () {
@@ -235,16 +234,15 @@ function compose(SeriesClass) {
             }
         });
     }
-    if (composedMembers.indexOf(SeriesClass) === -1) {
-        composedMembers.push(SeriesClass);
+    if (U.pushUnique(composedMembers, SeriesClass)) {
         addEvent(SeriesClass, 'afterSetOptions', onAfterSetOptions);
         addEvent(SeriesClass, 'destroy', destroyGroupedData);
         extend(SeriesClass.prototype, {
-            applyGrouping: applyGrouping,
-            destroyGroupedData: destroyGroupedData,
-            generatePoints: generatePoints,
-            getDGApproximation: getDGApproximation,
-            groupData: groupData
+            applyGrouping,
+            destroyGroupedData,
+            generatePoints,
+            getDGApproximation,
+            groupData
         });
     }
 }
@@ -319,13 +317,13 @@ function getDGApproximation() {
  *         Mapped groups.
  */
 function groupData(xData, yData, groupPositions, approximation) {
-    var series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], groupedYData = [], groupMap = [], dataLength = xData.length, 
+    const series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], groupedYData = [], groupMap = [], dataLength = xData.length, 
     // when grouping the fake extended axis for panning,
     // we don't need to consider y
     handleYData = !!yData, values = [], pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), groupAll = (this.options.dataGrouping &&
         this.options.dataGrouping.groupAll);
-    var pointX, pointY, groupedY, pos = 0, start = 0;
-    var approximationFn = (typeof approximation === 'function' ?
+    let pointX, pointY, groupedY, pos = 0, start = 0;
+    const approximationFn = (typeof approximation === 'function' ?
         approximation :
         approximation && ApproximationRegistry[approximation] ?
             ApproximationRegistry[approximation] :
@@ -333,7 +331,7 @@ function groupData(xData, yData, groupPositions, approximation) {
                 'average')]);
     // Calculate values array size from pointArrayMap length
     if (pointArrayMapLength) {
-        var len = pointArrayMap.length;
+        let len = pointArrayMap.length;
         while (len--) {
             values.push([]);
         }
@@ -341,8 +339,8 @@ function groupData(xData, yData, groupPositions, approximation) {
     else {
         values.push([]);
     }
-    var valuesLen = pointArrayMapLength || 1;
-    for (var i = 0; i <= dataLength; i++) {
+    const valuesLen = pointArrayMapLength || 1;
+    for (let i = 0; i <= dataLength; i++) {
         // Start with the first point within the X axis range (#2696)
         if (xData[i] < groupPositions[0]) {
             continue; // with next point
@@ -382,7 +380,7 @@ function groupData(xData, yData, groupPositions, approximation) {
             }
             // reset the aggregate arrays
             start = i;
-            for (var j = 0; j < valuesLen; j++) {
+            for (let j = 0; j < valuesLen; j++) {
                 values[j].length = 0; // faster than values[j] = []
                 values[j].hasNulls = false;
             }
@@ -400,14 +398,14 @@ function groupData(xData, yData, groupPositions, approximation) {
         // for each raw data point, push it to an array that contains all values
         // for this specific group
         if (pointArrayMap) {
-            var index = (series.options.dataGrouping &&
+            const index = (series.options.dataGrouping &&
                 series.options.dataGrouping.groupAll ?
                 i : series.cropStart + i), point = (data && data[index]) ||
                 series.pointClass.prototype.applyOptions.apply({
                     series: series
                 }, [dataOptions[index]]);
-            var val = void 0;
-            for (var j = 0; j < pointArrayMapLength; j++) {
+            let val;
+            for (let j = 0; j < pointArrayMapLength; j++) {
                 val = point[pointArrayMap[j]];
                 if (isNumber(val)) {
                     values[j].push(val);
@@ -428,9 +426,9 @@ function groupData(xData, yData, groupPositions, approximation) {
         }
     }
     return {
-        groupedXData: groupedXData,
-        groupedYData: groupedYData,
-        groupMap: groupMap
+        groupedXData,
+        groupedYData,
+        groupMap
     };
 }
 /**
@@ -439,14 +437,14 @@ function groupData(xData, yData, groupPositions, approximation) {
  * @private
  */
 function onAfterSetOptions(e) {
-    var options = e.options, type = this.type, plotOptions = this.chart.options.plotOptions, 
+    const options = e.options, type = this.type, plotOptions = this.chart.options.plotOptions, 
     // External series, for example technical indicators should also inherit
     // commonOptions which are not available outside this module
     baseOptions = (this.useCommonDataGrouping &&
         DataGroupingDefaults.common), seriesSpecific = DataGroupingDefaults.seriesSpecific;
-    var defaultOptions = D.defaultOptions.plotOptions[type].dataGrouping;
+    let defaultOptions = D.defaultOptions.plotOptions[type].dataGrouping;
     if (plotOptions && (seriesSpecific[type] || baseOptions)) { // #1284
-        var rangeSelector = this.chart.rangeSelector;
+        const rangeSelector = this.chart.rangeSelector;
         if (!defaultOptions) {
             defaultOptions = merge(DataGroupingDefaults.common, seriesSpecific[type]);
         }
@@ -473,8 +471,8 @@ function skipDataGrouping(series, force) {
  *  Default Export
  *
  * */
-var DataGroupingSeriesComposition = {
-    compose: compose,
-    groupData: groupData
+const DataGroupingSeriesComposition = {
+    compose,
+    groupData
 };
 export default DataGroupingSeriesComposition;

@@ -11,13 +11,13 @@
  * */
 'use strict';
 import CU from './Utils/ChartUtilities.js';
-var fireEventOnWrappedOrUnwrappedElement = CU.fireEventOnWrappedOrUnwrappedElement;
+const { fireEventOnWrappedOrUnwrappedElement } = CU;
 import DOMElementProvider from './Utils/DOMElementProvider.js';
 import EventProvider from './Utils/EventProvider.js';
 import HU from './Utils/HTMLUtilities.js';
-var getFakeMouseEvent = HU.getFakeMouseEvent;
+const { getFakeMouseEvent } = HU;
 import U from '../Core/Utilities.js';
-var extend = U.extend;
+const { extend } = U;
 /* *
  *
  *  Class
@@ -39,8 +39,8 @@ var extend = U.extend;
  * @class
  * @name Highcharts.AccessibilityComponent
  */
-var AccessibilityComponent = /** @class */ (function () {
-    function AccessibilityComponent() {
+class AccessibilityComponent {
+    constructor() {
         /* *
          *
          *  Properties
@@ -64,7 +64,7 @@ var AccessibilityComponent = /** @class */ (function () {
      * @param {Highcharts.Chart} chart The chart object
      * @param {Highcharts.ProxyProvider} proxyProvider The proxy provider of the accessibility module
      */
-    AccessibilityComponent.prototype.initBase = function (chart, proxyProvider) {
+    initBase(chart, proxyProvider) {
         this.chart = chart;
         this.eventProvider = new EventProvider();
         this.domElementProvider = new DOMElementProvider();
@@ -84,48 +84,47 @@ var AccessibilityComponent = /** @class */ (function () {
             end: 35,
             home: 36
         };
-    };
+    }
     /**
      * Add an event to an element and keep track of it for later removal.
      * See EventProvider for details.
      * @private
      */
-    AccessibilityComponent.prototype.addEvent = function (el, type, fn, options) {
+    addEvent(el, type, fn, options) {
         return this.eventProvider.addEvent(el, type, fn, options);
-    };
+    }
     /**
      * Create an element and keep track of it for later removal.
      * See DOMElementProvider for details.
      * @private
      */
-    AccessibilityComponent.prototype.createElement = function (tagName, options) {
+    createElement(tagName, options) {
         return this.domElementProvider.createElement(tagName, options);
-    };
+    }
     /**
      * Fire a fake click event on an element. It is useful to have this on
      * AccessibilityComponent for users of custom components.
      */
-    AccessibilityComponent.prototype.fakeClickEvent = function (el) {
-        var fakeEvent = getFakeMouseEvent('click');
+    fakeClickEvent(el) {
+        const fakeEvent = getFakeMouseEvent('click');
         fireEventOnWrappedOrUnwrappedElement(el, fakeEvent);
-    };
+    }
     /**
      * Remove traces of the component.
      * @private
      */
-    AccessibilityComponent.prototype.destroyBase = function () {
+    destroyBase() {
         this.domElementProvider.destroyCreatedElements();
         this.eventProvider.removeAddedEvents();
-    };
-    return AccessibilityComponent;
-}());
+    }
+}
 extend(AccessibilityComponent.prototype, 
 /** @lends Highcharts.AccessibilityComponent */
 {
     /**
      * Called on component initialization.
      */
-    init: function () { },
+    init() { },
     /**
      * Get keyboard navigation handler for this component.
      * @private
@@ -135,15 +134,15 @@ extend(AccessibilityComponent.prototype,
      * Called on updates to the chart, including options changes.
      * Note that this is also called on first render of chart.
      */
-    onChartUpdate: function () { },
+    onChartUpdate() { },
     /**
      * Called on every chart render.
      */
-    onChartRender: function () { },
+    onChartRender() { },
     /**
      * Called when accessibility is disabled or chart is destroyed.
      */
-    destroy: function () { }
+    destroy() { }
 });
 /* *
  *

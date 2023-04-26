@@ -9,9 +9,9 @@
  * */
 'use strict';
 import Color from '../../Core/Color/Color.js';
-var color = Color.parse;
+const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-var seriesTypes = SeriesRegistry.seriesTypes;
+const { seriesTypes } = SeriesRegistry;
 /* *
  *
  *  Constants
@@ -25,7 +25,7 @@ var seriesTypes = SeriesRegistry.seriesTypes;
  * @product      highstock gantt
  * @optionparent navigator
  */
-var NavigatorDefaults = {
+const NavigatorDefaults = {
     /**
      * Whether the navigator and scrollbar should adapt to updated data
      * in the base X axis. When loading data async, as in the demo below,
@@ -188,7 +188,7 @@ var NavigatorDefaults = {
      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @default rgba(102,133,194,0.3)
      */
-    maskFill: color("#6685c2" /* Palette.highlightColor60 */).setOpacity(0.3).get(),
+    maskFill: color("#667aff" /* Palette.highlightColor60 */).setOpacity(0.3).get(),
     /**
      * The color of the line marking the currently zoomed area in the
      * navigator.
@@ -199,7 +199,7 @@ var NavigatorDefaults = {
      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @default #cccccc
      */
-    outlineColor: "#cccccc" /* Palette.neutralColor20 */,
+    outlineColor: "#999999" /* Palette.neutralColor40 */,
     /**
      * The width of the line marking the currently zoomed area in the
      * navigator.
@@ -276,6 +276,12 @@ var NavigatorDefaults = {
          * @ignore-option
          */
         compare: null,
+        /**
+         * @ignore-option
+         */
+        sonification: {
+            enabled: false
+        },
         /**
          * Unless data is explicitly defined, the data is borrowed from the
          * first series in the chart.
@@ -414,7 +420,13 @@ var NavigatorDefaults = {
              */
             style: {
                 /** @ignore */
-                color: "#999999" /* Palette.neutralColor40 */
+                color: "#000000" /* Palette.neutralColor100 */,
+                /** @ignore */
+                fontSize: '0.7em',
+                /** @ignore */
+                opacity: 0.6,
+                /** @ignore */
+                textOutline: '2px contrast'
             },
             x: 3,
             y: -4

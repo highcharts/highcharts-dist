@@ -9,10 +9,10 @@
  * */
 'use strict';
 // Compute bounds from a path element
-var boundsFromPath = function (path) {
-    var x2 = -Number.MAX_VALUE, x1 = Number.MAX_VALUE, y2 = -Number.MAX_VALUE, y1 = Number.MAX_VALUE, validBounds;
-    path.forEach(function (seg) {
-        var x = seg[seg.length - 2], y = seg[seg.length - 1];
+const boundsFromPath = function (path) {
+    let x2 = -Number.MAX_VALUE, x1 = Number.MAX_VALUE, y2 = -Number.MAX_VALUE, y1 = Number.MAX_VALUE, validBounds;
+    path.forEach((seg) => {
+        const x = seg[seg.length - 2], y = seg[seg.length - 1];
         if (typeof x === 'number' &&
             typeof y === 'number') {
             x1 = Math.min(x1, x);
@@ -23,15 +23,15 @@ var boundsFromPath = function (path) {
         }
     });
     if (validBounds) {
-        return { x1: x1, y1: y1, x2: x2, y2: y2 };
+        return { x1, y1, x2, y2 };
     }
 };
 /**
  * Test for point in polygon. Polygon defined as array of [x,y] points.
  * @private
  */
-var pointInPolygon = function (point, polygon) {
-    var i, j, rel1, rel2, c = false, x = point.x, y = point.y;
+const pointInPolygon = function (point, polygon) {
+    let i, j, rel1, rel2, c = false, x = point.x, y = point.y;
     for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
         rel1 = polygon[i][1] > y;
         rel2 = polygon[j][1] > y;
@@ -49,8 +49,8 @@ var pointInPolygon = function (point, polygon) {
  *  Default Export
  *
  * */
-var MapUtilities = {
-    boundsFromPath: boundsFromPath,
-    pointInPolygon: pointInPolygon
+const MapUtilities = {
+    boundsFromPath,
+    pointInPolygon
 };
 export default MapUtilities;

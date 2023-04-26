@@ -18,7 +18,7 @@
 /**
  * @optionparent xAxis
  */
-var Axis3DDefaults = {
+const Axis3DDefaults = {
     labels: {
         /**
          * Defines how the labels are be repositioned according to the 3D

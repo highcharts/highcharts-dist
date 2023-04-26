@@ -15,7 +15,7 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-var setOptions = D.setOptions;
+const { setOptions } = D;
 /* *
  *
  *  Theme
@@ -28,7 +28,7 @@ var HighContrastDarkTheme;
      *  Constants
      *
      * */
-    var textBright = '#F0F0F3';
+    const textBright = '#F0F0F3';
     HighContrastDarkTheme.options = {
         colors: [
             '#67B9EE',
@@ -136,11 +136,6 @@ var HighContrastDarkTheme;
         credits: {
             style: {
                 color: textBright
-            }
-        },
-        labels: {
-            style: {
-                color: '#707073'
             }
         },
         drilldown: {

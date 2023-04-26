@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.3.3 (2023-01-20)
+ * @license Highstock JS v11.0.0 (2023-04-26)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -45,22 +45,25 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var error = U.error, extend = U.extend, merge = U.merge;
+        var error = U.error,
+            extend = U.extend,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -76,14 +79,15 @@
          * @augments Highcharts.Series
          */
         var ADIndicator = /** @class */ (function (_super) {
-            __extends(ADIndicator, _super);
+                __extends(ADIndicator, _super);
             function ADIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -100,9 +104,14 @@
              *
              * */
             ADIndicator.populateAverage = function (xVal, yVal, yValVolume, i, _period) {
-                var high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
-                    0 :
-                    ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];
+                var high = yVal[i][1],
+                    low = yVal[i][2],
+                    close = yVal[i][3],
+                    volume = yValVolume[i],
+                    adY = close === high && close === low || high === low ?
+                        0 :
+                        ((2 * close - low - high) / (high - low)) * volume,
+                    adX = xVal[i];
                 return [adX, adY];
             };
             /* *
@@ -111,7 +120,19 @@
              *
              * */
             ADIndicator.prototype.getValues = function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries && volumeSeries.yData, yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [], len, i, ADPoint;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    volumeSeriesID = params.volumeSeriesID,
+                    volumeSeries = series.chart.get(volumeSeriesID),
+                    yValVolume = volumeSeries && volumeSeries.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    AD = [],
+                    xData = [],
+                    yData = [];
+                var len,
+                    i,
+                    ADPoint;
                 if (xVal.length <= period &&
                     yValLen &&
                     yVal[0].length !== 4) {
@@ -213,22 +234,26 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U.error;
+        var correctFloat = U.correctFloat,
+            extend = U.extend,
+            merge = U.merge,
+            error = U.error;
         /* *
          *
          *  Class
@@ -244,14 +269,15 @@
          * @augments Highcharts.Series
          */
         var ChaikinIndicator = /** @class */ (function (_super) {
-            __extends(ChaikinIndicator, _super);
+                __extends(ChaikinIndicator, _super);
             function ChaikinIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -268,40 +294,45 @@
              *
              * */
             ChaikinIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods, period = params.period, 
-                // Accumulation Distribution Line data
-                ADL, 
-                // 0- date, 1- Chaikin Oscillator
-                CHA = [], xData = [], yData = [], periodsOffset, 
-                // Shorter Period EMA
-                SPE, 
-                // Longer Period EMA
-                LPE, oscillator, i;
+                var periods = params.periods,
+                    period = params.period, 
+                    // 0- date, 1- Chaikin Oscillator
+                    CHA = [],
+                    xData = [],
+                    yData = [];
+                var oscillator,
+                    i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "Chaikin requires two periods. Notice, first ' +
                         'period should be lower than the second one."');
                     return;
                 }
-                ADL = AD.prototype.getValues.call(this, series, {
-                    volumeSeriesID: params.volumeSeriesID,
-                    period: period
-                });
+                // Accumulation Distribution Line data
+                var ADL = AD.prototype.getValues.call(this,
+                    series, {
+                        volumeSeriesID: params.volumeSeriesID,
+                        period: period
+                    });
                 // Check if adl is calculated properly, if not skip
                 if (!ADL) {
                     return;
                 }
-                SPE = EMAIndicator.prototype.getValues.call(this, ADL, {
-                    period: periods[0]
-                });
-                LPE = EMAIndicator.prototype.getValues.call(this, ADL, {
-                    period: periods[1]
-                });
+                // Shorter Period EMA
+                var SPE = _super.prototype.getValues.call(this,
+                    ADL, {
+                        period: periods[0]
+                    });
+                // Longer Period EMA
+                var LPE = _super.prototype.getValues.call(this,
+                    ADL, {
+                        period: periods[1]
+                    });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
                     return;
                 }
-                periodsOffset = periods[1] - periods[0];
+                var periodsOffset = periods[1] - periods[0];
                 for (i = 0; i < LPE.yData.length; i++) {
                     oscillator = correctFloat(SPE.yData[i + periodsOffset] -
                         LPE.yData[i]);

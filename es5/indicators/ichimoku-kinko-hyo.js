@@ -1,5 +1,5 @@
 /*
- Highstock JS v10.3.3 (2023-01-20)
+ Highstock JS v11.0.0 (2023-04-26)
 
  Indicator series type for Highcharts Stock
 
@@ -7,7 +7,7 @@
 
  License: www.highcharts.com/license
 */
-(function(e){"object"===typeof module&&module.exports?(e["default"]=e,module.exports=e):"function"===typeof define&&define.amd?define("highcharts/indicators/ichimoku-kinko-hyo",["highcharts","highcharts/modules/stock"],function(w){e(w);e.Highcharts=w;return e}):e("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(e){function w(e,m,v,k){e.hasOwnProperty(m)||(e[m]=k.apply(null,v),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:m,
+'use strict';(function(e){"object"===typeof module&&module.exports?(e["default"]=e,module.exports=e):"function"===typeof define&&define.amd?define("highcharts/indicators/ichimoku-kinko-hyo",["highcharts","highcharts/modules/stock"],function(w){e(w);e.Highcharts=w;return e}):e("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(e){function w(e,m,v,k){e.hasOwnProperty(m)||(e[m]=k.apply(null,v),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:m,
 module:e[m]}})))}e=e?e._modules:{};w(e,"Stock/Indicators/IKH/IKHIndicator.js",[e["Extensions/DataGrouping/ApproximationRegistry.js"],e["Core/Color/Color.js"],e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(e,m,v,k){function w(b){return b.reduce(function(c,a){return Math.max(c,a[1])},-Infinity)}function G(b){return b.reduce(function(c,a){return Math.min(c,a[2])},Infinity)}function z(b){return{high:w(b),low:G(b)}}function H(b){var c,a,t,f,u;b.series.forEach(function(b){if(b.xData)for(f=
 b.xData,u=a=b.xIncrement?1:f.length-1;0<u;u--)if(t=f[u]-f[u-1],"undefined"===typeof c||t<c)c=t});return c}function I(b,c,a,t){if(b&&c&&a&&t){var f=c.plotX-b.plotX;c=c.plotY-b.plotY;var u=t.plotX-a.plotX;t=t.plotY-a.plotY;var e=b.plotX-a.plotX,p=b.plotY-a.plotY;a=(-c*e+f*p)/(-u*c+f*t);u=(u*p-t*e)/(-u*c+f*t);if(0<=a&&1>=a&&0<=u&&1>=u)return{plotX:b.plotX+u*f,plotY:b.plotY+u*c}}}function E(b){var c=b.indicator;c.points=b.points;c.nextPoints=b.nextPoints;c.color=b.color;c.options=B(b.options.senkouSpan.styles,
 b.gap);c.graph=b.graph;c.fillGraph=!0;v.seriesTypes.sma.prototype.drawGraph.call(c)}var J=this&&this.__extends||function(){var b=function(c,a){b=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,f){a.__proto__=f}||function(a,f){for(var c in f)Object.prototype.hasOwnProperty.call(f,c)&&(a[c]=f[c])};return b(c,a)};return function(c,a){function t(){this.constructor=c}if("function"!==typeof a&&null!==a)throw new TypeError("Class extends value "+String(a)+" is not a constructor or null");

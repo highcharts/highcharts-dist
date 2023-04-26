@@ -40,7 +40,7 @@
  * @requires     modules/treegraph.js
  * @optionparent plotOptions.treegraph
  */
-var TreegraphSeriesDefaults = {
+const TreegraphSeriesDefaults = {
     /**
      * Flips the positions of the nodes of a treegraph along the
      * horizontal axis (vertical if chart is inverted).
@@ -127,6 +127,10 @@ var TreegraphSeriesDefaults = {
          */
         enabled: true,
         /**
+         * The line width of the button in pixels
+         */
+        lineWidth: 1,
+        /**
          * Offset of the button in the x direction.
          */
         x: 0,
@@ -137,25 +141,26 @@ var TreegraphSeriesDefaults = {
         /**
          * Height of the button.
          */
-        height: 10,
+        height: 18,
         /**
          * Width of the button.
          */
-        width: 10,
+        width: 18,
         /**
          * The symbol of the collapse button.
          */
-        shape: 'circle'
+        shape: 'circle',
         /**
          * CSS styles for the collapse button.
          *
          * In styled mode, the collapse button style is given in the
          * `.highcharts-collapse-button` class.
-         *
-         *
-         * @type      {Highcharts.CSSObject}
-         * @apioption series.treegraph.collapseButton.style
          */
+        style: {
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            fontSize: '1em'
+        }
     },
     /**
      * @extends plotOptions.series.tooltip
@@ -197,6 +202,7 @@ var TreegraphSeriesDefaults = {
      * @declare Highcharts.SeriesTreegraphDataLabelsOptionsObject
      */
     dataLabels: {
+        defer: true,
         /**
          * Options for a _link_ label text which should follow link
          * connection. Border and background are disabled for a label
@@ -217,9 +223,9 @@ var TreegraphSeriesDefaults = {
             }
         },
         enabled: true,
-        linkFormatter: function () { return ''; },
-        formatter: function () {
-            return this.point.id;
+        linkFormatter: () => '',
+        style: {
+            textOverflow: 'none'
         }
     }
 };

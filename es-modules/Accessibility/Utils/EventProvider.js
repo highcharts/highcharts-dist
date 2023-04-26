@@ -12,7 +12,7 @@
 'use strict';
 import H from '../../Core/Globals.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent;
+const { addEvent } = U;
 /* *
  *
  *  Class
@@ -21,13 +21,13 @@ var addEvent = U.addEvent;
 /**
  * @private
  */
-var EventProvider = /** @class */ (function () {
+class EventProvider {
     /* *
      *
      *  Constructor
      *
      * */
-    function EventProvider() {
+    constructor() {
         this.eventRemovers = [];
     }
     /**
@@ -35,21 +35,20 @@ var EventProvider = /** @class */ (function () {
      * Same args as Highcharts.addEvent.
      * @private
      */
-    EventProvider.prototype.addEvent = function () {
-        var remover = addEvent.apply(H, arguments);
+    addEvent() {
+        const remover = addEvent.apply(H, arguments);
         this.eventRemovers.push(remover);
         return remover;
-    };
+    }
     /**
      * Remove all added events.
      * @private
      */
-    EventProvider.prototype.removeAddedEvents = function () {
-        this.eventRemovers.forEach(function (remover) { return remover(); });
+    removeAddedEvents() {
+        this.eventRemovers.forEach((remover) => remover());
         this.eventRemovers = [];
-    };
-    return EventProvider;
-}());
+    }
+}
 /* *
  *
  *  Default Export
