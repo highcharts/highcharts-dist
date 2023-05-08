@@ -99,6 +99,7 @@ const HLCSeriesDefaults = {
      * @sample {highstock} stock/plotoptions/hlc-pointvalkey/
      *         Possible values
      *
+     * @declare    Highcharts.OptionsHLCPointValKeyValue
      * @type       {string}
      * @default    close
      * @validvalue ["high", "low", "close"]

@@ -12,6 +12,12 @@ import * as _Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {}
+declare module "../highcharts.src" {
+    /**
+     * A dictionary with formulas for calculating number of bins based on the
+     * base series
+     */
+    let binsNumberFormulas: any;
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

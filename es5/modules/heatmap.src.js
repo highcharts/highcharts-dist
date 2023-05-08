@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.0.0 (2023-04-26)
+ * @license Highmaps JS v11.0.1 (2023-05-08)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1450,7 +1450,7 @@
                             chart: chart,
                             name: name,
                             options: {},
-                            drawLegendSymbol: LegendSymbol.drawRectangle,
+                            drawLegendSymbol: LegendSymbol.rectangle,
                             visible: true,
                             isDataClass: true,
                             // Override setState to set either normal or inactive
@@ -1811,7 +1811,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2365,7 +2365,8 @@
                          */
                         brightness: 0.2
                     }
-                }
+                },
+                legendSymbol: 'rectangle'
             });
             return HeatmapSeries;
         }(ScatterSeries));
@@ -2384,10 +2385,6 @@
              */
             alignDataLabel: ColumnSeries.prototype.alignDataLabel,
             colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-            /**
-             * @private
-             */
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             getSymbol: Series.prototype.getSymbol
         });
         ColorMapComposition.compose(HeatmapSeries);

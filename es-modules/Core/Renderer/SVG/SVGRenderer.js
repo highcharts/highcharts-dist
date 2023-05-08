@@ -189,7 +189,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.0.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.0.1'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -444,7 +444,7 @@ class SVGRenderer {
      */
     shadowDefinition(shadowOptions) {
         const id = [
-            'drop-shadow',
+            `highcharts-drop-shadow-${this.chartIndex}`,
             ...Object.keys(shadowOptions)
                 .map((key) => shadowOptions[key])
         ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({

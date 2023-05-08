@@ -1,3 +1,1 @@
-import factory from '../../../indicators/ichimoku-kinko-hyo.src';
-export * from '../../../indicators/ichimoku-kinko-hyo.src';
-export default factory;
+import '../../../indicators/ichimoku-kinko-hyo.src';

@@ -3263,6 +3263,15 @@ class Series {
         options.visiblePlotOnly = true;
         return this.chart.isInsidePlot(plotX, plotY, options);
     }
+    /**
+     * Draws the legend symbol based on the legendSymbol user option.
+     *
+     * @private
+     */
+    drawLegendSymbol(legend, item) {
+        var _a;
+        (_a = LegendSymbol[this.options.legendSymbol || 'rectangle']) === null || _a === void 0 ? void 0 : _a.call(this, legend, item);
+    }
 }
 Series.defaultOptions = SeriesDefaults;
 /**
@@ -3296,7 +3305,6 @@ extend(Series.prototype, {
     colorCounter: 0,
     cropShoulder: 1,
     directTouch: false,
-    drawLegendSymbol: LegendSymbol.drawLineMarker,
     isCartesian: true,
     kdAxisArray: ['clientX', 'plotY'],
     // each point's x and y values are stored in this.xData and this.yData:

@@ -190,7 +190,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    trackBackgroundColor: 'none',
+    trackBackgroundColor: 'rgba(255, 255, 255, 0.001)',
     /**
      * The color of the border of the scrollbar track.
      *

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v11.0.0 (2023-04-26)
+ Highcharts JS v11.0.1 (2023-05-08)
 
  ColorAxis module
 
@@ -27,6 +27,6 @@ m.dataMax);"undefined"!==typeof d.minColorValue&&(this.dataMin=Math.min(this.dat
 (this.cross.addClass("highcharts-coloraxis-marker").add(c.group),this.cross.addedToColorAxis=!0,this.chart.styledMode||"object"!==typeof this.crosshair||this.cross.attr({fill:this.crosshair.color})))}getPlotLinePath(b){const a=this.left,c=b.translatedValue,d=this.top;return D(c)?this.horiz?[["M",c-4,d-6],["L",c+4,d-6],["L",c,d],["Z"]]:[["M",a,c],["L",a-6,c+6],["L",a-6,c-6],["Z"]]:super.getPlotLinePath(b)}update(b,a){const c=this.chart.legend;this.series.forEach(a=>{a.isDirtyData=!0});(b.dataClasses&&
 c.allItems||this.dataClasses)&&this.destroyItems();super.update(b,a);this.legendItem&&this.legendItem.label&&(this.setLegendColor(),c.colorizeItem(this,!0))}destroyItems(){const b=this.chart,a=this.legendItem||{};if(a.label)b.legend.destroyItem(this);else if(a.labels)for(const c of a.labels)b.legend.destroyItem(c);b.isDirtyLegend=!0}destroy(){this.chart.isDirtyLegend=!0;this.destroyItems();super.destroy(...[].slice.call(arguments))}remove(b){this.destroyItems();super.remove(b)}getDataClassLegendSymbols(){const b=
 this,a=b.chart,c=b.legendItem&&b.legendItem.labels||[],d=a.options.legend,h=q(d.valueDecimals,-1),k=q(d.valueSuffix,""),g=a=>b.series.reduce((b,c)=>{b.push(...c.points.filter(b=>b.dataClass===a));return b},[]);let e;c.length||b.dataClasses.forEach((d,f)=>{const l=d.from,m=d.to,{numberFormatter:p}=a;let n=!0;e="";"undefined"===typeof l?e="< ":"undefined"===typeof m&&(e="> ");"undefined"!==typeof l&&(e+=p(l,h)+k);"undefined"!==typeof l&&"undefined"!==typeof m&&(e+=" - ");"undefined"!==typeof m&&(e+=
-p(m,h)+k);c.push(y({chart:a,name:e,options:{},drawLegendSymbol:B.drawRectangle,visible:!0,isDataClass:!0,setState:a=>{for(const b of g(f))b.setState(a)},setVisible:function(){this.visible=n=b.visible=!n;for(const a of g(f))a.setVisible(n);a.legend.colorizeItem(this,n)}},d))});return c}}p.defaultColorAxisOptions=r;p.defaultLegendLength=200;p.keepProps=["legendItem"];Array.prototype.push.apply(c.keepProps,p.keepProps);"";return p});n(c,"masters/modules/coloraxis.src.js",[c["Core/Globals.js"],c["Core/Axis/Color/ColorAxis.js"]],
+p(m,h)+k);c.push(y({chart:a,name:e,options:{},drawLegendSymbol:B.rectangle,visible:!0,isDataClass:!0,setState:a=>{for(const b of g(f))b.setState(a)},setVisible:function(){this.visible=n=b.visible=!n;for(const a of g(f))a.setVisible(n);a.legend.colorizeItem(this,n)}},d))});return c}}p.defaultColorAxisOptions=r;p.defaultLegendLength=200;p.keepProps=["legendItem"];Array.prototype.push.apply(c.keepProps,p.keepProps);"";return p});n(c,"masters/modules/coloraxis.src.js",[c["Core/Globals.js"],c["Core/Axis/Color/ColorAxis.js"]],
 function(c,l){c.ColorAxis=l;l.compose(c.Chart,c.Fx,c.Legend,c.Series)})});
 //# sourceMappingURL=coloraxis.js.map

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -709,7 +709,7 @@
                 len = points.length;
                 let last;
                 for (i = 0; i < len; i += 1) {
-                    const point = points[i], { plotX, plotY } = point;
+                    const point = points[i], { plotX, plotY, plotHigh } = point;
                     if (isNumber(plotX) && isNumber(plotY)) {
                         const ctlPoint = {
                             plotX,
@@ -720,7 +720,12 @@
                         };
                         if (onArea) {
                             // Vertically centered inside area
-                            ctlPoint.chartCenterY = paneTop + (plotY + pick(point.yBottom, translatedThreshold)) / 2;
+                            if (plotHigh) {
+                                ctlPoint.plotY = plotHigh;
+                                ctlPoint.chartY = paneTop + plotHigh;
+                            }
+                            ctlPoint.chartCenterY = paneTop + ((plotHigh ? plotHigh : plotY) +
+                                pick(point.yBottom, translatedThreshold)) / 2;
                         }
                         // Add interpolated points
                         if (last) {

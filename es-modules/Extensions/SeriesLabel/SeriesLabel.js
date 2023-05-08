@@ -478,7 +478,7 @@ function getPointsOnGraph(series) {
         len = points.length;
         let last;
         for (i = 0; i < len; i += 1) {
-            const point = points[i], { plotX, plotY } = point;
+            const point = points[i], { plotX, plotY, plotHigh } = point;
             if (isNumber(plotX) && isNumber(plotY)) {
                 const ctlPoint = {
                     plotX,
@@ -489,7 +489,12 @@ function getPointsOnGraph(series) {
                 };
                 if (onArea) {
                     // Vertically centered inside area
-                    ctlPoint.chartCenterY = paneTop + (plotY + pick(point.yBottom, translatedThreshold)) / 2;
+                    if (plotHigh) {
+                        ctlPoint.plotY = plotHigh;
+                        ctlPoint.chartY = paneTop + plotHigh;
+                    }
+                    ctlPoint.chartCenterY = paneTop + ((plotHigh ? plotHigh : plotY) +
+                        pick(point.yBottom, translatedThreshold)) / 2;
                 }
                 // Add interpolated points
                 if (last) {

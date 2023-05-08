@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Timeline series
  *
@@ -363,7 +363,8 @@
                 height: 15
             },
             showInLegend: false,
-            colorKey: 'x'
+            colorKey: 'x',
+            legendSymbol: 'rectangle'
         };
         /**
          * The `timeline` series. If the [type](#series.timeline.type) option is
@@ -442,7 +443,7 @@
 
         return TimelineSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Series/Timeline/TimelineSeriesDefaults.js'], _modules['Core/Utilities.js']], function (LegendSymbol, SeriesRegistry, SVGElement, TimelinePoint, TimelineSeriesDefaults, U) {
+    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Series/Timeline/TimelineSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, SVGElement, TimelinePoint, TimelineSeriesDefaults, U) {
         /* *
          *
          *  Timeline Series.
@@ -704,8 +705,6 @@
         }
         TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
         extend(TimelineSeries.prototype, {
-            // Use a simple symbol from LegendSymbolMixin
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             // Use a group of trackers from TrackerMixin
             drawTracker: ColumnSeries.prototype.drawTracker,
             pointClass: TimelinePoint,

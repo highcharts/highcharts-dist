@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Boost module
  *
@@ -178,14 +178,11 @@
         }
         /**
          * Returns true if the chart is in series boost mode.
-         *
-         * @function Highcharts.Chart#isChartSeriesBoosting
-         *
+         * @private
          * @param {Highcharts.Chart} chart
-         *        the chart to check
-         *
+         * Chart to check.
          * @return {boolean}
-         *         true if the chart is in series boost mode
+         * `true` if the chart is in series boost mode.
          */
         function isChartSeriesBoosting(chart) {
             var allSeries = chart.series,
@@ -2940,30 +2937,42 @@
                 plotY,
                 i,
                 percentage) {
-                    // We need to do ceil on the clientX to make things
-                    // snap to pixel values. The renderer will frequently
-                    // draw stuff on "sub-pixels".
-                    clientX = Math.ceil(clientX);
+                    var x = xDataFull ? xDataFull[cropStart + i] : false,
+                pushPoint = function (plotX) {
+                        if (chart.inverted) {
+                            plotX = xAxis.len - plotX;
+                        plotY = yAxis.len - plotY;
+                    }
+                    points.push({
+                        destroy: noop,
+                        x: x,
+                        clientX: plotX,
+                        plotX: plotX,
+                        plotY: plotY,
+                        i: cropStart + i,
+                        percentage: percentage
+                    });
+                };
+                // We need to do ceil on the clientX to make things
+                // snap to pixel values. The renderer will frequently
+                // draw stuff on "sub-pixels".
+                clientX = Math.ceil(clientX);
                 // Shaves off about 60ms compared to repeated concatenation
                 index = compareX ? clientX : clientX + ',' + plotY;
                 // The k-d tree requires series points.
                 // Reduce the amount of points, since the time to build the
                 // tree increases exponentially.
-                if (enableMouseTracking && !pointTaken[index]) {
-                    pointTaken[index] = true;
-                    if (chart.inverted) {
-                        clientX = xAxis.len - clientX;
-                        plotY = yAxis.len - plotY;
+                if (enableMouseTracking) {
+                    if (!pointTaken[index]) {
+                        pointTaken[index] = true;
+                        pushPoint(clientX);
                     }
-                    points.push({
-                        destroy: noop,
-                        x: xDataFull ? xDataFull[cropStart + i] : false,
-                        clientX: clientX,
-                        plotX: clientX,
-                        plotY: plotY,
-                        i: cropStart + i,
-                        percentage: percentage
-                    });
+                    else if (x === xDataFull[xDataFull.length - 1]) {
+                        // If the last point is on the same pixel as the last
+                        // tracked point, swap them. (#18856)
+                        points.length--;
+                        pushPoint(clientX);
+                    }
                 }
             };
             // Do not start building while drawing
@@ -3249,6 +3258,7 @@
         var BoostSeries = {
                 compose: compose,
                 destroyGraphics: destroyGraphics,
+                eachAsync: eachAsync,
                 getPoint: getPoint
             };
 
@@ -3611,7 +3621,7 @@
                         console.time('canvas rendering'); // eslint-disable-line no-console
                     }
                     // Loop over the points
-                    H.eachAsync(sdata, function (d, i) {
+                    BoostSeries.eachAsync(sdata, function (d, i) {
                         var x,
                             y,
                             clientX,

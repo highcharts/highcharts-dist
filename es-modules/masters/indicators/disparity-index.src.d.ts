@@ -1,3 +1,1 @@
-import factory from '../../../indicators/disparity-index.src';
-export * from '../../../indicators/disparity-index.src';
-export default factory;
+import '../../../indicators/disparity-index.src';

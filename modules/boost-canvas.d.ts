@@ -13,17 +13,6 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
-    interface Chart {
-        /**
-         * Returns true if the chart is in series boost mode.
-         *
-         * @param chart
-         *        the chart to check
-         *
-         * @return true if the chart is in series boost mode
-         */
-        isChartSeriesBoosting(chart: Chart): boolean;
-    }
     /**
      * Initialize the canvas boost.
      */

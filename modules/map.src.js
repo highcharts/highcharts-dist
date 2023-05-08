@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.0.0 (2023-04-26)
+ * @license Highmaps JS v11.0.1 (2023-05-08)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -1345,7 +1345,7 @@
                             chart,
                             name,
                             options: {},
-                            drawLegendSymbol: LegendSymbol.drawRectangle,
+                            drawLegendSymbol: LegendSymbol.rectangle,
                             visible: true,
                             isDataClass: true,
                             // Override setState to set either normal or inactive
@@ -2560,14 +2560,9 @@
                     // etc
                     const propMiddleLon = properties && properties['hc-middle-lon'], propMiddleLat = properties && properties['hc-middle-lat'];
                     if (mapView && isNumber(propMiddleLon) && isNumber(propMiddleLat)) {
-                        const newPos = mapView.lonLatToProjectedUnits({
-                            lon: propMiddleLon,
-                            lat: propMiddleLat
-                        });
-                        if (newPos) {
-                            bounds.midX = newPos.x;
-                            bounds.midY = newPos.y;
-                        }
+                        const projectedPoint = projection.forward([propMiddleLon, propMiddleLat]);
+                        bounds.midX = projectedPoint[0];
+                        bounds.midY = projectedPoint[1];
                     }
                     else {
                         const propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
@@ -5211,7 +5206,7 @@
 
         return MapView;
     });
-    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, LegendSymbol, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -6129,7 +6124,8 @@
                      */
                     color: "#cccccc" /* Palette.neutralColor20 */
                 }
-            }
+            },
+            legendSymbol: 'rectangle'
         });
         extend(MapSeries.prototype, {
             type: 'map',
@@ -6144,7 +6140,6 @@
             drawDataLabels: noop,
             // No graph for the map series
             drawGraph: noop,
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             forceDL: true,
             getCenter: CU.getCenter,
             getExtremesFromAll: true,
@@ -6536,12 +6531,12 @@
              *
              * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            fillColor: 'none'
+            fillColor: 'none',
+            legendSymbol: 'lineMarker'
         });
         extend(MapLineSeries.prototype, {
             type: 'mapline',
             colorProp: 'stroke',
-            drawLegendSymbol: Series.prototype.drawLegendSymbol,
             pointAttrToOptions: {
                 'stroke': 'color',
                 'stroke-width': 'lineWidth'
@@ -6851,7 +6846,8 @@
                     /** @internal */
                     color: "#000000" /* Palette.neutralColor100 */
                 }
-            }
+            },
+            legendSymbol: 'lineMarker'
         });
         /* *
          *
@@ -9304,7 +9300,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9812,7 +9808,8 @@
                      */
                     brightness: 0.2
                 }
-            }
+            },
+            legendSymbol: 'rectangle'
         });
         extend(HeatmapSeries.prototype, {
             axisTypes: ColorMapComposition.seriesMembers.axisTypes,
@@ -9829,10 +9826,6 @@
              */
             alignDataLabel: ColumnSeries.prototype.alignDataLabel,
             colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-            /**
-             * @private
-             */
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             getSymbol: Series.prototype.getSymbol
         });
         ColorMapComposition.compose(HeatmapSeries);

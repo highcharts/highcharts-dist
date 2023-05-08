@@ -10,7 +10,6 @@
 'use strict';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
@@ -87,11 +86,11 @@ PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
         followPointer: true,
         pointFormat: ''
     },
-    trackByArea: true
+    trackByArea: true,
+    legendSymbol: 'rectangle'
 });
 extend(PolygonSeries.prototype, {
     type: 'polygon',
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     drawTracker: Series.prototype.drawTracker,
     setStackedPoints: noop // No stacking points on polygons (#5310)
 });

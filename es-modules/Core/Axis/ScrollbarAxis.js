@@ -87,8 +87,10 @@ class ScrollbarAxis {
                         from = unitedMin + range * (1 - this.to);
                     }
                     if (this.shouldUpdateExtremes(e.DOMType)) {
-                        axis.setExtremes(from, to, true, (e.DOMType !== 'mousemove' &&
-                            e.DOMType !== 'touchmove'), e);
+                        // #17977, set animation to undefined instead of true
+                        const animate = e.DOMType === 'mousemove' ||
+                            e.DOMType === 'touchmove' ? false : void 0;
+                        axis.setExtremes(from, to, true, animate, e);
                     }
                     else {
                         // When live redraw is disabled, don't change extremes

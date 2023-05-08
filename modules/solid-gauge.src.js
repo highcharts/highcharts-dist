@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Solid angular gauge module
  *
@@ -369,7 +369,7 @@
 
         return SolidGaugeSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeSeries.js', [_modules['Extensions/BorderRadius.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/SolidGaugeAxis.js'], _modules['Series/SolidGauge/SolidGaugeSeriesDefaults.js'], _modules['Core/Utilities.js']], function (BorderRadius, LegendSymbol, SeriesRegistry, SolidGaugeAxis, SolidGaugeSeriesDefaults, U) {
+    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeSeries.js', [_modules['Extensions/BorderRadius.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/SolidGaugeAxis.js'], _modules['Series/SolidGauge/SolidGaugeSeriesDefaults.js'], _modules['Core/Utilities.js']], function (BorderRadius, SeriesRegistry, SolidGaugeAxis, SolidGaugeSeriesDefaults, U) {
         /* *
          *
          *  Solid angular gauge module
@@ -532,9 +532,6 @@
             }
         }
         SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);
-        extend(SolidGaugeSeries.prototype, {
-            drawLegendSymbol: LegendSymbol.drawRectangle
-        });
         SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
         /* *
          *

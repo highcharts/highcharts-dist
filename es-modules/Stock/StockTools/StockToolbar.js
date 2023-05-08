@@ -500,7 +500,7 @@ class Toolbar {
     getIconsURL() {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/11.0.0/gfx/stock-icons/';
+            'https://code.highcharts.com/11.0.1/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {

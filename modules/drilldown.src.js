@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Highcharts Drilldown module
  *
@@ -1037,7 +1037,7 @@
         const { noop } = H;
         const { defaultOptions } = D;
         const { seriesTypes } = SeriesRegistry;
-        const { addEvent, extend, fireEvent, merge, objectEach, pick, removeEvent, syncTimeout } = U;
+        const { addEvent, cleanRecursively, defined, extend, fireEvent, merge, objectEach, pick, removeEvent, syncTimeout } = U;
         const PieSeries = seriesTypes.pie, MapSeries = seriesTypes.map;
         let ddSeriesId = 1;
         /**
@@ -1508,14 +1508,24 @@
                 point.series.isDrilling = true;
                 // stop duplicating and overriding animations
                 point.series.options.inactiveOtherPoints = true;
+                // hide and disable dataLabels
+                if (point.series.dataLabelsGroup) {
+                    point.series.dataLabelsGroup.destroy();
+                    delete point.series.dataLabelsGroup;
+                }
+                // #18925 map zooming is not working with geoJSON maps
+                if (chart.options.drilldown &&
+                    !chart.mapView.projection.hasGeoProjection &&
+                    defaultOptions.drilldown) {
+                    const userDrilldown = cleanRecursively(chart.options.drilldown, defaultOptions.drilldown);
+                    // set mapZooming to false if user didn't set any in chart config
+                    if (!defined(userDrilldown.mapZooming)) {
+                        chart.options.drilldown.mapZooming = false;
+                    }
+                }
                 if (chart.options.drilldown &&
                     chart.options.drilldown.animation &&
                     chart.options.drilldown.mapZooming) {
-                    // hide and disable dataLabels
-                    if (point.series.dataLabelsGroup) {
-                        point.series.dataLabelsGroup.destroy();
-                        delete point.series.dataLabelsGroup;
-                    }
                     // first zoomTo then crossfade series
                     chart.mapView.allowTransformAnimation = true;
                     const animOptions = animObject(chart.options.drilldown.animation);
@@ -1686,13 +1696,10 @@
                                         if (chart.mapView) {
                                             chart.series.forEach((series) => {
                                                 series.isDirtyData = true;
-                                                // series.isDrilling = false;
+                                                series.isDrilling = false;
                                             });
-                                            chart.mapView.setView(void 0, 1);
+                                            chart.mapView.fitToBounds(void 0, void 0);
                                         }
-                                        chart.series.forEach((series) => {
-                                            series.isDrilling = false;
-                                        });
                                         fireEvent(chart, 'afterApplyDrilldown');
                                     });
                                 }
@@ -2248,6 +2255,8 @@
                                     series.options.enableMouseTracking =
                                         pick((series.userOptions &&
                                             series.userOptions.enableMouseTracking), true);
+                                    series.isDirty = true;
+                                    chart.redraw();
                                 }
                             });
                             if (chart.drilldown) {

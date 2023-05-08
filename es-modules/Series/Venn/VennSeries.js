@@ -28,7 +28,6 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
 import VennPoint from './VennPoint.js';
 import VennUtils from './VennUtils.js';
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, extend, isArray, isNumber, isObject, isString, merge } = U;
 /* *
@@ -520,12 +519,12 @@ VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
     },
     tooltip: {
         pointFormat: '{point.name}: {point.value}'
-    }
+    },
+    legendSymbol: 'rectangle'
 });
 extend(VennSeries.prototype, {
     axisTypes: [],
     directTouch: true,
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     isCartesian: false,
     pointArrayMap: ['value'],
     pointClass: VennPoint,

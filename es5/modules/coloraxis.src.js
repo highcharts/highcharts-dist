@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * ColorAxis module
  *
@@ -1452,7 +1452,7 @@
                             chart: chart,
                             name: name,
                             options: {},
-                            drawLegendSymbol: LegendSymbol.drawRectangle,
+                            drawLegendSymbol: LegendSymbol.rectangle,
                             visible: true,
                             isDataClass: true,
                             // Override setState to set either normal or inactive

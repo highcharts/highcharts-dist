@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Annotations module
  *
@@ -4500,7 +4500,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.0.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.0.1/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -6866,7 +6866,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.0.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.0.1/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -8681,8 +8681,25 @@
             };
             return TimeCycles;
         }(CrookedLine));
-        TimeCycles.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, {
+        TimeCycles.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, 
+        /**
+         * The TimeCycles Annotation
+         *
+         * @sample highcharts/annotations-advanced/time-cycles/
+         *         Time Cycles annotation
+         *
+         * @extends      annotations.crookedLine
+         * @product      highstock
+         * @exclude      labelOptions
+         * @optionparent annotations.timeCycles
+         */
+        {
             typeOptions: {
+                /**
+                 * @exclude   y
+                 * @product   highstock
+                 * @apioption annotations.timeCycles.typeOptions.points
+                 */
                 controlPointOptions: [{
                         positioner: function (target) {
                             var point = target.points[0],
@@ -8724,27 +8741,6 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * The TimeCycles Annotation
-         * @sample highcharts/annotations-advanced/time-cycles/
-         *     Time Cycles annotation
-         *
-         * @extends   annotations.crookedLine
-         * @product   highstock
-         * @exclude  labelOptions
-         * @apioption annotations.timeCycles
-         */
-        /**
-         * @exclude   y
-         * @product   highstock
-         * @apioption annotations.timeCycles.typeOptions.points
-         */
-        (''); // keeps doclets above in transpiled file
 
         return TimeCycles;
     });
@@ -9120,15 +9116,33 @@
             };
             return FibonacciTimeZones;
         }(CrookedLine));
-        FibonacciTimeZones.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, {
+        FibonacciTimeZones.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, 
+        /**
+         * The Fibonacci Time Zones annotation.
+         *
+         * @sample highcharts/annotations-advanced/fibonacci-time-zones/
+         *         Fibonacci Time Zones
+         *
+         * @extends      annotations.crookedLine
+         * @since        9.3.0
+         * @product      highstock
+         * @optionparent annotations.fibonacciTimeZones
+         */
+        {
             typeOptions: {
+                /**
+                 * @exclude   y
+                 * @since     9.3.0
+                 * @product   highstock
+                 * @apioption annotations.fibonacciTimeZones.typeOptions.points
+                 */
                 // Options for showing in popup edit
                 line: {
                     /**
                      * The color of the lines.
                      *
                      * @type      {string}
-                     * @since 9.3.0
+                     * @since     9.3.0
                      * @default   'rgba(0, 0, 0, 0.75)'
                      * @apioption annotations.fibonacciTimeZones.typeOptions.line.stroke
                      */
@@ -9137,7 +9151,7 @@
                      * The width of the lines.
                      *
                      * @type      {number}
-                     * @since 9.3.0
+                     * @since     9.3.0
                      * @default   1
                      * @apioption annotations.fibonacciTimeZones.typeOptions.line.strokeWidth
                      */
@@ -9189,29 +9203,6 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * The Fibonacci Time Zones annotation.
-         *
-         * @sample highcharts/annotations-advanced/fibonacci-time-zones/
-         *         Fibonacci Time Zones
-         *
-         * @extends   annotations.crookedLine
-         * @since 9.3.0
-         * @product   highstock
-         * @apioption annotations.fibonacciTimeZones
-         */
-        /**
-         * @exclude   y
-         * @since 9.3.0
-         * @product   highstock
-         * @apioption annotations.fibonacciTimeZones.typeOptions.points
-         */
-        (''); // keeps doclets above in transpiled file
 
         return FibonacciTimeZones;
     });

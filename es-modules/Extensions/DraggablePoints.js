@@ -1694,7 +1694,7 @@ Point.prototype.getDropValues = function (origin, newPos, updateProps) {
                 pointOrigin[key + 'Offset']), val.axis.toUpperCase());
         // If we are updating a single prop, and it has a validation function
         // for the prop, run it. If it fails, don't update the value.
-        if (newVal &&
+        if (isNumber(newVal) &&
             !(updateSingleProp &&
                 val.propValidate &&
                 !val.propValidate(newVal, point)) &&

@@ -171,7 +171,8 @@ const TimelineSeriesDefaults = {
         height: 15
     },
     showInLegend: false,
-    colorKey: 'x'
+    colorKey: 'x',
+    legendSymbol: 'rectangle'
 };
 /**
  * The `timeline` series. If the [type](#series.timeline.type) option is

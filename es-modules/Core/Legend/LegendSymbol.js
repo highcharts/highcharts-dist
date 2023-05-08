@@ -30,12 +30,12 @@ var LegendSymbol;
      * Highcharts.seriesTypes[type].prototype.drawLegendSymbol.
      *
      * @private
-     * @function Highcharts.LegendSymbolMixin.drawLineMarker
+     * @function Highcharts.LegendSymbolMixin.lineMarker
      *
      * @param {Highcharts.Legend} legend
      * The legend object.
      */
-    function drawLineMarker(legend) {
+    function lineMarker(legend, item) {
         const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
             Math.round(legend.fontMetrics.b * 0.3);
         let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
@@ -87,7 +87,7 @@ var LegendSymbol;
             legendSymbol.isMarker = true;
         }
     }
-    LegendSymbol.drawLineMarker = drawLineMarker;
+    LegendSymbol.lineMarker = lineMarker;
     /**
      * Get the series' symbol in the legend.
      *
@@ -95,7 +95,7 @@ var LegendSymbol;
      * Highcharts.seriesTypes[type].prototype.drawLegendSymbol.
      *
      * @private
-     * @function Highcharts.LegendSymbolMixin.drawRectangle
+     * @function Highcharts.LegendSymbolMixin.rectangle
      *
      * @param {Highcharts.Legend} legend
      * The legend object
@@ -103,7 +103,7 @@ var LegendSymbol;
      * @param {Highcharts.Point|Highcharts.Series} item
      * The series (this) or point
      */
-    function drawRectangle(legend, item) {
+    function rectangle(legend, item) {
         const legendItem = item.legendItem || {}, options = legend.options, symbolHeight = legend.symbolHeight, square = options.squareSymbol, symbolWidth = square ? symbolHeight : legend.symbolWidth;
         legendItem.symbol = this.chart.renderer
             .rect(square ? (legend.symbolWidth - symbolHeight) / 2 : 0, legend.baseline - symbolHeight + 1, // #3988
@@ -114,7 +114,7 @@ var LegendSymbol;
         })
             .add(legendItem.group);
     }
-    LegendSymbol.drawRectangle = drawRectangle;
+    LegendSymbol.rectangle = rectangle;
 })(LegendSymbol || (LegendSymbol = {}));
 /* *
  *

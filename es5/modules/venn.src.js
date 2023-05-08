@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -1420,7 +1420,7 @@
 
         return VennUtils;
     });
-    _registerModule(_modules, 'Series/Venn/VennSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Geometry/CircleUtilities.js'], _modules['Series/DrawPointUtilities.js'], _modules['Core/Geometry/GeometryUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Venn/VennPoint.js'], _modules['Series/Venn/VennUtils.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Utilities.js']], function (A, Color, CU, DPU, GU, SeriesRegistry, VennPoint, VennUtils, LegendSymbol, U) {
+    _registerModule(_modules, 'Series/Venn/VennSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Geometry/CircleUtilities.js'], _modules['Series/DrawPointUtilities.js'], _modules['Core/Geometry/GeometryUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Venn/VennPoint.js'], _modules['Series/Venn/VennUtils.js'], _modules['Core/Utilities.js']], function (A, Color, CU, DPU, GU, SeriesRegistry, VennPoint, VennUtils, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
@@ -2004,14 +2004,14 @@
                 },
                 tooltip: {
                     pointFormat: '{point.name}: {point.value}'
-                }
+                },
+                legendSymbol: 'rectangle'
             });
             return VennSeries;
         }(ScatterSeries));
         extend(VennSeries.prototype, {
             axisTypes: [],
             directTouch: true,
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             isCartesian: false,
             pointArrayMap: ['value'],
             pointClass: VennPoint,

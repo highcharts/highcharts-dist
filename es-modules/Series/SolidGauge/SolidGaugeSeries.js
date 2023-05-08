@@ -11,7 +11,6 @@
  * */
 'use strict';
 import BorderRadius from '../../Extensions/BorderRadius.js';
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { gauge: GaugeSeries, pie: { prototype: pieProto } } } = SeriesRegistry;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
@@ -167,9 +166,6 @@ class SolidGaugeSeries extends GaugeSeries {
     }
 }
 SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);
-extend(SolidGaugeSeries.prototype, {
-    drawLegendSymbol: LegendSymbol.drawRectangle
-});
 SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
 /* *
  *

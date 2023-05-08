@@ -276,7 +276,7 @@ LineSeries.defaultOptions = merge(Series.defaultOptions,
  * @optionparent plotOptions.series
  */
 {
-// nothing here yet
+    legendSymbol: 'lineMarker'
 });
 SeriesRegistry.registerSeriesType('line', LineSeries);
 /* *

@@ -988,7 +988,6 @@ function getNestedProperty(path, parent) {
  * The style value.
  */
 function getStyle(el, prop, toInt) {
-    const customGetStyle = H.getStyle;
     let style;
     // For width and height, return the actual inner pixel size (#4913)
     if (prop === 'width') {
@@ -1006,14 +1005,14 @@ function getStyle(el, prop, toInt) {
         }
         return Math.max(0, // #8377
         (offsetWidth -
-            (customGetStyle(el, 'padding-left', true) || 0) -
-            (customGetStyle(el, 'padding-right', true) || 0)));
+            (getStyle(el, 'padding-left', true) || 0) -
+            (getStyle(el, 'padding-right', true) || 0)));
     }
     if (prop === 'height') {
         return Math.max(0, // #8377
         (Math.min(el.offsetHeight, el.scrollHeight) -
-            (customGetStyle(el, 'padding-top', true) || 0) -
-            (customGetStyle(el, 'padding-bottom', true) || 0)));
+            (getStyle(el, 'padding-top', true) || 0) -
+            (getStyle(el, 'padding-bottom', true) || 0)));
     }
     // Otherwise, get the computed style
     const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined

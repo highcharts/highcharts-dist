@@ -187,10 +187,6 @@ class HTMLRenderer extends SVGRenderer {
                                     top: (parentGroup.translateY || 0) + 'px',
                                     display: parentGroup.display,
                                     opacity: parentGroup.opacity,
-                                    cursor: parentGroupStyles.cursor,
-                                    pointerEvents: (
-                                    // #5595
-                                    parentGroupStyles.pointerEvents),
                                     visibility: parentGroup.visibility
                                     // the top group is appended to container
                                 }, htmlGroup || container);
@@ -207,6 +203,23 @@ class HTMLRenderer extends SVGRenderer {
                                     htmlGroup.className = value;
                                 };
                             }(htmlGroup)),
+                            // Extend the parent group's css function by
+                            // updating the shadow div counterpart with the same
+                            // style.
+                            css: function (styles) {
+                                wrapper.css.call(parentGroup, styles);
+                                [
+                                    // #6794
+                                    'cursor',
+                                    // #5595, #18821
+                                    'pointerEvents'
+                                ].forEach((prop) => {
+                                    if (styles[prop]) {
+                                        htmlGroupStyle[prop] = styles[prop];
+                                    }
+                                });
+                                return parentGroup;
+                            },
                             on: function () {
                                 if (parents[0].div) { // #6418
                                     wrapper.on.apply({
@@ -222,6 +235,8 @@ class HTMLRenderer extends SVGRenderer {
                         if (!parentGroup.addedSetters) {
                             addSetters(parentGroup);
                         }
+                        // Apply pre-existing style
+                        parentGroup.css(parentGroupStyles);
                     });
                 }
             }

@@ -9,7 +9,6 @@
  * */
 'use strict';
 import SplineSeries from '../Spline/SplineSeries.js';
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: AreaSeries, area: { prototype: areaProto } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
@@ -50,8 +49,7 @@ AreaSplineSeries.defaultOptions = merge(SplineSeries.defaultOptions, AreaSeries.
 extend(AreaSplineSeries.prototype, {
     getGraphPath: areaProto.getGraphPath,
     getStackPoints: areaProto.getStackPoints,
-    drawGraph: areaProto.drawGraph,
-    drawLegendSymbol: LegendSymbol.drawRectangle
+    drawGraph: areaProto.drawGraph
 });
 SeriesRegistry.registerSeriesType('areaspline', AreaSplineSeries);
 /* *

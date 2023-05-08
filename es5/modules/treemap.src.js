@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -1907,7 +1907,7 @@
 
         return TreemapNode;
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js'], _modules['Core/Utilities.js'], _modules['Series/Treemap/TreemapNode.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U, TreemapNode) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js'], _modules['Core/Utilities.js'], _modules['Series/Treemap/TreemapNode.js']], function (Color, ColorMapComposition, H, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, Breadcrumbs, U, TreemapNode) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -3405,7 +3405,8 @@
                          */
                         shadow: false
                     }
-                }
+                },
+                legendSymbol: 'rectangle'
             });
             return TreemapSeries;
         }(ScatterSeries));
@@ -3414,7 +3415,6 @@
             colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
             colorKey: 'colorValue',
             directTouch: true,
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             getExtremesFromAll: true,
             getSymbol: noop,
             optionalAxis: 'colorAxis',

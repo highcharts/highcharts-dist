@@ -1,3 +1,1 @@
-import factory from '../../../indicators/tema.src';
-export * from '../../../indicators/tema.src';
-export default factory;
+import '../../../indicators/tema.src';

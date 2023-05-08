@@ -13,17 +13,12 @@ import * as _Highcharts from "../highcharts.src";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
-    interface Chart {
-        /**
-         * Returns true if the chart is in series boost mode.
-         *
-         * @param chart
-         *        the chart to check
-         *
-         * @return true if the chart is in series boost mode
-         */
-        isChartSeriesBoosting(chart: Chart): boolean;
-    }
+    /**
+     * Returns true if the current browser supports WebGL.
+     *
+     * @return `true` if the browser supports WebGL.
+     */
+    function hasWebGLSupport(): boolean;
     /**
      * Initialize the canvas boost.
      */

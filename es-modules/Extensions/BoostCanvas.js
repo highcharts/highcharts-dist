@@ -323,7 +323,7 @@ const initCanvasBoost = function () {
                 console.time('canvas rendering'); // eslint-disable-line no-console
             }
             // Loop over the points
-            H.eachAsync(sdata, function (d, i) {
+            BoostSeries.eachAsync(sdata, function (d, i) {
                 let x, y, clientX, plotY, isNull, low, isNextInside = false, isPrevInside = false, nx = false, px = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
                 if (!chartDestroyed) {
                     if (useRaw) {

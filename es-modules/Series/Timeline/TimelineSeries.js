@@ -12,7 +12,6 @@
  *
  * */
 'use strict';
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { column: ColumnSeries, line: LineSeries } } = SeriesRegistry;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
@@ -266,8 +265,6 @@ class TimelineSeries extends LineSeries {
 }
 TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
 extend(TimelineSeries.prototype, {
-    // Use a simple symbol from LegendSymbolMixin
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     // Use a group of trackers from TrackerMixin
     drawTracker: ColumnSeries.prototype.drawTracker,
     pointClass: TimelinePoint,

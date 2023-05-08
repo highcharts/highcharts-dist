@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.0 (2023-04-26)
+ * @license Highstock JS v11.0.1 (2023-05-08)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -3643,8 +3643,10 @@
                                 from = unitedMin + range * (1 - this.to);
                             }
                             if (this.shouldUpdateExtremes(e.DOMType)) {
-                                axis.setExtremes(from, to, true, (e.DOMType !== 'mousemove' &&
-                                    e.DOMType !== 'touchmove'), e);
+                                // #17977, set animation to undefined instead of true
+                                const animate = e.DOMType === 'mousemove' ||
+                                    e.DOMType === 'touchmove' ? false : void 0;
+                                axis.setExtremes(from, to, true, animate, e);
                             }
                             else {
                                 // When live redraw is disabled, don't change extremes
@@ -3933,7 +3935,7 @@
              *
              * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            trackBackgroundColor: 'none',
+            trackBackgroundColor: 'rgba(255, 255, 255, 0.001)',
             /**
              * The color of the border of the scrollbar track.
              *
@@ -9507,6 +9509,7 @@
              * @sample {highstock} stock/plotoptions/hlc-pointvalkey/
              *         Possible values
              *
+             * @declare    Highcharts.OptionsHLCPointValKeyValue
              * @type       {string}
              * @default    close
              * @validvalue ["high", "low", "close"]
@@ -9923,6 +9926,7 @@
              * be represented as `point.y`, which is later used to set dataLabel
              * position and [compare](#plotOptions.series.compare).
              *
+             * @declare    Highcharts.OptionsPointValKeyValue
              * @default    close
              * @validvalue ["open", "high", "low", "close"]
              * @product    highstock

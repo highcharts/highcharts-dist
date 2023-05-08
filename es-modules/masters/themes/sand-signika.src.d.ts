@@ -1,3 +1,1 @@
-import factory from '../../../themes/sand-signika.src';
-export * from '../../../themes/sand-signika.src';
-export default factory;
+import '../../../themes/sand-signika.src';

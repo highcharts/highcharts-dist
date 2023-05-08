@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.0.0 (2023-04-26)
+ * @license Highcharts Gantt JS v11.0.1 (2023-05-08)
  *
  * Gantt series
  *
@@ -1042,8 +1042,10 @@
                                 from = unitedMin + range * (1 - this.to);
                             }
                             if (this.shouldUpdateExtremes(e.DOMType)) {
-                                axis.setExtremes(from, to, true, (e.DOMType !== 'mousemove' &&
-                                    e.DOMType !== 'touchmove'), e);
+                                // #17977, set animation to undefined instead of true
+                                const animate = e.DOMType === 'mousemove' ||
+                                    e.DOMType === 'touchmove' ? false : void 0;
+                                axis.setExtremes(from, to, true, animate, e);
                             }
                             else {
                                 // When live redraw is disabled, don't change extremes
@@ -1332,7 +1334,7 @@
              *
              * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            trackBackgroundColor: 'none',
+            trackBackgroundColor: 'rgba(255, 255, 255, 0.001)',
             /**
              * The color of the border of the scrollbar track.
              *

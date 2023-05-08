@@ -1,3 +1,1 @@
-import factory from '../../../themes/dark-unica.src';
-export * from '../../../themes/dark-unica.src';
-export default factory;
+import '../../../themes/dark-unica.src';

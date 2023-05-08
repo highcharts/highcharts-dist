@@ -10,7 +10,6 @@
 'use strict';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
@@ -443,11 +442,11 @@ AreaSeries.defaultOptions = merge(LineSeries.defaultOptions, {
      * @since   2.0
      * @product highcharts highstock
      */
-    threshold: 0
+    threshold: 0,
+    legendSymbol: 'rectangle'
 });
 extend(AreaSeries.prototype, {
-    singleStacks: false,
-    drawLegendSymbol: LegendSymbol.drawRectangle
+    singleStacks: false
 });
 SeriesRegistry.registerSeriesType('area', AreaSeries);
 /* *

@@ -95,12 +95,12 @@ MapLineSeries.defaultOptions = merge(MapSeries.defaultOptions, {
      *
      * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
-    fillColor: 'none'
+    fillColor: 'none',
+    legendSymbol: 'lineMarker'
 });
 extend(MapLineSeries.prototype, {
     type: 'mapline',
     colorProp: 'stroke',
-    drawLegendSymbol: Series.prototype.drawLegendSymbol,
     pointAttrToOptions: {
         'stroke': 'color',
         'stroke-width': 'lineWidth'

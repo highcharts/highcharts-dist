@@ -57,8 +57,14 @@ function compose(ChartClass, SeriesClass, seriesTypes, ColorClass) {
     BoostSeries.compose(SeriesClass, seriesTypes, wglMode);
 }
 /**
- * Returns true if the current browser supports webgl
- * @private
+ * Returns true if the current browser supports WebGL.
+ *
+ * @requires module:modules/boost
+ *
+ * @function Highcharts.hasWebGLSupport
+ *
+ * @return {boolean}
+ * `true` if the browser supports WebGL.
  */
 function hasWebGLSupport() {
     let canvas, gl = false;

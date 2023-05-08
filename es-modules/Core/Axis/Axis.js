@@ -2347,7 +2347,7 @@ class Axis {
         const axis = this, { chart, horiz, options, side, ticks, tickPositions, coll, axisParent // Used in color axis
          } = axis, renderer = chart.renderer, invertedSide = (chart.inverted && !axis.isZAxis ?
             [1, 0, 3, 2][side] :
-            side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side], className = options.className;
+            side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, hasCrossing = isNumber(options.crossing), axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side], className = options.className;
         let showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // reset
         labelOffsetPadded, lineHeightCorrection;
         // For reuse in Axis.render
@@ -2378,7 +2378,7 @@ class Axis {
             axis.reserveSpaceDefault = (side === 0 ||
                 side === 2 ||
                 { 1: 'left', 3: 'right' }[side] === axis.labelAlign);
-            if (pick(labelOptions.reserveSpace, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
+            if (pick(labelOptions.reserveSpace, hasCrossing ? false : null, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
                 tickPositions.forEach(function (pos) {
                     // get the highest offset
                     labelOffset = Math.max(ticks[pos].getLabelSize(), labelOffset);
@@ -2399,7 +2399,9 @@ class Axis {
             axisTitleOptions.text &&
             axisTitleOptions.enabled !== false) {
             axis.addTitle(showAxis);
-            if (showAxis && axisTitleOptions.reserveSpace !== false) {
+            if (showAxis &&
+                !hasCrossing &&
+                axisTitleOptions.reserveSpace !== false) {
                 axis.titleOffset = titleOffset =
                     axis.axisTitle.getBBox()[horiz ? 'height' : 'width'];
                 titleOffsetOption = axisTitleOptions.offset;
@@ -2627,7 +2629,7 @@ class Axis {
      * @emits Highcharts.Axis#event:afterRender
      */
     render() {
-        const axis = this, chart = axis.chart, log = axis.logarithmic, renderer = chart.renderer, options = axis.options, isLinked = axis.isLinked, tickPositions = axis.tickPositions, axisTitle = axis.axisTitle, ticks = axis.ticks, minorTicks = axis.minorTicks, alternateBands = axis.alternateBands, stackLabelOptions = options.stackLabels, alternateGridColor = options.alternateGridColor, tickmarkOffset = axis.tickmarkOffset, axisLine = axis.axisLine, showAxis = axis.showAxis, animation = animObject(renderer.globalAnimation);
+        const axis = this, chart = axis.chart, log = axis.logarithmic, renderer = chart.renderer, options = axis.options, isLinked = axis.isLinked, tickPositions = axis.tickPositions, axisTitle = axis.axisTitle, ticks = axis.ticks, minorTicks = axis.minorTicks, alternateBands = axis.alternateBands, stackLabelOptions = options.stackLabels, alternateGridColor = options.alternateGridColor, crossing = options.crossing, tickmarkOffset = axis.tickmarkOffset, axisLine = axis.axisLine, showAxis = axis.showAxis, animation = animObject(renderer.globalAnimation);
         let from, to;
         // Reset
         axis.labelEdge.length = 0;
@@ -2638,6 +2640,13 @@ class Axis {
                 tick.isActive = false;
             });
         });
+        // Crossing
+        if (isNumber(crossing)) {
+            const otherAxis = this.isXAxis ? chart.yAxis[0] : chart.xAxis[0], directionFactor = [1, -1, -1, 1][this.side];
+            if (otherAxis) {
+                this.offset = directionFactor * otherAxis.toPixels(crossing, true);
+            }
+        }
         // If the series has data draw the ticks. Else only the line and title
         if (axis.hasData() || isLinked) {
             const slideInTicks = axis.chart.hasRendered &&

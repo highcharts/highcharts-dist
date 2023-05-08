@@ -1,3 +1,1 @@
-import factory from '../../../themes/brand-dark.src';
-export * from '../../../themes/brand-dark.src';
-export default factory;
+import '../../../themes/brand-dark.src';

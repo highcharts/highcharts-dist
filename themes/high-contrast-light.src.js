@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2009-2021 Highsoft AS
  *
@@ -77,6 +77,11 @@
                     '#1A704C',
                     '#B02FDD'
                 ],
+                credits: {
+                    style: {
+                        color: '#767676'
+                    }
+                },
                 navigator: {
                     series: {
                         color: '#5f98cf',

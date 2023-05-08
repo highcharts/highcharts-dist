@@ -172,7 +172,8 @@ MapPointSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
             /** @internal */
             color: "#000000" /* Palette.neutralColor100 */
         }
-    }
+    },
+    legendSymbol: 'lineMarker'
 });
 /* *
  *

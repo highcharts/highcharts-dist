@@ -1,3 +1,1 @@
-import factory from '../../../themes/brand-light.src';
-export * from '../../../themes/brand-light.src';
-export default factory;
+import '../../../themes/brand-light.src';

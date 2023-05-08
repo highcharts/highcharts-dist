@@ -13,7 +13,6 @@ const { getStartAndEndRadians } = CU;
 import ColumnSeries from '../Column/ColumnSeries.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import PiePoint from './PiePoint.js';
 import PieSeriesDefaults from './PieSeriesDefaults.js';
 import Series from '../../Core/Series/Series.js';
@@ -397,7 +396,6 @@ extend(PieSeries.prototype, {
     axisTypes: [],
     directTouch: true,
     drawGraph: void 0,
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     drawTracker: ColumnSeries.prototype.drawTracker,
     getCenter: CU.getCenter,
     getSymbol: noop,

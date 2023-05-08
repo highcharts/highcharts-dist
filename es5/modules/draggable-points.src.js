@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1816,7 +1816,7 @@
                     val.axis.toUpperCase());
                 // If we are updating a single prop, and it has a validation function
                 // for the prop, run it. If it fails, don't update the value.
-                if (newVal &&
+                if (isNumber(newVal) &&
                     !(updateSingleProp &&
                         val.propValidate &&
                         !val.propValidate(newVal, point)) &&

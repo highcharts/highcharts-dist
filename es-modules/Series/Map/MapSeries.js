@@ -14,7 +14,6 @@ import ColorMapComposition from '../ColorMapComposition.js';
 import CU from '../CenteredUtilities.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import MapChart from '../../Core/Chart/MapChart.js';
 const { splitPath } = MapChart;
 import MapPoint from './MapPoint.js';
@@ -928,7 +927,8 @@ MapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
              */
             color: "#cccccc" /* Palette.neutralColor20 */
         }
-    }
+    },
+    legendSymbol: 'rectangle'
 });
 extend(MapSeries.prototype, {
     type: 'map',
@@ -943,7 +943,6 @@ extend(MapSeries.prototype, {
     drawDataLabels: noop,
     // No graph for the map series
     drawGraph: noop,
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     forceDL: true,
     getCenter: CU.getCenter,
     getExtremesFromAll: true,

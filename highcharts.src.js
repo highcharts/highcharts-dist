@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -64,7 +64,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.0.0', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.0.1', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -1147,7 +1147,6 @@
          * The style value.
          */
         function getStyle(el, prop, toInt) {
-            const customGetStyle = H.getStyle;
             let style;
             // For width and height, return the actual inner pixel size (#4913)
             if (prop === 'width') {
@@ -1165,14 +1164,14 @@
                 }
                 return Math.max(0, // #8377
                 (offsetWidth -
-                    (customGetStyle(el, 'padding-left', true) || 0) -
-                    (customGetStyle(el, 'padding-right', true) || 0)));
+                    (getStyle(el, 'padding-left', true) || 0) -
+                    (getStyle(el, 'padding-right', true) || 0)));
             }
             if (prop === 'height') {
                 return Math.max(0, // #8377
                 (Math.min(el.offsetHeight, el.scrollHeight) -
-                    (customGetStyle(el, 'padding-top', true) || 0) -
-                    (customGetStyle(el, 'padding-bottom', true) || 0)));
+                    (getStyle(el, 'padding-top', true) || 0) -
+                    (getStyle(el, 'padding-bottom', true) || 0)));
             }
             // Otherwise, get the computed style
             const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
@@ -11979,7 +11978,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.0.0'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.0.1'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -12234,7 +12233,7 @@
              */
             shadowDefinition(shadowOptions) {
                 const id = [
-                    'drop-shadow',
+                    `highcharts-drop-shadow-${this.chartIndex}`,
                     ...Object.keys(shadowOptions)
                         .map((key) => shadowOptions[key])
                 ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({
@@ -14139,10 +14138,6 @@
                                             top: (parentGroup.translateY || 0) + 'px',
                                             display: parentGroup.display,
                                             opacity: parentGroup.opacity,
-                                            cursor: parentGroupStyles.cursor,
-                                            pointerEvents: (
-                                            // #5595
-                                            parentGroupStyles.pointerEvents),
                                             visibility: parentGroup.visibility
                                             // the top group is appended to container
                                         }, htmlGroup || container);
@@ -14159,6 +14154,23 @@
                                             htmlGroup.className = value;
                                         };
                                     }(htmlGroup)),
+                                    // Extend the parent group's css function by
+                                    // updating the shadow div counterpart with the same
+                                    // style.
+                                    css: function (styles) {
+                                        wrapper.css.call(parentGroup, styles);
+                                        [
+                                            // #6794
+                                            'cursor',
+                                            // #5595, #18821
+                                            'pointerEvents'
+                                        ].forEach((prop) => {
+                                            if (styles[prop]) {
+                                                htmlGroupStyle[prop] = styles[prop];
+                                            }
+                                        });
+                                        return parentGroup;
+                                    },
                                     on: function () {
                                         if (parents[0].div) { // #6418
                                             wrapper.on.apply({
@@ -14174,6 +14186,8 @@
                                 if (!parentGroup.addedSetters) {
                                     addSetters(parentGroup);
                                 }
+                                // Apply pre-existing style
+                                parentGroup.css(parentGroupStyles);
                             });
                         }
                     }
@@ -14410,6 +14424,19 @@
                  * @default   false
                  * @since     4.1
                  * @apioption xAxis.crosshair
+                 */
+                /**
+                 * The value on a perpendicular axis where this axis should cross. This
+                 * is typically used on mathematical plots where the axes cross at 0.
+                 * When `crossing` is set, space will not be reserved at the sides of
+                 * the chart for axis labels and title, so those may be clipped. In this
+                 * case it is better to place the axes without the `crossing` option.
+                 *
+                 * @type      {number}
+                 * @sample    highcharts/xaxis/crossing
+                 *            Function plot with axes crossing at 0
+                 * @since 11.0.1
+                 * @apioption xAxis.crossing
                  */
                 /**
                  * A class name for the crosshair, especially as a hook for styling.
@@ -20263,7 +20290,7 @@
                 const axis = this, { chart, horiz, options, side, ticks, tickPositions, coll, axisParent // Used in color axis
                  } = axis, renderer = chart.renderer, invertedSide = (chart.inverted && !axis.isZAxis ?
                     [1, 0, 3, 2][side] :
-                    side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side], className = options.className;
+                    side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, hasCrossing = isNumber(options.crossing), axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side], className = options.className;
                 let showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // reset
                 labelOffsetPadded, lineHeightCorrection;
                 // For reuse in Axis.render
@@ -20294,7 +20321,7 @@
                     axis.reserveSpaceDefault = (side === 0 ||
                         side === 2 ||
                         { 1: 'left', 3: 'right' }[side] === axis.labelAlign);
-                    if (pick(labelOptions.reserveSpace, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
+                    if (pick(labelOptions.reserveSpace, hasCrossing ? false : null, axis.labelAlign === 'center' ? true : null, axis.reserveSpaceDefault)) {
                         tickPositions.forEach(function (pos) {
                             // get the highest offset
                             labelOffset = Math.max(ticks[pos].getLabelSize(), labelOffset);
@@ -20315,7 +20342,9 @@
                     axisTitleOptions.text &&
                     axisTitleOptions.enabled !== false) {
                     axis.addTitle(showAxis);
-                    if (showAxis && axisTitleOptions.reserveSpace !== false) {
+                    if (showAxis &&
+                        !hasCrossing &&
+                        axisTitleOptions.reserveSpace !== false) {
                         axis.titleOffset = titleOffset =
                             axis.axisTitle.getBBox()[horiz ? 'height' : 'width'];
                         titleOffsetOption = axisTitleOptions.offset;
@@ -20543,7 +20572,7 @@
              * @emits Highcharts.Axis#event:afterRender
              */
             render() {
-                const axis = this, chart = axis.chart, log = axis.logarithmic, renderer = chart.renderer, options = axis.options, isLinked = axis.isLinked, tickPositions = axis.tickPositions, axisTitle = axis.axisTitle, ticks = axis.ticks, minorTicks = axis.minorTicks, alternateBands = axis.alternateBands, stackLabelOptions = options.stackLabels, alternateGridColor = options.alternateGridColor, tickmarkOffset = axis.tickmarkOffset, axisLine = axis.axisLine, showAxis = axis.showAxis, animation = animObject(renderer.globalAnimation);
+                const axis = this, chart = axis.chart, log = axis.logarithmic, renderer = chart.renderer, options = axis.options, isLinked = axis.isLinked, tickPositions = axis.tickPositions, axisTitle = axis.axisTitle, ticks = axis.ticks, minorTicks = axis.minorTicks, alternateBands = axis.alternateBands, stackLabelOptions = options.stackLabels, alternateGridColor = options.alternateGridColor, crossing = options.crossing, tickmarkOffset = axis.tickmarkOffset, axisLine = axis.axisLine, showAxis = axis.showAxis, animation = animObject(renderer.globalAnimation);
                 let from, to;
                 // Reset
                 axis.labelEdge.length = 0;
@@ -20554,6 +20583,13 @@
                         tick.isActive = false;
                     });
                 });
+                // Crossing
+                if (isNumber(crossing)) {
+                    const otherAxis = this.isXAxis ? chart.yAxis[0] : chart.xAxis[0], directionFactor = [1, -1, -1, 1][this.side];
+                    if (otherAxis) {
+                        this.offset = directionFactor * otherAxis.toPixels(crossing, true);
+                    }
+                }
                 // If the series has data draw the ticks. Else only the line and title
                 if (axis.hasData() || isLinked) {
                     const slideInTicks = axis.chart.hasRendered &&
@@ -22815,7 +22851,7 @@
          *
          * */
         const { format } = F;
-        const { doc } = H;
+        const { doc, isSafari } = H;
         const { distribute } = R;
         const { addEvent, clamp, css, discardElement, extend, fireEvent, isArray, isNumber, isString, merge, pick, splat, syncTimeout } = U;
         /* *
@@ -23876,6 +23912,16 @@
                     // Position the tooltip container to the chart container
                     container.style.left = boxExtremes.left + 'px';
                     container.style.top = chartTop + 'px';
+                }
+                // Workaround for #18927, artefacts left by the shadows of split
+                // tooltips in Safari v16 (2023). Check again with later versions if we
+                // can remove this.
+                if (isSafari) {
+                    tooltipLabel.attr({
+                        // Force a redraw of the whole group by chaning the opacity
+                        // slightly
+                        opacity: tooltipLabel.opacity === 1 ? 0.999 : 1
+                    });
                 }
             }
             /**
@@ -29690,7 +29736,7 @@
             }
             /**
              * Reflows the chart to its container. By default, the Resize Observer is
-             * attached to the chart's div which allows to reflows the he chart
+             * attached to the chart's div which allows to reflows the chart
              * automatically to its container, as per the
              * [chart.reflow](https://api.highcharts.com/highcharts/chart.reflow)
              * option.
@@ -31428,12 +31474,12 @@
              * Highcharts.seriesTypes[type].prototype.drawLegendSymbol.
              *
              * @private
-             * @function Highcharts.LegendSymbolMixin.drawLineMarker
+             * @function Highcharts.LegendSymbolMixin.lineMarker
              *
              * @param {Highcharts.Legend} legend
              * The legend object.
              */
-            function drawLineMarker(legend) {
+            function lineMarker(legend, item) {
                 const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
                     Math.round(legend.fontMetrics.b * 0.3);
                 let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
@@ -31485,7 +31531,7 @@
                     legendSymbol.isMarker = true;
                 }
             }
-            LegendSymbol.drawLineMarker = drawLineMarker;
+            LegendSymbol.lineMarker = lineMarker;
             /**
              * Get the series' symbol in the legend.
              *
@@ -31493,7 +31539,7 @@
              * Highcharts.seriesTypes[type].prototype.drawLegendSymbol.
              *
              * @private
-             * @function Highcharts.LegendSymbolMixin.drawRectangle
+             * @function Highcharts.LegendSymbolMixin.rectangle
              *
              * @param {Highcharts.Legend} legend
              * The legend object
@@ -31501,7 +31547,7 @@
              * @param {Highcharts.Point|Highcharts.Series} item
              * The series (this) or point
              */
-            function drawRectangle(legend, item) {
+            function rectangle(legend, item) {
                 const legendItem = item.legendItem || {}, options = legend.options, symbolHeight = legend.symbolHeight, square = options.squareSymbol, symbolWidth = square ? symbolHeight : legend.symbolWidth;
                 legendItem.symbol = this.chart.renderer
                     .rect(square ? (legend.symbolWidth - symbolHeight) / 2 : 0, legend.baseline - symbolHeight + 1, // #3988
@@ -31512,7 +31558,7 @@
                 })
                     .add(legendItem.group);
             }
-            LegendSymbol.drawRectangle = drawRectangle;
+            LegendSymbol.rectangle = rectangle;
         })(LegendSymbol || (LegendSymbol = {}));
         /* *
          *
@@ -31768,6 +31814,9 @@
             /**
              * Whether to connect a graph line across null points, or render a gap
              * between the two points on either side of the null.
+             *
+             * In stacked area chart, if `connectNulls` is set to true,
+             * null points are interpreted as 0.
              *
              * @sample {highcharts} highcharts/plotoptions/series-connectnulls-false/
              *         False by default
@@ -33850,6 +33899,14 @@
              * @private
              */
             findNearestPointBy: 'x'
+            /**
+             * What type of legend symbol to render for this series.
+             *
+             * @validvalue ["lineMarker", "rectangle"]
+             *
+             * @sample {highcharts} highcharts/series/legend-symbol/
+             *         Change the legend symbol
+             */
         };
         /* *
          *
@@ -37114,6 +37171,15 @@
                 options.visiblePlotOnly = true;
                 return this.chart.isInsidePlot(plotX, plotY, options);
             }
+            /**
+             * Draws the legend symbol based on the legendSymbol user option.
+             *
+             * @private
+             */
+            drawLegendSymbol(legend, item) {
+                var _a;
+                (_a = LegendSymbol[this.options.legendSymbol || 'rectangle']) === null || _a === void 0 ? void 0 : _a.call(this, legend, item);
+            }
         }
         Series.defaultOptions = SeriesDefaults;
         /**
@@ -37147,7 +37213,6 @@
             colorCounter: 0,
             cropShoulder: 1,
             directTouch: false,
-            drawLegendSymbol: LegendSymbol.drawLineMarker,
             isCartesian: true,
             kdAxisArray: ['clientX', 'plotY'],
             // each point's x and y values are stored in this.xData and this.yData:
@@ -38928,7 +38993,7 @@
          * @optionparent plotOptions.series
          */
         {
-        // nothing here yet
+            legendSymbol: 'lineMarker'
         });
         SeriesRegistry.registerSeriesType('line', LineSeries);
         /* *
@@ -39191,7 +39256,7 @@
 
         return LineSeries;
     });
-    _registerModule(_modules, 'Series/Area/AreaSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Color, LegendSymbol, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Area/AreaSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Color, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -39632,11 +39697,11 @@
              * @since   2.0
              * @product highcharts highstock
              */
-            threshold: 0
+            threshold: 0,
+            legendSymbol: 'rectangle'
         });
         extend(AreaSeries.prototype, {
-            singleStacks: false,
-            drawLegendSymbol: LegendSymbol.drawRectangle
+            singleStacks: false
         });
         SeriesRegistry.registerSeriesType('area', AreaSeries);
         /* *
@@ -40011,7 +40076,7 @@
 
         return SplineSeries;
     });
-    _registerModule(_modules, 'Series/AreaSpline/AreaSplineSeries.js', [_modules['Series/Spline/SplineSeries.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SplineSeries, LegendSymbol, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/AreaSpline/AreaSplineSeries.js', [_modules['Series/Spline/SplineSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SplineSeries, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -40059,8 +40124,7 @@
         extend(AreaSplineSeries.prototype, {
             getGraphPath: areaProto.getGraphPath,
             getStackPoints: areaProto.getStackPoints,
-            drawGraph: areaProto.drawGraph,
-            drawLegendSymbol: LegendSymbol.drawRectangle
+            drawGraph: areaProto.drawGraph
         });
         SeriesRegistry.registerSeriesType('areaspline', AreaSplineSeries);
         /* *
@@ -40693,7 +40757,7 @@
 
         return ColumnSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Column/ColumnSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, Color, ColumnSeriesDefaults, H, LegendSymbol, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Column/ColumnSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, Color, ColumnSeriesDefaults, H, Series, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -41308,19 +41372,6 @@
             // When tooltip is not shared, this series (and derivatives) requires
             // direct touch/hover. KD-tree does not apply.
             directTouch: true,
-            /**
-             * Use a solid rectangle like the area series types
-             *
-             * @private
-             * @function Highcharts.seriesTypes.column#drawLegendSymbol
-             *
-             * @param {Highcharts.Legend} legend
-             *        The legend object
-             *
-             * @param {Highcharts.Series|Highcharts.Point} item
-             *        The series (this) or point
-             */
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             getSymbol: noop,
             // use separate negative stacks, unlike area stacks where a negative
             // point is substracted from previous (#1910)
@@ -43623,7 +43674,7 @@
 
         return PieSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Pie/PieSeries.js', [_modules['Series/CenteredUtilities.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Series/Pie/PiePoint.js'], _modules['Series/Pie/PieSeriesDefaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/Symbols.js'], _modules['Core/Utilities.js']], function (CU, ColumnSeries, H, LegendSymbol, PiePoint, PieSeriesDefaults, Series, SeriesRegistry, Symbols, U) {
+    _registerModule(_modules, 'Series/Pie/PieSeries.js', [_modules['Series/CenteredUtilities.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Series/Pie/PiePoint.js'], _modules['Series/Pie/PieSeriesDefaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/Symbols.js'], _modules['Core/Utilities.js']], function (CU, ColumnSeries, H, PiePoint, PieSeriesDefaults, Series, SeriesRegistry, Symbols, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -44012,7 +44063,6 @@
             axisTypes: [],
             directTouch: true,
             drawGraph: void 0,
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             drawTracker: ColumnSeries.prototype.drawTracker,
             getCenter: CU.getCenter,
             getSymbol: noop,

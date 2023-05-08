@@ -76,6 +76,7 @@ class SonificationTimeline {
         else {
             this.clearScheduledCallbacks();
         }
+        this.onEndArgument = onEnd;
         this.playTimestamp = Date.now();
         this.resumeFromTime = 0;
         this.isPaused = false;
@@ -206,11 +207,11 @@ class SonificationTimeline {
     resume() {
         if (this.playingChannels) {
             const resumeFrom = this.resumeFromTime - 50;
-            this.play((e) => e.time > resumeFrom, false, false);
+            this.play((e) => e.time > resumeFrom, false, false, this.onEndArgument);
             this.playTimestamp -= resumeFrom;
         }
         else {
-            this.play(void 0, false, false);
+            this.play(void 0, false, false, this.onEndArgument);
         }
     }
     // Play a short moment, then pause, setting the cursor to the final
@@ -437,6 +438,7 @@ class SonificationTimeline {
     }
     resetPlayState() {
         delete this.playingChannels;
+        delete this.onEndArgument;
         this.playTimestamp = this.resumeFromTime = 0;
         this.isPaused = false;
     }

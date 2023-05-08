@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.0 (2023-04-26)
+ * @license Highstock JS v11.0.1 (2023-05-08)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -3854,8 +3854,10 @@
                                 from = unitedMin + range * (1 - this.to);
                             }
                             if (this.shouldUpdateExtremes(e.DOMType)) {
-                                axis.setExtremes(from, to, true, (e.DOMType !== 'mousemove' &&
-                                    e.DOMType !== 'touchmove'), e);
+                                // #17977, set animation to undefined instead of true
+                                var animate = e.DOMType === 'mousemove' ||
+                                        e.DOMType === 'touchmove' ? false : void 0;
+                                axis.setExtremes(from, to, true, animate, e);
                             }
                             else {
                                 // When live redraw is disabled, don't change extremes
@@ -4007,8 +4009,7 @@
          */
         var ScrollbarDefaults = {
                 /**
-                 * The height of the scrollbar. If `buttonsEnabled` is true ,
-            the height
+                 * The height of the scrollbar. If `buttonsEnabled` is true , the height
                  * also applies to the width of the scroll arrows so that they are always
                  * squares.
                  *
@@ -4042,8 +4043,7 @@
                  * Enable or disable the scrollbar.
                  *
                  * @sample stock/scrollbar/enabled/
-                 *         Disable the scrollbar,
-            only use navigator
+                 *         Disable the scrollbar, only use navigator
                  *
                  * @type      {boolean}
                  * @default   true
@@ -4063,8 +4063,7 @@
                 liveRedraw: void 0,
                 /**
                  * The margin between the scrollbar and its axis when the scrollbar is
-                 * applied directly to an axis,
-            or the navigator in case that is enabled.
+                 * applied directly to an axis, or the navigator in case that is enabled.
                  * Defaults to 10 for axis, 0 for navigator.
                  *
                  * @type {number|undefined}
@@ -4161,7 +4160,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                trackBackgroundColor: 'none',
+                trackBackgroundColor: 'rgba(255, 255, 255, 0.001)',
                 /**
                  * The color of the border of the scrollbar track.
                  *
@@ -10262,6 +10261,7 @@
                  * @sample {highstock} stock/plotoptions/hlc-pointvalkey/
                  *         Possible values
                  *
+                 * @declare    Highcharts.OptionsHLCPointValKeyValue
                  * @type       {string}
                  * @default    close
                  * @validvalue ["high", "low", "close"]
@@ -10735,6 +10735,7 @@
                  * be represented as `point.y`, which is later used to set dataLabel
                  * position and [compare](#plotOptions.series.compare).
                  *
+                 * @declare    Highcharts.OptionsPointValKeyValue
                  * @default    close
                  * @validvalue ["open", "high", "low", "close"]
                  * @product    highstock

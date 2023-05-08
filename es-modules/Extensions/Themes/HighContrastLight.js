@@ -41,6 +41,11 @@ var HighContrastLightTheme;
             '#1A704C',
             '#B02FDD'
         ],
+        credits: {
+            style: {
+                color: '#767676'
+            }
+        },
         navigator: {
             series: {
                 color: '#5f98cf',

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Sonification module
  *
@@ -1594,6 +1594,7 @@
         * width of 0.5 is roughly equal to a square wave. This is the default.
         * @name Highcharts.SynthPatchOscillatorOptionsObject#pulseWidth
         * @type {number|undefined}
+        */ /**
         * Index of another oscillator to use as carrier, with this oscillator being
         * used as a volume modulator. The first oscillator in the array has index 0,
         * and so on. This option can be used to produce tremolo effects.
@@ -3531,6 +3532,7 @@
                 else {
                     this.clearScheduledCallbacks();
                 }
+                this.onEndArgument = onEnd;
                 this.playTimestamp = Date.now();
                 this.resumeFromTime = 0;
                 this.isPaused = false;
@@ -3661,11 +3663,11 @@
             resume() {
                 if (this.playingChannels) {
                     const resumeFrom = this.resumeFromTime - 50;
-                    this.play((e) => e.time > resumeFrom, false, false);
+                    this.play((e) => e.time > resumeFrom, false, false, this.onEndArgument);
                     this.playTimestamp -= resumeFrom;
                 }
                 else {
-                    this.play(void 0, false, false);
+                    this.play(void 0, false, false, this.onEndArgument);
                 }
             }
             // Play a short moment, then pause, setting the cursor to the final
@@ -3892,6 +3894,7 @@
             }
             resetPlayState() {
                 delete this.playingChannels;
+                delete this.onEndArgument;
                 this.playTimestamp = this.resumeFromTime = 0;
                 this.isPaused = false;
             }

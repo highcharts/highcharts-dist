@@ -1,3 +1,1 @@
-import factory from '../../../indicators/indicators-all.src';
-export * from '../../../indicators/indicators-all.src';
-export default factory;
+import '../../../indicators/indicators-all.src';

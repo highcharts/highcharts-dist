@@ -11,7 +11,6 @@
 import Color from '../../Core/Color/Color.js';
 import ColorMapComposition from '../ColorMapComposition.js';
 import HeatmapPoint from './HeatmapPoint.js';
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
@@ -513,7 +512,8 @@ HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
              */
             brightness: 0.2
         }
-    }
+    },
+    legendSymbol: 'rectangle'
 });
 extend(HeatmapSeries.prototype, {
     axisTypes: ColorMapComposition.seriesMembers.axisTypes,
@@ -530,10 +530,6 @@ extend(HeatmapSeries.prototype, {
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
     colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-    /**
-     * @private
-     */
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     getSymbol: Series.prototype.getSymbol
 });
 ColorMapComposition.compose(HeatmapSeries);

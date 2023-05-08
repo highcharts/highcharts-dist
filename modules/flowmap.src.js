@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * (c) 2009-2022
  *
@@ -530,14 +530,9 @@
                     // etc
                     const propMiddleLon = properties && properties['hc-middle-lon'], propMiddleLat = properties && properties['hc-middle-lat'];
                     if (mapView && isNumber(propMiddleLon) && isNumber(propMiddleLat)) {
-                        const newPos = mapView.lonLatToProjectedUnits({
-                            lon: propMiddleLon,
-                            lat: propMiddleLat
-                        });
-                        if (newPos) {
-                            bounds.midX = newPos.x;
-                            bounds.midY = newPos.y;
-                        }
+                        const projectedPoint = projection.forward([propMiddleLon, propMiddleLat]);
+                        bounds.midX = projectedPoint[0];
+                        bounds.midY = projectedPoint[1];
                     }
                     else {
                         const propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
@@ -3181,7 +3176,7 @@
 
         return MapView;
     });
-    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, LegendSymbol, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4099,7 +4094,8 @@
                      */
                     color: "#cccccc" /* Palette.neutralColor20 */
                 }
-            }
+            },
+            legendSymbol: 'rectangle'
         });
         extend(MapSeries.prototype, {
             type: 'map',
@@ -4114,7 +4110,6 @@
             drawDataLabels: noop,
             // No graph for the map series
             drawGraph: noop,
-            drawLegendSymbol: LegendSymbol.drawRectangle,
             forceDL: true,
             getCenter: CU.getCenter,
             getExtremesFromAll: true,

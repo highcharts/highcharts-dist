@@ -15,7 +15,6 @@ const { parse: color } = Color;
 import ColorMapComposition from '../ColorMapComposition.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } } = SeriesRegistry;
 import TreemapAlgorithmGroup from './TreemapAlgorithmGroup.js';
@@ -1351,14 +1350,14 @@ TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
              */
             shadow: false
         }
-    }
+    },
+    legendSymbol: 'rectangle'
 });
 extend(TreemapSeries.prototype, {
     buildKDTree: noop,
     colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
     colorKey: 'colorValue',
     directTouch: true,
-    drawLegendSymbol: LegendSymbol.drawRectangle,
     getExtremesFromAll: true,
     getSymbol: noop,
     optionalAxis: 'colorAxis',

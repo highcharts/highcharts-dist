@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.0 (2023-04-26)
+ * @license Highcharts JS v11.0.1 (2023-05-08)
  *
  * Boost module
  *
@@ -177,14 +177,11 @@
         }
         /**
          * Returns true if the chart is in series boost mode.
-         *
-         * @function Highcharts.Chart#isChartSeriesBoosting
-         *
+         * @private
          * @param {Highcharts.Chart} chart
-         *        the chart to check
-         *
+         * Chart to check.
          * @return {boolean}
-         *         true if the chart is in series boost mode
+         * `true` if the chart is in series boost mode.
          */
         function isChartSeriesBoosting(chart) {
             const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = pick(boostOptions.seriesThreshold, 50);
@@ -2792,6 +2789,21 @@
                 }
             }
             const points = this.points = [], addKDPoint = (clientX, plotY, i, percentage) => {
+                const x = xDataFull ? xDataFull[cropStart + i] : false, pushPoint = (plotX) => {
+                    if (chart.inverted) {
+                        plotX = xAxis.len - plotX;
+                        plotY = yAxis.len - plotY;
+                    }
+                    points.push({
+                        destroy: noop,
+                        x: x,
+                        clientX: plotX,
+                        plotX: plotX,
+                        plotY: plotY,
+                        i: cropStart + i,
+                        percentage: percentage
+                    });
+                };
                 // We need to do ceil on the clientX to make things
                 // snap to pixel values. The renderer will frequently
                 // draw stuff on "sub-pixels".
@@ -2801,21 +2813,17 @@
                 // The k-d tree requires series points.
                 // Reduce the amount of points, since the time to build the
                 // tree increases exponentially.
-                if (enableMouseTracking && !pointTaken[index]) {
-                    pointTaken[index] = true;
-                    if (chart.inverted) {
-                        clientX = xAxis.len - clientX;
-                        plotY = yAxis.len - plotY;
+                if (enableMouseTracking) {
+                    if (!pointTaken[index]) {
+                        pointTaken[index] = true;
+                        pushPoint(clientX);
                     }
-                    points.push({
-                        destroy: noop,
-                        x: xDataFull ? xDataFull[cropStart + i] : false,
-                        clientX: clientX,
-                        plotX: clientX,
-                        plotY: plotY,
-                        i: cropStart + i,
-                        percentage: percentage
-                    });
+                    else if (x === xDataFull[xDataFull.length - 1]) {
+                        // If the last point is on the same pixel as the last
+                        // tracked point, swap them. (#18856)
+                        points.length--;
+                        pushPoint(clientX);
+                    }
                 }
             };
             // Do not start building while drawing
@@ -3091,6 +3099,7 @@
         const BoostSeries = {
             compose,
             destroyGraphics,
+            eachAsync,
             getPoint
         };
 
@@ -3413,7 +3422,7 @@
                         console.time('canvas rendering'); // eslint-disable-line no-console
                     }
                     // Loop over the points
-                    H.eachAsync(sdata, function (d, i) {
+                    BoostSeries.eachAsync(sdata, function (d, i) {
                         let x, y, clientX, plotY, isNull, low, isNextInside = false, isPrevInside = false, nx = false, px = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
                         if (!chartDestroyed) {
                             if (useRaw) {
@@ -3844,8 +3853,14 @@
             BoostSeries.compose(SeriesClass, seriesTypes, wglMode);
         }
         /**
-         * Returns true if the current browser supports webgl
-         * @private
+         * Returns true if the current browser supports WebGL.
+         *
+         * @requires module:modules/boost
+         *
+         * @function Highcharts.hasWebGLSupport
+         *
+         * @return {boolean}
+         * `true` if the browser supports WebGL.
          */
         function hasWebGLSupport() {
             let canvas, gl = false;

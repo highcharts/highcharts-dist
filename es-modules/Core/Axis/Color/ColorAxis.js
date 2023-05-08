@@ -590,7 +590,7 @@ class ColorAxis extends Axis {
                     chart,
                     name,
                     options: {},
-                    drawLegendSymbol: LegendSymbol.drawRectangle,
+                    drawLegendSymbol: LegendSymbol.rectangle,
                     visible: true,
                     isDataClass: true,
                     // Override setState to set either normal or inactive
