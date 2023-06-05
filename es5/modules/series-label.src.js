@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -80,28 +80,21 @@
                 /**
                  * Allow labels to be placed distant to the graph if necessary,
                  * and draw a connector line to the graph. Setting this option
-                 * to true may decrease the performance significantly,
-            since the
+                 * to true may decrease the performance significantly, since the
                  * algorithm with systematically search for open spaces in the
-                 * whole plot area. Visually,
-            it may also result in a more
-                 * cluttered chart,
-            though more of the series will be labeled.
+                 * whole plot area. Visually, it may also result in a more
+                 * cluttered chart, though more of the series will be labeled.
                  */
                 connectorAllowed: false,
                 /**
-                 * If the label is closer than this to a neighbour graph,
-            draw a
+                 * If the label is closer than this to a neighbour graph, draw a
                  * connector.
                  */
                 connectorNeighbourDistance: 24,
                 /**
-                 * A format string for the label,
-            with support for a subset of
+                 * A format string for the label, with support for a subset of
                  * HTML. Variables are enclosed by curly brackets. Available
-                 * variables are `name`,
-            `options.xxx`,
-            `color` and other
+                 * variables are `name`, `options.xxx`, `color` and other
                  * members from the `series` object. Use this option also to set
                  * a static text for the label.
                  *
@@ -119,8 +112,7 @@
                  */
                 formatter: void 0,
                 /**
-                 * For area-like series,
-            allow the font size to vary so that
+                 * For area-like series, allow the font size to vary so that
                  * small areas get a smaller font size. The default applies this
                  * effect to area-like series but not line-like series.
                  *
@@ -128,8 +120,7 @@
                  */
                 minFontSize: null,
                 /**
-                 * For area-like series,
-            allow the font size to vary so that
+                 * For area-like series, allow the font size to vary so that
                  * small areas get a smaller font size. The default applies this
                  * effect to area-like series but not line-like series.
                  *
@@ -146,8 +137,7 @@
                 onArea: null,
                 /**
                  * Styles for the series label. The color defaults to the series
-                 * color,
-            or a contrast color if `onArea`.
+                 * color, or a contrast color if `onArea`.
                  *
                  * @type {Highcharts.CSSObject}
                  */
@@ -163,9 +153,7 @@
                 useHTML: false,
                 /**
                  * An array of boxes to avoid when laying out the labels. Each
-                 * item has a `left`,
-            `right`,
-            `top` and `bottom` property.
+                 * item has a `left`, `right`, `top` and `bottom` property.
                  *
                  * @type {Array<Highcharts.LabelIntersectBoxObject>}
                  */
@@ -248,7 +236,7 @@
 
         return SeriesLabelUtilities;
     });
-    _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Defaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelDefaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelUtilities.js'], _modules['Core/Utilities.js']], function (A, Chart, FU, D, SeriesLabelDefaults, SLU, U) {
+    _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelDefaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelUtilities.js'], _modules['Core/Utilities.js']], function (A, Chart, T, D, SeriesLabelDefaults, SLU, U) {
         /* *
          *
          *  (c) 2009-2021 Torstein Honsi
@@ -285,7 +273,7 @@
             return to.concat(ar || Array.prototype.slice.call(from));
         };
         var animObject = A.animObject;
-        var format = FU.format;
+        var format = T.format;
         var setOptions = D.setOptions;
         var boxIntersectLine = SLU.boxIntersectLine,
             intersectRect = SLU.intersectRect;

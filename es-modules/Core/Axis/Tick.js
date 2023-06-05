@@ -8,7 +8,7 @@
  *
  * */
 'use strict';
-import F from '../FormatUtilities.js';
+import F from '../Templating.js';
 import H from '../Globals.js';
 const { deg2rad } = H;
 import U from '../Utilities.js';

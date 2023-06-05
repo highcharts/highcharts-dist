@@ -388,6 +388,7 @@ const seriesDefaults = {
      * @default   true
      * @apioption plotOptions.series.enableMouseTracking
      */
+    enableMouseTracking: true,
     /**
      * Whether to use the Y extremes of the total chart width or only the
      * zoomed area when zooming in on parts of the X axis. By default, the
@@ -489,6 +490,15 @@ const seriesDefaults = {
      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @since     3.0
      * @apioption plotOptions.series.negativeColor
+     */
+    /**
+     * Same as
+     * [accessibility.point.descriptionFormat](#accessibility.point.descriptionFormat),
+     * but for an individual series. Overrides the chart wide configuration.
+     *
+     * @type      {Function}
+     * @since 11.1.0
+     * @apioption plotOptions.series.pointDescriptionFormat
      */
     /**
      * Same as
@@ -1614,6 +1624,8 @@ const seriesDefaults = {
          *
          * @sample {highcharts} highcharts/plotoptions/series-datalabels-format/
          *         Add a unit
+         * @sample {highcharts} highcharts/plotoptions/series-datalabels-format-subexpression/
+         *         Complex logic in the format string
          * @sample {highmaps} maps/plotoptions/series-datalabels-format/
          *         Formatted value in the data label
          *
@@ -2307,6 +2319,20 @@ const seriesDefaults = {
      * @apioption plotOptions.series.colorKey
      */
     /**
+     * What type of legend symbol to render for this series. Can be one of
+     * `lineMarker` or `rectangle`.
+     *
+     * @validvalue ["lineMarker", "rectangle"]
+     *
+     * @sample {highcharts} highcharts/series/legend-symbol/
+     *         Change the legend symbol
+     *
+     * @type      {string}
+     * @default   rectangle
+     * @since     11.0.1
+     * @apioption plotOptions.series.legendSymbol
+     */
+    /**
      * Determines whether the series should look for the nearest point
      * in both dimensions or just the x-dimension when hovering the series.
      * Defaults to `'xy'` for scatter series and `'x'` for most other
@@ -2329,14 +2355,6 @@ const seriesDefaults = {
      * @private
      */
     findNearestPointBy: 'x'
-    /**
-     * What type of legend symbol to render for this series.
-     *
-     * @validvalue ["lineMarker", "rectangle"]
-     *
-     * @sample {highcharts} highcharts/series/legend-symbol/
-     *         Change the legend symbol
-     */
 };
 /* *
  *

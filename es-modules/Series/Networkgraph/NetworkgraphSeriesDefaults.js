@@ -548,6 +548,12 @@ export default NetworkgraphSeriesDefaults;
  * @apioption series.networkgraph.nodes.mass
  */
 /**
+ * Options for the node markers.
+ *
+ * @extends   plotOptions.networkgraph.marker
+ * @apioption series.networkgraph.nodes.marker
+ */
+/**
  * Individual data label for each node. The options are the same as
  * the ones for [series.networkgraph.dataLabels](#series.networkgraph.dataLabels).
  *

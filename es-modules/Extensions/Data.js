@@ -1023,7 +1023,7 @@ class Data {
         if (typeof str === 'string') {
             str = str.replace(/^\s+|\s+$/g, '');
             // Clear white space insdie the string, like thousands separators
-            if (inside && /^[0-9\s]+$/.test(str)) {
+            if (inside && /^-?[0-9\s]+$/.test(str)) {
                 str = str.replace(/\s/g, '');
             }
             if (this.decimalRegex) {

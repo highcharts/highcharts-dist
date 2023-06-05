@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -4387,6 +4387,7 @@
             extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            getClosestDistance = U.getClosestDistance,
             merge = U.merge,
             objectEach = U.objectEach;
         /* *
@@ -4420,30 +4421,6 @@
             };
         }
         /**
-         * @private
-         */
-        function getClosestPointRange(axis) {
-            var closestDataRange,
-                loopLength,
-                distance,
-                xData,
-                i;
-            axis.series.forEach(function (series) {
-                if (series.xData) {
-                    xData = series.xData;
-                    loopLength = series.xIncrement ? 1 : xData.length - 1;
-                    for (i = loopLength; i > 0; i--) {
-                        distance = xData[i] - xData[i - 1];
-                        if (typeof closestDataRange === 'undefined' ||
-                            distance < closestDataRange) {
-                            closestDataRange = distance;
-                        }
-                    }
-                }
-            });
-            return closestDataRange;
-        }
-        /**
          * Check two lines intersection (line a1-a2 and b1-b2)
          * Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
          * @private
@@ -4457,8 +4434,7 @@
                     sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
                     sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
                     // First degree Bézier parameters
-                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY),
-                    t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
+                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY), t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
                 if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
                     return {
                         plotX: a1.plotX + t * saX,
@@ -4852,7 +4828,7 @@
                     yVal = series.yData,
                     xAxis = series.xAxis,
                     yValLen = (yVal && yVal.length) || 0,
-                    closestPointRange = getClosestPointRange(xAxis),
+                    closestPointRange = getClosestDistance(xAxis.series.map(function (s) { return s.xData || []; })),
                     IKH = [],
                     xData = [];
                 var date,
@@ -5583,8 +5559,7 @@
                     SMASlow = this.getSMA(params.slowAvgPeriod, 0,
                     volumeForce);
                 // Calculate EMApercent for the first points.
-                var fastEMApercent = 2 / (params.fastAvgPeriod + 1),
-                    slowEMApercent = 2 / (params.slowAvgPeriod + 1);
+                var fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
                 // Calculate KO
                 for (i; i < yVal.length; i++) {
                     // Get EMA for fast period.
@@ -5796,18 +5771,17 @@
              * */
             MACDIndicator.prototype.init = function () {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
-                var originalColor = this.color,
-                    originalColorIndex = this.userOptions._colorIndex;
+                var originalColor = this.color;
                 // Check whether series is initialized. It may be not initialized,
                 // when any of required indicators is missing.
                 if (this.options) {
                     // If the default colour doesn't set, get the next available from
                     // the array and apply it #15608.
-                    if (defined(this.userOptions._colorIndex)) {
+                    if (defined(this.colorIndex)) {
                         if (this.options.signalLine &&
                             this.options.signalLine.styles &&
                             !this.options.signalLine.styles.lineColor) {
-                            this.userOptions._colorIndex++;
+                            this.options.colorIndex = this.colorIndex + 1;
                             this.getCyclic('color', void 0, this.chart.options.colors);
                             this.options.signalLine.styles.lineColor =
                                 this.color;
@@ -5815,7 +5789,7 @@
                         if (this.options.macdLine &&
                             this.options.macdLine.styles &&
                             !this.options.macdLine.styles.lineColor) {
-                            this.userOptions._colorIndex++;
+                            this.options.colorIndex = this.colorIndex + 1;
                             this.getCyclic('color', void 0, this.chart.options.colors);
                             this.options.macdLine.styles.lineColor =
                                 this.color;
@@ -5835,7 +5809,6 @@
                 }
                 // Reset color and index #15608.
                 this.color = originalColor;
-                this.userOptions._colorIndex = originalColorIndex;
             };
             MACDIndicator.prototype.toYData = function (point) {
                 return [point.y, point.signal, point.MACD];
@@ -9949,8 +9922,11 @@
              *  Functions
              *
              * */
-            VBPIndicator.prototype.init = function (chart) {
+            VBPIndicator.prototype.init = function (chart, options) {
                 var indicator = this;
+                // series.update() sends data that is not necessary
+                // as everything is calculated in getValues(), #17007
+                delete options.data;
                 _super.prototype.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
                 var unbinder = addEvent(StockChart, 'afterLinkSeries',
@@ -12403,13 +12379,7 @@
                     yData = [],
                     xValLength = xVal.length,
                     index = params.index;
-                var sumX = (xValLength - 1) * xValLength / 2,
-                    sumY = 0,
-                    sumXY = 0,
-                    sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6,
-                    alpha,
-                    i,
-                    y;
+                var sumX = (xValLength - 1) * xValLength / 2, sumY = 0, sumXY = 0, sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6, alpha, i, y;
                 // Get sums:
                 for (i = 0; i < xValLength; i++) {
                     y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];

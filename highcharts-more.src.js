@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -2273,7 +2273,7 @@
                  */
                 style: {
                     /** @ignore-option */
-                    fontSize: '0.7em',
+                    fontSize: '0.9em',
                     /** @ignore-option */
                     color: "#000000" /* Palette.neutralColor100 */
                 },
@@ -2376,7 +2376,7 @@
 
         return BubbleLegendDefaults;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -2568,7 +2568,8 @@
                 }
                 // Nesting SVG groups to enable handleOverflow
                 legendItem.symbol = renderer.g('bubble-legend');
-                legendItem.label = renderer.g('bubble-legend-item');
+                legendItem.label = renderer.g('bubble-legend-item')
+                    .css(this.legend.itemStyle || {});
                 // To enable default 'hideOverlappingLabels' method
                 legendItem.symbol.translateX = 0;
                 legendItem.symbol.translateY = 0;
@@ -3422,13 +3423,16 @@
                 this.translateBubble();
             }
             translateBubble() {
-                const { data, radii } = this;
-                const { minPxSize } = this.getPxExtremes();
+                const { data, options, radii } = this, { minPxSize } = this.getPxExtremes();
                 // Set the shape type and arguments to be picked up in drawPoints
                 let i = data.length;
                 while (i--) {
                     const point = data[i];
                     const radius = radii ? radii[i] : 0; // #1737
+                    // Negative points means negative z values (#9728)
+                    if (this.zoneAxis === 'z') {
+                        point.negative = (point.z || 0) < (options.zThreshold || 0);
+                    }
                     if (isNumber(radius) && radius >= minPxSize / 2) {
                         // Shape arguments
                         point.marker = extend(point.marker, {
@@ -4008,6 +4012,69 @@
             translate3dShapes() {
                 return columnProto.translate3dShapes.apply(this, arguments);
             }
+            afterColumnTranslate() {
+                /**
+                 * Translate data points from raw values x and y to plotX and plotY
+                 * @private
+                 */
+                const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
+                let height, heightDifference, start, plotHigh, y;
+                // eslint-disable-next-line valid-jsdoc
+                /**
+                 * Don't draw too far outside plot area (#6835)
+                 * @private
+                 */
+                function safeBounds(pixelPos) {
+                    return clamp(pixelPos, -safeDistance, safeDistance);
+                }
+                // Set plotLow and plotHigh
+                this.points.forEach((point) => {
+                    const shapeArgs = point.shapeArgs || {}, minPointLength = this.options.minPointLength, plotY = point.plotY, plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
+                    if (isNumber(plotHigh) && isNumber(plotY)) {
+                        point.plotHigh = safeBounds(plotHigh);
+                        point.plotLow = safeBounds(plotY);
+                        // adjust shape
+                        y = point.plotHigh;
+                        height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
+                        // Adjust for minPointLength
+                        if (Math.abs(height) < minPointLength) {
+                            heightDifference = (minPointLength - height);
+                            height += heightDifference;
+                            y -= heightDifference / 2;
+                            // Adjust for negative ranges or reversed Y axis (#1457)
+                        }
+                        else if (height < 0) {
+                            height *= -1;
+                            y -= height;
+                        }
+                        if (isRadial && this.polar) {
+                            start = point.barX + startAngleRad;
+                            point.shapeType = 'arc';
+                            point.shapeArgs = this.polar.arc(y + height, y, start, start + point.pointWidth);
+                        }
+                        else {
+                            shapeArgs.height = height;
+                            shapeArgs.y = y;
+                            const { x = 0, width = 0 } = shapeArgs;
+                            // #17912, aligning column range points
+                            // merge if shapeArgs contains more properties e.g. for 3d
+                            point.shapeArgs = merge(point.shapeArgs, this.crispCol(x, y, width, height));
+                            point.tooltipPos = chart.inverted ?
+                                [
+                                    yAxis.len + yAxis.pos - chart.plotLeft - y -
+                                        height / 2,
+                                    xAxis.len + xAxis.pos - chart.plotTop - x -
+                                        width / 2,
+                                    height
+                                ] : [
+                                xAxis.left - chart.plotLeft + x + width / 2,
+                                yAxis.pos - chart.plotTop + y + height / 2,
+                                height
+                            ]; // don't inherit from column tooltip position - #3372
+                        }
+                    }
+                });
+            }
         }
         /* *
          *
@@ -4016,67 +4083,7 @@
          * */
         ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, columnRangeOptions);
         addEvent(ColumnRangeSeries, 'afterColumnTranslate', function () {
-            /**
-             * Translate data points from raw values x and y to plotX and plotY
-             * @private
-             */
-            const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
-            let height, heightDifference, start, plotHigh, y;
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Don't draw too far outside plot area (#6835)
-             * @private
-             */
-            function safeBounds(pixelPos) {
-                return clamp(pixelPos, -safeDistance, safeDistance);
-            }
-            // Set plotLow and plotHigh
-            this.points.forEach((point) => {
-                const shapeArgs = point.shapeArgs || {}, minPointLength = this.options.minPointLength, plotY = point.plotY, plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
-                if (isNumber(plotHigh) && isNumber(plotY)) {
-                    point.plotHigh = safeBounds(plotHigh);
-                    point.plotLow = safeBounds(plotY);
-                    // adjust shape
-                    y = point.plotHigh;
-                    height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
-                    // Adjust for minPointLength
-                    if (Math.abs(height) < minPointLength) {
-                        heightDifference = (minPointLength - height);
-                        height += heightDifference;
-                        y -= heightDifference / 2;
-                        // Adjust for negative ranges or reversed Y axis (#1457)
-                    }
-                    else if (height < 0) {
-                        height *= -1;
-                        y -= height;
-                    }
-                    if (isRadial && this.polar) {
-                        start = point.barX + startAngleRad;
-                        point.shapeType = 'arc';
-                        point.shapeArgs = this.polar.arc(y + height, y, start, start + point.pointWidth);
-                    }
-                    else {
-                        shapeArgs.height = height;
-                        shapeArgs.y = y;
-                        const { x = 0, width = 0 } = shapeArgs;
-                        // #17912, aligning column range points
-                        // merge if shapeArgs contains more properties e.g. for 3d
-                        point.shapeArgs = merge(point.shapeArgs, this.crispCol(x, y, width, height));
-                        point.tooltipPos = chart.inverted ?
-                            [
-                                yAxis.len + yAxis.pos - chart.plotLeft - y -
-                                    height / 2,
-                                xAxis.len + xAxis.pos - chart.plotTop - x -
-                                    width / 2,
-                                height
-                            ] : [
-                            xAxis.left - chart.plotLeft + x + width / 2,
-                            yAxis.pos - chart.plotTop + y + height / 2,
-                            height
-                        ]; // don't inherit from column tooltip position - #3372
-                    }
-                }
-            });
+            ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
         }, { order: 5 });
         extend(ColumnRangeSeries.prototype, {
             directTouch: true,
@@ -8085,6 +8092,7 @@
              * @private
              */
             drawGraph() {
+                var _a;
                 // if the series is not using layout, don't add parent nodes
                 if (!this.layout || !this.layout.options.splitSeries) {
                     return;
@@ -8097,28 +8105,32 @@
                     'stroke-width': pick(nodeMarker.lineWidth, this.options.lineWidth)
                 };
                 let parentAttribs = {};
-                // create the group for parent Nodes if doesn't exist
-                if (!this.parentNodesGroup) {
-                    this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-                    this.group.attr({
-                        zIndex: 2
-                    });
-                }
+                // Create the group for parent Nodes if doesn't exist
+                // If exists it will only be adjusted to the updated plot size (#12063)
+                this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
+                (_a = this.group) === null || _a === void 0 ? void 0 : _a.attr({
+                    zIndex: 2
+                });
                 this.calculateParentRadius();
-                parentAttribs = merge({
-                    x: this.parentNode.plotX -
-                        this.parentNodeRadius,
-                    y: this.parentNode.plotY -
-                        this.parentNodeRadius,
-                    width: this.parentNodeRadius * 2,
-                    height: this.parentNodeRadius * 2
-                }, parentOptions);
-                if (!this.parentNode.graphic) {
-                    this.graph = this.parentNode.graphic =
-                        chart.renderer.symbol(parentOptions.symbol)
-                            .add(this.parentNodesGroup);
+                if (this.parentNode &&
+                    defined(this.parentNode.plotX) &&
+                    defined(this.parentNode.plotY) &&
+                    defined(this.parentNodeRadius)) {
+                    parentAttribs = merge({
+                        x: this.parentNode.plotX -
+                            this.parentNodeRadius,
+                        y: this.parentNode.plotY -
+                            this.parentNodeRadius,
+                        width: this.parentNodeRadius * 2,
+                        height: this.parentNodeRadius * 2
+                    }, parentOptions);
+                    if (!this.parentNode.graphic) {
+                        this.graph = this.parentNode.graphic =
+                            chart.renderer.symbol(parentOptions.symbol)
+                                .add(this.parentNodesGroup);
+                    }
+                    this.parentNode.graphic.attr(parentAttribs);
                 }
-                this.parentNode.graphic.attr(parentAttribs);
             }
             drawTracker() {
                 const parentNode = this.parentNode;

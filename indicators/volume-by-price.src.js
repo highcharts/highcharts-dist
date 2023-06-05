@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -165,8 +165,11 @@
              *  Functions
              *
              * */
-            init(chart) {
+            init(chart, options) {
                 const indicator = this;
+                // series.update() sends data that is not necessary
+                // as everything is calculated in getValues(), #17007
+                delete options.data;
                 super.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
                 const unbinder = addEvent(StockChart, 'afterLinkSeries', function () {

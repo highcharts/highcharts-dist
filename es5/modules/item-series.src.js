@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Item series type for Highcharts
  *
@@ -206,19 +206,7 @@
                 }
             };
             ItemSeries.prototype.drawPoints = function () {
-                var series = this,
-                    options = this.options,
-                    renderer = series.chart.renderer,
-                    seriesMarkerOptions = options.marker,
-                    borderWidth = this.borderWidth,
-                    crisp = borderWidth % 2 ? 0.5 : 1,
-                    i = 0,
-                    rows = this.getRows(),
-                    cols = Math.ceil(this.total / rows),
-                    cellWidth = this.chart.plotWidth / cols,
-                    cellHeight = this.chart.plotHeight / rows,
-                    itemSize = this.itemSize || Math.min(cellWidth,
-                    cellHeight);
+                var series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, i = 0, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
                 /* @todo: remove if not needed
                 this.slots.forEach(slot => {
                     this.chart.renderer.circle(slot.x, slot.y, 6)
@@ -306,18 +294,20 @@
                             i++;
                         }
                     }
-                    graphics.forEach(function (graphic, i) {
+                    for (var j = 0; j < graphics.length; j++) {
+                        var graphic = graphics[j];
                         if (!graphic) {
                             return;
                         }
                         if (!graphic.isActive) {
                             graphic.destroy();
-                            graphics.splice(i, 1);
+                            graphics.splice(j, 1);
+                            j--; // Need to substract 1 after splice, #19053
                         }
                         else {
                             graphic.isActive = false;
                         }
-                    });
+                    }
                 });
             };
             ItemSeries.prototype.getRows = function () {

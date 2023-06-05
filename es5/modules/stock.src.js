@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -525,7 +525,9 @@
                     var hasBreaks = (isArray(breaks) && !!breaks.length);
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
-                    axis.options.breaks = axis.userOptions.breaks = breaks;
+                    if (breaks !== axis.options.breaks) {
+                        axis.options.breaks = axis.userOptions.breaks = breaks;
+                    }
                     axis.forceRedraw = true; // Force recalculation in setScale
                     // Recalculate series related to the axis.
                     axis.series.forEach(function (series) {
@@ -1557,7 +1559,11 @@
             if (this.is('hlc')) {
                 return 'hlc';
             }
-            if (this.is('column')) {
+            if (
+            // #18974, default approximation for cumulative
+            // should be `sum` when `dataGrouping` is enabled
+            this.is('column') ||
+                this.options.cumulative) {
                 return 'sum';
             }
             return 'average';
@@ -1763,7 +1769,7 @@
 
         return DataGroupingSeriesComposition;
     });
-    _registerModule(_modules, 'Extensions/DataGrouping/DataGrouping.js', [_modules['Extensions/DataGrouping/DataGroupingAxisComposition.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Extensions/DataGrouping/DataGroupingSeriesComposition.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (DataGroupingAxisComposition, DataGroupingDefaults, DataGroupingSeriesComposition, F, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping/DataGrouping.js', [_modules['Extensions/DataGrouping/DataGroupingAxisComposition.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Extensions/DataGrouping/DataGroupingSeriesComposition.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (DataGroupingAxisComposition, DataGroupingDefaults, DataGroupingSeriesComposition, F, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2252,6 +2258,298 @@
             approximations: ApproximationRegistry
         };
         DataGrouping.compose(G.Axis, G.Series, G.Tooltip);
+
+    });
+    _registerModule(_modules, 'Extensions/MouseWheelZoom/MouseWheelZoom.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2023 Torstein Honsi, Askel Eirik Johansson
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent,
+            isObject = U.isObject,
+            pick = U.pick,
+            defined = U.defined,
+            merge = U.merge;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedClasses = [],
+            defaultOptions = {
+                enabled: true,
+                sensitivity: 1.1
+            };
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        var optionsToObject = function (options) {
+                if (!isObject(options)) {
+                    return merge(defaultOptions, { enabled: defined(options) ? options : true });
+            }
+            return merge(defaultOptions, options);
+        };
+        /**
+         * @private
+         */
+        var fitToBox = function (inner,
+            outer) {
+                if (inner.x + inner.width > outer.x + outer.width) {
+                    if (inner.width > outer.width) {
+                        inner.width = outer.width;
+                    inner.x = outer.x;
+                }
+                else {
+                    inner.x = outer.x + outer.width - inner.width;
+                }
+            }
+            if (inner.width > outer.width) {
+                inner.width = outer.width;
+            }
+            if (inner.x < outer.x) {
+                inner.x = outer.x;
+            }
+            // y and height
+            if (inner.y + inner.height > outer.y + outer.height) {
+                if (inner.height > outer.height) {
+                    inner.height = outer.height;
+                    inner.y = outer.y;
+                }
+                else {
+                    inner.y = outer.y + outer.height - inner.height;
+                }
+            }
+            if (inner.height > outer.height) {
+                inner.height = outer.height;
+            }
+            if (inner.y < outer.y) {
+                inner.y = outer.y;
+            }
+            return inner;
+        };
+        var wheelTimer,
+            originalOptions;
+        /**
+         * @private
+         */
+        var zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY, options) {
+                var xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
+            if (defined(xAxis.max) && defined(xAxis.min) &&
+                defined(yAxis.max) && defined(yAxis.min) &&
+                defined(xAxis.dataMax) && defined(xAxis.dataMin) &&
+                defined(yAxis.dataMax) && defined(yAxis.dataMin)) {
+                if (zoomY) {
+                    // Options interfering with yAxis zoom by setExtremes() returning
+                    // integers by default.
+                    if (defined(wheelTimer)) {
+                        clearTimeout(wheelTimer);
+                    }
+                    var _a = yAxis.options,
+                        startOnTick = _a.startOnTick,
+                        endOnTick = _a.endOnTick;
+                    if (!originalOptions) {
+                        originalOptions = { startOnTick: startOnTick, endOnTick: endOnTick };
+                    }
+                    if (startOnTick || endOnTick) {
+                        yAxis.setOptions({ startOnTick: false, endOnTick: false });
+                    }
+                    wheelTimer = setTimeout(function () {
+                        if (originalOptions) {
+                            yAxis.setOptions(originalOptions);
+                            // Set the extremes to the same as they already are, but now
+                            // with the original startOnTick and endOnTick. We need
+                            // `forceRedraw` otherwise it will detect that the values
+                            // haven't changed. We do not use a simple yAxis.update()
+                            // because it will destroy the ticks and prevent animation.
+                            var _a = yAxis.getExtremes(),
+                                min = _a.min,
+                                max = _a.max;
+                            yAxis.forceRedraw = true;
+                            yAxis.setExtremes(min, max);
+                            originalOptions = void 0;
+                        }
+                    }, 400);
+                }
+                if (chart.inverted) {
+                    var emulateRoof = yAxis.pos + yAxis.len;
+                    // Get the correct values
+                    centerXArg = xAxis.toValue(mouseY);
+                    centerYArg = yAxis.toValue(mouseX);
+                    // Swapping x and y for simplicity when chart is inverted.
+                    var tmp = mouseX;
+                    mouseX = mouseY;
+                    mouseY = emulateRoof - tmp + yAxis.pos;
+                }
+                var fixToX = mouseX ? ((mouseX - xAxis.pos) / xAxis.len) : 0.5;
+                if (xAxis.reversed && !chart.inverted ||
+                    chart.inverted && !xAxis.reversed) {
+                    // We are taking into account that xAxis automatically gets
+                    // reversed when chart.inverted
+                    fixToX = 1 - fixToX;
+                }
+                var fixToY = 1 - (mouseY ? ((mouseY - yAxis.pos) / yAxis.len) : 0.5);
+                if (yAxis.reversed) {
+                    fixToY = 1 - fixToY;
+                }
+                var xRange = xAxis.max - xAxis.min, centerX = pick(centerXArg, xAxis.min + xRange / 2), newXRange = xRange * howMuch, yRange = yAxis.max - yAxis.min, centerY = pick(centerYArg, yAxis.min + yRange / 2), newYRange = yRange * howMuch, newXMin = centerX - newXRange * fixToX, newYMin = centerY - newYRange * fixToY, dataRangeX = xAxis.dataMax - xAxis.dataMin, dataRangeY = yAxis.dataMax - yAxis.dataMin, outerX = xAxis.dataMin - dataRangeX * xAxis.options.minPadding, outerWidth_1 = dataRangeX + dataRangeX * xAxis.options.minPadding +
+                        dataRangeX * xAxis.options.maxPadding, outerY = yAxis.dataMin - dataRangeY * yAxis.options.minPadding, outerHeight_1 = dataRangeY + dataRangeY * yAxis.options.minPadding +
+                        dataRangeY * yAxis.options.maxPadding, newExt = fitToBox({
+                        x: newXMin,
+                        y: newYMin,
+                        width: newXRange,
+                        height: newYRange
+                    }, {
+                        x: outerX,
+                        y: outerY,
+                        width: outerWidth_1,
+                        height: outerHeight_1
+                    }), zoomOut = (newExt.x <= outerX &&
+                        newExt.width >=
+                            outerWidth_1 &&
+                        newExt.y <= outerY &&
+                        newExt.height >= outerHeight_1);
+                // Zoom
+                if (defined(howMuch) && !zoomOut) {
+                    if (zoomX) {
+                        xAxis.setExtremes(newExt.x, newExt.x + newExt.width, false);
+                    }
+                    if (zoomY) {
+                        yAxis.setExtremes(newExt.y, newExt.y + newExt.height, false);
+                    }
+                    // Reset zoom
+                }
+                else {
+                    if (zoomX) {
+                        xAxis.setExtremes(void 0, void 0, false);
+                    }
+                    if (zoomY) {
+                        yAxis.setExtremes(void 0, void 0, false);
+                    }
+                }
+                chart.redraw(false);
+            }
+        };
+        /**
+         * @private
+         */
+        function onAfterGetContainer() {
+            var _this = this;
+            var chart = this,
+                wheelZoomOptions = optionsToObject(chart.options.chart.zooming.mouseWheel);
+            if (wheelZoomOptions.enabled) {
+                addEvent(this.container, 'wheel', function (e) {
+                    e = _this.pointer.normalize(e);
+                    // Firefox uses e.detail, WebKit and IE uses deltaX, deltaY, deltaZ.
+                    if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
+                        var wheelSensitivity = pick(wheelZoomOptions.sensitivity, 1.1),
+                            delta = e.detail || ((e.deltaY || 0) / 120);
+                        zoomBy(chart, Math.pow(wheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, wheelZoomOptions);
+                    }
+                    // prevent page scroll
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        }
+        /**
+         * @private
+         */
+        function compose(ChartClass) {
+            if (composedClasses.indexOf(ChartClass) === -1) {
+                composedClasses.push(ChartClass);
+                addEvent(ChartClass, 'afterGetContainer', onAfterGetContainer);
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var MouseWheelZoomComposition = {
+                compose: compose
+            };
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * The mouse wheel zoom is a feature included in Highcharts Stock, but is
+         * also available for Highcharts Core as a module. Zooming with the mouse wheel
+         * is enabled by default. It can be disabled by setting this option to
+         * `false`.
+         *
+         * @type      {boolean|object}
+         * @since 11.1.0
+         * @requires  modules/mouse-wheel-zoom
+         * @sample    {highcharts} highcharts/mouse-wheel-zoom/enabled
+         *            Enable or disable
+         * @sample    {highstock} stock/mouse-wheel-zoom/enabled
+         *            Enable or disable
+         * @apioption chart.zooming.mouseWheel
+         */
+        /**
+         * Zooming with the mouse wheel can be disabled by setting this option to
+         * `false`.
+         *
+         * @type      {boolean}
+         * @default   true
+         * @since 11.1.0
+         * @requires  modules/mouse-wheel-zoom
+         * @apioption chart.zooming.mouseWheel.enabled
+         */
+        /**
+         * Adjust the sensitivity of the zoom. Sensitivity of mouse wheel or trackpad
+         * scrolling. `1` is no sensitivity, while with `2`, one mouse wheel delta will
+         * zoom in `50%`.
+         *
+         * @type      {number}
+         * @default   1.1
+         * @since 11.1.0
+         * @requires  modules/mouse-wheel-zoom
+         * @sample    {highcharts} highcharts/mouse-wheel-zoom/sensitivity
+         *            Change mouse wheel zoom sensitivity
+         * @sample    {highstock} stock/mouse-wheel-zoom/sensitivity
+         *            Change mouse wheel zoom sensitivity
+         * @apioption chart.zooming.mouseWheel.sensitivity
+         */
+        /**
+         * Decides in what dimensions the user can zoom scrolling the wheel.
+         * Can be one of `x`, `y` or `xy`. If not specified here, it will inherit the
+         * type from [chart.zooming.type](chart.zooming.type).
+         *
+         * Note that particularly with mouse wheel in the y direction, the zoom is
+         * affected by the default [yAxis.startOnTick](#yAxis.startOnTick) and
+         * [endOnTick]((#yAxis.endOnTick)) settings. In order to respect these settings,
+         * the zoom level will adjust after the user has stopped zooming. To prevent
+         * this, consider setting `startOnTick` and `endOnTick` to `false`.
+         *
+         * @type      {string}
+         * @default   x
+         * @validvalue ["x", "y", "xy"]
+         * @since 11.1.0
+         * @requires  modules/mouse-wheel-zoom
+         * @apioption chart.zooming.mouseWheel.type
+         */
+        (''); // Keeps doclets above in JS file
+
+        return MouseWheelZoomComposition;
+    });
+    _registerModule(_modules, 'masters/modules/mouse-wheel-zoom.src.js', [_modules['Core/Globals.js'], _modules['Extensions/MouseWheelZoom/MouseWheelZoom.js']], function (Highcharts, MouseWheelZoom) {
+
+        var G = Highcharts;
+        MouseWheelZoom.compose(G.Chart);
 
     });
     _registerModule(_modules, 'Series/DataModifyComposition.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Point, Series, U) {
@@ -2787,6 +3085,8 @@
          * Adds the `cumulativeSum` field to each point object that can be accessed
          * e.g. in the [tooltip.pointFormat](https://api.highcharts.com/highstock/tooltip.pointFormat).
          *
+         * With `dataGrouping` enabled, default grouping approximation is set to `sum`.
+         *
          * @see [Axis.setCumulative()](/class-reference/Highcharts.Axis#setCumulative)
          * @see [Series.setCumulative()](/class-reference/Highcharts.Series#setCumulative)
          *
@@ -2851,9 +3151,9 @@
                 chartOptions = chart.options,
                 navigator = chartOptions.navigator,
                 navigatorAxis = axis.navigatorAxis,
-                pinchType = chartOptions.chart.zooming.pinchType,
+                pinchType = chart.zooming.pinchType,
                 rangeSelector = chartOptions.rangeSelector,
-                zoomType = chartOptions.chart.zooming.type;
+                zoomType = chart.zooming.type;
             if (axis.isXAxis && ((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled))) {
                 // For y only zooming, ignore the X axis completely
@@ -2944,8 +3244,7 @@
                     axis.translate(pxMax,
                     true, !axis.horiz));
                 var fixedRange = chart && chart.fixedRange,
-                    halfPointRange = (axis.pointRange || 0) / 2,
-                    changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+                    halfPointRange = (axis.pointRange || 0) / 2;
                 // Add/remove half point range to/from the extremes (#1172)
                 if (!defined(fixedMin)) {
                     newMin = correctFloat(newMin + halfPointRange);
@@ -2953,15 +3252,13 @@
                 if (!defined(fixedMax)) {
                     newMax = correctFloat(newMax - halfPointRange);
                 }
-                // If the difference between the fixed range and the actual requested
-                // range is too great, the user is dragging across an ordinal gap, and
-                // we need to release the range selector button.
-                if (changeRatio > 0.7 && changeRatio < 1.3) {
-                    if (fixedMax) {
-                        newMin = newMax - fixedRange;
+                // Make sure panning to the edges does not decrease the zoomed range
+                if (fixedRange && axis.dataMin && axis.dataMax) {
+                    if (newMax >= axis.dataMax) {
+                        newMin = correctFloat(axis.dataMax - fixedRange);
                     }
-                    else {
-                        newMax = newMin + fixedRange;
+                    if (newMin <= axis.dataMin) {
+                        newMax = correctFloat(axis.dataMin + fixedRange);
                     }
                 }
                 if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
@@ -3505,8 +3802,7 @@
          */
         function navigatorHandle(_x, _y, width, height, options) {
             if (options === void 0) { options = {}; }
-            var halfWidth = options.width ? options.width / 2 : width,
-                markerPosition = Math.round(halfWidth / 3) + 0.5;
+            var halfWidth = options.width ? options.width / 2 : width, markerPosition = Math.round(halfWidth / 3) + 0.5;
             height = options.height || height;
             return [
                 ['M', -halfWidth - 1, 0.5],
@@ -3701,9 +3997,8 @@
             if (((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled)) &&
                 ((!isTouchDevice &&
-                    chartOptions.chart.zooming.type === 'x') ||
-                    (isTouchDevice &&
-                        chartOptions.chart.zooming.pinchType === 'x'))) {
+                    this.zooming.type === 'x') ||
+                    (isTouchDevice && this.zooming.pinchType === 'x'))) {
                 return false;
             }
         }
@@ -5081,17 +5376,8 @@
              *        use 'animate' or 'attr'
              */
             Navigator.prototype.drawOutline = function (zoomedMin, zoomedMax, inverted, verb) {
-                var navigator = this,
-                    maskInside = navigator.navigatorOptions.maskInside,
-                    outlineWidth = navigator.outline.strokeWidth(),
-                    halfOutline = outlineWidth / 2,
-                    outlineCorrection = (outlineWidth % 2) / 2, // #5800
-                    scrollButtonSize = navigator.scrollButtonSize,
-                    navigatorSize = navigator.size,
-                    navigatorTop = navigator.top,
-                    height = navigator.height,
-                    lineTop = navigatorTop - halfOutline,
-                    lineBtm = navigatorTop + height;
+                var navigator = this, maskInside = navigator.navigatorOptions.maskInside, outlineWidth = navigator.outline.strokeWidth(), halfOutline = outlineWidth / 2, outlineCorrection = (outlineWidth % 2) / 2, // #5800
+                    scrollButtonSize = navigator.scrollButtonSize, navigatorSize = navigator.size, navigatorTop = navigator.top, height = navigator.height, lineTop = navigatorTop - halfOutline, lineBtm = navigatorTop + height;
                 var left = navigator.left,
                     verticalMin,
                     path;
@@ -5879,7 +6165,6 @@
                     }, navigatorOptions.xAxis, {
                         id: 'navigator-x-axis',
                         yAxis: 'navigator-y-axis',
-                        isX: true,
                         type: 'datetime',
                         index: xAxisIndex,
                         isInternal: true,
@@ -5896,7 +6181,7 @@
                     } : {
                         offsets: [0, -scrollButtonSize, 0, scrollButtonSize],
                         height: height
-                    }));
+                    }), 'xAxis');
                     navigator.yAxis = new Axis(chart, merge(navigatorOptions.yAxis, {
                         id: 'navigator-y-axis',
                         alignTicks: false,
@@ -5910,7 +6195,7 @@
                         width: height
                     } : {
                         height: height
-                    }));
+                    }), 'yAxis');
                     // If we have a base series, initialize the navigator series
                     if (baseSeries || navigatorOptions.series.data) {
                         navigator.updateNavigatorSeries(false);
@@ -6597,8 +6882,7 @@
                 buttons: void 0,
                 /**
                  * How many units of the defined type the button should span. If `type`
-                 * is "month" and `count` is 3,
-            the button spans three months.
+                 * is "month" and `count` is 3, the button spans three months.
                  *
                  * @type      {number}
                  * @default   1
@@ -6606,9 +6890,7 @@
                  */
                 /**
                  * Fires when clicking on the rangeSelector button. One parameter,
-                 * event,
-            is passed to the function,
-            containing common event
+                 * event, is passed to the function, containing common event
                  * information.
                  *
                  * ```js
@@ -9291,9 +9573,10 @@
                         return val;
                 }
                 // Convert back from modivied value to pixels. // #15970
-                var pixelVal = (val - localMin) * localA +
-                        axis.minPixelPadding,
-                    isInside = pixelVal > 0 && pixelVal < axis.left + axis.len;
+                var pixelVal = correctFloat((val - localMin) * localA +
+                        axis.minPixelPadding),
+                    isInside = val >= positions[0] &&
+                        val <= positions[positions.length - 1];
                 // If the value is not inside the plot area, use the extended positions.
                 // (array contains also points that are outside of the plotArea).
                 if (!isInside) {
@@ -9307,12 +9590,13 @@
                 // In some cases (especially in early stages of the chart creation) the
                 // getExtendedPositions might return undefined.
                 if (positions && positions.length) {
-                    var index = ordinal.getIndexOfPoint(pixelVal,
-                        positions),
+                    var indexOf = positions.indexOf(val);
+                    var index = indexOf !== -1 ? indexOf : correctFloat(ordinal.getIndexOfPoint(pixelVal,
+                        positions)),
                         mantissa = correctFloat(index % 1);
                     // Check if the index is inside position array. If true,
                     // read/approximate value for that exact index.
-                    if (index >= 0 && index < positions.length - 1) {
+                    if (index >= 0 && index <= positions.length - 1) {
                         var leftNeighbour = positions[Math.floor(index)],
                             rightNeighbour = positions[Math.ceil(index)],
                             distance = rightNeighbour - leftNeighbour;
@@ -9431,7 +9715,7 @@
                         pointPixelWidth = (xAxis.translationSlope *
                             (xAxis.ordinal.slope || closestPointRange)), 
                         // how many ordinal units did we move?
-                        movedUnits = (mouseDownX - chartX) / pointPixelWidth, 
+                        movedUnits = Math.round((mouseDownX - chartX) / pointPixelWidth), 
                         // get index of all the chart's points
                         extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(),
                         extendedAxis = {
@@ -10007,31 +10291,32 @@
                     var ordinal = this,
                         axis = ordinal.axis,
                         firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
-                    var firstPointX = axis.series[0].points &&
-                            axis.series[0].points[0] &&
-                            axis.series[0].points[0].plotX ||
-                            axis.minPixelPadding; // #15987
-                        // When more series assign to axis, find the smallest one, #15987.
-                        if (axis.series.length > 1) {
-                            axis.series.forEach(function (series) {
-                                if (series.points &&
-                                    defined(series.points[0]) &&
-                                    defined(series.points[0].plotX) &&
-                                    series.points[0].plotX < firstPointX &&
-                                    // #17128
-                                    series.points[0].plotX >= pick(axis.min, -Infinity)) {
-                                    firstPointX = series.points[0].plotX;
-                            }
-                        });
-                    }
+                    // Check whether the series has at least one point inside the chart
+                    var hasPointsInside = function (series) {
+                            return series.points.some(function (point) { return !!point.isInside; });
+                    };
+                    var firstPointX;
+                    // When more series assign to axis, find the smallest one, #15987.
+                    axis.series.forEach(function (series) {
+                        var _a;
+                        var firstPoint = (_a = series.points) === null || _a === void 0 ? void 0 : _a[0];
+                        if (defined(firstPoint === null || firstPoint === void 0 ? void 0 : firstPoint.plotX) &&
+                            (firstPoint.plotX < firstPointX ||
+                                !defined(firstPointX)) &&
+                            hasPointsInside(series)) {
+                            firstPointX = firstPoint.plotX;
+                        }
+                    });
+                    // If undefined, give a default value
+                    firstPointX !== null && firstPointX !== void 0 ? firstPointX : (firstPointX = axis.minPixelPadding);
                     // Distance in pixels between two points on the ordinal axis in the
                     // current zoom.
                     var ordinalPointPixelInterval = axis.translationSlope * (ordinal.slope ||
                             axis.closestPointRange ||
                             ordinal.overscrollPointsRange), 
                         // toValue for the first point.
-                        shiftIndex = (val - firstPointX) / ordinalPointPixelInterval;
-                    return Additions.findIndexOf(ordinalArray, firstPointVal) + shiftIndex;
+                        shiftIndex = correctFloat((val - firstPointX) / ordinalPointPixelInterval);
+                    return Additions.findIndexOf(ordinalArray, firstPointVal, true) + shiftIndex;
                 };
                 /**
                  * Get ticks for an ordinal axis within a range where points don't
@@ -10976,13 +11261,7 @@
              *
              * */
             OHLCSeries.prototype.getPointPath = function (point, graphic) {
-                var path = _super.prototype.getPointPath.call(this,
-                    point,
-                    graphic),
-                    strokeWidth = graphic.strokeWidth(),
-                    crispCorr = (strokeWidth % 2) / 2,
-                    crispX = Math.round(point.plotX) - crispCorr,
-                    halfWidth = Math.round(point.shapeArgs.width / 2);
+                var path = _super.prototype.getPointPath.call(this, point, graphic), strokeWidth = graphic.strokeWidth(), crispCorr = (strokeWidth % 2) / 2, crispX = Math.round(point.plotX) - crispCorr, halfWidth = Math.round(point.shapeArgs.width / 2);
                 var plotOpen = point.plotOpen;
                 // crisp vector coordinates
                 if (point.open !== null) {
@@ -11094,8 +11373,7 @@
                 /**
                  * The color of the line/border of the candlestick.
                  *
-                 * In styled mode,
-            the line stroke can be set with the
+                 * In styled mode, the line stroke can be set with the
                  * `.highcharts-candlestick-series .highcahrts-point` rule.
                  *
                  * @see [upLineColor](#plotOptions.candlestick.upLineColor)
@@ -11112,8 +11390,7 @@
                  * The pixel width of the candlestick line/border. Defaults to `1`.
                  *
                  *
-                 * In styled mode,
-            the line stroke width can be set with the
+                 * In styled mode, the line stroke width can be set with the
                  * `.highcharts-candlestick-series .highcahrts-point` rule.
                  *
                  * @product highstock
@@ -11122,8 +11399,7 @@
                 /**
                  * The fill color of the candlestick when values are rising.
                  *
-                 * In styled mode,
-            the up color can be set with the
+                 * In styled mode, the up color can be set with the
                  * `.highcharts-candlestick-series .highcharts-point-up` rule.
                  *
                  * @sample {highstock} stock/plotoptions/candlestick-color/
@@ -12449,7 +12725,7 @@
 
         return FlagsSeries;
     });
-    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Defaults.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, D, NavigatorDefaults, RangeSelectorDefaults, ScrollbarDefaults, Series, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, D, NavigatorDefaults, RangeSelectorDefaults, ScrollbarDefaults, Series, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -12597,14 +12873,14 @@
              *
              * @private
              * @function Highcharts.StockChart#createAxis
-             * @param {string} type
+             * @param {string} coll
              * An axis type.
              * @param {Chart.CreateAxisOptionsObject} options
              * The axis creation options.
              */
-            StockChart.prototype.createAxis = function (type, options) {
-                options.axis = merge(getDefaultAxisOptions(type, options.axis), options.axis, getForcedAxisOptions(type, this.userOptions));
-                return _super.prototype.createAxis.call(this, type, options);
+            StockChart.prototype.createAxis = function (coll, options) {
+                options.axis = merge(getDefaultAxisOptions(coll, options.axis), options.axis, getForcedAxisOptions(coll, this.userOptions));
+                return _super.prototype.createAxis.call(this, coll, options);
             };
             return StockChart;
         }(Chart));

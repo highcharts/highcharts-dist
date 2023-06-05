@@ -1,5 +1,5 @@
 /*
- Highcharts JS v11.0.1 (2023-05-08)
+ Highcharts JS v11.1.0 (2023-06-05)
 
  (c) 2009-2021 Torstein Honsi
 
@@ -39,6 +39,6 @@ d)||"undefined"===typeof f||(D[c]=h)});return D};H.prototype.getGuideBox=functio
 f.resize&&n&&f.resizeSide&&m&&(g["draggable"+f.axis.toUpperCase()]||g[f.optionName])&&!1!==g[f.optionName]&&(c.dragHandles||(c.dragHandles={group:e.g("drag-drop-handles").add(b.markerGroup||b.group)}),c.dragHandles.point=a.id,h=h(a),p.d=m=m(a),n=a.series.xAxis.categories?-.5:0,!m||h.x<n||0>h.y||(p.cursor=k.cursor||("x"===f.axis!==!!d?"ew-resize":"ns-resize"),(k=c.dragHandles[f.optionName])||(k=c.dragHandles[f.optionName]=e.path().add(c.dragHandles.group)),p.translateX=d?b.yAxis.len-h.y:h.x,p.translateY=
 d?b.xAxis.len-h.x:h.y,d&&(p.rotation=-90),k.attr(p),C(k.element,["touchstart","mousedown"],function(b){{b=B(b,c);const d=a.series.chart;d.zoomOrPanKeyPressed(b)||(d.mouseIsDown=!1,J(b,a),d.dragDropData.updateProp=b.updateProp=l,a.firePointEvent("dragStart",b),b.stopPropagation(),b.preventDefault())}},{passive:!1}),y(c.dragHandles.group.element,"mouseover",function(){c.dragDropData=c.dragDropData||{};c.dragDropData.isHoveringHandle=a.id}),C(c.dragHandles.group.element,["touchend","mouseout"],function(){{const b=
 a.series.chart;b.dragDropData&&a.id===b.dragDropData.isHoveringHandle&&delete b.dragDropData.isHoveringHandle;b.hoverPoint||L(a)}})))})};w.prototype.hideDragHandles=function(){this.dragHandles&&(x(this.dragHandles,function(a,b){"group"!==b&&a.destroy&&a.destroy()}),this.dragHandles.group&&this.dragHandles.group.destroy&&this.dragHandles.group.destroy(),delete this.dragHandles)};y(z,"mouseOver",function(){const a=this;setTimeout(function(){{const b=a.series,c=b&&b.chart,d=c&&c.dragDropData,e=c&&c.is3d&&
-c.is3d();!c||d&&d.isDragging&&d.draggedPastSensitivity||c.isDragDropAnimating||!b.options.dragDrop||e||(c.dragHandles&&c.hideDragHandles(),a.showDragHandles())}},12)});y(z,"mouseOut",function(){const a=this;setTimeout(function(){a.series&&L(a)},10)});y(z,"remove",function(){const a=this.series.chart,b=a.dragHandles;b&&b.point===this.id&&a.hideDragHandles()});w.prototype.zoomOrPanKeyPressed=function(a){const b=this.options.chart||{},c=b.panKey&&b.panKey+"Key";return a[b.zooming.key&&b.zooming.key+
-"Key"]||a[c]};y(w,"render",function(){this.hasAddedDragDropEvents||Y(this)});""});v(e,"masters/modules/draggable-points.src.js",[],function(){})});
+c.is3d();!c||d&&d.isDragging&&d.draggedPastSensitivity||c.isDragDropAnimating||!b.options.dragDrop||e||(c.dragHandles&&c.hideDragHandles(),a.showDragHandles())}},12)});y(z,"mouseOut",function(){const a=this;setTimeout(function(){a.series&&L(a)},10)});y(z,"remove",function(){const a=this.series.chart,b=a.dragHandles;b&&b.point===this.id&&a.hideDragHandles()});w.prototype.zoomOrPanKeyPressed=function(a){var b=this.options.chart||{};b=b.panKey&&b.panKey+"Key";return a[this.zooming.key&&this.zooming.key+
+"Key"]||a[b]};y(w,"render",function(){this.hasAddedDragDropEvents||Y(this)});""});v(e,"masters/modules/draggable-points.src.js",[],function(){})});
 //# sourceMappingURL=draggable-points.js.map

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.0.1 (2023-05-08)
+ * @license Highmaps JS v11.1.0 (2023-06-05)
  *
  * Tilemap module
  *
@@ -180,14 +180,7 @@
                     ];
                 },
                 translate: function () {
-                    var series = this,
-                        options = series.options,
-                        xAxis = series.xAxis,
-                        yAxis = series.yAxis,
-                        seriesPointPadding = options.pointPadding || 0,
-                        xPad = (options.colsize || 1) / 3,
-                        yPad = (options.rowsize || 1) / 2,
-                        yShift;
+                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, xPad = (options.colsize || 1) / 3, yPad = (options.rowsize || 1) / 2, yShift;
                     series.generatePoints();
                     series.points.forEach(function (point) {
                         var x1 = clamp(Math.floor(xAxis.len -

@@ -9,7 +9,7 @@
  * */
 'use strict';
 import U from './Utilities.js';
-const { extend, find, isArray, isObject, merge, objectEach, pick, splat, uniqueKey } = U;
+const { diffObjects, extend, find, isArray, isObject, merge, objectEach, pick, splat, uniqueKey } = U;
 /* *
  *
  *  Composition
@@ -39,7 +39,6 @@ var Responsive;
     function compose(ChartClass) {
         if (U.pushUnique(composedMembers, ChartClass)) {
             extend(ChartClass.prototype, {
-                currentOptions,
                 matchResponsiveRule,
                 setResponsive
             });
@@ -47,67 +46,6 @@ var Responsive;
         return ChartClass;
     }
     Responsive.compose = compose;
-    /**
-     * Get the current values for a given set of options. Used before we
-     * update the chart with a new responsiveness rule.
-     *
-     * @todo Restore axis options (by id?). The matching of items in
-     * collections bears resemblance to the oneToOne matching in
-     * Chart.update. Probably we can refactor out that matching and reuse it
-     * in both functions.
-     *
-     * @private
-     * @function Highcharts.Chart#currentOptions
-     */
-    function currentOptions(options) {
-        const chart = this, ret = {};
-        /**
-         * Recurse over a set of options and its current values,
-         * and store the current values in the ret object.
-         */
-        function getCurrent(options, curr, ret, depth) {
-            let i;
-            objectEach(options, function (val, key) {
-                if (!depth &&
-                    chart.collectionsWithUpdate.indexOf(key) > -1 &&
-                    curr[key]) {
-                    val = splat(val);
-                    ret[key] = [];
-                    // Iterate over collections like series, xAxis or yAxis
-                    // and map the items by index.
-                    for (i = 0; i < Math.max(val.length, curr[key].length); i++) {
-                        // Item exists in current data (#6347)
-                        if (curr[key][i]) {
-                            // If the item is missing from the new data, we
-                            // need to save the whole config structure. Like
-                            // when responsively updating from a dual axis
-                            // layout to a single axis and back (#13544).
-                            if (val[i] === void 0) {
-                                ret[key][i] = curr[key][i];
-                                // Otherwise, proceed
-                            }
-                            else {
-                                ret[key][i] = {};
-                                getCurrent(val[i], curr[key][i], ret[key][i], depth + 1);
-                            }
-                        }
-                    }
-                }
-                else if (isObject(val)) {
-                    ret[key] = isArray(val) ? [] : {};
-                    getCurrent(val, curr[key] || {}, ret[key], depth + 1);
-                }
-                else if (typeof curr[key] === 'undefined') { // #10286
-                    ret[key] = null;
-                }
-                else {
-                    ret[key] = curr[key];
-                }
-            });
-        }
-        getCurrent(options, this.options, ret, 0);
-        return ret;
-    }
     /**
      * Handle a single responsiveness rule.
      *
@@ -165,8 +103,10 @@ var Responsive;
                 this.update(currentResponsive.undoOptions, redraw, true);
             }
             if (ruleIds) {
-                // Get undo-options for matching rules
-                undoOptions = this.currentOptions(mergedOptions);
+                // Get undo-options for matching rules. The `undoOptions``
+                // hold the current values before they are changed by the
+                // `mergedOptions`.
+                undoOptions = diffObjects(mergedOptions, this.options, true, this.collectionsWithUpdate);
                 undoOptions.isResponsiveOptions = true;
                 this.currentResponsive = {
                     ruleIds: ruleIds,

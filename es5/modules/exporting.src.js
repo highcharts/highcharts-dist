@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Exporting module
  *
@@ -2379,13 +2379,10 @@
                     },
                     doc.body);
                 // get the source size
-                var cssWidth = chart.renderTo.style.width,
-                    cssHeight = chart.renderTo.style.height,
-                    sourceWidth = options.exporting.sourceWidth ||
+                var cssWidth = chart.renderTo.style.width, cssHeight = chart.renderTo.style.height, sourceWidth = options.exporting.sourceWidth ||
                         options.chart.width ||
                         (/px$/.test(cssWidth) && parseInt(cssWidth, 10)) ||
-                        (options.isGantt ? 800 : 600),
-                    sourceHeight = options.exporting.sourceHeight ||
+                        (options.isGantt ? 800 : 600), sourceHeight = options.exporting.sourceHeight ||
                         options.chart.height ||
                         (/px$/.test(cssHeight) && parseInt(cssHeight, 10)) ||
                         400;

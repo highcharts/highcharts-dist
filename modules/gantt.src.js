@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.0.1 (2023-05-08)
+ * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
  *
  * Gantt series
  *
@@ -76,7 +76,7 @@
          * @private
          */
         function onAxisZoom(e) {
-            const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chartOptions.chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chartOptions.chart.zooming.type;
+            const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chart.zooming.type;
             if (axis.isXAxis && ((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled))) {
                 // For y only zooming, ignore the X axis completely
@@ -160,7 +160,7 @@
             toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
                 const axis = this.axis, chart = axis.chart;
                 let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
-                const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2, changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+                const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2;
                 // Add/remove half point range to/from the extremes (#1172)
                 if (!defined(fixedMin)) {
                     newMin = correctFloat(newMin + halfPointRange);
@@ -168,15 +168,13 @@
                 if (!defined(fixedMax)) {
                     newMax = correctFloat(newMax - halfPointRange);
                 }
-                // If the difference between the fixed range and the actual requested
-                // range is too great, the user is dragging across an ordinal gap, and
-                // we need to release the range selector button.
-                if (changeRatio > 0.7 && changeRatio < 1.3) {
-                    if (fixedMax) {
-                        newMin = newMax - fixedRange;
+                // Make sure panning to the edges does not decrease the zoomed range
+                if (fixedRange && axis.dataMin && axis.dataMax) {
+                    if (newMax >= axis.dataMax) {
+                        newMin = correctFloat(axis.dataMax - fixedRange);
                     }
-                    else {
-                        newMax = newMin + fixedRange;
+                    if (newMin <= axis.dataMin) {
+                        newMax = correctFloat(axis.dataMin + fixedRange);
                     }
                 }
                 if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
@@ -903,9 +901,8 @@
             if (((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled)) &&
                 ((!isTouchDevice &&
-                    chartOptions.chart.zooming.type === 'x') ||
-                    (isTouchDevice &&
-                        chartOptions.chart.zooming.pinchType === 'x'))) {
+                    this.zooming.type === 'x') ||
+                    (isTouchDevice && this.zooming.pinchType === 'x'))) {
                 return false;
             }
         }
@@ -2886,7 +2883,6 @@
                     }, navigatorOptions.xAxis, {
                         id: 'navigator-x-axis',
                         yAxis: 'navigator-y-axis',
-                        isX: true,
                         type: 'datetime',
                         index: xAxisIndex,
                         isInternal: true,
@@ -2903,7 +2899,7 @@
                     } : {
                         offsets: [0, -scrollButtonSize, 0, scrollButtonSize],
                         height: height
-                    }));
+                    }), 'xAxis');
                     navigator.yAxis = new Axis(chart, merge(navigatorOptions.yAxis, {
                         id: 'navigator-y-axis',
                         alignTicks: false,
@@ -2917,7 +2913,7 @@
                         width: height
                     } : {
                         height: height
-                    }));
+                    }), 'yAxis');
                     // If we have a base series, initialize the navigator series
                     if (baseSeries || navigatorOptions.series.data) {
                         navigator.updateNavigatorSeries(false);
@@ -7114,7 +7110,9 @@
                     const hasBreaks = (isArray(breaks) && !!breaks.length);
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
-                    axis.options.breaks = axis.userOptions.breaks = breaks;
+                    if (breaks !== axis.options.breaks) {
+                        axis.options.breaks = axis.userOptions.breaks = breaks;
+                    }
                     axis.forceRedraw = true; // Force recalculation in setScale
                     // Recalculate series related to the axis.
                     axis.series.forEach(function (series) {
@@ -7489,6 +7487,7 @@
                 // Handle columns, each column is a grid axis
                 while (++columnIndex < gridOptions.columns.length) {
                     const columnOptions = merge(userOptions, gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                        isInternal: true,
                         linkedTo: 0,
                         // Force to behave like category axis
                         type: 'category',
@@ -7498,13 +7497,13 @@
                         }
                     });
                     delete columnOptions.grid.columns; // Prevent recursion
-                    const column = new Axis(axis.chart, columnOptions);
+                    const column = new Axis(axis.chart, columnOptions, 'yAxis');
                     column.grid.isColumn = true;
                     column.grid.columnIndex = columnIndex;
                     // Remove column axis from chart axes array, and place it
                     // in the columns array.
                     erase(chart.axes, column);
-                    erase(chart[axis.coll], column);
+                    erase(chart[axis.coll] || [], column);
                     columns.push(column);
                 }
             }
@@ -9264,7 +9263,7 @@
         /**
          * @private
          */
-        function wrapInit(proceed, chart, userOptions) {
+        function wrapInit(proceed, chart, userOptions, coll) {
             const axis = this, isTreeGrid = userOptions.type === 'treegrid';
             if (!axis.treeGrid) {
                 axis.treeGrid = new TreeGridAxisAdditions(axis);
@@ -9395,9 +9394,9 @@
                     }
                 });
             }
-            // Now apply the original function with the original arguments,
-            // which are sliced off this function's arguments
-            proceed.apply(axis, [chart, userOptions]);
+            // Now apply the original function with the original arguments, which are
+            // sliced off this function's arguments
+            proceed.apply(axis, [chart, userOptions, coll]);
             if (isTreeGrid) {
                 axis.hasNames = true;
                 axis.options.showLastLabel = true;
@@ -10262,7 +10261,8 @@
                         // Create new marker element
                         connection.graphics[type] = renderer
                             .symbol(options.symbol)
-                            .addClass('highcharts-point-connecting-path-' + type + '-marker')
+                            .addClass('highcharts-point-connecting-path-' + type + '-marker' +
+                            ' highcharts-color-' + this.fromPoint.colorIndex)
                             .attr(box)
                             .add(pathfinder.group);
                         if (!renderer.styledMode) {

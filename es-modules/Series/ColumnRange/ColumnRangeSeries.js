@@ -118,6 +118,69 @@ class ColumnRangeSeries extends AreaRangeSeries {
     translate3dShapes() {
         return columnProto.translate3dShapes.apply(this, arguments);
     }
+    afterColumnTranslate() {
+        /**
+         * Translate data points from raw values x and y to plotX and plotY
+         * @private
+         */
+        const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
+        let height, heightDifference, start, plotHigh, y;
+        // eslint-disable-next-line valid-jsdoc
+        /**
+         * Don't draw too far outside plot area (#6835)
+         * @private
+         */
+        function safeBounds(pixelPos) {
+            return clamp(pixelPos, -safeDistance, safeDistance);
+        }
+        // Set plotLow and plotHigh
+        this.points.forEach((point) => {
+            const shapeArgs = point.shapeArgs || {}, minPointLength = this.options.minPointLength, plotY = point.plotY, plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
+            if (isNumber(plotHigh) && isNumber(plotY)) {
+                point.plotHigh = safeBounds(plotHigh);
+                point.plotLow = safeBounds(plotY);
+                // adjust shape
+                y = point.plotHigh;
+                height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
+                // Adjust for minPointLength
+                if (Math.abs(height) < minPointLength) {
+                    heightDifference = (minPointLength - height);
+                    height += heightDifference;
+                    y -= heightDifference / 2;
+                    // Adjust for negative ranges or reversed Y axis (#1457)
+                }
+                else if (height < 0) {
+                    height *= -1;
+                    y -= height;
+                }
+                if (isRadial && this.polar) {
+                    start = point.barX + startAngleRad;
+                    point.shapeType = 'arc';
+                    point.shapeArgs = this.polar.arc(y + height, y, start, start + point.pointWidth);
+                }
+                else {
+                    shapeArgs.height = height;
+                    shapeArgs.y = y;
+                    const { x = 0, width = 0 } = shapeArgs;
+                    // #17912, aligning column range points
+                    // merge if shapeArgs contains more properties e.g. for 3d
+                    point.shapeArgs = merge(point.shapeArgs, this.crispCol(x, y, width, height));
+                    point.tooltipPos = chart.inverted ?
+                        [
+                            yAxis.len + yAxis.pos - chart.plotLeft - y -
+                                height / 2,
+                            xAxis.len + xAxis.pos - chart.plotTop - x -
+                                width / 2,
+                            height
+                        ] : [
+                        xAxis.left - chart.plotLeft + x + width / 2,
+                        yAxis.pos - chart.plotTop + y + height / 2,
+                        height
+                    ]; // don't inherit from column tooltip position - #3372
+                }
+            }
+        });
+    }
 }
 /* *
  *
@@ -126,67 +189,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
  * */
 ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, columnRangeOptions);
 addEvent(ColumnRangeSeries, 'afterColumnTranslate', function () {
-    /**
-     * Translate data points from raw values x and y to plotX and plotY
-     * @private
-     */
-    const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
-    let height, heightDifference, start, plotHigh, y;
-    // eslint-disable-next-line valid-jsdoc
-    /**
-     * Don't draw too far outside plot area (#6835)
-     * @private
-     */
-    function safeBounds(pixelPos) {
-        return clamp(pixelPos, -safeDistance, safeDistance);
-    }
-    // Set plotLow and plotHigh
-    this.points.forEach((point) => {
-        const shapeArgs = point.shapeArgs || {}, minPointLength = this.options.minPointLength, plotY = point.plotY, plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
-        if (isNumber(plotHigh) && isNumber(plotY)) {
-            point.plotHigh = safeBounds(plotHigh);
-            point.plotLow = safeBounds(plotY);
-            // adjust shape
-            y = point.plotHigh;
-            height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
-            // Adjust for minPointLength
-            if (Math.abs(height) < minPointLength) {
-                heightDifference = (minPointLength - height);
-                height += heightDifference;
-                y -= heightDifference / 2;
-                // Adjust for negative ranges or reversed Y axis (#1457)
-            }
-            else if (height < 0) {
-                height *= -1;
-                y -= height;
-            }
-            if (isRadial && this.polar) {
-                start = point.barX + startAngleRad;
-                point.shapeType = 'arc';
-                point.shapeArgs = this.polar.arc(y + height, y, start, start + point.pointWidth);
-            }
-            else {
-                shapeArgs.height = height;
-                shapeArgs.y = y;
-                const { x = 0, width = 0 } = shapeArgs;
-                // #17912, aligning column range points
-                // merge if shapeArgs contains more properties e.g. for 3d
-                point.shapeArgs = merge(point.shapeArgs, this.crispCol(x, y, width, height));
-                point.tooltipPos = chart.inverted ?
-                    [
-                        yAxis.len + yAxis.pos - chart.plotLeft - y -
-                            height / 2,
-                        xAxis.len + xAxis.pos - chart.plotTop - x -
-                            width / 2,
-                        height
-                    ] : [
-                    xAxis.left - chart.plotLeft + x + width / 2,
-                    yAxis.pos - chart.plotTop + y + height / 2,
-                    height
-                ]; // don't inherit from column tooltip position - #3372
-            }
-        }
-    });
+    ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
 }, { order: 5 });
 extend(ColumnRangeSeries.prototype, {
     directTouch: true,

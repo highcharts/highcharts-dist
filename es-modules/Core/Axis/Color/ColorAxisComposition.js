@@ -90,8 +90,7 @@ var ColorAxisComposition;
         this.colorAxis = [];
         if (options.colorAxis) {
             options.colorAxis = splat(options.colorAxis);
-            options.colorAxis.forEach((axisOptions, i) => {
-                axisOptions.index = i;
+            options.colorAxis.forEach((axisOptions) => {
                 new ColorAxisClass(this, axisOptions); // eslint-disable-line no-new
             });
         }

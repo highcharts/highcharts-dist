@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * ColorAxis module
  *
@@ -127,8 +127,7 @@
                 this.colorAxis = [];
                 if (options.colorAxis) {
                     options.colorAxis = splat(options.colorAxis);
-                    options.colorAxis.forEach((axisOptions, i) => {
-                        axisOptions.index = i;
+                    options.colorAxis.forEach((axisOptions) => {
                         new ColorAxisClass(this, axisOptions); // eslint-disable-line no-new
                     });
                 }
@@ -772,7 +771,7 @@
          * */
         const { parse: color } = Color;
         const { series: Series } = SeriesRegistry;
-        const { extend, isNumber, merge, pick } = U;
+        const { extend, isArray, isNumber, merge, pick } = U;
         /* *
          *
          *  Class
@@ -846,16 +845,16 @@
                     title: null,
                     visible: legend.enabled && visible !== false
                 });
-                axis.coll = 'colorAxis';
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                super.init(chart, options);
-                // #16053: Restore the actual userOptions.visible so the color axis
-                // doesnt stay hidden forever when hiding and showing legend
-                axis.userOptions.visible = visible;
-                // Base init() pushes it to the xAxis array, now pop it again
-                // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
+                super.init(chart, options, 'colorAxis');
+                // Super.init saves the extended user options, now replace it with the
+                // originals
+                this.userOptions = userOptions;
+                if (isArray(chart.userOptions.colorAxis)) {
+                    chart.userOptions.colorAxis[this.index] = userOptions;
+                }
                 // Prepare data classes
                 if (userOptions.dataClasses) {
                     axis.initDataClasses(userOptions);

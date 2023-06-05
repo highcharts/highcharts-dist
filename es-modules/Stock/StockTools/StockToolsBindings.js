@@ -55,8 +55,8 @@ const StockToolsBindings = {
                 langKey: 'segment',
                 type: 'crookedLine',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -99,8 +99,8 @@ const StockToolsBindings = {
                     line: {
                         markerEnd: 'arrow'
                     },
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -141,8 +141,8 @@ const StockToolsBindings = {
                 type: 'infinityLine',
                 typeOptions: {
                     type: 'ray',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -186,8 +186,8 @@ const StockToolsBindings = {
                     line: {
                         markerEnd: 'arrow'
                     },
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -227,8 +227,8 @@ const StockToolsBindings = {
                 type: 'infinityLine',
                 typeOptions: {
                     type: 'line',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -272,8 +272,8 @@ const StockToolsBindings = {
                     line: {
                         markerEnd: 'arrow'
                     },
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -315,8 +315,8 @@ const StockToolsBindings = {
                 draggable: 'y',
                 typeOptions: {
                     type: 'horizontalLine',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -351,8 +351,8 @@ const StockToolsBindings = {
                 draggable: 'x',
                 typeOptions: {
                     type: 'verticalLine',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value
@@ -386,8 +386,8 @@ const StockToolsBindings = {
                 langKey: 'crooked3',
                 type: 'crookedLine',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [
                         { x, y },
                         { x, y },
@@ -426,8 +426,8 @@ const StockToolsBindings = {
                 langKey: 'crooked5',
                 type: 'crookedLine',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [
                         { x, y },
                         { x, y },
@@ -470,8 +470,8 @@ const StockToolsBindings = {
                 langKey: 'elliott3',
                 type: 'elliottWave',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [
                         { x, y },
                         { x, y },
@@ -517,8 +517,8 @@ const StockToolsBindings = {
                 langKey: 'elliott5',
                 type: 'elliottWave',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [
                         { x, y },
                         { x, y },
@@ -569,8 +569,8 @@ const StockToolsBindings = {
                 type: 'measure',
                 typeOptions: {
                     selectType: 'x',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     point: { x, y },
                     crosshairX: {
                         strokeWidth: 1,
@@ -625,8 +625,8 @@ const StockToolsBindings = {
                 type: 'measure',
                 typeOptions: {
                     selectType: 'y',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     point: { x, y },
                     crosshairX: {
                         enabled: false,
@@ -681,8 +681,8 @@ const StockToolsBindings = {
                 type: 'measure',
                 typeOptions: {
                     selectType: 'xy',
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     point: { x, y },
                     background: {
                         width: 0,
@@ -738,8 +738,8 @@ const StockToolsBindings = {
                 langKey: 'fibonacci',
                 type: 'fibonacci',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [
                         { x, y },
                         { x, y }
@@ -782,8 +782,8 @@ const StockToolsBindings = {
                 langKey: 'parallelChannel',
                 type: 'tunnel',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [
                         { x, y },
                         { x, y }
@@ -822,8 +822,8 @@ const StockToolsBindings = {
                 langKey: 'pitchfork',
                 type: 'pitchfork',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value,
                             y: coordsY.value,
@@ -1061,8 +1061,8 @@ const StockToolsBindings = {
                 type: 'fibonacciTimeZones',
                 langKey: 'fibonacciTimeZones',
                 typeOptions: {
-                    xAxis: coordsX.axis.options.index,
-                    yAxis: coordsY.axis.options.index,
+                    xAxis: coordsX.axis.index,
+                    yAxis: coordsY.axis.index,
                     points: [{
                             x: coordsX.value
                         }]
@@ -1078,8 +1078,8 @@ const StockToolsBindings = {
                 const mockPointOpts = annotation.options.typeOptions.points, x = mockPointOpts && mockPointOpts[0].x, coords = this.chart.pointer.getCoordinates(e), coordsX = getAssignedAxis(coords.xAxis), coordsY = getAssignedAxis(coords.yAxis);
                 annotation.update({
                     typeOptions: {
-                        xAxis: coordsX.axis.options.index,
-                        yAxis: coordsY.axis.options.index,
+                        xAxis: coordsX.axis.index,
+                        yAxis: coordsY.axis.index,
                         points: [{
                                 x: x
                             }, {

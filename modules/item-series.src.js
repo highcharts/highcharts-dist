@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Item series type for Highcharts
  *
@@ -236,18 +236,20 @@
                             i++;
                         }
                     }
-                    graphics.forEach((graphic, i) => {
+                    for (let j = 0; j < graphics.length; j++) {
+                        const graphic = graphics[j];
                         if (!graphic) {
                             return;
                         }
                         if (!graphic.isActive) {
                             graphic.destroy();
-                            graphics.splice(i, 1);
+                            graphics.splice(j, 1);
+                            j--; // Need to substract 1 after splice, #19053
                         }
                         else {
                             graphic.isActive = false;
                         }
-                    });
+                    }
                 });
             }
             getRows() {

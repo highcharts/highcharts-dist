@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -505,6 +505,14 @@
                 }
                 return pointAttribs;
             }
+            /**
+             * Set the shape arguments for dummbells.
+             * @private
+             */
+            setShapeArgs() {
+                colProto.translate.apply(this);
+                columnRangeProto.afterColumnTranslate.apply(this);
+            }
         }
         /**
          * The dumbbell series is a cartesian series with higher and lower values
@@ -584,7 +592,6 @@
             drawGraph: noop,
             drawTracker: ColumnSeries.prototype.drawTracker,
             pointClass: DumbbellPoint,
-            setShapeArgs: columnRangeProto.translate,
             seriesDrawPoints: areaRangeProto.drawPoints,
             trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
             translatePoint: areaRangeProto.translate

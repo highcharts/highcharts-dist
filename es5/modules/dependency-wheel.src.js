@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Dependency wheel module
  *
@@ -135,8 +135,7 @@
                     .attr({
                     x: shapeArgs.x,
                     y: shapeArgs.y,
-                    r: (shapeArgs.r +
-                        (this.dataLabel.options.distance || 0)),
+                    r: (shapeArgs.r + (label.options.distance || 0)),
                     start: (upperHalf ? start : end),
                     end: (upperHalf ? end : start),
                     clockwise: +upperHalf
@@ -424,8 +423,7 @@
             /* eslint-disable valid-jsdoc */
             DependencyWheelSeries.prototype.animate = function (init) {
                 if (!init) {
-                    var duration = animObject(this.options.animation).duration,
-                        step_1 = (duration / 2) / this.nodes.length;
+                    var duration = animObject(this.options.animation).duration, step_1 = (duration / 2) / this.nodes.length;
                     this.nodes.forEach(function (point, i) {
                         var graphic = point.graphic;
                         if (graphic) {

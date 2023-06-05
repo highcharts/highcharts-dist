@@ -12,7 +12,7 @@ const { parse: color } = Color;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import U from '../../../Core/Utilities.js';
-const { defined, extend, isArray, isNumber, merge, objectEach } = U;
+const { defined, extend, isArray, isNumber, getClosestDistance, merge, objectEach } = U;
 /* *
  *
  *  Functions
@@ -42,26 +42,6 @@ function highlowLevel(arr) {
         high: maxHigh(arr),
         low: minLow(arr)
     };
-}
-/**
- * @private
- */
-function getClosestPointRange(axis) {
-    let closestDataRange, loopLength, distance, xData, i;
-    axis.series.forEach(function (series) {
-        if (series.xData) {
-            xData = series.xData;
-            loopLength = series.xIncrement ? 1 : xData.length - 1;
-            for (i = loopLength; i > 0; i--) {
-                distance = xData[i] - xData[i - 1];
-                if (typeof closestDataRange === 'undefined' ||
-                    distance < closestDataRange) {
-                    closestDataRange = distance;
-                }
-            }
-        }
-    });
-    return closestDataRange;
 }
 /**
  * Check two lines intersection (line a1-a2 and b1-b2)
@@ -426,7 +406,7 @@ class IKHIndicator extends SMAIndicator {
         return path;
     }
     getValues(series, params) {
-        const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestPointRange(xAxis), IKH = [], xData = [];
+        const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestDistance(xAxis.series.map((s) => s.xData || [])), IKH = [], xData = [];
         let date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
         // Ikh requires close value
         if (xVal.length <= period ||

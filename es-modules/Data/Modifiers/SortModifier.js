@@ -62,6 +62,27 @@ class SortModifier extends DataModifier {
      *
      * */
     /**
+     * Returns index and row for sort reference.
+     *
+     * @private
+     *
+     * @param {Highcharts.DataTable} table
+     * Table with rows to reference.
+     *
+     * @return {Array<SortModifier.RowReference>}
+     * Array of row references.
+     */
+    getRowReferences(table) {
+        const rows = table.getRows(), rowReferences = [];
+        for (let i = 0, iEnd = rows.length; i < iEnd; ++i) {
+            rowReferences.push({
+                index: i,
+                row: rows[i]
+            });
+        }
+        return rowReferences;
+    }
+    /**
      * Applies partial modifications of a cell change to the property `modified`
      * of the given modified table.
      *
@@ -193,10 +214,7 @@ class SortModifier extends DataModifier {
     modifyTable(table, eventDetail) {
         const modifier = this;
         modifier.emit({ type: 'modify', detail: eventDetail, table });
-        const columnNames = table.getColumnNames(), rowCount = table.getRowCount(), rowReferences = table.getRows().map((row, index) => ({
-            index,
-            row
-        })), { direction, orderByColumn, orderInColumn } = modifier.options, compare = (direction === 'asc' ?
+        const columnNames = table.getColumnNames(), rowCount = table.getRowCount(), rowReferences = this.getRowReferences(table), { direction, orderByColumn, orderInColumn } = modifier.options, compare = (direction === 'asc' ?
             SortModifier.ascending :
             SortModifier.descending), orderByColumnIndex = columnNames.indexOf(orderByColumn), modified = table.modified;
         if (orderByColumnIndex !== -1) {

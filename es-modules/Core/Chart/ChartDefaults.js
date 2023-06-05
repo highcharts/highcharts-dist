@@ -455,7 +455,7 @@ const ChartDefaults = {
      *
      * @type       {string}
      * @default    {highcharts} undefined
-     * @default    {highstock} x
+     * @default    {highstock} undefined
      * @since      3.0
      * @product    highcharts highstock gantt
      * @deprecated
@@ -957,7 +957,6 @@ const ChartDefaults = {
      * @product    highcharts highstock gantt
      * @deprecated
      */
-    zoomBySingleTouch: false,
     /**
      * Chart zooming options.
      * @since 10.2.1

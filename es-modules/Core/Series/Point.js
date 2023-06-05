@@ -13,7 +13,7 @@ import A from '../Animation/AnimationUtilities.js';
 const { animObject } = A;
 import D from '../Defaults.js';
 const { defaultOptions } = D;
-import F from '../FormatUtilities.js';
+import F from '../Templating.js';
 const { format } = F;
 import U from '../Utilities.js';
 const { addEvent, defined, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, syncTimeout, removeEvent, uniqueKey } = U;

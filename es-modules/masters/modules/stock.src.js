@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -12,6 +12,7 @@
 'use strict';
 import './broken-axis.src.js';
 import './datagrouping.src.js';
+import './mouse-wheel-zoom.src.js';
 import Highcharts from '../../Core/Globals.js';
 import DataModifyComposition from '../../Series/DataModifyComposition.js';
 import Navigator from '../../Stock/Navigator/Navigator.js';

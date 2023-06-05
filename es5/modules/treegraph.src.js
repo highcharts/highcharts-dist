@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  * Treegraph chart series type
  *
  *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
@@ -521,10 +521,7 @@
                     if (!point.node.children.length || !btnOptions.enabled) {
                         return;
                     }
-                    var _a = this.getCollapseBtnPosition(btnOptions),
-                        x = _a.x,
-                        y = _a.y,
-                        fill = (btnOptions.fillColor ||
+                    var _a = this.getCollapseBtnPosition(btnOptions), x = _a.x, y = _a.y, fill = (btnOptions.fillColor ||
                             point.color ||
                             "#cccccc" /* Palette.neutralColor20 */);
                     point.collapseButton = chart.renderer
@@ -1150,8 +1147,7 @@
                 reversed: false,
                 /**
                  * @extends   plotOptions.series.marker
-                 * @excluding enabled,
-            enabledThreshold
+                 * @excluding enabled, enabledThreshold
                  */
                 marker: {
                     radius: 10,
@@ -1163,9 +1159,7 @@
                 link: {
                     /**
                      * Modifier of the shape of the curved link. Works best for
-                     * values between 0 and 1,
-            where 0 is a straight line,
-            and 1 is
+                     * values between 0 and 1, where 0 is a straight line, and 1 is
                      * a shape close to the default one.
                      *
                      * @type      {number}
@@ -1182,8 +1176,7 @@
                      */
                     color: "#666666" /* Palette.neutralColor60 */,
                     /**
-                     * The line width of the links connecting nodes,
-            in pixels.
+                     * The line width of the links connecting nodes, in pixels.
                      * @type {number}
                      *
                      * @private
@@ -1211,16 +1204,13 @@
                 },
                 /**
                  * Options applied to collapse Button. The collape button is the
-                 * small button which indicates,
-            that the node is collapsable.
+                 * small button which indicates, that the node is collapsable.
                  */
                 collapseButton: {
                     /**
                      * Whether the button should be visible only when the node is
-                     * hovered. When set to true,
-            the button is hidden for nodes,
-                     * which are not collapsed,
-            and shown for the collapsed ones.
+                     * hovered. When set to true, the button is hidden for nodes,
+                     * which are not collapsed, and shown for the collapsed ones.
                      */
                     onlyOnHover: true,
                     /**
@@ -1254,8 +1244,7 @@
                     /**
                      * CSS styles for the collapse button.
                      *
-                     * In styled mode,
-            the collapse button style is given in the
+                     * In styled mode, the collapse button style is given in the
                      * `.highcharts-collapse-button` class.
                      */
                     style: {
@@ -1265,23 +1254,27 @@
                     }
                 },
                 /**
+                 * Whether the treegraph series should fill the entire plot area in the X
+                 * axis direction, even when there are collapsed points.
+                 *
+                 * @sample  highcharts/series-treegraph/fillspace
+                 *          Fill space demonstrated
+                 *
+                 * @product highcharts
+                 */
+                fillSpace: false,
+                /**
                  * @extends plotOptions.series.tooltip
                  */
                 tooltip: {
                     /**
                      * The HTML of the point's line in the tooltip. Variables are
                      * enclosed by curly brackets. Available variables are
-                     * `point.id`,
-            `point.fromNode.id`,
-            `point.toNode.id`,
-                     * `series.name`,
-            `series.color` and other properties on the
-                     * same form. Furthermore,
-            This can also be overridden for each
-                     * series,
-            which makes it a good hook for displaying units. In
-                     * styled mode,
-            the dot is colored by a class name rather than
+                     * `point.id`,  `point.fromNode.id`, `point.toNode.id`,
+                     * `series.name`, `series.color` and other properties on the
+                     * same form. Furthermore, This can also be overridden for each
+                     * series, which makes it a good hook for displaying units. In
+                     * styled mode, the dot is colored by a class name rather than
                      * the point color.
                      *
                      * @type {string}
@@ -1302,12 +1295,9 @@
                 },
                 /**
                  * Options for the data labels appearing on top of the nodes and
-                 * links. For treegraph charts,
-            data labels are visible for the
-                 * nodes by default,
-            but hidden for links. This is controlled by
-                 * modifying the `nodeFormat`,
-            and the `format` that applies to
+                 * links. For treegraph charts, data labels are visible for the
+                 * nodes by default, but hidden for links. This is controlled by
+                 * modifying the `nodeFormat`, and the `format` that applies to
                  * links and is an empty string by default.
                  *
                  * @declare Highcharts.SeriesTreegraphDataLabelsOptionsObject
@@ -1458,6 +1448,11 @@
                     maxYSize = 0,
                     minYSize = 0;
                 this.points.forEach(function (point) {
+                    // When fillSpace is on, stop the layout calculation when the hidden
+                    // points are reached. (#19038)
+                    if (_this.options.fillSpace && !point.visible) {
+                        return;
+                    }
                     var node = point.node,
                         level = series.mapOptionsToLevel[point.node.level] || {},
                         markerOptions = merge(_this.options.marker,
@@ -1503,12 +1498,9 @@
                 // applied as `nodePosition = a * x + b` for each direction.
                 var ay = maxY === minY ?
                         1 :
-                        (plotSizeY - (minYSize + maxYSize) / 2) / (maxY - minY),
-                    by = maxY === minY ? plotSizeY / 2 : -ay * minY + minYSize / 2,
-                    ax = maxX === minX ?
+                        (plotSizeY - (minYSize + maxYSize) / 2) / (maxY - minY), by = maxY === minY ? plotSizeY / 2 : -ay * minY + minYSize / 2, ax = maxX === minX ?
                         1 :
-                        (plotSizeX - (maxXSize + maxXSize) / 2) / (maxX - minX),
-                    bx = maxX === minX ? plotSizeX / 2 : -ax * minX + minXSize / 2;
+                        (plotSizeX - (maxXSize + maxXSize) / 2) / (maxX - minX), bx = maxX === minX ? plotSizeX / 2 : -ax * minX + minXSize / 2;
                 return { ax: ax, bx: bx, ay: ay, by: by };
             };
             TreegraphSeries.prototype.getLinks = function () {
@@ -1717,7 +1709,12 @@
                 point.visible = true;
                 _super.prototype.alignDataLabel.apply(this, arguments);
                 // Fade in or out
-                dataLabel.animate({ opacity: visible === false ? 0 : 1 });
+                dataLabel.animate({
+                    opacity: visible === false ? 0 : 1
+                }, void 0, function () {
+                    // Hide data labels that belong to hidden points (#18891)
+                    visible || dataLabel.hide();
+                });
                 // Reset
                 point.visible = visible;
             };

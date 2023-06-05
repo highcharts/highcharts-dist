@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.0.1 (2023-05-08)
+ * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
  *
  * GridAxis
  *
@@ -265,6 +265,7 @@
                 // Handle columns, each column is a grid axis
                 while (++columnIndex < gridOptions.columns.length) {
                     const columnOptions = merge(userOptions, gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                        isInternal: true,
                         linkedTo: 0,
                         // Force to behave like category axis
                         type: 'category',
@@ -274,13 +275,13 @@
                         }
                     });
                     delete columnOptions.grid.columns; // Prevent recursion
-                    const column = new Axis(axis.chart, columnOptions);
+                    const column = new Axis(axis.chart, columnOptions, 'yAxis');
                     column.grid.isColumn = true;
                     column.grid.columnIndex = columnIndex;
                     // Remove column axis from chart axes array, and place it
                     // in the columns array.
                     erase(chart.axes, column);
-                    erase(chart[axis.coll], column);
+                    erase(chart[axis.coll] || [], column);
                     columns.push(column);
                 }
             }

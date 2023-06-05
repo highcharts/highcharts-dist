@@ -178,32 +178,68 @@ function clamp(value, min, max) {
 }
 // eslint-disable-next-line valid-jsdoc
 /**
- * Remove settings that have not changed, to avoid unnecessary rendering or
- * computing (#9197).
+ * Return the deep difference between two objects. It can either return the new
+ * properties, or optionally return the old values of new properties.
  * @private
  */
-function cleanRecursively(newer, older) {
-    const result = {};
-    objectEach(newer, function (_val, key) {
-        let ob;
-        // Dive into objects (except DOM nodes)
-        if (isObject(newer[key], true) &&
-            !newer.nodeType && // #10044
-            older[key]) {
-            ob = cleanRecursively(newer[key], older[key]);
-            if (Object.keys(ob).length) {
-                result[key] = ob;
+function diffObjects(newer, older, keepOlder, collectionsWithUpdate) {
+    const ret = {};
+    /**
+     * Recurse over a set of options and its current values, and store the
+     * current values in the ret object.
+     */
+    function diff(newer, older, ret, depth) {
+        const keeper = keepOlder ? older : newer;
+        objectEach(newer, function (newerVal, key) {
+            if (!depth &&
+                collectionsWithUpdate &&
+                collectionsWithUpdate.indexOf(key) > -1 &&
+                older[key]) {
+                newerVal = splat(newerVal);
+                ret[key] = [];
+                // Iterate over collections like series, xAxis or yAxis and map
+                // the items by index.
+                for (let i = 0; i < Math.max(newerVal.length, older[key].length); i++) {
+                    // Item exists in current data (#6347)
+                    if (older[key][i]) {
+                        // If the item is missing from the new data, we need to
+                        // save the whole config structure. Like when
+                        // responsively updating from a dual axis layout to a
+                        // single axis and back (#13544).
+                        if (newerVal[i] === void 0) {
+                            ret[key][i] = older[key][i];
+                            // Otherwise, proceed
+                        }
+                        else {
+                            ret[key][i] = {};
+                            diff(newerVal[i], older[key][i], ret[key][i], depth + 1);
+                        }
+                    }
+                }
             }
-            // Arrays, primitives and DOM nodes are copied directly
-        }
-        else if (isObject(newer[key]) ||
-            newer[key] !== older[key] ||
-            // If the newer key is explicitly undefined, keep it (#10525)
-            (key in newer && !(key in older))) {
-            result[key] = newer[key];
-        }
-    });
-    return result;
+            else if (isObject(newerVal, true) &&
+                !newerVal.nodeType // #10044
+            ) {
+                ret[key] = isArray(newerVal) ? [] : {};
+                diff(newerVal, older[key] || {}, ret[key], depth + 1);
+                // Delete empty nested objects
+                if (Object.keys(ret[key]).length === 0 &&
+                    // Except colorAxis which is a special case where the empty
+                    // object means it is enabled. Which is unfortunate and we
+                    // should try to find a better way.
+                    !(key === 'colorAxis' && depth === 0)) {
+                    delete ret[key];
+                }
+            }
+            else if (newer[key] !== older[key] ||
+                // If the newer key is explicitly undefined, keep it (#10525)
+                (key in newer && !(key in older))) {
+                ret[key] = keeper[key];
+            }
+        });
+    }
+    diff(newer, older, ret, 0);
+    return ret;
 }
 /**
  * Shortcut for parseInt
@@ -338,6 +374,42 @@ function erase(arr, item) {
             break;
         }
     }
+}
+/**
+ * Insert a series or an axis in a collection with other items, either the
+ * chart series or yAxis series or axis collections, in the correct order
+ * according to the index option and whether it is internal. Used internally
+ * when adding series and axes.
+ *
+ * @private
+ * @function Highcharts.Chart#insertItem
+ * @param  {Highcharts.Series|Highcharts.Axis} item
+ *         The item to insert
+ * @param  {Array<Highcharts.Series>|Array<Highcharts.Axis>} collection
+ *         A collection of items, like `chart.series` or `xAxis.series`.
+ * @return {number} The index of the series in the collection.
+ */
+function insertItem(item, collection) {
+    const indexOption = item.options.index, length = collection.length;
+    let i;
+    for (
+    // Internal item (navigator) should always be pushed to the end
+    i = item.options.isInternal ? length : 0; i < length + 1; i++) {
+        if (
+        // No index option, reached the end of the collection,
+        // equivalent to pushing
+        !collection[i] ||
+            // Handle index option, the element to insert has lower index
+            (isNumber(indexOption) &&
+                indexOption < pick(collection[i].options.index, collection[i]._i)) ||
+            // Insert the new item before other internal items
+            // (navigator)
+            collection[i].options.isInternal) {
+            collection.splice(i, 0, item);
+            break;
+        }
+    }
+    return i;
 }
 /**
  * Adds an item to an array, if it is not present in the array.
@@ -932,6 +1004,38 @@ Math.easeInOutSine = function (pos) {
     return -0.5 * (Math.cos(Math.PI * pos) - 1);
 };
 /**
+ * Find the closest distance between two values of a two-dimensional array
+ * @private
+ * @function Highcharts.getClosestDistance
+ *
+ * @param {Array<Array<number>>} arrays
+ *          An array of arrays of numbers
+ *
+ * @return {number | undefined}
+ *          The closest distance between values
+ */
+function getClosestDistance(arrays, onError) {
+    const allowNegative = !onError;
+    let closest, loopLength, distance, i;
+    arrays.forEach((xData) => {
+        if (xData.length > 1) {
+            loopLength = xData.length - 1;
+            for (i = loopLength; i > 0; i--) {
+                distance = xData[i] - xData[i - 1];
+                if (distance < 0 && !allowNegative) {
+                    onError === null || onError === void 0 ? void 0 : onError();
+                    // Only one call
+                    onError = void 0;
+                }
+                else if (distance && (typeof closest === 'undefined' || distance < closest)) {
+                    closest = distance;
+                }
+            }
+        }
+    });
+    return closest;
+}
+/**
  * Returns the value of a property path on a given object.
  *
  * @private
@@ -954,6 +1058,13 @@ function getNestedProperty(path, parent) {
         if (typeof pathElement === 'undefined' ||
             pathElement === '__proto__') {
             return; // undefined
+        }
+        if (pathElement === 'this') {
+            let thisProp;
+            if (isObject(parent)) {
+                thisProp = parent['@this'];
+            }
+            return thisProp !== null && thisProp !== void 0 ? thisProp : parent;
         }
         const child = parent[pathElement];
         // Filter on the child
@@ -1600,13 +1711,13 @@ const Utilities = {
     arrayMin,
     attr,
     clamp,
-    cleanRecursively,
     clearTimeout: internalClearTimeout,
     correctFloat,
     createElement,
     css,
     defined,
     destroyObjectProperties,
+    diffObjects,
     discardElement,
     erase,
     error,
@@ -1614,10 +1725,12 @@ const Utilities = {
     extendClass,
     find,
     fireEvent,
+    getClosestDistance,
     getMagnitude,
     getNestedProperty,
     getStyle,
     inArray,
+    insertItem,
     isArray,
     isClass,
     isDOMElement,

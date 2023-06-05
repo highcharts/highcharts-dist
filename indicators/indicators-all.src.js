@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -3695,7 +3695,7 @@
          * */
         const { parse: color } = Color;
         const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-        const { defined, extend, isArray, isNumber, merge, objectEach } = U;
+        const { defined, extend, isArray, isNumber, getClosestDistance, merge, objectEach } = U;
         /* *
          *
          *  Functions
@@ -3725,26 +3725,6 @@
                 high: maxHigh(arr),
                 low: minLow(arr)
             };
-        }
-        /**
-         * @private
-         */
-        function getClosestPointRange(axis) {
-            let closestDataRange, loopLength, distance, xData, i;
-            axis.series.forEach(function (series) {
-                if (series.xData) {
-                    xData = series.xData;
-                    loopLength = series.xIncrement ? 1 : xData.length - 1;
-                    for (i = loopLength; i > 0; i--) {
-                        distance = xData[i] - xData[i - 1];
-                        if (typeof closestDataRange === 'undefined' ||
-                            distance < closestDataRange) {
-                            closestDataRange = distance;
-                        }
-                    }
-                }
-            });
-            return closestDataRange;
         }
         /**
          * Check two lines intersection (line a1-a2 and b1-b2)
@@ -4109,7 +4089,7 @@
                 return path;
             }
             getValues(series, params) {
-                const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestPointRange(xAxis), IKH = [], xData = [];
+                const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestDistance(xAxis.series.map((s) => s.xData || [])), IKH = [], xData = [];
                 let date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
                 // Ikh requires close value
                 if (xVal.length <= period ||
@@ -4927,17 +4907,17 @@
              * */
             init() {
                 SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
-                const originalColor = this.color, originalColorIndex = this.userOptions._colorIndex;
+                const originalColor = this.color;
                 // Check whether series is initialized. It may be not initialized,
                 // when any of required indicators is missing.
                 if (this.options) {
                     // If the default colour doesn't set, get the next available from
                     // the array and apply it #15608.
-                    if (defined(this.userOptions._colorIndex)) {
+                    if (defined(this.colorIndex)) {
                         if (this.options.signalLine &&
                             this.options.signalLine.styles &&
                             !this.options.signalLine.styles.lineColor) {
-                            this.userOptions._colorIndex++;
+                            this.options.colorIndex = this.colorIndex + 1;
                             this.getCyclic('color', void 0, this.chart.options.colors);
                             this.options.signalLine.styles.lineColor =
                                 this.color;
@@ -4945,7 +4925,7 @@
                         if (this.options.macdLine &&
                             this.options.macdLine.styles &&
                             !this.options.macdLine.styles.lineColor) {
-                            this.userOptions._colorIndex++;
+                            this.options.colorIndex = this.colorIndex + 1;
                             this.getCyclic('color', void 0, this.chart.options.colors);
                             this.options.macdLine.styles.lineColor =
                                 this.color;
@@ -4965,7 +4945,6 @@
                 }
                 // Reset color and index #15608.
                 this.color = originalColor;
-                this.userOptions._colorIndex = originalColorIndex;
             }
             toYData(point) {
                 return [point.y, point.signal, point.MACD];
@@ -8468,8 +8447,11 @@
              *  Functions
              *
              * */
-            init(chart) {
+            init(chart, options) {
                 const indicator = this;
+                // series.update() sends data that is not necessary
+                // as everything is calculated in getValues(), #17007
+                delete options.data;
                 super.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
                 const unbinder = addEvent(StockChart, 'afterLinkSeries', function () {

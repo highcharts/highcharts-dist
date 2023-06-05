@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -274,20 +274,11 @@
                 if (d < r1 + r2 && d > Math.abs(r1 - r2)) {
                     // If the circles are overlapping, but not completely overlapping,
                     // then it exists intersecting points.
-                    var r1Square = r1 * r1,
-                        r2Square = r2 * r2, 
+                    var r1Square = r1 * r1, r2Square = r2 * r2, 
                         // d^2 - r^2 + R^2 / 2d
                         x = (r1Square - r2Square + d * d) / (2 * d), 
                         // y^2 = R^2 - x^2
-                        y = Math.sqrt(r1Square - x * x),
-                        x1 = c1.x,
-                        x2 = c2.x,
-                        y1 = c1.y,
-                        y2 = c2.y,
-                        x0 = x1 + x * (x2 - x1) / d,
-                        y0 = y1 + x * (y2 - y1) / d,
-                        rx = -(y2 - y1) * (y / d),
-                        ry = -(x2 - x1) * (y / d);
+                        y = Math.sqrt(r1Square - x * x), x1 = c1.x, x2 = c2.x, y1 = c1.y, y2 = c2.y, x0 = x1 + x * (x2 - x1) / d, y0 = y1 + x * (y2 - y1) / d, rx = -(y2 - y1) * (y / d), ry = -(x2 - x1) * (y / d);
                     points = [
                         { x: round(x0 + rx, 14), y: round(y0 - ry, 14) },
                         { x: round(x0 - rx, 14), y: round(y0 + ry, 14) }
@@ -1682,13 +1673,7 @@
              */
             VennSeries.getScale = function (targetWidth, targetHeight, field) {
                 var height = field.bottom - field.top, // top is smaller than bottom
-                    width = field.right - field.left,
-                    scaleX = width > 0 ? 1 / width * targetWidth : 1,
-                    scaleY = height > 0 ? 1 / height * targetHeight : 1,
-                    adjustX = (field.right + field.left) / 2,
-                    adjustY = (field.top + field.bottom) / 2,
-                    scale = Math.min(scaleX,
-                    scaleY);
+                    width = field.right - field.left, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1, adjustX = (field.right + field.left) / 2, adjustY = (field.top + field.bottom) / 2, scale = Math.min(scaleX, scaleY);
                 return {
                     scale: scale,
                     centerX: targetWidth / 2 - adjustX * scale,

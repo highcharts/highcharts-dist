@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Vector plot series module
  *
@@ -136,10 +136,7 @@
              * @private
              */
             VectorSeries.prototype.arrow = function (point) {
-                var path,
-                    fraction = point.length / this.lengthMax,
-                    u = fraction * this.options.vectorLength / 20,
-                    o = {
+                var path, fraction = point.length / this.lengthMax, u = fraction * this.options.vectorLength / 20, o = {
                         start: 10 * u,
                         center: 0,
                         end: -10 * u

@@ -17,7 +17,7 @@ import LegendSymbol from '../../Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Utilities.js';
-const { extend, isNumber, merge, pick } = U;
+const { extend, isArray, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -91,16 +91,16 @@ class ColorAxis extends Axis {
             title: null,
             visible: legend.enabled && visible !== false
         });
-        axis.coll = 'colorAxis';
         axis.side = userOptions.side || horiz ? 2 : 1;
         axis.reversed = userOptions.reversed || !horiz;
         axis.opposite = !horiz;
-        super.init(chart, options);
-        // #16053: Restore the actual userOptions.visible so the color axis
-        // doesnt stay hidden forever when hiding and showing legend
-        axis.userOptions.visible = visible;
-        // Base init() pushes it to the xAxis array, now pop it again
-        // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
+        super.init(chart, options, 'colorAxis');
+        // Super.init saves the extended user options, now replace it with the
+        // originals
+        this.userOptions = userOptions;
+        if (isArray(chart.userOptions.colorAxis)) {
+            chart.userOptions.colorAxis[this.index] = userOptions;
+        }
         // Prepare data classes
         if (userOptions.dataClasses) {
             axis.initDataClasses(userOptions);

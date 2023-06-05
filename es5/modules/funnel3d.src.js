@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Highcharts funnel module
  *
@@ -204,11 +204,7 @@
                             });
                             if (fillColor.radialGradient) {
                                 funnel3d.sideGroups.forEach(function (sideGroupName) {
-                                    var gradBox = funnel3d[sideGroupName].gradientBox,
-                                        centerX = gradBox.x + gradBox.width / 2,
-                                        centerY = gradBox.y + gradBox.height / 2,
-                                        diameter = Math.min(gradBox.width,
-                                        gradBox.height);
+                                    var gradBox = funnel3d[sideGroupName].gradientBox, centerX = gradBox.x + gradBox.width / 2, centerY = gradBox.y + gradBox.height / 2, diameter = Math.min(gradBox.width, gradBox.height);
                                     funnel3d.sideParts[sideGroupName].forEach(function (partName) {
                                         funnel3d[partName].setRadialReference([
                                             centerX, centerY, diameter

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -37,7 +37,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/ParallelCoordinates.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, H, D, Series, U) {
+    _registerModule(_modules, 'Extensions/ParallelCoordinates.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, H, D, Series, U) {
         /* *
          *
          *  Parallel coordinates module
@@ -57,7 +57,7 @@
             defined = U.defined,
             erase = U.erase,
             extend = U.extend,
-            isArray = U.isArray,
+            insertItem = U.insertItem,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
@@ -90,8 +90,7 @@
                  * @sample {highcharts} /highcharts/demo/parallel-coordinates/
                  *         Parallel coordinates demo
                  * @sample {highcharts} highcharts/parallel-coordinates/polar/
-                 *         Star plot,
-            multivariate data in a polar chart
+                 *         Star plot, multivariate data in a polar chart
                  *
                  * @since    6.0.0
                  * @product  highcharts
@@ -127,25 +126,11 @@
                  * @extends   yAxis
                  * @since     6.0.0
                  * @product   highcharts
-                 * @excluding alternateGridColor,
-            breaks,
-            id,
-            gridLineColor,
-                 *            gridLineDashStyle,
-            gridLineWidth,
-            minorGridLineColor,
-                 *            minorGridLineDashStyle,
-            minorGridLineWidth,
-            plotBands,
-                 *            plotLines,
-            angle,
-            gridLineInterpolation,
-            maxColor,
-            maxZoom,
-                 *            minColor,
-            scrollbar,
-            stackLabels,
-            stops,
+                 * @excluding alternateGridColor, breaks, id, gridLineColor,
+                 *            gridLineDashStyle, gridLineWidth, minorGridLineColor,
+                 *            minorGridLineDashStyle, minorGridLineWidth, plotBands,
+                 *            plotLines, angle, gridLineInterpolation, maxColor, maxZoom,
+                 *            minColor, scrollbar, stackLabels, stops,
                  * @requires  modules/parallel-coordinates
                  */
                 parallelAxes: {
@@ -153,24 +138,11 @@
                     /**
                      * Titles for yAxes are taken from
                      * [xAxis.categories](#xAxis.categories). All options for `xAxis.labels`
-                     * applies to parallel coordinates titles. For example,
-            to style
-                     * categories,
-            use [xAxis.labels.style](#xAxis.labels.style).
+                     * applies to parallel coordinates titles. For example, to style
+                     * categories, use [xAxis.labels.style](#xAxis.labels.style).
                      *
-                     * @excluding align,
-            enabled,
-            margin,
-            offset,
-            position3d,
-            reserveSpace,
-                     *            rotation,
-            skew3d,
-            style,
-            text,
-            useHTML,
-            x,
-            y
+                     * @excluding align, enabled, margin, offset, position3d, reserveSpace,
+                     *            rotation, skew3d, style, text, useHTML, x, y
                      */
                     title: {
                         text: '',
@@ -292,7 +264,7 @@
             if (this.chart.hasParallelCoordinates) {
                 var series_1 = this;
                 this.chart.axes.forEach(function (axis) {
-                    series_1.insert(axis.series);
+                    insertItem(series_1, axis.series);
                     axis.isDirty = true;
                 });
                 series_1.xAxis = this.chart.xAxis[0];

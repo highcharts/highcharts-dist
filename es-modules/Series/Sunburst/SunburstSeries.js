@@ -83,6 +83,12 @@ function getDlOptions(params) {
     }, optionsLevel, optionsPoint), rotationRad, rotation, rotationMode = options.rotationMode;
     if (!isNumber(options.rotation)) {
         if (rotationMode === 'auto' || rotationMode === 'circular') {
+            if (options.useHTML &&
+                rotationMode === 'circular') {
+                // Change rotationMode to 'auto' to avoid using text paths
+                // for HTML labels, see #18953
+                rotationMode = 'auto';
+            }
             if (point.innerArcLength < 1 &&
                 point.outerArcLength > shape.radius) {
                 rotationRad = 0;

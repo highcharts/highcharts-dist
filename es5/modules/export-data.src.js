@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Exporting module
  *
@@ -72,22 +72,17 @@
                  * @apioption exporting.tableCaption
                  */
                 /**
-                 * Options for exporting data to CSV or ExCel,
-            or displaying the data
+                 * Options for exporting data to CSV or ExCel, or displaying the data
                  * in a HTML table or a JavaScript structure.
                  *
                  * This module adds data export options to the export menu and provides
-                 * functions like `Chart.getCSV`,
-            `Chart.getTable`,
-            `Chart.getDataRows`
+                 * functions like `Chart.getCSV`, `Chart.getTable`, `Chart.getDataRows`
                  * and `Chart.viewData`.
                  *
                  * The XLS converter is limited and only creates a HTML string that is
-                 * passed for download,
-            which works but creates a warning before
+                 * passed for download, which works but creates a warning before
                  * opening. The workaround for this is to use a third party XLSX
-                 * converter,
-            as demonstrated in the sample below.
+                 * converter, as demonstrated in the sample below.
                  *
                  * @sample  highcharts/export-data/categorized/ Categorized data
                  * @sample  highcharts/export-data/stock-timeaxis/ Highcharts Stock time axis
@@ -132,25 +127,19 @@
                     /**
                      * Formatter callback for the column headers. Parameters are:
                      * - `item` - The series or axis object)
-                     * - `key` -  The point key,
-            for example y or z
-                     * - `keyLength` - The amount of value keys for this item,
-            for
+                     * - `key` -  The point key, for example y or z
+                     * - `keyLength` - The amount of value keys for this item, for
                      *   example a range series has the keys `low` and `high` so the
                      *   key length is 2.
                      *
                      * If [useMultiLevelHeaders](#exporting.useMultiLevelHeaders) is
-                     * true,
-            columnHeaderFormatter by default returns an object with
+                     * true, columnHeaderFormatter by default returns an object with
                      * columnTitle and topLevelColumnTitle for each key. Columns with
                      * the same topLevelColumnTitle have their titles merged into a
                      * single cell with colspan for table/Excel export.
                      *
-                     * If `useMultiLevelHeaders` is false,
-            or for CSV export,
-            it returns
-                     * the series name,
-            followed by the key if there is more than one
+                     * If `useMultiLevelHeaders` is false, or for CSV export, it returns
+                     * the series name, followed by the key if there is more than one
                      * key.
                      *
                      * For the axis it returns the axis title or "Category" or
@@ -171,9 +160,7 @@
                     dateFormat: '%Y-%m-%d %H:%M:%S',
                     /**
                      * Which decimal point to use for exported CSV. Defaults to the same
-                     * as the browser locale,
-            typically `.` (English) or `,
-            ` (German,
+                     * as the browser locale, typically `.` (English) or `,` (German,
                      * French etc).
                      *
                      * @type  {string|null}
@@ -183,19 +170,14 @@
                     /**
                      * The item delimiter in the exported data. Use `;` for direct
                      * exporting to Excel. Defaults to a best guess based on the browser
-                     * locale. If the locale _decimal point_ is `,
-            `,
-            the `itemDelimiter`
-                     * defaults to `;`,
-            otherwise the `itemDelimiter` defaults to `,
-            `.
+                     * locale. If the locale _decimal point_ is `,`, the `itemDelimiter`
+                     * defaults to `;`, otherwise the `itemDelimiter` defaults to `,`.
                      *
                      * @type {string|null}
                      */
                     itemDelimiter: null,
                     /**
-                     * The line delimiter in the exported data,
-            defaults to a newline.
+                     * The line delimiter in the exported data, defaults to a newline.
                      */
                     lineDelimiter: '\n'
                 },
@@ -214,8 +196,7 @@
                 showTable: false,
                 /**
                  * Use multi level headers in data table. If [csv.columnHeaderFormatter
-                 * ](#exporting.csv.columnHeaderFormatter) is defined,
-            it has to return
+                 * ](#exporting.csv.columnHeaderFormatter) is defined, it has to return
                  * objects in order for multi level headers to work.
                  *
                  * @sample highcharts/export-data/multilevel-table
@@ -226,8 +207,7 @@
                  */
                 useMultiLevelHeaders: true,
                 /**
-                 * If using multi level table headers,
-            use rowspans for headers that
+                 * If using multi level table headers, use rowspans for headers that
                  * have only one level.
                  *
                  * @sample highcharts/export-data/multilevel-table

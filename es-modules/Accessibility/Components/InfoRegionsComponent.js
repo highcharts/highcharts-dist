@@ -18,7 +18,7 @@ const { getAnnotationsInfoHTML } = AnnotationsA11y;
 import AST from '../../Core/Renderer/HTML/AST.js';
 import CU from '../Utils/ChartUtilities.js';
 const { getAxisDescription, getAxisRangeDescription, getChartTitle, unhideChartElementFromAT } = CU;
-import F from '../../Core/FormatUtilities.js';
+import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
 const { doc } = H;
@@ -87,7 +87,7 @@ function getTypeDescription(chart, types) {
     if (!firstType) {
         return getTypeDescForEmptyChart(chart, formatContext);
     }
-    if (firstType === 'map') {
+    if (firstType === 'map' || firstType === 'tiledwebmap') {
         return getTypeDescForMapChart(chart, formatContext);
     }
     if (chart.types.length > 1) {

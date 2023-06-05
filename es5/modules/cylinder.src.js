@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Highcharts cylinder module
  *
@@ -287,10 +287,7 @@
                 alphaCorrection = _c === void 0 ? 0 : _c;
             // A half of the smaller one out of width or depth (optional, because
             // there's no depth for a funnel that reuses the code)
-            var depth = pick(shapeArgs.depth,
-                width, 0),
-                radius = Math.min(width,
-                depth) / 2, 
+            var depth = pick(shapeArgs.depth, width, 0), radius = Math.min(width, depth) / 2, 
                 // Approximated longest diameter
                 angleOffset = deg2rad * (chart.options.chart.options3d.beta - 90 +
                     alphaCorrection), 
@@ -298,9 +295,7 @@
                 y = (shapeArgs.y || 0) + (isBottom ? height : 0), 
                 // Use cubic Bezier curve to draw a cricle in x,z (y is constant).
                 // More math. at spencermortensen.com/articles/bezier-circle/
-                c = 0.5519 * radius,
-                centerX = width / 2 + (shapeArgs.x || 0),
-                centerZ = depth / 2 + (shapeArgs.z || 0), 
+                c = 0.5519 * radius, centerX = width / 2 + (shapeArgs.x || 0), centerZ = depth / 2 + (shapeArgs.z || 0), 
                 // points could be generated in a loop, but readability will plummet
                 points = [{
                         x: 0,
@@ -354,13 +349,7 @@
                         x: 0,
                         y: y,
                         z: radius
-                    }],
-                cosTheta = Math.cos(angleOffset),
-                sinTheta = Math.sin(angleOffset),
-                perspectivePoints,
-                path,
-                x,
-                z;
+                    }], cosTheta = Math.cos(angleOffset), sinTheta = Math.sin(angleOffset), perspectivePoints, path, x, z;
             // rotete to match chart's beta and translate to the shape center
             points.forEach(function (point, i) {
                 x = point.x;

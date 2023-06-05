@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Sonification module
  *
@@ -1087,9 +1087,7 @@
                 envelope.unshift({ t: 0, vol: isAtk ? 0 : 1 });
             }
             envelope.forEach(function (ep, ix) {
-                var prev = envelope[ix - 1],
-                    delta = prev ? (ep.t - prev.t) / 1000 : 0,
-                    startTime = time + (prev ? prev.t / 1000 + SynthPatch.stopRampTime : 0);
+                var prev = envelope[ix - 1], delta = prev ? (ep.t - prev.t) / 1000 : 0, startTime = time + (prev ? prev.t / 1000 + SynthPatch.stopRampTime : 0);
                 gain.setTargetAtTime(ep.vol * volumeMultiplier, startTime, Math.max(delta, SynthPatch.stopRampTime) / 2);
             });
         }
@@ -3593,23 +3591,15 @@
          * */
         /* eslint-disable no-multi-spaces */
         var pick = U.pick;
-        var freqToNote = function (f) { return Math.round(12 * Math.log(f) / Math.LN2 - 48.37632); },
-            b = function (byte,
-            n) { return n >>> 8 * byte & 0xFF; },
-            getHeader = function (nTracks) { return [
+        var freqToNote = function (f) { return Math.round(12 * Math.log(f) / Math.LN2 - 48.37632); }, b = function (byte, n) { return n >>> 8 * byte & 0xFF; }, getHeader = function (nTracks) { return [
                 0x4D, 0x54, 0x68, 0x64,
                 0, 0, 0, 6,
-                0,
-            nTracks > 1 ? 1 : 0,
-                b(1,
-            nTracks),
-            b(0,
-            nTracks),
+                0, nTracks > 1 ? 1 : 0,
+                b(1, nTracks), b(0, nTracks),
                 // SMTPE: 0xE7 0x28
                 // -25/40 time div gives us millisecond SMTPE, but not widely supported.
                 1, 0xF4 // HD_TIMEDIV, 500 ticks per beat = millisecond at 120bpm
-            ]; },
-            timeInfo = [0, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20], // META_TEMPO
+            ]; }, timeInfo = [0, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20], // META_TEMPO
             varLenEnc = function (n) {
                 var buf = n & 0x7F;
             var res = [];
@@ -4395,7 +4385,7 @@
 
         return SonificationTimeline;
     });
-    _registerModule(_modules, 'Extensions/Sonification/TimelineFromChart.js', [_modules['Extensions/Sonification/SonificationTimeline.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Core/Utilities.js'], _modules['Core/FormatUtilities.js']], function (SonificationTimeline, SonificationInstrument, SonificationSpeaker, U, FU) {
+    _registerModule(_modules, 'Extensions/Sonification/TimelineFromChart.js', [_modules['Extensions/Sonification/SonificationTimeline.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Core/Utilities.js'], _modules['Core/Templating.js']], function (SonificationTimeline, SonificationInstrument, SonificationSpeaker, U, T) {
         /* *
          *
          *  (c) 2009-2022 Øystein Moseng
@@ -4426,7 +4416,7 @@
             getNestedProperty = U.getNestedProperty,
             merge = U.merge,
             pick = U.pick;
-        var format = FU.format;
+        var format = T.format;
         var isNoteDefinition = function (str) {
                 // eslint-disable-next-line require-unicode-regexp
                 return (/^([a-g][#b]?)[0-8]$/i).test(str);
@@ -4702,10 +4692,7 @@
             }
             if (scale) {
                 // Build a musical scale from array
-                var scaleAxis = [],
-                    minOctave = Math.floor(min / 12),
-                    maxOctave = Math.ceil(max / 12) + 1,
-                    lenScale = scale.length;
+                var scaleAxis = [], minOctave = Math.floor(min / 12), maxOctave = Math.ceil(max / 12) + 1, lenScale = scale.length;
                 for (var octave = minOctave; octave < maxOctave; ++octave) {
                     for (var scaleIx = 0; scaleIx < lenScale; ++scaleIx) {
                         var note = 12 * octave + scale[scaleIx];

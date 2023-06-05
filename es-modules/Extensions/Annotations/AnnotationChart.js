@@ -112,7 +112,7 @@ function chartCallback() {
                         const annotationText = label.options.text;
                         label.points.forEach((points) => {
                             const annotationX = points.x, xAxisIndex = points.series.xAxis ?
-                                points.series.xAxis.options.index :
+                                points.series.xAxis.index :
                                 -1;
                             let wasAdded = false;
                             // Annotation not connected to any xAxis -

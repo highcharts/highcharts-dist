@@ -165,9 +165,8 @@ function onChartBeforeShowResetZoom() {
     if (((navigator && navigator.enabled) ||
         (rangeSelector && rangeSelector.enabled)) &&
         ((!isTouchDevice &&
-            chartOptions.chart.zooming.type === 'x') ||
-            (isTouchDevice &&
-                chartOptions.chart.zooming.pinchType === 'x'))) {
+            this.zooming.type === 'x') ||
+            (isTouchDevice && this.zooming.pinchType === 'x'))) {
         return false;
     }
 }

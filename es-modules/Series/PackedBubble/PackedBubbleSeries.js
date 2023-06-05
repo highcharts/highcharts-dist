@@ -328,6 +328,7 @@ class PackedBubbleSeries extends BubbleSeries {
      * @private
      */
     drawGraph() {
+        var _a;
         // if the series is not using layout, don't add parent nodes
         if (!this.layout || !this.layout.options.splitSeries) {
             return;
@@ -340,28 +341,32 @@ class PackedBubbleSeries extends BubbleSeries {
             'stroke-width': pick(nodeMarker.lineWidth, this.options.lineWidth)
         };
         let parentAttribs = {};
-        // create the group for parent Nodes if doesn't exist
-        if (!this.parentNodesGroup) {
-            this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-            this.group.attr({
-                zIndex: 2
-            });
-        }
+        // Create the group for parent Nodes if doesn't exist
+        // If exists it will only be adjusted to the updated plot size (#12063)
+        this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
+        (_a = this.group) === null || _a === void 0 ? void 0 : _a.attr({
+            zIndex: 2
+        });
         this.calculateParentRadius();
-        parentAttribs = merge({
-            x: this.parentNode.plotX -
-                this.parentNodeRadius,
-            y: this.parentNode.plotY -
-                this.parentNodeRadius,
-            width: this.parentNodeRadius * 2,
-            height: this.parentNodeRadius * 2
-        }, parentOptions);
-        if (!this.parentNode.graphic) {
-            this.graph = this.parentNode.graphic =
-                chart.renderer.symbol(parentOptions.symbol)
-                    .add(this.parentNodesGroup);
+        if (this.parentNode &&
+            defined(this.parentNode.plotX) &&
+            defined(this.parentNode.plotY) &&
+            defined(this.parentNodeRadius)) {
+            parentAttribs = merge({
+                x: this.parentNode.plotX -
+                    this.parentNodeRadius,
+                y: this.parentNode.plotY -
+                    this.parentNodeRadius,
+                width: this.parentNodeRadius * 2,
+                height: this.parentNodeRadius * 2
+            }, parentOptions);
+            if (!this.parentNode.graphic) {
+                this.graph = this.parentNode.graphic =
+                    chart.renderer.symbol(parentOptions.symbol)
+                        .add(this.parentNodesGroup);
+            }
+            this.parentNode.graphic.attr(parentAttribs);
         }
-        this.parentNode.graphic.attr(parentAttribs);
     }
     drawTracker() {
         const parentNode = this.parentNode;

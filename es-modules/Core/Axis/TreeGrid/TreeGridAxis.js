@@ -351,7 +351,7 @@ function wrapGenerateTick(proceed, pos) {
 /**
  * @private
  */
-function wrapInit(proceed, chart, userOptions) {
+function wrapInit(proceed, chart, userOptions, coll) {
     const axis = this, isTreeGrid = userOptions.type === 'treegrid';
     if (!axis.treeGrid) {
         axis.treeGrid = new TreeGridAxisAdditions(axis);
@@ -482,9 +482,9 @@ function wrapInit(proceed, chart, userOptions) {
             }
         });
     }
-    // Now apply the original function with the original arguments,
-    // which are sliced off this function's arguments
-    proceed.apply(axis, [chart, userOptions]);
+    // Now apply the original function with the original arguments, which are
+    // sliced off this function's arguments
+    proceed.apply(axis, [chart, userOptions, coll]);
     if (isTreeGrid) {
         axis.hasNames = true;
         axis.options.showLastLabel = true;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.0.1 (2023-05-08)
+ * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
  *
  * Tree Grid
  *
@@ -488,7 +488,9 @@
                     const hasBreaks = (isArray(breaks) && !!breaks.length);
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
-                    axis.options.breaks = axis.userOptions.breaks = breaks;
+                    if (breaks !== axis.options.breaks) {
+                        axis.options.breaks = axis.userOptions.breaks = breaks;
+                    }
                     axis.forceRedraw = true; // Force recalculation in setScale
                     // Recalculate series related to the axis.
                     axis.series.forEach(function (series) {
@@ -863,6 +865,7 @@
                 // Handle columns, each column is a grid axis
                 while (++columnIndex < gridOptions.columns.length) {
                     const columnOptions = merge(userOptions, gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                        isInternal: true,
                         linkedTo: 0,
                         // Force to behave like category axis
                         type: 'category',
@@ -872,13 +875,13 @@
                         }
                     });
                     delete columnOptions.grid.columns; // Prevent recursion
-                    const column = new Axis(axis.chart, columnOptions);
+                    const column = new Axis(axis.chart, columnOptions, 'yAxis');
                     column.grid.isColumn = true;
                     column.grid.columnIndex = columnIndex;
                     // Remove column axis from chart axes array, and place it
                     // in the columns array.
                     erase(chart.axes, column);
-                    erase(chart[axis.coll], column);
+                    erase(chart[axis.coll] || [], column);
                     columns.push(column);
                 }
             }
@@ -2638,7 +2641,7 @@
         /**
          * @private
          */
-        function wrapInit(proceed, chart, userOptions) {
+        function wrapInit(proceed, chart, userOptions, coll) {
             const axis = this, isTreeGrid = userOptions.type === 'treegrid';
             if (!axis.treeGrid) {
                 axis.treeGrid = new TreeGridAxisAdditions(axis);
@@ -2769,9 +2772,9 @@
                     }
                 });
             }
-            // Now apply the original function with the original arguments,
-            // which are sliced off this function's arguments
-            proceed.apply(axis, [chart, userOptions]);
+            // Now apply the original function with the original arguments, which are
+            // sliced off this function's arguments
+            proceed.apply(axis, [chart, userOptions, coll]);
             if (isTreeGrid) {
                 axis.hasNames = true;
                 axis.options.showLastLabel = true;

@@ -58,9 +58,9 @@ function getChartTitle(chart) {
  * @private
  */
 function getAxisDescription(axis) {
-    return axis && (axis.userOptions && axis.userOptions.accessibility &&
-        axis.userOptions.accessibility.description ||
-        axis.axisTitle && axis.axisTitle.textStr ||
+    var _a, _b;
+    return axis && (((_a = axis.options.accessibility) === null || _a === void 0 ? void 0 : _a.description) ||
+        ((_b = axis.axisTitle) === null || _b === void 0 ? void 0 : _b.textStr) ||
         axis.options.id ||
         axis.categories && 'categories' ||
         axis.dateTime && 'Time' ||

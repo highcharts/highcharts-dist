@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Solid angular gauge module
  *
@@ -495,16 +495,9 @@
                     var point = _a[_i];
                     // #10630 null point should not be draw
                     if (!point.isNull) { // condition like in pie chart
-                        var radius = ((pInt(pick(point.options.radius,
-                            options.radius, 100 // %
-                            )) * center[2]) / 200),
-                            innerRadius = ((pInt(pick(point.options.innerRadius,
-                            options.innerRadius, 60 // %
-                            )) * center[2]) / 200),
-                            axisMinAngle = Math.min(yAxis.startAngleRad,
-                            yAxis.endAngleRad),
-                            axisMaxAngle = Math.max(yAxis.startAngleRad,
-                            yAxis.endAngleRad);
+                        var radius = ((pInt(pick(point.options.radius, options.radius, 100 // %
+                            )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
+                            )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
                         var graphic = point.graphic,
                             rotation = (yAxis.startAngleRad +
                                 yAxis.translate(point.y,
@@ -530,9 +523,7 @@
                         }
                         var angleOfRounding = rounded ?
                                 ((radius - innerRadius) / 2) / radius :
-                                0,
-                            start = Math.min(rotation,
-                            series.thresholdAngleRad) -
+                                0, start = Math.min(rotation, series.thresholdAngleRad) -
                                 angleOfRounding;
                         var end = Math.max(rotation,
                             series.thresholdAngleRad) +

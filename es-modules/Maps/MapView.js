@@ -113,7 +113,8 @@ class MapView {
                 if (geoMap) {
                     // Use the first geo map as main
                     if (!recommendedMapView) {
-                        recommendedMapView = geoMap['hc-recommended-mapview'];
+                        recommendedMapView =
+                            geoMap['hc-recommended-mapview'];
                     }
                     // Combine the bounding boxes of all loaded maps
                     if (geoMap.bbox) {
@@ -125,27 +126,36 @@ class MapView {
             // Get the composite bounds
             const geoBounds = (allGeoBounds.length &&
                 MapView.compositeBounds(allGeoBounds));
-            // Provide a best-guess recommended projection if not set in the map
-            // or in user options
-            if (geoBounds) {
-                const { x1, y1, x2, y2 } = geoBounds;
-                recommendedProjection = (x2 - x1 > 180 && y2 - y1 > 90) ?
-                    // Wide angle, go for the world view
-                    {
-                        name: 'EqualEarth'
-                    } :
-                    // Narrower angle, use a projection better suited for local
-                    // view
-                    {
-                        name: 'LambertConformalConic',
-                        parallels: [y1, y2],
-                        rotation: [-(x1 + x2) / 2]
-                    };
-            }
+            // Provide a best-guess recommended projection if not set in
+            // the map or in user options
+            fireEvent(chart, 'beforeMapViewInit', {
+                geoBounds
+            }, function () {
+                if (geoBounds) {
+                    const { x1, y1, x2, y2 } = geoBounds;
+                    recommendedProjection =
+                        (x2 - x1 > 180 && y2 - y1 > 90) ?
+                            // Wide angle, go for the world view
+                            {
+                                name: 'EqualEarth'
+                            } :
+                            // Narrower angle, use a projection better
+                            // suited for local view
+                            {
+                                name: 'LambertConformalConic',
+                                parallels: [y1, y2],
+                                rotation: [-(x1 + x2) / 2]
+                            };
+                }
+            });
             // Register the main geo map (from options.chart.map) if set
             this.geoMap = geoMaps[0];
         }
         this.userOptions = options || {};
+        if (chart.options.mapView &&
+            chart.options.mapView.recommendedMapView) {
+            recommendedMapView = chart.options.mapView.recommendedMapView;
+        }
         const o = merge(defaultOptions, { projection: recommendedProjection }, recommendedMapView, options);
         // Merge the inset collections by id, or index if id missing
         const recInsets = recommendedMapView && recommendedMapView.insets, optInsets = options && options.insets;
@@ -172,6 +182,7 @@ class MapView {
          * @type {number}
          */
         this.zoom = o.zoom || 0;
+        this.minZoom = o.minZoom;
         // Create the insets
         this.createInsets();
         // Initialize and respond to chart size changes

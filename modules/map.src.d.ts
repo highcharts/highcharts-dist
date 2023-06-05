@@ -55,7 +55,7 @@ declare module "../highcharts.src" {
          *
          * @param chartX
          *        Keep this chart position stationary if possible. This is used
-         *        for example in mousewheel events, where the area under the
+         *        for example in `mousewheel` events, where the area under the
          *        mouse should be fixed as we zoom in.
          *
          * @param chartY

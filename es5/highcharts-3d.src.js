@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * 3D features for Highcharts JS
  *
@@ -528,10 +528,7 @@
          *  Constants
          *
          * */
-        var cos = Math.cos,
-            sin = Math.sin,
-            PI = Math.PI,
-            dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
+        var cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
         /* *
          *
          *  Functions
@@ -784,39 +781,17 @@
              * @private
              */
             SVGRenderer3D.prototype.cuboidPath = function (shapeArgs) {
-                var x = shapeArgs.x || 0,
-                    y = shapeArgs.y || 0,
-                    z = shapeArgs.z || 0, 
+                var x = shapeArgs.x || 0, y = shapeArgs.y || 0, z = shapeArgs.z || 0, 
                     // For side calculation (right/left)
                     // there is a need for height (and other shapeArgs arguments)
                     // to be at least 1px
-                    h = shapeArgs.height || 0,
-                    w = shapeArgs.width || 0,
-                    d = shapeArgs.depth || 0,
-                    chart = charts[this.chartIndex],
-                    front,
-                    back,
-                    top,
-                    bottom,
-                    left,
-                    right,
-                    shape,
-                    path1,
-                    path2,
-                    path3,
-                    isFront,
-                    isTop,
-                    isRight,
-                    options3d = chart.options.chart.options3d,
-                    alpha = options3d.alpha, 
+                    h = shapeArgs.height || 0, w = shapeArgs.width || 0, d = shapeArgs.depth || 0, chart = charts[this.chartIndex], front, back, top, bottom, left, right, shape, path1, path2, path3, isFront, isTop, isRight, options3d = chart.options.chart.options3d, alpha = options3d.alpha, 
                     // Priority for x axis is the biggest,
                     // because of x direction has biggest influence on zIndex
                     incrementX = 1000000, 
                     // y axis has the smallest priority in case of our charts
                     // (needs to be set because of stacking)
-                    incrementY = 10,
-                    incrementZ = 100,
-                    zIndex = 0, 
+                    incrementY = 10, incrementZ = 100, zIndex = 0, 
                     // The 8 corners of the cube
                     pArr = [{
                             x: x,
@@ -850,9 +825,7 @@
                             x: x,
                             y: y,
                             z: z + d
-                        }],
-                    forcedSides = [],
-                    pickShape;
+                        }], forcedSides = [], pickShape;
                 // apply perspective
                 pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
                 /**
@@ -1237,8 +1210,7 @@
                 top = top.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, 0, 0));
                 top.push(['Z']);
                 // OUTSIDE
-                var b = (beta > 0 ? Math.PI / 2 : 0),
-                    a = (alpha > 0 ? 0 : Math.PI / 2);
+                var b = (beta > 0 ? Math.PI / 2 : 0), a = (alpha > 0 ? 0 : Math.PI / 2);
                 var start2 = start > -b ? start : (end > -b ? -b : start),
                     end2 = end < PI - a ? end : (start < PI - a ? PI - a : end),
                     midEnd = 2 * PI - a;
@@ -1584,42 +1556,22 @@
                             // size/color/visibility set, the opposite face will default to
                             // the same values. Also, left/right used to be called 'side',
                             // so that's also added as a fallback.
-                            bottom: getFaceOptions([frameOptions.bottom,
-                        frameOptions.top,
-                        frameOptions],
-                        bottomOrientation,
-                        defaultShowBottom),
-                            top: getFaceOptions([frameOptions.top,
-                        frameOptions.bottom,
-                        frameOptions],
-                        topOrientation,
-                        defaultShowTop),
+                            bottom: getFaceOptions([frameOptions.bottom, frameOptions.top, frameOptions], bottomOrientation, defaultShowBottom),
+                            top: getFaceOptions([frameOptions.top, frameOptions.bottom, frameOptions], topOrientation, defaultShowTop),
                             left: getFaceOptions([
                                 frameOptions.left,
                                 frameOptions.right,
                                 frameOptions.side,
                                 frameOptions
-                            ],
-                        leftOrientation,
-                        defaultShowLeft),
+                            ], leftOrientation, defaultShowLeft),
                             right: getFaceOptions([
                                 frameOptions.right,
                                 frameOptions.left,
                                 frameOptions.side,
                                 frameOptions
-                            ],
-                        rightOrientation,
-                        defaultShowRight),
-                            back: getFaceOptions([frameOptions.back,
-                        frameOptions.front,
-                        frameOptions],
-                        backOrientation,
-                        defaultShowBack),
-                            front: getFaceOptions([frameOptions.front,
-                        frameOptions.back,
-                        frameOptions],
-                        frontOrientation,
-                        defaultShowFront)
+                            ], rightOrientation, defaultShowRight),
+                            back: getFaceOptions([frameOptions.back, frameOptions.front, frameOptions], backOrientation, defaultShowBack),
+                            front: getFaceOptions([frameOptions.front, frameOptions.back, frameOptions], frontOrientation, defaultShowFront)
                         };
                     // Decide the bast place to put axis title/labels based on the
                     // visible faces. Ideally, The labels can only be on the edge
@@ -1837,14 +1789,7 @@
                  * @requires highcharts-3d
                  */
                 Composition.prototype.getScale = function (depth) {
-                    var chart = this.chart,
-                        plotLeft = chart.plotLeft,
-                        plotRight = chart.plotWidth + plotLeft,
-                        plotTop = chart.plotTop,
-                        plotBottom = chart.plotHeight + plotTop,
-                        originX = plotLeft + chart.plotWidth / 2,
-                        originY = plotTop + chart.plotHeight / 2,
-                        bbox3d = {
+                    var chart = this.chart, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop, originX = plotLeft + chart.plotWidth / 2, originY = plotTop + chart.plotHeight / 2, bbox3d = {
                             minX: Number.MAX_VALUE,
                             maxX: -Number.MAX_VALUE,
                             minY: Number.MAX_VALUE,
@@ -3229,9 +3174,6 @@
             }
             this.zAxis = [];
             zAxisOptions.forEach(function (axisOptions, i) {
-                axisOptions.index = i;
-                // Z-Axis is shown horizontally, so it's kind of a X-Axis
-                axisOptions.isX = true;
                 _this.addZAxis(axisOptions).setScale();
             });
         }
@@ -3245,23 +3187,17 @@
          */
         var ZAxis = /** @class */ (function (_super) {
                 __extends(ZAxis, _super);
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            function ZAxis(chart, userOptions) {
-                var _this = _super.call(this,
-                    chart,
-                    userOptions) || this;
+            function ZAxis() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
                 _this.isZAxis = true;
                 return _this;
             }
-            /* *
-             *
-             *  Static Properties
-             *
-             * */
             ZAxis.compose = function (ChartClass) {
                 if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
@@ -3270,6 +3206,16 @@
                     chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
                     chartProto.collectionsWithUpdate.push('zAxis');
                 }
+            };
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            ZAxis.prototype.init = function (chart, userOptions) {
+                // #14793, this used to be set on the prototype
+                this.isZAxis = true;
+                _super.prototype.init.call(this, chart, userOptions, 'zAxis');
             };
             /* *
              *
@@ -3321,10 +3267,7 @@
                     offset: 0,
                     lineWidth: 0
                 }, userOptions);
-                // #14793, this used to be set on the prototype
-                this.isZAxis = true;
                 _super.prototype.setOptions.call(this, userOptions);
-                this.coll = 'zAxis';
             };
             return ZAxis;
         }(Axis));
@@ -4503,10 +4446,7 @@
                                     x: tooltipPos[0],
                                     y: tooltipPos[1],
                                     z: z + depth / 2 // The center of column in Z dimension
-                                }],
-                            chart,
-                            true,
-                            false)[0];
+                                }], chart, true, false)[0];
                         point.tooltipPos = [translatedTTPos.x, translatedTTPos.y];
                     }
                 }

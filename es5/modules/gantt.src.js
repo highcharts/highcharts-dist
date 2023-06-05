@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.0.1 (2023-05-08)
+ * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
  *
  * Gantt series
  *
@@ -85,9 +85,9 @@
                 chartOptions = chart.options,
                 navigator = chartOptions.navigator,
                 navigatorAxis = axis.navigatorAxis,
-                pinchType = chartOptions.chart.zooming.pinchType,
+                pinchType = chart.zooming.pinchType,
                 rangeSelector = chartOptions.rangeSelector,
-                zoomType = chartOptions.chart.zooming.type;
+                zoomType = chart.zooming.type;
             if (axis.isXAxis && ((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled))) {
                 // For y only zooming, ignore the X axis completely
@@ -178,8 +178,7 @@
                     axis.translate(pxMax,
                     true, !axis.horiz));
                 var fixedRange = chart && chart.fixedRange,
-                    halfPointRange = (axis.pointRange || 0) / 2,
-                    changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+                    halfPointRange = (axis.pointRange || 0) / 2;
                 // Add/remove half point range to/from the extremes (#1172)
                 if (!defined(fixedMin)) {
                     newMin = correctFloat(newMin + halfPointRange);
@@ -187,15 +186,13 @@
                 if (!defined(fixedMax)) {
                     newMax = correctFloat(newMax - halfPointRange);
                 }
-                // If the difference between the fixed range and the actual requested
-                // range is too great, the user is dragging across an ordinal gap, and
-                // we need to release the range selector button.
-                if (changeRatio > 0.7 && changeRatio < 1.3) {
-                    if (fixedMax) {
-                        newMin = newMax - fixedRange;
+                // Make sure panning to the edges does not decrease the zoomed range
+                if (fixedRange && axis.dataMin && axis.dataMax) {
+                    if (newMax >= axis.dataMax) {
+                        newMin = correctFloat(axis.dataMax - fixedRange);
                     }
-                    else {
-                        newMax = newMin + fixedRange;
+                    if (newMin <= axis.dataMin) {
+                        newMax = correctFloat(axis.dataMin + fixedRange);
                     }
                 }
                 if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
@@ -739,8 +736,7 @@
          */
         function navigatorHandle(_x, _y, width, height, options) {
             if (options === void 0) { options = {}; }
-            var halfWidth = options.width ? options.width / 2 : width,
-                markerPosition = Math.round(halfWidth / 3) + 0.5;
+            var halfWidth = options.width ? options.width / 2 : width, markerPosition = Math.round(halfWidth / 3) + 0.5;
             height = options.height || height;
             return [
                 ['M', -halfWidth - 1, 0.5],
@@ -935,9 +931,8 @@
             if (((navigator && navigator.enabled) ||
                 (rangeSelector && rangeSelector.enabled)) &&
                 ((!isTouchDevice &&
-                    chartOptions.chart.zooming.type === 'x') ||
-                    (isTouchDevice &&
-                        chartOptions.chart.zooming.pinchType === 'x'))) {
+                    this.zooming.type === 'x') ||
+                    (isTouchDevice && this.zooming.pinchType === 'x'))) {
                 return false;
             }
         }
@@ -2315,17 +2310,8 @@
              *        use 'animate' or 'attr'
              */
             Navigator.prototype.drawOutline = function (zoomedMin, zoomedMax, inverted, verb) {
-                var navigator = this,
-                    maskInside = navigator.navigatorOptions.maskInside,
-                    outlineWidth = navigator.outline.strokeWidth(),
-                    halfOutline = outlineWidth / 2,
-                    outlineCorrection = (outlineWidth % 2) / 2, // #5800
-                    scrollButtonSize = navigator.scrollButtonSize,
-                    navigatorSize = navigator.size,
-                    navigatorTop = navigator.top,
-                    height = navigator.height,
-                    lineTop = navigatorTop - halfOutline,
-                    lineBtm = navigatorTop + height;
+                var navigator = this, maskInside = navigator.navigatorOptions.maskInside, outlineWidth = navigator.outline.strokeWidth(), halfOutline = outlineWidth / 2, outlineCorrection = (outlineWidth % 2) / 2, // #5800
+                    scrollButtonSize = navigator.scrollButtonSize, navigatorSize = navigator.size, navigatorTop = navigator.top, height = navigator.height, lineTop = navigatorTop - halfOutline, lineBtm = navigatorTop + height;
                 var left = navigator.left,
                     verticalMin,
                     path;
@@ -3113,7 +3099,6 @@
                     }, navigatorOptions.xAxis, {
                         id: 'navigator-x-axis',
                         yAxis: 'navigator-y-axis',
-                        isX: true,
                         type: 'datetime',
                         index: xAxisIndex,
                         isInternal: true,
@@ -3130,7 +3115,7 @@
                     } : {
                         offsets: [0, -scrollButtonSize, 0, scrollButtonSize],
                         height: height
-                    }));
+                    }), 'xAxis');
                     navigator.yAxis = new Axis(chart, merge(navigatorOptions.yAxis, {
                         id: 'navigator-y-axis',
                         alignTicks: false,
@@ -3144,7 +3129,7 @@
                         width: height
                     } : {
                         height: height
-                    }));
+                    }), 'yAxis');
                     // If we have a base series, initialize the navigator series
                     if (baseSeries || navigatorOptions.series.data) {
                         navigator.updateNavigatorSeries(false);
@@ -3831,8 +3816,7 @@
                 buttons: void 0,
                 /**
                  * How many units of the defined type the button should span. If `type`
-                 * is "month" and `count` is 3,
-            the button spans three months.
+                 * is "month" and `count` is 3, the button spans three months.
                  *
                  * @type      {number}
                  * @default   1
@@ -3840,9 +3824,7 @@
                  */
                 /**
                  * Fires when clicking on the rangeSelector button. One parameter,
-                 * event,
-            is passed to the function,
-            containing common event
+                 * event, is passed to the function, containing common event
                  * information.
                  *
                  * ```js
@@ -6262,8 +6244,7 @@
          */
         var XRangeSeriesDefaults = {
                 /**
-                 * A partial fill for each point,
-            typically used to visualize how much
+                 * A partial fill for each point, typically used to visualize how much
                  * of a task is performed. The partial fill object can be set either on
                  * series or point level.
                  *
@@ -6282,8 +6263,7 @@
                  * @apioption plotOptions.xrange.partialFill.fill
                  */
                 /**
-                 * A partial fill for each point,
-            typically used to visualize how much
+                 * A partial fill for each point, typically used to visualize how much
                  * of a task is performed. See [completed](series.gantt.data.completed).
                  *
                  * @sample gantt/demo/progress-indicator
@@ -6293,15 +6273,13 @@
                  * @apioption plotOptions.gantt.partialFill
                  */
                 /**
-                 * In an X-range series,
-            this option makes all points of the same Y-axis
+                 * In an X-range series, this option makes all points of the same Y-axis
                  * category the same color.
                  */
                 colorByPoint: true,
                 dataLabels: {
                     formatter: function () {
-                        var point = this.point,
-            amount = point.partialFill;
+                        var point = this.point, amount = point.partialFill;
                     if (isObject(amount)) {
                         amount = amount.amount;
                     }
@@ -7748,7 +7726,9 @@
                     var hasBreaks = (isArray(breaks) && !!breaks.length);
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
-                    axis.options.breaks = axis.userOptions.breaks = breaks;
+                    if (breaks !== axis.options.breaks) {
+                        axis.options.breaks = axis.userOptions.breaks = breaks;
+                    }
                     axis.forceRedraw = true; // Force recalculation in setScale
                     // Recalculate series related to the axis.
                     axis.series.forEach(function (series) {
@@ -8156,6 +8136,7 @@
                 while (++columnIndex < gridOptions.columns.length) {
                     var columnOptions = merge(userOptions,
                         gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                            isInternal: true,
                             linkedTo: 0,
                             // Force to behave like category axis
                             type: 'category',
@@ -8166,13 +8147,13 @@
                         });
                     delete columnOptions.grid.columns; // Prevent recursion
                     var column = new Axis(axis.chart,
-                        columnOptions);
+                        columnOptions, 'yAxis');
                     column.grid.isColumn = true;
                     column.grid.columnIndex = columnIndex;
                     // Remove column axis from chart axes array, and place it
                     // in the columns array.
                     erase(chart.axes, column);
-                    erase(chart[axis.coll], column);
+                    erase(chart[axis.coll] || [], column);
                     columns.push(column);
                 }
             }
@@ -10130,7 +10111,7 @@
         /**
          * @private
          */
-        function wrapInit(proceed, chart, userOptions) {
+        function wrapInit(proceed, chart, userOptions, coll) {
             var axis = this,
                 isTreeGrid = userOptions.type === 'treegrid';
             if (!axis.treeGrid) {
@@ -10263,9 +10244,9 @@
                     }
                 });
             }
-            // Now apply the original function with the original arguments,
-            // which are sliced off this function's arguments
-            proceed.apply(axis, [chart, userOptions]);
+            // Now apply the original function with the original arguments, which are
+            // sliced off this function's arguments
+            proceed.apply(axis, [chart, userOptions, coll]);
             if (isTreeGrid) {
                 axis.hasNames = true;
                 axis.options.showLastLabel = true;
@@ -10456,9 +10437,7 @@
              * List of positions.
              */
             TreeGridAxisAdditions.prototype.getTickPositions = function () {
-                var axis = this.axis,
-                    roundedMin = Math.floor(axis.min / axis.tickInterval) * axis.tickInterval,
-                    roundedMax = Math.ceil(axis.max / axis.tickInterval) * axis.tickInterval;
+                var axis = this.axis, roundedMin = Math.floor(axis.min / axis.tickInterval) * axis.tickInterval, roundedMax = Math.ceil(axis.max / axis.tickInterval) * axis.tickInterval;
                 return Object.keys(axis.treeGrid.mapOfPosToGridNode || {}).reduce(function (arr, key) {
                     var pos = +key;
                     if (pos >= roundedMin &&
@@ -11190,7 +11169,8 @@
                         // Create new marker element
                         connection.graphics[type] = renderer
                             .symbol(options.symbol)
-                            .addClass('highcharts-point-connecting-path-' + type + '-marker')
+                            .addClass('highcharts-point-connecting-path-' + type + '-marker' +
+                            ' highcharts-color-' + this.fromPoint.colorIndex)
                             .attr(box)
                             .add(pathfinder.group);
                         if (!renderer.styledMode) {
@@ -11424,25 +11404,10 @@
              *         The marker vector as an object with x/y properties.
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
-                var twoPI = Math.PI * 2.0,
-                    theta = radians,
-                    bb = getPointBB(this),
-                    rectWidth = bb.xMax - bb.xMin,
-                    rectHeight = bb.yMax - bb.yMin,
-                    rAtan = Math.atan2(rectHeight,
-                    rectWidth),
-                    tanTheta = 1,
-                    leftOrRightRegion = false,
-                    rectHalfWidth = rectWidth / 2.0,
-                    rectHalfHeight = rectHeight / 2.0,
-                    rectHorizontalCenter = bb.xMin + rectHalfWidth,
-                    rectVerticalCenter = bb.yMin + rectHalfHeight,
-                    edgePoint = {
+                var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
                         x: rectHorizontalCenter,
                         y: rectVerticalCenter
-                    },
-                    xFactor = 1,
-                    yFactor = 1;
+                    }, xFactor = 1, yFactor = 1;
                 while (theta < -Math.PI) {
                     theta += twoPI;
                 }
@@ -11847,58 +11812,34 @@
          *         renderer, as well as an array of new obstacles making up this
          *         path.
          */
-        var fastAvoid = function (start,
-            end,
-            options) {
+        var fastAvoid = function (start, end, options) {
                 /*
                     Algorithm rules/description
                     - Find initial direction
                     - Determine soft/hard max for each direction.
                     - Move along initial direction until obstacle.
                     - Change direction.
-                    - If hitting obstacle,
-            first try to change length of previous line
+                    - If hitting obstacle, first try to change length of previous line
                         before changing direction again.
     
                     Soft min/max x = start/destination x +/- widest obstacle + margin
                     Soft min/max y = start/destination y +/- tallest obstacle + margin
     
                     @todo:
-                        - Make retrospective,
-            try changing prev segment to reduce
+                        - Make retrospective, try changing prev segment to reduce
                             corners
                         - Fix logic for breaking out of end-points - not always picking
                             the best direction currently
                         - When going around the end obstacle we should not always go the
-                            shortest route,
-            rather pick the one closer to the end point
+                            shortest route, rather pick the one closer to the end point
                 */
-                var dirIsX = pick(options.startDirectionX,
-            abs(end.x - start.x) > abs(end.y - start.y)),
-            dir = dirIsX ? 'x' : 'y',
-            segments,
-            useMax,
-            extractedEndPoint,
-            endSegments = [],
-            forceObstacleBreak = false, // Used in clearPathTo to keep track of
+                var dirIsX = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)), dir = dirIsX ? 'x' : 'y', segments, useMax, extractedEndPoint, endSegments = [], forceObstacleBreak = false, // Used in clearPathTo to keep track of
                 // when to force break through an obstacle.
                 // Boundaries to stay within. If beyond soft boundary, prefer to
                 // change direction ASAP. If at hard max, always change immediately.
-                metrics = options.obstacleMetrics,
-            softMinX = min(start.x,
-            end.x) - metrics.maxWidth - 10,
-            softMaxX = max(start.x,
-            end.x) + metrics.maxWidth + 10,
-            softMinY = min(start.y,
-            end.y) - metrics.maxHeight - 10,
-            softMaxY = max(start.y,
-            end.y) + metrics.maxHeight + 10, 
+                metrics = options.obstacleMetrics, softMinX = min(start.x, end.x) - metrics.maxWidth - 10, softMaxX = max(start.x, end.x) + metrics.maxWidth + 10, softMinY = min(start.y, end.y) - metrics.maxHeight - 10, softMaxY = max(start.y, end.y) + metrics.maxHeight + 10, 
                 // Obstacles
-                chartObstacles = options.chartObstacles,
-            startObstacleIx = findLastObstacleBefore(chartObstacles,
-            softMinX),
-            endObstacleIx = findLastObstacleBefore(chartObstacles,
-            softMaxX);
+                chartObstacles = options.chartObstacles, startObstacleIx = findLastObstacleBefore(chartObstacles, softMinX), endObstacleIx = findLastObstacleBefore(chartObstacles, softMaxX);
             // eslint-disable-next-line valid-jsdoc
             /**
              * How far can you go between two points before hitting an obstacle?
@@ -13000,25 +12941,10 @@
              *         The marker vector as an object with x/y properties.
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
-                var twoPI = Math.PI * 2.0,
-                    theta = radians,
-                    bb = getPointBB(this),
-                    rectWidth = bb.xMax - bb.xMin,
-                    rectHeight = bb.yMax - bb.yMin,
-                    rAtan = Math.atan2(rectHeight,
-                    rectWidth),
-                    tanTheta = 1,
-                    leftOrRightRegion = false,
-                    rectHalfWidth = rectWidth / 2.0,
-                    rectHalfHeight = rectHeight / 2.0,
-                    rectHorizontalCenter = bb.xMin + rectHalfWidth,
-                    rectVerticalCenter = bb.yMin + rectHalfHeight,
-                    edgePoint = {
+                var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
                         x: rectHorizontalCenter,
                         y: rectVerticalCenter
-                    },
-                    xFactor = 1,
-                    yFactor = 1;
+                    }, xFactor = 1, yFactor = 1;
                 while (theta < -Math.PI) {
                     theta += twoPI;
                 }

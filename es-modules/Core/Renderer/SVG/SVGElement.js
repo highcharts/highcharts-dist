@@ -709,10 +709,6 @@ class SVGElement {
     css(styles) {
         const oldStyles = this.styles, newStyles = {}, elem = this.element;
         let textWidth, hasNew = !oldStyles;
-        // convert legacy
-        if (styles.color) {
-            styles.fill = styles.color;
-        }
         // Filter out existing styles to increase performance (#2640)
         if (oldStyles) {
             objectEach(styles, function (value, n) {
@@ -750,6 +746,10 @@ class SVGElement {
                 // to the DOM whatsoever (#6173, #6474).
                 ['textOutline', 'textOverflow', 'width'].forEach((key) => (stylesToApply &&
                     delete stylesToApply[key]));
+                // SVG requires fill for text
+                if (stylesToApply.color) {
+                    stylesToApply.fill = stylesToApply.color;
+                }
             }
             css(elem, stylesToApply);
         }

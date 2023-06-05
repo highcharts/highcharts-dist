@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.0.1 (2023-05-08)
+ * @license Highmaps JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -130,8 +130,7 @@
                 this.colorAxis = [];
                 if (options.colorAxis) {
                     options.colorAxis = splat(options.colorAxis);
-                    options.colorAxis.forEach(function (axisOptions, i) {
-                        axisOptions.index = i;
+                    options.colorAxis.forEach(function (axisOptions) {
                         new ColorAxisClass(_this, axisOptions); // eslint-disable-line no-new
                     });
                 }
@@ -804,6 +803,7 @@
         var color = Color.parse;
         var Series = SeriesRegistry.series;
         var extend = U.extend,
+            isArray = U.isArray,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick;
@@ -887,16 +887,16 @@
                         title: null,
                         visible: legend.enabled && visible !== false
                     });
-                axis.coll = 'colorAxis';
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                _super.prototype.init.call(this, chart, options);
-                // #16053: Restore the actual userOptions.visible so the color axis
-                // doesnt stay hidden forever when hiding and showing legend
-                axis.userOptions.visible = visible;
-                // Base init() pushes it to the xAxis array, now pop it again
-                // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
+                _super.prototype.init.call(this, chart, options, 'colorAxis');
+                // Super.init saves the extended user options, now replace it with the
+                // originals
+                this.userOptions = userOptions;
+                if (isArray(chart.userOptions.colorAxis)) {
+                    chart.userOptions.colorAxis[this.index] = userOptions;
+                }
                 // Prepare data classes
                 if (userOptions.dataClasses) {
                     axis.initDataClasses(userOptions);
@@ -1697,40 +1697,14 @@
                 return this;
             };
             HeatmapPoint.prototype.getCellAttributes = function () {
-                var point = this,
-                    series = point.series,
-                    seriesOptions = series.options,
-                    xPad = (seriesOptions.colsize || 1) / 2,
-                    yPad = (seriesOptions.rowsize || 1) / 2,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    markerOptions = point.options.marker || series.options.marker,
-                    pointPlacement = series.pointPlacementToXValue(), // #7860
-                    pointPadding = pick(point.pointPadding,
-                    seriesOptions.pointPadding, 0),
-                    cellAttr = {
+                var point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
+                    pointPadding = pick(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
                         x1: clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x - xPad,
-                    false,
-                    true,
-                    false,
-                    true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                            xAxis.translate(point.x - xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
                         x2: clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x + xPad,
-                    false,
-                    true,
-                    false,
-                    true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
-                        y1: clamp(Math.round(yAxis.translate(point.y - yPad,
-                    false,
-                    true,
-                    false,
-                    true)), -yAxis.len, 2 * yAxis.len),
-                        y2: clamp(Math.round(yAxis.translate(point.y + yPad,
-                    false,
-                    true,
-                    false,
-                    true)), -yAxis.len, 2 * yAxis.len)
+                            xAxis.translate(point.x + xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                        y1: clamp(Math.round(yAxis.translate(point.y - yPad, false, true, false, true)), -yAxis.len, 2 * yAxis.len),
+                        y2: clamp(Math.round(yAxis.translate(point.y + yPad, false, true, false, true)), -yAxis.len, 2 * yAxis.len)
                     };
                 var dimensions = [['width', 'x'], ['height', 'y']];
                 // Handle marker's fixed width, and height values including border
@@ -1811,7 +1785,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1837,16 +1811,32 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        var __assign = (this && this.__assign) || function () {
+                __assign = Object.assign || function(t) {
+                    for (var s,
+            i = 1,
+            n = arguments.length; i < n; i++) {
+                        s = arguments[i];
+                    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                        t[p] = s[p];
+                }
+                return t;
+            };
+            return __assign.apply(this, arguments);
+        };
+        var doc = H.doc;
         var Series = SeriesRegistry.series,
             _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
             ScatterSeries = _a.scatter;
         var symbols = SVGRenderer.prototype.symbols;
-        var extend = U.extend,
+        var clamp = U.clamp,
+            extend = U.extend,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
             merge = U.merge,
-            pick = U.pick;
+            pick = U.pick,
+            defined = U.defined;
         /* *
          *
          *  Class
@@ -1874,7 +1864,9 @@
                  *  Properties
                  *
                  * */
+                _this.canvas = void 0;
                 _this.colorAxis = void 0;
+                _this.context = void 0;
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -1893,21 +1885,113 @@
              * @private
              */
             HeatmapSeries.prototype.drawPoints = function () {
-                var _this = this;
-                // In styled mode, use CSS, otherwise the fill used in the style sheet
-                // will take precedence over the fill attribute.
-                var seriesMarkerOptions = this.options.marker || {};
-                if (seriesMarkerOptions.enabled || this._hasPointMarkers) {
-                    Series.prototype.drawPoints.call(this);
-                    this.points.forEach(function (point) {
+                var series = this,
+                    seriesOptions = series.options,
+                    interpolation = seriesOptions.interpolation,
+                    seriesMarkerOptions = seriesOptions.marker || {};
+                if (interpolation) {
+                    var image = series.image, chart = series.chart, xAxis_1 = series.xAxis, yAxis = series.yAxis, points = series.points, lastPointIndex = points.length - 1, xAxisLen = xAxis_1.len, xRev = xAxis_1.reversed, yAxisLen = yAxis.len, yRev = yAxis.reversed, _a = xAxis_1.getExtremes(), xMin_1 = _a.min, xMax_1 = _a.max, _b = yAxis.getExtremes(), yMin_1 = _b.min, yMax_1 = _b.max, _c = [
+                            pick(seriesOptions.colsize, 1),
+                            pick(seriesOptions.rowsize, 1)
+                        ], colsize = _c[0], rowsize = _c[1], inverted = chart.inverted, xTranslationPad = colsize / 2, userMinPadding = xAxis_1.userOptions.minPadding, isUserMinPadZero = (defined(userMinPadding) &&
+                            !(userMinPadding > 0)), noOffset = (inverted || isUserMinPadZero), padIfMinSet = (isUserMinPadZero && xTranslationPad || 0), _d = [
+                            xMin_1 - padIfMinSet,
+                            xMax_1 + (padIfMinSet * 2),
+                            isUserMinPadZero && 0 || (xMin_1 + colsize)
+                        ].map(function (side) { return (clamp(Math.round(xAxis_1.len -
+                            xAxis_1.translate(side, false, true, false, true, -series.pointPlacementToXValue())), -xAxis_1.len, 2 * xAxis_1.len)); }), x1 = _d[0], x2 = _d[1], postTranslationOffset = _d[2], _e = xRev ? [x2, x1] : [x1, x2], xStart = _e[0], xEnd = _e[1], xOffset = (noOffset && 0 ||
+                            (((xAxisLen / postTranslationOffset) / 2) / 2) / 2), dimensions = inverted ?
+                            {
+                                width: xAxisLen,
+                                height: yAxisLen,
+                                x: 0,
+                                y: 0
+                            } : {
+                            x: xStart - xOffset,
+                            width: xEnd - xOffset,
+                            height: yAxisLen,
+                            y: 0
+                        };
+                    if (!image || series.isDirtyData) {
+                        var colorAxis_1 = (chart.colorAxis &&
+                                chart.colorAxis[0]),
+                            ctx = series.getContext(),
+                            canvas = series.canvas;
+                        if (canvas && ctx && colorAxis_1) {
+                            var canvasWidth_1 = canvas.width = ~~((xMax_1 - xMin_1) / colsize) + 1, canvasHeight = canvas.height = ~~((yMax_1 - yMin_1) / rowsize) + 1, canvasArea = canvasWidth_1 * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4), widthLastIndex_1 = (canvasWidth_1 - (noOffset && 1 || 0)), heightLastIndex_1 = canvasHeight - 1, colorFromPoint = function (p) {
+                                    var rgba = (colorAxis_1.toColor(p.value ||
+                                        0, pick(p))
+                                        .split(')')[0]
+                                        .split('(')[1]
+                                        .split(',')
+                                        .map(function (s) { return pick(parseFloat(s), parseInt(s, 10)); }));
+                                rgba[3] = pick(rgba[3], 1.0) * 255;
+                                return rgba;
+                            }, scaleToImg_1 = function (val, fromMin, fromMax, toMin, toMax) { return ~~((val - fromMin) * ((toMax - toMin) /
+                                (fromMax - fromMin))); }, xPlacement_1 = (xRev ?
+                                function (xToImg) { return (widthLastIndex_1 - xToImg); } :
+                                function (xToImg) { return xToImg; }), yPlacement_1 = (yRev ?
+                                function (yToImg) { return (heightLastIndex_1 - yToImg); } :
+                                function (yToImg) { return yToImg; }), scaledPointPos = function (x, y) { return (Math.ceil(canvasWidth_1 *
+                                yPlacement_1(scaleToImg_1(yMax_1 - y, yMin_1, yMax_1, 0, heightLastIndex_1)) +
+                                xPlacement_1(scaleToImg_1(x, xMin_1, xMax_1, 0, widthLastIndex_1)))); };
+                            series.buildKDTree();
+                            series.directTouch = false;
+                            for (var i = 0; i < canvasArea; i++) {
+                                var toPointScale = scaleToImg_1(i * 4, 0,
+                                    pixelData.length - 4, 0,
+                                    lastPointIndex),
+                                    p = points[toPointScale],
+                                    sourceArr = new Uint8ClampedArray(colorFromPoint(p));
+                                pixelData.set(sourceArr, scaledPointPos(p.x, p.y) * 4);
+                            }
+                            ctx.putImageData(new ImageData(pixelData, canvasWidth_1, canvasHeight), 0, 0);
+                            if (image) {
+                                image.attr(__assign(__assign({}, dimensions), { href: canvas.toDataURL() }));
+                            }
+                            else {
+                                series.image = chart.renderer.image(canvas.toDataURL())
+                                    .attr(dimensions)
+                                    .add(series.group);
+                            }
+                        }
+                    }
+                    else if (image.width !== dimensions.width ||
+                        image.height !== dimensions.height) {
+                        image.attr(dimensions);
+                    }
+                }
+                else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
+                    Series.prototype.drawPoints.call(series);
+                    series.points.forEach(function (point) {
                         if (point.graphic) {
-                            point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
+                            // In styled mode, use CSS, otherwise the fill used in
+                            // the style sheet will take precedence over
+                            // the fill attribute.
+                            point.graphic[series.chart.styledMode ? 'css' : 'animate'](series.colorAttribs(point));
                             if (point.value === null) { // #15708
                                 point.graphic.addClass('highcharts-null-point');
                             }
                         }
                     });
                 }
+            };
+            /**
+             * @private
+             */
+            HeatmapSeries.prototype.getContext = function () {
+                var series = this,
+                    canvas = series.canvas,
+                    context = series.context;
+                if (canvas && context) {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                }
+                else {
+                    series.canvas = doc.createElement('canvas');
+                    series.context = series.canvas.getContext('2d') || void 0;
+                    return series.context;
+                }
+                return context;
             };
             /**
              * @private
@@ -2004,8 +2088,7 @@
                             seriesStateOptions.heightPlus ||
                             0);
                     // Align marker by the new size.
-                    var x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2,
-                        y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
+                    var x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2, y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
                     return { x: x, y: y, width: width, height: height };
                 }
                 return shapeArgs;
@@ -2180,6 +2263,16 @@
                  * @product   highcharts highmaps
                  * @apioption plotOptions.heatmap.rowsize
                  */
+                /**
+                 * Make the heatmap render its data points as an interpolated image.
+                 *
+                 * @sample highcharts/demo/heatmap-interpolation
+                 *   Interpolated heatmap image displaying user activity on a website
+                 * @sample highcharts/series-heatmap/interpolation
+                 *   Interpolated heatmap toggle
+                 *
+                 */
+                interpolation: false,
                 /**
                  * The color applied to null points. In styled mode, a general CSS class
                  * is applied instead.

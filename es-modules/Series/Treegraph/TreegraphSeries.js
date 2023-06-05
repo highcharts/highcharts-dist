@@ -80,6 +80,11 @@ class TreegraphSeries extends TreemapSeries {
         const chart = this.chart, series = this, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY;
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, maxXSize = 0, minXSize = 0, maxYSize = 0, minYSize = 0;
         this.points.forEach((point) => {
+            // When fillSpace is on, stop the layout calculation when the hidden
+            // points are reached. (#19038)
+            if (this.options.fillSpace && !point.visible) {
+                return;
+            }
             const node = point.node, level = series.mapOptionsToLevel[point.node.level] || {}, markerOptions = merge(this.options.marker, level.marker, point.options.marker), radius = relativeLength(markerOptions.radius || 0, Math.min(plotSizeX, plotSizeY)), symbol = markerOptions.symbol, nodeSizeY = (symbol === 'circle' || !markerOptions.height) ?
                 radius * 2 :
                 relativeLength(markerOptions.height, plotSizeY), nodeSizeX = symbol === 'circle' || !markerOptions.width ?
@@ -301,7 +306,12 @@ class TreegraphSeries extends TreemapSeries {
         point.visible = true;
         super.alignDataLabel.apply(this, arguments);
         // Fade in or out
-        dataLabel.animate({ opacity: visible === false ? 0 : 1 });
+        dataLabel.animate({
+            opacity: visible === false ? 0 : 1
+        }, void 0, function () {
+            // Hide data labels that belong to hidden points (#18891)
+            visible || dataLabel.hide();
+        });
         // Reset
         point.visible = visible;
     }

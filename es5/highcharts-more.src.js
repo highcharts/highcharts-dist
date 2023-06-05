@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -718,10 +718,8 @@
                  */
                 /**
                  * Whether to apply a drop shadow to the graph line. Since 2.3 the
-                 * shadow can be an object configuration containing `color`,
-            `offsetX`,
-                 * `offsetY`,
-            `opacity` and `width`.
+                 * shadow can be an object configuration containing `color`, `offsetX`,
+                 * `offsetY`, `opacity` and `width`.
                  *
                  * @type      {boolean|Highcharts.ShadowOptionsObject}
                  * @product   highcharts
@@ -754,15 +752,12 @@
                 trackByArea: true,
                 /**
                  * Extended data labels for range series types. Range series data
-                 * labels use no `x` and `y` options. Instead,
-            they have `xLow`,
-                 * `xHigh`,
-            `yLow` and `yHigh` options to allow the higher and lower
+                 * labels use no `x` and `y` options. Instead, they have `xLow`,
+                 * `xHigh`, `yLow` and `yHigh` options to allow the higher and lower
                  * data label sets individually.
                  *
                  * @declare Highcharts.SeriesAreaRangeDataLabelsOptionsObject
-                 * @exclude x,
-            y
+                 * @exclude x, y
                  * @since   2.3.0
                  * @product highcharts highstock
                  *
@@ -2322,8 +2317,7 @@
          */
         var BubbleLegendDefaults = {
                 /**
-                 * The color of the ranges borders,
-            can be also defined for an
+                 * The color of the ranges borders, can be also defined for an
                  * individual range.
                  *
                  * @sample highcharts/bubble-legend/similartoseries/
@@ -2335,8 +2329,7 @@
                  */
                 borderColor: void 0,
                 /**
-                 * The width of the ranges borders in pixels,
-            can be also
+                 * The width of the ranges borders in pixels, can be also
                  * defined for an individual range.
                  */
                 borderWidth: 2,
@@ -2352,8 +2345,7 @@
                  */
                 className: void 0,
                 /**
-                 * The main color of the bubble legend. Applies to ranges,
-            if
+                 * The main color of the bubble legend. Applies to ranges, if
                  * individual color is not defined.
                  *
                  * @sample highcharts/bubble-legend/similartoseries/
@@ -2376,8 +2368,7 @@
                  */
                 connectorClassName: void 0,
                 /**
-                 * The color of the connector,
-            can be also defined
+                 * The color of the connector, can be also defined
                  * for an individual range.
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
@@ -2385,8 +2376,7 @@
                 connectorColor: void 0,
                 /**
                  * The length of the connectors in pixels. If labels are
-                 * centered,
-            the distance is reduced to 0.
+                 * centered, the distance is reduced to 0.
                  *
                  * @sample highcharts/bubble-legend/connectorandlabels/
                  *         Increased connector length
@@ -2446,8 +2436,7 @@
                     formatter: void 0,
                     /**
                      * The alignment of the labels compared to the bubble
-                     * legend. Can be one of `left`,
-            `center` or `right`.
+                     * legend. Can be one of `left`, `center` or `right`.
                      *
                      * @sample highcharts/bubble-legend/connectorandlabels/
                      *         Labels on left
@@ -2462,7 +2451,7 @@
                      */
                     style: {
                         /** @ignore-option */
-                        fontSize: '0.7em',
+                        fontSize: '0.9em',
                         /** @ignore-option */
                         color: "#000000" /* Palette.neutralColor100 */
                     },
@@ -2479,15 +2468,13 @@
                 },
                 /**
                  * Miximum bubble legend range size. If values for ranges are
-                 * not specified,
-            the `minSize` and the `maxSize` are calculated
+                 * not specified, the `minSize` and the `maxSize` are calculated
                  * from bubble series.
                  */
                 maxSize: 60,
                 /**
                  * Minimum bubble legend range size. If values for ranges are
-                 * not specified,
-            the `minSize` and the `maxSize` are calculated
+                 * not specified, the `minSize` and the `maxSize` are calculated
                  * from bubble series.
                  */
                 minSize: 10,
@@ -2510,8 +2497,7 @@
                  */
                 ranges: {
                     /**
-                     * Range size value,
-            similar to bubble Z data.
+                     * Range size value, similar to bubble Z data.
                      * @type {number}
                      */
                     value: void 0,
@@ -2533,8 +2519,7 @@
                 },
                 /**
                  * Whether the bubble legend range value should be represented
-                 * by the area or the width of the bubble. The default,
-            area,
+                 * by the area or the width of the bubble. The default, area,
                  * corresponds best to the human perception of the size of each
                  * bubble.
                  *
@@ -2545,13 +2530,10 @@
                  */
                 sizeBy: 'area',
                 /**
-                 * When this is true,
-            the absolute value of z determines the
+                 * When this is true, the absolute value of z determines the
                  * size of the bubble. This means that with the default
-                 * zThreshold of 0,
-            a bubble of value -1 will have the same size
-                 * as a bubble of value 1,
-            while a bubble of value 0 will have a
+                 * zThreshold of 0, a bubble of value -1 will have the same size
+                 * as a bubble of value 1, while a bubble of value 0 will have a
                  * smaller size according to minSize.
                  */
                 sizeByAbsoluteValue: false,
@@ -2560,8 +2542,7 @@
                  */
                 zIndex: 1,
                 /**
-                 * Ranges with with lower value than zThreshold,
-            are skipped.
+                 * Ranges with with lower value than zThreshold, are skipped.
                  */
                 zThreshold: 0
             };
@@ -2573,7 +2554,7 @@
 
         return BubbleLegendDefaults;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -2793,7 +2774,8 @@
                 }
                 // Nesting SVG groups to enable handleOverflow
                 legendItem.symbol = renderer.g('bubble-legend');
-                legendItem.label = renderer.g('bubble-legend-item');
+                legendItem.label = renderer.g('bubble-legend-item')
+                    .css(this.legend.itemStyle || {});
                 // To enable default 'hideOverlappingLabels' method
                 legendItem.symbol.translateX = 0;
                 legendItem.symbol.translateY = 0;
@@ -2817,28 +2799,9 @@
              *        Range options
              */
             BubbleLegendItem.prototype.renderRange = function (range) {
-                var mainRange = this.ranges[0],
-                    legend = this.legend,
-                    options = this.options,
-                    labelsOptions = options.labels,
-                    chart = this.chart,
-                    bubbleSeries = chart.series[options.seriesIndex],
-                    renderer = chart.renderer,
-                    symbols = this.symbols,
-                    labels = symbols.labels,
-                    elementCenter = range.center,
-                    absoluteRadius = Math.abs(range.radius),
-                    connectorDistance = options.connectorDistance || 0,
-                    labelsAlign = labelsOptions.align,
-                    rtl = legend.options.rtl,
-                    borderWidth = options.borderWidth,
-                    connectorWidth = options.connectorWidth,
-                    posX = mainRange.radius || 0,
-                    posY = elementCenter - absoluteRadius -
-                        borderWidth / 2 + connectorWidth / 2,
-                    crispMovement = (posY % 1 ? 1 : 0.5) -
-                        (connectorWidth % 2 ? 0 : 0.5),
-                    styledMode = renderer.styledMode;
+                var mainRange = this.ranges[0], legend = this.legend, options = this.options, labelsOptions = options.labels, chart = this.chart, bubbleSeries = chart.series[options.seriesIndex], renderer = chart.renderer, symbols = this.symbols, labels = symbols.labels, elementCenter = range.center, absoluteRadius = Math.abs(range.radius), connectorDistance = options.connectorDistance || 0, labelsAlign = labelsOptions.align, rtl = legend.options.rtl, borderWidth = options.borderWidth, connectorWidth = options.connectorWidth, posX = mainRange.radius || 0, posY = elementCenter - absoluteRadius -
+                        borderWidth / 2 + connectorWidth / 2, crispMovement = (posY % 1 ? 1 : 0.5) -
+                        (connectorWidth % 2 ? 0 : 0.5), styledMode = renderer.styledMode;
                 var connectorLength = rtl || labelsAlign === 'left' ?
                         -connectorDistance : connectorDistance;
                 // Set options for centered labels
@@ -3795,20 +3758,25 @@
             BubbleSeries.prototype.translateBubble = function () {
                 var _a = this,
                     data = _a.data,
-                    radii = _a.radii;
-                var minPxSize = this.getPxExtremes().minPxSize;
+                    options = _a.options,
+                    radii = _a.radii,
+                    minPxSize = this.getPxExtremes().minPxSize;
                 // Set the shape type and arguments to be picked up in drawPoints
                 var i = data.length;
                 while (i--) {
                     var point = data[i];
                     var radius = radii ? radii[i] : 0; // #1737
-                        if (isNumber(radius) && radius >= minPxSize / 2) {
-                            // Shape arguments
-                            point.marker = extend(point.marker, {
-                                radius: radius,
-                                width: 2 * radius,
-                                height: 2 * radius
-                            });
+                        // Negative points means negative z values (#9728)
+                        if (this.zoneAxis === 'z') {
+                            point.negative = (point.z || 0) < (options.zThreshold || 0);
+                    }
+                    if (isNumber(radius) && radius >= minPxSize / 2) {
+                        // Shape arguments
+                        point.marker = extend(point.marker, {
+                            radius: radius,
+                            width: 2 * radius,
+                            height: 2 * radius
+                        });
                         // Alignment box for the data label
                         point.dlBox = {
                             x: point.plotX - radius,
@@ -4359,9 +4327,7 @@
                 },
                 /**
                  * Extended data labels for range series types. Range series data labels
-                 * have no `x` and `y` options. Instead,
-            they have `xLow`,
-            `xHigh`,
+                 * have no `x` and `y` options. Instead, they have `xLow`, `xHigh`,
                  * `yLow` and `yHigh` options to allow the higher and lower data label
                  * sets individually.
                  *
@@ -4442,6 +4408,86 @@
             ColumnRangeSeries.prototype.translate3dShapes = function () {
                 return columnProto.translate3dShapes.apply(this, arguments);
             };
+            ColumnRangeSeries.prototype.afterColumnTranslate = function () {
+                var _this = this;
+                /**
+                 * Translate data points from raw values x and y to plotX and plotY
+                 * @private
+                 */
+                var yAxis = this.yAxis,
+                    xAxis = this.xAxis,
+                    startAngleRad = xAxis.startAngleRad,
+                    chart = this.chart,
+                    isRadial = this.xAxis.isRadial,
+                    safeDistance = Math.max(chart.chartWidth,
+                    chart.chartHeight) + 999;
+                var height,
+                    heightDifference,
+                    start,
+                    plotHigh,
+                    y;
+                // eslint-disable-next-line valid-jsdoc
+                /**
+                 * Don't draw too far outside plot area (#6835)
+                 * @private
+                 */
+                function safeBounds(pixelPos) {
+                    return clamp(pixelPos, -safeDistance, safeDistance);
+                }
+                // Set plotLow and plotHigh
+                this.points.forEach(function (point) {
+                    var shapeArgs = point.shapeArgs || {},
+                        minPointLength = _this.options.minPointLength,
+                        plotY = point.plotY,
+                        plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
+                    if (isNumber(plotHigh) && isNumber(plotY)) {
+                        point.plotHigh = safeBounds(plotHigh);
+                        point.plotLow = safeBounds(plotY);
+                        // adjust shape
+                        y = point.plotHigh;
+                        height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
+                        // Adjust for minPointLength
+                        if (Math.abs(height) < minPointLength) {
+                            heightDifference = (minPointLength - height);
+                            height += heightDifference;
+                            y -= heightDifference / 2;
+                            // Adjust for negative ranges or reversed Y axis (#1457)
+                        }
+                        else if (height < 0) {
+                            height *= -1;
+                            y -= height;
+                        }
+                        if (isRadial && _this.polar) {
+                            start = point.barX + startAngleRad;
+                            point.shapeType = 'arc';
+                            point.shapeArgs = _this.polar.arc(y + height, y, start, start + point.pointWidth);
+                        }
+                        else {
+                            shapeArgs.height = height;
+                            shapeArgs.y = y;
+                            var _a = shapeArgs.x,
+                                x = _a === void 0 ? 0 : _a,
+                                _b = shapeArgs.width,
+                                width = _b === void 0 ? 0 : _b;
+                            // #17912, aligning column range points
+                            // merge if shapeArgs contains more properties e.g. for 3d
+                            point.shapeArgs = merge(point.shapeArgs, _this.crispCol(x, y, width, height));
+                            point.tooltipPos = chart.inverted ?
+                                [
+                                    yAxis.len + yAxis.pos - chart.plotLeft - y -
+                                        height / 2,
+                                    xAxis.len + xAxis.pos - chart.plotTop - x -
+                                        width / 2,
+                                    height
+                                ] : [
+                                xAxis.left - chart.plotLeft + x + width / 2,
+                                yAxis.pos - chart.plotTop + y + height / 2,
+                                height
+                            ]; // don't inherit from column tooltip position - #3372
+                        }
+                    }
+                });
+            };
             /* *
              *
              *  Static Properties
@@ -4451,84 +4497,7 @@
             return ColumnRangeSeries;
         }(AreaRangeSeries));
         addEvent(ColumnRangeSeries, 'afterColumnTranslate', function () {
-            var _this = this;
-            /**
-             * Translate data points from raw values x and y to plotX and plotY
-             * @private
-             */
-            var yAxis = this.yAxis,
-                xAxis = this.xAxis,
-                startAngleRad = xAxis.startAngleRad,
-                chart = this.chart,
-                isRadial = this.xAxis.isRadial,
-                safeDistance = Math.max(chart.chartWidth,
-                chart.chartHeight) + 999;
-            var height,
-                heightDifference,
-                start,
-                plotHigh,
-                y;
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Don't draw too far outside plot area (#6835)
-             * @private
-             */
-            function safeBounds(pixelPos) {
-                return clamp(pixelPos, -safeDistance, safeDistance);
-            }
-            // Set plotLow and plotHigh
-            this.points.forEach(function (point) {
-                var shapeArgs = point.shapeArgs || {},
-                    minPointLength = _this.options.minPointLength,
-                    plotY = point.plotY,
-                    plotHigh = yAxis.translate(point.high, 0, 1, 0, 1);
-                if (isNumber(plotHigh) && isNumber(plotY)) {
-                    point.plotHigh = safeBounds(plotHigh);
-                    point.plotLow = safeBounds(plotY);
-                    // adjust shape
-                    y = point.plotHigh;
-                    height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
-                    // Adjust for minPointLength
-                    if (Math.abs(height) < minPointLength) {
-                        heightDifference = (minPointLength - height);
-                        height += heightDifference;
-                        y -= heightDifference / 2;
-                        // Adjust for negative ranges or reversed Y axis (#1457)
-                    }
-                    else if (height < 0) {
-                        height *= -1;
-                        y -= height;
-                    }
-                    if (isRadial && _this.polar) {
-                        start = point.barX + startAngleRad;
-                        point.shapeType = 'arc';
-                        point.shapeArgs = _this.polar.arc(y + height, y, start, start + point.pointWidth);
-                    }
-                    else {
-                        shapeArgs.height = height;
-                        shapeArgs.y = y;
-                        var _a = shapeArgs.x,
-                            x = _a === void 0 ? 0 : _a,
-                            _b = shapeArgs.width,
-                            width = _b === void 0 ? 0 : _b;
-                        // #17912, aligning column range points
-                        // merge if shapeArgs contains more properties e.g. for 3d
-                        point.shapeArgs = merge(point.shapeArgs, _this.crispCol(x, y, width, height));
-                        point.tooltipPos = chart.inverted ?
-                            [
-                                yAxis.len + yAxis.pos - chart.plotLeft - y -
-                                    height / 2,
-                                xAxis.len + xAxis.pos - chart.plotTop - x -
-                                    width / 2,
-                                height
-                            ] : [
-                            xAxis.left - chart.plotLeft + x + width / 2,
-                            yAxis.pos - chart.plotTop + y + height / 2,
-                            height
-                        ]; // don't inherit from column tooltip position - #3372
-                    }
-                }
-            });
+            ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
         }, { order: 5 });
         extend(ColumnRangeSeries.prototype, {
             directTouch: true,
@@ -5041,8 +5010,7 @@
                 grouping: false,
                 /**
                  * The parent series of the error bar. The default value links it to
-                 * the previous series. Otherwise,
-            use the id of the parent series.
+                 * the previous series. Otherwise, use the id of the parent series.
                  *
                  * @since   3.0
                  * @product highcharts
@@ -5052,10 +5020,8 @@
                     pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.low}</b> - <b>{point.high}</b><br/>'
                 },
                 /**
-                 * The line width of the whiskers,
-            the horizontal lines marking
-                 * low and high values. When `null`,
-            the general
+                 * The line width of the whiskers, the horizontal lines marking
+                 * low and high values. When `null`, the general
                  * [lineWidth](#plotOptions.errorbar.lineWidth) applies.
                  *
                  * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
@@ -5417,13 +5383,7 @@
                     center = yAxis.center;
                 series.generatePoints();
                 series.points.forEach(function (point) {
-                    var dialOptions = merge(options.dial,
-                        point.dial),
-                        radius = (pInt(dialOptions.radius) * center[2]) / 200,
-                        baseLength = (pInt(dialOptions.baseLength) * radius) / 100,
-                        rearLength = (pInt(dialOptions.rearLength) * radius) / 100,
-                        baseWidth = dialOptions.baseWidth,
-                        topWidth = dialOptions.topWidth;
+                    var dialOptions = merge(options.dial, point.dial), radius = (pInt(dialOptions.radius) * center[2]) / 200, baseLength = (pInt(dialOptions.baseLength) * radius) / 100, rearLength = (pInt(dialOptions.rearLength) * radius) / 100, baseWidth = dialOptions.baseWidth, topWidth = dialOptions.topWidth;
                     var overshoot = options.overshoot,
                         rotation = yAxis.startAngleRad + yAxis.translate(point.y,
                         void 0,
@@ -6402,10 +6362,8 @@
                 /**
                  * Minimum bubble size. Bubbles will automatically size between the
                  * `minSize` and `maxSize` to reflect the value of each bubble.
-                 * Can be either pixels (when no unit is given),
-            or a percentage of
-                 * the smallest one of the plot width and height,
-            divided by the square
+                 * Can be either pixels (when no unit is given), or a percentage of
+                 * the smallest one of the plot width and height, divided by the square
                  * root of total number of points.
                  *
                  * @sample highcharts/plotoptions/bubble-size/
@@ -6419,10 +6377,8 @@
                 /**
                  * Maximum bubble size. Bubbles will automatically size between the
                  * `minSize` and `maxSize` to reflect the value of each bubble.
-                 * Can be either pixels (when no unit is given),
-            or a percentage of
-                 * the smallest one of the plot width and height,
-            divided by the square
+                 * Can be either pixels (when no unit is given), or a percentage of
+                 * the smallest one of the plot width and height, divided by the square
                  * root of total number of points.
                  *
                  * @sample highcharts/plotoptions/bubble-size/
@@ -6452,10 +6408,8 @@
                  * An option is giving a possibility to choose between using simulation
                  * for calculating bubble positions. These reflects in both animation
                  * and final position of bubbles. Simulation is also adding options to
-                 * the series graph based on used layout. In case of big data sets,
-            with
-                 * any performance issues,
-            it is possible to disable animation and pack
+                 * the series graph based on used layout. In case of big data sets, with
+                 * any performance issues, it is possible to disable animation and pack
                  * bubble in a simple circular way.
                  *
                  * @sample highcharts/series-packedbubble/spiral/
@@ -6494,8 +6448,7 @@
                      * The
                      * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
                      * specifying what to show for _node_ in the networkgraph. In v7.0
-                     * defaults to `{key}`,
-            since v7.1 defaults to `undefined` and
+                     * defaults to `{key}`, since v7.1 defaults to `undefined` and
                      * `formatter` is used instead.
                      *
                      * @type      {string}
@@ -6505,8 +6458,7 @@
                     // eslint-disable-next-line valid-jsdoc
                     /**
                      * Callback JavaScript function to format the data label for a node.
-                     * Note that if a `format` is defined,
-            the format takes precedence
+                     * Note that if a `format` is defined, the format takes precedence
                      * and the formatter is ignored.
                      *
                      * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
@@ -6897,17 +6849,11 @@
          * @param {Highcharts.Point} node node that should be translated
          */
         function integrate(layout, node) {
-            var friction = -layout.options.friction,
-                maxSpeed = layout.options.maxSpeed,
-                prevX = node.prevX,
-                prevY = node.prevY, 
+            var friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
                 // Apply friciton:
                 diffX = ((node.plotX + node.dispX -
-                    prevX) * friction),
-                diffY = ((node.plotY + node.dispY -
-                    prevY) * friction),
-                abs = Math.abs,
-                signX = abs(diffX) / (diffX || 1), // need to deal with 0
+                    prevX) * friction), diffY = ((node.plotY + node.dispY -
+                    prevY) * friction), abs = Math.abs, signX = abs(diffX) / (diffX || 1), // need to deal with 0
                 signY = abs(diffY) / (diffY || 1);
             // Apply max speed:
             diffX = signX * Math.min(maxSpeed, Math.abs(diffX));
@@ -7027,9 +6973,7 @@
          */
         function repulsive(node, force, distanceXY, repNode) {
             var factor = (force * this.diffTemperature / node.mass /
-                    node.degree),
-                x = distanceXY.x * factor,
-                y = distanceXY.y * factor;
+                    node.degree), x = distanceXY.x * factor, y = distanceXY.y * factor;
             if (!node.fixedPosition) {
                 node.plotX += x;
                 node.plotY += y;
@@ -7094,9 +7038,7 @@
          * @param {number} distanceR
              */
         function attractive(link, force, distanceXY, distanceR) {
-            var massFactor = link.getMass(),
-                translatedX = (distanceXY.x / distanceR) * force,
-                translatedY = (distanceXY.y / distanceR) * force;
+            var massFactor = link.getMass(), translatedX = (distanceXY.x / distanceR) * force, translatedY = (distanceXY.y / distanceR) * force;
             if (!link.fromNode.fixedPosition) {
                 link.fromNode.dispX -=
                     translatedX * massFactor.fromNode / link.fromNode.degree;
@@ -7380,8 +7322,7 @@
              * ```
              */
             QuadTreeNode.prototype.divideBox = function () {
-                var halfWidth = this.box.width / 2,
-                    halfHeight = this.box.height / 2;
+                var halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
                 // Top left
                 this.nodes[0] = new QuadTreeNode({
                     left: this.box.left,
@@ -7417,8 +7358,7 @@
              * @private
              */
             QuadTreeNode.prototype.getBoxPosition = function (point) {
-                var left = point.plotX < this.box.left + this.box.width / 2,
-                    top = point.plotY < this.box.top + this.box.height / 2;
+                var left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
                 var index;
                 if (left) {
                     if (top) {
@@ -8911,6 +8851,7 @@
              * @private
              */
             PackedBubbleSeries.prototype.drawGraph = function () {
+                var _a;
                 // if the series is not using layout, don't add parent nodes
                 if (!this.layout || !this.layout.options.splitSeries) {
                     return;
@@ -8926,28 +8867,32 @@
                     this.options.lineWidth)
                     };
                 var parentAttribs = {};
-                // create the group for parent Nodes if doesn't exist
-                if (!this.parentNodesGroup) {
-                    this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-                    this.group.attr({
-                        zIndex: 2
-                    });
-                }
+                // Create the group for parent Nodes if doesn't exist
+                // If exists it will only be adjusted to the updated plot size (#12063)
+                this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
+                (_a = this.group) === null || _a === void 0 ? void 0 : _a.attr({
+                    zIndex: 2
+                });
                 this.calculateParentRadius();
-                parentAttribs = merge({
-                    x: this.parentNode.plotX -
-                        this.parentNodeRadius,
-                    y: this.parentNode.plotY -
-                        this.parentNodeRadius,
-                    width: this.parentNodeRadius * 2,
-                    height: this.parentNodeRadius * 2
-                }, parentOptions);
-                if (!this.parentNode.graphic) {
-                    this.graph = this.parentNode.graphic =
-                        chart.renderer.symbol(parentOptions.symbol)
-                            .add(this.parentNodesGroup);
+                if (this.parentNode &&
+                    defined(this.parentNode.plotX) &&
+                    defined(this.parentNode.plotY) &&
+                    defined(this.parentNodeRadius)) {
+                    parentAttribs = merge({
+                        x: this.parentNode.plotX -
+                            this.parentNodeRadius,
+                        y: this.parentNode.plotY -
+                            this.parentNodeRadius,
+                        width: this.parentNodeRadius * 2,
+                        height: this.parentNodeRadius * 2
+                    }, parentOptions);
+                    if (!this.parentNode.graphic) {
+                        this.graph = this.parentNode.graphic =
+                            chart.renderer.symbol(parentOptions.symbol)
+                                .add(this.parentNodesGroup);
+                    }
+                    this.parentNode.graphic.attr(parentAttribs);
                 }
-                this.parentNode.graphic.attr(parentAttribs);
             };
             PackedBubbleSeries.prototype.drawTracker = function () {
                 var parentNode = this.parentNode;
@@ -9003,8 +8948,7 @@
                     value,
                     radius;
                 ['minSize', 'maxSize'].forEach(function (prop) {
-                    var length = parseInt(seriesOptions[prop], 10),
-                        isPercent = /%$/.test(seriesOptions[prop]);
+                    var length = parseInt(seriesOptions[prop], 10), isPercent = /%$/.test(seriesOptions[prop]);
                     extremes[prop] = isPercent ?
                         smallestSize * length / 100 :
                         length * Math.sqrt(allDataPointsLength);
@@ -9222,21 +9166,14 @@
              * @return {Array<number>} Bubble with correct positions
              */
             PackedBubbleSeries.prototype.positionBubble = function (lastBubble, newOrigin, nextBubble) {
-                var sqrt = Math.sqrt,
-                    asin = Math.asin,
-                    acos = Math.acos,
-                    pow = Math.pow,
-                    abs = Math.abs,
-                    distance = sqrt(// dist between lastBubble and newOrigin
+                var sqrt = Math.sqrt, asin = Math.asin, acos = Math.acos, pow = Math.pow, abs = Math.abs, distance = sqrt(// dist between lastBubble and newOrigin
                     pow((lastBubble[0] - newOrigin[0]), 2) +
-                        pow((lastBubble[1] - newOrigin[1]), 2)),
-                    alfa = acos(
+                        pow((lastBubble[1] - newOrigin[1]), 2)), alfa = acos(
                     // from cosinus theorem: alfa is an angle used for
                     // calculating correct position
                     (pow(distance, 2) +
                         pow(nextBubble[2] + newOrigin[2], 2) -
-                        pow(nextBubble[2] + lastBubble[2], 2)) / (2 * (nextBubble[2] + newOrigin[2]) * distance)),
-                    beta = asin(// from sinus theorem.
+                        pow(nextBubble[2] + lastBubble[2], 2)) / (2 * (nextBubble[2] + newOrigin[2]) * distance)), beta = asin(// from sinus theorem.
                     abs(lastBubble[0] - newOrigin[0]) /
                         distance), 
                     // providing helping variables, related to angle between
@@ -9248,10 +9185,7 @@
                     delta = (lastBubble[0] - newOrigin[0]) *
                         (lastBubble[1] - newOrigin[1]) < 0 ?
                         1 : -1, // (1st and 3rd quarter)
-                    finalAngle = gamma + alfa + beta * delta,
-                    cosA = Math.cos(finalAngle),
-                    sinA = Math.sin(finalAngle),
-                    posX = newOrigin[0] + (newOrigin[2] + nextBubble[2]) * sinA, 
+                    finalAngle = gamma + alfa + beta * delta, cosA = Math.cos(finalAngle), sinA = Math.sin(finalAngle), posX = newOrigin[0] + (newOrigin[2] + nextBubble[2]) * sinA, 
                     // center of new origin + (radius1 + radius2) * sinus A
                     posY = newOrigin[1] - (newOrigin[2] + nextBubble[2]) * cosA;
                 return [
@@ -11436,9 +11370,7 @@
                         // Start and end angle options are given in degrees relative to
                         // top, while internal computations are in radians relative to
                         // right (like SVG).
-                        start = (pick(paneOptions.startAngle, 0) - 90) * Math.PI / 180,
-                        end = (pick(paneOptions.endAngle,
-                        pick(paneOptions.startAngle, 0) + 360) - 90) * Math.PI / 180;
+                        start = (pick(paneOptions.startAngle, 0) - 90) * Math.PI / 180, end = (pick(paneOptions.endAngle, pick(paneOptions.startAngle, 0) + 360) - 90) * Math.PI / 180;
                     // Y axis in polar charts
                     this.angleRad = (options.angle || 0) * Math.PI / 180;
                     // Gauges
@@ -11571,13 +11503,8 @@
                 if (!label) {
                     return;
                 }
-                var axis = this.axis,
-                    labelBBox = label.getBBox(),
-                    labelOptions = axis.options.labels,
-                    angle = ((axis.translate(this.pos) + axis.startAngleRad +
-                        Math.PI / 2) / Math.PI * 180) % 360,
-                    correctAngle = Math.round(angle),
-                    labelYPosCorrection = !defined(labelOptions.y) ? -labelBBox.height * 0.3 : 0;
+                var axis = this.axis, labelBBox = label.getBBox(), labelOptions = axis.options.labels, angle = ((axis.translate(this.pos) + axis.startAngleRad +
+                        Math.PI / 2) / Math.PI * 180) % 360, correctAngle = Math.round(angle), labelYPosCorrection = !defined(labelOptions.y) ? -labelBBox.height * 0.3 : 0;
                 var optionsY = labelOptions.y, ret, centerSlot = 20, // 20 degrees to each side at the top and bottom
                     align = labelOptions.align, labelDir = 'end', // Direction of the label 'start' or 'end'
                     reducedAngle1 = correctAngle < 0 ?
@@ -12222,10 +12149,7 @@
                         pathEnd = radialAxis.toValue(min + max);
                     // Trim path
                     if (attrs.d instanceof Array) {
-                        var innerPath = attrs.d.slice(0,
-                            attrs.d.length / 2),
-                            outerPath = attrs.d.slice(attrs.d.length / 2,
-                            attrs.d.length);
+                        var innerPath = attrs.d.slice(0, attrs.d.length / 2), outerPath = attrs.d.slice(attrs.d.length / 2, attrs.d.length);
                         outerPath = __spreadArray([], outerPath, true).reverse();
                         var radialAxis_1 = chart.hoverPane.axis;
                         innerPath = trimPath(innerPath, pathStart, pathEnd, radialAxis_1);

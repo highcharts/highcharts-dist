@@ -39,7 +39,7 @@ function onAxisInit() {
  * @private
  */
 function onAxisZoom(e) {
-    const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chartOptions.chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chartOptions.chart.zooming.type;
+    const axis = this, chart = axis.chart, chartOptions = chart.options, navigator = chartOptions.navigator, navigatorAxis = axis.navigatorAxis, pinchType = chart.zooming.pinchType, rangeSelector = chartOptions.rangeSelector, zoomType = chart.zooming.type;
     if (axis.isXAxis && ((navigator && navigator.enabled) ||
         (rangeSelector && rangeSelector.enabled))) {
         // For y only zooming, ignore the X axis completely
@@ -123,7 +123,7 @@ class NavigatorAxisAdditions {
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
         const axis = this.axis, chart = axis.chart;
         let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
-        const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2, changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+        const fixedRange = chart && chart.fixedRange, halfPointRange = (axis.pointRange || 0) / 2;
         // Add/remove half point range to/from the extremes (#1172)
         if (!defined(fixedMin)) {
             newMin = correctFloat(newMin + halfPointRange);
@@ -131,15 +131,13 @@ class NavigatorAxisAdditions {
         if (!defined(fixedMax)) {
             newMax = correctFloat(newMax - halfPointRange);
         }
-        // If the difference between the fixed range and the actual requested
-        // range is too great, the user is dragging across an ordinal gap, and
-        // we need to release the range selector button.
-        if (changeRatio > 0.7 && changeRatio < 1.3) {
-            if (fixedMax) {
-                newMin = newMax - fixedRange;
+        // Make sure panning to the edges does not decrease the zoomed range
+        if (fixedRange && axis.dataMin && axis.dataMax) {
+            if (newMax >= axis.dataMax) {
+                newMin = correctFloat(axis.dataMax - fixedRange);
             }
-            else {
-                newMax = newMin + fixedRange;
+            if (newMin <= axis.dataMin) {
+                newMax = correctFloat(axis.dataMin + fixedRange);
             }
         }
         if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411

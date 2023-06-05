@@ -23,7 +23,7 @@ import SeriesRegistry from './SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import SVGElement from '../Renderer/SVG/SVGElement.js';
 import U from '../Utilities.js';
-const { addEvent, arrayMax, arrayMin, clamp, cleanRecursively, correctFloat, defined, erase, error, extend, find, fireEvent, getNestedProperty, isArray, isNumber, isString, merge, objectEach, pick, removeEvent, splat, syncTimeout } = U;
+const { addEvent, arrayMax, arrayMin, clamp, correctFloat, defined, diffObjects, erase, error, extend, find, fireEvent, getClosestDistance, getNestedProperty, insertItem, isArray, isNumber, isString, merge, objectEach, pick, removeEvent, splat, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -209,7 +209,7 @@ class Series {
         series.opacity = series.options.opacity;
         // Insert the series and re-order all series above the insertion
         // point.
-        chart.orderSeries(this.insert(chartSeries));
+        chart.orderItems('series', insertItem(this, chartSeries));
         // Set options for series with sorting and set data later.
         if (options.dataSorting && options.dataSorting.enabled) {
             series.setDataSortingOptions();
@@ -235,43 +235,6 @@ class Series {
         return seriesTypes[type] && this instanceof seriesTypes[type];
     }
     /**
-     * Insert the series in a collection with other series, either the chart
-     * series or yAxis series, in the correct order according to the index
-     * option. Used internally when adding series.
-     *
-     * @private
-     * @function Highcharts.Series#insert
-     * @param {Array<Highcharts.Series>} collection
-     *        A collection of series, like `chart.series` or `xAxis.series`.
-     * @return {number}
-     *         The index of the series in the collection.
-     */
-    insert(collection) {
-        const indexOption = this.options.index;
-        let i;
-        // Insert by index option
-        if (isNumber(indexOption)) {
-            i = collection.length;
-            while (i--) {
-                // Loop down until the interted element has higher index
-                if (indexOption >=
-                    pick(collection[i].options.index, collection[i]._i)) {
-                    collection.splice(i + 1, 0, this);
-                    break;
-                }
-            }
-            if (i === -1) {
-                collection.unshift(this);
-            }
-            i = i + 1;
-            // Or just push it to the end
-        }
-        else {
-            collection.push(this);
-        }
-        return pick(i, collection.length - 1);
-    }
-    /**
      * Set the xAxis and yAxis properties of cartesian series, and register
      * the series in the `axis.series` array.
      *
@@ -283,24 +246,19 @@ class Series {
         let axisOptions;
         fireEvent(this, 'bindAxes', null, function () {
             // repeat for xAxis and yAxis
-            (series.axisTypes || []).forEach(function (AXIS) {
-                let index = 0;
+            (series.axisTypes || []).forEach(function (coll) {
                 // loop through the chart's axis objects
-                chart[AXIS].forEach(function (axis) {
+                chart[coll].forEach(function (axis) {
                     axisOptions = axis.options;
                     // apply if the series xAxis or yAxis option mathches
                     // the number of the axis, or if undefined, use the
                     // first axis
-                    if ((seriesOptions[AXIS] === index &&
-                        !axisOptions.isInternal) ||
-                        (typeof seriesOptions[AXIS] !==
+                    if (pick(seriesOptions[coll], 0) === axis.index ||
+                        (typeof seriesOptions[coll] !==
                             'undefined' &&
-                            seriesOptions[AXIS] === axisOptions.id) ||
-                        (typeof seriesOptions[AXIS] ===
-                            'undefined' &&
-                            axisOptions.index === 0)) {
+                            seriesOptions[coll] === axisOptions.id)) {
                         // register this series in the axis.series lookup
-                        series.insert(axis.series);
+                        insertItem(series, axis.series);
                         // set this series.xAxis or series.yAxis reference
                         /**
                          * Read only. The unique xAxis object associated
@@ -316,17 +274,14 @@ class Series {
                          * @name Highcharts.Series#yAxis
                          * @type {Highcharts.Axis}
                          */
-                        series[AXIS] = axis;
+                        series[coll] = axis;
                         // mark dirty for redraw
                         axis.isDirty = true;
                     }
-                    if (!axisOptions.isInternal) {
-                        index++;
-                    }
                 });
                 // The series needs an X and an Y axis
-                if (!series[AXIS] &&
-                    series.optionalAxis !== AXIS) {
+                if (!series[coll] &&
+                    series.optionalAxis !== coll) {
                     error(18, true, chart);
                 }
             });
@@ -442,6 +397,7 @@ class Series {
      * @emits Highcharts.Series#event:afterSetOptions
      */
     setOptions(itemOptions) {
+        var _a, _b;
         const chart = this.chart, chartOptions = chart.options, plotOptions = chartOptions.plotOptions, userOptions = chart.userOptions || {}, seriesUserOptions = merge(itemOptions), styledMode = chart.styledMode, e = {
             plotOptions: plotOptions,
             userOptions: seriesUserOptions
@@ -449,7 +405,7 @@ class Series {
         let zone;
         fireEvent(this, 'setOptions', e);
         // These may be modified by the event
-        const typeOptions = e.plotOptions[this.type], userPlotOptions = (userOptions.plotOptions || {});
+        const typeOptions = e.plotOptions[this.type], userPlotOptions = (userOptions.plotOptions || {}), userPlotOptionsSeries = userPlotOptions.series || {}, defaultPlotOptionsType = (defaultOptions.plotOptions[this.type] || {}), userPlotOptionsType = userPlotOptions[this.type] || {};
         // use copy to prevent undetected changes (#9762)
         /**
          * Contains series options by the user without defaults.
@@ -460,8 +416,7 @@ class Series {
         const options = merge(typeOptions, plotOptions.series, 
         // #3881, chart instance plotOptions[type] should trump
         // plotOptions.series
-        userOptions.plotOptions &&
-            userOptions.plotOptions[this.type], seriesUserOptions);
+        userPlotOptionsType, seriesUserOptions);
         // The tooltip options are merged between global and series specific
         // options. Importance order asscendingly:
         // globals: (1)tooltip, (2)plotOptions.series,
@@ -469,19 +424,16 @@ class Series {
         // init userOptions with possible later updates: 4-6 like 1-3 and
         // (7)this series options
         this.tooltipOptions = merge(defaultOptions.tooltip, // 1
-        defaultOptions.plotOptions.series &&
-            defaultOptions.plotOptions.series.tooltip, // 2
-        defaultOptions.plotOptions[this.type].tooltip, // 3
-        chartOptions.tooltip.userOptions, // 4
-        plotOptions.series &&
-            plotOptions.series.tooltip, // 5
-        plotOptions[this.type].tooltip, // 6
+        (_a = defaultOptions.plotOptions.series) === null || _a === void 0 ? void 0 : _a.tooltip, // 2
+        defaultPlotOptionsType === null || defaultPlotOptionsType === void 0 ? void 0 : defaultPlotOptionsType.tooltip, // 3
+        chart.userOptions.tooltip, // 4
+        (_b = userPlotOptions.series) === null || _b === void 0 ? void 0 : _b.tooltip, // 5
+        userPlotOptionsType.tooltip, // 6
         seriesUserOptions.tooltip // 7
         );
         // When shared tooltip, stickyTracking is true by default,
         // unless user says otherwise.
-        this.stickyTracking = pick(seriesUserOptions.stickyTracking, userPlotOptions[this.type] &&
-            userPlotOptions[this.type].stickyTracking, userPlotOptions.series && userPlotOptions.series.stickyTracking, (this.tooltipOptions.shared && !this.noSharedTooltip ?
+        this.stickyTracking = pick(seriesUserOptions.stickyTracking, userPlotOptionsType.stickyTracking, userPlotOptionsSeries.stickyTracking, (this.tooltipOptions.shared && !this.noSharedTooltip ?
             true :
             options.stickyTracking));
         // Delete marker object if not allowed (#1125)
@@ -535,12 +487,16 @@ class Series {
      * @function Highcharts.Series#getCyclic
      */
     getCyclic(prop, value, defaults) {
-        const chart = this.chart, userOptions = this.userOptions, indexName = prop + 'Index', counterName = prop + 'Counter', len = defaults ? defaults.length : pick(chart.options.chart[prop + 'Count'], chart[prop + 'Count']);
+        const chart = this.chart, indexName = `${prop}Index`, counterName = `${prop}Counter`, len = (
+        // Symbol count
+        (defaults === null || defaults === void 0 ? void 0 : defaults.length) ||
+            // Color count
+            chart.options.chart.colorCount);
         let i, setting;
         if (!value) {
-            // Pick up either the colorIndex option, or the _colorIndex
+            // Pick up either the colorIndex option, or the series.colorIndex
             // after Series.update()
-            setting = pick(userOptions[indexName], userOptions['_' + indexName]);
+            setting = pick(prop === 'color' ? this.options.colorIndex : void 0, this[indexName]);
             if (defined(setting)) { // after Series.update()
                 i = setting;
             }
@@ -549,8 +505,7 @@ class Series {
                 if (!chart.series.length) {
                     chart[counterName] = 0;
                 }
-                userOptions['_' + indexName] = i =
-                    chart[counterName] % len;
+                i = chart[counterName] % len;
                 chart[counterName] += 1;
             }
             if (defaults) {
@@ -1029,11 +984,10 @@ class Series {
         const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
             series.getExtremesFromAll ||
             options.getExtremesFromAll, // #4599
-        isCartesian = series.isCartesian, val2lin = xAxis && xAxis.val2lin, isLog = !!(xAxis && xAxis.logarithmic);
-        let croppedData, cropped, cropStart = 0, distance, closestPointRange, i, // loop variable
-        xExtremes, min, max, 
+        logarithmic = xAxis === null || xAxis === void 0 ? void 0 : xAxis.logarithmic, isCartesian = series.isCartesian;
+        let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
         // copied during slice operation:
-        processedXData = series.xData, processedYData = series.yData, throwOnUnsorted = series.requireSorting, updatingNames = false;
+        processedXData = series.xData, processedYData = series.yData, updatingNames = false;
         const dataLength = processedXData.length;
         if (xAxis) {
             // corrected for log axis (#3053)
@@ -1066,28 +1020,18 @@ class Series {
             }
         }
         // Find the closest distance between processed points
-        i = processedXData.length || 1;
-        while (--i) {
-            distance = (isLog ?
-                (val2lin(processedXData[i]) -
-                    val2lin(processedXData[i - 1])) :
-                (processedXData[i] -
-                    processedXData[i - 1]));
-            if (distance > 0 &&
-                (typeof closestPointRange === 'undefined' ||
-                    distance < closestPointRange)) {
-                closestPointRange = distance;
-                // Unsorted data is not supported by the line tooltip, as well
-                // as data grouping and navigation in Stock charts (#725) and
-                // width calculation of columns (#1900).
-                // Avoid warning during the premature processing pass in
-                // updateNames (#16104).
-            }
-            else if (distance < 0 && throwOnUnsorted && !updatingNames) {
-                error(15, false, series.chart);
-                throwOnUnsorted = false; // Only once
-            }
-        }
+        const closestPointRange = getClosestDistance([
+            logarithmic ?
+                processedXData.map(logarithmic.log2lin) :
+                processedXData
+        ], 
+        // Unsorted data is not supported by the line tooltip, as well as
+        // data grouping and navigation in Stock charts (#725) and width
+        // calculation of columns (#1900). Avoid warning during the
+        // premature processing pass in updateNames (#16104).
+        () => (series.requireSorting &&
+            !updatingNames &&
+            error(15, false, series.chart)));
         return {
             xData: processedXData,
             yData: processedYData,
@@ -1409,7 +1353,7 @@ class Series {
         }
         this.generatePoints();
         const series = this, options = series.options, stacking = options.stacking, xAxis = series.xAxis, categories = xAxis.categories, enabledDataSorting = series.enabledDataSorting, yAxis = series.yAxis, points = series.points, dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
-        dynamicallyPlaced = Boolean(pointPlacement), threshold = options.threshold, stackThreshold = options.startFromThreshold ? threshold : 0, zoneAxis = this.zoneAxis || 'y';
+        dynamicallyPlaced = Boolean(pointPlacement), threshold = options.threshold, stackThreshold = options.startFromThreshold ? threshold : 0;
         let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
         /**
          * Plotted coordinates need to be within a limited range. Drawing
@@ -1507,11 +1451,8 @@ class Series {
             point.clientX = dynamicallyPlaced ?
                 correctFloat(xAxis.translate(xValue, false, false, false, true, pointPlacement)) :
                 plotX; // #1514, #5383, #5518
-            // Negative points. For bubble charts, this means negative z
-            // values (#9728)
-            point.negative = point[zoneAxis] < (options[zoneAxis + 'Threshold'] ||
-                threshold ||
-                0);
+            // Negative points #19028
+            point.negative = (point.y || 0) < (threshold || 0);
             // some API data
             point.category = pick(categories && categories[point.x], point.x);
             // Determine auto enabling of markers (#3635, #5099)
@@ -1983,7 +1924,7 @@ class Series {
             chart.hoverSeries = void 0;
         }
         erase(chart.series, series);
-        chart.orderSeries();
+        chart.orderItems('series');
         // clear all members
         objectEach(series, function (val, prop) {
             if (!keepEventsForUpdate || prop !== 'hcEvents') {
@@ -2227,9 +2168,9 @@ class Series {
         if (series.redrawPoints) {
             series.redrawPoints();
         }
-        // draw the mouse tracking area
+        // Draw the mouse tracking area
         if (series.drawTracker &&
-            series.options.enableMouseTracking !== false) {
+            options.enableMouseTracking) {
             series.drawTracker();
         }
         // Run the animation
@@ -2457,7 +2398,8 @@ class Series {
             series.graphPath), 
         // trackerPathLength = trackerPath.length,
         chart = series.chart, pointer = chart.pointer, renderer = chart.renderer, snap = chart.options.tooltip.snap, tracker = series.tracker, onMouseOver = function (e) {
-            if (chart.hoverSeries !== series) {
+            if (options.enableMouseTracking &&
+                chart.hoverSeries !== series) {
                 series.onMouseOver();
             }
         }, 
@@ -2758,7 +2700,7 @@ class Series {
      * @emits Highcharts.Series#event:afterUpdate
      */
     update(options, redraw) {
-        options = cleanRecursively(options, this.userOptions);
+        options = diffObjects(options, this.userOptions);
         fireEvent(this, 'update', { options: options });
         const series = this, chart = series.chart, 
         // must use user options when changing type because series.options
@@ -2775,8 +2717,10 @@ class Series {
         // rules (#6912).
         animation = series.finishedAnimating && { animation: false }, kinds = {};
         let seriesOptions, n, preserve = [
+            'colorIndex',
             'eventOptions',
             'navigatorSeries',
+            'symbolIndex',
             'baseSeries'
         ], newType = (options.type ||
             oldOptions.type ||

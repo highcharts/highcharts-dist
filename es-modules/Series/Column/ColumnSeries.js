@@ -354,6 +354,7 @@ class ColumnSeries extends Series {
                     // for it (#14876)
                     (dataMin !== dataMax || (yAxis.max || 0) <= threshold)) {
                     up = !up;
+                    point.negative = !point.negative;
                 }
                 // If stacked...
                 barY = (Math.abs(barY - translatedThreshold) > minPointLength ?
@@ -547,7 +548,8 @@ class ColumnSeries extends Series {
         const series = this, chart = series.chart, pointer = chart.pointer, onMouseOver = function (e) {
             const point = pointer.getPointFromEvent(e);
             // undefined on graph in scatterchart
-            if (typeof point !== 'undefined') {
+            if (typeof point !== 'undefined' &&
+                series.options.enableMouseTracking) {
                 pointer.isDirectTouch = true;
                 point.onMouseOver(e);
             }

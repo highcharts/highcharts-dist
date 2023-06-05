@@ -9,7 +9,7 @@
  * */
 'use strict';
 import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+const { animObject, stop } = A;
 import ColorMapComposition from '../ColorMapComposition.js';
 import CU from '../CenteredUtilities.js';
 import H from '../../Core/Globals.js';
@@ -266,20 +266,14 @@ class MapSeries extends ScatterSeries {
                     });
                     animatePoints(scaleStep); // #18166
                 };
-                let animOptions = {};
-                if (chart.options.chart) {
-                    animOptions = merge({}, chart.options.chart.animation);
-                }
-                if (typeof animOptions !== 'boolean') {
-                    const userStep = animOptions.step;
-                    animOptions.step =
-                        function (obj) {
-                            if (userStep) {
-                                userStep.apply(this, arguments);
-                            }
-                            step.apply(this, arguments);
-                        };
-                }
+                const animOptions = merge(animObject(renderer.globalAnimation)), userStep = animOptions.step;
+                animOptions.step =
+                    function (obj) {
+                        if (userStep) {
+                            userStep.apply(this, arguments);
+                        }
+                        step.apply(this, arguments);
+                    };
                 transformGroup
                     .attr({ animator: 0 })
                     .animate({ animator: 1 }, animOptions, function () {
@@ -294,6 +288,7 @@ class MapSeries extends ScatterSeries {
                 // When dragging or first rendering, animation is off
             }
             else {
+                stop(transformGroup);
                 transformGroup.attr(merge(svgTransform, { 'stroke-width': strokeWidth / scale }));
                 animatePoints(scale); // #18166
             }

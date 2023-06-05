@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Pictorial graph series type for Highcharts
  *
@@ -669,8 +669,7 @@
         var defined = U.defined;
         function rescalePatternFill(element, stackHeight, width, height, borderWidth) {
             if (borderWidth === void 0) { borderWidth = 1; }
-            var fill = element && element.attr('fill'),
-                match = fill && fill.match(/url\(([^)]+)\)/);
+            var fill = element && element.attr('fill'), match = fill && fill.match(/url\(([^)]+)\)/);
             if (match) {
                 var patternPath = document.querySelector("" + match[1] + " path");
                 if (patternPath) {
@@ -685,10 +684,7 @@
                         parent_1.appendChild(patternPath);
                     }
                     var scaleX = 1 / (bBox.width + borderWidth);
-                    var scaleY = stackHeight / height / bBox.height,
-                        aspectRatio = bBox.width / bBox.height,
-                        pointAspectRatio = width / stackHeight,
-                        x = -bBox.width / 2;
+                    var scaleY = stackHeight / height / bBox.height, aspectRatio = bBox.width / bBox.height, pointAspectRatio = width / stackHeight, x = -bBox.width / 2;
                     if (aspectRatio < pointAspectRatio) {
                         scaleX = scaleX * aspectRatio / pointAspectRatio;
                     }
@@ -1016,9 +1012,7 @@
          *
          * */
         addEvent(PictorialSeries, 'afterRender', function () {
-            var series = this,
-                paths = series.options.paths,
-                fillUrlMatcher = /url\(([^)]+)\)/;
+            var series = this, paths = series.options.paths, fillUrlMatcher = /url\(([^)]+)\)/;
             series.points.forEach(function (point) {
                 if (point.graphic && point.shapeArgs && paths) {
                     var shape = paths[point.index % paths.length],
@@ -1128,9 +1122,7 @@
                         width: width,
                         height: height
                     });
-                    var fillUrlMatcher = /url\(([^)]+)\)/,
-                        fill = stackShadow.attr('fill'),
-                        match = fill && fill.match(fillUrlMatcher);
+                    var fillUrlMatcher = /url\(([^)]+)\)/, fill = stackShadow.attr('fill'), match = fill && fill.match(fillUrlMatcher);
                     if (match && chart.renderer.patternElements) {
                         chart.renderer.patternElements[match[1].slice(1)]
                             .animate({

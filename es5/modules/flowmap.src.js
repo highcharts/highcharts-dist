@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2022
  *
@@ -758,8 +758,7 @@
         var defaultOptions = {
                 /**
                  * The center of the map in terms of longitude and latitude. For
-                 * preprojected maps (like the GeoJSON files in Map Collection v1.x),
-            the
+                 * preprojected maps (like the GeoJSON files in Map Collection v1.x), the
                  * units are projected x and y units.
                  *
                  * @default [0, 0]
@@ -774,8 +773,7 @@
                  * Fit the map to a geometry object consisting of individual points or
                  * polygons. This is practical for responsive maps where we want to focus on
                  * a specific area regardless of map size - unlike setting `center` and
-                 * `zoom`,
-            where the view doesn't scale with different map sizes.
+                 * `zoom`, where the view doesn't scale with different map sizes.
                  *
                  * The geometry can be combined with the [padding](#mapView.padding) option
                  * to avoid touching the edges of the chart.
@@ -798,14 +796,11 @@
                 maxZoom: void 0,
                 /**
                  * The padding inside the plot area when auto fitting to the map bounds. A
-                 * number signifies pixels,
-            and a percentage is relative to the plot area
+                 * number signifies pixels, and a percentage is relative to the plot area
                  * size.
                  *
-                 * An array sets individual padding for the sides in the order [top,
-            right,
-                 * bottom,
-            left].
+                 * An array sets individual padding for the sides in the order [top, right,
+                 * bottom, left].
                  *
                  * @sample {highmaps} maps/chart/plotbackgroundcolor-color
                  *         Visible plot area and percentage padding
@@ -816,8 +811,7 @@
                 padding: 0,
                 /**
                  * The projection options allow applying client side projection to a map
-                 * given in geographic coordinates,
-            typically from TopoJSON or GeoJSON.
+                 * given in geographic coordinates, typically from TopoJSON or GeoJSON.
                  *
                  * @type   {Object}
                  *
@@ -833,9 +827,7 @@
                 projection: {
                     /**
                      * Projection name. Built-in projections are `EqualEarth`,
-                     * `LambertConformalConic`,
-            `Miller`,
-            `Orthographic` and `WebMercator`.
+                     * `LambertConformalConic`, `Miller`, `Orthographic` and `WebMercator`.
                      *
                      * @type   {string}
                      * @sample maps/demo/projection-explorer
@@ -850,10 +842,8 @@
                     name: void 0,
                     /**
                      * The two standard parallels that define the map layout in conic
-                     * projections,
-            like the LambertConformalConic projection. If only one
-                     * number is given,
-            the second parallel will be the same as the first.
+                     * projections, like the LambertConformalConic projection. If only one
+                     * number is given, the second parallel will be the same as the first.
                      *
                      * @sample maps/mapview/projection-parallels
                      *         LCC projection with parallels
@@ -863,10 +853,8 @@
                      */
                     parallels: void 0,
                     /**
-                     * Rotation of the projection in terms of degrees `[lambda,
-            phi,
-                     * gamma]`. When given,
-            a three-axis spherical rotation is be applied
+                     * Rotation of the projection in terms of degrees `[lambda, phi,
+                     * gamma]`. When given, a three-axis spherical rotation is be applied
                      * to the globe prior to the projection.
                      *
                      * * `lambda` shifts the longitudes by the given value.
@@ -885,8 +873,7 @@
                  * increase of 1 zooms in to a quarter of the viewed area (half the width
                  * and height). Defaults to fitting to the map bounds.
                  *
-                 * In a `WebMercator` projection,
-            a zoom level of 0 represents
+                 * In a `WebMercator` projection, a zoom level of 0 represents
                  * the world in a 256x256 pixel square. This is a common concept for WMS
                  * tiling software.
                  *
@@ -1056,7 +1043,7 @@
 
         return defaultOptions;
     });
-    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
+    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1332,14 +1319,11 @@
             var normalized = {
                     x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
                     y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
-                },
-                cosAngle = transform.cosAngle ||
-                    (transform.rotation && Math.cos(transform.rotation)),
-                sinAngle = transform.sinAngle ||
+                }, cosAngle = transform.cosAngle ||
+                    (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
                     (transform.rotation && Math.sin(transform.rotation)), 
                 // Note: Inverted sinAngle to reverse rotation direction
-                projected = proj4(transform.crs, 'WGS84',
-                transform.rotation ? {
+                projected = proj4(transform.crs, 'WGS84', transform.rotation ? {
                     x: normalized.x * cosAngle + normalized.y * -sinAngle,
                     y: normalized.x * sinAngle + normalized.y * cosAngle
                 } : normalized);
@@ -1676,12 +1660,7 @@
          * Lambert Conformal Conic projection
          * */
         var sign = Math.sign ||
-                (function (n) { return (n === 0 ? 0 : n > 0 ? 1 : -1); }),
-            scale = 63.78137,
-            deg2rad = Math.PI / 180,
-            halfPI = Math.PI / 2,
-            eps10 = 1e-6,
-            tany = function (y) { return Math.tan((halfPI + y) / 2); };
+                (function (n) { return (n === 0 ? 0 : n > 0 ? 1 : -1); }), scale = 63.78137, deg2rad = Math.PI / 180, halfPI = Math.PI / 2, eps10 = 1e-6, tany = function (y) { return Math.tan((halfPI + y) / 2); };
         var LambertConformalConic = /** @class */ (function () {
                 function LambertConformalConic(options) {
                     var _a;
@@ -1735,13 +1714,7 @@
                 return xy;
             };
             LambertConformalConic.prototype.inverse = function (xy) {
-                var x = xy[0] / scale,
-                    y = xy[1] / scale,
-                    _a = this,
-                    c = _a.c,
-                    n = _a.n,
-                    cy = c - y,
-                    rho = sign(n) * Math.sqrt(x * x + cy * cy);
+                var x = xy[0] / scale, y = xy[1] / scale, _a = this, c = _a.c, n = _a.n, cy = c - y, rho = sign(n) * Math.sqrt(x * x + cy * cy);
                 var l = Math.atan2(x,
                     Math.abs(cy)) * sign(cy);
                 if (cy * n < 0) {
@@ -1795,11 +1768,7 @@
                 return [x, y];
             };
             EqualEarth.prototype.inverse = function (xy) {
-                var x = xy[0] / scale,
-                    y = xy[1] / scale,
-                    d = 180 / Math.PI,
-                    epsilon = 1e-9,
-                    iterations = 12;
+                var x = xy[0] / scale, y = xy[1] / scale, d = 180 / Math.PI, epsilon = 1e-9, iterations = 12;
                 var paramLat = y,
                     paramLatSq,
                     paramLatPow6,
@@ -1832,9 +1801,7 @@
         /* *
          * Miller projection
          * */
-        var quarterPI = Math.PI / 4,
-            deg2rad = Math.PI / 180,
-            scale = 63.78137;
+        var quarterPI = Math.PI / 4, deg2rad = Math.PI / 180, scale = 63.78137;
         var Miller = /** @class */ (function () {
                 function Miller() {
                     this.bounds = {
@@ -1891,12 +1858,7 @@
                 return xy;
             };
             Orthographic.prototype.inverse = function (xy) {
-                var x = xy[0] / scale,
-                    y = xy[1] / scale,
-                    z = Math.sqrt(x * x + y * y),
-                    c = Math.asin(z),
-                    cSin = Math.sin(c),
-                    cCos = Math.cos(c);
+                var x = xy[0] / scale, y = xy[1] / scale, z = Math.sqrt(x * x + y * y), c = Math.asin(z), cSin = Math.sin(c), cCos = Math.cos(c);
                 return [
                     Math.atan2(x * cSin, z * cCos) / deg2rad,
                     Math.asin(z && y * cSin / z) / deg2rad
@@ -2625,11 +2587,8 @@
         var tileSize = 256;
         // Compute the zoom from given bounds and the size of the playing field. Used in
         // two places, hence the local function.
-        var zoomFromBounds = function (b,
-            playingField) {
-                var width = playingField.width,
-            height = playingField.height,
-            scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
+        var zoomFromBounds = function (b, playingField) {
+                var width = playingField.width, height = playingField.height, scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
             return Math.log(worldSize / scaleToField) / Math.log(2);
         };
         /*
@@ -2689,7 +2648,8 @@
                         if (geoMap) {
                             // Use the first geo map as main
                             if (!recommendedMapView) {
-                                recommendedMapView = geoMap['hc-recommended-mapview'];
+                                recommendedMapView =
+                                    geoMap['hc-recommended-mapview'];
                             }
                             // Combine the bounding boxes of all loaded maps
                             if (geoMap.bbox) {
@@ -2703,32 +2663,41 @@
                         }
                     });
                     // Get the composite bounds
-                    var geoBounds = (allGeoBounds_1.length &&
+                    var geoBounds_1 = (allGeoBounds_1.length &&
                             MapView.compositeBounds(allGeoBounds_1));
-                    // Provide a best-guess recommended projection if not set in the map
-                    // or in user options
-                    if (geoBounds) {
-                        var x1 = geoBounds.x1,
-                            y1 = geoBounds.y1,
-                            x2 = geoBounds.x2,
-                            y2 = geoBounds.y2;
-                        recommendedProjection = (x2 - x1 > 180 && y2 - y1 > 90) ?
-                            // Wide angle, go for the world view
-                            {
-                                name: 'EqualEarth'
-                            } :
-                            // Narrower angle, use a projection better suited for local
-                            // view
-                            {
-                                name: 'LambertConformalConic',
-                                parallels: [y1, y2],
-                                rotation: [-(x1 + x2) / 2]
-                            };
-                    }
+                    // Provide a best-guess recommended projection if not set in
+                    // the map or in user options
+                    fireEvent(chart, 'beforeMapViewInit', {
+                        geoBounds: geoBounds_1
+                    }, function () {
+                        if (geoBounds_1) {
+                            var x1 = geoBounds_1.x1,
+                                y1 = geoBounds_1.y1,
+                                x2 = geoBounds_1.x2,
+                                y2 = geoBounds_1.y2;
+                            recommendedProjection =
+                                (x2 - x1 > 180 && y2 - y1 > 90) ?
+                                    // Wide angle, go for the world view
+                                    {
+                                        name: 'EqualEarth'
+                                    } :
+                                    // Narrower angle, use a projection better
+                                    // suited for local view
+                                    {
+                                        name: 'LambertConformalConic',
+                                        parallels: [y1, y2],
+                                        rotation: [-(x1 + x2) / 2]
+                                    };
+                        }
+                    });
                     // Register the main geo map (from options.chart.map) if set
                     this.geoMap = geoMaps[0];
                 }
                 this.userOptions = options || {};
+                if (chart.options.mapView &&
+                    chart.options.mapView.recommendedMapView) {
+                    recommendedMapView = chart.options.mapView.recommendedMapView;
+                }
                 var o = merge(defaultOptions, { projection: recommendedProjection },
                     recommendedMapView,
                     options);
@@ -2758,6 +2727,7 @@
                  * @type {number}
                  */
                 this.zoom = o.zoom || 0;
+                this.minZoom = o.minZoom;
                 // Create the insets
                 this.createInsets();
                 // Initialize and respond to chart size changes
@@ -2948,17 +2918,7 @@
             };
             // Calculate the SVG transform to be applied to series groups
             MapView.prototype.getSVGTransform = function () {
-                var _a = this.playingField,
-                    x = _a.x,
-                    y = _a.y,
-                    width = _a.width,
-                    height = _a.height,
-                    projectedCenter = this.projection.forward(this.center),
-                    flipFactor = this.projection.hasCoordinates ? -1 : 1,
-                    scaleX = this.getScale(),
-                    scaleY = scaleX * flipFactor,
-                    translateX = x + width / 2 - projectedCenter[0] * scaleX,
-                    translateY = y + height / 2 - projectedCenter[1] * scaleY;
+                var _a = this.playingField, x = _a.x, y = _a.y, width = _a.width, height = _a.height, projectedCenter = this.projection.forward(this.center), flipFactor = this.projection.hasCoordinates ? -1 : 1, scaleX = this.getScale(), scaleY = scaleX * flipFactor, translateX = x + width / 2 - projectedCenter[0] * scaleX, translateY = y + height / 2 - projectedCenter[1] * scaleY;
                 return { scaleX: scaleX, scaleY: scaleY, translateX: translateX, translateY: translateY };
             };
             /**
@@ -3207,11 +3167,7 @@
              * @return {Highcharts.PositionObject} The position in pixels
              */
             MapView.prototype.projectedUnitsToPixels = function (pos) {
-                var scale = this.getScale(),
-                    projectedCenter = this.projection.forward(this.center),
-                    field = this.playingField,
-                    centerPxX = field.x + field.width / 2,
-                    centerPxY = field.y + field.height / 2;
+                var scale = this.getScale(), projectedCenter = this.projection.forward(this.center), field = this.playingField, centerPxX = field.x + field.width / 2, centerPxY = field.y + field.height / 2;
                 var x = centerPxX - scale * (projectedCenter[0] - pos.x);
                 var y = centerPxY + scale * (projectedCenter[1] - pos.y);
                 return { x: x, y: y };
@@ -3238,13 +3194,7 @@
              * @return {Highcharts.PositionObject} The position in projected units
              */
             MapView.prototype.pixelsToProjectedUnits = function (pos) {
-                var x = pos.x,
-                    y = pos.y,
-                    scale = this.getScale(),
-                    projectedCenter = this.projection.forward(this.center),
-                    field = this.playingField,
-                    centerPxX = field.x + field.width / 2,
-                    centerPxY = field.y + field.height / 2;
+                var x = pos.x, y = pos.y, scale = this.getScale(), projectedCenter = this.projection.forward(this.center), field = this.playingField, centerPxX = field.x + field.width / 2, centerPxY = field.y + field.height / 2;
                 var projectedX = projectedCenter[0] + (x - centerPxX) / scale;
                 var projectedY = projectedCenter[1] - (y - centerPxY) / scale;
                 return { x: projectedX, y: projectedY };
@@ -3709,7 +3659,8 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var animObject = A.animObject;
+        var animObject = A.animObject,
+            stop = A.stop;
         var noop = H.noop;
         var splitPath = MapChart.splitPath;
         var 
@@ -3992,20 +3943,15 @@
                             });
                             animatePoints(scaleStep); // #18166
                         };
-                        var animOptions = {};
-                        if (chart.options.chart) {
-                            animOptions = merge({}, chart.options.chart.animation);
-                        }
-                        if (typeof animOptions !== 'boolean') {
-                            var userStep_1 = animOptions.step;
-                            animOptions.step =
-                                function (obj) {
-                                    if (userStep_1) {
-                                        userStep_1.apply(this, arguments);
-                                    }
-                                    step_1.apply(this, arguments);
-                                };
-                        }
+                        var animOptions = merge(animObject(renderer.globalAnimation)),
+                            userStep_1 = animOptions.step;
+                        animOptions.step =
+                            function (obj) {
+                                if (userStep_1) {
+                                    userStep_1.apply(this, arguments);
+                                }
+                                step_1.apply(this, arguments);
+                            };
                         transformGroup
                             .attr({ animator: 0 })
                             .animate({ animator: 1 }, animOptions, function () {
@@ -4020,6 +3966,7 @@
                         // When dragging or first rendering, animation is off
                     }
                     else {
+                        stop(transformGroup);
                         transformGroup.attr(merge(svgTransform, { 'stroke-width': strokeWidth / scale }));
                         animatePoints(scale); // #18166
                     }
@@ -5141,13 +5088,9 @@
                         yLeft = lCorner[1],
                         xRight = rCorner[0],
                         yRight = rCorner[1];
-                    var xTop = topCorner[0],
-                        yTop = topCorner[1],
-                        xMid = (xRight - xLeft) / 2 + xLeft,
-                        yMid = (yRight - yLeft) / 2 + yLeft, 
+                    var xTop = topCorner[0], yTop = topCorner[1], xMid = (xRight - xLeft) / 2 + xLeft, yMid = (yRight - yLeft) / 2 + yLeft, 
                         // Control point for curve.
-                        xControl = (xTop - xMid) * 2 + xMid,
-                        yControl = (yTop - yMid) * 2 + yMid;
+                        xControl = (xTop - xMid) * 2 + xMid, yControl = (yTop - yMid) * 2 + yMid;
                     // Left side of arrow head.
                     xLeft -= edgeX * width;
                     yLeft -= edgeY * width;

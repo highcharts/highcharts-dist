@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -67,6 +67,7 @@
             extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            getClosestDistance = U.getClosestDistance,
             merge = U.merge,
             objectEach = U.objectEach;
         /* *
@@ -100,30 +101,6 @@
             };
         }
         /**
-         * @private
-         */
-        function getClosestPointRange(axis) {
-            var closestDataRange,
-                loopLength,
-                distance,
-                xData,
-                i;
-            axis.series.forEach(function (series) {
-                if (series.xData) {
-                    xData = series.xData;
-                    loopLength = series.xIncrement ? 1 : xData.length - 1;
-                    for (i = loopLength; i > 0; i--) {
-                        distance = xData[i] - xData[i - 1];
-                        if (typeof closestDataRange === 'undefined' ||
-                            distance < closestDataRange) {
-                            closestDataRange = distance;
-                        }
-                    }
-                }
-            });
-            return closestDataRange;
-        }
-        /**
          * Check two lines intersection (line a1-a2 and b1-b2)
          * Source: https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
          * @private
@@ -137,8 +114,7 @@
                     sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
                     sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
                     // First degree Bézier parameters
-                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY),
-                    t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
+                    u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY), t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
                 if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
                     return {
                         plotX: a1.plotX + t * saX,
@@ -532,7 +508,7 @@
                     yVal = series.yData,
                     xAxis = series.xAxis,
                     yValLen = (yVal && yVal.length) || 0,
-                    closestPointRange = getClosestPointRange(xAxis),
+                    closestPointRange = getClosestDistance(xAxis.series.map(function (s) { return s.xData || []; })),
                     IKH = [],
                     xData = [];
                 var date,

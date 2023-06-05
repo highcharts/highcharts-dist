@@ -266,6 +266,14 @@ class DumbbellSeries extends AreaRangeSeries {
         }
         return pointAttribs;
     }
+    /**
+     * Set the shape arguments for dummbells.
+     * @private
+     */
+    setShapeArgs() {
+        colProto.translate.apply(this);
+        columnRangeProto.afterColumnTranslate.apply(this);
+    }
 }
 /**
  * The dumbbell series is a cartesian series with higher and lower values
@@ -345,7 +353,6 @@ extend(DumbbellSeries.prototype, {
     drawGraph: noop,
     drawTracker: ColumnSeries.prototype.drawTracker,
     pointClass: DumbbellPoint,
-    setShapeArgs: columnRangeProto.translate,
     seriesDrawPoints: areaRangeProto.drawPoints,
     trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
     translatePoint: areaRangeProto.translate

@@ -135,8 +135,8 @@ const navigation = {
                             point: {
                                 x: coordsX.value,
                                 y: coordsY.value,
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index
                             },
                             r: 5
                         }]
@@ -186,8 +186,8 @@ const navigation = {
                     shapes: [
                         {
                             type: 'ellipse',
-                            xAxis: coordsX.axis.options.index,
-                            yAxis: coordsY.axis.options.index,
+                            xAxis: coordsX.axis.index,
+                            yAxis: coordsY.axis.index,
                             points: [{
                                     x: coordsX.value,
                                     y: coordsY.value
@@ -231,7 +231,7 @@ const navigation = {
                 if (!coordsX || !coordsY) {
                     return;
                 }
-                const x = coordsX.value, y = coordsY.value, xAxis = coordsX.axis.options.index, yAxis = coordsY.axis.options.index, navigation = this.chart.options.navigation;
+                const x = coordsX.value, y = coordsY.value, xAxis = coordsX.axis.index, yAxis = coordsY.axis.index, navigation = this.chart.options.navigation;
                 return this.chart.addAnnotation(merge({
                     langKey: 'rectangle',
                     type: 'basicAnnotation',
@@ -298,8 +298,8 @@ const navigation = {
                     },
                     labels: [{
                             point: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 x: coordsX.value,
                                 y: coordsY.value
                             },
@@ -319,7 +319,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/11.0.1/gfx/stock-icons/
+     * @default   https://code.highcharts.com/11.1.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

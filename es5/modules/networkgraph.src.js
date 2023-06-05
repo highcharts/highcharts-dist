@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Force directed graph module
  *
@@ -1060,8 +1060,7 @@
                      * The
                      * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
                      * specifying what to show for _node_ in the networkgraph. In v7.0
-                     * defaults to `{key}`,
-            since v7.1 defaults to `undefined` and
+                     * defaults to `{key}`, since v7.1 defaults to `undefined` and
                      * `formatter` is used instead.
                      *
                      * @type      {string}
@@ -1071,8 +1070,7 @@
                     // eslint-disable-next-line valid-jsdoc
                     /**
                      * Callback JavaScript function to format the data label for a node.
-                     * Note that if a `format` is defined,
-            the format takes precedence
+                     * Note that if a `format` is defined, the format takes precedence
                      * and the formatter is ignored.
                      *
                      * @type  {Highcharts.SeriesNetworkgraphDataLabelsFormatterCallbackFunction}
@@ -1498,6 +1496,12 @@
          * @apioption series.networkgraph.nodes.mass
          */
         /**
+         * Options for the node markers.
+         *
+         * @extends   plotOptions.networkgraph.marker
+         * @apioption series.networkgraph.nodes.marker
+         */
+        /**
          * Individual data label for each node. The options are the same as
          * the ones for [series.networkgraph.dataLabels](#series.networkgraph.dataLabels).
          *
@@ -1542,9 +1546,7 @@
          * @param {number} distanceR
              */
         function attractive(link, force, distanceXY, distanceR) {
-            var massFactor = link.getMass(),
-                translatedX = (distanceXY.x / distanceR) * force,
-                translatedY = (distanceXY.y / distanceR) * force;
+            var massFactor = link.getMass(), translatedX = (distanceXY.x / distanceR) * force, translatedY = (distanceXY.y / distanceR) * force;
             if (!link.fromNode.fixedPosition) {
                 link.fromNode.dispX -=
                     translatedX * massFactor.fromNode / link.fromNode.degree;
@@ -1828,8 +1830,7 @@
              * ```
              */
             QuadTreeNode.prototype.divideBox = function () {
-                var halfWidth = this.box.width / 2,
-                    halfHeight = this.box.height / 2;
+                var halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
                 // Top left
                 this.nodes[0] = new QuadTreeNode({
                     left: this.box.left,
@@ -1865,8 +1866,7 @@
              * @private
              */
             QuadTreeNode.prototype.getBoxPosition = function (point) {
-                var left = point.plotX < this.box.left + this.box.width / 2,
-                    top = point.plotY < this.box.top + this.box.height / 2;
+                var left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
                 var index;
                 if (left) {
                     if (top) {
@@ -2267,17 +2267,11 @@
          * @param {Highcharts.Point} node node that should be translated
          */
         function integrate(layout, node) {
-            var friction = -layout.options.friction,
-                maxSpeed = layout.options.maxSpeed,
-                prevX = node.prevX,
-                prevY = node.prevY, 
+            var friction = -layout.options.friction, maxSpeed = layout.options.maxSpeed, prevX = node.prevX, prevY = node.prevY, 
                 // Apply friciton:
                 diffX = ((node.plotX + node.dispX -
-                    prevX) * friction),
-                diffY = ((node.plotY + node.dispY -
-                    prevY) * friction),
-                abs = Math.abs,
-                signX = abs(diffX) / (diffX || 1), // need to deal with 0
+                    prevX) * friction), diffY = ((node.plotY + node.dispY -
+                    prevY) * friction), abs = Math.abs, signX = abs(diffX) / (diffX || 1), // need to deal with 0
                 signY = abs(diffY) / (diffY || 1);
             // Apply max speed:
             diffX = signX * Math.min(maxSpeed, Math.abs(diffX));

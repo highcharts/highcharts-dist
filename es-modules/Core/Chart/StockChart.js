@@ -10,7 +10,7 @@
 'use strict';
 import Axis from '../Axis/Axis.js';
 import Chart from '../Chart/Chart.js';
-import F from '../../Core/FormatUtilities.js';
+import F from '../Templating.js';
 const { format } = F;
 import D from '../Defaults.js';
 const { getOptions } = D;
@@ -120,14 +120,14 @@ class StockChart extends Chart {
      *
      * @private
      * @function Highcharts.StockChart#createAxis
-     * @param {string} type
+     * @param {string} coll
      * An axis type.
      * @param {Chart.CreateAxisOptionsObject} options
      * The axis creation options.
      */
-    createAxis(type, options) {
-        options.axis = merge(getDefaultAxisOptions(type, options.axis), options.axis, getForcedAxisOptions(type, this.userOptions));
-        return super.createAxis(type, options);
+    createAxis(coll, options) {
+        options.axis = merge(getDefaultAxisOptions(coll, options.axis), options.axis, getForcedAxisOptions(coll, this.userOptions));
+        return super.createAxis(coll, options);
     }
 }
 /* eslint-disable no-invalid-this, valid-jsdoc */

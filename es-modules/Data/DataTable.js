@@ -95,7 +95,7 @@ class DataTable {
      * Options to initialize the new DataTable instance.
      */
     constructor(options = {}) {
-        this.aliasMap = {};
+        this.aliases = {};
         /**
          * Whether the ID was automatic generated or given in the constructor.
          *
@@ -126,10 +126,10 @@ class DataTable {
             thisColumns[columnNames[i]].length = rowCount;
         }
         this.rowCount = rowCount;
-        const aliasMap = options.aliasMap || {}, aliases = Object.keys(aliasMap), thisAliasMap = this.aliasMap;
-        for (let i = 0, iEnd = aliases.length, alias; i < iEnd; ++i) {
-            alias = aliases[i];
-            thisAliasMap[alias] = aliasMap[alias];
+        const aliases = options.aliases || {}, aliasKeys = Object.keys(aliases), thisAliases = this.aliases;
+        for (let i = 0, iEnd = aliasKeys.length, alias; i < iEnd; ++i) {
+            alias = aliasKeys[i];
+            thisAliases[alias] = aliases[alias];
         }
     }
     /* *
@@ -160,7 +160,7 @@ class DataTable {
         const table = this, tableOptions = {};
         table.emit({ type: 'cloneTable', detail: eventDetail });
         if (!skipColumns) {
-            tableOptions.aliasMap = table.aliasMap;
+            tableOptions.aliases = table.aliases;
             tableOptions.columns = table.columns;
         }
         if (!table.autoId) {
@@ -191,9 +191,9 @@ class DataTable {
      * Returns the original column name, if found.
      */
     deleteColumnAlias(alias) {
-        const table = this, aliasMap = table.aliasMap, deletedAlias = aliasMap[alias], modifier = table.modifier;
+        const table = this, aliases = table.aliases, deletedAlias = aliases[alias], modifier = table.modifier;
         if (deletedAlias) {
-            delete table.aliasMap[alias];
+            delete table.aliases[alias];
             if (modifier) {
                 modifier.modifyColumns(table, { [deletedAlias]: new Array(table.rowCount) }, 0);
             }
@@ -320,18 +320,18 @@ class DataTable {
      * Event object with event information.
      */
     emit(e) {
-        const frame = this;
+        const table = this;
         switch (e.type) {
             case 'afterDeleteColumns':
             case 'afterDeleteRows':
             case 'afterSetCell':
             case 'afterSetColumns':
             case 'afterSetRows':
-                frame.versionTag = uniqueKey();
+                table.versionTag = uniqueKey();
                 break;
             default:
         }
-        fireEvent(frame, e.type, e);
+        fireEvent(table, e.type, e);
     }
     /**
      * Fetches a single cell value.
@@ -349,7 +349,7 @@ class DataTable {
      */
     getCell(columnNameOrAlias, rowIndex) {
         const table = this;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = table.columns[columnNameOrAlias];
         if (column) {
@@ -372,7 +372,7 @@ class DataTable {
      */
     getCellAsBoolean(columnNameOrAlias, rowIndex) {
         const table = this;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = table.columns[columnNameOrAlias];
         return !!(column && column[rowIndex]);
@@ -396,7 +396,7 @@ class DataTable {
      */
     getCellAsNumber(columnNameOrAlias, rowIndex, useNaN) {
         const table = this;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = table.columns[columnNameOrAlias];
         let cellValue = (column && column[rowIndex]);
@@ -425,7 +425,7 @@ class DataTable {
      */
     getCellAsString(columnNameOrAlias, rowIndex) {
         const table = this;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = table.columns[columnNameOrAlias];
         return `${(column && column[rowIndex])}`;
@@ -449,15 +449,19 @@ class DataTable {
         return this.getColumns([columnNameOrAlias], asReference)[columnNameOrAlias];
     }
     /**
-     * Fetches all column aliases.
+     * Fetches all column aliases and their mapped columns.
      *
      * @function Highcharts.DataTable#getColumnAliases
      *
-     * @return {Array<string>}
+     * @return {Highcharts.Dictionary<string>}
      * Returns all column aliases.
      */
     getColumnAliases() {
-        const table = this, columnAliases = Object.keys(table.aliasMap);
+        const aliases = this.aliases, aliasKeys = Object.keys(aliases), columnAliases = {};
+        for (let i = 0, iEnd = aliasKeys.length, alias; i < iEnd; ++i) {
+            alias = aliasKeys[i];
+            columnAliases[alias] = aliases[alias];
+        }
         return columnAliases;
     }
     /**
@@ -480,7 +484,7 @@ class DataTable {
      */
     getColumnAsNumbers(columnNameOrAlias, useNaN) {
         const table = this, columns = table.columns;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = columns[columnNameOrAlias], columnAsNumber = [];
         if (column) {
@@ -537,7 +541,7 @@ class DataTable {
      * `undefined`.
      */
     getColumns(columnNamesOrAliases, asReference) {
-        const table = this, tableAliasMap = table.aliasMap, tableColumns = table.columns, columns = {};
+        const table = this, tableAliasMap = table.aliases, tableColumns = table.columns, columns = {};
         columnNamesOrAliases = (columnNamesOrAliases || Object.keys(tableColumns));
         for (let i = 0, iEnd = columnNamesOrAliases.length, column, columnName; i < iEnd; ++i) {
             columnName = columnNamesOrAliases[i];
@@ -607,7 +611,7 @@ class DataTable {
      */
     getRowIndexBy(columnNameOrAlias, cellValue, rowIndexOffset) {
         const table = this;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = table.columns[columnNameOrAlias];
         if (column) {
@@ -653,12 +657,12 @@ class DataTable {
      * Returns retrieved rows.
      */
     getRowObjects(rowIndex = 0, rowCount = (this.rowCount - rowIndex), columnNamesOrAliases) {
-        const table = this, aliasMap = table.aliasMap, columns = table.columns, rows = new Array(rowCount);
+        const table = this, aliases = table.aliases, columns = table.columns, rows = new Array(rowCount);
         columnNamesOrAliases = (columnNamesOrAliases || Object.keys(columns));
         for (let i = rowIndex, i2 = 0, iEnd = Math.min(table.rowCount, (rowIndex + rowCount)), column, row; i < iEnd; ++i, ++i2) {
             row = rows[i2] = {};
             for (const columnName of columnNamesOrAliases) {
-                column = columns[(aliasMap[columnName] || columnName)];
+                column = columns[(aliases[columnName] || columnName)];
                 row[columnName] = (column ? column[i] : void 0);
             }
         }
@@ -682,12 +686,12 @@ class DataTable {
      * Returns retrieved rows.
      */
     getRows(rowIndex = 0, rowCount = (this.rowCount - rowIndex), columnNamesOrAliases) {
-        const table = this, aliasMap = table.aliasMap, columns = table.columns, rows = new Array(rowCount);
+        const table = this, aliases = table.aliases, columns = table.columns, rows = new Array(rowCount);
         columnNamesOrAliases = (columnNamesOrAliases || Object.keys(columns));
         for (let i = rowIndex, i2 = 0, iEnd = Math.min(table.rowCount, (rowIndex + rowCount)), column, row; i < iEnd; ++i, ++i2) {
             row = rows[i2] = [];
             for (const columnName of columnNamesOrAliases) {
-                column = columns[(aliasMap[columnName] || columnName)];
+                column = columns[(aliases[columnName] || columnName)];
                 row.push(column ? column[i] : void 0);
             }
         }
@@ -716,10 +720,10 @@ class DataTable {
      * Returns `true` if all columns have been found, otherwise `false`.
      */
     hasColumns(columnNamesOrAliases) {
-        const table = this, aliasMap = table.aliasMap, columns = table.columns;
+        const table = this, aliases = table.aliases, columns = table.columns;
         for (let i = 0, iEnd = columnNamesOrAliases.length, columnName; i < iEnd; ++i) {
             columnName = columnNamesOrAliases[i];
-            if (!columns[columnName] && !aliasMap[columnName]) {
+            if (!columns[columnName] && !aliases[columnName]) {
                 return false;
             }
         }
@@ -741,7 +745,7 @@ class DataTable {
      */
     hasRowWith(columnNameOrAlias, cellValue) {
         const table = this;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         const column = table.columns[columnNameOrAlias];
         if (column) {
@@ -785,9 +789,9 @@ class DataTable {
         const table = this, columns = table.columns;
         if (columns[columnName]) {
             if (columnName !== newColumnName) {
-                const aliasMap = table.aliasMap;
-                if (aliasMap[newColumnName]) {
-                    delete aliasMap[newColumnName];
+                const aliases = table.aliases;
+                if (aliases[newColumnName]) {
+                    delete aliases[newColumnName];
                 }
                 columns[newColumnName] = columns[columnName];
                 delete columns[columnName];
@@ -819,7 +823,7 @@ class DataTable {
      */
     setCell(columnNameOrAlias, rowIndex, cellValue, eventDetail) {
         const table = this, columns = table.columns, modifier = table.modifier;
-        columnNameOrAlias = (table.aliasMap[columnNameOrAlias] ||
+        columnNameOrAlias = (table.aliases[columnNameOrAlias] ||
             columnNameOrAlias);
         let column = columns[columnNameOrAlias];
         if (column && column[rowIndex] === cellValue) {
@@ -890,9 +894,9 @@ class DataTable {
      * `true` if successfully changed, `false` if reserved.
      */
     setColumnAlias(columnAlias, columnName) {
-        const aliasMap = this.aliasMap;
-        if (!aliasMap[columnAlias]) {
-            aliasMap[columnAlias] = columnName;
+        const aliases = this.aliases;
+        if (!aliases[columnAlias]) {
+            aliases[columnAlias] = columnName;
             return true;
         }
         return false;
@@ -927,7 +931,7 @@ class DataTable {
         for (let i = 0, iEnd = columnNames.length, column, columnName; i < iEnd; ++i) {
             columnName = columnNames[i];
             column = columns[columnName];
-            columnName = (table.aliasMap[columnName] ||
+            columnName = (table.aliases[columnName] ||
                 columnName);
             if (reset) {
                 tableColumns[columnName] = column.slice();
@@ -1054,7 +1058,7 @@ class DataTable {
      * @emits #afterSetRows
      */
     setRows(rows, rowIndex = this.rowCount, eventDetail) {
-        const table = this, aliasMap = table.aliasMap, columns = table.columns, columnNames = Object.keys(columns), modifier = table.modifier, rowCount = rows.length;
+        const table = this, aliases = table.aliases, columns = table.columns, columnNames = Object.keys(columns), modifier = table.modifier, rowCount = rows.length;
         table.emit({
             type: 'setRows',
             detail: eventDetail,
@@ -1078,7 +1082,7 @@ class DataTable {
                 const rowColumnNames = Object.keys(row);
                 for (let j = 0, jEnd = rowColumnNames.length, rowColumnName; j < jEnd; ++j) {
                     rowColumnName = rowColumnNames[j];
-                    rowColumnName = (aliasMap[rowColumnName] || rowColumnName);
+                    rowColumnName = (aliases[rowColumnName] || rowColumnName);
                     if (!columns[rowColumnName]) {
                         columns[rowColumnName] = new Array(i2 + 1);
                     }
@@ -1162,7 +1166,7 @@ export default DataTable;
  * @readonly
  */ /**
 * Initial map of column aliases to original column names.
-* @name Highcharts.DataTableOptions#aliasMap
+* @name Highcharts.DataTableOptions#aliases
 * @type {Highcharts.Dictionary<string>|undefined}
 */ /**
 * Initial columns with their values.

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Arc diagram module
  *
@@ -362,9 +362,7 @@
                     toX,
                     toX + linkWeight
                 ];
-                var linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * pick(seriesOptions.linkRadius,
-                    Math.min(Math.abs(toX + linkWeight - fromX) / 2,
-                    fromNode.nodeY - Math.abs(linkWeight)));
+                var linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * pick(seriesOptions.linkRadius, Math.min(Math.abs(toX + linkWeight - fromX) / 2, fromNode.nodeY - Math.abs(linkWeight)));
                 point.shapeArgs = {
                     d: [
                         ['M', fromX, bottom],
@@ -418,32 +416,12 @@
              * @private
              */
             ArcDiagramSeries.prototype.translateNode = function (node, column) {
-                var series = this,
-                    translationFactor = series.translationFactor,
-                    chart = series.chart,
-                    maxNodesLength = chart.inverted ?
-                        chart.plotWidth : chart.plotHeight,
-                    options = series.options,
-                    maxRadius = Math.min(chart.plotWidth,
-                    chart.plotHeight,
-                    maxNodesLength / node.series.nodes.length - this.nodePadding),
-                    sum = node.getSum() * (column.sankeyColumn.scale || 0),
-                    equalNodes = options.equalNodes,
-                    nodeHeight = equalNodes ?
+                var series = this, translationFactor = series.translationFactor, chart = series.chart, maxNodesLength = chart.inverted ?
+                        chart.plotWidth : chart.plotHeight, options = series.options, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, maxNodesLength / node.series.nodes.length - this.nodePadding), sum = node.getSum() * (column.sankeyColumn.scale || 0), equalNodes = options.equalNodes, nodeHeight = equalNodes ?
                         maxRadius :
-                        Math.max(sum * translationFactor,
-                    this.options.minLinkWidth || 0),
-                    crisp = Math.round(options.marker &&
-                        options.marker.lineWidth || 0) % 2 / 2,
-                    nodeOffset = column.sankeyColumn.offset(node,
-                    translationFactor),
-                    fromNodeLeft = Math.floor(pick(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
-                        (nodeOffset && nodeOffset.relativeLeft || 0)))) + crisp,
-                    markerOptions = merge(options.marker,
-                    node.options.marker),
-                    symbol = markerOptions.symbol,
-                    markerRadius = markerOptions.radius,
-                    top = parseInt(options.offset, 10) *
+                        Math.max(sum * translationFactor, this.options.minLinkWidth || 0), crisp = Math.round(options.marker &&
+                        options.marker.lineWidth || 0) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = Math.floor(pick(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
+                        (nodeOffset && nodeOffset.relativeLeft || 0)))) + crisp, markerOptions = merge(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset, 10) *
                         ((chart.inverted ?
                             chart.plotWidth : chart.plotHeight) - (Math.floor(this.colDistance * (node.column || 0) +
                             (markerOptions.lineWidth || 0) / 2) + crisp +

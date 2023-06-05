@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * 3D features for Highcharts JS
  *
@@ -2995,9 +2995,6 @@
             }
             this.zAxis = [];
             zAxisOptions.forEach((axisOptions, i) => {
-                axisOptions.index = i;
-                // Z-Axis is shown horizontally, so it's kind of a X-Axis
-                axisOptions.isX = true;
                 this.addZAxis(axisOptions).setScale();
             });
         }
@@ -3010,11 +3007,15 @@
          * 3D axis for z coordinates.
          */
         class ZAxis extends Axis {
-            /* *
-             *
-             *  Static Properties
-             *
-             * */
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                this.isZAxis = true;
+            }
             static compose(ChartClass) {
                 if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
@@ -3029,9 +3030,10 @@
              *  Constructor
              *
              * */
-            constructor(chart, userOptions) {
-                super(chart, userOptions);
+            init(chart, userOptions) {
+                // #14793, this used to be set on the prototype
                 this.isZAxis = true;
+                super.init(chart, userOptions, 'zAxis');
             }
             /* *
              *
@@ -3082,10 +3084,7 @@
                     offset: 0,
                     lineWidth: 0
                 }, userOptions);
-                // #14793, this used to be set on the prototype
-                this.isZAxis = true;
                 super.setOptions(userOptions);
-                this.coll = 'zAxis';
             }
         }
         /* *

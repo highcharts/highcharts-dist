@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -783,21 +783,15 @@
         var options = {
                 /**
                  * A collection of attributes for the buttons. The object takes SVG
-                 * attributes like `fill`,
-            `stroke`,
-            `stroke-width`,
-            as well as `style`,
+                 * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
                  * a collection of CSS properties for the text.
                  *
-                 * The object can also be extended with states,
-            so you can set
-                 * presentational options for `hover`,
-            `select` or `disabled` button
+                 * The object can also be extended with states, so you can set
+                 * presentational options for `hover`, `select` or `disabled` button
                  * states.
                  *
                  * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *         Themed,
-            single button
+                 *         Themed, single button
                  *
                  * @type    {Highcharts.SVGAttributes}
                  * @since   10.0.0
@@ -834,13 +828,11 @@
                 /**
                  * Fires when clicking on the breadcrumbs button. Two arguments are
                  * passed to the function. First breadcrumb button as an SVG element.
-                 * Second is the breadcrumbs class,
-            containing reference to the chart,
+                 * Second is the breadcrumbs class, containing reference to the chart,
                  * series etc.
                  *
                  * ```js
-                 * click: function(button,
-            breadcrumbs) {
+                 * click: function(button, breadcrumbs) {
                  *   console.log(button);
              * }
              * ```
@@ -1018,7 +1010,7 @@
 
         return BreadcrumbsDefaults;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
         /* *
          *
          *  Highcharts Breadcrumbs module

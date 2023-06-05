@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Stock JS v11.0.1 (2023-05-08)
+ * @license Highcharts Stock JS v11.1.0 (2023-06-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -506,8 +506,7 @@
                     SMASlow = this.getSMA(params.slowAvgPeriod, 0,
                     volumeForce);
                 // Calculate EMApercent for the first points.
-                var fastEMApercent = 2 / (params.fastAvgPeriod + 1),
-                    slowEMApercent = 2 / (params.slowAvgPeriod + 1);
+                var fastEMApercent = 2 / (params.fastAvgPeriod + 1), slowEMApercent = 2 / (params.slowAvgPeriod + 1);
                 // Calculate KO
                 for (i; i < yVal.length; i++) {
                     // Get EMA for fast period.

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Marker clusters module for Highcharts
  *
@@ -152,8 +152,7 @@
                 minimumClusterSize: 2,
                 /**
                  * Options for layout algorithm. Inside there
-                 * are options to change the type of the algorithm,
-            gridSize,
+                 * are options to change the type of the algorithm, gridSize,
                  * distance or iterations.
                  */
                 layoutAlgorithm: {
@@ -168,11 +167,9 @@
                      * (grid size changes at certain zoom levels).
                      *
                      * 2) `kmeans` - based on K-Means clustering technique. In the
-                     * first step,
-            points are divided using the grid method (distance
+                     * first step, points are divided using the grid method (distance
                      * property is a grid size) to find the initial amount of clusters.
-                     * Next,
-            each point is classified by computing the distance between
+                     * Next, each point is classified by computing the distance between
                      * each cluster center and that point. When the closest cluster
                      * distance is lower than distance property set by a user the point
                      * is added to this cluster otherwise is classified as `noise`. The
@@ -190,17 +187,13 @@
                      * improvement and more stable clusters position yet can be used rather
                      * on small and sparse datasets.
                      *
-                     * By default,
-            the algorithm depends on visible quantity of points
+                     * By default, the algorithm depends on visible quantity of points
                      * and `kmeansThreshold`. When there are more visible points than the
-                     * `kmeansThreshold` the `grid` algorithm is used,
-            otherwise `kmeans`.
+                     * `kmeansThreshold` the `grid` algorithm is used, otherwise `kmeans`.
                      *
                      * The custom clustering algorithm can be added by assigning a callback
                      * function as the type property. This function takes an array of
-                     * `processedXData`,
-            `processedYData`,
-            `processedXData` indexes and
+                     * `processedXData`, `processedYData`, `processedXData` indexes and
                      * `layoutAlgorithm` options as arguments and should return an object
                      * with grouped data.
                      *
@@ -242,8 +235,7 @@
                     /**
                      * When `type` is set to the `grid`,
                      * `gridSize` is a size of a grid square element either as a number
-                     * defining pixels,
-            or a percentage defining a percentage
+                     * defining pixels, or a percentage defining a percentage
                      * of the plot area width.
                      *
                      * @type    {number|string}
@@ -270,8 +262,7 @@
                     /**
                      * When `type` is set to `undefined` and there are more visible points
                      * than the kmeansThreshold the `grid` algorithm is used to find
-                     * clusters,
-            otherwise `kmeans`. It ensures good performance on
+                     * clusters, otherwise `kmeans`. It ensures good performance on
                      * large datasets and better clusters arrangement after the zoom.
                      */
                     kmeansThreshold: 100
@@ -280,8 +271,7 @@
                  * Options for the cluster marker.
                  * @type      {Highcharts.PointMarkerOptionsObject}
                  * @extends   plotOptions.series.marker
-                 * @excluding enabledThreshold,
-            states
+                 * @excluding enabledThreshold, states
                  */
                 marker: {
                     /** @internal */
@@ -295,9 +285,7 @@
                 },
                 /**
                  * Fires when the cluster point is clicked and `drillToCluster` is enabled.
-                 * One parameter,
-            `event`,
-            is passed to the function. The default action
+                 * One parameter, `event`, is passed to the function. The default action
                  * is to zoom to the cluster points range. This can be prevented
                  * by calling `event.preventDefault()`.
                  *
@@ -309,10 +297,8 @@
                 /**
                  * An array defining zones within marker clusters.
                  *
-                 * In styled mode,
-            the color zones are styled with the
-                 * `.highcharts-cluster-zone-{n}` class,
-            or custom
+                 * In styled mode, the color zones are styled with the
+                 * `.highcharts-cluster-zone-{n}` class, or custom
                  * classed from the `className`
                  * option.
                  *
@@ -358,8 +344,7 @@
                  */
                 /**
                  * The fill color of the cluster marker in hover state. When
-                 * `undefined`,
-            the series' or point's fillColor for normal
+                 * `undefined`, the series' or point's fillColor for normal
                  * state is used.
                  *
                  * @type      {Highcharts.ColorType}
@@ -524,31 +509,16 @@
         }
         // Cluster symbol.
         symbols.cluster = function (x, y, width, height) {
-            var w = width / 2,
-                h = height / 2,
-                outerWidth = 1,
-                space = 1,
-                inner = symbols.arc(x + w,
-                y + h,
-                w - space * 4,
-                h - space * 4, {
+            var w = width / 2, h = height / 2, outerWidth = 1, space = 1, inner = symbols.arc(x + w, y + h, w - space * 4, h - space * 4, {
                     start: Math.PI * 0.5,
                     end: Math.PI * 2.5,
                     open: false
-                }),
-                outer1 = symbols.arc(x + w,
-                y + h,
-                w - space * 3,
-                h - space * 3, {
+                }), outer1 = symbols.arc(x + w, y + h, w - space * 3, h - space * 3, {
                     start: Math.PI * 0.5,
                     end: Math.PI * 2.5,
                     innerR: w - outerWidth * 2,
                     open: false
-                }),
-                outer2 = symbols.arc(x + w,
-                y + h,
-                w - space,
-                h - space, {
+                }), outer2 = symbols.arc(x + w, y + h, w - space, h - space, {
                     start: Math.PI * 0.5,
                     end: Math.PI * 2.5,
                     innerR: w,

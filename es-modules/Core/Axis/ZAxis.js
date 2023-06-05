@@ -39,9 +39,6 @@ function onChartAfterGetAxes() {
     }
     this.zAxis = [];
     zAxisOptions.forEach((axisOptions, i) => {
-        axisOptions.index = i;
-        // Z-Axis is shown horizontally, so it's kind of a X-Axis
-        axisOptions.isX = true;
         this.addZAxis(axisOptions).setScale();
     });
 }
@@ -54,11 +51,15 @@ function onChartAfterGetAxes() {
  * 3D axis for z coordinates.
  */
 class ZAxis extends Axis {
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
+    constructor() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        super(...arguments);
+        this.isZAxis = true;
+    }
     static compose(ChartClass) {
         if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
@@ -73,9 +74,10 @@ class ZAxis extends Axis {
      *  Constructor
      *
      * */
-    constructor(chart, userOptions) {
-        super(chart, userOptions);
+    init(chart, userOptions) {
+        // #14793, this used to be set on the prototype
         this.isZAxis = true;
+        super.init(chart, userOptions, 'zAxis');
     }
     /* *
      *
@@ -126,10 +128,7 @@ class ZAxis extends Axis {
             offset: 0,
             lineWidth: 0
         }, userOptions);
-        // #14793, this used to be set on the prototype
-        this.isZAxis = true;
         super.setOptions(userOptions);
-        this.coll = 'zAxis';
     }
 }
 /* *

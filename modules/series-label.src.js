@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -236,7 +236,7 @@
 
         return SeriesLabelUtilities;
     });
-    _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Defaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelDefaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelUtilities.js'], _modules['Core/Utilities.js']], function (A, Chart, FU, D, SeriesLabelDefaults, SLU, U) {
+    _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelDefaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelUtilities.js'], _modules['Core/Utilities.js']], function (A, Chart, T, D, SeriesLabelDefaults, SLU, U) {
         /* *
          *
          *  (c) 2009-2021 Torstein Honsi
@@ -259,7 +259,7 @@
          * https://jsfiddle.net/highcharts/y5A37/
          */
         const { animObject } = A;
-        const { format } = FU;
+        const { format } = T;
         const { setOptions } = D;
         const { boxIntersectLine, intersectRect } = SLU;
         const { addEvent, extend, fireEvent, isNumber, pick, syncTimeout } = U;

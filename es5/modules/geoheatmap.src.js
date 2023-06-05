@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2022
  *
@@ -101,13 +101,7 @@
                     lat = _a.lat,
                     lon = _a.lon;
                 if (isNumber(lon) && isNumber(lat)) {
-                    var _b = this.series.options,
-                        _c = _b.colsize,
-                        colsize = _c === void 0 ? 1 : _c,
-                        _d = _b.rowsize,
-                        rowsize = _d === void 0 ? 1 : _d,
-                        x1 = lon - colsize / 2,
-                        y1 = lat - rowsize / 2;
+                    var _b = this.series.options, _c = _b.colsize, colsize = _c === void 0 ? 1 : _c, _d = _b.rowsize, rowsize = _d === void 0 ? 1 : _d, x1 = lon - colsize / 2, y1 = lat - rowsize / 2;
                     point.geometry = point.options.geometry = {
                         type: 'Polygon',
                         // A rectangle centered in lon/lat

@@ -333,6 +333,21 @@ const Options = {
              * @apioption   accessibility.point.valueDecimals
              */
             /**
+             * A [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+             * to use instead of the default for point descriptions.
+             *
+             * The context of the format string is the point instance.
+             *
+             * As opposed to [accessibility.point.valueDescriptionFormat](#accessibility.point.valueDescriptionFormat),
+             * this option replaces the whole description.
+             *
+             * @type      {string}
+             * @since 11.1.0
+             * @sample highcharts/demo/advanced-accessible
+             *      Description format
+             * @apioption accessibility.point.descriptionFormat
+             */
+            /**
              * Formatter function to use instead of the default for point
              * descriptions.
              *

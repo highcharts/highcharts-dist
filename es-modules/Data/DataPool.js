@@ -11,8 +11,9 @@
  *
  * */
 'use strict';
-import DataPoolDefaults from './DataPoolDefaults.js';
 import DataConnector from './Connectors/DataConnector.js';
+import DataPoolDefaults from './DataPoolDefaults.js';
+import U from '../Core/Utilities.js';
 /* *
  *
  *  Class
@@ -44,6 +45,17 @@ class DataPool {
      *  Functions
      *
      * */
+    /**
+     * Emits an event on this data pool to all registered callbacks of the given
+     * event.
+     * @private
+     *
+     * @param {DataTable.Event} e
+     * Event object with event information.
+     */
+    emit(e) {
+        U.fireEvent(this, e.type, e);
+    }
     /**
      * Loads the connector.
      *
@@ -107,39 +119,74 @@ class DataPool {
      *
      * @private
      *
-     * @param {Data.DataPoolConnectorOptions} connectorOptions
+     * @param {Data.DataPoolConnectorOptions} options
      * Options of connector.
      *
      * @return {Promise<Data.DataConnector>}
      * Returns the connector.
      */
-    loadConnector(connectorOptions) {
+    loadConnector(options) {
         return new Promise((resolve, reject) => {
-            const ConnectorClass = DataConnector.types[connectorOptions.type];
+            this.emit({
+                type: 'load',
+                options
+            });
+            const ConnectorClass = DataConnector.types[options.type];
             if (!ConnectorClass) {
-                throw new Error(`Connector type not found. (${connectorOptions.type})`);
+                throw new Error(`Connector type not found. (${options.type})`);
             }
-            const connector = new ConnectorClass(connectorOptions.options);
-            this.connectors[connectorOptions.name] = connector;
+            const connector = new ConnectorClass(options.options);
+            this.connectors[options.name] = connector;
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            connector.load().then(resolve)['catch'](reject);
+            connector.load().then((connector) => {
+                this.emit({
+                    type: 'afterLoad',
+                    options
+                });
+                resolve(connector);
+            })['catch'](reject);
         });
+    }
+    /**
+     * Registers a callback for a specific event.
+     *
+     * @function Highcharts.DataPool#on
+     *
+     * @param {string} type
+     * Event type as a string.
+     *
+     * @param {Highcharts.EventCallbackFunction<Highcharts.DataPool>} callback
+     * Function to register for an event callback.
+     *
+     * @return {Function}
+     * Function to unregister callback from the event.
+     */
+    on(type, callback) {
+        return U.addEvent(this, type, callback);
     }
     /**
      * Sets connector options with a specific name.
      *
-     * @param {Data.DataPoolConnectorOptions} connectorOptions
+     * @param {Data.DataPoolConnectorOptions} options
      * Connector options to set.
      */
-    setConnectorOptions(connectorOptions) {
+    setConnectorOptions(options) {
         const connectors = this.options.connectors;
+        this.emit({
+            type: 'setConnectorOptions',
+            options
+        });
         for (let i = 0, iEnd = connectors.length; i < iEnd; ++i) {
-            if (connectors[i].name === connectorOptions.name) {
-                connectors.splice(i, 1, connectorOptions);
-                return;
+            if (connectors[i].name === options.name) {
+                connectors.splice(i, 1);
+                break;
             }
         }
-        connectors.push(connectorOptions);
+        connectors.push(options);
+        this.emit({
+            type: 'afterSetConnectorOptions',
+            options
+        });
     }
 }
 /* *

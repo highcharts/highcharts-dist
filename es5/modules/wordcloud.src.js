@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -554,12 +554,7 @@
          * area.
          */
         function getScale(targetWidth, targetHeight, field) {
-            var height = Math.max(Math.abs(field.top),
-                Math.abs(field.bottom)) * 2,
-                width = Math.max(Math.abs(field.left),
-                Math.abs(field.right)) * 2,
-                scaleX = width > 0 ? 1 / width * targetWidth : 1,
-                scaleY = height > 0 ? 1 / height * targetHeight : 1;
+            var height = Math.max(Math.abs(field.top), Math.abs(field.bottom)) * 2, width = Math.max(Math.abs(field.left), Math.abs(field.right)) * 2, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1;
             return Math.min(scaleX, scaleY);
         }
         /**
@@ -899,21 +894,11 @@
          * @private
          */
         function getPolygon(x, y, width, height, rotation) {
-            var origin = [x,
-                y],
-                left = x - (width / 2),
-                right = x + (width / 2),
-                top = y - (height / 2),
-                bottom = y + (height / 2),
-                polygon = [
-                    [left,
-                top],
-                    [right,
-                top],
-                    [right,
-                bottom],
-                    [left,
-                bottom]
+            var origin = [x, y], left = x - (width / 2), right = x + (width / 2), top = y - (height / 2), bottom = y + (height / 2), polygon = [
+                    [left, top],
+                    [right, top],
+                    [right, bottom],
+                    [left, bottom]
                 ];
             return polygon.map(function (point) {
                 return rotate2DToPoint(point, origin, -rotation);

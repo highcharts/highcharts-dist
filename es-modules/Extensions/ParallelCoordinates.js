@@ -12,14 +12,14 @@
 'use strict';
 import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
-import F from '../Core/FormatUtilities.js';
+import F from '../Core/Templating.js';
 const { format } = F;
 import H from '../Core/Globals.js';
 import D from '../Core/Defaults.js';
 const { setOptions } = D;
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, defined, erase, extend, isArray, isNumber, merge, pick, splat, wrap } = U;
+const { addEvent, arrayMax, arrayMin, defined, erase, extend, insertItem, isNumber, merge, pick, splat, wrap } = U;
 /* *
  *
  *  Constants
@@ -217,8 +217,8 @@ extend(ChartProto, /** @lends Highcharts.Chart.prototype */ {
 addEvent(Series, 'bindAxes', function (e) {
     if (this.chart.hasParallelCoordinates) {
         const series = this;
-        this.chart.axes.forEach(function (axis) {
-            series.insert(axis.series);
+        this.chart.axes.forEach((axis) => {
+            insertItem(series, axis.series);
             axis.isDirty = true;
         });
         series.xAxis = this.chart.xAxis[0];

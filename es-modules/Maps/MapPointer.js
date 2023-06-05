@@ -83,7 +83,7 @@ wrap(Pointer.prototype, 'zoomOption', function (proceed) {
     const mapNavigation = this.chart.options.mapNavigation;
     // Pinch status
     if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
-        this.chart.options.chart.zooming.pinchType = 'xy';
+        this.chart.zooming.pinchType = 'xy';
     }
     proceed.apply(this, [].slice.call(arguments, 1));
 });

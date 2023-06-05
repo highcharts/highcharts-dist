@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -926,7 +926,7 @@
 
         return BreadcrumbsDefaults;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
         /* *
          *
          *  Highcharts Breadcrumbs module
@@ -3536,6 +3536,12 @@
             }, optionsLevel, optionsPoint), rotationRad, rotation, rotationMode = options.rotationMode;
             if (!isNumber(options.rotation)) {
                 if (rotationMode === 'auto' || rotationMode === 'circular') {
+                    if (options.useHTML &&
+                        rotationMode === 'circular') {
+                        // Change rotationMode to 'auto' to avoid using text paths
+                        // for HTML labels, see #18953
+                        rotationMode = 'auto';
+                    }
                     if (point.innerArcLength < 1 &&
                         point.outerArcLength > shape.radius) {
                         rotationRad = 0;
@@ -4430,8 +4436,11 @@
 
         return SunburstSeries;
     });
-    _registerModule(_modules, 'masters/modules/sunburst.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/sunburst.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Breadcrumbs/Breadcrumbs.js']], function (Highcharts, Breadcrumbs) {
 
+        const G = Highcharts;
+        G.Breadcrumbs = Breadcrumbs;
+        Breadcrumbs.compose(G.Chart, G.defaultOptions);
 
     });
 }));

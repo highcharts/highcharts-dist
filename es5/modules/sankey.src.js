@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Sankey diagram module
  *
@@ -532,11 +532,9 @@
                 curveFactor: 0.33,
                 /**
                  * Options for the data labels appearing on top of the nodes and links.
-                 * For sankey charts,
-            data labels are visible for the nodes by default,
+                 * For sankey charts, data labels are visible for the nodes by default,
                  * but hidden for links. This is controlled by modifying the
-                 * `nodeFormat`,
-            and the `format` that applies to links and is an empty
+                 * `nodeFormat`, and the `format` that applies to links and is an empty
                  * string by default.
                  *
                  * @declare Highcharts.SeriesSankeyDataLabelsOptionsObject
@@ -1475,7 +1473,8 @@
         var Series = SeriesRegistry.series,
             ColumnSeries = SeriesRegistry.seriesTypes.column;
         var getLevelOptions = TU.getLevelOptions;
-        var extend = U.extend,
+        var clamp = U.clamp,
+            extend = U.extend,
             isObject = U.isObject,
             merge = U.merge,
             pick = U.pick,
@@ -1932,10 +1931,13 @@
                         y = fromNodeTop,
                         width = node.options.width || options.width || nodeWidth,
                         height = node.options.height || options.height || nodeHeight;
-                    var r = relativeLength((typeof borderRadius === 'object' ?
+                    // border radius should not greater than half the height of the node
+                    // #18956
+                    var r = clamp(relativeLength((typeof borderRadius === 'object' ?
                             borderRadius.radius :
                             borderRadius || 0),
-                        width);
+                        width), 0,
+                        nodeHeight / 2);
                     if (chart.inverted) {
                         x = nodeLeft - nodeWidth;
                         y = chart.plotSizeY - fromNodeTop - nodeHeight;

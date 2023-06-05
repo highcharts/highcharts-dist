@@ -156,7 +156,7 @@ function navigationGetYAxisResizers(yAxes) {
                 enabled: true,
                 controlledAxis: {
                     next: [
-                        pick(nextYAxis.options.id, nextYAxis.options.index)
+                        pick(nextYAxis.options.id, nextYAxis.index)
                     ]
                 }
             };

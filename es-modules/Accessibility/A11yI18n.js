@@ -11,7 +11,7 @@
  *
  * */
 'use strict';
-import F from '../Core/FormatUtilities.js';
+import F from '../Core/Templating.js';
 const { format } = F;
 import U from '../Core/Utilities.js';
 const { getNestedProperty, pick } = U;
@@ -199,6 +199,8 @@ var A11yI18nComposition;
      * @param {Highcharts.Chart} chart
      * A `Chart` instance with a time object and numberFormatter, passed on to
      * format().
+     *
+     * @deprecated
      *
      * @return {string}
      * The formatted string.

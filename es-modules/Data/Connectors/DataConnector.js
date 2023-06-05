@@ -42,6 +42,12 @@ class DataConnector {
         this.table = new DataTable(options.dataTable);
         this.metadata = options.metadata || { columns: {} };
     }
+    /**
+     * Poll timer ID, if active.
+     */
+    get polling() {
+        return !!this.polling;
+    }
     /* *
      *
      *  Functions
@@ -171,15 +177,15 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
-        window.clearTimeout(connector.polling);
-        connector.polling = window.setTimeout(() => connector
+        window.clearTimeout(connector._polling);
+        connector._polling = window.setTimeout(() => connector
             .load()['catch']((error) => connector.emit({
             type: 'loadError',
             error,
             table: connector.table
         }))
             .then(() => {
-            if (connector.polling) {
+            if (connector._polling) {
                 connector.startPolling(refreshTime);
             }
         }), refreshTime);
@@ -189,8 +195,8 @@ class DataConnector {
      */
     stopPolling() {
         const connector = this;
-        window.clearTimeout(connector.polling);
-        delete connector.polling;
+        window.clearTimeout(connector._polling);
+        delete connector._polling;
     }
     /**
      * Retrieves metadata from a single column.

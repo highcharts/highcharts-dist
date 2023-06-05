@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -37,7 +37,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/ParallelCoordinates.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, H, D, Series, U) {
+    _registerModule(_modules, 'Extensions/ParallelCoordinates.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, H, D, Series, U) {
         /* *
          *
          *  Parallel coordinates module
@@ -51,7 +51,7 @@
          * */
         const { format } = F;
         const { setOptions } = D;
-        const { addEvent, arrayMax, arrayMin, defined, erase, extend, isArray, isNumber, merge, pick, splat, wrap } = U;
+        const { addEvent, arrayMax, arrayMin, defined, erase, extend, insertItem, isNumber, merge, pick, splat, wrap } = U;
         /* *
          *
          *  Constants
@@ -249,8 +249,8 @@
         addEvent(Series, 'bindAxes', function (e) {
             if (this.chart.hasParallelCoordinates) {
                 const series = this;
-                this.chart.axes.forEach(function (axis) {
-                    series.insert(axis.series);
+                this.chart.axes.forEach((axis) => {
+                    insertItem(series, axis.series);
                     axis.isDirty = true;
                 });
                 series.xAxis = this.chart.xAxis[0];

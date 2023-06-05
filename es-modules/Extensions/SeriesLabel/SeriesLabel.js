@@ -23,8 +23,8 @@
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
 import Chart from '../../Core/Chart/Chart.js';
-import FU from '../../Core/FormatUtilities.js';
-const { format } = FU;
+import T from '../../Core/Templating.js';
+const { format } = T;
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
 import SeriesLabelDefaults from './SeriesLabelDefaults.js';

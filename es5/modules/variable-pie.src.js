@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Variable Pie module for Highcharts
  *
@@ -138,8 +138,7 @@
                     // dataLabels, then series.center is changing.
                     positions = series.center || series.getCenter();
                 ['minPointSize', 'maxPointSize'].forEach(function (prop) {
-                    var length = seriesOptions[prop],
-                        isPercent = /%$/.test(length);
+                    var length = seriesOptions[prop], isPercent = /%$/.test(length);
                     length = parseInt(length, 10);
                     extremes[prop] = isPercent ?
                         smallestSize * length / 100 :
@@ -224,33 +223,11 @@
              */
             VariablePieSeries.prototype.translate = function (positions) {
                 this.generatePoints();
-                var series = this,
-                    cumulative = 0,
-                    precision = 1000, // issue #172
-                    options = series.options,
-                    slicedOffset = options.slicedOffset,
-                    connectorOffset = slicedOffset + (options.borderWidth || 0),
-                    finalConnectorOffset,
-                    start,
-                    end,
-                    angle,
-                    startAngle = options.startAngle || 0,
-                    startAngleRad = Math.PI / 180 * (startAngle - 90),
-                    endAngleRad = Math.PI / 180 * (pick(options.endAngle,
-                    startAngle + 360) - 90),
-                    circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                var series = this, cumulative = 0, precision = 1000, // issue #172
+                    options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), finalConnectorOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
                     points = series.points, 
                     // the x component of the radius vector for a given point
-                    radiusX,
-                    radiusY,
-                    labelDistance = options.dataLabels.distance,
-                    ignoreHiddenPoint = options.ignoreHiddenPoint,
-                    i,
-                    len = points.length,
-                    point,
-                    pointRadii,
-                    pointRadiusX,
-                    pointRadiusY;
+                    radiusX, radiusY, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii, pointRadiusX, pointRadiusY;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
                 // Use calculateExtremes to get series.radii array.

@@ -12,7 +12,7 @@
 'use strict';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
-import F from '../../Core/FormatUtilities.js';
+import F from '../../Core/Templating.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import U from '../../Core/Utilities.js';
@@ -194,7 +194,8 @@ class BubbleLegendItem {
         }
         // Nesting SVG groups to enable handleOverflow
         legendItem.symbol = renderer.g('bubble-legend');
-        legendItem.label = renderer.g('bubble-legend-item');
+        legendItem.label = renderer.g('bubble-legend-item')
+            .css(this.legend.itemStyle || {});
         // To enable default 'hideOverlappingLabels' method
         legendItem.symbol.translateX = 0;
         legendItem.symbol.translateY = 0;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Highcharts funnel module
  *
@@ -37,7 +37,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/Funnel/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Funnel/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, H, BorderRadius, SeriesRegistry, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -51,7 +51,7 @@
          * */
         const { noop } = H;
         const { series: Series, seriesTypes: { pie: PieSeries } } = SeriesRegistry;
-        const { addEvent, extend, fireEvent, isArray, merge, pick } = U;
+        const { addEvent, extend, fireEvent, isArray, merge, pick, relativeLength } = U;
         /**
          * @private
          * @class
@@ -187,8 +187,22 @@
              * @private
              */
             translate() {
-                let sum = 0, series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, cumulative = 0, // start at top
-                center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), tempWidth, height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, path, fraction, half = (options.dataLabels.position === 'left' ?
+                let sum = 0, series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, cumulative = 0, // start at top
+                center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), tempWidth, height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, path, fraction, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, alpha, // the angle between top and left point's edges
+                maxT, roundingFactors = (angle) => {
+                    const tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
+                    let r = borderRadius, t = r / tan, k = Math.tan((Math.PI - angle) / 3.2104);
+                    if (t > maxT) {
+                        t = maxT;
+                        r = t * tan;
+                    }
+                    k *= r;
+                    return {
+                        dx: [t * cosA, (t - k) * cosA, t - k, t],
+                        dy: [t * sinA, (t - k) * sinA, t - k, t]
+                            .map((i) => (reversed ? -i : i))
+                    };
+                }, half = (options.dataLabels.position === 'left' ?
                     1 :
                     0), x1, y1, x2, x3, y3, x4, y5;
                 /**
@@ -280,16 +294,116 @@
                             y5 = 2 * centerY - y5;
                         }
                     }
-                    // save the path
-                    path = [
-                        ['M', x1, y1],
-                        ['L', x2, y1],
-                        ['L', x4, y3]
-                    ];
-                    if (y5 !== null) {
-                        path.push(['L', x4, y5], ['L', x3, y5]);
+                    if (borderRadius && (radiusScope === 'point' ||
+                        point.index === 0 ||
+                        point.index === data.length - 1 ||
+                        y5 !== null)) {
+                        // Creating the path of funnel points with rounded corners
+                        // (#18839)
+                        const h = Math.abs(y3 - y1), xSide = x2 - x4, lBase = x4 - x3, lSide = Math.sqrt(xSide * xSide + h * h);
+                        alpha = Math.atan(h / xSide);
+                        maxT = lSide / 2;
+                        if (y5 !== null) {
+                            maxT = Math.min(maxT, Math.abs(y5 - y3) / 2);
+                        }
+                        if (lBase >= 1) {
+                            maxT = Math.min(maxT, lBase / 2);
+                        }
+                        // Creating a point base
+                        let f = roundingFactors(alpha);
+                        if (radiusScope === 'stack' && point.index !== 0) {
+                            path = [
+                                ['M', x1, y1],
+                                ['L', x2, y1]
+                            ];
+                        }
+                        else {
+                            path = [
+                                ['M', x1 + f.dx[0], y1 + f.dy[0]],
+                                ['C',
+                                    x1 + f.dx[1], y1 + f.dy[1],
+                                    x1 + f.dx[2], y1,
+                                    x1 + f.dx[3], y1
+                                ],
+                                ['L', x2 - f.dx[3], y1],
+                                ['C',
+                                    x2 - f.dx[2], y1,
+                                    x2 - f.dx[1], y1 + f.dy[1],
+                                    x2 - f.dx[0], y1 + f.dy[0]
+                                ]
+                            ];
+                        }
+                        if (y5 !== null) {
+                            // Closure of point with extension
+                            const fr = roundingFactors(Math.PI / 2);
+                            f = roundingFactors(Math.PI / 2 + alpha);
+                            path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], ['C',
+                                x4 + f.dx[1], y3 - f.dy[1],
+                                x4, y3 + f.dy[2],
+                                x4, y3 + f.dy[3]
+                            ]);
+                            if (radiusScope === 'stack' &&
+                                point.index !== data.length - 1) {
+                                path.push(['L', x4, y5], ['L', x3, y5]);
+                            }
+                            else {
+                                path.push(['L', x4, y5 - fr.dy[3]], ['C',
+                                    x4, y5 - fr.dy[2],
+                                    x4 - fr.dx[2], y5,
+                                    x4 - fr.dx[3], y5
+                                ], ['L', x3 + fr.dx[3], y5], ['C',
+                                    x3 + fr.dx[2], y5,
+                                    x3, y5 - fr.dy[2],
+                                    x3, y5 - fr.dy[3]
+                                ]);
+                            }
+                            path.push(['L', x3, y3 + f.dy[3]], ['C',
+                                x3, y3 + f.dy[2],
+                                x3 - f.dx[1], y3 - f.dy[1],
+                                x3 - f.dx[0], y3 - f.dy[0]
+                            ]);
+                        }
+                        else if (lBase >= 1) {
+                            // Closure of point without extension
+                            f = roundingFactors(Math.PI - alpha);
+                            if (radiusScope === 'stack' && point.index === 0) {
+                                path.push(['L', x4, y3], ['L', x3, y3]);
+                            }
+                            else {
+                                path.push(['L', x4 + f.dx[0], y3 - f.dy[0]], ['C',
+                                    x4 + f.dx[1], y3 - f.dy[1],
+                                    x4 - f.dx[2], y3,
+                                    x4 - f.dx[3], y3
+                                ], ['L', x3 + f.dx[3], y3], ['C',
+                                    x3 + f.dx[2], y3,
+                                    x3 - f.dx[1], y3 - f.dy[1],
+                                    x3 - f.dx[0], y3 - f.dy[0]
+                                ]);
+                            }
+                        }
+                        else {
+                            // Creating a rounded tip of the "pyramid"
+                            f = roundingFactors(Math.PI - alpha * 2);
+                            path.push(['L', x3 + f.dx[0], y3 - f.dy[0]], ['C',
+                                x3 + f.dx[1], y3 - f.dy[1],
+                                x3 - f.dx[1], y3 - f.dy[1],
+                                x3 - f.dx[0], y3 - f.dy[0]
+                            ]);
+                        }
                     }
-                    path.push(['L', x3, y3], ['Z']);
+                    else {
+                        // Creating the path of funnel points without rounded corners
+                        path = [
+                            ['M', x1, y1],
+                            ['L', x2, y1],
+                            ['L', x4, y3]
+                        ];
+                        if (y5 !== null) {
+                            path.push(['L', x4, y5], ['L', x3, y5]);
+                        }
+                        path.push(['L', x3, y3]);
+                    }
+                    path.push(['Z']);
                     // prepare for using shared dr
                     point.shapeType = 'path';
                     point.shapeArgs = { d: path };
@@ -350,6 +464,15 @@
              * Initial animation is by default disabled for the funnel chart.
              */
             animation: false,
+            /**
+             * The corner radius of the border surrounding all points or series. A
+             * number signifies pixels. A percentage string, like for example `50%`,
+             * signifies a size relative to the series width.
+             *
+             * @sample highcharts/plotoptions/funnel-border-radius
+             *         Funnel and pyramid with rounded border
+             */
+            borderRadius: 0,
             /**
              * The center of the series. By default, it is centered in the middle
              * of the plot area, so it fills the plot area height.

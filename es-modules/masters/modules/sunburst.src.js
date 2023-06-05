@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
@@ -9,5 +9,10 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Series/Treemap/TreemapSeries.js';
 import '../../Series/Sunburst/SunburstSeries.js';
+import Breadcrumbs from '../../Extensions/Breadcrumbs/Breadcrumbs.js';
+const G = Highcharts;
+G.Breadcrumbs = Breadcrumbs;
+Breadcrumbs.compose(G.Chart, G.defaultOptions);

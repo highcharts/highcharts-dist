@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2022
  *
@@ -948,7 +948,7 @@
 
         return defaultOptions;
     });
-    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
+    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2344,7 +2344,8 @@
                         if (geoMap) {
                             // Use the first geo map as main
                             if (!recommendedMapView) {
-                                recommendedMapView = geoMap['hc-recommended-mapview'];
+                                recommendedMapView =
+                                    geoMap['hc-recommended-mapview'];
                             }
                             // Combine the bounding boxes of all loaded maps
                             if (geoMap.bbox) {
@@ -2356,27 +2357,36 @@
                     // Get the composite bounds
                     const geoBounds = (allGeoBounds.length &&
                         MapView.compositeBounds(allGeoBounds));
-                    // Provide a best-guess recommended projection if not set in the map
-                    // or in user options
-                    if (geoBounds) {
-                        const { x1, y1, x2, y2 } = geoBounds;
-                        recommendedProjection = (x2 - x1 > 180 && y2 - y1 > 90) ?
-                            // Wide angle, go for the world view
-                            {
-                                name: 'EqualEarth'
-                            } :
-                            // Narrower angle, use a projection better suited for local
-                            // view
-                            {
-                                name: 'LambertConformalConic',
-                                parallels: [y1, y2],
-                                rotation: [-(x1 + x2) / 2]
-                            };
-                    }
+                    // Provide a best-guess recommended projection if not set in
+                    // the map or in user options
+                    fireEvent(chart, 'beforeMapViewInit', {
+                        geoBounds
+                    }, function () {
+                        if (geoBounds) {
+                            const { x1, y1, x2, y2 } = geoBounds;
+                            recommendedProjection =
+                                (x2 - x1 > 180 && y2 - y1 > 90) ?
+                                    // Wide angle, go for the world view
+                                    {
+                                        name: 'EqualEarth'
+                                    } :
+                                    // Narrower angle, use a projection better
+                                    // suited for local view
+                                    {
+                                        name: 'LambertConformalConic',
+                                        parallels: [y1, y2],
+                                        rotation: [-(x1 + x2) / 2]
+                                    };
+                        }
+                    });
                     // Register the main geo map (from options.chart.map) if set
                     this.geoMap = geoMaps[0];
                 }
                 this.userOptions = options || {};
+                if (chart.options.mapView &&
+                    chart.options.mapView.recommendedMapView) {
+                    recommendedMapView = chart.options.mapView.recommendedMapView;
+                }
                 const o = merge(defaultOptions, { projection: recommendedProjection }, recommendedMapView, options);
                 // Merge the inset collections by id, or index if id missing
                 const recInsets = recommendedMapView && recommendedMapView.insets, optInsets = options && options.insets;
@@ -2403,6 +2413,7 @@
                  * @type {number}
                  */
                 this.zoom = o.zoom || 0;
+                this.minZoom = o.minZoom;
                 // Create the insets
                 this.createInsets();
                 // Initialize and respond to chart size changes
@@ -3186,7 +3197,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { animObject } = A;
+        const { animObject, stop } = A;
         const { noop } = H;
         const { splitPath } = MapChart;
         const { 
@@ -3433,20 +3444,14 @@
                             });
                             animatePoints(scaleStep); // #18166
                         };
-                        let animOptions = {};
-                        if (chart.options.chart) {
-                            animOptions = merge({}, chart.options.chart.animation);
-                        }
-                        if (typeof animOptions !== 'boolean') {
-                            const userStep = animOptions.step;
-                            animOptions.step =
-                                function (obj) {
-                                    if (userStep) {
-                                        userStep.apply(this, arguments);
-                                    }
-                                    step.apply(this, arguments);
-                                };
-                        }
+                        const animOptions = merge(animObject(renderer.globalAnimation)), userStep = animOptions.step;
+                        animOptions.step =
+                            function (obj) {
+                                if (userStep) {
+                                    userStep.apply(this, arguments);
+                                }
+                                step.apply(this, arguments);
+                            };
                         transformGroup
                             .attr({ animator: 0 })
                             .animate({ animator: 1 }, animOptions, function () {
@@ -3461,6 +3466,7 @@
                         // When dragging or first rendering, animation is off
                     }
                     else {
+                        stop(transformGroup);
                         transformGroup.attr(merge(svgTransform, { 'stroke-width': strokeWidth / scale }));
                         animatePoints(scale); // #18166
                     }

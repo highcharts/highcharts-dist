@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Highcharts Drilldown module
  *
@@ -79,21 +79,15 @@
         var options = {
                 /**
                  * A collection of attributes for the buttons. The object takes SVG
-                 * attributes like `fill`,
-            `stroke`,
-            `stroke-width`,
-            as well as `style`,
+                 * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
                  * a collection of CSS properties for the text.
                  *
-                 * The object can also be extended with states,
-            so you can set
-                 * presentational options for `hover`,
-            `select` or `disabled` button
+                 * The object can also be extended with states, so you can set
+                 * presentational options for `hover`, `select` or `disabled` button
                  * states.
                  *
                  * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *         Themed,
-            single button
+                 *         Themed, single button
                  *
                  * @type    {Highcharts.SVGAttributes}
                  * @since   10.0.0
@@ -130,13 +124,11 @@
                 /**
                  * Fires when clicking on the breadcrumbs button. Two arguments are
                  * passed to the function. First breadcrumb button as an SVG element.
-                 * Second is the breadcrumbs class,
-            containing reference to the chart,
+                 * Second is the breadcrumbs class, containing reference to the chart,
                  * series etc.
                  *
                  * ```js
-                 * click: function(button,
-            breadcrumbs) {
+                 * click: function(button, breadcrumbs) {
                  *   console.log(button);
              * }
              * ```
@@ -314,7 +306,7 @@
 
         return BreadcrumbsDefaults;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
         /* *
          *
          *  Highcharts Breadcrumbs module
@@ -1109,8 +1101,8 @@
         var defaultOptions = D.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
-            cleanRecursively = U.cleanRecursively,
             defined = U.defined,
+            diffObjects = U.diffObjects,
             extend = U.extend,
             fireEvent = U.fireEvent,
             merge = U.merge,
@@ -1587,18 +1579,19 @@
             if (chart.mapView) {
                 // stop hovering while drilling down
                 point.series.isDrilling = true;
-                // stop duplicating and overriding animations
-                point.series.options.inactiveOtherPoints = true;
-                // hide and disable dataLabels
-                if (point.series.dataLabelsGroup) {
-                    point.series.dataLabelsGroup.destroy();
-                    delete point.series.dataLabelsGroup;
-                }
+                chart.series.forEach(function (series) {
+                    var _a;
+                    // stop duplicating and overriding animations
+                    series.options.inactiveOtherPoints = true;
+                    // hide and disable dataLabels
+                    (_a = series.dataLabelsGroup) === null || _a === void 0 ? void 0 : _a.destroy();
+                    delete series.dataLabelsGroup;
+                });
                 // #18925 map zooming is not working with geoJSON maps
                 if (chart.options.drilldown &&
                     !chart.mapView.projection.hasGeoProjection &&
                     defaultOptions.drilldown) {
-                    var userDrilldown = cleanRecursively(chart.options.drilldown,
+                    var userDrilldown = diffObjects(chart.options.drilldown,
                         defaultOptions.drilldown);
                     // set mapZooming to false if user didn't set any in chart config
                     if (!defined(userDrilldown.mapZooming)) {
@@ -1674,7 +1667,7 @@
                 if (series.xAxis === xAxis) {
                     series.options._ddSeriesId =
                         series.options._ddSeriesId || ddSeriesId++;
-                    series.options._colorIndex = series.userOptions._colorIndex;
+                    series.options.colorIndex = series.colorIndex;
                     series.options._levelNumber =
                         series.options._levelNumber || levelNumber; // #3182
                     if (last) {
@@ -1779,23 +1772,28 @@
                                         opacity: 0
                                     }, animOptions, function () {
                                         series.remove(false);
-                                        // We have a reset zoom button. Hide it and
-                                        // detatch it from the chart. It is preserved
-                                        // to the layer config above.
-                                        if (chart.resetZoomButton) {
-                                            chart.resetZoomButton.hide();
-                                            delete chart.resetZoomButton;
+                                        // If it is the last series
+                                        if (!(level.levelSeries.filter(function (el) {
+                                            return Object.keys(el).length;
+                                        })).length) {
+                                            // We have a reset zoom button. Hide it and
+                                            // detatch it from the chart. It is
+                                            // preserved to the layer config above.
+                                            if (chart.resetZoomButton) {
+                                                chart.resetZoomButton.hide();
+                                                delete chart.resetZoomButton;
+                                            }
+                                            chart.pointer.reset();
+                                            fireEvent(chart, 'afterDrilldown');
+                                            if (chart.mapView) {
+                                                chart.series.forEach(function (series) {
+                                                    series.isDirtyData = true;
+                                                    series.isDrilling = false;
+                                                });
+                                                chart.mapView.fitToBounds(void 0, void 0);
+                                            }
+                                            fireEvent(chart, 'afterApplyDrilldown');
                                         }
-                                        chart.pointer.reset();
-                                        fireEvent(chart, 'afterDrilldown');
-                                        if (chart.mapView) {
-                                            chart.series.forEach(function (series) {
-                                                series.isDirtyData = true;
-                                                series.isDrilling = false;
-                                            });
-                                            chart.mapView.fitToBounds(void 0, void 0);
-                                        }
-                                        fireEvent(chart, 'afterApplyDrilldown');
                                     });
                                 }
                             }
@@ -1940,7 +1938,11 @@
                         oldSeries.xAxis.names.length = 0;
                     }
                     level.levelSeriesOptions.forEach(function (el) {
-                        newSeries = addSeries(el, oldSeries);
+                        var addedSeries = addSeries(el,
+                            oldSeries);
+                        if (addedSeries) {
+                            newSeries = addedSeries;
+                        }
                     });
                     fireEvent(chart, 'drillup', {
                         seriesOptions: level.seriesPurgedOptions ||

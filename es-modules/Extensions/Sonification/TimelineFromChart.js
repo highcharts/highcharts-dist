@@ -15,8 +15,8 @@ import SonificationInstrument from './SonificationInstrument.js';
 import SonificationSpeaker from './SonificationSpeaker.js';
 import U from '../../Core/Utilities.js';
 const { clamp, defined, extend, getNestedProperty, merge, pick } = U;
-import FU from '../../Core/FormatUtilities.js';
-const { format } = FU;
+import T from '../../Core/Templating.js';
+const { format } = T;
 const isNoteDefinition = (str) => 
 // eslint-disable-next-line require-unicode-regexp
 (/^([a-g][#b]?)[0-8]$/i).test(str);

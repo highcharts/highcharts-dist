@@ -12,7 +12,7 @@
 'use strict';
 import BreadcrumbsDefaults from './BreadcrumbsDefaults.js';
 import Chart from '../../Core/Chart/Chart.js';
-import F from '../../Core/FormatUtilities.js';
+import F from '../../Core/Templating.js';
 const { format } = F;
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick } = U;

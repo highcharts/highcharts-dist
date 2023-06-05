@@ -29,7 +29,7 @@ import Tick from '../Core/Axis/Tick.js';
 import U from '../Core/Utilities.js';
 import '../Series/Column/ColumnSeries.js';
 import Breadcrumbs from './Breadcrumbs/Breadcrumbs.js';
-const { addEvent, cleanRecursively, defined, extend, fireEvent, merge, objectEach, pick, removeEvent, syncTimeout } = U;
+const { addEvent, defined, diffObjects, extend, fireEvent, merge, objectEach, pick, removeEvent, syncTimeout } = U;
 const PieSeries = seriesTypes.pie, MapSeries = seriesTypes.map;
 let ddSeriesId = 1;
 /**
@@ -498,18 +498,19 @@ Chart.prototype.addSeriesAsDrilldown = function (point, options) {
     if (chart.mapView) {
         // stop hovering while drilling down
         point.series.isDrilling = true;
-        // stop duplicating and overriding animations
-        point.series.options.inactiveOtherPoints = true;
-        // hide and disable dataLabels
-        if (point.series.dataLabelsGroup) {
-            point.series.dataLabelsGroup.destroy();
-            delete point.series.dataLabelsGroup;
-        }
+        chart.series.forEach((series) => {
+            var _a;
+            // stop duplicating and overriding animations
+            series.options.inactiveOtherPoints = true;
+            // hide and disable dataLabels
+            (_a = series.dataLabelsGroup) === null || _a === void 0 ? void 0 : _a.destroy();
+            delete series.dataLabelsGroup;
+        });
         // #18925 map zooming is not working with geoJSON maps
         if (chart.options.drilldown &&
             !chart.mapView.projection.hasGeoProjection &&
             defaultOptions.drilldown) {
-            const userDrilldown = cleanRecursively(chart.options.drilldown, defaultOptions.drilldown);
+            const userDrilldown = diffObjects(chart.options.drilldown, defaultOptions.drilldown);
             // set mapZooming to false if user didn't set any in chart config
             if (!defined(userDrilldown.mapZooming)) {
                 chart.options.drilldown.mapZooming = false;
@@ -572,7 +573,7 @@ Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
         if (series.xAxis === xAxis) {
             series.options._ddSeriesId =
                 series.options._ddSeriesId || ddSeriesId++;
-            series.options._colorIndex = series.userOptions._colorIndex;
+            series.options.colorIndex = series.colorIndex;
             series.options._levelNumber =
                 series.options._levelNumber || levelNumber; // #3182
             if (last) {
@@ -676,23 +677,26 @@ Chart.prototype.applyDrilldown = function () {
                                 opacity: 0
                             }, animOptions, function () {
                                 series.remove(false);
-                                // We have a reset zoom button. Hide it and
-                                // detatch it from the chart. It is preserved
-                                // to the layer config above.
-                                if (chart.resetZoomButton) {
-                                    chart.resetZoomButton.hide();
-                                    delete chart.resetZoomButton;
+                                // If it is the last series
+                                if (!(level.levelSeries.filter((el) => Object.keys(el).length)).length) {
+                                    // We have a reset zoom button. Hide it and
+                                    // detatch it from the chart. It is
+                                    // preserved to the layer config above.
+                                    if (chart.resetZoomButton) {
+                                        chart.resetZoomButton.hide();
+                                        delete chart.resetZoomButton;
+                                    }
+                                    chart.pointer.reset();
+                                    fireEvent(chart, 'afterDrilldown');
+                                    if (chart.mapView) {
+                                        chart.series.forEach((series) => {
+                                            series.isDirtyData = true;
+                                            series.isDrilling = false;
+                                        });
+                                        chart.mapView.fitToBounds(void 0, void 0);
+                                    }
+                                    fireEvent(chart, 'afterApplyDrilldown');
                                 }
-                                chart.pointer.reset();
-                                fireEvent(chart, 'afterDrilldown');
-                                if (chart.mapView) {
-                                    chart.series.forEach((series) => {
-                                        series.isDirtyData = true;
-                                        series.isDrilling = false;
-                                    });
-                                    chart.mapView.fitToBounds(void 0, void 0);
-                                }
-                                fireEvent(chart, 'afterApplyDrilldown');
                             });
                         }
                     }
@@ -826,7 +830,10 @@ Chart.prototype.drillUp = function (isMultipleDrillUp) {
                 oldSeries.xAxis.names.length = 0;
             }
             level.levelSeriesOptions.forEach((el) => {
-                newSeries = addSeries(el, oldSeries);
+                const addedSeries = addSeries(el, oldSeries);
+                if (addedSeries) {
+                    newSeries = addedSeries;
+                }
             });
             fireEvent(chart, 'drillup', {
                 seriesOptions: level.seriesPurgedOptions ||

@@ -14,12 +14,12 @@ import AnnotationsA11y from '../AnnotationsA11y.js';
 const { getPointAnnotationTexts } = AnnotationsA11y;
 import ChartUtilities from '../../Utils/ChartUtilities.js';
 const { getAxisDescription, getSeriesFirstPointElement, getSeriesA11yElement, unhideChartElementFromAT } = ChartUtilities;
-import F from '../../../Core/FormatUtilities.js';
+import F from '../../../Core/Templating.js';
 const { format, numberFormat } = F;
 import HTMLUtilities from '../../Utils/HTMLUtilities.js';
 const { reverseChildNodes, stripHTMLTagsFromString: stripHTMLTags } = HTMLUtilities;
 import U from '../../../Core/Utilities.js';
-const { find, isNumber, pick, defined } = U;
+const { find, isNumber, isString, pick, defined } = U;
 /* *
  *
  *  Functions
@@ -282,11 +282,13 @@ function defaultPointDescriptionFormatter(point) {
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
  */
 function setPointScreenReaderAttribs(point, pointElement) {
-    const series = point.series, a11yPointOptions = series.chart.options.accessibility.point || {}, seriesPointA11yOptions = series.options.accessibility &&
-        series.options.accessibility.point || {}, label = stripHTMLTags(seriesPointA11yOptions.descriptionFormatter &&
-        seriesPointA11yOptions.descriptionFormatter(point) ||
-        a11yPointOptions.descriptionFormatter &&
-            a11yPointOptions.descriptionFormatter(point) ||
+    var _a, _b, _c;
+    const series = point.series, seriesPointA11yOptions = ((_a = series.options.accessibility) === null || _a === void 0 ? void 0 : _a.point) || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
+        format(seriesPointA11yOptions.descriptionFormat, point, series.chart)) ||
+        ((_b = seriesPointA11yOptions.descriptionFormatter) === null || _b === void 0 ? void 0 : _b.call(seriesPointA11yOptions, point)) ||
+        (isString(a11yPointOptions.descriptionFormat) &&
+            format(a11yPointOptions.descriptionFormat, point, series.chart)) ||
+        ((_c = a11yPointOptions.descriptionFormatter) === null || _c === void 0 ? void 0 : _c.call(a11yPointOptions, point)) ||
         defaultPointDescriptionFormatter(point));
     pointElement.setAttribute('role', 'img');
     pointElement.setAttribute('aria-label', label);

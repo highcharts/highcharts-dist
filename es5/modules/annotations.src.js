@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Annotations module
  *
@@ -161,7 +161,7 @@
                                 label.points.forEach(function (points) {
                                     var annotationX = points.x,
                                         xAxisIndex = points.series.xAxis ?
-                                            points.series.xAxis.options.index :
+                                            points.series.xAxis.index :
                                             -1;
                                     var wasAdded = false;
                                     // Annotation not connected to any xAxis -
@@ -1097,8 +1097,7 @@
                     prevDy = e.prevChartY - cy,
                     dx = e.chartX - cx,
                     dy = e.chartY - cy;
-                var sx = (dx || 1) / (prevDx || 1),
-                    sy = (dy || 1) / (prevDy || 1);
+                var sx = (dx || 1) / (prevDx || 1), sy = (dy || 1) / (prevDy || 1);
                 if (this.chart.inverted) {
                     var temp = sy;
                     sy = sx;
@@ -3278,14 +3277,7 @@
              *        Absolute position of the second point in points array
              */
             ControllableEllipse.prototype.getAttrs = function (position, position2) {
-                var x1 = position.x,
-                    y1 = position.y,
-                    x2 = position2.x,
-                    y2 = position2.y,
-                    cx = (x1 + x2) / 2,
-                    cy = (y1 + y2) / 2,
-                    rx = Math.sqrt((x1 - x2) * (x1 - x2) / 4 + (y1 - y2) * (y1 - y2) / 4),
-                    tan = (y2 - y1) / (x2 - x1);
+                var x1 = position.x, y1 = position.y, x2 = position2.x, y2 = position2.y, cx = (x1 + x2) / 2, cy = (y1 + y2) / 2, rx = Math.sqrt((x1 - x2) * (x1 - x2) / 4 + (y1 - y2) * (y1 - y2) / 4), tan = (y2 - y1) / (x2 - x1);
                 var angle = Math.atan(tan) * 180 / Math.PI;
                 if (cx < x1) {
                     angle += 180;
@@ -3392,7 +3384,7 @@
 
         return ControllableEllipse;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Controllables/ControllableLabel.js', [_modules['Extensions/Annotations/Controllables/Controllable.js'], _modules['Core/FormatUtilities.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Controllable, F, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Controllables/ControllableLabel.js', [_modules['Extensions/Annotations/Controllables/Controllable.js'], _modules['Core/Templating.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Controllable, F, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -4287,8 +4279,8 @@
                                     point: {
                                         x: coordsX.value,
                                         y: coordsY.value,
-                                        xAxis: coordsX.axis.options.index,
-                                        yAxis: coordsY.axis.options.index
+                                        xAxis: coordsX.axis.index,
+                                        yAxis: coordsY.axis.index
                                     },
                                     r: 5
                                 }]
@@ -4344,8 +4336,8 @@
                             shapes: [
                                 {
                                     type: 'ellipse',
-                                    xAxis: coordsX.axis.options.index,
-                                    yAxis: coordsY.axis.options.index,
+                                    xAxis: coordsX.axis.index,
+                                    yAxis: coordsY.axis.index,
                                     points: [{
                                             x: coordsX.value,
                                             y: coordsY.value
@@ -4402,8 +4394,8 @@
                         }
                         var x = coordsX.value,
                             y = coordsY.value,
-                            xAxis = coordsX.axis.options.index,
-                            yAxis = coordsY.axis.options.index,
+                            xAxis = coordsX.axis.index,
+                            yAxis = coordsY.axis.index,
                             navigation = this.chart.options.navigation;
                         return this.chart.addAnnotation(merge({
                             langKey: 'rectangle',
@@ -4479,8 +4471,8 @@
                             },
                             labels: [{
                                     point: {
-                                        xAxis: coordsX.axis.options.index,
-                                        yAxis: coordsY.axis.options.index,
+                                        xAxis: coordsX.axis.index,
+                                        yAxis: coordsY.axis.index,
                                         x: coordsX.value,
                                         y: coordsY.value
                                     },
@@ -4500,7 +4492,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.0.1/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.1.0/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -4577,7 +4569,7 @@
 
         return NavigationBindingDefaults;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -5102,7 +5094,7 @@
                         pathLength = path.length - 1;
                     // If it's a number (not "format" options), parse it:
                     if (isNumber(parsedValue) &&
-                        !value.match(/px/g) &&
+                        !value.match(/px|em/g) &&
                         !field.match(/format/g)) {
                         value = parsedValue;
                     }
@@ -6866,7 +6858,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.0.1/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.1.0/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }

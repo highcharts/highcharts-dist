@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Drag-panes module
  *
@@ -105,8 +105,7 @@
                     controlledAxis: {
                         /**
                          * Array of axes that should move out of the way of resizing
-                         * being done for the current axis. If not set,
-            the next axis
+                         * being done for the current axis. If not set, the next axis
                          * will be used.
                          *
                          * @sample {highstock} stock/yaxis/multiple-resizers

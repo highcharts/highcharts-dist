@@ -547,7 +547,8 @@ class Connection {
                 // Create new marker element
                 connection.graphics[type] = renderer
                     .symbol(options.symbol)
-                    .addClass('highcharts-point-connecting-path-' + type + '-marker')
+                    .addClass('highcharts-point-connecting-path-' + type + '-marker' +
+                    ' highcharts-color-' + this.fromPoint.colorIndex)
                     .attr(box)
                     .add(pathfinder.group);
                 if (!renderer.styledMode) {

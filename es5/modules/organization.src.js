@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -239,8 +239,7 @@
                 borderRadius: 3,
                 /**
                  * Radius for the rounded corners of the links between nodes. This
-                 * option is now deprecated,
-            and moved to
+                 * option is now deprecated, and moved to
                  * [link.radius](#plotOptions.organization.link.radius).
                  *
                  * @sample   highcharts/series-organization/link-options
@@ -257,9 +256,7 @@
                 link: {
                     /**
                      * Modifier of the shape of the curved link. Works best for values
-                     * between 0 and 1,
-            where 0 is a straight line,
-            and 1 is a shape
+                     * between 0 and 1, where 0 is a straight line, and 1 is a shape
                      * close to the default one.
                      *
                      * @default 0.5
@@ -275,8 +272,7 @@
                      */
                     color: "#666666" /* Palette.neutralColor60 */,
                     /**
-                     * The line width of the links connecting nodes,
-            in pixels.
+                     * The line width of the links connecting nodes, in pixels.
                      *
                      * @sample   highcharts/series-organization/link-options
                      *           Square links
@@ -316,13 +312,10 @@
                      * organization chart. The `nodeFormat` option takes precedence
                      * over `nodeFormatter`.
                      *
-                     * In an organization chart,
-            the `nodeFormatter` is a quite complex
-                     * function of the available options,
-            striving for a good default
+                     * In an organization chart, the `nodeFormatter` is a quite complex
+                     * function of the available options, striving for a good default
                      * layout of cards with or without images. In organization chart,
-                     * the data labels come with `useHTML` set to true,
-            meaning they
+                     * the data labels come with `useHTML` set to true, meaning they
                      * will be rendered as true HTML above the SVG.
                      *
                      * @sample highcharts/series-organization/datalabels-nodeformatter
@@ -339,24 +332,19 @@
                             'flex-direction': 'row',
                             'align-items': 'center',
                             'justify-content': 'center'
-                        },
-            imageStyle = {
+                        }, imageStyle = {
                             'max-height': '100%',
                             'border-radius': '50%'
-                        },
-            innerStyle = {
+                        }, innerStyle = {
                             width: '100%',
                             padding: 0,
                             'text-align': 'center',
                             'white-space': 'normal'
-                        },
-            nameStyle = {
+                        }, nameStyle = {
                             margin: 0
-                        },
-            titleStyle = {
+                        }, titleStyle = {
                             margin: 0
-                        },
-            descriptionStyle = {
+                        }, descriptionStyle = {
                             opacity: 0.75,
                             margin: '5px'
                         };
@@ -1028,17 +1016,9 @@
                     this.options.link.type);
                 if (fromNode.shapeArgs && toNode.shapeArgs) {
                     var x1 = Math.floor((fromNode.shapeArgs.x || 0) +
-                            (fromNode.shapeArgs.width || 0)) + crisp,
-                        y1 = Math.floor((fromNode.shapeArgs.y || 0) +
-                            (fromNode.shapeArgs.height || 0) / 2) + crisp,
-                        x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp,
-                        y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                            (toNode.shapeArgs.height || 0) / 2) + crisp,
-                        xMiddle = void 0,
-                        hangingIndent = this.options.hangingIndent,
-                        toOffset = toNode.options.offset,
-                        percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10),
-                        inverted = this.chart.inverted;
+                            (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
+                            (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
+                            (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle = void 0, hangingIndent = this.options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = this.chart.inverted;
                     if (inverted) {
                         x1 -= (fromNode.shapeArgs.width || 0);
                         x2 += (toNode.shapeArgs.width || 0);

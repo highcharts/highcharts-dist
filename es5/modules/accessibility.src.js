@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Accessibility module
  *
@@ -358,7 +358,7 @@
 
         return HTMLUtilities;
     });
-    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (F, U) {
+    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (F, U) {
         /* *
          *
          *  Accessibility module - internationalization support
@@ -564,6 +564,8 @@
              * A `Chart` instance with a time object and numberFormatter, passed on to
              * format().
              *
+             * @deprecated
+             *
              * @return {string}
              * The formatted string.
              */
@@ -722,9 +724,10 @@
          * @private
          */
         function getAxisDescription(axis) {
-            return axis && (axis.userOptions && axis.userOptions.accessibility &&
-                axis.userOptions.accessibility.description ||
-                axis.axisTitle && axis.axisTitle.textStr ||
+            var _a,
+                _b;
+            return axis && (((_a = axis.options.accessibility) === null || _a === void 0 ? void 0 : _a.description) ||
+                ((_b = axis.axisTitle) === null || _b === void 0 ? void 0 : _b.textStr) ||
                 axis.options.id ||
                 axis.categories && 'categories' ||
                 axis.dateTime && 'Time' ||
@@ -2111,7 +2114,7 @@
 
         return AnnotationsA11y;
     });
-    _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Accessibility/A11yI18n.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (A11yI18n, AccessibilityComponent, Announcer, AnnotationsA11y, AST, CU, F, H, HU, U) {
+    _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Accessibility/A11yI18n.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (A11yI18n, AccessibilityComponent, Announcer, AnnotationsA11y, AST, CU, F, H, HU, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -2217,7 +2220,7 @@
             if (!firstType) {
                 return getTypeDescForEmptyChart(chart, formatContext);
             }
-            if (firstType === 'map') {
+            if (firstType === 'map' || firstType === 'tiledwebmap') {
                 return getTypeDescForMapChart(chart, formatContext);
             }
             if (chart.types.length > 1) {
@@ -4133,7 +4136,7 @@
 
         return LegendComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesDescriber.js', [_modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/FormatUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (AnnotationsA11y, ChartUtilities, F, HTMLUtilities, U) {
+    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesDescriber.js', [_modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Templating.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (AnnotationsA11y, ChartUtilities, F, HTMLUtilities, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -4156,6 +4159,7 @@
             stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
         var find = U.find,
             isNumber = U.isNumber,
+            isString = U.isString,
             pick = U.pick,
             defined = U.defined;
         /* *
@@ -4463,14 +4467,24 @@
          * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
          */
         function setPointScreenReaderAttribs(point, pointElement) {
+            var _a,
+                _b,
+                _c;
             var series = point.series,
+                seriesPointA11yOptions = ((_a = series.options.accessibility) === null || _a === void 0 ? void 0 : _a.point) || {},
                 a11yPointOptions = series.chart.options.accessibility.point || {},
-                seriesPointA11yOptions = series.options.accessibility &&
-                    series.options.accessibility.point || {},
-                label = stripHTMLTags(seriesPointA11yOptions.descriptionFormatter &&
-                    seriesPointA11yOptions.descriptionFormatter(point) ||
-                    a11yPointOptions.descriptionFormatter &&
-                        a11yPointOptions.descriptionFormatter(point) ||
+                label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
+                    format(seriesPointA11yOptions.descriptionFormat,
+                point,
+                series.chart)) ||
+                    ((_b = seriesPointA11yOptions.descriptionFormatter) === null || _b === void 0 ? void 0 : _b.call(seriesPointA11yOptions,
+                point)) ||
+                    (isString(a11yPointOptions.descriptionFormat) &&
+                        format(a11yPointOptions.descriptionFormat,
+                point,
+                series.chart)) ||
+                    ((_c = a11yPointOptions.descriptionFormatter) === null || _c === void 0 ? void 0 : _c.call(a11yPointOptions,
+                point)) ||
                     defaultPointDescriptionFormatter(point));
             pointElement.setAttribute('role', 'img');
             pointElement.setAttribute('aria-label', label);
@@ -5611,8 +5625,7 @@
                 buttons: void 0,
                 /**
                  * How many units of the defined type the button should span. If `type`
-                 * is "month" and `count` is 3,
-            the button spans three months.
+                 * is "month" and `count` is 3, the button spans three months.
                  *
                  * @type      {number}
                  * @default   1
@@ -5620,9 +5633,7 @@
                  */
                 /**
                  * Fires when clicking on the rangeSelector button. One parameter,
-                 * event,
-            is passed to the function,
-            containing common event
+                 * event, is passed to the function, containing common event
                  * information.
                  *
                  * ```js
@@ -10647,6 +10658,21 @@
                          * @apioption   accessibility.point.valueDecimals
                          */
                         /**
+                         * A [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+                         * to use instead of the default for point descriptions.
+                         *
+                         * The context of the format string is the point instance.
+                         *
+                         * As opposed to [accessibility.point.valueDescriptionFormat](#accessibility.point.valueDescriptionFormat),
+                         * this option replaces the whole description.
+                         *
+                         * @type      {string}
+                         * @since 11.1.0
+                         * @sample highcharts/demo/advanced-accessible
+                         *      Description format
+                         * @apioption accessibility.point.descriptionFormat
+                         */
+                        /**
                          * Formatter function to use instead of the default for point
                          * descriptions.
                          *
@@ -11337,7 +11363,9 @@
                             heading: 'Chart annotations summary',
                             descriptionSinglePoint: ('{annotationText}. Related to {annotationPoint}'),
                             descriptionMultiplePoints: ('{annotationText}. Related to {annotationPoint}' +
-                                '{ Also related to, #each(additionalAnnotationPoints)}'),
+                                '{#each additionalAnnotationPoints}' +
+                                ', also related to {this}' +
+                                '{/each}'),
                             descriptionNoPoints: '{annotationText}'
                         },
                         /**
@@ -11475,23 +11503,32 @@
                         mapTypeDescription: 'Map of {mapTitle} with {numSeries} data series.',
                         unknownMap: 'Map of unspecified region with {numSeries} data series.',
                         combinationChart: 'Combination chart with {numSeries} data series.',
-                        defaultSingle: 'Chart with {numPoints} data {#plural(numPoints, points, point)}.',
+                        defaultSingle: 'Chart with {numPoints} data ' +
+                            '{#eq numPoints 1}point{else}points{/eq}.',
                         defaultMultiple: 'Chart with {numSeries} data series.',
-                        splineSingle: 'Line chart with {numPoints} data {#plural(numPoints, points, point)}.',
+                        splineSingle: 'Line chart with {numPoints} data ' +
+                            '{#eq numPoints 1}point{else}points{/eq}.',
                         splineMultiple: 'Line chart with {numSeries} lines.',
-                        lineSingle: 'Line chart with {numPoints} data {#plural(numPoints, points, point)}.',
+                        lineSingle: 'Line chart with {numPoints} data ' +
+                            '{#eq numPoints 1}point{else}points{/eq}.',
                         lineMultiple: 'Line chart with {numSeries} lines.',
-                        columnSingle: 'Bar chart with {numPoints} {#plural(numPoints, bars, bar)}.',
+                        columnSingle: 'Bar chart with {numPoints} ' +
+                            '{#eq numPoints 1}bar{else}bars{/eq}.',
                         columnMultiple: 'Bar chart with {numSeries} data series.',
-                        barSingle: 'Bar chart with {numPoints} {#plural(numPoints, bars, bar)}.',
+                        barSingle: 'Bar chart with {numPoints} ' +
+                            '{#eq numPoints 1}bar{else}bars{/eq}.',
                         barMultiple: 'Bar chart with {numSeries} data series.',
-                        pieSingle: 'Pie chart with {numPoints} {#plural(numPoints, slices, slice)}.',
+                        pieSingle: 'Pie chart with {numPoints} ' +
+                            '{#eq numPoints 1}slice{else}slices{/eq}.',
                         pieMultiple: 'Pie chart with {numSeries} pies.',
-                        scatterSingle: 'Scatter chart with {numPoints} {#plural(numPoints, points, point)}.',
+                        scatterSingle: 'Scatter chart with {numPoints} ' +
+                            '{#eq numPoints 1}point{else}points{/eq}.',
                         scatterMultiple: 'Scatter chart with {numSeries} data series.',
-                        boxplotSingle: 'Boxplot with {numPoints} {#plural(numPoints, boxes, box)}.',
+                        boxplotSingle: 'Boxplot with {numPoints} ' +
+                            '{#eq numPoints 1}box{else}boxes{/eq}.',
                         boxplotMultiple: 'Boxplot with {numSeries} data series.',
-                        bubbleSingle: 'Bubble chart with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
+                        bubbleSingle: 'Bubble chart with {numPoints} ' +
+                            '{#eq numPoints 1}bubbles{else}bubble{/eq}.',
                         bubbleMultiple: 'Bubble chart with {numSeries} data series.'
                     },
                     /**
@@ -11502,9 +11539,9 @@
                     axis: {
                         /* eslint-disable max-len */
                         xAxisDescriptionSingular: 'The chart has 1 X axis displaying {names[0]}. {ranges[0]}',
-                        xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#each(names, -1) }and {names[-1]}.',
+                        xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#each names}{#unless @first},{/unless}{#if @last} and{/if} {this}{/each}.',
                         yAxisDescriptionSingular: 'The chart has 1 Y axis displaying {names[0]}. {ranges[0]}',
-                        yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#each(names, -1) }and {names[-1]}.',
+                        yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#each names}{#unless @first},{/unless}{#if @last} and{/if} {this}{/each}.',
                         timeRangeDays: 'Data range: {range} days.',
                         timeRangeHours: 'Data range: {range} hours.',
                         timeRangeMinutes: 'Data range: {range} minutes.',
@@ -11550,30 +11587,30 @@
                          */
                         summary: {
                             /* eslint-disable max-len */
-                            'default': '{series.name}, series {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            defaultCombination: '{series.name}, series {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            line: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            lineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            spline: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            splineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            column: '{series.name}, bar series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bars, bar)}.',
-                            columnCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bar series with {series.points.length} {#plural(series.points.length, bars, bar)}.',
-                            bar: '{series.name}, bar series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bars, bar)}.',
-                            barCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bar series with {series.points.length} {#plural(series.points.length, bars, bar)}.',
-                            pie: '{series.name}, pie {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, slices, slice)}.',
-                            pieCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Pie with {series.points.length} {#plural(series.points.length, slices, slice)}.',
-                            scatter: '{series.name}, scatter plot {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, points, point)}.',
-                            scatterCombination: '{series.name}, series {seriesNumber} of {chart.series.length}, scatter plot with {series.points.length} {#plural(series.points.length, points, point)}.',
-                            boxplot: '{series.name}, boxplot {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, boxes, box)}.',
-                            boxplotCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Boxplot with {series.points.length} {#plural(series.points.length, boxes, box)}.',
-                            bubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.',
-                            bubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.',
-                            map: '{series.name}, map {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, areas, area)}.',
-                            mapCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Map with {series.points.length} {#plural(series.points.length, areas, area)}.',
-                            mapline: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            maplineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#plural(series.points.length, points, point)}.',
-                            mapbubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.',
-                            mapbubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.'
+                            'default': '{series.name}, series {seriesNumber} of {chart.series.length} with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            defaultCombination: '{series.name}, series {seriesNumber} of {chart.series.length} with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            line: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            lineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            spline: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            splineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            column: '{series.name}, bar series {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}bar{else}bars{/eq}.',
+                            columnCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bar series with {series.points.length} {#eq series.points.length 1}bar{else}bars{/eq}.',
+                            bar: '{series.name}, bar series {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}bar{else}bars{/eq}.',
+                            barCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bar series with {series.points.length} {#eq series.points.length 1}bar{else}bars{/eq}.',
+                            pie: '{series.name}, pie {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}slice{else}slices{/eq}.',
+                            pieCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Pie with {series.points.length} {#eq series.points.length 1}slice{else}slices{/eq}.',
+                            scatter: '{series.name}, scatter plot {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}point{else}points{/eq}.',
+                            scatterCombination: '{series.name}, series {seriesNumber} of {chart.series.length}, scatter plot with {series.points.length} {#eq series.points.length 1}point{else}points{/eq}.',
+                            boxplot: '{series.name}, boxplot {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}box{else}boxes{/eq}.',
+                            boxplotCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Boxplot with {series.points.length} {#eq series.points.length 1}box{else}boxes{/eq}.',
+                            bubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}bubble{else}bubbles{/eq}.',
+                            bubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#eq series.points.length 1}bubble{else}bubbles{/eq}.',
+                            map: '{series.name}, map {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}area{else}areas{/eq}.',
+                            mapCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Map with {series.points.length} {#eq series.points.length 1}area{else}areas{/eq}.',
+                            mapline: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            maplineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#eq series.points.length 1}point{else}points{/eq}.',
+                            mapbubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#eq series.points.length 1}bubble{else}bubbles{/eq}.',
+                            mapbubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#eq series.points.length 1}bubble{else}bubbles{/eq}.'
                         },
                         /**
                          * User supplied description text. This is added in the point
@@ -11611,7 +11648,8 @@
                          *
                          * @since 8.0.1
                          */
-                        pointAnnotationsDescription: '{Annotation: #each(annotations). }'
+                        pointAnnotationsDescription: '{#each annotations}' +
+                            'Annotation: {this}{/each}'
                     }
                 }
             };

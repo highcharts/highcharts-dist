@@ -8,7 +8,7 @@
  *
  * */
 'use strict';
-import F from './FormatUtilities.js';
+import F from './Templating.js';
 const { format } = F;
 import H from './Globals.js';
 const { doc, isSafari } = H;
@@ -673,8 +673,8 @@ class Tooltip {
      *        used for the tooltip update.
      */
     refresh(pointOrPoints, mouseEvent) {
-        const tooltip = this, chart = this.chart, options = tooltip.options, pointer = chart.pointer, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatter = options.formatter || tooltip.defaultFormatter, shared = tooltip.shared, styledMode = chart.styledMode;
-        let textConfig = {};
+        const tooltip = this, chart = this.chart, options = tooltip.options, pointer = chart.pointer, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatString = options.format, formatter = options.formatter || tooltip.defaultFormatter, shared = tooltip.shared, styledMode = chart.styledMode;
+        let formatterContext = {};
         if (!options.enabled || !point.series) { // #16820
             return;
         }
@@ -695,18 +695,17 @@ class Tooltip {
                 item.setState('hover');
                 pointConfig.push(item.getLabelConfig());
             });
-            textConfig = {
-                x: point.category,
-                y: point.y
-            };
-            textConfig.points = pointConfig;
+            formatterContext = point.getLabelConfig();
+            formatterContext.points = pointConfig;
             // single point tooltip
         }
         else {
-            textConfig = point.getLabelConfig();
+            formatterContext = point.getLabelConfig();
         }
         this.len = pointConfig.length; // #6128
-        const text = formatter.call(textConfig, tooltip);
+        const text = isString(formatString) ?
+            format(formatString, formatterContext, chart) :
+            formatter.call(formatterContext, tooltip);
         // register the current series
         const currentSeries = point.series;
         this.distance = pick(currentSeries.tooltipOptions.distance, 16);
@@ -1200,8 +1199,6 @@ class Tooltip {
      */
     update(options) {
         this.destroy();
-        // Update user options (#6218)
-        merge(true, this.chart.options.tooltip.userOptions, options);
         this.init(this.chart, merge(true, this.options, options));
     }
     /**

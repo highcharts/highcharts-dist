@@ -11,7 +11,7 @@
 import DataGroupingAxisComposition from './DataGroupingAxisComposition.js';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
 import DataGroupingSeriesComposition from './DataGroupingSeriesComposition.js';
-import F from '../../Core/FormatUtilities.js';
+import F from '../../Core/Templating.js';
 const { format } = F;
 import U from '../../Core/Utilities.js';
 const { addEvent, extend, isNumber } = U;

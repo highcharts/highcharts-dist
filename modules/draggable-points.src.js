@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -2185,7 +2185,7 @@
          */
         Chart.prototype.zoomOrPanKeyPressed = function (e) {
             // Check whether the panKey and zoomKey are set in chart.userOptions
-            const chartOptions = this.options.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zooming.key && chartOptions.zooming.key + 'Key';
+            const chartOptions = this.options.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = this.zooming.key && this.zooming.key + 'Key';
             return (e[zoomKey] || e[panKey]);
         };
         /**

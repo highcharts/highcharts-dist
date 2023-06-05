@@ -1390,7 +1390,7 @@ class Pointer {
      * @function Highcharts.Pointer#touchSelect
      */
     touchSelect(e) {
-        return Boolean(this.chart.options.chart.zooming.singleTouch &&
+        return Boolean(this.chart.zooming.singleTouch &&
             e.touches &&
             e.touches.length === 1);
     }
@@ -1402,10 +1402,10 @@ class Pointer {
      */
     zoomOption(e) {
         const chart = this.chart, options = chart.options.chart, inverted = chart.inverted;
-        let zoomType = options.zooming.type || '', zoomX, zoomY;
+        let zoomType = chart.zooming.type || '', zoomX, zoomY;
         // Look for the pinchType option
         if (/touch/.test(e.type)) {
-            zoomType = pick(options.zooming.pinchType, zoomType);
+            zoomType = pick(chart.zooming.pinchType, zoomType);
         }
         this.zoomX = zoomX = /x/.test(zoomType);
         this.zoomY = zoomY = /y/.test(zoomType);

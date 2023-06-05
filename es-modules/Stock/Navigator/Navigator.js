@@ -857,7 +857,6 @@ class Navigator {
             }, navigatorOptions.xAxis, {
                 id: 'navigator-x-axis',
                 yAxis: 'navigator-y-axis',
-                isX: true,
                 type: 'datetime',
                 index: xAxisIndex,
                 isInternal: true,
@@ -874,7 +873,7 @@ class Navigator {
             } : {
                 offsets: [0, -scrollButtonSize, 0, scrollButtonSize],
                 height: height
-            }));
+            }), 'xAxis');
             navigator.yAxis = new Axis(chart, merge(navigatorOptions.yAxis, {
                 id: 'navigator-y-axis',
                 alignTicks: false,
@@ -888,7 +887,7 @@ class Navigator {
                 width: height
             } : {
                 height: height
-            }));
+            }), 'yAxis');
             // If we have a base series, initialize the navigator series
             if (baseSeries || navigatorOptions.series.data) {
                 navigator.updateNavigatorSeries(false);

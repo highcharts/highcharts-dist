@@ -1,0 +1,17 @@
+/*
+ Highcharts JS v11.1.0 (2023-06-05)
+
+ Mousewheel zoom module
+
+ (c) 2023 Askel Eirik Johansson
+
+ License: www.highcharts.com/license
+*/
+'use strict';(function(b){"object"===typeof module&&module.exports?(b["default"]=b,module.exports=b):"function"===typeof define&&define.amd?define("highcharts/modules/mouse-wheel-zoom",["highcharts"],function(f){b(f);b.Highcharts=f;return b}):b("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(b){function f(b,l,f,r){b.hasOwnProperty(l)||(b[l]=r.apply(null,f),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:l,module:b[l]}})))}
+b=b?b._modules:{};f(b,"Extensions/MouseWheelZoom/MouseWheelZoom.js",[b["Core/Utilities.js"]],function(b){function l(){var a=this,c=this,b=v(c.options.chart.zooming.mouseWheel);b.enabled&&f(this.container,"wheel",function(d){d=a.pointer.normalize(d);if(c.isInsidePlot(d.chartX-c.plotLeft,d.chartY-c.plotTop)){var h=w(b.sensitivity,1.1);B(c,Math.pow(h,d.detail||(d.deltaY||0)/120),c.xAxis[0].toValue(d.chartX),c.yAxis[0].toValue(d.chartY),d.chartX,d.chartY,b)}d.preventDefault&&d.preventDefault()})}var f=
+b.addEvent,r=b.isObject,w=b.pick,m=b.defined,y=b.merge,z=[],A={enabled:!0,sensitivity:1.1},v=function(a){return r(a)?y(A,a):y(A,{enabled:m(a)?a:!0})},C=function(a,c){a.x+a.width>c.x+c.width&&(a.width>c.width?(a.width=c.width,a.x=c.x):a.x=c.x+c.width-a.width);a.width>c.width&&(a.width=c.width);a.x<c.x&&(a.x=c.x);a.y+a.height>c.y+c.height&&(a.height>c.height?(a.height=c.height,a.y=c.y):a.y=c.y+c.height-a.height);a.height>c.height&&(a.height=c.height);a.y<c.y&&(a.y=c.y);return a},x,u,B=function(a,c,
+b,d,h,f,l){var g=a.xAxis[0],e=a.yAxis[0],t=w(l.type,a.options.chart.zooming.type,"x");l=/x/.test(t);t=/y/.test(t);if(m(g.max)&&m(g.min)&&m(e.max)&&m(e.min)&&m(g.dataMax)&&m(g.dataMin)&&m(e.dataMax)&&m(e.dataMin)){if(t){m(x)&&clearTimeout(x);var k=e.options,n=k.startOnTick;k=k.endOnTick;u||(u={startOnTick:n,endOnTick:k});(n||k)&&e.setOptions({startOnTick:!1,endOnTick:!1});x=setTimeout(function(){if(u){e.setOptions(u);var a=e.getExtremes(),b=a.min;a=a.max;e.forceRedraw=!0;e.setExtremes(b,a);u=void 0}},
+400)}a.inverted&&(n=e.pos+e.len,b=g.toValue(f),d=e.toValue(h),k=h,h=f,f=n-k+e.pos);h=h?(h-g.pos)/g.len:.5;if(g.reversed&&!a.inverted||a.inverted&&!g.reversed)h=1-h;f=1-(f?(f-e.pos)/e.len:.5);e.reversed&&(f=1-f);n=g.max-g.min;b=w(b,g.min+n/2);n*=c;k=e.max-e.min;d=w(d,e.min+k/2);var v=k*c,p=g.dataMax-g.dataMin,q=e.dataMax-e.dataMin;k=g.dataMin-p*g.options.minPadding;p=p+p*g.options.minPadding+p*g.options.maxPadding;var r=e.dataMin-q*e.options.minPadding;q=q+q*e.options.minPadding+q*e.options.maxPadding;
+d=C({x:b-n*h,y:d-v*f,width:n,height:v},{x:k,y:r,width:p,height:q});h=d.x<=k&&d.width>=p&&d.y<=r&&d.height>=q;m(c)&&!h?(l&&g.setExtremes(d.x,d.x+d.width,!1),t&&e.setExtremes(d.y,d.y+d.height,!1)):(l&&g.setExtremes(void 0,void 0,!1),t&&e.setExtremes(void 0,void 0,!1));a.redraw(!1)}};"";return{compose:function(a){-1===z.indexOf(a)&&(z.push(a),f(a,"afterGetContainer",l))}}});f(b,"masters/modules/mouse-wheel-zoom.src.js",[b["Core/Globals.js"],b["Extensions/MouseWheelZoom/MouseWheelZoom.js"]],function(b,
+f){f.compose(b.Chart)})});
+//# sourceMappingURL=mouse-wheel-zoom.js.map

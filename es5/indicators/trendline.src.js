@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -113,13 +113,7 @@
                     yData = [],
                     xValLength = xVal.length,
                     index = params.index;
-                var sumX = (xValLength - 1) * xValLength / 2,
-                    sumY = 0,
-                    sumXY = 0,
-                    sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6,
-                    alpha,
-                    i,
-                    y;
+                var sumX = (xValLength - 1) * xValLength / 2, sumY = 0, sumXY = 0, sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6, alpha, i, y;
                 // Get sums:
                 for (i = 0; i < xValLength; i++) {
                     y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];

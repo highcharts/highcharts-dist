@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Advanced Highcharts Stock tools
  *
@@ -371,8 +371,8 @@
                                     point: {
                                         x: coordsX.value,
                                         y: coordsY.value,
-                                        xAxis: coordsX.axis.options.index,
-                                        yAxis: coordsY.axis.options.index
+                                        xAxis: coordsX.axis.index,
+                                        yAxis: coordsY.axis.index
                                     },
                                     r: 5
                                 }]
@@ -428,8 +428,8 @@
                             shapes: [
                                 {
                                     type: 'ellipse',
-                                    xAxis: coordsX.axis.options.index,
-                                    yAxis: coordsY.axis.options.index,
+                                    xAxis: coordsX.axis.index,
+                                    yAxis: coordsY.axis.index,
                                     points: [{
                                             x: coordsX.value,
                                             y: coordsY.value
@@ -486,8 +486,8 @@
                         }
                         var x = coordsX.value,
                             y = coordsY.value,
-                            xAxis = coordsX.axis.options.index,
-                            yAxis = coordsY.axis.options.index,
+                            xAxis = coordsX.axis.index,
+                            yAxis = coordsY.axis.index,
                             navigation = this.chart.options.navigation;
                         return this.chart.addAnnotation(merge({
                             langKey: 'rectangle',
@@ -563,8 +563,8 @@
                             },
                             labels: [{
                                     point: {
-                                        xAxis: coordsX.axis.options.index,
-                                        yAxis: coordsY.axis.options.index,
+                                        xAxis: coordsX.axis.index,
+                                        yAxis: coordsY.axis.index,
                                         x: coordsX.value,
                                         y: coordsY.value
                                     },
@@ -584,7 +584,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.0.1/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.1.0/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -661,7 +661,7 @@
 
         return NavigationBindingDefaults;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -1186,7 +1186,7 @@
                         pathLength = path.length - 1;
                     // If it's a number (not "format" options), parse it:
                     if (isNumber(parsedValue) &&
-                        !value.match(/px/g) &&
+                        !value.match(/px|em/g) &&
                         !field.match(/format/g)) {
                         value = parsedValue;
                     }
@@ -1730,8 +1730,8 @@
                     y: closestPoint.y,
                     below: y < closestPoint.y,
                     series: closestPoint.series,
-                    xAxis: closestPoint.series.xAxis.options.index || 0,
-                    yAxis: closestPoint.series.yAxis.options.index || 0
+                    xAxis: closestPoint.series.xAxis.index || 0,
+                    yAxis: closestPoint.series.yAxis.index || 0
                 };
             }
         }
@@ -2031,8 +2031,8 @@
                             langKey: 'segment',
                             type: 'crookedLine',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2080,8 +2080,8 @@
                                 line: {
                                     markerEnd: 'arrow'
                                 },
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2127,8 +2127,8 @@
                             type: 'infinityLine',
                             typeOptions: {
                                 type: 'ray',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2177,8 +2177,8 @@
                                 line: {
                                     markerEnd: 'arrow'
                                 },
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2223,8 +2223,8 @@
                             type: 'infinityLine',
                             typeOptions: {
                                 type: 'line',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2273,8 +2273,8 @@
                                 line: {
                                     markerEnd: 'arrow'
                                 },
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2321,8 +2321,8 @@
                             draggable: 'y',
                             typeOptions: {
                                 type: 'horizontalLine',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2362,8 +2362,8 @@
                             draggable: 'x',
                             typeOptions: {
                                 type: 'verticalLine',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value
@@ -2404,8 +2404,8 @@
                             langKey: 'crooked3',
                             type: 'crookedLine',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [
                                     { x: x,
                         y: y },
@@ -2454,8 +2454,8 @@
                             langKey: 'crooked5',
                             type: 'crookedLine',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [
                                     { x: x,
                         y: y },
@@ -2503,24 +2503,17 @@
                     if (!coordsX || !coordsY) {
                         return;
                     }
-                    var x = coordsX.value,
-                        y = coordsY.value,
-                        navigation = this.chart.options.navigation,
-                        options = merge({
+                    var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
                             langKey: 'elliott3',
                             type: 'elliottWave',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y }
+                                    { x: x, y: y },
+                                    { x: x, y: y },
+                                    { x: x, y: y },
+                                    { x: x, y: y }
                                 ]
                             },
                             labelOptions: {
@@ -2528,9 +2521,7 @@
                                     color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
-                        },
-                        navigation.annotationsOptions,
-                        navigation.bindings.elliott3.annotationsOptions);
+                        }, navigation.annotationsOptions, navigation.bindings.elliott3.annotationsOptions);
                     return this.chart.addAnnotation(options);
                 },
                 /** @ignore-option */
@@ -2561,28 +2552,19 @@
                     if (!coordsX || !coordsY) {
                         return;
                     }
-                    var x = coordsX.value,
-                        y = coordsY.value,
-                        navigation = this.chart.options.navigation,
-                        options = merge({
+                    var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
                             langKey: 'elliott5',
                             type: 'elliottWave',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y }
+                                    { x: x, y: y },
+                                    { x: x, y: y },
+                                    { x: x, y: y },
+                                    { x: x, y: y },
+                                    { x: x, y: y },
+                                    { x: x, y: y }
                                 ]
                             },
                             labelOptions: {
@@ -2590,9 +2572,7 @@
                                     color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
-                        },
-                        navigation.annotationsOptions,
-                        navigation.bindings.elliott5.annotationsOptions);
+                        }, navigation.annotationsOptions, navigation.bindings.elliott5.annotationsOptions);
                     return this.chart.addAnnotation(options);
                 },
                 /** @ignore-option */
@@ -2625,18 +2605,14 @@
                     if (!coordsX || !coordsY) {
                         return;
                     }
-                    var x = coordsX.value,
-                        y = coordsY.value,
-                        navigation = this.chart.options.navigation,
-                        options = merge({
+                    var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
                             langKey: 'measure',
                             type: 'measure',
                             typeOptions: {
                                 selectType: 'x',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
-                                point: { x: x,
-                        y: y },
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
+                                point: { x: x, y: y },
                                 crosshairX: {
                                     strokeWidth: 1,
                                     stroke: "#000000" /* Palette.neutralColor100 */
@@ -2658,9 +2634,7 @@
                                     color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
-                        },
-                        navigation.annotationsOptions,
-                        navigation.bindings.measureX.annotationsOptions);
+                        }, navigation.annotationsOptions, navigation.bindings.measureX.annotationsOptions);
                     return this.chart.addAnnotation(options);
                 },
                 /** @ignore-option */
@@ -2689,18 +2663,14 @@
                     if (!coordsX || !coordsY) {
                         return;
                     }
-                    var x = coordsX.value,
-                        y = coordsY.value,
-                        navigation = this.chart.options.navigation,
-                        options = merge({
+                    var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
                             langKey: 'measure',
                             type: 'measure',
                             typeOptions: {
                                 selectType: 'y',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
-                                point: { x: x,
-                        y: y },
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
+                                point: { x: x, y: y },
                                 crosshairX: {
                                     enabled: false,
                                     strokeWidth: 0,
@@ -2722,9 +2692,7 @@
                                     color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
-                        },
-                        navigation.annotationsOptions,
-                        navigation.bindings.measureY.annotationsOptions);
+                        }, navigation.annotationsOptions, navigation.bindings.measureY.annotationsOptions);
                     return this.chart.addAnnotation(options);
                 },
                 /** @ignore-option */
@@ -2753,18 +2721,14 @@
                     if (!coordsX || !coordsY) {
                         return;
                     }
-                    var x = coordsX.value,
-                        y = coordsY.value,
-                        navigation = this.chart.options.navigation,
-                        options = merge({
+                    var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
                             langKey: 'measure',
                             type: 'measure',
                             typeOptions: {
                                 selectType: 'xy',
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
-                                point: { x: x,
-                        y: y },
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
+                                point: { x: x, y: y },
                                 background: {
                                     width: 0,
                                     height: 0,
@@ -2784,9 +2748,7 @@
                                     color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
-                        },
-                        navigation.annotationsOptions,
-                        navigation.bindings.measureXY.annotationsOptions);
+                        }, navigation.annotationsOptions, navigation.bindings.measureXY.annotationsOptions);
                     return this.chart.addAnnotation(options);
                 },
                 /** @ignore-option */
@@ -2819,20 +2781,15 @@
                     if (!coordsX || !coordsY) {
                         return;
                     }
-                    var x = coordsX.value,
-                        y = coordsY.value,
-                        navigation = this.chart.options.navigation,
-                        options = merge({
+                    var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
                             langKey: 'fibonacci',
                             type: 'fibonacci',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [
-                                    { x: x,
-                        y: y },
-                                    { x: x,
-                        y: y }
+                                    { x: x, y: y },
+                                    { x: x, y: y }
                                 ]
                             },
                             labelOptions: {
@@ -2840,9 +2797,7 @@
                                     color: "#666666" /* Palette.neutralColor60 */
                                 }
                             }
-                        },
-                        navigation.annotationsOptions,
-                        navigation.bindings.fibonacci.annotationsOptions);
+                        }, navigation.annotationsOptions, navigation.bindings.fibonacci.annotationsOptions);
                     return this.chart.addAnnotation(options);
                 },
                 /** @ignore-option */
@@ -2879,8 +2834,8 @@
                             langKey: 'parallelChannel',
                             type: 'tunnel',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [
                                     { x: x,
                         y: y },
@@ -2925,8 +2880,8 @@
                             langKey: 'pitchfork',
                             type: 'pitchfork',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value,
                                         y: coordsY.value,
@@ -3171,8 +3126,8 @@
                             type: 'fibonacciTimeZones',
                             langKey: 'fibonacciTimeZones',
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: coordsX.value
                                     }]
@@ -3194,8 +3149,8 @@
                             coordsY = getAssignedAxis(coords.yAxis);
                         annotation.update({
                             typeOptions: {
-                                xAxis: coordsX.axis.options.index,
-                                yAxis: coordsY.axis.options.index,
+                                xAxis: coordsX.axis.index,
+                                yAxis: coordsY.axis.index,
                                 points: [{
                                         x: x
                                     }, {
@@ -4981,7 +4936,7 @@
                         enabled: true,
                         controlledAxis: {
                             next: [
-                                pick(nextYAxis.options.id, nextYAxis.options.index)
+                                pick(nextYAxis.options.id, nextYAxis.index)
                             ]
                         }
                     };
@@ -5644,7 +5599,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/11.0.1/gfx/stock-icons/';
+                    'https://code.highcharts.com/11.1.0/gfx/stock-icons/';
             };
             return Toolbar;
         }());

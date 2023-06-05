@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Debugger module
  *
@@ -171,8 +171,7 @@
                  */
                 chart: {
                     /**
-                     * Whether to display errors on the chart. When `false`,
-            the errors will
+                     * Whether to display errors on the chart. When `false`, the errors will
                      * be shown only in the console.
                      *
                      * @sample highcharts/chart/display-errors/

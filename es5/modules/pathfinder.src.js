@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.0.1 (2023-05-08)
+ * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
  *
  * Pathfinder
  *
@@ -619,7 +619,8 @@
                         // Create new marker element
                         connection.graphics[type] = renderer
                             .symbol(options.symbol)
-                            .addClass('highcharts-point-connecting-path-' + type + '-marker')
+                            .addClass('highcharts-point-connecting-path-' + type + '-marker' +
+                            ' highcharts-color-' + this.fromPoint.colorIndex)
                             .attr(box)
                             .add(pathfinder.group);
                         if (!renderer.styledMode) {
@@ -853,25 +854,10 @@
              *         The marker vector as an object with x/y properties.
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
-                var twoPI = Math.PI * 2.0,
-                    theta = radians,
-                    bb = getPointBB(this),
-                    rectWidth = bb.xMax - bb.xMin,
-                    rectHeight = bb.yMax - bb.yMin,
-                    rAtan = Math.atan2(rectHeight,
-                    rectWidth),
-                    tanTheta = 1,
-                    leftOrRightRegion = false,
-                    rectHalfWidth = rectWidth / 2.0,
-                    rectHalfHeight = rectHeight / 2.0,
-                    rectHorizontalCenter = bb.xMin + rectHalfWidth,
-                    rectVerticalCenter = bb.yMin + rectHalfHeight,
-                    edgePoint = {
+                var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
                         x: rectHorizontalCenter,
                         y: rectVerticalCenter
-                    },
-                    xFactor = 1,
-                    yFactor = 1;
+                    }, xFactor = 1, yFactor = 1;
                 while (theta < -Math.PI) {
                     theta += twoPI;
                 }
@@ -1276,58 +1262,34 @@
          *         renderer, as well as an array of new obstacles making up this
          *         path.
          */
-        var fastAvoid = function (start,
-            end,
-            options) {
+        var fastAvoid = function (start, end, options) {
                 /*
                     Algorithm rules/description
                     - Find initial direction
                     - Determine soft/hard max for each direction.
                     - Move along initial direction until obstacle.
                     - Change direction.
-                    - If hitting obstacle,
-            first try to change length of previous line
+                    - If hitting obstacle, first try to change length of previous line
                         before changing direction again.
     
                     Soft min/max x = start/destination x +/- widest obstacle + margin
                     Soft min/max y = start/destination y +/- tallest obstacle + margin
     
                     @todo:
-                        - Make retrospective,
-            try changing prev segment to reduce
+                        - Make retrospective, try changing prev segment to reduce
                             corners
                         - Fix logic for breaking out of end-points - not always picking
                             the best direction currently
                         - When going around the end obstacle we should not always go the
-                            shortest route,
-            rather pick the one closer to the end point
+                            shortest route, rather pick the one closer to the end point
                 */
-                var dirIsX = pick(options.startDirectionX,
-            abs(end.x - start.x) > abs(end.y - start.y)),
-            dir = dirIsX ? 'x' : 'y',
-            segments,
-            useMax,
-            extractedEndPoint,
-            endSegments = [],
-            forceObstacleBreak = false, // Used in clearPathTo to keep track of
+                var dirIsX = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)), dir = dirIsX ? 'x' : 'y', segments, useMax, extractedEndPoint, endSegments = [], forceObstacleBreak = false, // Used in clearPathTo to keep track of
                 // when to force break through an obstacle.
                 // Boundaries to stay within. If beyond soft boundary, prefer to
                 // change direction ASAP. If at hard max, always change immediately.
-                metrics = options.obstacleMetrics,
-            softMinX = min(start.x,
-            end.x) - metrics.maxWidth - 10,
-            softMaxX = max(start.x,
-            end.x) + metrics.maxWidth + 10,
-            softMinY = min(start.y,
-            end.y) - metrics.maxHeight - 10,
-            softMaxY = max(start.y,
-            end.y) + metrics.maxHeight + 10, 
+                metrics = options.obstacleMetrics, softMinX = min(start.x, end.x) - metrics.maxWidth - 10, softMaxX = max(start.x, end.x) + metrics.maxWidth + 10, softMinY = min(start.y, end.y) - metrics.maxHeight - 10, softMaxY = max(start.y, end.y) + metrics.maxHeight + 10, 
                 // Obstacles
-                chartObstacles = options.chartObstacles,
-            startObstacleIx = findLastObstacleBefore(chartObstacles,
-            softMinX),
-            endObstacleIx = findLastObstacleBefore(chartObstacles,
-            softMaxX);
+                chartObstacles = options.chartObstacles, startObstacleIx = findLastObstacleBefore(chartObstacles, softMinX), endObstacleIx = findLastObstacleBefore(chartObstacles, softMaxX);
             // eslint-disable-next-line valid-jsdoc
             /**
              * How far can you go between two points before hitting an obstacle?
@@ -2429,25 +2391,10 @@
              *         The marker vector as an object with x/y properties.
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
-                var twoPI = Math.PI * 2.0,
-                    theta = radians,
-                    bb = getPointBB(this),
-                    rectWidth = bb.xMax - bb.xMin,
-                    rectHeight = bb.yMax - bb.yMin,
-                    rAtan = Math.atan2(rectHeight,
-                    rectWidth),
-                    tanTheta = 1,
-                    leftOrRightRegion = false,
-                    rectHalfWidth = rectWidth / 2.0,
-                    rectHalfHeight = rectHeight / 2.0,
-                    rectHorizontalCenter = bb.xMin + rectHalfWidth,
-                    rectVerticalCenter = bb.yMin + rectHalfHeight,
-                    edgePoint = {
+                var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
                         x: rectHorizontalCenter,
                         y: rectVerticalCenter
-                    },
-                    xFactor = 1,
-                    yFactor = 1;
+                    }, xFactor = 1, yFactor = 1;
                 while (theta < -Math.PI) {
                     theta += twoPI;
                 }

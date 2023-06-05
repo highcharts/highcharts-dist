@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.0.1 (2023-05-08)
+ * @license Highmaps JS v11.1.0 (2023-06-05)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -127,8 +127,7 @@
                 this.colorAxis = [];
                 if (options.colorAxis) {
                     options.colorAxis = splat(options.colorAxis);
-                    options.colorAxis.forEach((axisOptions, i) => {
-                        axisOptions.index = i;
+                    options.colorAxis.forEach((axisOptions) => {
                         new ColorAxisClass(this, axisOptions); // eslint-disable-line no-new
                     });
                 }
@@ -772,7 +771,7 @@
          * */
         const { parse: color } = Color;
         const { series: Series } = SeriesRegistry;
-        const { extend, isNumber, merge, pick } = U;
+        const { extend, isArray, isNumber, merge, pick } = U;
         /* *
          *
          *  Class
@@ -846,16 +845,16 @@
                     title: null,
                     visible: legend.enabled && visible !== false
                 });
-                axis.coll = 'colorAxis';
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                super.init(chart, options);
-                // #16053: Restore the actual userOptions.visible so the color axis
-                // doesnt stay hidden forever when hiding and showing legend
-                axis.userOptions.visible = visible;
-                // Base init() pushes it to the xAxis array, now pop it again
-                // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
+                super.init(chart, options, 'colorAxis');
+                // Super.init saves the extended user options, now replace it with the
+                // originals
+                this.userOptions = userOptions;
+                if (isArray(chart.userOptions.colorAxis)) {
+                    chart.userOptions.colorAxis[this.index] = userOptions;
+                }
                 // Prepare data classes
                 if (userOptions.dataClasses) {
                     axis.initDataClasses(userOptions);
@@ -1427,7 +1426,7 @@
          * */
         /**
          * The `mapNavigation` option handles buttons for navigation in addition to
-         * mousewheel and doubleclick handlers for map zooming.
+         * `mousewheel` and `doubleclick` handlers for map zooming.
          *
          * @product      highmaps
          * @optionparent mapNavigation
@@ -1599,13 +1598,13 @@
             /**
              * Whether to enable map navigation. The default is not to enable
              * navigation, as many choropleth maps are simple and don't need it.
-             * Additionally, when touch zoom and mousewheel zoom is enabled, it breaks
+             * Additionally, when touch zoom and mouse wheel zoom is enabled, it breaks
              * the default behaviour of these interactions in the website, and the
              * implementer should be aware of this.
              *
              * Individual interactions can be enabled separately, namely buttons,
              * multitouch zoom, double click zoom, double click zoom to element and
-             * mousewheel zoom.
+             * mouse wheel zoom.
              *
              * @type      {boolean}
              * @default   false
@@ -1647,7 +1646,7 @@
              */
             /**
              * Sensitivity of mouse wheel or trackpad scrolling. 1 is no sensitivity,
-             * while with 2, one mousewheel delta will zoom in 50%.
+             * while with 2, one mouse wheel delta will zoom in 50%.
              *
              * @since 4.2.4
              */
@@ -1989,7 +1988,7 @@
              *
              * @param {number} [chartX]
              *        Keep this chart position stationary if possible. This is used for
-             *        example in mousewheel events, where the area under the mouse
+             *        example in `mousewheel` events, where the area under the mouse
              *        should be fixed as we zoom in.
              *
              * @param {number} [chartY]
@@ -2104,7 +2103,7 @@
             const mapNavigation = this.chart.options.mapNavigation;
             // Pinch status
             if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
-                this.chart.options.chart.zooming.pinchType = 'xy';
+                this.chart.zooming.pinchType = 'xy';
             }
             proceed.apply(this, [].slice.call(arguments, 1));
         });
@@ -2978,7 +2977,7 @@
 
         return defaultOptions;
     });
-    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
+    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4374,7 +4373,8 @@
                         if (geoMap) {
                             // Use the first geo map as main
                             if (!recommendedMapView) {
-                                recommendedMapView = geoMap['hc-recommended-mapview'];
+                                recommendedMapView =
+                                    geoMap['hc-recommended-mapview'];
                             }
                             // Combine the bounding boxes of all loaded maps
                             if (geoMap.bbox) {
@@ -4386,27 +4386,36 @@
                     // Get the composite bounds
                     const geoBounds = (allGeoBounds.length &&
                         MapView.compositeBounds(allGeoBounds));
-                    // Provide a best-guess recommended projection if not set in the map
-                    // or in user options
-                    if (geoBounds) {
-                        const { x1, y1, x2, y2 } = geoBounds;
-                        recommendedProjection = (x2 - x1 > 180 && y2 - y1 > 90) ?
-                            // Wide angle, go for the world view
-                            {
-                                name: 'EqualEarth'
-                            } :
-                            // Narrower angle, use a projection better suited for local
-                            // view
-                            {
-                                name: 'LambertConformalConic',
-                                parallels: [y1, y2],
-                                rotation: [-(x1 + x2) / 2]
-                            };
-                    }
+                    // Provide a best-guess recommended projection if not set in
+                    // the map or in user options
+                    fireEvent(chart, 'beforeMapViewInit', {
+                        geoBounds
+                    }, function () {
+                        if (geoBounds) {
+                            const { x1, y1, x2, y2 } = geoBounds;
+                            recommendedProjection =
+                                (x2 - x1 > 180 && y2 - y1 > 90) ?
+                                    // Wide angle, go for the world view
+                                    {
+                                        name: 'EqualEarth'
+                                    } :
+                                    // Narrower angle, use a projection better
+                                    // suited for local view
+                                    {
+                                        name: 'LambertConformalConic',
+                                        parallels: [y1, y2],
+                                        rotation: [-(x1 + x2) / 2]
+                                    };
+                        }
+                    });
                     // Register the main geo map (from options.chart.map) if set
                     this.geoMap = geoMaps[0];
                 }
                 this.userOptions = options || {};
+                if (chart.options.mapView &&
+                    chart.options.mapView.recommendedMapView) {
+                    recommendedMapView = chart.options.mapView.recommendedMapView;
+                }
                 const o = merge(defaultOptions, { projection: recommendedProjection }, recommendedMapView, options);
                 // Merge the inset collections by id, or index if id missing
                 const recInsets = recommendedMapView && recommendedMapView.insets, optInsets = options && options.insets;
@@ -4433,6 +4442,7 @@
                  * @type {number}
                  */
                 this.zoom = o.zoom || 0;
+                this.minZoom = o.minZoom;
                 // Create the insets
                 this.createInsets();
                 // Initialize and respond to chart size changes
@@ -5216,7 +5226,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { animObject } = A;
+        const { animObject, stop } = A;
         const { noop } = H;
         const { splitPath } = MapChart;
         const { 
@@ -5463,20 +5473,14 @@
                             });
                             animatePoints(scaleStep); // #18166
                         };
-                        let animOptions = {};
-                        if (chart.options.chart) {
-                            animOptions = merge({}, chart.options.chart.animation);
-                        }
-                        if (typeof animOptions !== 'boolean') {
-                            const userStep = animOptions.step;
-                            animOptions.step =
-                                function (obj) {
-                                    if (userStep) {
-                                        userStep.apply(this, arguments);
-                                    }
-                                    step.apply(this, arguments);
-                                };
-                        }
+                        const animOptions = merge(animObject(renderer.globalAnimation)), userStep = animOptions.step;
+                        animOptions.step =
+                            function (obj) {
+                                if (userStep) {
+                                    userStep.apply(this, arguments);
+                                }
+                                step.apply(this, arguments);
+                            };
                         transformGroup
                             .attr({ animator: 0 })
                             .animate({ animator: 1 }, animOptions, function () {
@@ -5491,6 +5495,7 @@
                         // When dragging or first rendering, animation is off
                     }
                     else {
+                        stop(transformGroup);
                         transformGroup.attr(merge(svgTransform, { 'stroke-width': strokeWidth / scale }));
                         animatePoints(scale); // #18166
                     }
@@ -7223,7 +7228,7 @@
                  */
                 style: {
                     /** @ignore-option */
-                    fontSize: '0.7em',
+                    fontSize: '0.9em',
                     /** @ignore-option */
                     color: "#000000" /* Palette.neutralColor100 */
                 },
@@ -7326,7 +7331,7 @@
 
         return BubbleLegendDefaults;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -7518,7 +7523,8 @@
                 }
                 // Nesting SVG groups to enable handleOverflow
                 legendItem.symbol = renderer.g('bubble-legend');
-                legendItem.label = renderer.g('bubble-legend-item');
+                legendItem.label = renderer.g('bubble-legend-item')
+                    .css(this.legend.itemStyle || {});
                 // To enable default 'hideOverlappingLabels' method
                 legendItem.symbol.translateX = 0;
                 legendItem.symbol.translateY = 0;
@@ -8372,13 +8378,16 @@
                 this.translateBubble();
             }
             translateBubble() {
-                const { data, radii } = this;
-                const { minPxSize } = this.getPxExtremes();
+                const { data, options, radii } = this, { minPxSize } = this.getPxExtremes();
                 // Set the shape type and arguments to be picked up in drawPoints
                 let i = data.length;
                 while (i--) {
                     const point = data[i];
                     const radius = radii ? radii[i] : 0; // #1737
+                    // Negative points means negative z values (#9728)
+                    if (this.zoneAxis === 'z') {
+                        point.negative = (point.z || 0) < (options.zThreshold || 0);
+                    }
                     if (isNumber(radius) && radius >= minPxSize / 2) {
                         // Shape arguments
                         point.marker = extend(point.marker, {
@@ -9300,7 +9309,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9310,9 +9319,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { doc } = H;
         const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = SeriesRegistry;
         const { prototype: { symbols } } = SVGRenderer;
-        const { extend, fireEvent, isNumber, merge, pick } = U;
+        const { clamp, extend, fireEvent, isNumber, merge, pick, defined } = U;
         /* *
          *
          *  Class
@@ -9338,7 +9348,9 @@
                  *  Properties
                  *
                  * */
+                this.canvas = void 0;
                 this.colorAxis = void 0;
+                this.context = void 0;
                 this.data = void 0;
                 this.options = void 0;
                 this.points = void 0;
@@ -9356,20 +9368,102 @@
              * @private
              */
             drawPoints() {
-                // In styled mode, use CSS, otherwise the fill used in the style sheet
-                // will take precedence over the fill attribute.
-                const seriesMarkerOptions = this.options.marker || {};
-                if (seriesMarkerOptions.enabled || this._hasPointMarkers) {
-                    Series.prototype.drawPoints.call(this);
-                    this.points.forEach((point) => {
+                const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
+                if (interpolation) {
+                    const { image, chart, xAxis, yAxis, points } = series, lastPointIndex = points.length - 1, { len: xAxisLen, reversed: xRev } = xAxis, { len: yAxisLen, reversed: yRev } = yAxis, { min: xMin, max: xMax } = xAxis.getExtremes(), { min: yMin, max: yMax } = yAxis.getExtremes(), [colsize, rowsize] = [
+                        pick(seriesOptions.colsize, 1),
+                        pick(seriesOptions.rowsize, 1)
+                    ], inverted = chart.inverted, xTranslationPad = colsize / 2, userMinPadding = xAxis.userOptions.minPadding, isUserMinPadZero = (defined(userMinPadding) &&
+                        !(userMinPadding > 0)), noOffset = (inverted || isUserMinPadZero), padIfMinSet = (isUserMinPadZero && xTranslationPad || 0), [x1, x2, postTranslationOffset] = [
+                        xMin - padIfMinSet,
+                        xMax + (padIfMinSet * 2),
+                        isUserMinPadZero && 0 || (xMin + colsize)
+                    ].map((side) => (clamp(Math.round(xAxis.len -
+                        xAxis.translate(side, false, true, false, true, -series.pointPlacementToXValue())), -xAxis.len, 2 * xAxis.len))), [xStart, xEnd] = xRev ? [x2, x1] : [x1, x2], xOffset = (noOffset && 0 ||
+                        (((xAxisLen / postTranslationOffset) / 2) / 2) / 2), dimensions = inverted ?
+                        {
+                            width: xAxisLen,
+                            height: yAxisLen,
+                            x: 0,
+                            y: 0
+                        } : {
+                        x: xStart - xOffset,
+                        width: xEnd - xOffset,
+                        height: yAxisLen,
+                        y: 0
+                    };
+                    if (!image || series.isDirtyData) {
+                        const colorAxis = (chart.colorAxis &&
+                            chart.colorAxis[0]), ctx = series.getContext(), canvas = series.canvas;
+                        if (canvas && ctx && colorAxis) {
+                            const canvasWidth = canvas.width = ~~((xMax - xMin) / colsize) + 1, canvasHeight = canvas.height = ~~((yMax - yMin) / rowsize) + 1, canvasArea = canvasWidth * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4), widthLastIndex = (canvasWidth - (noOffset && 1 || 0)), heightLastIndex = canvasHeight - 1, colorFromPoint = (p) => {
+                                const rgba = (colorAxis.toColor(p.value ||
+                                    0, pick(p))
+                                    .split(')')[0]
+                                    .split('(')[1]
+                                    .split(',')
+                                    .map((s) => pick(parseFloat(s), parseInt(s, 10))));
+                                rgba[3] = pick(rgba[3], 1.0) * 255;
+                                return rgba;
+                            }, scaleToImg = (val, fromMin, fromMax, toMin, toMax) => ~~((val - fromMin) * ((toMax - toMin) /
+                                (fromMax - fromMin))), xPlacement = (xRev ?
+                                (xToImg) => (widthLastIndex - xToImg) :
+                                (xToImg) => xToImg), yPlacement = (yRev ?
+                                (yToImg) => (heightLastIndex - yToImg) :
+                                (yToImg) => yToImg), scaledPointPos = (x, y) => (Math.ceil(canvasWidth *
+                                yPlacement(scaleToImg(yMax - y, yMin, yMax, 0, heightLastIndex)) +
+                                xPlacement(scaleToImg(x, xMin, xMax, 0, widthLastIndex))));
+                            series.buildKDTree();
+                            series.directTouch = false;
+                            for (let i = 0; i < canvasArea; i++) {
+                                const toPointScale = scaleToImg(i * 4, 0, pixelData.length - 4, 0, lastPointIndex), p = points[toPointScale], sourceArr = new Uint8ClampedArray(colorFromPoint(p));
+                                pixelData.set(sourceArr, scaledPointPos(p.x, p.y) * 4);
+                            }
+                            ctx.putImageData(new ImageData(pixelData, canvasWidth, canvasHeight), 0, 0);
+                            if (image) {
+                                image.attr(Object.assign(Object.assign({}, dimensions), { href: canvas.toDataURL() }));
+                            }
+                            else {
+                                series.image = chart.renderer.image(canvas.toDataURL())
+                                    .attr(dimensions)
+                                    .add(series.group);
+                            }
+                        }
+                    }
+                    else if (image.width !== dimensions.width ||
+                        image.height !== dimensions.height) {
+                        image.attr(dimensions);
+                    }
+                }
+                else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
+                    Series.prototype.drawPoints.call(series);
+                    series.points.forEach((point) => {
                         if (point.graphic) {
-                            point.graphic[this.chart.styledMode ? 'css' : 'animate'](this.colorAttribs(point));
+                            // In styled mode, use CSS, otherwise the fill used in
+                            // the style sheet will take precedence over
+                            // the fill attribute.
+                            point.graphic[series.chart.styledMode ? 'css' : 'animate'](series.colorAttribs(point));
                             if (point.value === null) { // #15708
                                 point.graphic.addClass('highcharts-null-point');
                             }
                         }
                     });
                 }
+            }
+            /**
+             * @private
+             */
+            getContext() {
+                const series = this, { canvas, context } = series;
+                if (canvas && context) {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                }
+                else {
+                    series.canvas = doc.createElement('canvas');
+                    series.context = series.canvas.getContext('2d') || void 0;
+                    return series.context;
+                }
+                return context;
             }
             /**
              * @private
@@ -9623,6 +9717,16 @@
              * @product   highcharts highmaps
              * @apioption plotOptions.heatmap.rowsize
              */
+            /**
+             * Make the heatmap render its data points as an interpolated image.
+             *
+             * @sample highcharts/demo/heatmap-interpolation
+             *   Interpolated heatmap image displaying user activity on a website
+             * @sample highcharts/series-heatmap/interpolation
+             *   Interpolated heatmap toggle
+             *
+             */
+            interpolation: false,
             /**
              * The color applied to null points. In styled mode, a general CSS class
              * is applied instead.

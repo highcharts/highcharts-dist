@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Sonification module
  *
@@ -3932,7 +3932,7 @@
 
         return SonificationTimeline;
     });
-    _registerModule(_modules, 'Extensions/Sonification/TimelineFromChart.js', [_modules['Extensions/Sonification/SonificationTimeline.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Core/Utilities.js'], _modules['Core/FormatUtilities.js']], function (SonificationTimeline, SonificationInstrument, SonificationSpeaker, U, FU) {
+    _registerModule(_modules, 'Extensions/Sonification/TimelineFromChart.js', [_modules['Extensions/Sonification/SonificationTimeline.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Core/Utilities.js'], _modules['Core/Templating.js']], function (SonificationTimeline, SonificationInstrument, SonificationSpeaker, U, T) {
         /* *
          *
          *  (c) 2009-2022 Øystein Moseng
@@ -3945,7 +3945,7 @@
          *
          * */
         const { clamp, defined, extend, getNestedProperty, merge, pick } = U;
-        const { format } = FU;
+        const { format } = T;
         const isNoteDefinition = (str) => 
         // eslint-disable-next-line require-unicode-regexp
         (/^([a-g][#b]?)[0-8]$/i).test(str);

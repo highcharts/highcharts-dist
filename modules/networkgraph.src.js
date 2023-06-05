@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Force directed graph module
  *
@@ -1423,6 +1423,12 @@
          * @type      {number}
          * @product   highcharts
          * @apioption series.networkgraph.nodes.mass
+         */
+        /**
+         * Options for the node markers.
+         *
+         * @extends   plotOptions.networkgraph.marker
+         * @apioption series.networkgraph.nodes.marker
          */
         /**
          * Individual data label for each node. The options are the same as

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * X-range series
  *
@@ -81,8 +81,7 @@
          */
         var XRangeSeriesDefaults = {
                 /**
-                 * A partial fill for each point,
-            typically used to visualize how much
+                 * A partial fill for each point, typically used to visualize how much
                  * of a task is performed. The partial fill object can be set either on
                  * series or point level.
                  *
@@ -101,8 +100,7 @@
                  * @apioption plotOptions.xrange.partialFill.fill
                  */
                 /**
-                 * A partial fill for each point,
-            typically used to visualize how much
+                 * A partial fill for each point, typically used to visualize how much
                  * of a task is performed. See [completed](series.gantt.data.completed).
                  *
                  * @sample gantt/demo/progress-indicator
@@ -112,15 +110,13 @@
                  * @apioption plotOptions.gantt.partialFill
                  */
                 /**
-                 * In an X-range series,
-            this option makes all points of the same Y-axis
+                 * In an X-range series, this option makes all points of the same Y-axis
                  * category the same color.
                  */
                 colorByPoint: true,
                 dataLabels: {
                     formatter: function () {
-                        var point = this.point,
-            amount = point.partialFill;
+                        var point = this.point, amount = point.partialFill;
                     if (isObject(amount)) {
                         amount = amount.amount;
                     }

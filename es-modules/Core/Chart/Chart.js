@@ -13,20 +13,21 @@ const { animate, animObject, setAnimation } = A;
 import Axis from '../Axis/Axis.js';
 import D from '../Defaults.js';
 const { defaultOptions, defaultTime } = D;
-import FormatUtilities from '../FormatUtilities.js';
-const { numberFormat } = FormatUtilities;
+import Templating from '../Templating.js';
+const { numberFormat } = Templating;
 import Foundation from '../Foundation.js';
 const { registerEventOptions } = Foundation;
 import H from '../Globals.js';
 const { charts, doc, marginNames, svg, win } = H;
 import RendererRegistry from '../Renderer/RendererRegistry.js';
+import Series from '../Series/Series.js';
 import SeriesRegistry from '../Series/SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import Time from '../Time.js';
 import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
-const { addEvent, attr, cleanRecursively, createElement, css, defined, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
+const { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -131,6 +132,7 @@ class Chart {
         this.userOptions = void 0;
         this.xAxis = void 0;
         this.yAxis = void 0;
+        this.zooming = void 0;
         this.getArgs(a, b, c);
     }
     /* *
@@ -162,6 +164,17 @@ class Chart {
         }
     }
     /**
+     * Function setting zoom options after chart init and after chart update.
+     * Offers support for deprecated options.
+     *
+     * @private
+     * @function Highcharts.Chart#setZoomOptions
+     */
+    setZoomOptions() {
+        const chart = this, options = chart.options.chart, zooming = options.zooming;
+        chart.zooming = Object.assign(Object.assign({}, zooming), { type: pick(options.zoomType, zooming.type), key: pick(options.zoomKey, zooming.key), pinchType: pick(options.pinchType, zooming.pinchType), singleTouch: pick(options.zoomBySingleTouch, zooming.singleTouch, false), resetButton: merge(zooming.resetButton, options.resetZoomButton) });
+    }
+    /**
      * Overridable function that initializes the chart. The constructor's
      * arguments are passed on directly.
      *
@@ -179,33 +192,27 @@ class Chart {
      * @emits Highcharts.Chart#event:afterInit
      */
     init(userOptions, callback) {
-        // Handle regular options
-        const userPlotOptions = userOptions.plotOptions || {};
         // Fire the event with a default function
         fireEvent(this, 'init', { args: arguments }, function () {
-            const options = merge(defaultOptions, userOptions); // do the merge
-            const optionsChart = options.chart;
-            // Override (by copy of user options) or clear tooltip options
-            // in chart.options.plotOptions (#6218)
-            objectEach(options.plotOptions, function (typeOptions, type) {
-                if (isObject(typeOptions)) { // #8766
-                    typeOptions.tooltip = (userPlotOptions[type] && // override by copy:
-                        merge(userPlotOptions[type].tooltip)) || void 0; // or clear
-                }
-            });
-            // User options have higher priority than default options
-            // (#6218). In case of exporting: path is changed
-            options.tooltip.userOptions = (userOptions.chart &&
-                userOptions.chart.forExport &&
-                userOptions.tooltip.userOptions) || userOptions.tooltip;
+            const options = merge(defaultOptions, userOptions), // do the merge
+            optionsChart = options.chart;
             /**
              * The original options given to the constructor or a chart factory
              * like {@link Highcharts.chart} and {@link Highcharts.stockChart}.
+             * The original options are shallow copied to avoid mutation. The
+             * copy, `chart.userOptions`, may later be mutated to reflect
+             * updated options throughout the lifetime of the chart.
+             *
+             * For collections, like `series`, `xAxis` and `yAxis`, the chart
+             * user options should always be reflected by the item user option,
+             * so for example the following should always be true:
+             *
+             * `chart.xAxis[0].userOptions === chart.userOptions.xAxis[0]`
              *
              * @name Highcharts.Chart#userOptions
              * @type {Highcharts.Options}
              */
-            this.userOptions = userOptions;
+            this.userOptions = extend({}, userOptions);
             this.margin = [];
             this.spacing = [];
             // Pixel data bounds for touch zoom
@@ -215,15 +222,6 @@ class Chart {
             this.labelCollectors = [];
             this.callback = callback;
             this.isResizing = 0;
-            const zooming = optionsChart.zooming = optionsChart.zooming || {};
-            // Other options have no default so just pick
-            if (userOptions.chart && !userOptions.chart.zooming) {
-                zooming.resetButton = optionsChart.resetZoomButton;
-            }
-            zooming.key = pick(zooming.key, optionsChart.zoomKey);
-            zooming.pinchType = pick(zooming.pinchType, optionsChart.pinchType);
-            zooming.singleTouch = pick(zooming.singleTouch, optionsChart.zoomBySingleTouch);
-            zooming.type = pick(zooming.type, optionsChart.zoomType);
             /**
              * The options structure for the chart after merging
              * {@link #defaultOptions} and {@link #userOptions}. It contains
@@ -313,6 +311,7 @@ class Chart {
              */
             chart.yAxis = [];
             chart.pointCount = chart.colorCounter = chart.symbolCounter = 0;
+            this.setZoomOptions();
             // Fire after init but before first render, before axes and series
             // have been initialized.
             fireEvent(chart, 'afterInit');
@@ -368,28 +367,50 @@ class Chart {
         });
     }
     /**
-     * Order all series above a given index. When series are added and ordered
-     * by configuration, only the last series is handled (#248, #1123, #2456,
-     * #6112). This function is called on series initialization and destroy.
+     * Order all series or axes above a given index. When series or axes are
+     * added and ordered by configuration, only the last series is handled
+     * (#248, #1123, #2456, #6112). This function is called on series and axis
+     * initialization and destroy.
      *
      * @private
-     * @function Highcharts.Series#orderSeries
-     * @param {number} [fromIndex]
+     * @function Highcharts.Chart#orderItems
+     * @param {string} coll The collection name
+     * @param {number} [fromIndex=0]
      * If this is given, only the series above this index are handled.
      */
-    orderSeries(fromIndex) {
-        const series = this.series;
-        for (let i = (fromIndex || 0), iEnd = series.length; i < iEnd; ++i) {
-            if (series[i]) {
-                /**
-                 * Contains the series' index in the `Chart.series` array.
-                 *
-                 * @name Highcharts.Series#index
-                 * @type {number}
-                 * @readonly
-                 */
-                series[i].index = i;
-                series[i].name = series[i].getName();
+    orderItems(coll, fromIndex = 0) {
+        const collection = this[coll], 
+        // Item options should be reflected in chart.options.series,
+        // chart.options.yAxis etc
+        optionsArray = this.options[coll] = splat(this.options[coll])
+            .slice(), userOptionsArray = this.userOptions[coll] = this.userOptions[coll] ?
+            splat(this.userOptions[coll]).slice() :
+            [];
+        if (this.hasRendered) {
+            // Remove all above index
+            optionsArray.splice(fromIndex);
+            userOptionsArray.splice(fromIndex);
+        }
+        if (collection) {
+            for (let i = fromIndex, iEnd = collection.length; i < iEnd; ++i) {
+                const item = collection[i];
+                if (item) {
+                    /**
+                     * Contains the series' index in the `Chart.series` array.
+                     *
+                     * @name Highcharts.Series#index
+                     * @type {number}
+                     * @readonly
+                     */
+                    item.index = i;
+                    if (item instanceof Series) {
+                        item.name = item.getName();
+                    }
+                    if (!item.options.isInternal) {
+                        optionsArray[i] = item.options;
+                        userOptionsArray[i] = item.userOptions;
+                    }
+                }
             }
         }
     }
@@ -490,7 +511,7 @@ class Chart {
             chart.temporaryDisplay();
         }
         // Adjust title layout (reflow multiline text)
-        chart.layOutTitles();
+        chart.layOutTitles(false);
         // link stacked series
         i = series.length;
         while (i--) {
@@ -646,21 +667,15 @@ class Chart {
      * @emits Highcharts.Chart#event:getAxes
      */
     getAxes() {
-        const chart = this, options = this.options, xAxisOptions = options.xAxis = splat(options.xAxis || {}), yAxisOptions = options.yAxis = splat(options.yAxis || {});
+        const options = this.options;
         fireEvent(this, 'getAxes');
-        // make sure the options are arrays and add some members
-        xAxisOptions.forEach(function (axis, i) {
-            axis.index = i;
-            axis.isX = true;
-        });
-        yAxisOptions.forEach(function (axis, i) {
-            axis.index = i;
-        });
-        // concatenate all axis options into one array
-        const optionsArray = xAxisOptions.concat(yAxisOptions);
-        optionsArray.forEach(function (axisOptions) {
-            new Axis(chart, axisOptions); // eslint-disable-line no-new
-        });
+        for (const coll of ['xAxis', 'yAxis']) {
+            const arr = options[coll] = splat(options[coll] || {});
+            for (const axisOptions of arr) {
+                // eslint-disable-next-line no-new
+                new Axis(this, axisOptions, coll);
+            }
+        }
         fireEvent(this, 'afterGetAxes');
     }
     /**
@@ -752,20 +767,8 @@ class Chart {
      */
     applyDescription(name, explicitOptions) {
         const chart = this;
-        // Default style
-        const style = name === 'title' ? {
-            color: "#333333" /* Palette.neutralColor80 */,
-            fontSize: this.options.isStock ? '1em' : '1.2em',
-            fontWeight: 'bold'
-        } : {
-            // Subtitle or caption
-            color: "#666666" /* Palette.neutralColor60 */,
-            fontSize: '0.8em'
-        };
         // Merge default options with explicit options
-        const options = this.options[name] = merge(
-        // Default styles
-        (!this.styledMode && { style }), this.options[name], explicitOptions);
+        const options = this.options[name] = merge(this.options[name], explicitOptions);
         let elem = this[name];
         if (elem && explicitOptions) {
             this[name] = elem = elem.destroy(); // remove old
@@ -778,19 +781,17 @@ class Chart {
                 zIndex: options.zIndex || 4
             })
                 .add();
-            // Update methods, shortcut to Chart.setTitle, Chart.setSubtitle and
-            // Chart.setCaption
-            elem.update = function (updateOptions) {
-                const fn = {
-                    title: 'setTitle',
-                    subtitle: 'setSubtitle',
-                    caption: 'setCaption'
-                }[name];
-                chart[fn](updateOptions);
+            // Update methods, relay to `applyDescription`
+            elem.update = function (updateOptions, redraw) {
+                chart.applyDescription(name, updateOptions);
+                chart.layOutTitles(redraw);
             };
             // Presentational
             if (!this.styledMode) {
-                elem.css(options.style);
+                elem.css(extend(name === 'title' ? {
+                    // #2944
+                    fontSize: this.options.isStock ? '1em' : '1.2em'
+                } : {}, options.style));
             }
             /**
              * The chart title. The title has an `update` method that allows
@@ -825,7 +826,7 @@ class Chart {
      * @param {boolean} [redraw=true]
      * @emits Highcharts.Chart#event:afterLayOutTitles
      */
-    layOutTitles(redraw) {
+    layOutTitles(redraw = true) {
         const titleOffset = [0, 0, 0], renderer = this.renderer, spacingBox = this.spacingBox;
         // Lay out the title and the subtitle respectively
         ['title', 'subtitle', 'caption'].forEach(function (key) {
@@ -877,7 +878,7 @@ class Chart {
         if (!this.isDirtyBox && requiresDirtyBox) {
             this.isDirtyBox = this.isDirtyLegend = requiresDirtyBox;
             // Redraw if necessary (#2719, #2744)
-            if (this.hasRendered && pick(redraw, true) && this.isDirtyBox) {
+            if (this.hasRendered && redraw && this.isDirtyBox) {
                 this.redraw();
             }
         }
@@ -1170,6 +1171,21 @@ class Chart {
             }
         });
         chart.setChartSize();
+    }
+    /**
+     * Return the current options of the chart, but only those that differ from
+     * default options. Items that can be either an object or an array of
+     * objects, like `series`, `xAxis` and `yAxis`, are always returned as
+     * array.
+     *
+     * @sample highcharts/members/chart-getoptions
+     *
+     * @function Highcharts.Chart#getOptions
+     *
+     * @since 11.1.0
+     */
+    getOptions() {
+        return diffObjects(this.userOptions, defaultOptions);
     }
     /**
      * Reflows the chart to its container. By default, the Resize Observer is
@@ -1846,7 +1862,9 @@ class Chart {
         // get axes
         chart.getAxes();
         // Initialize the series
-        (isArray(options.series) ? options.series : []).forEach(
+        const series = isArray(options.series) ? options.series : [];
+        options.series = []; // Avoid mutation
+        series.forEach(
         // #9680
         function (serieOptions) {
             chart.initSeries(serieOptions);
@@ -2037,7 +2055,7 @@ class Chart {
      * @private
      * @function Highcharts.Chart#createAxis
      *
-     * @param {string} type
+     * @param {string} coll
      *        An axis type.
      *
      * @param {...Array<*>} arguments
@@ -2046,11 +2064,8 @@ class Chart {
      * @return {Highcharts.Axis}
      *         The newly generated Axis object.
      */
-    createAxis(type, options) {
-        const axis = new Axis(this, merge(options.axis, {
-            index: this[type].length,
-            isX: type === 'xAxis'
-        }));
+    createAxis(coll, options) {
+        const axis = new Axis(this, options.axis, coll);
         if (pick(options.redraw, true)) {
             this.redraw(options.animation);
         }
@@ -2223,13 +2238,15 @@ class Chart {
         if (!isResponsiveOptions) {
             chart.setResponsive(false, true);
         }
-        options = cleanRecursively(options, chart.options);
+        options = diffObjects(options, chart.options);
         chart.userOptions = merge(chart.userOptions, options);
         // If the top-level chart option is present, some special updates are
         // required
         const optionsChart = options.chart;
         if (optionsChart) {
             merge(true, chart.options.chart, optionsChart);
+            // Add support for deprecated zooming options like zoomType, #17861
+            this.setZoomOptions();
             // Setter function
             if ('className' in optionsChart) {
                 chart.setClassName(optionsChart.className);
@@ -2328,17 +2345,7 @@ class Chart {
         // an id will update the first and the second respectively (#6019)
         // chart.update and responsive.
         this.collectionsWithUpdate.forEach(function (coll) {
-            let indexMap;
             if (options[coll]) {
-                // In stock charts, the navigator series are also part of the
-                // chart.series array, but those series should not be handled
-                // here (#8196) and neither should the navigator axis (#9671).
-                indexMap = [];
-                chart[coll].forEach(function (s, i) {
-                    if (!s.options.isInternal) {
-                        indexMap.push(pick(s.options.index, i));
-                    }
-                });
                 splat(options[coll]).forEach(function (newOptions, i) {
                     const hasId = defined(newOptions.id);
                     let item;
@@ -2348,10 +2355,12 @@ class Chart {
                     }
                     // No match by id found, match by index instead
                     if (!item && chart[coll]) {
-                        item = chart[coll][indexMap ? indexMap[i] : i];
+                        item = chart[coll][pick(newOptions.index, i)];
                         // Check if we grabbed an item with an exising but
-                        // different id (#13541)
-                        if (item && hasId && defined(item.options.id)) {
+                        // different id (#13541). Check that the item in this
+                        // position is not internal (navigator).
+                        if (item && ((hasId && defined(item.options.id)) ||
+                            item.options.isInternal)) {
                             item = void 0;
                         }
                     }
@@ -2469,7 +2478,7 @@ class Chart {
      * @emits Highcharts.Chart#event:beforeShowResetZoom
      */
     showResetZoom() {
-        const chart = this, lang = defaultOptions.lang, btnOptions = chart.options.chart.zooming.resetButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
+        const chart = this, lang = defaultOptions.lang, btnOptions = chart.zooming.resetButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
             btnOptions.relativeTo === 'spacingBox' ?
             null :
             'scrollablePlotBox');

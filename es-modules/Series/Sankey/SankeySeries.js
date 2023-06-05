@@ -21,7 +21,7 @@ const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry
 import TU from '../TreeUtilities.js';
 const { getLevelOptions } = TU;
 import U from '../../Core/Utilities.js';
-const { extend, isObject, merge, pick, relativeLength, stableSort } = U;
+const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
 /* *
  *
  *  Class
@@ -409,9 +409,11 @@ class SankeySeries extends ColumnSeries {
             node.nodeX = nodeLeft;
             node.nodeY = fromNodeTop;
             let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
-            const r = relativeLength((typeof borderRadius === 'object' ?
+            // border radius should not greater than half the height of the node
+            // #18956
+            const r = clamp(relativeLength((typeof borderRadius === 'object' ?
                 borderRadius.radius :
-                borderRadius || 0), width);
+                borderRadius || 0), width), 0, nodeHeight / 2);
             if (chart.inverted) {
                 x = nodeLeft - nodeWidth;
                 y = chart.plotSizeY - fromNodeTop - nodeHeight;

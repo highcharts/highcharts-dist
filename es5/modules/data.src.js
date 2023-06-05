@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.0.1 (2023-05-08)
+ * @license Highcharts JS v11.1.0 (2023-06-05)
  *
  * Data module
  *
@@ -884,9 +884,7 @@
                  * @private
                  */
                 function deduceDateFormat(data, limit) {
-                    var format = 'YYYY/mm/dd',
-                        stable = [],
-                        max = [];
+                    var format = 'YYYY/mm/dd', stable = [], max = [];
                     var thing,
                         guessedFormat = [],
                         calculatedFormat,
@@ -1324,7 +1322,7 @@
                 if (typeof str === 'string') {
                     str = str.replace(/^\s+|\s+$/g, '');
                     // Clear white space insdie the string, like thousands separators
-                    if (inside && /^[0-9\s]+$/.test(str)) {
+                    if (inside && /^-?[0-9\s]+$/.test(str)) {
                         str = str.replace(/\s/g, '');
                     }
                     if (this.decimalRegex) {

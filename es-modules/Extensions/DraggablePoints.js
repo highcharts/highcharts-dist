@@ -2155,7 +2155,7 @@ addEvent(Point, 'remove', function () {
  */
 Chart.prototype.zoomOrPanKeyPressed = function (e) {
     // Check whether the panKey and zoomKey are set in chart.userOptions
-    const chartOptions = this.options.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zooming.key && chartOptions.zooming.key + 'Key';
+    const chartOptions = this.options.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = this.zooming.key && this.zooming.key + 'Key';
     return (e[zoomKey] || e[panKey]);
 };
 /**

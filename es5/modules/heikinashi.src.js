@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * HeikinAshi series type for Highcharts Stock
  *
@@ -382,8 +382,7 @@
                 var open = (dataPoint[0] +
                         dataPoint[1] +
                         dataPoint[2] +
-                        dataPoint[3]) / 4,
-                    close = (dataPoint[0] + dataPoint[3]) / 2;
+                        dataPoint[3]) / 4, close = (dataPoint[0] + dataPoint[3]) / 2;
                 this.heikiashiData.push([open, dataPoint[1], dataPoint[2], close]);
             };
             /**

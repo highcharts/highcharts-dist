@@ -10,7 +10,7 @@
 'use strict';
 import A from '../Animation/AnimationUtilities.js';
 const { animObject, setAnimation } = A;
-import F from '../FormatUtilities.js';
+import F from '../Templating.js';
 const { format } = F;
 import H from '../Globals.js';
 const { marginNames } = H;
@@ -202,20 +202,12 @@ class Legend {
             group[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
         }
         if (!this.chart.styledMode) {
-            const legend = this, options = legend.options, hiddenColor = legend.itemHiddenStyle.color, textColor = visible ?
-                options.itemStyle.color :
-                hiddenColor, symbolColor = visible ?
+            const { itemHiddenStyle } = this, hiddenColor = itemHiddenStyle.color, symbolColor = visible ?
                 (item.color || hiddenColor) :
                 hiddenColor, markerOptions = item.options && item.options.marker;
             let symbolAttr = { fill: symbolColor };
-            if (label) {
-                label.css({
-                    fill: textColor
-                });
-            }
-            if (line) {
-                line.attr({ stroke: symbolColor });
-            }
+            label === null || label === void 0 ? void 0 : label.css(merge(visible ? this.itemStyle : itemHiddenStyle));
+            line === null || line === void 0 ? void 0 : line.attr({ stroke: symbolColor });
             if (symbol) {
                 // Apply marker options
                 if (markerOptions && symbol.isMarker) { // #585

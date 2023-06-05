@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.0.1 (2023-05-08)
+ * @license Highstock JS v11.1.0 (2023-06-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -218,8 +218,11 @@
              *  Functions
              *
              * */
-            VBPIndicator.prototype.init = function (chart) {
+            VBPIndicator.prototype.init = function (chart, options) {
                 var indicator = this;
+                // series.update() sends data that is not necessary
+                // as everything is calculated in getValues(), #17007
+                delete options.data;
                 _super.prototype.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
                 var unbinder = addEvent(StockChart, 'afterLinkSeries',

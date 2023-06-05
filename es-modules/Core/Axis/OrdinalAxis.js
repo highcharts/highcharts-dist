@@ -280,8 +280,9 @@ var OrdinalAxis;
             return val;
         }
         // Convert back from modivied value to pixels. // #15970
-        const pixelVal = (val - localMin) * localA +
-            axis.minPixelPadding, isInside = pixelVal > 0 && pixelVal < axis.left + axis.len;
+        const pixelVal = correctFloat((val - localMin) * localA +
+            axis.minPixelPadding), isInside = val >= positions[0] &&
+            val <= positions[positions.length - 1];
         // If the value is not inside the plot area, use the extended positions.
         // (array contains also points that are outside of the plotArea).
         if (!isInside) {
@@ -295,10 +296,11 @@ var OrdinalAxis;
         // In some cases (especially in early stages of the chart creation) the
         // getExtendedPositions might return undefined.
         if (positions && positions.length) {
-            const index = ordinal.getIndexOfPoint(pixelVal, positions), mantissa = correctFloat(index % 1);
+            const indexOf = positions.indexOf(val);
+            const index = indexOf !== -1 ? indexOf : correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = correctFloat(index % 1);
             // Check if the index is inside position array. If true,
             // read/approximate value for that exact index.
-            if (index >= 0 && index < positions.length - 1) {
+            if (index >= 0 && index <= positions.length - 1) {
                 const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                 return positions[Math.floor(index)] + mantissa * distance;
             }
@@ -399,7 +401,7 @@ var OrdinalAxis;
                 (xAxis.ordinal && xAxis.ordinal.overscrollPointsRange)), pointPixelWidth = (xAxis.translationSlope *
                 (xAxis.ordinal.slope || closestPointRange)), 
             // how many ordinal units did we move?
-            movedUnits = (mouseDownX - chartX) / pointPixelWidth, 
+            movedUnits = Math.round((mouseDownX - chartX) / pointPixelWidth), 
             // get index of all the chart's points
             extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(), extendedAxis = {
                 ordinal: {
@@ -926,31 +928,32 @@ var OrdinalAxis;
          */
         getIndexOfPoint(val, ordinalArray) {
             const ordinal = this, axis = ordinal.axis, firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
-            let firstPointX = axis.series[0].points &&
-                axis.series[0].points[0] &&
-                axis.series[0].points[0].plotX ||
-                axis.minPixelPadding; // #15987
+            // Check whether the series has at least one point inside the chart
+            const hasPointsInside = function (series) {
+                return series.points.some((point) => !!point.isInside);
+            };
+            let firstPointX;
             // When more series assign to axis, find the smallest one, #15987.
-            if (axis.series.length > 1) {
-                axis.series.forEach(function (series) {
-                    if (series.points &&
-                        defined(series.points[0]) &&
-                        defined(series.points[0].plotX) &&
-                        series.points[0].plotX < firstPointX &&
-                        // #17128
-                        series.points[0].plotX >= pick(axis.min, -Infinity)) {
-                        firstPointX = series.points[0].plotX;
-                    }
-                });
-            }
+            axis.series.forEach((series) => {
+                var _a;
+                const firstPoint = (_a = series.points) === null || _a === void 0 ? void 0 : _a[0];
+                if (defined(firstPoint === null || firstPoint === void 0 ? void 0 : firstPoint.plotX) &&
+                    (firstPoint.plotX < firstPointX ||
+                        !defined(firstPointX)) &&
+                    hasPointsInside(series)) {
+                    firstPointX = firstPoint.plotX;
+                }
+            });
+            // If undefined, give a default value
+            firstPointX !== null && firstPointX !== void 0 ? firstPointX : (firstPointX = axis.minPixelPadding);
             // Distance in pixels between two points on the ordinal axis in the
             // current zoom.
             const ordinalPointPixelInterval = axis.translationSlope * (ordinal.slope ||
                 axis.closestPointRange ||
                 ordinal.overscrollPointsRange), 
             // toValue for the first point.
-            shiftIndex = (val - firstPointX) / ordinalPointPixelInterval;
-            return Additions.findIndexOf(ordinalArray, firstPointVal) + shiftIndex;
+            shiftIndex = correctFloat((val - firstPointX) / ordinalPointPixelInterval);
+            return Additions.findIndexOf(ordinalArray, firstPointVal, true) + shiftIndex;
         }
         /**
          * Get ticks for an ordinal axis within a range where points don't
