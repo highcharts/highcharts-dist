@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,25 +44,21 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var Point = SeriesRegistry.series.prototype.pointClass,
-            _a = SeriesRegistry.seriesTypes,
-            ScatterPoint = _a.scatter.prototype.pointClass,
-            DumbbellPoint = _a.dumbbell.prototype.pointClass;
+        var Point = SeriesRegistry.series.prototype.pointClass, _a = SeriesRegistry.seriesTypes, ScatterPoint = _a.scatter.prototype.pointClass, DumbbellPoint = _a.dumbbell.prototype.pointClass;
         var extend = U.extend;
         /* *
          *
@@ -72,15 +66,14 @@
          *
          * */
         var LollipopPoint = /** @class */ (function (_super) {
-                __extends(LollipopPoint, _super);
+            __extends(LollipopPoint, _super);
             function LollipopPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
                 _this.plotX = void 0;
@@ -112,27 +105,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            colProto = _a.column.prototype,
-            dumbbellProto = _a.dumbbell.prototype,
-            ScatterSeries = _a.scatter;
-        var extend = U.extend,
-            merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes, colProto = _a.column.prototype, dumbbellProto = _a.dumbbell.prototype, ScatterSeries = _a.scatter;
+        var extend = U.extend, merge = U.merge;
         /* *
          *
          *  Class
@@ -149,15 +137,14 @@
          *
          */
         var LollipopSeries = /** @class */ (function (_super) {
-                __extends(LollipopSeries, _super);
+            __extends(LollipopSeries, _super);
             function LollipopSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -179,10 +166,8 @@
              *
              */
             LollipopSeries.prototype.drawPoints = function () {
-                var series = this,
-                    pointLength = series.points.length;
-                var i = 0,
-                    point;
+                var series = this, pointLength = series.points.length;
+                var i = 0, point;
                 _super.prototype.drawPoints.apply(series, arguments);
                 // Draw connectors
                 while (i < pointLength) {

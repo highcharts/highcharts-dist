@@ -17,7 +17,7 @@ import BorderRadius from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { pie: PieSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, isArray, merge, pick, relativeLength } = U;
+const { addEvent, extend, fireEvent, isArray, merge, pick, relativeLength, splat } = U;
 /**
  * @private
  * @class
@@ -98,55 +98,41 @@ class FunnelSeries extends PieSeries {
         }
     }
     /**
-     * Extend the pie data label method.
+     * Extend the data label method.
      * @private
      */
     drawDataLabels() {
-        let series = this, data = series.data, labelDistance = series.options.dataLabels.distance, leftSide, sign, point, i = data.length, x, y;
-        // In the original pie label anticollision logic, the slots are
-        // distributed from one labelDistance above to one labelDistance
-        // below the pie. In funnels we don't want this.
-        series.center[2] -= 2 * labelDistance;
-        // Set the label position array for each point.
-        while (i--) {
-            point = data[i];
-            leftSide = point.half;
-            sign = leftSide ? 1 : -1;
-            y = point.plotY;
-            point.labelDistance = pick(point.options.dataLabels &&
-                point.options.dataLabels.distance, labelDistance);
-            series.maxLabelDistance = Math.max(point.labelDistance, series.maxLabelDistance || 0);
-            x = series.getX(y, leftSide, point);
-            // set the anchor point for data labels
-            point.labelPosition = {
-                // initial position of the data label - it's utilized for
-                // finding the final position for the label
-                natural: {
-                    x: 0,
-                    y: y
+        SeriesRegistry.seriesTypes[splat(this.options.dataLabels)[0].inside ? 'column' : 'pie'].prototype.drawDataLabels.call(this);
+    }
+    /** @private */
+    getDataLabelPosition(point, distance) {
+        const y = point.plotY || 0, x = this.getX(y, !!point.half, point);
+        return {
+            distance,
+            // Initial position of the data label - it's utilized for finding
+            // the final position for the label
+            natural: {
+                x: 0,
+                y
+            },
+            computed: {
+            // Used for generating connector path - initialized later in
+            // drawDataLabels function x: undefined, y: undefined
+            },
+            // Left - funnel on the left side of the data label
+            // Right - funnel on the right side of the data label
+            alignment: point.half ? 'right' : 'left',
+            connectorPosition: {
+                breakAt: {
+                    x: x - 5 * (point.half ? 1 : -1),
+                    y
                 },
-                computed: {
-                // used for generating connector path -
-                // initialized later in drawDataLabels function
-                // x: undefined,
-                // y: undefined
-                },
-                // left - funnel on the left side of the data label
-                // right - funnel on the right side of the data label
-                alignment: leftSide ? 'right' : 'left',
-                connectorPosition: {
-                    breakAt: {
-                        x: x + (point.labelDistance - 5) * sign,
-                        y: y
-                    },
-                    touchingSliceAt: {
-                        x: x + point.labelDistance * sign,
-                        y: y
-                    }
+                touchingSliceAt: {
+                    x,
+                    y
                 }
-            };
-        }
-        SeriesRegistry.seriesTypes[series.options.dataLabels.inside ? 'column' : 'pie'].prototype.drawDataLabels.call(this);
+            }
+        };
     }
     /**
      * Overrides the pie translate method.
@@ -195,9 +181,10 @@ class FunnelSeries extends PieSeries {
                     (1 - (y - top) / (height - neckHeight));
         };
         series.getX = function (y, half, point) {
+            var _a, _b;
             return centerX + (half ? -1 : 1) *
                 ((series.getWidthAt(reversed ? 2 * centerY - y : y) / 2) +
-                    point.labelDistance);
+                    (((_b = (_a = point.dataLabel) === null || _a === void 0 ? void 0 : _a.dataLabelPosition) === null || _b === void 0 ? void 0 : _b.distance) || 0));
         };
         // Expose
         series.center = [centerX, centerY, height];

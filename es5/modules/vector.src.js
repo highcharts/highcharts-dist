@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Vector plot series module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -50,28 +48,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var animObject = A.animObject;
-        var Series = SeriesRegistry.series,
-            ScatterSeries = SeriesRegistry.seriesTypes.scatter;
-        var arrayMax = U.arrayMax,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        var Series = SeriesRegistry.series, ScatterSeries = SeriesRegistry.seriesTypes.scatter;
+        var arrayMax = U.arrayMax, extend = U.extend, merge = U.merge, pick = U.pick;
         /* *
          *
          *  Class
@@ -87,15 +80,14 @@
          * @augments Highcharts.seriesTypes.scatter
          */
         var VectorSeries = /** @class */ (function (_super) {
-                __extends(VectorSeries, _super);
+            __extends(VectorSeries, _super);
             function VectorSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -137,10 +129,10 @@
              */
             VectorSeries.prototype.arrow = function (point) {
                 var path, fraction = point.length / this.lengthMax, u = fraction * this.options.vectorLength / 20, o = {
-                        start: 10 * u,
-                        center: 0,
-                        end: -10 * u
-                    }[this.options.rotationOrigin] || 0;
+                    start: 10 * u,
+                    center: 0,
+                    end: -10 * u
+                }[this.options.rotationOrigin] || 0;
                 // The stem and the arrow head. Draw the arrow first with rotation
                 // 0, which is the arrow pointing down (vector from north to south).
                 path = [
@@ -184,8 +176,7 @@
             VectorSeries.prototype.drawPoints = function () {
                 var chart = this.chart;
                 this.points.forEach(function (point) {
-                    var plotX = point.plotX,
-                        plotY = point.plotY;
+                    var plotX = point.plotX, plotY = point.plotY;
                     if (this.options.clip === false ||
                         chart.isInsidePlot(plotX, plotY, { inverted: chart.inverted })) {
                         if (!point.graphic) {
@@ -218,9 +209,7 @@
              * @private
              */
             VectorSeries.prototype.pointAttribs = function (point, state) {
-                var options = this.options,
-                    stroke = point.color || this.color,
-                    strokeWidth = this.options.lineWidth;
+                var options = this.options, stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
                 if (state) {
                     stroke = options.states[state].color || stroke;
                     strokeWidth =
@@ -261,6 +250,7 @@
                  * The line width for each vector arrow.
                  */
                 lineWidth: 2,
+                marker: void 0,
                 /**
                  * What part of the vector it should be rotated around. Can be one of
                  * `start`, `center` and `end`. When `start`, the vectors will start
@@ -293,8 +283,6 @@
                  * length is computed between 0 and this value.
                  */
                 vectorLength: 20
-            }, {
-                marker: null
             });
             return VectorSeries;
         }(ScatterSeries));

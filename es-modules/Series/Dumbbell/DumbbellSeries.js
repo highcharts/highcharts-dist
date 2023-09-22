@@ -201,6 +201,7 @@ class DumbbellSeries extends AreaRangeSeries {
      *
      */
     drawPoints() {
+        var _a;
         let series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
         this.seriesDrawPoints.apply(series, arguments);
         // Draw connectors and color upper markers
@@ -212,7 +213,7 @@ class DumbbellSeries extends AreaRangeSeries {
                 upperGraphic.element.point = point;
                 upperGraphic.addClass('highcharts-lollipop-high');
             }
-            point.connector.element.point = point;
+            ((_a = point.connector) === null || _a === void 0 ? void 0 : _a.element).point = point;
             if (lowerGraphic) {
                 zoneColor = point.zone && point.zone.color;
                 lowerGraphicColor = pick(point.options.lowColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);

@@ -1,9 +1,9 @@
 /*
- Highstock JS v11.1.0 (2023-06-05)
+ Highstock JS v11.1.0 (2023-09-22)
 
  Indicator series type for Highcharts Stock
 
- (c) 2010-2021 Pawe Dalek
+ (c) 2010-2021 Pawe? Dalek
 
  License: www.highcharts.com/license
 */

@@ -446,8 +446,8 @@ class SVGRenderer {
         const id = [
             `highcharts-drop-shadow-${this.chartIndex}`,
             ...Object.keys(shadowOptions)
-                .map((key) => shadowOptions[key])
-        ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({
+                .map((key) => `${key}-${shadowOptions[key]}`)
+        ].join('-').toLowerCase().replace(/[^a-z0-9\-]/g, ''), options = merge({
             color: '#000000',
             offsetX: 1,
             offsetY: 1,
@@ -458,7 +458,8 @@ class SVGRenderer {
             this.definition({
                 tagName: 'filter',
                 attributes: {
-                    id
+                    id,
+                    filterUnits: options.filterUnits
                 },
                 children: [{
                         tagName: 'feDropShadow',

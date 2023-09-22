@@ -10,7 +10,6 @@
  *
  * */
 'use strict';
-import Color from '../../Core/Color/Color.js';
 import H from '../../Core/Globals.js';
 import NodesComposition from '../NodesComposition.js';
 import SankeyPoint from './SankeyPoint.js';
@@ -18,6 +17,8 @@ import SankeySeriesDefaults from './SankeySeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import SankeyColumnComposition from './SankeyColumnComposition.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+import Color from '../../Core/Color/Color.js';
+const { parse: color } = Color;
 import TU from '../TreeUtilities.js';
 const { getLevelOptions } = TU;
 import U from '../../Core/Utilities.js';
@@ -292,8 +293,9 @@ class SankeySeries extends ColumnSeries {
             node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
             return y;
         };
-        let fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-            options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.nodeX, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
+        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = pick(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+            options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
+        let linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
             fromY = chart.plotSizeY - fromY;
             toY = (chart.plotSizeY || 0) - toY;
@@ -386,8 +388,28 @@ class SankeySeries extends ColumnSeries {
         // #15863
         point.y = point.plotY = 1;
         point.x = point.plotX = 1;
-        if (!point.color) {
-            point.color = fromNode.color;
+        if (!point.options.color) {
+            if (linkColorMode === 'from') {
+                point.color = fromNode.color;
+            }
+            else if (linkColorMode === 'to') {
+                point.color = toNode.color;
+            }
+            else if (linkColorMode === 'gradient') {
+                const fromColor = color(fromNode.color).get(), toColor = color(toNode.color).get();
+                point.color = {
+                    linearGradient: {
+                        x1: 1,
+                        x2: 0,
+                        y1: 0,
+                        y2: 0
+                    },
+                    stops: [
+                        [0, inverted ? fromColor : toColor],
+                        [1, inverted ? toColor : fromColor]
+                    ]
+                };
+            }
         }
     }
     /**
@@ -397,7 +419,9 @@ class SankeySeries extends ColumnSeries {
     translateNode(node, column) {
         const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
             nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-            borderWidth / 2) + relativeLength(node.options.offsetHorizontal || 0, nodeWidth) +
+            borderWidth / 2) + relativeLength(node.options[chart.inverted ?
+            'offsetVertical' :
+            'offsetHorizontal'] || 0, nodeWidth) +
             crisp, nodeLeft = chart.inverted ?
             chart.plotSizeX - left :
             left;
@@ -409,7 +433,7 @@ class SankeySeries extends ColumnSeries {
             node.nodeX = nodeLeft;
             node.nodeY = fromNodeTop;
             let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
-            // border radius should not greater than half the height of the node
+            // Border radius should not greater than half the height of the node
             // #18956
             const r = clamp(relativeLength((typeof borderRadius === 'object' ?
                 borderRadius.radius :

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -81,8 +79,8 @@
          *
          * */
         var ArrayUtilities = {
-                getArrayExtremes: getArrayExtremes
-            };
+            getArrayExtremes: getArrayExtremes
+        };
 
         return ArrayUtilities;
     });
@@ -97,9 +95,7 @@
          *
          * */
         var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined,
-            error = U.error,
-            merge = U.merge;
+        var defined = U.defined, error = U.error, merge = U.merge;
         /* *
          *
          *  Composition
@@ -225,24 +221,14 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    areaLinesNames = indicator.areaLinesNames,
-                    mainLinePoints = indicator.points,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    }, 
-                    // additional lines point place holders:
-                    secondaryLines = [],
-                    secondaryLinesNames = getTranslatedLinesNames(indicator,
-                    pointValKey);
-                var pointsLength = mainLinePoints.length,
-                    point;
+                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
+                var pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach(function (plotLine, index) {
                     // create additional lines point place holders
@@ -260,12 +246,9 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
-                        secondLinePoints = secondaryLines[index],
-                        firstLinePoints = areaLinesNames.length === 1 ?
-                            mainLinePoints :
-                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
-                        originalColor = indicator.color;
+                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
+                        mainLinePoints :
+                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -316,9 +299,7 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath,
-                    path = [],
-                    higherAreaPath = [];
+                var areaPath, path = [], higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -360,8 +341,7 @@
             function indicatorTranslate() {
                 var _this = this;
                 var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [],
-                    value;
+                var LinesNames = [], value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
                 this.points.forEach(function (point) {
@@ -396,24 +376,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var merge = U.merge,
-            extend = U.extend;
+        var merge = U.merge, extend = U.extend;
         /* *
          *
          *  Class
@@ -429,15 +407,14 @@
          * @augments Highcharts.Series
          */
         var PCIndicator = /** @class */ (function (_super) {
-                __extends(PCIndicator, _super);
+            __extends(PCIndicator, _super);
             function PCIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -454,24 +431,12 @@
              *
              * */
             PCIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0, 
-                    // 0- date, 1-top line, 2-middle line, 3-bottom line
-                    PC = [], 
-                    // middle line, top line and bottom line
-                    low = 2,
-                    high = 1,
-                    xData = [],
-                    yData = [];
-                var ML,
-                    TL,
-                    BL,
-                    date,
-                    slicedY,
-                    extremes,
-                    i;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
+                // 0- date, 1-top line, 2-middle line, 3-bottom line
+                PC = [], 
+                // middle line, top line and bottom line
+                low = 2, high = 1, xData = [], yData = [];
+                var ML, TL, BL, date, slicedY, extremes, i;
                 if (yValLen < period) {
                     return;
                 }

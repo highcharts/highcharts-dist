@@ -18,7 +18,9 @@ const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSer
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 const { prototype: { symbols } } = SVGRenderer;
 import U from '../../Core/Utilities.js';
-const { clamp, extend, fireEvent, isNumber, merge, pick, defined } = U;
+const { addEvent, clamp, extend, fireEvent, isNumber, merge, pick, defined } = U;
+import IU from '../InterpolationUtilities.js';
+const { colorFromPoint, getContext } = IU;
 /* *
  *
  *  Class
@@ -52,6 +54,7 @@ class HeatmapSeries extends ScatterSeries {
         this.points = void 0;
         this.valueMax = NaN;
         this.valueMin = NaN;
+        this.isDirtyCanvas = true;
         /* eslint-enable valid-jsdoc */
     }
     /* *
@@ -66,68 +69,37 @@ class HeatmapSeries extends ScatterSeries {
     drawPoints() {
         const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
         if (interpolation) {
-            const { image, chart, xAxis, yAxis, points } = series, lastPointIndex = points.length - 1, { len: xAxisLen, reversed: xRev } = xAxis, { len: yAxisLen, reversed: yRev } = yAxis, { min: xMin, max: xMax } = xAxis.getExtremes(), { min: yMin, max: yMax } = yAxis.getExtremes(), [colsize, rowsize] = [
-                pick(seriesOptions.colsize, 1),
-                pick(seriesOptions.rowsize, 1)
-            ], inverted = chart.inverted, xTranslationPad = colsize / 2, userMinPadding = xAxis.userOptions.minPadding, isUserMinPadZero = (defined(userMinPadding) &&
-                !(userMinPadding > 0)), noOffset = (inverted || isUserMinPadZero), padIfMinSet = (isUserMinPadZero && xTranslationPad || 0), [x1, x2, postTranslationOffset] = [
-                xMin - padIfMinSet,
-                xMax + (padIfMinSet * 2),
-                isUserMinPadZero && 0 || (xMin + colsize)
-            ].map((side) => (clamp(Math.round(xAxis.len -
-                xAxis.translate(side, false, true, false, true, -series.pointPlacementToXValue())), -xAxis.len, 2 * xAxis.len))), [xStart, xEnd] = xRev ? [x2, x1] : [x1, x2], xOffset = (noOffset && 0 ||
-                (((xAxisLen / postTranslationOffset) / 2) / 2) / 2), dimensions = inverted ?
-                {
-                    width: xAxisLen,
-                    height: yAxisLen,
-                    x: 0,
-                    y: 0
-                } : {
-                x: xStart - xOffset,
-                width: xEnd - xOffset,
-                height: yAxisLen,
-                y: 0
-            };
-            if (!image || series.isDirtyData) {
-                const colorAxis = (chart.colorAxis &&
-                    chart.colorAxis[0]), ctx = series.getContext(), canvas = series.canvas;
+            const { image, chart, xAxis, yAxis } = series, { reversed: xRev = false, len: width } = xAxis, { reversed: yRev = false, len: height } = yAxis, dimensions = { width, height };
+            if (!image || series.isDirtyData || series.isDirtyCanvas) {
+                const ctx = getContext(series), { canvas, options: { colsize = 1, rowsize = 1 }, points, points: { length } } = series, pointsLen = length - 1, colorAxis = (chart.colorAxis && chart.colorAxis[0]);
                 if (canvas && ctx && colorAxis) {
-                    const canvasWidth = canvas.width = ~~((xMax - xMin) / colsize) + 1, canvasHeight = canvas.height = ~~((yMax - yMin) / rowsize) + 1, canvasArea = canvasWidth * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4), widthLastIndex = (canvasWidth - (noOffset && 1 || 0)), heightLastIndex = canvasHeight - 1, colorFromPoint = (p) => {
-                        const rgba = (colorAxis.toColor(p.value ||
-                            0, pick(p))
-                            .split(')')[0]
-                            .split('(')[1]
-                            .split(',')
-                            .map((s) => pick(parseFloat(s), parseInt(s, 10))));
-                        rgba[3] = pick(rgba[3], 1.0) * 255;
-                        return rgba;
-                    }, scaleToImg = (val, fromMin, fromMax, toMin, toMax) => ~~((val - fromMin) * ((toMax - toMin) /
-                        (fromMax - fromMin))), xPlacement = (xRev ?
-                        (xToImg) => (widthLastIndex - xToImg) :
-                        (xToImg) => xToImg), yPlacement = (yRev ?
-                        (yToImg) => (heightLastIndex - yToImg) :
-                        (yToImg) => yToImg), scaledPointPos = (x, y) => (Math.ceil(canvasWidth *
-                        yPlacement(scaleToImg(yMax - y, yMin, yMax, 0, heightLastIndex)) +
-                        xPlacement(scaleToImg(x, xMin, xMax, 0, widthLastIndex))));
+                    const { min: xMin, max: xMax } = xAxis.getExtremes(), { min: yMin, max: yMax } = yAxis.getExtremes(), xDelta = xMax - xMin, yDelta = yMax - yMin, imgMultiple = 8.0, lastX = Math.round(imgMultiple * ((xDelta / colsize) / imgMultiple)), lastY = Math.round(imgMultiple * ((yDelta / rowsize) / imgMultiple)), [transformX, transformY] = [
+                        [lastX, lastX / xDelta, xRev, 'ceil'],
+                        [lastY, lastY / yDelta, !yRev, 'floor']
+                    ].map(([last, scale, rev, rounding]) => (rev ?
+                        (v) => (Math[rounding](last -
+                            (scale * (v)))) :
+                        (v) => (Math[rounding](scale * v)))), canvasWidth = canvas.width = lastX + 1, canvasHeight = canvas.height = lastY + 1, canvasArea = canvasWidth * canvasHeight, pixelToPointScale = pointsLen / canvasArea, pixelData = new Uint8ClampedArray(canvasArea * 4), pointInPixels = (x, y) => (Math.ceil((canvasWidth * transformY(y - yMin)) +
+                        transformX(x - xMin)) * 4);
                     series.buildKDTree();
-                    series.directTouch = false;
                     for (let i = 0; i < canvasArea; i++) {
-                        const toPointScale = scaleToImg(i * 4, 0, pixelData.length - 4, 0, lastPointIndex), p = points[toPointScale], sourceArr = new Uint8ClampedArray(colorFromPoint(p));
-                        pixelData.set(sourceArr, scaledPointPos(p.x, p.y) * 4);
+                        const point = points[Math.ceil(pixelToPointScale * i)], { x, y } = point;
+                        pixelData.set(colorFromPoint(point.value, point), pointInPixels(x, y));
                     }
-                    ctx.putImageData(new ImageData(pixelData, canvasWidth, canvasHeight), 0, 0);
+                    ctx.putImageData(new ImageData(pixelData, canvasWidth), 0, 0);
                     if (image) {
-                        image.attr(Object.assign(Object.assign({}, dimensions), { href: canvas.toDataURL() }));
+                        image.attr(Object.assign(Object.assign({}, dimensions), { href: canvas.toDataURL('image/png', 1) }));
                     }
                     else {
-                        series.image = chart.renderer.image(canvas.toDataURL())
+                        series.directTouch = false;
+                        series.image = chart.renderer.image(canvas.toDataURL('image/png', 1))
                             .attr(dimensions)
                             .add(series.group);
                     }
                 }
+                series.isDirtyCanvas = false;
             }
-            else if (image.width !== dimensions.width ||
-                image.height !== dimensions.height) {
+            else if (image.width !== width || image.height !== height) {
                 image.attr(dimensions);
             }
         }
@@ -145,21 +117,6 @@ class HeatmapSeries extends ScatterSeries {
                 }
             });
         }
-    }
-    /**
-     * @private
-     */
-    getContext() {
-        const series = this, { canvas, context } = series;
-        if (canvas && context) {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        else {
-            series.canvas = doc.createElement('canvas');
-            series.context = series.canvas.getContext('2d') || void 0;
-            return series.context;
-        }
-        return context;
     }
     /**
      * @private
@@ -610,6 +567,10 @@ HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
         }
     },
     legendSymbol: 'rectangle'
+});
+addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
+    this.isDirtyCanvas = true;
+    this.drawPoints();
 });
 extend(HeatmapSeries.prototype, {
     axisTypes: ColorMapComposition.seriesMembers.axisTypes,

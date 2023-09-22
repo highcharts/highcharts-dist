@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -27,12 +27,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -51,16 +49,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -83,15 +80,14 @@
          * @augments Highcharts.Series
          */
         var CMFIndicator = /** @class */ (function (_super) {
-                __extends(CMFIndicator, _super);
+            __extends(CMFIndicator, _super);
             function CMFIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -120,15 +116,11 @@
              * otherwise false.
              */
             CMFIndicator.prototype.isValid = function () {
-                var chart = this.chart,
-                    options = this.options,
-                    series = this.linkedParent,
-                    volumeSeries = (this.volumeSeries ||
-                        (this.volumeSeries =
-                            chart.get(options.params.volumeSeriesID))),
-                    isSeriesOHLC = (series &&
-                        series.yData &&
-                        series.yData[0].length === 4);
+                var chart = this.chart, options = this.options, series = this.linkedParent, volumeSeries = (this.volumeSeries ||
+                    (this.volumeSeries =
+                        chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series &&
+                    series.yData &&
+                    series.yData[0].length === 4);
                 /**
                  * @private
                  * @param {Highcharts.Series} serie to check length validity on.
@@ -177,16 +169,8 @@
              * object containing computed money flow data
              */
             CMFIndicator.prototype.getMoneyFlow = function (xData, seriesYData, volumeSeriesYData, period) {
-                var len = seriesYData.length,
-                    moneyFlowVolume = [],
-                    moneyFlowXData = [],
-                    moneyFlowYData = [],
-                    values = [];
-                var i,
-                    point,
-                    nullIndex = -1,
-                    sumVolume = 0,
-                    sumMoneyFlowVolume = 0;
+                var len = seriesYData.length, moneyFlowVolume = [], moneyFlowXData = [], moneyFlowYData = [], values = [];
+                var i, point, nullIndex = -1, sumVolume = 0, sumMoneyFlowVolume = 0;
                 /**
                  * Calculates money flow volume, changes i, nullIndex vars from
                  * upper scope!
@@ -203,14 +187,11 @@
                  * Volume * moneyFlowMultiplier
                  */
                 function getMoneyFlowVolume(ohlc, volume) {
-                    var high = ohlc[1],
-                        low = ohlc[2],
-                        close = ohlc[3],
-                        isValid = volume !== null &&
-                            high !== null &&
-                            low !== null &&
-                            close !== null &&
-                            high !== low;
+                    var high = ohlc[1], low = ohlc[2], close = ohlc[3], isValid = volume !== null &&
+                        high !== null &&
+                        low !== null &&
+                        close !== null &&
+                        high !== low;
                     /**
                      * @private
                      * @param {number} h

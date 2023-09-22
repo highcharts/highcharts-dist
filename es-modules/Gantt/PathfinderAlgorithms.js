@@ -9,6 +9,7 @@
  *
  * */
 'use strict';
+import PathUtilities from '../Series/PathUtilities.js';
 import U from '../Core/Utilities.js';
 const { extend, pick } = U;
 const { min, max, abs } = Math;
@@ -277,8 +278,9 @@ const simpleConnect = function (start, end, options) {
     });
     // Finally add the endSegment
     segments.push(endSegment);
+    const path = PathUtilities.applyRadius(pathFromSegments(segments), options.radius);
     return {
-        path: pathFromSegments(segments),
+        path,
         obstacles: segments
     };
 };

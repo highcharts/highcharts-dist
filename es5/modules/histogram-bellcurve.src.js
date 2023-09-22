@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -27,12 +27,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -43,8 +41,7 @@
          *
          * */
         var noop = H.noop;
-        var addEvent = U.addEvent,
-            defined = U.defined;
+        var addEvent = U.addEvent, defined = U.defined;
         /* *
          *
          *  Composition
@@ -115,11 +112,9 @@
              * @private
              */
             function setBaseSeries() {
-                var chart = this.chart,
-                    baseSeriesOptions = this.options.baseSeries,
-                    baseSeries = (defined(baseSeriesOptions) &&
-                        (chart.series[baseSeriesOptions] ||
-                            chart.get(baseSeriesOptions)));
+                var chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
+                    (chart.series[baseSeriesOptions] ||
+                        chart.get(baseSeriesOptions)));
                 this.baseSeries = baseSeries || null;
             }
             DerivedComposition.setBaseSeries = setBaseSeries;
@@ -186,29 +181,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            correctFloat = U.correctFloat,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach;
         /* ************************************************************************** *
          *  HISTOGRAM
          * ************************************************************************** */
@@ -217,8 +205,8 @@
          * base series
          **/
         var binsNumberFormulas = {
-                'square-root': function (baseSeries) {
-                    return Math.ceil(Math.sqrt(baseSeries.options.data.length));
+            'square-root': function (baseSeries) {
+                return Math.ceil(Math.sqrt(baseSeries.options.data.length));
             },
             'sturges': function (baseSeries) {
                 return Math.ceil(Math.log(baseSeries.options.data.length) * Math.LOG2E);
@@ -255,15 +243,14 @@
          * @augments Highcharts.Series
          */
         var HistogramSeries = /** @class */ (function (_super) {
-                __extends(HistogramSeries, _super);
+            __extends(HistogramSeries, _super);
             function HistogramSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -280,24 +267,18 @@
             HistogramSeries.prototype.binsNumber = function () {
                 var binsNumberOption = this.options.binsNumber;
                 var binsNumber = binsNumberFormulas[binsNumberOption] ||
-                        // #7457
-                        (typeof binsNumberOption === 'function' && binsNumberOption);
+                    // #7457
+                    (typeof binsNumberOption === 'function' && binsNumberOption);
                 return Math.ceil((binsNumber && binsNumber(this.baseSeries)) ||
                     (isNumber(binsNumberOption) ?
                         binsNumberOption :
                         binsNumberFormulas['square-root'](this.baseSeries)));
             };
             HistogramSeries.prototype.derivedData = function (baseData, binsNumber, binWidth) {
-                var series = this,
-                    max = correctFloat(arrayMax(baseData)), 
-                    // Float correction needed, because first frequency value is not
-                    // corrected when generating frequencies (within for loop).
-                    min = correctFloat(arrayMin(baseData)),
-                    frequencies = [],
-                    bins = {},
-                    data = [],
-                    x,
-                    fitToBin;
+                var series = this, max = correctFloat(arrayMax(baseData)), 
+                // Float correction needed, because first frequency value is not
+                // corrected when generating frequencies (within for loop).
+                min = correctFloat(arrayMin(baseData)), frequencies = [], bins = {}, data = [], x, fitToBin;
                 binWidth = series.binWidth = (correctFloat(isNumber(binWidth) ?
                     (binWidth || 1) :
                     (max - min) / binsNumber));
@@ -352,9 +333,7 @@
                     this.setData([]);
                     return;
                 }
-                var data = this.derivedData(yData,
-                    this.binsNumber(),
-                    this.options.binWidth);
+                var data = this.derivedData(yData, this.binsNumber(), this.options.binWidth);
                 this.setData(data, false);
             };
             /**
@@ -457,26 +436,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var AreaSplineSeries = SeriesRegistry.seriesTypes.areaspline;
-        var correctFloat = U.correctFloat,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge;
+        var correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber, merge = U.merge;
         /**
          * Bell curve class
          *
@@ -487,15 +462,14 @@
          * @augments Highcharts.Series
          */
         var BellcurveSeries = /** @class */ (function (_super) {
-                __extends(BellcurveSeries, _super);
+            __extends(BellcurveSeries, _super);
             function BellcurveSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* eslint-enable valid-jsdoc */
                 /* *
                  *
@@ -518,10 +492,8 @@
              * @private
              */
             BellcurveSeries.mean = function (data) {
-                var length = data.length,
-                    sum = data.reduce(function (sum,
-                    value) {
-                        return (sum += value);
+                var length = data.length, sum = data.reduce(function (sum, value) {
+                    return (sum += value);
                 }, 0);
                 return length > 0 && sum / length;
             };
@@ -529,8 +501,7 @@
              * @private
              */
             BellcurveSeries.standardDeviation = function (data, average) {
-                var len = data.length,
-                    sum;
+                var len = data.length, sum;
                 average = isNumber(average) ?
                     average : BellcurveSeries.mean(data);
                 sum = data.reduce(function (sum, value) {
@@ -554,13 +525,7 @@
              * */
             /* eslint-disable valid-jsdoc */
             BellcurveSeries.prototype.derivedData = function (mean, standardDeviation) {
-                var intervals = this.options.intervals,
-                    pointsInInterval = this.options.pointsInInterval,
-                    x = mean - intervals * standardDeviation,
-                    stop = intervals * pointsInInterval * 2 + 1,
-                    increment = standardDeviation / pointsInInterval,
-                    data = [],
-                    i;
+                var intervals = this.options.intervals, pointsInInterval = this.options.pointsInInterval, x = mean - intervals * standardDeviation, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [], i;
                 for (i = 0; i < stop; i++) {
                     data.push([x, BellcurveSeries.normalDensity(x, mean, standardDeviation)]);
                     x += increment;

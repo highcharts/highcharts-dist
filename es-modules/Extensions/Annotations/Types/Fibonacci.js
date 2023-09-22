@@ -54,11 +54,12 @@ class Fibonacci extends Tunnel {
     linkRetracementsPoints() {
         const points = this.points, startDiff = points[0].y - points[3].y, endDiff = points[1].y - points[2].y, startX = points[0].x, endX = points[1].x;
         Fibonacci.levels.forEach((level, i) => {
-            const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level;
+            const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level, index = this.options.typeOptions.reversed ?
+                (Fibonacci.levels.length - i - 1) : i;
             this.startRetracements = this.startRetracements || [];
             this.endRetracements = this.endRetracements || [];
-            this.linkRetracementPoint(i, startX, startRetracement, this.startRetracements);
-            this.linkRetracementPoint(i, endX, endRetracement, this.endRetracements);
+            this.linkRetracementPoint(index, startX, startRetracement, this.startRetracements);
+            this.linkRetracementPoint(index, endX, endRetracement, this.endRetracements);
         });
     }
     linkRetracementPoint(pointIndex, x, y, retracements) {
@@ -127,6 +128,17 @@ Fibonacci.prototype.defaultOptions = merge(Tunnel.prototype.defaultOptions,
  */
 {
     typeOptions: {
+        /**
+         * Whether the annotation levels should be reversed. By default they
+         * start from 0 and go to 1.
+         *
+         * @sample highcharts/annotations-advanced/fibonacci-reversed/
+         *         Fibonacci annotation reversed
+         *
+         * @type {boolean}
+         * @apioption annotations.fibonacci.typeOptions.reversed
+         */
+        reversed: false,
         /**
          * The height of the fibonacci in terms of yAxis.
          */

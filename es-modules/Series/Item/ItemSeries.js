@@ -499,4 +499,8 @@ export default ItemSeries;
  * @product   highcharts
  * @apioption series.pie.data.legendIndex
  */
+/**
+ * @excluding legendItemClick
+ * @apioption series.item.events
+ */
 ''; // adds the doclets above to the transpiled file

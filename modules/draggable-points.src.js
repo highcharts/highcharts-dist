@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -770,6 +768,9 @@
          * @sample {highcharts|highstock}
          *         highcharts/dragdrop/drag-xrange
          *         Draggable X range series
+         * @sample {highcharts|highstock}
+         *         highcharts/dragdrop/undraggable-points
+         *         Dragging disabled for specific points
          * @sample {highmaps}
          *         maps/series/draggable-mappoint
          *         Draggable Map Point series
@@ -1059,6 +1060,8 @@
          *
          * @sample {highcharts} highcharts/dragdrop/drag-xrange
          *         Drag events
+         * @sample {highcharts|highstock} highcharts/dragdrop/undraggable-points
+         *         Dragging disabled for specific points
          *
          * @type      {Highcharts.PointDragCallbackFunction}
          * @since     6.2.0
@@ -1073,6 +1076,8 @@
          *
          * @sample {highcharts} highcharts/dragdrop/drag-xrange
          *         Drag events
+         * @sample {highcharts|highstock} highcharts/dragdrop/undraggable-points
+         *         Dragging disabled for specific points
          *
          * @type      {Highcharts.PointDropCallbackFunction}
          * @since     6.2.0

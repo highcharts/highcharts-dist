@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,29 +44,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
-            SMAIndicator = _a.sma;
-        var extend = U.extend,
-            correctFloat = U.correctFloat,
-            defined = U.defined,
-            merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, SMAIndicator = _a.sma;
+        var extend = U.extend, correctFloat = U.correctFloat, defined = U.defined, merge = U.merge;
         /* *
          *
          *  Class
@@ -84,15 +76,14 @@
          * @augments Highcharts.Series
          */
         var MACDIndicator = /** @class */ (function (_super) {
-                __extends(MACDIndicator, _super);
+            __extends(MACDIndicator, _super);
             function MACDIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.data = void 0;
                 _this.macdZones = void 0;
                 _this.options = void 0;
@@ -169,19 +160,12 @@
                 SeriesRegistry.seriesTypes.sma.prototype.destroy.apply(this, arguments);
             };
             MACDIndicator.prototype.drawGraph = function () {
-                var indicator = this,
-                    mainLinePoints = indicator.points,
-                    mainLineOptions = indicator.options,
-                    histogramZones = indicator.zones,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    },
-                    otherSignals = [[],
-                    []];
-                var point,
-                    pointsLength = mainLinePoints.length;
+                var indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, otherSignals = [[], []];
+                var point, pointsLength = mainLinePoints.length;
                 // Generate points for top and bottom lines:
                 while (pointsLength--) {
                     point = mainLinePoints[pointsLength];
@@ -220,8 +204,7 @@
                 // indicator.graph = null;
             };
             MACDIndicator.prototype.getZonesGraphs = function (props) {
-                var allZones = _super.prototype.getZonesGraphs.call(this,
-                    props);
+                var allZones = _super.prototype.getZonesGraphs.call(this, props);
                 var currentZones = allZones;
                 if (this.currentLineZone) {
                     currentZones = allZones.splice(this[this.currentLineZone].startIndex + 1);
@@ -251,14 +234,8 @@
             };
             MACDIndicator.prototype.getValues = function (series, params) {
                 var indexToShift = (params.longPeriod - params.shortPeriod), // #14197
-                    MACD = [],
-                    xMACD = [],
-                    yMACD = [];
-                var shortEMA,
-                    longEMA,
-                    i,
-                    j = 0,
-                    signalLine = [];
+                MACD = [], xMACD = [], yMACD = [];
+                var shortEMA, longEMA, i, j = 0, signalLine = [];
                 if (series.xData.length <
                     params.longPeriod + params.signalPeriod) {
                     return;

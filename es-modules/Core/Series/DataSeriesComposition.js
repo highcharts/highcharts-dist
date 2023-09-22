@@ -163,7 +163,7 @@ class DataSeriesAdditions {
                 anySeries[`${key}Data`] = [];
             }
             for (let i = 0, iEnd = oldData.length; i < iEnd; ++i) {
-                if (oldData[i] && (oldData[i].destroy)) {
+                if (oldData[i] && !!oldData[i].destroy) {
                     oldData[i].destroy();
                 }
             }

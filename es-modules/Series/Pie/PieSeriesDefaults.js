@@ -17,7 +17,7 @@
  * A pie chart is a circular graphic which is divided into slices to
  * illustrate numerical proportion.
  *
- * @sample highcharts/demo/pie-basic/
+ * @sample highcharts/demo/pie-chart/
  *         Pie chart
  *
  * @extends      plotOptions.line
@@ -170,7 +170,6 @@ const PieSeriesDefaults = {
          * @product   highcharts highmaps
          * @apioption plotOptions.pie.dataLabels.alignTo
          */
-        allowOverlap: true,
         /**
          * The color of the line connecting the data label to the pie slice.
          * The default color is the same as the point's color.
@@ -388,8 +387,8 @@ const PieSeriesDefaults = {
      */
     ignoreHiddenPoint: true,
     /**
-     * @ignore-option
-     *
+     * @default   true
+     * @extends   plotOptions.series.inactiveOtherPoints
      * @private
      */
     inactiveOtherPoints: true,

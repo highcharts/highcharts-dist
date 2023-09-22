@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.1.0 (2023-09-22)
  *
  * Pathfinder
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -49,12 +47,7 @@
          *
          * */
         var defaultOptions = D.defaultOptions;
-        var defined = U.defined,
-            error = U.error,
-            extend = U.extend,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick;
+        var defined = U.defined, error = U.error, extend = U.extend, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
         /**
          * The default pathfinder algorithm to use for a chart. It is possible to define
          * your own algorithms by adding them to the
@@ -78,9 +71,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
-        var deg2rad = H.deg2rad,
-            max = Math.max,
-            min = Math.min;
+        var deg2rad = H.deg2rad, max = Math.max, min = Math.min;
         /*
          @todo:
              - Document how to write your own algorithms
@@ -182,6 +173,12 @@
                  * @since   6.2.0
                  */
                 type: 'straight',
+                /**
+                 * The corner radius for this chart's Pathfinder connecting lines
+                 *
+                 * @since next
+                 */
+                radius: 0,
                 /**
                  * Set the default pixel width for this chart's Pathfinder connecting
                  * lines.
@@ -346,8 +343,7 @@
          *         Result xMax, xMin, yMax, yMin.
          */
         function getPointBB(point) {
-            var shapeArgs = point.shapeArgs,
-                bb;
+            var shapeArgs = point.shapeArgs, bb;
             // Prefer using shapeArgs (columns)
             if (shapeArgs) {
                 return {
@@ -380,23 +376,13 @@
          *         The calculated margin in pixels. At least 1.
          */
         function calculateObstacleMargin(obstacles) {
-            var len = obstacles.length,
-                i = 0,
-                j,
-                obstacleDistance,
-                distances = [], 
-                // Compute smallest distance between two rectangles
-                distance = function (a,
-                b,
-                bbMargin) {
-                    // Count the distance even if we are slightly off
-                    var margin = pick(bbMargin, 10),
-                yOverlap = a.yMax + margin > b.yMin - margin &&
-                        a.yMin - margin < b.yMax + margin,
-                xOverlap = a.xMax + margin > b.xMin - margin &&
-                        a.xMin - margin < b.xMax + margin,
-                xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity,
-                yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
+            var len = obstacles.length, i = 0, j, obstacleDistance, distances = [], 
+            // Compute smallest distance between two rectangles
+            distance = function (a, b, bbMargin) {
+                // Count the distance even if we are slightly off
+                var margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
+                    a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
+                    a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
                 // If the rectangles collide, try recomputing with smaller margin.
                 // If they collide anyway, discard the obstacle.
                 if (xOverlap && yOverlap) {
@@ -448,13 +434,13 @@
          *        Connection options.
          */
         var Connection = /** @class */ (function () {
-                function Connection(from, to, options) {
-                    /* *
-                    *
-                    * Properties
-                    *
-                    * */
-                    this.chart = void 0;
+            function Connection(from, to, options) {
+                /* *
+                *
+                * Properties
+                *
+                * */
+                this.chart = void 0;
                 this.fromPoint = void 0;
                 this.graphics = void 0;
                 this.pathfinder = void 0;
@@ -498,13 +484,7 @@
              *        Animation options for the rendering.
              */
             Connection.prototype.renderPath = function (path, attribs, animation) {
-                var connection = this,
-                    chart = this.chart,
-                    styledMode = chart.styledMode,
-                    pathfinder = chart.pathfinder,
-                    animate = !chart.options.chart.forExport && animation !== false,
-                    pathGraphic = connection.graphics && connection.graphics.path,
-                    anim;
+                var connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, pathGraphic = connection.graphics && connection.graphics.path, anim;
                 // Add the SVG element of the pathfinder group if it doesn't exist
                 if (!pathfinder.group) {
                     pathfinder.group = chart.renderer.g()
@@ -556,22 +536,9 @@
              *        rotation angle of the markers.
              */
             Connection.prototype.addMarker = function (type, options, path) {
-                var connection = this,
-                    chart = connection.fromPoint.series.chart,
-                    pathfinder = chart.pathfinder,
-                    renderer = chart.renderer,
-                    point = (type === 'start' ?
-                        connection.fromPoint :
-                        connection.toPoint),
-                    anchor = point.getPathfinderAnchorPoint(options),
-                    markerVector,
-                    radians,
-                    rotation,
-                    box,
-                    width,
-                    height,
-                    pathVector,
-                    segment;
+                var connection = this, chart = connection.fromPoint.series.chart, pathfinder = chart.pathfinder, renderer = chart.renderer, point = (type === 'start' ?
+                    connection.fromPoint :
+                    connection.toPoint), anchor = point.getPathfinderAnchorPoint(options), markerVector, radians, rotation, box, width, height, pathVector, segment;
                 if (!options.enabled) {
                     return;
                 }
@@ -653,10 +620,7 @@
              *         Calculated SVG path data in array format.
              */
             Connection.prototype.getPath = function (options) {
-                var pathfinder = this.pathfinder,
-                    chart = this.chart,
-                    algorithm = pathfinder.algorithms[options.type],
-                    chartObstacles = pathfinder.chartObstacles;
+                var pathfinder = this.pathfinder, chart = this.chart, algorithm = pathfinder.algorithms[options.type], chartObstacles = pathfinder.chartObstacles;
                 if (typeof algorithm !== 'function') {
                     error('"' + options.type + '" is not a Pathfinder algorithm.');
                     return {
@@ -704,18 +668,7 @@
              * @function Highcharts.Connection#render
              */
             Connection.prototype.render = function () {
-                var connection = this,
-                    fromPoint = connection.fromPoint,
-                    series = fromPoint.series,
-                    chart = series.chart,
-                    pathfinder = chart.pathfinder,
-                    pathResult,
-                    path,
-                    options = merge(chart.options.connectors,
-                    series.options.connectors,
-                    fromPoint.options.connectors,
-                    connection.options),
-                    attribs = {};
+                var connection = this, fromPoint = connection.fromPoint, series = fromPoint.series, chart = series.chart, pathfinder = chart.pathfinder, pathResult, path, options = merge(chart.options.connectors, series.options.connectors, fromPoint.options.connectors, connection.options), attribs = {};
                 // Set path attribs
                 if (!chart.styledMode) {
                     attribs.stroke = options.lineColor || fromPoint.color;
@@ -782,9 +735,7 @@
              *         in plot values, not relative to point.
              */
             getPathfinderAnchorPoint: function (markerOptions) {
-                var bb = getPointBB(this),
-                    x,
-                    y;
+                var bb = getPointBB(this), x, y;
                 switch (markerOptions.align) { // eslint-disable-line default-case
                     case 'right':
                         x = 'xMax';
@@ -855,9 +806,9 @@
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
                 var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
-                        x: rectHorizontalCenter,
-                        y: rectVerticalCenter
-                    }, xFactor = 1, yFactor = 1;
+                    x: rectHorizontalCenter,
+                    y: rectVerticalCenter
+                }, xFactor = 1, yFactor = 1;
                 while (theta < -Math.PI) {
                     theta += twoPI;
                 }
@@ -926,7 +877,137 @@
 
         return Connection;
     });
-    _registerModule(_modules, 'Gantt/PathfinderAlgorithms.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
+        /* *
+         *
+         *  (c) 2010-2022 Pawel Lysy
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var getLinkPath = {
+            'default': getDefaultPath,
+            straight: getStraightPath,
+            curved: getCurvedPath
+        };
+        function getDefaultPath(pathParams) {
+            var x1 = pathParams.x1, y1 = pathParams.y1, x2 = pathParams.x2, y2 = pathParams.y2, _a = pathParams.width, width = _a === void 0 ? 0 : _a, _b = pathParams.inverted, inverted = _b === void 0 ? false : _b, radius = pathParams.radius, parentVisible = pathParams.parentVisible;
+            var path = [
+                ['M', x1, y1],
+                ['L', x1, y1],
+                ['C', x1, y1, x1, y2, x1, y2],
+                ['L', x1, y2],
+                ['C', x1, y1, x1, y2, x1, y2],
+                ['L', x1, y2]
+            ];
+            return parentVisible ?
+                applyRadius([
+                    ['M', x1, y1],
+                    ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
+                    ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
+                    ['L', x2, y2]
+                ], radius) :
+                path;
+        }
+        function getStraightPath(pathParams) {
+            var x1 = pathParams.x1, y1 = pathParams.y1, x2 = pathParams.x2, y2 = pathParams.y2, _a = pathParams.width, width = _a === void 0 ? 0 : _a, _b = pathParams.inverted, inverted = _b === void 0 ? false : _b, parentVisible = pathParams.parentVisible;
+            return parentVisible ? [
+                ['M', x1, y1],
+                ['L', x1 + width * (inverted ? -1 : 1), y2],
+                ['L', x2, y2]
+            ] : [
+                ['M', x1, y1],
+                ['L', x1, y2],
+                ['L', x1, y2]
+            ];
+        }
+        function getCurvedPath(pathParams) {
+            var x1 = pathParams.x1, y1 = pathParams.y1, x2 = pathParams.x2, y2 = pathParams.y2, _a = pathParams.offset, offset = _a === void 0 ? 0 : _a, _b = pathParams.width, width = _b === void 0 ? 0 : _b, _c = pathParams.inverted, inverted = _c === void 0 ? false : _c, parentVisible = pathParams.parentVisible;
+            return parentVisible ?
+                [
+                    ['M', x1, y1],
+                    [
+                        'C',
+                        x1 + offset,
+                        y1,
+                        x1 - offset + width * (inverted ? -1 : 1),
+                        y2,
+                        x1 + width * (inverted ? -1 : 1),
+                        y2
+                    ],
+                    ['L', x2, y2]
+                ] :
+                [
+                    ['M', x1, y1],
+                    ['C', x1, y1, x1, y2, x1, y2],
+                    ['L', x2, y2]
+                ];
+        }
+        /**
+         * General function to apply corner radius to a path
+         * @private
+         */
+        function applyRadius(path, r) {
+            var d = [];
+            for (var i = 0; i < path.length; i++) {
+                var x = path[i][1];
+                var y = path[i][2];
+                if (typeof x === 'number' && typeof y === 'number') {
+                    // moveTo
+                    if (i === 0) {
+                        d.push(['M', x, y]);
+                    }
+                    else if (i === path.length - 1) {
+                        d.push(['L', x, y]);
+                        // curveTo
+                    }
+                    else if (r) {
+                        var prevSeg = path[i - 1];
+                        var nextSeg = path[i + 1];
+                        if (prevSeg && nextSeg) {
+                            var x1 = prevSeg[1], y1 = prevSeg[2], x2 = nextSeg[1], y2 = nextSeg[2];
+                            // Only apply to breaks
+                            if (typeof x1 === 'number' &&
+                                typeof x2 === 'number' &&
+                                typeof y1 === 'number' &&
+                                typeof y2 === 'number' &&
+                                x1 !== x2 &&
+                                y1 !== y2) {
+                                var directionX = x1 < x2 ? 1 : -1, directionY = y1 < y2 ? 1 : -1;
+                                d.push([
+                                    'L',
+                                    x - directionX * Math.min(Math.abs(x - x1), r),
+                                    y - directionY * Math.min(Math.abs(y - y1), r)
+                                ], [
+                                    'C',
+                                    x,
+                                    y,
+                                    x,
+                                    y,
+                                    x + directionX * Math.min(Math.abs(x - x2), r),
+                                    y + directionY * Math.min(Math.abs(y - y2), r)
+                                ]);
+                            }
+                        }
+                        // lineTo
+                    }
+                    else {
+                        d.push(['L', x, y]);
+                    }
+                }
+            }
+            return d;
+        }
+        var PathUtilities = {
+            applyRadius: applyRadius,
+            getLinkPath: getLinkPath
+        };
+
+        return PathUtilities;
+    });
+    _registerModule(_modules, 'Gantt/PathfinderAlgorithms.js', [_modules['Series/PathUtilities.js'], _modules['Core/Utilities.js']], function (PathUtilities, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -937,11 +1018,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
-            pick = U.pick;
-        var min = Math.min,
-            max = Math.max,
-            abs = Math.abs;
+        var extend = U.extend, pick = U.pick;
+        var min = Math.min, max = Math.max, abs = Math.abs;
         /**
          * Get index of last obstacle before xMin. Employs a type of binary search, and
          * thus requires that obstacles are sorted by xMin value.
@@ -963,10 +1041,9 @@
          */
         function findLastObstacleBefore(obstacles, xMin, startIx) {
             var left = startIx || 0, // left limit
-                right = obstacles.length - 1, // right limit
-                min = xMin - 0.0000001, // Make sure we include all obstacles at xMin
-                cursor,
-                cmp;
+            right = obstacles.length - 1, // right limit
+            min = xMin - 0.0000001, // Make sure we include all obstacles at xMin
+            cursor, cmp;
             while (left <= right) {
                 cursor = (right + left) >> 1;
                 cmp = min - obstacles[cursor].xMin;
@@ -1020,8 +1097,7 @@
          *         Ix of the obstacle in the array, or -1 if not found.
          */
         function findObstacleFromPoint(obstacles, point) {
-            var i = findLastObstacleBefore(obstacles,
-                point.x + 1) + 1;
+            var i = findLastObstacleBefore(obstacles, point.x + 1) + 1;
             while (i--) {
                 if (obstacles[i].xMax >= point.x &&
                     // optimization using lazy evaluation
@@ -1125,25 +1201,8 @@
          *         renderer, as well as an array of new obstacles making up this
          *         path.
          */
-        var simpleConnect = function (start,
-            end,
-            options) {
-                var segments = [],
-            endSegment,
-            dir = pick(options.startDirectionX,
-            abs(end.x - start.x) > abs(end.y - start.y)) ? 'x' : 'y',
-            chartObstacles = options.chartObstacles,
-            startObstacleIx = findObstacleFromPoint(chartObstacles,
-            start),
-            endObstacleIx = findObstacleFromPoint(chartObstacles,
-            end),
-            startObstacle,
-            endObstacle,
-            prevWaypoint,
-            waypoint,
-            waypoint2,
-            useMax,
-            endPoint;
+        var simpleConnect = function (start, end, options) {
+            var segments = [], endSegment, dir = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)) ? 'x' : 'y', chartObstacles = options.chartObstacles, startObstacleIx = findObstacleFromPoint(chartObstacles, start), endObstacleIx = findObstacleFromPoint(chartObstacles, end), startObstacle, endObstacle, prevWaypoint, waypoint, waypoint2, useMax, endPoint;
             // eslint-disable-next-line valid-jsdoc
             /**
              * Return a clone of a point with a property set from a target object,
@@ -1152,9 +1211,9 @@
              */
             function copyFromPoint(from, fromKey, to, toKey, offset) {
                 var point = {
-                        x: from.x,
-                        y: from.y
-                    };
+                    x: from.x,
+                    y: from.y
+                };
                 point[fromKey] = to[toKey || fromKey] + (offset || 0);
                 return point;
             }
@@ -1165,7 +1224,7 @@
              */
             function getMeOut(obstacle, point, direction) {
                 var useMax = abs(point[direction] - obstacle[direction + 'Min']) >
-                        abs(point[direction] - obstacle[direction + 'Max']);
+                    abs(point[direction] - obstacle[direction + 'Max']);
                 return copyFromPoint(point, direction, obstacle, direction + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1);
             }
             // Pull out end point
@@ -1226,8 +1285,9 @@
             });
             // Finally add the endSegment
             segments.push(endSegment);
+            var path = PathUtilities.applyRadius(pathFromSegments(segments), options.radius);
             return {
-                path: pathFromSegments(segments),
+                path: path,
                 obstacles: segments
             };
         };
@@ -1263,33 +1323,33 @@
          *         path.
          */
         var fastAvoid = function (start, end, options) {
-                /*
-                    Algorithm rules/description
-                    - Find initial direction
-                    - Determine soft/hard max for each direction.
-                    - Move along initial direction until obstacle.
-                    - Change direction.
-                    - If hitting obstacle, first try to change length of previous line
-                        before changing direction again.
-    
-                    Soft min/max x = start/destination x +/- widest obstacle + margin
-                    Soft min/max y = start/destination y +/- tallest obstacle + margin
-    
-                    @todo:
-                        - Make retrospective, try changing prev segment to reduce
-                            corners
-                        - Fix logic for breaking out of end-points - not always picking
-                            the best direction currently
-                        - When going around the end obstacle we should not always go the
-                            shortest route, rather pick the one closer to the end point
-                */
-                var dirIsX = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)), dir = dirIsX ? 'x' : 'y', segments, useMax, extractedEndPoint, endSegments = [], forceObstacleBreak = false, // Used in clearPathTo to keep track of
-                // when to force break through an obstacle.
-                // Boundaries to stay within. If beyond soft boundary, prefer to
-                // change direction ASAP. If at hard max, always change immediately.
-                metrics = options.obstacleMetrics, softMinX = min(start.x, end.x) - metrics.maxWidth - 10, softMaxX = max(start.x, end.x) + metrics.maxWidth + 10, softMinY = min(start.y, end.y) - metrics.maxHeight - 10, softMaxY = max(start.y, end.y) + metrics.maxHeight + 10, 
-                // Obstacles
-                chartObstacles = options.chartObstacles, startObstacleIx = findLastObstacleBefore(chartObstacles, softMinX), endObstacleIx = findLastObstacleBefore(chartObstacles, softMaxX);
+            /*
+                Algorithm rules/description
+                - Find initial direction
+                - Determine soft/hard max for each direction.
+                - Move along initial direction until obstacle.
+                - Change direction.
+                - If hitting obstacle, first try to change length of previous line
+                    before changing direction again.
+
+                Soft min/max x = start/destination x +/- widest obstacle + margin
+                Soft min/max y = start/destination y +/- tallest obstacle + margin
+
+                @todo:
+                    - Make retrospective, try changing prev segment to reduce
+                        corners
+                    - Fix logic for breaking out of end-points - not always picking
+                        the best direction currently
+                    - When going around the end obstacle we should not always go the
+                        shortest route, rather pick the one closer to the end point
+            */
+            var dirIsX = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)), dir = dirIsX ? 'x' : 'y', segments, useMax, extractedEndPoint, endSegments = [], forceObstacleBreak = false, // Used in clearPathTo to keep track of
+            // when to force break through an obstacle.
+            // Boundaries to stay within. If beyond soft boundary, prefer to
+            // change direction ASAP. If at hard max, always change immediately.
+            metrics = options.obstacleMetrics, softMinX = min(start.x, end.x) - metrics.maxWidth - 10, softMaxX = max(start.x, end.x) + metrics.maxWidth + 10, softMinY = min(start.y, end.y) - metrics.maxHeight - 10, softMaxY = max(start.y, end.y) + metrics.maxHeight + 10, 
+            // Obstacles
+            chartObstacles = options.chartObstacles, startObstacleIx = findLastObstacleBefore(chartObstacles, softMinX), endObstacleIx = findLastObstacleBefore(chartObstacles, softMaxX);
             // eslint-disable-next-line valid-jsdoc
             /**
              * How far can you go between two points before hitting an obstacle?
@@ -1297,12 +1357,7 @@
              * @private
              */
             function pivotPoint(fromPoint, toPoint, directionIsX) {
-                var firstPoint,
-                    lastPoint,
-                    highestPoint,
-                    lowestPoint,
-                    i,
-                    searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
+                var firstPoint, lastPoint, highestPoint, lowestPoint, i, searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
                 if (fromPoint.x < toPoint.x) {
                     firstPoint = fromPoint;
                     lastPoint = toPoint;
@@ -1388,18 +1443,18 @@
              */
             function getDodgeDirection(obstacle, fromPoint, toPoint, dirIsX, bounds) {
                 var softBounds = bounds.soft, hardBounds = bounds.hard, dir = dirIsX ? 'x' : 'y', toPointMax = { x: fromPoint.x, y: fromPoint.y }, toPointMin = { x: fromPoint.x, y: fromPoint.y }, minPivot, maxPivot, maxOutOfSoftBounds = obstacle[dir + 'Max'] >=
-                        softBounds[dir + 'Max'], minOutOfSoftBounds = obstacle[dir + 'Min'] <=
-                        softBounds[dir + 'Min'], maxOutOfHardBounds = obstacle[dir + 'Max'] >=
-                        hardBounds[dir + 'Max'], minOutOfHardBounds = obstacle[dir + 'Min'] <=
-                        hardBounds[dir + 'Min'], 
-                    // Find out if we should prefer one direction over the other if
-                    // we can choose freely
-                    minDistance = abs(obstacle[dir + 'Min'] - fromPoint[dir]), maxDistance = abs(obstacle[dir + 'Max'] - fromPoint[dir]), 
-                    // If it's a small difference, pick the one leading towards dest
-                    // point. Otherwise pick the shortest distance
-                    useMax = abs(minDistance - maxDistance) < 10 ?
-                        fromPoint[dir] < toPoint[dir] :
-                        maxDistance < minDistance;
+                    softBounds[dir + 'Max'], minOutOfSoftBounds = obstacle[dir + 'Min'] <=
+                    softBounds[dir + 'Min'], maxOutOfHardBounds = obstacle[dir + 'Max'] >=
+                    hardBounds[dir + 'Max'], minOutOfHardBounds = obstacle[dir + 'Min'] <=
+                    hardBounds[dir + 'Min'], 
+                // Find out if we should prefer one direction over the other if
+                // we can choose freely
+                minDistance = abs(obstacle[dir + 'Min'] - fromPoint[dir]), maxDistance = abs(obstacle[dir + 'Max'] - fromPoint[dir]), 
+                // If it's a small difference, pick the one leading towards dest
+                // point. Otherwise pick the shortest distance
+                useMax = abs(minDistance - maxDistance) < 10 ?
+                    fromPoint[dir] < toPoint[dir] :
+                    maxDistance < minDistance;
                 // Check if we hit any obstacles trying to go around in either
                 // direction.
                 toPointMin[dir] = obstacle[dir + 'Min'];
@@ -1434,24 +1489,15 @@
                 if (fromPoint.x === toPoint.x && fromPoint.y === toPoint.y) {
                     return [];
                 }
-                var dir = dirIsX ? 'x' : 'y',
-                    pivot,
-                    segments,
-                    waypoint,
-                    waypointUseMax,
-                    envelopingObstacle,
-                    secondEnvelopingObstacle,
-                    envelopWaypoint,
-                    obstacleMargin = options.obstacleOptions.margin,
-                    bounds = {
-                        soft: {
-                            xMin: softMinX,
-                            xMax: softMaxX,
-                            yMin: softMinY,
-                            yMax: softMaxY
-                        },
-                        hard: options.hardBounds
-                    };
+                var dir = dirIsX ? 'x' : 'y', pivot, segments, waypoint, waypointUseMax, envelopingObstacle, secondEnvelopingObstacle, envelopWaypoint, obstacleMargin = options.obstacleOptions.margin, bounds = {
+                    soft: {
+                        xMin: softMinX,
+                        xMax: softMaxX,
+                        yMin: softMinY,
+                        yMax: softMaxY
+                    },
+                    hard: options.hardBounds
+                };
                 // If fromPoint is inside an obstacle we have a problem. Break out
                 // by just going to the outside of this obstacle. We prefer to go to
                 // the nearest edge in the chosen direction.
@@ -1557,19 +1603,11 @@
              * @private
              */
             function extractFromObstacle(obstacle, point, goalPoint) {
-                var dirIsX = min(obstacle.xMax - point.x,
-                    point.x - obstacle.xMin) <
-                        min(obstacle.yMax - point.y,
-                    point.y - obstacle.yMin),
-                    bounds = {
-                        soft: options.hardBounds,
-                        hard: options.hardBounds
-                    },
-                    useMax = getDodgeDirection(obstacle,
-                    point,
-                    goalPoint,
-                    dirIsX,
-                    bounds);
+                var dirIsX = min(obstacle.xMax - point.x, point.x - obstacle.xMin) <
+                    min(obstacle.yMax - point.y, point.y - obstacle.yMin), bounds = {
+                    soft: options.hardBounds,
+                    hard: options.hardBounds
+                }, useMax = getDodgeDirection(obstacle, point, goalPoint, dirIsX, bounds);
                 return dirIsX ? {
                     y: point.y,
                     x: obstacle[useMax ? 'xMax' : 'xMin'] + (useMax ? 1 : -1)
@@ -1621,10 +1659,10 @@
         // Algorithms take up to 3 arguments: starting point, ending point, and an
         // options object.
         var algorithms = {
-                fastAvoid: fastAvoid,
-                straight: straight,
-                simpleConnect: simpleConnect
-            };
+            fastAvoid: fastAvoid,
+            straight: straight,
+            simpleConnect: simpleConnect
+        };
 
         return algorithms;
     });
@@ -1640,13 +1678,7 @@
          *
          * */
         var defaultOptions = D.defaultOptions;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            error = U.error,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick,
-            splat = U.splat;
+        var addEvent = U.addEvent, defined = U.defined, error = U.error, extend = U.extend, merge = U.merge, pick = U.pick, splat = U.splat;
         /**
          * The default pathfinder algorithm to use for a chart. It is possible to define
          * your own algorithms by adding them to the
@@ -1670,8 +1702,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
-        var max = Math.max,
-            min = Math.min;
+        var max = Math.max, min = Math.min;
         /*
          @todo:
              - Document how to write your own algorithms
@@ -1773,6 +1804,12 @@
                  * @since   6.2.0
                  */
                 type: 'straight',
+                /**
+                 * The corner radius for the connector line
+                 *
+                 * @since next
+                 */
+                radius: 0,
                 /**
                  * Set the default pixel width for this chart's Pathfinder connecting
                  * lines.
@@ -1937,8 +1974,7 @@
          *         Result xMax, xMin, yMax, yMin.
          */
         function getPointBB(point) {
-            var shapeArgs = point.shapeArgs,
-                bb;
+            var shapeArgs = point.shapeArgs, bb;
             // Prefer using shapeArgs (columns)
             if (shapeArgs) {
                 return {
@@ -1971,23 +2007,13 @@
          *         The calculated margin in pixels. At least 1.
          */
         function calculateObstacleMargin(obstacles) {
-            var len = obstacles.length,
-                i = 0,
-                j,
-                obstacleDistance,
-                distances = [], 
-                // Compute smallest distance between two rectangles
-                distance = function (a,
-                b,
-                bbMargin) {
-                    // Count the distance even if we are slightly off
-                    var margin = pick(bbMargin, 10),
-                yOverlap = a.yMax + margin > b.yMin - margin &&
-                        a.yMin - margin < b.yMax + margin,
-                xOverlap = a.xMax + margin > b.xMin - margin &&
-                        a.xMin - margin < b.xMax + margin,
-                xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity,
-                yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
+            var len = obstacles.length, i = 0, j, obstacleDistance, distances = [], 
+            // Compute smallest distance between two rectangles
+            distance = function (a, b, bbMargin) {
+                // Count the distance even if we are slightly off
+                var margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
+                    a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
+                    a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
                 // If the rectangles collide, try recomputing with smaller margin.
                 // If they collide anyway, discard the obstacle.
                 if (xOverlap && yOverlap) {
@@ -2032,13 +2058,13 @@
          *        The chart to operate on.
          */
         var Pathfinder = /** @class */ (function () {
-                function Pathfinder(chart) {
-                    /* *
-                     *
-                     * Properties
-                     *
-                     * */
-                    this.chart = void 0;
+            function Pathfinder(chart) {
+                /* *
+                 *
+                 * Properties
+                 *
+                 * */
+                this.chart = void 0;
                 this.chartObstacles = void 0;
                 this.chartObstacleMetrics = void 0;
                 this.connections = void 0;
@@ -2078,9 +2104,7 @@
              *        series.afterAnimate event has fired. Used on first render.
              */
             Pathfinder.prototype.update = function (deferRender) {
-                var chart = this.chart,
-                    pathfinder = this,
-                    oldConnections = pathfinder.connections;
+                var chart = this.chart, pathfinder = this, oldConnections = pathfinder.connections;
                 // Rebuild pathfinder connections from options
                 pathfinder.connections = [];
                 chart.series.forEach(function (series) {
@@ -2093,10 +2117,9 @@
                                 ganttPointOptions.connect = ganttPointOptions
                                     .dependency;
                             }
-                            var to,
-                                connects = (point.options &&
-                                    point.options.connect &&
-                                    splat(point.options.connect));
+                            var to, connects = (point.options &&
+                                point.options.connect &&
+                                splat(point.options.connect));
                             if (point.visible && point.isInside !== false && connects) {
                                 connects.forEach(function (connect) {
                                     to = chart.get(typeof connect === 'string' ?
@@ -2158,10 +2181,9 @@
                     // Render after series are done animating
                     this.chart.series.forEach(function (series) {
                         var render = function () {
-                                // Find pathfinder connections belonging to this series
-                                // that haven't rendered, and render them now.
-                                var pathfinder = series.chart.pathfinder,
-                            conns = pathfinder && pathfinder.connections || [];
+                            // Find pathfinder connections belonging to this series
+                            // that haven't rendered, and render them now.
+                            var pathfinder = series.chart.pathfinder, conns = pathfinder && pathfinder.connections || [];
                             conns.forEach(function (connection) {
                                 if (connection.fromPoint &&
                                     connection.fromPoint.series === series) {
@@ -2203,10 +2225,7 @@
              *         object with xMin, xMax, yMin and yMax properties.
              */
             Pathfinder.prototype.getChartObstacles = function (options) {
-                var obstacles = [],
-                    series = this.chart.series,
-                    margin = pick(options.algorithmMargin, 0),
-                    calculatedMargin;
+                var obstacles = [], series = this.chart.series, margin = pick(options.algorithmMargin, 0), calculatedMargin;
                 for (var i = 0, sLen = series.length; i < sLen; ++i) {
                     if (series[i].visible && !series[i].options.isInternal) {
                         for (var j = 0, pLen = series[i].points.length, bb = void 0, point = void 0; j < pLen; ++j) {
@@ -2258,11 +2277,7 @@
              *         properties.
              */
             Pathfinder.prototype.getObstacleMetrics = function (obstacles) {
-                var maxWidth = 0,
-                    maxHeight = 0,
-                    width,
-                    height,
-                    i = obstacles.length;
+                var maxWidth = 0, maxHeight = 0, width, height, i = obstacles.length;
                 while (i--) {
                     width = obstacles[i].xMax - obstacles[i].xMin;
                     height = obstacles[i].yMax - obstacles[i].yMin;
@@ -2292,8 +2307,8 @@
              */
             Pathfinder.prototype.getAlgorithmStartDirection = function (markerOptions) {
                 var xCenter = markerOptions.align !== 'left' &&
-                        markerOptions.align !== 'right', yCenter = markerOptions.verticalAlign !== 'top' &&
-                        markerOptions.verticalAlign !== 'bottom', undef;
+                    markerOptions.align !== 'right', yCenter = markerOptions.verticalAlign !== 'top' &&
+                    markerOptions.verticalAlign !== 'bottom', undef;
                 return xCenter ?
                     (yCenter ? undef : false) : // x is centered
                     (yCenter ? true : undef); // x is off-center
@@ -2319,9 +2334,7 @@
              *         in plot values, not relative to point.
              */
             getPathfinderAnchorPoint: function (markerOptions) {
-                var bb = getPointBB(this),
-                    x,
-                    y;
+                var bb = getPointBB(this), x, y;
                 switch (markerOptions.align) { // eslint-disable-line default-case
                     case 'right':
                         x = 'xMax';
@@ -2392,9 +2405,9 @@
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
                 var twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
-                        x: rectHorizontalCenter,
-                        y: rectVerticalCenter
-                    }, xFactor = 1, yFactor = 1;
+                    x: rectHorizontalCenter,
+                    y: rectVerticalCenter
+                }, xFactor = 1, yFactor = 1;
                 while (theta < -Math.PI) {
                     theta += twoPI;
                 }
@@ -2650,8 +2663,8 @@
          *
          * */
         var ArrowSymbols = {
-                compose: compose
-            };
+            compose: compose
+        };
 
         return ArrowSymbols;
     });

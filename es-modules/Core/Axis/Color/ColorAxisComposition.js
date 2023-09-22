@@ -157,13 +157,11 @@ var ColorAxisComposition;
      * Updates in the legend need to be reflected in the color axis. (#6888)
      * @private
      */
-    function onLegendAfterUpdate() {
-        const colorAxes = this.chart.colorAxis;
-        if (colorAxes) {
-            colorAxes.forEach(function (colorAxis) {
-                colorAxis.update({}, arguments[2]);
-            });
-        }
+    function onLegendAfterUpdate(e) {
+        var _a;
+        (_a = this.chart.colorAxis) === null || _a === void 0 ? void 0 : _a.forEach((colorAxis) => {
+            colorAxis.update({}, e.redraw);
+        });
     }
     /**
      * Calculate and set colors for points.

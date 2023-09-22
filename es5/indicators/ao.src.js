@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,29 +44,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            columnProto = _a.column.prototype,
-            SMAIndicator = _a.sma;
-        var extend = U.extend,
-            merge = U.merge,
-            correctFloat = U.correctFloat,
-            isArray = U.isArray;
+        var _a = SeriesRegistry.seriesTypes, columnProto = _a.column.prototype, SMAIndicator = _a.sma;
+        var extend = U.extend, merge = U.merge, correctFloat = U.correctFloat, isArray = U.isArray;
         /* *
          *
          *  Class
@@ -84,15 +76,14 @@
          * @augments Highcharts.Series
          */
         var AOIndicator = /** @class */ (function (_super) {
-                __extends(AOIndicator, _super);
+            __extends(AOIndicator, _super);
             function AOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -109,13 +100,7 @@
              *
              * */
             AOIndicator.prototype.drawGraph = function () {
-                var indicator = this,
-                    options = indicator.options,
-                    points = indicator.points,
-                    userColor = indicator.userOptions.color,
-                    positiveColor = options.greaterBarColor,
-                    negativeColor = options.lowerBarColor,
-                    firstPoint = points[0];
+                var indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0];
                 var i;
                 if (!userColor && firstPoint) {
                     firstPoint.color = positiveColor;
@@ -133,26 +118,11 @@
                 }
             };
             AOIndicator.prototype.getValues = function (series) {
-                var shortPeriod = 5,
-                    longPeriod = 34,
-                    xVal = series.xData || [],
-                    yVal = series.yData || [],
-                    yValLen = yVal.length,
-                    AO = [], // 0- date, 1- Awesome Oscillator
-                    xData = [],
-                    yData = [],
-                    high = 1,
-                    low = 2;
+                var shortPeriod = 5, longPeriod = 34, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, AO = [], // 0- date, 1- Awesome Oscillator
+                xData = [], yData = [], high = 1, low = 2;
                 var shortSMA, // Shorter Period SMA
-                    longSMA, // Longer Period SMA
-                    awesome,
-                    shortLastIndex,
-                    longLastIndex,
-                    price,
-                    i,
-                    j,
-                    longSum = 0,
-                    shortSum = 0;
+                longSMA, // Longer Period SMA
+                awesome, shortLastIndex, longLastIndex, price, i, j, longSum = 0, shortSum = 0;
                 if (xVal.length <= longPeriod ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {

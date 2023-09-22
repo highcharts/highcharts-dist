@@ -581,7 +581,7 @@ class NavigationBindings {
         function traverse(option, key, parentEditables, parent, parentKey) {
             let nextParent;
             if (parentEditables &&
-                option &&
+                defined(option) &&
                 nonEditables.indexOf(key) === -1 &&
                 ((parentEditables.indexOf &&
                     parentEditables.indexOf(key)) >= 0 ||

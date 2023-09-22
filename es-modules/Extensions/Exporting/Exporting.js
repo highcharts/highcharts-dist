@@ -48,6 +48,7 @@ var Exporting;
         /^font$/,
         /[lL]ogical(Width|Height)$/,
         /^parentRule$/,
+        /^(cssRules|ownerRules)$/,
         /perspective/,
         /TapHighlightColor/,
         /^transition/,

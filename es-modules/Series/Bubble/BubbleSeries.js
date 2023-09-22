@@ -560,8 +560,6 @@ extend(BubbleSeries.prototype, {
     alignDataLabel: columnProto.alignDataLabel,
     applyZones: noop,
     bubblePadding: true,
-    buildKDTree: noop,
-    directTouch: true,
     isBubble: true,
     pointArrayMap: ['y', 'z'],
     pointClass: BubblePoint,

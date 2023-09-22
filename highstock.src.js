@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -2819,7 +2817,8 @@
             spacing: [10, 10, 15, 10],
             /**
              * The button that appears after a selection zoom, allowing the user
-             * to reset zoom.
+             * to reset zoom. This option is deprecated in favor of
+             * [zooming](#chart.zooming).
              *
              * @since      2.2
              * @deprecated 10.2.1
@@ -2835,7 +2834,6 @@
                  *         Relative to the chart
                  *
                  * @type      {Highcharts.ButtonRelativeToValue}
-                 * @default   plot
                  * @apioption chart.resetZoomButton.relativeTo
                  */
                 /**
@@ -2853,10 +2851,12 @@
                  * @type {Highcharts.SVGAttributes}
                  */
                 theme: {
-                    /**
-                     * @internal
-                     */
-                    zIndex: 6
+                /**
+                 * zIndex of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.theme.zIndex
+                 */
                 },
                 /**
                  * The position of the button.
@@ -2871,25 +2871,30 @@
                  * @type {Highcharts.AlignObject}
                  */
                 position: {
-                    /**
-                     * The horizontal alignment of the button.
-                     */
-                    align: 'right',
-                    /**
-                     * The horizontal offset of the button.
-                     */
-                    x: -10,
-                    /**
-                     * The vertical alignment of the button.
-                     *
-                     * @type      {Highcharts.VerticalAlignValue}
-                     * @default   top
-                     * @apioption chart.resetZoomButton.position.verticalAlign
-                     */
-                    /**
-                     * The vertical offset of the button.
-                     */
-                    y: 10
+                /**
+                 * The horizontal alignment of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.position.align
+                 */
+                /**
+                 * The horizontal offset of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.position.x
+                 */
+                /**
+                 * The vertical alignment of the button.
+                 *
+                 * @type      {Highcharts.VerticalAlignValue}
+                 * @apioption chart.resetZoomButton.position.verticalAlign
+                 */
+                /**
+                 * The vertical offset of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.position.y
+                 */
                 }
             },
             /**
@@ -4726,7 +4731,7 @@
              *     "#2ee0ca",
              *     "#fa4b42",
              *     "#feb56a",
-             *     "#91e8e12
+             *     "#91e8e1"
              * ]
              */
             colors: Palettes.colors,
@@ -6840,7 +6845,7 @@
                  *         Different shapes for header and split boxes
                  *
                  * @type       {Highcharts.TooltipShapeValue}
-                 * @validvalue ["callout", "square"]
+                 * @validvalue ["callout", "rect"]
                  * @since      7.0
                  */
                 headerShape: 'callout',
@@ -7597,7 +7602,7 @@
             step(gotoEnd) {
                 const t = +new Date(), options = this.options, elem = this.elem, complete = options.complete, duration = options.duration, curAnim = options.curAnim;
                 let ret, done;
-                if ((elem.attr) && !elem.element) { // #2616, element is destroyed
+                if (!!elem.attr && !elem.element) { // #2616, element is destroyed
                     ret = false;
                 }
                 else if (gotoEnd || t >= duration + this.startTime) {
@@ -8326,6 +8331,7 @@
             'dy',
             'disabled',
             'fill',
+            'filterUnits',
             'flood-color',
             'flood-opacity',
             'height',
@@ -9868,6 +9874,7 @@
              * @function Highcharts.SVGElement#destroy
              */
             destroy() {
+                var _a;
                 const wrapper = this, element = wrapper.element || {}, renderer = wrapper.renderer, ownerSVGElement = element.ownerSVGElement;
                 let parentToClean = (element.nodeName === 'SPAN' &&
                     wrapper.parentGroup ||
@@ -9888,6 +9895,7 @@
                     });
                     wrapper.clipPath = clipPath.destroy();
                 }
+                wrapper.connector = (_a = wrapper.connector) === null || _a === void 0 ? void 0 : _a.destroy();
                 // Destroy stops in case this is a gradient object @todo old code?
                 if (wrapper.stops) {
                     for (i = 0; i < wrapper.stops.length; i++) {
@@ -9958,27 +9966,6 @@
                 }
             }
             /**
-             * Fade out an element by animating its opacity down to 0, and hide it on
-             * complete. Used internally for the tooltip.
-             *
-             * @function Highcharts.SVGElement#fadeOut
-             *
-             * @param {number} [duration=150]
-             * The fade duration in milliseconds.
-             */
-            fadeOut(duration) {
-                const elemWrapper = this;
-                elemWrapper.animate({
-                    opacity: 0
-                }, {
-                    duration: pick(duration, 150),
-                    complete: function () {
-                        // #3088, assuming we're only using this for tooltips
-                        elemWrapper.hide();
-                    }
-                });
-            }
-            /**
              * @private
              * @function Highcharts.SVGElement#fillSetter
              * @param {Highcharts.ColorType} value
@@ -9992,6 +9979,17 @@
                 else if (value) {
                     this.complexColor(value, key, element);
                 }
+            }
+            /**
+             * @private
+             * @function Highcharts.SVGElement#hrefSetter
+             * @param {Highcharts.ColorType} value
+             * @param {string} key
+             * @param {Highcharts.SVGDOMElement} element
+             */
+            hrefSetter(value, key, element) {
+                // Namespace is needed for offline export, #19106
+                element.setAttributeNS('http://www.w3.org/1999/xlink', key, value);
             }
             /**
              * Get the bounding box (width, height, x and y) for the element. Generally
@@ -11525,8 +11523,12 @@
             if (!isNumber(anchorX)) {
                 return path;
             }
+            // Do not render a connector, if anchor starts inside the label
+            if (anchorX < w && anchorX > 0 && anchorY < h && anchorY > 0) {
+                return path;
+            }
             // Anchor on right side
-            if (x + anchorX >= w) {
+            if (x + anchorX >= w - safeDistance) {
                 // Chevron
                 if (anchorY > y + safeDistance &&
                     anchorY < y + h - safeDistance) {
@@ -11534,11 +11536,17 @@
                     // Simple connector
                 }
                 else {
-                    path.splice(3, 1, ['L', x + w, h / 2], ['L', anchorX, anchorY], ['L', x + w, h / 2], ['L', x + w, y + h - r]);
+                    if (anchorX < w) { // Corner connector
+                        const isTopCorner = anchorY < y + safeDistance, cornerY = isTopCorner ? y : y + h, sliceStart = isTopCorner ? 2 : 5;
+                        path.splice(sliceStart, 0, ['L', anchorX, anchorY], ['L', x + w - r, cornerY]);
+                    }
+                    else { // Side connector
+                        path.splice(3, 1, ['L', x + w, h / 2], ['L', anchorX, anchorY], ['L', x + w, h / 2], ['L', x + w, y + h - r]);
+                    }
                 }
                 // Anchor on left side
             }
-            else if (x + anchorX <= 0) {
+            else if (x + anchorX <= safeDistance) {
                 // Chevron
                 if (anchorY > y + safeDistance &&
                     anchorY < y + h - safeDistance) {
@@ -11546,21 +11554,23 @@
                     // Simple connector
                 }
                 else {
-                    path.splice(7, 1, ['L', x, h / 2], ['L', anchorX, anchorY], ['L', x, h / 2], ['L', x, y + r]);
+                    if (anchorX > 0) { // Corner connector
+                        const isTopCorner = anchorY < y + safeDistance, cornerY = isTopCorner ? y : y + h, sliceStart = isTopCorner ? 1 : 6;
+                        path.splice(sliceStart, 0, ['L', anchorX, anchorY], ['L', x + r, cornerY]);
+                    }
+                    else { // Side connector
+                        path.splice(7, 1, ['L', x, h / 2], ['L', anchorX, anchorY], ['L', x, h / 2], ['L', x, y + r]);
+                    }
                 }
             }
             else if ( // replace bottom
-            anchorY &&
-                anchorY > h &&
-                anchorX > x + safeDistance &&
-                anchorX < x + w - safeDistance) {
+            anchorY > h &&
+                anchorX < w - safeDistance) {
                 path.splice(5, 1, ['L', anchorX + halfDistance, y + h], ['L', anchorX, y + h + arrowLength], ['L', anchorX - halfDistance, y + h], ['L', x + r, y + h]);
             }
             else if ( // replace top
-            anchorY &&
-                anchorY < 0 &&
-                anchorX > x + safeDistance &&
-                anchorX < x + w - safeDistance) {
+            anchorY < 0 &&
+                anchorX > safeDistance) {
                 path.splice(1, 1, ['L', anchorX - halfDistance, y], ['L', anchorX, y - arrowLength], ['L', anchorX + halfDistance, y], ['L', w - r, y]);
             }
             return path;
@@ -12518,8 +12528,8 @@
                 const id = [
                     `highcharts-drop-shadow-${this.chartIndex}`,
                     ...Object.keys(shadowOptions)
-                        .map((key) => shadowOptions[key])
-                ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({
+                        .map((key) => `${key}-${shadowOptions[key]}`)
+                ].join('-').toLowerCase().replace(/[^a-z0-9\-]/g, ''), options = merge({
                     color: '#000000',
                     offsetX: 1,
                     offsetY: 1,
@@ -12530,7 +12540,8 @@
                     this.definition({
                         tagName: 'filter',
                         attributes: {
-                            id
+                            id,
+                            filterUnits: options.filterUnits
                         },
                         children: [{
                                 tagName: 'feDropShadow',
@@ -14382,7 +14393,7 @@
                             // Ensure dynamically updating position when any parent
                             // is translated
                             parents.reverse().forEach(function (parentGroup) {
-                                const cls = attr(parentGroup.element, 'class');
+                                const cls = attr(parentGroup.element, 'class'), parentProtoCss = parentGroup.css;
                                 /**
                                  * Common translate setter for X and Y on the HTML
                                  * group. Reverted the fix for #6957 du to
@@ -14433,7 +14444,10 @@
                                     // updating the shadow div counterpart with the same
                                     // style.
                                     css: function (styles) {
-                                        wrapper.css.call(parentGroup, styles);
+                                        // Call the base css method. The `parentGroup`
+                                        // can be either an SVGElement or an SVGLabel,
+                                        // in which the css method is extended (#19200).
+                                        parentProtoCss.call(parentGroup, styles);
                                         [
                                             // #6794
                                             'cursor',
@@ -15022,7 +15036,10 @@
                  *
                  * @productdesc {highstock}
                  * In Highcharts Stock, `endOnTick` is always `false` when the navigator
-                 * is enabled, to prevent jumpy scrolling.
+                 * is enabled, to prevent jumpy scrolling. With disabled navigator
+                 * enabling `endOnTick` may lead to extending the xAxis to show the last
+                 * tick, therefore range selector buttons may not have an active state
+                 * if the axis gets extended.
                  *
                  * @sample {highcharts} highcharts/yaxis/endontick/
                  *         True by default
@@ -22437,7 +22454,7 @@
             renderLabel(optionsLabel, path, isBand, zIndex) {
                 const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer;
                 let label = plotLine.label;
-                // add the SVG element
+                // Add the SVG element
                 if (!label) {
                     /**
                      * SVG element of the label.
@@ -22453,16 +22470,16 @@
                         'class': 'highcharts-plot-' + (isBand ? 'band' : 'line') +
                             '-label ' + (optionsLabel.className || ''),
                         zIndex
-                    })
-                        .add();
+                    });
                     if (!axis.chart.styledMode) {
                         label.css(merge({
                             fontSize: '0.8em',
                             textOverflow: 'ellipsis'
                         }, optionsLabel.style));
                     }
+                    label.add();
                 }
-                // get the bounding box and align the label
+                // Get the bounding box and align the label
                 // #3000 changed to better handle choice between plotband or plotline
                 const xBounds = path.xBounds ||
                     [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])];
@@ -23178,7 +23195,6 @@
                  *
                  * */
                 this.allowShared = true;
-                this.container = void 0;
                 this.crosshairs = [];
                 this.distance = 0;
                 this.isHidden = true;
@@ -23366,9 +23382,8 @@
              * Tooltip label
              */
             getLabel() {
-                const tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared, pointerEvents = (options.style.pointerEvents ||
-                    (this.shouldStickOnContact() ? 'auto' : 'none'));
-                let container, renderer = this.chart.renderer;
+                const tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared;
+                let container = this.container, renderer = this.chart.renderer;
                 // If changing from a split tooltip to a non-split tooltip, we must
                 // destroy it in order to get the SVG right. #13868.
                 if (this.label) {
@@ -23390,13 +23405,15 @@
                          */
                         this.container = container = H.doc.createElement('div');
                         container.className = 'highcharts-tooltip-container';
+                        // We need to set pointerEvents = 'none' as otherwise it makes
+                        // the area under the tooltip non-hoverable even after the
+                        // tooltip disappears, #19035.
                         css(container, {
                             position: 'absolute',
                             top: '1px',
-                            pointerEvents,
+                            pointerEvents: 'none',
                             zIndex: Math.max(this.options.style.zIndex || 0, (chartStyle && chartStyle.zIndex || 0) + 3)
                         });
-                        H.doc.body.appendChild(container);
                         /**
                          * Reference to the tooltip's renderer, when
                          * [Highcharts.Tooltip#outside] is set to true, otherwise
@@ -23426,7 +23443,10 @@
                             })
                                 // #2301, #2657
                                 .css(options.style)
-                                .css({ pointerEvents });
+                                .css({
+                                pointerEvents: (options.style.pointerEvents ||
+                                    (this.shouldStickOnContact() ? 'auto' : 'none'))
+                            });
                         }
                     }
                     // Split tooltip use updateTooltipContainer to position the tooltip
@@ -23436,17 +23456,24 @@
                         const { xSetter, ySetter } = label;
                         label.xSetter = function (value) {
                             xSetter.call(label, tooltip.distance);
-                            container.style.left = value + 'px';
+                            if (container) {
+                                container.style.left = value + 'px';
+                            }
                         };
                         label.ySetter = function (value) {
                             ySetter.call(label, tooltip.distance);
-                            container.style.top = value + 'px';
+                            if (container) {
+                                container.style.top = value + 'px';
+                            }
                         };
                     }
                     this.label
                         .attr({ zIndex: 8 })
                         .shadow(options.shadow)
                         .add();
+                }
+                if (container && !container.parentElement) {
+                    H.doc.body.appendChild(container);
                 }
                 return this.label;
             }
@@ -23634,15 +23661,28 @@
              */
             hide(delay) {
                 const tooltip = this;
-                // disallow duplicate timers (#1728, #1766)
+                // Disallow duplicate timers (#1728, #1766)
                 U.clearTimeout(this.hideTimer);
                 delay = pick(delay, this.options.hideDelay);
                 if (!this.isHidden) {
                     this.hideTimer = syncTimeout(function () {
-                        // If there is a delay, do fadeOut with the default duration. If
+                        const label = tooltip.getLabel();
+                        // If there is a delay, fade out with the default duration. If
                         // the hideDelay is 0, we assume no animation is wanted, so we
                         // pass 0 duration. #12994.
-                        tooltip.getLabel().fadeOut(delay ? void 0 : delay);
+                        tooltip.getLabel().animate({
+                            opacity: 0
+                        }, {
+                            duration: delay ? 150 : delay,
+                            complete: () => {
+                                // #3088, assuming we're only using this for tooltips
+                                label.hide();
+                                // Clear the container for outside tooltip (#18490)
+                                if (tooltip.container) {
+                                    tooltip.container.remove();
+                                }
+                            }
+                        });
                         tooltip.isHidden = true;
                     }, delay);
                 }
@@ -23955,7 +23995,7 @@
                     let anchorY;
                     if (isHeader) {
                         // Set anchorX to plotX
-                        anchorX = plotLeft + plotX;
+                        anchorX = Math.max(plotLeft + plotX, plotLeft);
                         // Set anchorY to center of visible plot area.
                         anchorY = plotTop + plotHeight / 2;
                     }
@@ -24340,23 +24380,26 @@
              * @param {Highcharts.Point} point
              */
             updatePosition(point) {
-                const { chart, distance, options } = this, pointer = chart.pointer, label = this.getLabel(), 
+                const { chart, container, distance, options } = this, pointer = chart.pointer, label = this.getLabel(), 
                 // Needed for outside: true (#11688)
-                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, label.width, label.height, point);
+                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, label.width, label.height, point), renderer = this.renderer;
                 let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
-                // Set the renderer size dynamically to prevent document size to change
-                if (this.outside) {
+                // Set the renderer size dynamically to prevent document size to change.
+                // Renderer only exists when tooltip is outside.
+                if (renderer && container) {
                     // Corrects positions, occurs with tooltip positioner (#16944)
                     if (options.positioner) {
                         pos.x += left - distance;
                         pos.y += top - distance;
                     }
-                    pad = (options.borderWidth || 0) + 2 * distance;
-                    this.renderer.setSize(label.width + pad, label.height + pad, false);
+                    // Pad it by the border width and distance. Add 2 to make room for
+                    // the default shadow (#19314).
+                    pad = (options.borderWidth || 0) + 2 * distance + 2;
+                    renderer.setSize(label.width + pad, label.height + pad, false);
                     // Anchor and tooltip container need scaling if chart container has
                     // scale transform/css zoom. #11329.
                     if (scaleX !== 1 || scaleY !== 1) {
-                        css(this.container, {
+                        css(container, {
                             transform: `scale(${scaleX}, ${scaleY})`
                         });
                         anchorX *= scaleX;
@@ -24365,8 +24408,8 @@
                     anchorX += left - pos.x;
                     anchorY += top - pos.y;
                 }
-                // do the move
-                this.move(Math.round(pos.x), Math.round(pos.y || 0), // can be undefined (#3977)
+                // Do the move
+                this.move(Math.round(pos.x), Math.round(pos.y || 0), // Can be undefined (#3977)
                 anchorX, anchorY);
             }
         }
@@ -24495,7 +24538,7 @@
         * @type {number}
         */
         /**
-         * @typedef {"callout"|"circle"|"square"} Highcharts.TooltipShapeValue
+         * @typedef {"callout"|"circle"|"rect"} Highcharts.TooltipShapeValue
          */
         ''; // keeps doclets above in JS file
 
@@ -24707,8 +24750,6 @@
                 if (pointValKey) {
                     point.y = Point.prototype.getNestedProperty.call(point, pointValKey);
                 }
-                point.isNull = this.isValid && !this.isValid();
-                point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
                 // The point is initially selected by options (#5777)
                 if (point.selected) {
                     point.state = 'select';
@@ -24738,6 +24779,8 @@
                 else if (isNumber(options.x) && series.options.relativeXValue) {
                     point.x = series.autoIncrement(options.x);
                 }
+                point.isNull = this.isValid && !this.isValid();
+                point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
                 return point;
             }
             /**
@@ -24845,7 +24888,7 @@
                     defaultFunction = function (event) {
                         // Control key is for Windows, meta (= Cmd key) for Mac, Shift
                         // for Opera.
-                        if (point.select) { // #2911
+                        if (!point.destroyed && point.select) { // #2911, #19075
                             point.select(null, event.ctrlKey || event.metaKey || event.shiftKey);
                         }
                     };
@@ -24884,10 +24927,11 @@
                 let prop, i;
                 kinds = kinds || { graphic: 1, dataLabel: 1 };
                 if (kinds.graphic) {
-                    props.push('graphic');
+                    props.push('graphic', 'connector' // Used by dumbbell
+                    );
                 }
                 if (kinds.dataLabel) {
-                    props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper', 'connector');
+                    props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper');
                 }
                 i = props.length;
                 while (i--) {
@@ -24898,8 +24942,7 @@
                 }
                 [
                     'graphic',
-                    'dataLabel',
-                    'connector'
+                    'dataLabel'
                 ].forEach(function (prop) {
                     const plural = prop + 's';
                     if (kinds[prop] && point[plural]) {
@@ -25017,7 +25060,9 @@
              * @function Highcharts.Point#isValid
              */
             isValid() {
-                return this.x !== null && isNumber(this.y);
+                return ((isNumber(this.x) ||
+                    this.x instanceof Date) &&
+                    isNumber(this.y));
             }
             /**
              * Transform number or array configs into objects. Also called for object
@@ -25075,7 +25120,9 @@
                     // dataLabels that need to be considered in drawDataLabels. These
                     // can only occur in object configs.
                     if (options.dataLabels) {
-                        series._hasPointLabels = true;
+                        // Override the prototype function to always return true,
+                        // regardless of whether data labels are enabled series-wide
+                        series.hasDataLabels = () => true;
                     }
                     // Same approach as above for markers
                     if (options.marker) {
@@ -25086,8 +25133,22 @@
             }
             /**
              * Get the pixel position of the point relative to the plot area.
-             * @private
              * @function Highcharts.Point#pos
+             *
+             * @sample highcharts/point/position
+             *         Get point's position in pixels.
+             *
+             * @param {boolean} chartCoordinates
+             * If true, the returned position is relative to the full chart area.
+             * If false, it is relative to the plot area determined by the axes.
+             *
+             * @param {number|undefined} plotY
+             * A custom plot y position to be computed. Used internally for some
+             * series types that have multiple `y` positions, like area range (low
+             * and high values).
+             *
+             * @return {Array<number>|undefined}
+             * Coordinates of the point if the point exists.
              */
             pos(chartCoordinates, plotY = this.plotY) {
                 if (!this.destroyed) {
@@ -25277,11 +25338,8 @@
                                 point.graphic = graphic.destroy();
                             }
                         }
-                        if (options && options.dataLabels && point.dataLabel) {
+                        if ((options === null || options === void 0 ? void 0 : options.dataLabels) && point.dataLabel) {
                             point.dataLabel = point.dataLabel.destroy(); // #2468
-                        }
-                        if (point.connector) {
-                            point.connector = point.connector.destroy(); // #7243
                         }
                     }
                     // record changes in the parallel arrays
@@ -25526,11 +25584,11 @@
                                 if (label &&
                                     !label.hasClass('highcharts-data-label-hidden')) {
                                     label.animate({ opacity }, pointAttribsAnimation);
+                                    if (label.connector) {
+                                        label.connector.animate({ opacity }, pointAttribsAnimation);
+                                    }
                                 }
                             });
-                            if (point.connector) {
-                                point.connector.animate({ opacity }, pointAttribsAnimation);
-                            }
                         }
                         point.graphic.animate(pointAttribs, pointAttribsAnimation);
                     }
@@ -26182,7 +26240,7 @@
                 // (#877)
                 if (chart && isNumber(chart.index)) {
                     css(chart.container, { cursor: chart._cursor });
-                    chart.cancelClick = this.hasDragged > 10; // #370
+                    chart.cancelClick = +this.hasDragged > 10; // #370
                     chart.mouseIsDown = this.hasDragged = this.hasPinched = false;
                     this.pinchDown = [];
                 }
@@ -26628,6 +26686,7 @@
             onContainerMouseLeave(e) {
                 const chart = charts[pick(Pointer.hoverChartIndex, -1)];
                 e = this.normalize(e);
+                this.onContainerMouseMove(e);
                 // #4886, MS Touch end fires mouseleave but with no related target
                 if (chart &&
                     e.relatedTarget &&
@@ -26652,7 +26711,7 @@
              */
             onContainerMouseMove(e) {
                 const chart = this.chart, tooltip = chart.tooltip, pEvt = this.normalize(e);
-                this.setHoverChartIndex();
+                this.setHoverChartIndex(e);
                 if (chart.mouseIsDown === 'mousedown' || this.touchSelect(pEvt)) {
                     this.drag(pEvt);
                 }
@@ -26899,7 +26958,8 @@
                 const transformScale = inverted ? 1 / scale : scale;
                 selectionMarker[wh] = selectionWH;
                 selectionMarker[xy] = selectionXY;
-                transform[scaleKey] = scale;
+                // Invert scale if needed (#19217)
+                transform[scaleKey] = scale * (inverted && !horiz ? -1 : 1);
                 transform['translate' + XY] = (transformScale * plotLeftTop) +
                     (touch0Now - (transformScale * touch0Start));
             }
@@ -27119,7 +27179,7 @@
                 const chart = this.chart;
                 // Scale each series
                 chart.series.forEach(function (series) {
-                    const seriesAttribs = attribs || series.getPlotBox(); // #1701
+                    const seriesAttribs = attribs || series.getPlotBox('series'); // #1701 and #19217
                     if (series.group &&
                         ((series.xAxis && series.xAxis.zoomEnabled) ||
                             chart.mapView)) {
@@ -27177,12 +27237,12 @@
              * @private
              * @function Highcharts.Pointer#setHoverChartIndex
              */
-            setHoverChartIndex() {
+            setHoverChartIndex(e) {
                 const chart = this.chart;
                 const hoverChart = H.charts[pick(Pointer.hoverChartIndex, -1)];
                 if (hoverChart &&
                     hoverChart !== chart) {
-                    hoverChart.pointer.onContainerMouseLeave({ relatedTarget: chart.container });
+                    hoverChart.pointer.onContainerMouseLeave(e || { relatedTarget: chart.container });
                 }
                 if (!hoverChart ||
                     !hoverChart.mouseIsDown) {
@@ -27554,19 +27614,19 @@
                 if (options.enabled) {
                     // Render it
                     this.render();
-                    // move checkboxes
+                    // Move checkboxes
                     addEvent(this.chart, 'endResize', function () {
                         this.legend.positionCheckboxes();
                     });
-                    // On Legend.init and Legend.update, make sure that proximate layout
-                    // events are either added or removed (#18362).
-                    addEvent(this.chart, 'render', () => {
-                        if (this.proximate) {
-                            this.proximatePositions();
-                            this.positionItems();
-                        }
-                    });
                 }
+                // On Legend.init and Legend.update, make sure that proximate layout
+                // events are either added or removed (#18362).
+                addEvent(this.chart, 'render', () => {
+                    if (this.options.enabled && this.proximate) {
+                        this.proximatePositions();
+                        this.positionItems();
+                    }
+                });
             }
             /**
              * @private
@@ -27624,7 +27684,7 @@
                 if (pick(redraw, true)) {
                     chart.redraw();
                 }
-                fireEvent(this, 'afterUpdate');
+                fireEvent(this, 'afterUpdate', { redraw });
             }
             /**
              * Set the colors for the legend item.
@@ -27850,9 +27910,9 @@
             renderItem(item) {
                 const legend = this, legendItem = item.legendItem = item.legendItem || {}, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
                     item.series :
-                    item, seriesOptions = series.options, showCheckbox = (legend.createCheckboxForItem) &&
+                    item, seriesOptions = series.options, showCheckbox = (!!legend.createCheckboxForItem &&
                     seriesOptions &&
-                    seriesOptions.showCheckbox, useHTML = options.useHTML, itemClassName = item.options.className;
+                    seriesOptions.showCheckbox), useHTML = options.useHTML, itemClassName = item.options.className;
                 let label = legendItem.label, 
                 // full width minus text width
                 itemExtraWidth = symbolWidth + symbolPadding +
@@ -28790,7 +28850,7 @@
              * The legend object.
              */
             function lineMarker(legend, item) {
-                const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
+                const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
                     Math.round(legend.fontMetrics.b * 0.3);
                 let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
                 // Draw the line
@@ -28827,7 +28887,7 @@
                     // Do not allow the marker to be larger than the symbolHeight
                     let radius = Math.min(pick(markerOptions.radius, generalRadius), generalRadius);
                     // Restrict symbol markers size
-                    if (this.symbol.indexOf('url') === 0) {
+                    if (symbol.indexOf('url') === 0) {
                         markerOptions = merge(markerOptions, {
                             width: symbolHeight,
                             height: symbolHeight
@@ -28835,7 +28895,7 @@
                         radius = 0;
                     }
                     legendItem.symbol = legendSymbol = renderer
-                        .symbol(this.symbol, (symbolWidth / 2) - radius, verticalCenter - radius, 2 * radius, 2 * radius, extend({ context: 'legend' }, markerOptions))
+                        .symbol(symbol, (symbolWidth / 2) - radius, verticalCenter - radius, 2 * radius, 2 * radius, extend({ context: 'legend' }, markerOptions))
                         .addClass('highcharts-point')
                         .add(legendItemGroup);
                     legendSymbol.isMarker = true;
@@ -29054,6 +29114,7 @@
              * chart's legend and tooltip.
              *
              * @sample {highcharts} highcharts/css/point-series-classname
+             *         Series and point class name
              *
              * @type      {string}
              * @since     5.0.0
@@ -29280,6 +29341,20 @@
              * @since     4.1.6
              * @product   highcharts highstock gantt
              * @apioption plotOptions.series.getExtremesFromAll
+             */
+            /**
+             * Highlight only the hovered point and fade the remaining points.
+             *
+             * Scatter-type series require enabling the 'inactive' marker state and
+             * adjusting opacity. Note that this approach could affect performance
+             * with large datasets.
+             *
+             * @sample {highcharts} highcharts/plotoptions/series-inactiveotherpoints-enabled/
+             *         Chart with inactiveOtherPoints option enabled.
+             *
+             * @type      {boolean}
+             * @default   false
+             * @apioption plotOptions.series.inactiveOtherPoints
              */
             /**
              * An array specifying which option maps to which key in the data point
@@ -32417,30 +32492,28 @@
              * @private
              * @function Highcharts.Series#cropData
              */
-            cropData(xData, yData, min, max, cropShoulder) {
+            cropData(xData, yData, min, max) {
                 const dataLength = xData.length;
-                let i, j, cropStart = 0, cropEnd = dataLength;
-                // line-type series need one point outside
-                cropShoulder = pick(cropShoulder, this.cropShoulder);
-                // iterate up to find slice start
+                let i, j, start = 0, end = dataLength;
+                // Iterate up to find slice start
                 for (i = 0; i < dataLength; i++) {
                     if (xData[i] >= min) {
-                        cropStart = Math.max(0, i - cropShoulder);
+                        start = Math.max(0, i - 1);
                         break;
                     }
                 }
-                // proceed to find slice end
+                // Proceed to find slice end
                 for (j = i; j < dataLength; j++) {
                     if (xData[j] > max) {
-                        cropEnd = j + cropShoulder;
+                        end = j + 1;
                         break;
                     }
                 }
                 return {
-                    xData: xData.slice(cropStart, cropEnd),
-                    yData: yData.slice(cropStart, cropEnd),
-                    start: cropStart,
-                    end: cropEnd
+                    xData: xData.slice(start, end),
+                    yData: yData.slice(start, end),
+                    start,
+                    end
                 };
             }
             /**
@@ -32582,8 +32655,10 @@
                 const xAxis = this.xAxis, yAxis = this.yAxis, xData = this.processedXData || this.xData, activeYData = [], 
                 // Handle X outside the viewed area. This does not work with
                 // non-sorted data like scatter (#7639).
-                shoulder = this.requireSorting ? this.cropShoulder : 0, positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
+                shoulder = this.requireSorting && !this.is('column') ?
+                    1 : 0, 
                 // #2117, need to compensate for log X axis
+                positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
                 let xExtremes, validValue, withinRange, x, y, i, j, xMin = 0, xMax = 0, activeCounter = 0;
                 yData = yData || this.stackedYData || this.processedYData || [];
                 const yDataLength = yData.length;
@@ -32597,8 +32672,9 @@
                     y = yData[i];
                     // For points within the visible range, including the first
                     // point outside the visible range (#7061), consider y extremes.
-                    validValue = ((isNumber(y) || isArray(y)) &&
-                        ((y.length || y > 0) || !positiveValuesOnly));
+                    validValue = ((isNumber(y) ||
+                        isArray(y)) && ((isNumber(y) ? y > 0 : y.length) ||
+                        !positiveValuesOnly));
                     withinRange = (forceExtremesFromAll ||
                         this.getExtremesFromAll ||
                         this.options.getExtremesFromAll ||
@@ -32719,6 +32795,12 @@
                      * to the X axis position if the series has one, otherwise relative
                      * to the plot area. Depending on the series type this value might
                      * not be defined.
+                     *
+                     * In an inverted chart the x-axis is going from the bottom to the
+                     * top so the `plotX` value is the number of pixels from the bottom
+                     * of the axis.
+                     *
+                     * @see Highcharts.Point#pos
                      * @name Highcharts.Point#plotX
                      * @type {number|undefined}
                      */
@@ -32781,6 +32863,12 @@
                      * to the Y axis position if the series has one, otherwise relative
                      * to the plot area. Depending on the series type this value might
                      * not be defined.
+                     *
+                     * In an inverted chart the y-axis is going from right to left
+                     * so the `plotY` value is the number of pixels from the right
+                     * of the `yAxis`.
+                     *
+                     * @see Highcharts.Point#pos
                      * @name Highcharts.Point#plotY
                      * @type {number|undefined}
                      */
@@ -33642,32 +33730,29 @@
              * @function Highcharts.Series#searchKDTree
              */
             searchKDTree(point, compareX, e) {
-                const series = this, kdX = this.kdAxisArray[0], kdY = this.kdAxisArray[1], kdComparer = compareX ? 'distX' : 'dist', kdDimensions = series.options.findNearestPointBy
-                    .indexOf('y') > -1 ? 2 : 1;
+                const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
+                    .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble;
                 /**
                  * Set the one and two dimensional distance on the point object.
                  * @private
                  */
                 function setDistance(p1, p2) {
-                    const x = (defined(p1[kdX]) &&
-                        defined(p2[kdX])) ?
-                        Math.pow(p1[kdX] - p2[kdX], 2) :
-                        null, y = (defined(p1[kdY]) &&
-                        defined(p2[kdY])) ?
-                        Math.pow(p1[kdY] - p2[kdY], 2) :
-                        null, r = (x || 0) + (y || 0);
-                    p2.dist = defined(r) ? Math.sqrt(r) : Number.MAX_VALUE;
-                    p2.distX = defined(x) ? Math.sqrt(x) : Number.MAX_VALUE;
+                    var _a;
+                    const p1kdX = p1[kdX], p2kdX = p2[kdX], x = (defined(p1kdX) && defined(p2kdX)) ? p1kdX - p2kdX : null, p1kdY = p1[kdY], p2kdY = p2[kdY], y = (defined(p1kdY) && defined(p2kdY)) ? p1kdY - p2kdY : 0, radius = useRadius ? (((_a = p2.marker) === null || _a === void 0 ? void 0 : _a.radius) || 0) : 0;
+                    p2.dist = Math.sqrt(((x && x * x) || 0) + y * y) - radius;
+                    p2.distX = defined(x) ? (Math.abs(x) - radius) : Number.MAX_VALUE;
                 }
                 /**
                  * @private
                  */
                 function _search(search, tree, depth, dimensions) {
+                    var _a;
                     const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
                     let nPoint1, nPoint2, ret = point;
                     setDistance(search, point);
                     // Pick side based on distance to splitting point
-                    const tdist = search[axis] - point[axis], sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
+                    const tdist = (search[axis] || 0) - (point[axis] || 0) +
+                        (useRadius ? (((_a = point.marker) === null || _a === void 0 ? void 0 : _a.radius) || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
                     // End of tree
                     if (tree[sideA]) {
                         nPoint1 = _search(search, tree[sideA], depth + 1, dimensions);
@@ -33892,7 +33977,7 @@
                 }
                 // Shift the first point off the parallel arrays
                 if (shift) {
-                    if (data[0] && (data[0].remove)) {
+                    if (data[0] && !!data[0].remove) {
                         data[0].remove(false);
                     }
                     else {
@@ -34039,6 +34124,8 @@
              * @emits Highcharts.Series#event:afterUpdate
              */
             update(options, redraw) {
+                var _a,
+                    _b;
                 options = diffObjects(options, this.userOptions);
                 fireEvent(this, 'update', { options: options });
                 const series = this, chart = series.chart, 
@@ -34049,6 +34136,12 @@
                     'markerGroup',
                     'dataLabelsGroup',
                     'transformGroup'
+                ], optionsToCheck = [
+                    'dataGrouping',
+                    'pointStart',
+                    'pointInterval',
+                    'pointIntervalUnit',
+                    'keys'
                 ], 
                 // Animation must be enabled when calling update before the initial
                 // animation has first run. This happens when calling update
@@ -34077,15 +34170,13 @@
                     options.joinBy ||
                     options.mapData || // #11636
                     // Changes to data grouping requires new points in new group
-                    series.hasOptionChanged('dataGrouping') ||
-                    series.hasOptionChanged('pointStart') ||
-                    series.hasOptionChanged('pointInterval') ||
-                    series.hasOptionChanged('pointIntervalUnit') ||
-                    series.hasOptionChanged('keys'));
+                    optionsToCheck.some((option) => series.hasOptionChanged(option)));
                 newType = newType || initialType;
                 if (keepPoints) {
-                    preserve.push('data', 'isDirtyData', 'points', 'processedData', // #17057
-                    'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
+                    preserve.push('data', 'isDirtyData', 
+                    // GeoHeatMap interpolation
+                    'isDirtyCanvas', 'points', 'processedData', // #17057
+                    'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', 'hasDataLabels', 'clips', // #15420
                     // Networkgraph (#14397)
                     'nodes', 'layout', 
                     // Treemap
@@ -34115,11 +34206,9 @@
                     index: typeof oldOptions.index === 'undefined' ?
                         series.index : oldOptions.index,
                     pointStart: pick(
-                    // when updating from blank (#7933)
-                    (plotOptions &&
-                        plotOptions.series &&
-                        plotOptions.series.pointStart), oldOptions.pointStart, 
-                    // when updating after addPoint
+                    // When updating from blank (#7933)
+                    (_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.pointStart, oldOptions.pointStart, 
+                    // When updating after addPoint
                     series.xData[0])
                 }, (!keepPoints && { data: series.options.data }), options);
                 // Merge does not merge arrays, but replaces them. Since points were
@@ -34182,19 +34271,19 @@
                         kinds.graphic = 1;
                         kinds.dataLabel = 1;
                     }
-                    else if (!series._hasPointLabels) {
-                        const { marker, dataLabels } = seriesOptions, oldMarker = oldOptions.marker || {};
+                    else {
+                        const { marker } = seriesOptions, oldMarker = oldOptions.marker || {};
                         // If the  marker got disabled or changed its symbol, width or
                         // height - destroy
-                        if (marker && (marker.enabled === false ||
-                            oldMarker.symbol !== marker.symbol || // #10870, #15946
-                            oldMarker.height !== marker.height || // #16274
-                            oldMarker.width !== marker.width // #16274
-                        )) {
+                        if (marker &&
+                            ((oldMarker.enabled && !marker.enabled) ||
+                                oldMarker.symbol !== marker.symbol || // #10870, #15946
+                                oldMarker.height !== marker.height || // #16274
+                                oldMarker.width !== marker.width // #16274
+                            )) {
                             kinds.graphic = 1;
                         }
-                        if (dataLabels &&
-                            dataLabels.enabled === false) {
+                        if (!((_b = series.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(series))) {
                             kinds.dataLabel = 1;
                         }
                     }
@@ -34238,16 +34327,14 @@
              * @private
              */
             hasOptionChanged(optionName) {
-                const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName];
-                if (oldOption) {
+                var _a,
+                    _b;
+                const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = pick((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[this.type]) === null || _a === void 0 ? void 0 : _a[optionName], (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _b === void 0 ? void 0 : _b[optionName]);
+                // Check if `plotOptions` are defined already, #19203
+                if (oldOption && !defined(plotOptionsOption)) {
                     return option !== oldOption;
                 }
-                return option !==
-                    pick(plotOptions &&
-                        plotOptions[this.type] &&
-                        plotOptions[this.type][optionName], plotOptions &&
-                        plotOptions.series &&
-                        plotOptions.series[optionName], option);
+                return option !== pick(plotOptionsOption, option);
             }
             /**
              * Runs on mouse over the series graphical items.
@@ -34586,15 +34673,14 @@
             axisTypes: ['xAxis', 'yAxis'],
             coll: 'series',
             colorCounter: 0,
-            cropShoulder: 1,
             directTouch: false,
             isCartesian: true,
             kdAxisArray: ['clientX', 'plotY'],
-            // each point's x and y values are stored in this.xData and this.yData:
+            // Each point's x and y values are stored in this.xData and this.yData:
             parallelArrays: ['x', 'y'],
             pointClass: Point,
             requireSorting: true,
-            // requires the data to be sorted:
+            // Requires the data to be sorted:
             sorted: true
         });
         /* *
@@ -35501,7 +35587,7 @@
                             redrawLegend = true;
                         }
                         else if (legendUserOptions &&
-                            (legendUserOptions.labelFormatter ||
+                            (!!legendUserOptions.labelFormatter ||
                                 legendUserOptions.labelFormat)) {
                             redrawLegend = true; // #2165
                         }
@@ -36162,13 +36248,12 @@
              *        internally as a response to window resize.
              */
             reflow(e) {
-                const chart = this, optionsChart = chart.options.chart, hasUserSize = (defined(optionsChart.width) &&
-                    defined(optionsChart.height)), oldBox = chart.containerBox, containerBox = chart.getContainerBox();
+                const chart = this, oldBox = chart.containerBox, containerBox = chart.getContainerBox();
                 delete chart.pointer.chartPosition;
                 // Width and height checks for display:none. Target is doc in Opera
                 // and win in Firefox, Chrome and IE9.
-                if (!hasUserSize &&
-                    !chart.isPrinting &&
+                if (!chart.isPrinting &&
+                    !chart.isResizing &&
                     oldBox &&
                     // When fired by resize observer inside hidden container
                     containerBox.width) {
@@ -36284,10 +36369,11 @@
                 chart.oldChartHeight = null;
                 fireEvent(chart, 'resize');
                 // Fire endResize and set isResizing back. If animation is disabled,
-                // fire without delay
-                syncTimeout(function () {
+                // fire without delay, but in a new thread to avoid triggering the
+                // resize observer (#19027).
+                setTimeout(() => {
                     if (chart) {
-                        fireEvent(chart, 'endResize', null, function () {
+                        fireEvent(chart, 'endResize', void 0, () => {
                             chart.isResizing -= 1;
                         });
                     }
@@ -37487,14 +37573,20 @@
                     });
                     pointer.initiated = false; // #6804
                 }
-                else { // else, zoom in on all axes
+                else { // Else, zoom in on all axes
                     event.xAxis.concat(event.yAxis).forEach(function (axisData) {
-                        const axis = axisData.axis, isXAxis = axis.isXAxis;
-                        // don't zoom more than minRange
+                        const axis = axisData.axis, isXAxis = axis.isXAxis, { hasPinched, mouseDownX, mouseDownY } = pointer;
+                        // Don't zoom more than minRange
                         if (pointer[isXAxis ? 'zoomX' : 'zoomY'] &&
-                            (defined(pointer.mouseDownX) &&
-                                defined(pointer.mouseDownY) &&
-                                chart.isInsidePlot(pointer.mouseDownX - chart.plotLeft, pointer.mouseDownY - chart.plotTop, { axis })) || !defined(chart.inverted ? pointer.mouseDownX : pointer.mouseDownY)) {
+                            (defined(mouseDownX) &&
+                                defined(mouseDownY) &&
+                                chart.isInsidePlot(mouseDownX - chart.plotLeft, mouseDownY - chart.plotTop, {
+                                    axis,
+                                    // Ignore touch positions if pinched on mobile
+                                    // #18062
+                                    ignoreX: hasPinched,
+                                    ignoreY: hasPinched
+                                })) || !defined(chart.inverted ? mouseDownX : mouseDownY)) {
                             hasZoomed = axis.zoom(axisData.min, axisData.max);
                             if (axis.displayBtn) {
                                 displayButton = true;
@@ -38981,7 +39073,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defined, merge } = U;
+        const { defined, merge, isObject } = U;
         /* *
          *
          *  Class
@@ -39096,7 +39188,12 @@
                         graph[verb](attribs)
                             // Add shadow to normal series (0) or to first
                             // zone (1) #3932
-                            .shadow((i < 2) && options.shadow);
+                            .shadow((i < 2) &&
+                            options.shadow &&
+                            // If shadow is defined, call function with
+                            // `filterUnits: 'userSpaceOnUse'` to avoid known
+                            // SVG filter bug (#19093)
+                            merge({ filterUnits: 'userSpaceOnUse' }, isObject(options.shadow) ? options.shadow : {}));
                     }
                     // Helpers for animation
                     if (graph) {
@@ -39263,7 +39360,7 @@
          * A line series displays information as a series of data points connected by
          * straight line segments.
          *
-         * @sample {highcharts} highcharts/demo/line-basic/
+         * @sample {highcharts} highcharts/demo/line-chart/
          *         Line chart
          * @sample {highstock} stock/demo/basic-line/
          *         Line chart
@@ -39365,6 +39462,7 @@
          * chart's legend and tooltip.
          *
          * @sample {highcharts} highcharts/css/point-series-classname
+         *         Series and point class name
          *
          * @type      {string}
          * @since     5.0.0
@@ -39422,6 +39520,7 @@
          * @sample highcharts/point/datalabels/
          *         Show a label for the last value
          *
+         * @type      {*|Array<*>}
          * @declare   Highcharts.DataLabelsOptions
          * @extends   plotOptions.line.dataLabels
          * @product   highcharts highstock gantt
@@ -40174,56 +40273,70 @@
                     // record for drawing in next point
                     point.rightContX = rightContX;
                     point.rightContY = rightContY;
+                    // Visualize control points for debugging
+                    /*
+                    if (leftContX) {
+                        this.chart.renderer
+                            .circle(
+                                leftContX + this.chart.plotLeft,
+                                leftContY + this.chart.plotTop,
+                                2
+                            )
+                            .attr({
+                                stroke: 'red',
+                                'stroke-width': 2,
+                                fill: 'none',
+                                zIndex: 9
+                            })
+                            .add();
+                        this.chart.renderer
+                            .path([['M', leftContX + this.chart.plotLeft,
+                                leftContY + this.chart.plotTop
+                            ], ['L', plotX + this.chart.plotLeft,
+                                plotY + this.chart.plotTop
+                            ]])
+                            .attr({
+                                stroke: 'red',
+                                'stroke-width': 2,
+                                zIndex: 9
+                            })
+                            .add();
+                    }
+                    if (rightContX) {
+                        this.chart.renderer
+                            .circle(
+                                rightContX + this.chart.plotLeft,
+                                rightContY + this.chart.plotTop,
+                                2
+                            )
+                            .attr({
+                                stroke: 'green',
+                                'stroke-width': 2,
+                                fill: 'none',
+                                zIndex: 9
+                            })
+                            .add();
+                        this.chart.renderer
+                            .path([[
+                                'M', rightContX + this.chart.plotLeft,
+                                rightContY + this.chart.plotTop
+                            ], [
+                                'L', plotX + this.chart.plotLeft,
+                                plotY + this.chart.plotTop
+                            ]])
+                            .attr({
+                                stroke: 'green',
+                                'stroke-width': 2,
+                                zIndex: 9
+                            })
+                            .add();
+                    }
+                    // */
+                    point.controlPoints = {
+                        low: [leftContX, leftContY],
+                        high: [rightContX, rightContY]
+                    };
                 }
-                // Visualize control points for debugging
-                /*
-                if (leftContX) {
-                    this.chart.renderer.circle(
-                            leftContX + this.chart.plotLeft,
-                            leftContY + this.chart.plotTop,
-                            2
-                        )
-                        .attr({
-                            stroke: 'red',
-                            'stroke-width': 2,
-                            fill: 'none',
-                            zIndex: 9
-                        })
-                        .add();
-                    this.chart.renderer.path(['M', leftContX + this.chart.plotLeft,
-                        leftContY + this.chart.plotTop,
-                        'L', plotX + this.chart.plotLeft, plotY + this.chart.plotTop])
-                        .attr({
-                            stroke: 'red',
-                            'stroke-width': 2,
-                            zIndex: 9
-                        })
-                        .add();
-                }
-                if (rightContX) {
-                    this.chart.renderer.circle(
-                            rightContX + this.chart.plotLeft,
-                            rightContY + this.chart.plotTop,
-                            2
-                        )
-                        .attr({
-                            stroke: 'green',
-                            'stroke-width': 2,
-                            fill: 'none',
-                            zIndex: 9
-                        })
-                        .add();
-                    this.chart.renderer.path(['M', rightContX + this.chart.plotLeft,
-                        rightContY + this.chart.plotTop,
-                        'L', plotX + this.chart.plotLeft, plotY + this.chart.plotTop])
-                        .attr({
-                            stroke: 'green',
-                            'stroke-width': 2,
-                            zIndex: 9
-                        })
-                        .add();
-                }
-                // */
                 const ret = [
                     'C',
                     pick(lastPoint.rightContX, lastPoint.plotX, 0),
@@ -41630,12 +41743,11 @@
         }
         ColumnSeries.defaultOptions = merge(Series.defaultOptions, ColumnSeriesDefaults);
         extend(ColumnSeries.prototype, {
-            cropShoulder: 0,
             // When tooltip is not shared, this series (and derivatives) requires
             // direct touch/hover. KD-tree does not apply.
             directTouch: true,
             getSymbol: noop,
-            // use separate negative stacks, unlike area stacks where a negative
+            // Use separate negative stacks, unlike area stacks where a negative
             // point is substracted from previous (#1910)
             negStacks: true,
             trackerGroups: ['group', 'dataLabelsGroup']
@@ -41681,7 +41793,7 @@
          * */
         const { getDeferredAnimation } = A;
         const { format } = F;
-        const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, splat } = U;
+        const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
         /* *
          *
          *  Composition
@@ -41707,6 +41819,15 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
+            /**
+             * Check if this series has data labels, either a series-level setting, or
+             * individual. In case of individual point labels, this method is overridden
+             * to always return true.
+             * @private
+             */
+            function hasDataLabels() {
+                return splat(this.options.dataLabels || {}).some((o) => o === null || o === void 0 ? void 0 : o.enabled);
+            }
             /**
              * Align each individual data label.
              * @private
@@ -41889,6 +42010,7 @@
                     seriesProto.drawDataLabels = drawDataLabels;
                     seriesProto.justifyDataLabel = justifyDataLabel;
                     seriesProto.setDataLabelStartPos = setDataLabelStartPos;
+                    seriesProto.hasDataLabels = hasDataLabels;
                 }
             }
             DataLabel.compose = compose;
@@ -41928,43 +42050,42 @@
              */
             function drawDataLabels(points = this.points) {
                 var _a,
-                    _b;
+                    _b,
+                    _c;
                 const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
                     (isString(backgroundColor) && backgroundColor) ||
                     "#000000" /* Palette.neutralColor100 */);
                 let seriesDlOptions = seriesOptions.dataLabels, pointOptions, dataLabelsGroup;
-                const firstDLOptions = splat(seriesDlOptions)[0], dataLabelAnim = firstDLOptions.animation, animationConfig = firstDLOptions.defer ?
-                    getDeferredAnimation(chart, dataLabelAnim, series) :
-                    { defer: 0, duration: 0 };
                 // Merge in plotOptions.dataLabels for series
                 seriesDlOptions = mergeArrays(mergeArrays((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.dataLabels, (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[series.type]) === null || _b === void 0 ? void 0 : _b.dataLabels), seriesDlOptions);
+                // Resolve the animation
+                const { animation, defer } = splat(seriesDlOptions)[0], animationConfig = defer ?
+                    getDeferredAnimation(chart, animation, series) :
+                    { defer: 0, duration: 0 };
                 fireEvent(this, 'drawDataLabels');
-                if (isArray(seriesDlOptions) ||
-                    seriesDlOptions.enabled ||
-                    series._hasPointLabels) {
+                if ((_c = series.hasDataLabels) === null || _c === void 0 ? void 0 : _c.call(series)) {
                     dataLabelsGroup = this.initDataLabels(animationConfig);
                     // Make the labels for each point
                     points.forEach((point) => {
-                        var _a;
+                        var _a,
+                            _b;
                         const dataLabels = point.dataLabels || [];
                         // Merge in series options for the point.
                         // @note dataLabelAttribs (like pointAttribs) would eradicate
                         // the need for dlOptions, and simplify the section below.
                         pointOptions = splat(mergeArrays(seriesDlOptions, 
-                        // dlOptions is used in treemaps
+                        // The dlOptions prop is used in treemaps
                         point.dlOptions || ((_a = point.options) === null || _a === void 0 ? void 0 : _a.dataLabels)));
                         // Handle each individual data label for this point
                         pointOptions.forEach((labelOptions, i) => {
                             var _a;
                             // Options for one datalabel
                             const labelEnabled = (labelOptions.enabled &&
+                                point.visible &&
                                 // #2282, #4641, #7112, #10049
                                 (!point.isNull || point.dataLabelOnNull) &&
-                                applyFilter(point, labelOptions)), connector = point.connectors ?
-                                point.connectors[i] :
-                                point.connector, style = labelOptions.style || {};
+                                applyFilter(point, labelOptions)), style = labelOptions.style || {}, labelDistance = labelOptions.distance;
                             let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel;
-                            const labelDistance = pick(labelOptions.distance, point.labelDistance);
                             if (labelEnabled) {
                                 // Create individual options structure that can be
                                 // extended without affecting others
@@ -41983,7 +42104,7 @@
                                         point.contrastColor = renderer.getContrast((point.color || series.color));
                                         style.color = ((!defined(labelDistance) &&
                                             labelOptions.inside) ||
-                                            (labelDistance || 0) < 0 ||
+                                            pInt(labelDistance || 0) < 0 ||
                                             seriesOptions.stacking) ?
                                             point.contrastColor :
                                             contrastColor;
@@ -42033,19 +42154,6 @@
                                     dataLabel.rotation !== labelOptions.rotation))) {
                                 dataLabel = void 0;
                                 isNew = true;
-                                if (connector && point.connector) {
-                                    point.connector = point.connector.destroy();
-                                    if (point.connectors) {
-                                        // Remove point.connectors if this was the last
-                                        // one
-                                        if (point.connectors.length === 1) {
-                                            delete point.connectors;
-                                        }
-                                        else {
-                                            delete point.connectors[i];
-                                        }
-                                    }
-                                }
                             }
                             // Individual labels are disabled if the are explicitly
                             // disabled in the point options, or if they fall outside
@@ -42109,12 +42217,14 @@
                         // Destroy and remove the inactive ones
                         let j = dataLabels.length;
                         while (j--) {
-                            if (dataLabels[j].isActive) {
-                                dataLabels[j].isActive = false;
+                            // The item can be undefined if a disabled data label is
+                            // succeeded by an enabled one (#19457)
+                            if (!dataLabels[j] || !dataLabels[j].isActive) {
+                                (_b = dataLabels[j]) === null || _b === void 0 ? void 0 : _b.destroy();
+                                dataLabels.splice(j, 1);
                             }
                             else {
-                                dataLabels[j].destroy();
-                                dataLabels.splice(j, 1);
+                                dataLabels[j].isActive = false;
                             }
                         }
                         // Write back
@@ -43011,7 +43121,7 @@
          *
          * */
         const { setAnimation } = A;
-        const { addEvent, defined, extend, isNumber, pick, relativeLength } = U;
+        const { addEvent, defined, extend, isNumber, isString, pick, relativeLength } = U;
         /* *
          *
          *  Class
@@ -43025,7 +43135,7 @@
                  *
                  * */
                 super(...arguments);
-                this.labelDistance = void 0;
+                this.half = 0;
                 this.options = void 0;
                 this.series = void 0;
             }
@@ -43040,25 +43150,15 @@
              * data label and the pie slice.
              * @private
              */
-            getConnectorPath() {
-                const labelPosition = this.labelPosition, options = this.series.options.dataLabels, predefinedShapes = this.connectorShapes;
-                let connectorShape = options.connectorShape;
-                // find out whether to use the predefined shape
-                if (predefinedShapes[connectorShape]) {
-                    connectorShape = predefinedShapes[connectorShape];
-                }
-                return connectorShape.call(this, {
-                    // pass simplified label position object for user's convenience
-                    x: labelPosition.computed.x,
-                    y: labelPosition.computed.y,
-                    alignment: labelPosition.alignment
-                }, labelPosition.connectorPosition, options);
+            getConnectorPath(dataLabel) {
+                const labelPosition = dataLabel.dataLabelPosition, options = (dataLabel.options || {}), connectorShape = options.connectorShape, shapeFunc = (this.connectorShapes[connectorShape] || connectorShape);
+                return labelPosition && shapeFunc.call(this, Object.assign(Object.assign({}, labelPosition.computed), { alignment: labelPosition.alignment }), labelPosition.connectorPosition, options) || [];
             }
             /**
              * @private
              */
             getTranslate() {
-                return this.sliced ? this.slicedTranslation : {
+                return this.sliced && this.slicedTranslation || {
                     translateX: 0,
                     translateY: 0
                 };
@@ -43221,7 +43321,7 @@
                     ];
                 },
                 crookedLine: function (labelPosition, connectorPosition, options) {
-                    const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, plotWidth = series.chart.plotWidth, plotLeft = series.chart.plotLeft, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
+                    const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
                     let crookX = breakAt.x;
                     if (options.crookDistance) {
                         const crookDistance = relativeLength(// % to fraction
@@ -43278,7 +43378,7 @@
          * A pie chart is a circular graphic which is divided into slices to
          * illustrate numerical proportion.
          *
-         * @sample highcharts/demo/pie-basic/
+         * @sample highcharts/demo/pie-chart/
          *         Pie chart
          *
          * @extends      plotOptions.line
@@ -43431,7 +43531,6 @@
                  * @product   highcharts highmaps
                  * @apioption plotOptions.pie.dataLabels.alignTo
                  */
-                allowOverlap: true,
                 /**
                  * The color of the line connecting the data label to the pie slice.
                  * The default color is the same as the point's color.
@@ -43649,8 +43748,8 @@
              */
             ignoreHiddenPoint: true,
             /**
-             * @ignore-option
-             *
+             * @default   true
+             * @extends   plotOptions.series.inactiveOtherPoints
              * @private
              */
             inactiveOtherPoints: true,
@@ -43948,7 +44047,7 @@
          * */
         const { getStartAndEndRadians } = CU;
         const { noop } = H;
-        const { clamp, extend, fireEvent, merge, pick, relativeLength } = U;
+        const { clamp, extend, fireEvent, merge, pick, relativeLength, splat } = U;
         /* *
          *
          *  Class
@@ -43978,7 +44077,6 @@
                  * */
                 this.center = void 0;
                 this.data = void 0;
-                this.maxLabelDistance = void 0;
                 this.options = void 0;
                 this.points = void 0;
                 /* eslint-enable valid-jsdoc */
@@ -44085,23 +44183,22 @@
                 this.updateTotals();
             }
             /**
-             * Utility for getting the x value from a given y, used for
-             * anticollision logic in data labels. Added point for using specific
-             * points' label distance.
+             * Utility for getting the x value from a given y, used for anticollision
+             * logic in data labels.
              * @private
              */
-            getX(y, left, point) {
+            getX(y, left, point, dataLabel) {
                 const center = this.center, 
                 // Variable pie has individual radius
                 radius = this.radii ?
                     this.radii[point.index] || 0 :
-                    center[2] / 2;
-                const angle = Math.asin(clamp((y - center[1]) / (radius + point.labelDistance), -1, 1));
+                    center[2] / 2, labelPosition = dataLabel.dataLabelPosition, distance = (labelPosition === null || labelPosition === void 0 ? void 0 : labelPosition.distance) || 0;
+                const angle = Math.asin(clamp((y - center[1]) / (radius + distance), -1, 1));
                 const x = center[0] +
                     (left ? -1 : 1) *
-                        (Math.cos(angle) * (radius + point.labelDistance)) +
-                    (point.labelDistance > 0 ?
-                        (left ? -1 : 1) * this.options.dataLabels.padding :
+                        (Math.cos(angle) * (radius + distance)) +
+                    (distance > 0 ?
+                        (left ? -1 : 1) * (dataLabel.padding || 0) :
                         0);
                 return x;
             }
@@ -44189,10 +44286,10 @@
                 fireEvent(this, 'translate');
                 this.generatePoints();
                 const series = this, precision = 1000, // issue #172
-                options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
-                points = series.points, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
-                let finalConnectorOffset, start, end, angle, 
-                // the x component of the radius vector for a given point
+                options = series.options, slicedOffset = options.slicedOffset, radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
+                let start, end, angle, 
+                // The x component of the radius vector for a given point
                 radiusX, radiusY, i, point, cumulative = 0;
                 // Get positions - either an integer or a percentage string must be
                 // given. If positions are passed as a parameter, we're in a
@@ -44203,14 +44300,14 @@
                 // Calculate the geometry for each point
                 for (i = 0; i < len; i++) {
                     point = points[i];
-                    // set start and end angle
+                    // Set start and end angle
                     start = startAngleRad + (cumulative * circ);
                     if (point.isValid() &&
                         (!ignoreHiddenPoint || point.visible)) {
                         cumulative += point.percentage / 100;
                     }
                     end = startAngleRad + (cumulative * circ);
-                    // set the shape
+                    // Set the shape
                     const shapeArgs = {
                         x: positions[0],
                         y: positions[1],
@@ -44221,14 +44318,6 @@
                     };
                     point.shapeType = 'arc';
                     point.shapeArgs = shapeArgs;
-                    // Used for distance calculation for specific point.
-                    point.labelDistance = pick((point.options.dataLabels &&
-                        point.options.dataLabels.distance), labelDistance);
-                    // Compute point.labelDistance if it's defined as percentage
-                    // of slice radius (#8854)
-                    point.labelDistance = relativeLength(point.labelDistance, shapeArgs.r);
-                    // Saved for later dataLabels distance calculation.
-                    series.maxLabelDistance = Math.max(series.maxLabelDistance || 0, point.labelDistance);
                     // The angle must stay within -90 and 270 (#2645)
                     angle = (end + start) / 2;
                     if (angle > 1.5 * Math.PI) {
@@ -44242,7 +44331,7 @@
                         translateX: Math.round(Math.cos(angle) * slicedOffset),
                         translateY: Math.round(Math.sin(angle) * slicedOffset)
                     };
-                    // set the anchor point for tooltips
+                    // Set the anchor point for tooltips
                     radiusX = Math.cos(angle) * positions[2] / 2;
                     radiusY = Math.sin(angle) * positions[2] / 2;
                     point.tooltipPos = [
@@ -44253,43 +44342,6 @@
                         1 :
                         0;
                     point.angle = angle;
-                    // Set the anchor point for data labels. Use point.labelDistance
-                    // instead of labelDistance // #1174
-                    // finalConnectorOffset - not override connectorOffset value.
-                    finalConnectorOffset = Math.min(connectorOffset, point.labelDistance / 5); // #1678
-                    point.labelPosition = {
-                        natural: {
-                            // initial position of the data label - it's utilized for
-                            // finding the final position for the label
-                            x: positions[0] + radiusX + Math.cos(angle) *
-                                point.labelDistance,
-                            y: positions[1] + radiusY + Math.sin(angle) *
-                                point.labelDistance
-                        },
-                        computed: {
-                        // used for generating connector path -
-                        // initialized later in drawDataLabels function
-                        // x: undefined,
-                        // y: undefined
-                        },
-                        // left - pie on the left side of the data label
-                        // right - pie on the right side of the data label
-                        // center - data label overlaps the pie
-                        alignment: point.labelDistance < 0 ?
-                            'center' : point.half ? 'right' : 'left',
-                        connectorPosition: {
-                            breakAt: {
-                                x: positions[0] + radiusX + Math.cos(angle) *
-                                    finalConnectorOffset,
-                                y: positions[1] + radiusY + Math.sin(angle) *
-                                    finalConnectorOffset
-                            },
-                            touchingSliceAt: {
-                                x: positions[0] + radiusX,
-                                y: positions[1] + radiusY
-                            }
-                        }
-                    };
                 }
                 fireEvent(series, 'afterTranslate');
             }
@@ -44358,7 +44410,7 @@
         const { noop } = H;
         const { distribute } = R;
         const { series: Series } = SeriesRegistry;
-        const { arrayMax, clamp, defined, merge, pick, relativeLength } = U;
+        const { arrayMax, clamp, defined, pick, relativeLength, splat } = U;
         /* *
          *
          *  Composition
@@ -44374,22 +44426,26 @@
             const composedMembers = [];
             const dataLabelPositioners = {
                 // Based on the value computed in Highcharts' distribute algorithm.
-                radialDistributionY: function (point) {
-                    return point.top + point.distributeBox.pos;
+                radialDistributionY: function (point, dataLabel) {
+                    var _a;
+                    return (((_a = dataLabel.dataLabelPosition) === null || _a === void 0 ? void 0 : _a.top) || 0) +
+                        point.distributeBox.pos;
                 },
-                // get the x - use the natural x position for labels near the
-                // top and bottom, to prevent the top and botton slice
-                // connectors from touching each other on either side
-                // Based on the value computed in Highcharts' distribute algorithm.
-                radialDistributionX: function (series, point, y, naturalY) {
-                    return series.getX(y < point.top + 2 || y > point.bottom - 2 ?
+                // Get the x - use the natural x position for labels near the top and
+                // bottom, to prevent the top and botton slice connectors from touching
+                // each other on either side. Based on the value computed in Highcharts'
+                // distribute algorithm.
+                radialDistributionX: function (series, point, y, naturalY, dataLabel) {
+                    const pos = dataLabel.dataLabelPosition;
+                    return series.getX(y < ((pos === null || pos === void 0 ? void 0 : pos.top) || 0) + 2 || y > ((pos === null || pos === void 0 ? void 0 : pos.bottom) || 0) - 2 ?
                         naturalY :
-                        y, point.half, point);
+                        y, point.half, point, dataLabel);
                 },
-                // dataLabels.distance determines the x position of the label
-                justify: function (point, radius, seriesCenter) {
+                // The dataLabels.distance determines the x position of the label
+                justify: function (point, dataLabel, radius, seriesCenter) {
+                    var _a;
                     return seriesCenter[0] + (point.half ? -1 : 1) *
-                        (radius + point.labelDistance);
+                        (radius + (((_a = dataLabel.dataLabelPosition) === null || _a === void 0 ? void 0 : _a.distance) || 0));
                 },
                 // Left edges of the left-half labels touch the left edge of the plot
                 // area. Right edges of the right-half labels touch the right edge of
@@ -44430,263 +44486,282 @@
                     pieProto.dataLabelPositioners = dataLabelPositioners;
                     pieProto.alignDataLabel = noop;
                     pieProto.drawDataLabels = drawDataLabels;
+                    pieProto.getDataLabelPosition = getDataLabelPosition;
                     pieProto.placeDataLabels = placeDataLabels;
                     pieProto.verifyDataLabelOverflow = verifyDataLabelOverflow;
                 }
             }
             ColumnDataLabel.compose = compose;
+            /** @private */
+            function getDataLabelPosition(point, distance) {
+                const { center, options } = this, r = center[2] / 2, angle = point.angle || 0, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
+                return {
+                    natural: {
+                        // Initial position of the data label - it's utilized for
+                        // finding the final position for the label
+                        x: x + cosAngle * distance,
+                        y: y + sinAngle * distance
+                    },
+                    computed: {
+                    // Used for generating connector path - initialized later in
+                    // drawDataLabels function x: undefined, y: undefined
+                    },
+                    // Left - pie on the left side of the data label
+                    // Right - pie on the right side of the data label
+                    // Center - data label overlaps the pie
+                    alignment: distance < 0 ? 'center' : point.half ? 'right' : 'left',
+                    connectorPosition: {
+                        breakAt: {
+                            x: x + cosAngle * finalConnectorOffset,
+                            y: y + sinAngle * finalConnectorOffset
+                        },
+                        touchingSliceAt: {
+                            x,
+                            y
+                        }
+                    },
+                    distance
+                };
+            }
             /**
              * Override the base drawDataLabels method by pie specific functionality
              * @private
              */
             function drawDataLabels() {
-                const series = this, data = series.data, chart = series.chart, options = series.options.dataLabels || {}, connectorPadding = options.connectorPadding, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
+                var _a;
+                const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
                     [],
-                    [] // left
-                ], overflow = [0, 0, 0, 0], // top, right, bottom, left
+                    [] // Left
+                ], overflow = [0, 0, 0, 0], // Top, right, bottom, left
                 dataLabelPositioners = series.dataLabelPositioners;
-                let point, connectorWidth, connector, dataLabel, dataLabelWidth, 
-                // labelPos,
-                labelPosition, labelHeight, 
-                // divide the points into right and left halves for anti collision
-                x, y, visibility, j, pointDataLabelsOptions;
-                // get out if not enabled
-                if (!series.visible ||
-                    (!options.enabled &&
-                        !series._hasPointLabels)) {
+                let connector, dataLabelWidth, labelHeight, maxLabelDistance = 0;
+                // Get out if not enabled
+                if (!series.visible || !((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) {
                     return;
                 }
                 // Reset all labels that have been shortened
-                data.forEach(function (point) {
-                    if (point.dataLabel && point.visible && point.dataLabel.shortened) {
-                        point.dataLabel
-                            .attr({
-                            width: 'auto'
-                        }).css({
-                            width: 'auto',
-                            textOverflow: 'clip'
-                        });
-                        point.dataLabel.shortened = false;
-                    }
+                points.forEach((point) => {
+                    (point.dataLabels || []).forEach((dataLabel) => {
+                        if (dataLabel.shortened) {
+                            dataLabel
+                                .attr({
+                                width: 'auto'
+                            }).css({
+                                width: 'auto',
+                                textOverflow: 'clip'
+                            });
+                            dataLabel.shortened = false;
+                        }
+                    });
                 });
-                // run parent method
+                // Run parent method
                 Series.prototype.drawDataLabels.apply(series);
-                data.forEach(function (point) {
-                    if (point.dataLabel) {
-                        if (point.visible) { // #407, #2510
-                            // Arrange points for detection collision
+                points.forEach((point) => {
+                    (point.dataLabels || []).forEach((dataLabel, i) => {
+                        var _a;
+                        const r = seriesCenter[2] / 2, dataLabelOptions = dataLabel.options, distance = relativeLength((dataLabelOptions === null || dataLabelOptions === void 0 ? void 0 : dataLabelOptions.distance) || 0, r);
+                        // Arrange points for collision detection
+                        if (i === 0) {
                             halves[point.half].push(point);
-                            // Reset positions (#4905)
-                            point.dataLabel._pos = null;
-                            // Avoid long labels squeezing the pie size too far down
-                            if (!defined(options.style.width) &&
-                                !defined(point.options.dataLabels &&
-                                    point.options.dataLabels.style &&
-                                    point.options.dataLabels.style.width)) {
-                                if (point.dataLabel.getBBox().width > maxWidth) {
-                                    point.dataLabel.css({
-                                        // Use a fraction of the maxWidth to avoid
-                                        // wrapping close to the end of the string.
-                                        width: Math.round(maxWidth * 0.7) + 'px'
-                                    });
-                                    point.dataLabel.shortened = true;
-                                }
+                        }
+                        // Avoid long labels squeezing the pie size too far down
+                        if (!defined((_a = dataLabelOptions === null || dataLabelOptions === void 0 ? void 0 : dataLabelOptions.style) === null || _a === void 0 ? void 0 : _a.width)) {
+                            if (dataLabel.getBBox().width > maxWidth) {
+                                dataLabel.css({
+                                    // Use a fraction of the maxWidth to avoid wrapping
+                                    // close to the end of the string.
+                                    width: Math.round(maxWidth * 0.7) + 'px'
+                                });
+                                dataLabel.shortened = true;
                             }
                         }
-                        else {
-                            point.dataLabel = point.dataLabel.destroy();
-                            // Workaround to make pies destroy multiple datalabels
-                            // correctly. This logic needs rewriting to support multiple
-                            // datalabels fully.
-                            if (point.dataLabels && point.dataLabels.length === 1) {
-                                delete point.dataLabels;
-                            }
-                        }
-                    }
+                        dataLabel.dataLabelPosition = this.getDataLabelPosition(point, distance);
+                        maxLabelDistance = Math.max(maxLabelDistance, distance);
+                    });
                 });
                 /* Loop over the points in each half, starting from the top and bottom
                  * of the pie to detect overlapping labels.
                  */
-                halves.forEach((points, i) => {
+                halves.forEach((points, halfIdx) => {
                     const length = points.length, positions = [];
-                    let top, bottom, naturalY, sideOverflow, size = 0, distributionLength;
+                    let top, bottom, size = 0, distributionLength;
                     if (!length) {
                         return;
                     }
                     // Sort by angle
-                    series.sortByAngle(points, i - 0.5);
+                    series.sortByAngle(points, halfIdx - 0.5);
                     // Only do anti-collision when we have dataLabels outside the pie
                     // and have connectors. (#856)
-                    if (series.maxLabelDistance > 0) {
-                        top = Math.max(0, centerY - radius - series.maxLabelDistance);
-                        bottom = Math.min(centerY + radius + series.maxLabelDistance, chart.plotHeight);
-                        points.forEach(function (point) {
-                            // check if specific points' label is outside the pie
-                            if (point.labelDistance > 0 && point.dataLabel) {
-                                // point.top depends on point.labelDistance value
-                                // Used for calculation of y value in getX method
-                                point.top = Math.max(0, centerY - radius - point.labelDistance);
-                                point.bottom = Math.min(centerY + radius + point.labelDistance, chart.plotHeight);
-                                size = point.dataLabel.getBBox().height || 21;
-                                // point.positionsIndex is needed for getting index of
-                                // parameter related to specific point inside positions
-                                // array - not every point is in positions array.
-                                point.distributeBox = {
-                                    target: point.labelPosition.natural.y -
-                                        point.top + size / 2,
-                                    size,
-                                    rank: point.y
-                                };
-                                positions.push(point.distributeBox);
-                            }
+                    if (maxLabelDistance > 0) {
+                        top = Math.max(0, centerY - radius - maxLabelDistance);
+                        bottom = Math.min(centerY + radius + maxLabelDistance, chart.plotHeight);
+                        points.forEach((point) => {
+                            // Check if specific points' label is outside the pie
+                            (point.dataLabels || []).forEach((dataLabel, i) => {
+                                var _a;
+                                const labelPosition = dataLabel.dataLabelPosition;
+                                if (labelPosition &&
+                                    labelPosition.distance > 0) {
+                                    // The point.top depends on point.labelDistance
+                                    // value. Used for calculation of y value in getX
+                                    // method
+                                    labelPosition.top = Math.max(0, centerY - radius - labelPosition.distance);
+                                    labelPosition.bottom = Math.min(centerY + radius + labelPosition.distance, chart.plotHeight);
+                                    size = dataLabel.getBBox().height || 21;
+                                    point.distributeBox = {
+                                        target: ((((_a = dataLabel.dataLabelPosition) === null || _a === void 0 ? void 0 : _a.natural.y) || 0) -
+                                            labelPosition.top +
+                                            size / 2),
+                                        size,
+                                        rank: point.y
+                                    };
+                                    positions.push(point.distributeBox);
+                                }
+                            });
                         });
                         distributionLength = bottom + size - top;
                         distribute(positions, distributionLength, distributionLength / 5);
                     }
                     // Now the used slots are sorted, fill them up sequentially
-                    for (j = 0; j < length; j++) {
-                        point = points[j];
-                        // labelPos = point.labelPos;
-                        labelPosition = point.labelPosition;
-                        dataLabel = point.dataLabel;
-                        visibility = point.visible === false ? 'hidden' : 'inherit';
-                        naturalY = labelPosition.natural.y;
-                        y = naturalY;
-                        if (positions && defined(point.distributeBox)) {
-                            if (typeof point.distributeBox.pos === 'undefined') {
-                                visibility = 'hidden';
+                    points.forEach((point) => {
+                        (point.dataLabels || []).forEach((dataLabel) => {
+                            const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = (labelPosition === null || labelPosition === void 0 ? void 0 : labelPosition.natural.y) || 0, connectorPadding = dataLabelOptions
+                                .connectorPadding || 0;
+                            let x = 0, y = naturalY, visibility = 'inherit';
+                            if (labelPosition) {
+                                if (positions &&
+                                    defined(distributeBox) &&
+                                    labelPosition.distance > 0) {
+                                    if (typeof distributeBox.pos === 'undefined') {
+                                        visibility = 'hidden';
+                                    }
+                                    else {
+                                        labelHeight = distributeBox.size;
+                                        // Find label's y position
+                                        y = dataLabelPositioners
+                                            .radialDistributionY(point, dataLabel);
+                                    }
+                                }
+                                // Find label's x position. The justify option is
+                                // undocumented in the API - preserve support for it
+                                if (dataLabelOptions.justify) {
+                                    x = dataLabelPositioners.justify(point, dataLabel, radius, seriesCenter);
+                                }
+                                else {
+                                    switch (dataLabelOptions.alignTo) {
+                                        case 'connectors':
+                                            x = dataLabelPositioners.alignToConnectors(points, halfIdx, plotWidth, plotLeft);
+                                            break;
+                                        case 'plotEdges':
+                                            x = dataLabelPositioners.alignToPlotEdges(dataLabel, halfIdx, plotWidth, plotLeft);
+                                            break;
+                                        default:
+                                            x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY, dataLabel);
+                                    }
+                                }
+                                // Record the placement and visibility
+                                labelPosition.attribs = {
+                                    visibility,
+                                    align: labelPosition.alignment
+                                };
+                                labelPosition.posAttribs = {
+                                    x: x +
+                                        (dataLabelOptions.x || 0) + // (#12985)
+                                        ({
+                                            left: connectorPadding,
+                                            right: -connectorPadding
+                                        }[labelPosition.alignment] || 0),
+                                    y: y +
+                                        (dataLabelOptions.y || 0) - // (#12985)
+                                        // Vertically center
+                                        dataLabel.getBBox().height / 2
+                                };
+                                labelPosition.computed.x = x;
+                                labelPosition.computed.y = y;
+                                // Detect overflowing data labels
+                                if (pick(dataLabelOptions.crop, true)) {
+                                    dataLabelWidth = dataLabel.getBBox().width;
+                                    let sideOverflow;
+                                    // Overflow left
+                                    if (x - dataLabelWidth < connectorPadding &&
+                                        halfIdx === 1 // Left half
+                                    ) {
+                                        sideOverflow = Math.round(dataLabelWidth - x + connectorPadding);
+                                        overflow[3] = Math.max(sideOverflow, overflow[3]);
+                                        // Overflow right
+                                    }
+                                    else if (x + dataLabelWidth >
+                                        plotWidth - connectorPadding &&
+                                        halfIdx === 0 // Right half
+                                    ) {
+                                        sideOverflow = Math.round(x +
+                                            dataLabelWidth -
+                                            plotWidth +
+                                            connectorPadding);
+                                        overflow[1] = Math.max(sideOverflow, overflow[1]);
+                                    }
+                                    // Overflow top
+                                    if (y - labelHeight / 2 < 0) {
+                                        overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
+                                        // Overflow left
+                                    }
+                                    else if (y + labelHeight / 2 > plotHeight) {
+                                        overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
+                                    }
+                                    labelPosition.sideOverflow = sideOverflow;
+                                }
                             }
-                            else {
-                                labelHeight = point.distributeBox.size;
-                                // Find label's y position
-                                y = dataLabelPositioners
-                                    .radialDistributionY(point);
-                            }
-                        }
-                        // It is needed to delete point.positionIndex for
-                        // dynamically added points etc.
-                        delete point.positionIndex; // @todo unused
-                        // Find label's x position
-                        // justify is undocumented in the API - preserve support for it
-                        if (options.justify) {
-                            x = dataLabelPositioners.justify(point, radius, seriesCenter);
-                        }
-                        else {
-                            switch (options.alignTo) {
-                                case 'connectors':
-                                    x = dataLabelPositioners.alignToConnectors(points, i, plotWidth, plotLeft);
-                                    break;
-                                case 'plotEdges':
-                                    x = dataLabelPositioners.alignToPlotEdges(dataLabel, i, plotWidth, plotLeft);
-                                    break;
-                                default:
-                                    x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY);
-                            }
-                        }
-                        // Record the placement and visibility
-                        dataLabel._attr = {
-                            visibility: visibility,
-                            align: labelPosition.alignment
-                        };
-                        pointDataLabelsOptions = point.options.dataLabels || {};
-                        dataLabel._pos = {
-                            x: (x +
-                                pick(pointDataLabelsOptions.x, options.x) + // (#12985)
-                                ({
-                                    left: connectorPadding,
-                                    right: -connectorPadding
-                                }[labelPosition.alignment] || 0)),
-                            y: (y +
-                                pick(pointDataLabelsOptions.y, options.y) - // (#12985)
-                                // Vertically center
-                                dataLabel.getBBox().height / 2)
-                        };
-                        // labelPos.x = x;
-                        // labelPos.y = y;
-                        if (labelPosition) {
-                            labelPosition.computed.x = x;
-                            labelPosition.computed.y = y;
-                        }
-                        // Detect overflowing data labels
-                        if (pick(options.crop, true)) {
-                            dataLabelWidth = dataLabel.getBBox().width;
-                            sideOverflow = null;
-                            // Overflow left
-                            if (x - dataLabelWidth < connectorPadding &&
-                                i === 1 // left half
-                            ) {
-                                sideOverflow = Math.round(dataLabelWidth - x + connectorPadding);
-                                overflow[3] = Math.max(sideOverflow, overflow[3]);
-                                // Overflow right
-                            }
-                            else if (x + dataLabelWidth > plotWidth - connectorPadding &&
-                                i === 0 // right half
-                            ) {
-                                sideOverflow = Math.round(x + dataLabelWidth - plotWidth + connectorPadding);
-                                overflow[1] = Math.max(sideOverflow, overflow[1]);
-                            }
-                            // Overflow top
-                            if (y - labelHeight / 2 < 0) {
-                                overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
-                                // Overflow left
-                            }
-                            else if (y + labelHeight / 2 > plotHeight) {
-                                overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
-                            }
-                            dataLabel.sideOverflow = sideOverflow;
-                        }
-                    } // for each point
-                }); // for each half
+                        }); // For each data label of the point
+                    }); // For each point
+                }); // For each half
                 // Do not apply the final placement and draw the connectors until we
                 // have verified that labels are not spilling over.
                 if (arrayMax(overflow) === 0 ||
                     this.verifyDataLabelOverflow(overflow)) {
                     // Place the labels in the final position
                     this.placeDataLabels();
-                    this.points.forEach(function (point) {
-                        // #8864: every connector can have individual options
-                        pointDataLabelsOptions =
-                            merge(options, point.options.dataLabels);
-                        connectorWidth =
-                            pick(pointDataLabelsOptions.connectorWidth, 1);
-                        // Draw the connector
-                        if (connectorWidth) {
-                            let isNew;
-                            connector = point.connector;
-                            dataLabel = point.dataLabel;
-                            if (dataLabel &&
-                                dataLabel._pos &&
-                                point.visible &&
-                                point.labelDistance > 0) {
-                                visibility = dataLabel._attr.visibility;
-                                isNew = !connector;
-                                if (isNew) {
-                                    point.connector = connector = chart.renderer
-                                        .path()
-                                        .addClass('highcharts-data-label-connector ' +
-                                        ' highcharts-color-' + point.colorIndex +
-                                        (point.className ?
-                                            ' ' + point.className :
-                                            ''))
-                                        .add(series.dataLabelsGroup);
+                    this.points.forEach((point) => {
+                        (point.dataLabels || []).forEach((dataLabel) => {
+                            var _a;
+                            // #8864: every connector can have individual options
+                            const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
+                            // Draw the connector
+                            if (connectorWidth) {
+                                let isNew;
+                                connector = dataLabel.connector;
+                                if (labelPosition && labelPosition.distance > 0) {
+                                    isNew = !connector;
+                                    if (!connector) {
+                                        dataLabel.connector = connector = chart.renderer
+                                            .path()
+                                            .addClass('highcharts-data-label-connector ' +
+                                            ' highcharts-color-' +
+                                            point.colorIndex +
+                                            (point.className ?
+                                                ' ' + point.className :
+                                                ''))
+                                            .add(series.dataLabelsGroup);
+                                    }
                                     if (!chart.styledMode) {
                                         connector.attr({
                                             'stroke-width': connectorWidth,
-                                            'stroke': (pointDataLabelsOptions.connectorColor ||
+                                            'stroke': (connectorColor ||
                                                 point.color ||
                                                 "#666666" /* Palette.neutralColor60 */)
                                         });
                                     }
+                                    connector[isNew ? 'attr' : 'animate']({
+                                        d: point.getConnectorPath(dataLabel)
+                                    });
+                                    connector.attr({
+                                        visibility: (_a = labelPosition.attribs) === null || _a === void 0 ? void 0 : _a.visibility
+                                    });
                                 }
-                                connector[isNew ? 'attr' : 'animate']({
-                                    d: point.getConnectorPath()
-                                });
-                                connector.attr('visibility', visibility);
+                                else if (connector) {
+                                    dataLabel.connector = connector.destroy();
+                                }
                             }
-                            else if (connector) {
-                                point.connector = connector.destroy();
-                            }
-                        }
+                        });
                     });
                 }
             }
@@ -44696,33 +44771,31 @@
              * @private
              */
             function placeDataLabels() {
-                this.points.forEach(function (point) {
-                    let dataLabel = point.dataLabel, _pos;
-                    if (dataLabel && point.visible) {
-                        _pos = dataLabel._pos;
-                        if (_pos) {
+                this.points.forEach((point) => {
+                    (point.dataLabels || []).forEach((dataLabel) => {
+                        var _a;
+                        const labelPosition = dataLabel.dataLabelPosition;
+                        if (labelPosition) {
                             // Shorten data labels with ellipsis if they still overflow
                             // after the pie has reached minSize (#223).
-                            if (dataLabel.sideOverflow) {
-                                dataLabel._attr.width =
-                                    Math.max(dataLabel.getBBox().width -
-                                        dataLabel.sideOverflow, 0);
+                            if (labelPosition.sideOverflow) {
                                 dataLabel.css({
-                                    width: dataLabel._attr.width + 'px',
-                                    textOverflow: ((this.options.dataLabels.style || {})
+                                    width: (Math.max(dataLabel.getBBox().width -
+                                        labelPosition.sideOverflow, 0)) + 'px',
+                                    textOverflow: ((((_a = dataLabel.options) === null || _a === void 0 ? void 0 : _a.style) || {})
                                         .textOverflow ||
                                         'ellipsis')
                                 });
                                 dataLabel.shortened = true;
                             }
-                            dataLabel.attr(dataLabel._attr);
-                            dataLabel[dataLabel.moved ? 'animate' : 'attr'](_pos);
+                            dataLabel.attr(labelPosition.attribs);
+                            dataLabel[dataLabel.moved ? 'animate' : 'attr'](labelPosition.posAttribs);
                             dataLabel.moved = true;
                         }
                         else if (dataLabel) {
                             dataLabel.attr({ y: -9999 });
                         }
-                    }
+                    });
                     // Clear for update
                     delete point.distributeBox;
                 }, this);
@@ -44817,15 +44890,15 @@
         addEvent(Chart, 'render', function collectAndHide() {
             let chart = this, labels = [];
             // Consider external label collectors
-            (this.labelCollectors || []).forEach(function (collector) {
+            (this.labelCollectors || []).forEach((collector) => {
                 labels = labels.concat(collector());
             });
-            (this.yAxis || []).forEach(function (yAxis) {
+            (this.yAxis || []).forEach((yAxis) => {
                 if (yAxis.stacking &&
                     yAxis.options.stackLabels &&
                     !yAxis.options.stackLabels.allowOverlap) {
-                    objectEach(yAxis.stacking.stacks, function (stack) {
-                        objectEach(stack, function (stackItem) {
+                    objectEach(yAxis.stacking.stacks, (stack) => {
+                        objectEach(stack, (stackItem) => {
                             if (stackItem.label) {
                                 labels.push(stackItem.label);
                             }
@@ -44833,25 +44906,24 @@
                     });
                 }
             });
-            (this.series || []).forEach(function (series) {
-                const dlOptions = series.options.dataLabels;
-                if (series.visible &&
-                    !(dlOptions.enabled === false && !series._hasPointLabels)) { // #3866
+            (this.series || []).forEach((series) => {
+                var _a;
+                if (series.visible && ((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) { // #3866
                     const push = (points) => points.forEach((point) => {
                         if (point.visible) {
-                            const dataLabels = (isArray(point.dataLabels) ?
-                                point.dataLabels :
-                                (point.dataLabel ? [point.dataLabel] : []));
-                            dataLabels.forEach(function (label) {
-                                const options = label.options;
-                                label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
-                                if (!options.allowOverlap) {
-                                    labels.push(label);
-                                }
-                                else { // #13449
+                            (point.dataLabels || []).forEach((label) => {
+                                var _a;
+                                const options = label.options || {};
+                                label.labelrank = pick(options.labelrank, point.labelrank, (_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.height); // #4118
+                                // Allow overlap if the option is explicitly true
+                                if (options.allowOverlap) { // #13449
                                     label.oldOpacity = label.opacity;
                                     label.newOpacity = 1;
                                     hideOrShow(label, chart);
+                                    // Do not allow overlap
+                                }
+                                else {
+                                    labels.push(label);
                                 }
                             });
                         }
@@ -47025,7 +47097,6 @@
                             'dataGrouping.smoothed': 'use dataGrouping.anchor'
                         });
                     }
-                    anchorPoints(series, groupedXData, xMax);
                     // Record what data grouping values were used
                     for (i = 1; i < groupPositions.length; i++) {
                         // The grouped gapSize needs to be the largest distance between
@@ -47041,6 +47112,8 @@
                     currentDataGrouping.gapSize = gapSize;
                     series.closestPointRange = groupPositions.info.totalRange;
                     series.groupMap = groupedData.groupMap;
+                    series.currentDataGrouping = currentDataGrouping;
+                    anchorPoints(series, groupedXData, xMax);
                     if (visible) {
                         adjustExtremes(xAxis, groupedXData);
                     }
@@ -47050,8 +47123,7 @@
                         // Keep the reference to all grouped points
                         // for further calculation (eg. heikinashi).
                         series.allGroupedData = groupedYData;
-                        croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max, 1 // Ordinal xAxis will remove left-most points otherwise
-                        );
+                        croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max);
                         groupedXData = croppedData.xData;
                         groupedYData = croppedData.yData;
                         series.cropStart = croppedData.start; // #15005
@@ -47064,7 +47136,6 @@
                     series.groupMap = null;
                 }
                 series.hasGroupedData = hasGroupedData;
-                series.currentDataGrouping = currentDataGrouping;
                 series.preventGraphAnimation =
                     (lastDataGrouping && lastDataGrouping.totalRange) !==
                         (currentDataGrouping && currentDataGrouping.totalRange);
@@ -47388,8 +47459,7 @@
                 // if we have grouped data, use the grouping information to get the
                 // right format
                 if (currentDataGrouping) {
-                    labelFormats =
-                        dateTimeLabelFormats[currentDataGrouping.unitName];
+                    labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
                     if (currentDataGrouping.count === 1) {
                         xDateFormat = labelFormats[0];
                     }
@@ -47880,12 +47950,12 @@
             }
             return inner;
         };
-        let wheelTimer, originalOptions;
+        let wheelTimer, startOnTick, endOnTick;
         /**
          * @private
          */
         const zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY, options) {
-            const xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
+            const xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], yOptions = yAxis.options, type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
             if (defined(xAxis.max) && defined(xAxis.min) &&
                 defined(yAxis.max) && defined(yAxis.min) &&
                 defined(xAxis.dataMax) && defined(xAxis.dataMin) &&
@@ -47896,16 +47966,21 @@
                     if (defined(wheelTimer)) {
                         clearTimeout(wheelTimer);
                     }
-                    const { startOnTick, endOnTick } = yAxis.options;
-                    if (!originalOptions) {
-                        originalOptions = { startOnTick, endOnTick };
+                    if (!defined(startOnTick)) {
+                        startOnTick = yOptions.startOnTick;
+                        endOnTick = yOptions.endOnTick;
                     }
+                    // Temporarily disable start and end on tick, because they would
+                    // prevent small increments of zooming.
                     if (startOnTick || endOnTick) {
-                        yAxis.setOptions({ startOnTick: false, endOnTick: false });
+                        yOptions.startOnTick = false;
+                        yOptions.endOnTick = false;
                     }
                     wheelTimer = setTimeout(() => {
-                        if (originalOptions) {
-                            yAxis.setOptions(originalOptions);
+                        if (defined(startOnTick) && defined(endOnTick)) {
+                            // Repeat merge after the wheel zoom is finished, #19178
+                            yOptions.startOnTick = startOnTick;
+                            yOptions.endOnTick = endOnTick;
                             // Set the extremes to the same as they already are, but now
                             // with the original startOnTick and endOnTick. We need
                             // `forceRedraw` otherwise it will detect that the values
@@ -47914,7 +47989,7 @@
                             const { min, max } = yAxis.getExtremes();
                             yAxis.forceRedraw = true;
                             yAxis.setExtremes(min, max);
-                            originalOptions = void 0;
+                            startOnTick = endOnTick = void 0;
                         }
                     }, 400);
                 }
@@ -50629,7 +50704,7 @@
          * */
         const { defaultOptions } = D;
         const { hasTouch, isTouchDevice } = H;
-        const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, isArray, isNumber, merge, pick, removeEvent, splat } = U;
+        const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, fireEvent, isArray, isNumber, merge, pick, removeEvent, splat } = U;
         /* *
          *
          *  Functions
@@ -51112,6 +51187,7 @@
                     navigator.zoomedMin / (navigatorSize || 1), navigator.zoomedMax / (navigatorSize || 1));
                 }
                 navigator.rendered = true;
+                fireEvent(this, 'afterRender');
             }
             /**
              * Set up the mouse and touch events for the navigator
@@ -53075,10 +53151,10 @@
                 const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
                     const minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
                     // #3274 in some case blur is not defined
-                    if (minInput && (minInput.blur)) {
+                    if (minInput && !!minInput.blur) {
                         fireEvent(minInput, 'blur');
                     }
-                    if (maxInput && (maxInput.blur)) {
+                    if (maxInput && !!maxInput.blur) {
                         fireEvent(maxInput, 'blur');
                     }
                 };
@@ -53394,9 +53470,7 @@
                  * @private
                  */
                 function updateExtremes() {
-                    const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], dataAxis = chart.scroller && chart.scroller.xAxis ?
-                        chart.scroller.xAxis :
-                        chartAxis, dataMin = dataAxis.dataMin, dataMax = dataAxis.dataMax;
+                    const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chartAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax;
                     let value = rangeSelector.getInputValue(name);
                     if (value !== Number(input.getAttribute('data-hc-time-previous')) &&
                         isNumber(value)) {
@@ -54623,12 +54697,7 @@
                 // If the value is not inside the plot area, use the extended positions.
                 // (array contains also points that are outside of the plotArea).
                 if (!isInside) {
-                    // When iterating for the first time,
-                    // get the extended ordinal positional and assign them.
-                    if (!ordinal.extendedOrdinalPositions) {
-                        ordinal.extendedOrdinalPositions = (ordinal.getExtendedPositions());
-                    }
-                    positions = ordinal.extendedOrdinalPositions;
+                    positions = ordinal.getExtendedPositions();
                 }
                 // In some cases (especially in early stages of the chart creation) the
                 // getExtendedPositions might return undefined.
@@ -54641,15 +54710,8 @@
                         const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                         return positions[Math.floor(index)] + mantissa * distance;
                     }
-                    // For cases when the index is not in the extended ordinal position
-                    // array, like when the value we are looking for exceed the
-                    // available data, approximate that value based on the calculated
-                    // slope.
-                    const positionsLength = positions.length, firstPositionsValue = positions[0], lastPositionsValue = positions[positionsLength - 1], slope = (lastPositionsValue - firstPositionsValue) / (positionsLength - 1);
-                    if (index < 0) {
-                        return firstPositionsValue + slope * index;
-                    }
-                    return lastPositionsValue + slope * (index - positionsLength);
+                    // If the value is outside positions array, return initial value
+                    return val; // #16784
                 }
                 return val;
             }
@@ -54823,7 +54885,6 @@
                 // and destroy extendedOrdinalPositions, #16055.
                 if (xAxis && xAxis.options.ordinal) {
                     delete xAxis.ordinal.index;
-                    delete xAxis.ordinal.extendedOrdinalPositions;
                 }
             }
             /**
@@ -54841,7 +54902,7 @@
              */
             function val2lin(val, toIndex) {
                 const axis = this, ordinal = axis.ordinal, ordinalPositions = ordinal.positions;
-                let slope = ordinal.slope, extendedOrdinalPositions = ordinal.extendedOrdinalPositions;
+                let slope = ordinal.slope, extendedOrdinalPositions;
                 if (!ordinalPositions) {
                     return val;
                 }
@@ -54855,12 +54916,9 @@
                     // final return value is based on ordinalIndex
                 }
                 else {
-                    if (!extendedOrdinalPositions) {
-                        extendedOrdinalPositions =
-                            ordinal.getExtendedPositions &&
-                                ordinal.getExtendedPositions();
-                        ordinal.extendedOrdinalPositions = extendedOrdinalPositions;
-                    }
+                    extendedOrdinalPositions =
+                        ordinal.getExtendedPositions &&
+                            ordinal.getExtendedPositions();
                     if (!(extendedOrdinalPositions && extendedOrdinalPositions.length)) {
                         return val;
                     }
@@ -54884,6 +54942,11 @@
                             originalPositionsReference;
                     }
                     else {
+                        if (!toIndex) {
+                            // If the value is outside positions array,
+                            // return initial value, #16784
+                            return val;
+                        }
                         // Since ordinal.slope is the average distance between 2
                         // points on visible plotArea, this can be used to calculete
                         // the approximate position of the point, which is outside
@@ -55143,6 +55206,7 @@
                                     max: extremes.dataMax + overscroll
                                 };
                             },
+                            applyGrouping: axisProto.applyGrouping,
                             getGroupPixelWidth: axisProto.getGroupPixelWidth,
                             getTimeTicks: axisProto.getTimeTicks,
                             options: {
@@ -55163,6 +55227,7 @@
                                 xAxis: fakeAxis,
                                 xData: series.xData.slice(),
                                 chart: chart,
+                                groupPixelWidth: series.groupPixelWidth,
                                 destroyGroupedData: H.noop,
                                 getProcessedData: Series.prototype.getProcessedData,
                                 applyGrouping: Series.prototype.applyGrouping
@@ -55188,6 +55253,7 @@
                             fakeAxis.series.push(fakeSeries);
                             series.processData.apply(fakeSeries);
                         });
+                        fakeAxis.applyGrouping({ hasExtremesChanged: true });
                         // Force to use the ordinal when points are evenly spaced (e.g.
                         // weeks), #3825.
                         if ((fakeSeries.closestPointRange !==
@@ -55267,7 +55333,11 @@
                     const ordinal = this, axis = ordinal.axis, firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
                     // Check whether the series has at least one point inside the chart
                     const hasPointsInside = function (series) {
-                        return series.points.some((point) => !!point.isInside);
+                        const { min, max } = axis;
+                        if (defined(min) && defined(max)) {
+                            return series.points.some((point) => point.x >= min && point.x <= max);
+                        }
+                        return false;
                     };
                     let firstPointX;
                     // When more series assign to axis, find the smallest one, #15987.
@@ -57033,6 +57103,8 @@
              * @private
              */
             function translate() {
+                var _a,
+                    _b;
                 columnProto.translate.apply(this);
                 const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
                     chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
@@ -57060,17 +57132,67 @@
                                     rightPoint = onData[i + 1];
                                     if (rightPoint &&
                                         typeof rightPoint[onKey] !== 'undefined') {
-                                        // the distance ratio, between 0 and 1
-                                        distanceRatio =
-                                            (point.x - leftPoint.x) /
-                                                (rightPoint.x - leftPoint.x);
-                                        point.plotY +=
-                                            distanceRatio *
-                                                // the plotY distance
-                                                (rightPoint[onKey] - leftPoint[onKey]);
-                                        point.y +=
-                                            distanceRatio *
-                                                (rightPoint.y - leftPoint.y);
+                                        // If the series is spline, calculate Y of the
+                                        // point on the bezier line. #19264
+                                        if (defined(point.plotX) &&
+                                            onSeries.is('spline')) {
+                                            leftPoint = leftPoint;
+                                            rightPoint = rightPoint;
+                                            const p0 = [
+                                                leftPoint.plotX || 0,
+                                                leftPoint.plotY || 0
+                                            ], p3 = [
+                                                rightPoint.plotX || 0,
+                                                rightPoint.plotY || 0
+                                            ], p1 = (((_a = leftPoint.controlPoints) === null || _a === void 0 ? void 0 : _a.high) ||
+                                                p0), p2 = (((_b = rightPoint.controlPoints) === null || _b === void 0 ? void 0 : _b.low) ||
+                                                p3), pixelThreshold = 0.25, maxIterations = 100, calculateCoord = (t, key) => (
+                                            // The parametric formula for the
+                                            // cubic Bezier curve.
+                                            Math.pow(1 - t, 3) * p0[key] +
+                                                3 * (1 - t) * (1 - t) * t *
+                                                    p1[key] + 3 * (1 - t) * t * t *
+                                                p2[key] + t * t * t * p3[key]);
+                                            let tMin = 0, tMax = 1, t;
+                                            // Find `t` of the parametric function of
+                                            // the bezier curve for the given `plotX`.
+                                            for (let i = 0; i < maxIterations; i++) {
+                                                const tMid = (tMin + tMax) / 2;
+                                                const xMid = calculateCoord(tMid, 0);
+                                                if (xMid === null) {
+                                                    break;
+                                                }
+                                                if (Math.abs(xMid - point.plotX) < pixelThreshold) {
+                                                    t = tMid;
+                                                    break;
+                                                }
+                                                if (xMid < point.plotX) {
+                                                    tMin = tMid;
+                                                }
+                                                else {
+                                                    tMax = tMid;
+                                                }
+                                            }
+                                            if (defined(t)) {
+                                                point.plotY =
+                                                    calculateCoord(t, 1);
+                                                point.y =
+                                                    yAxis.toValue(point.plotY, true);
+                                            }
+                                        }
+                                        else {
+                                            // the distance ratio, between 0 and 1
+                                            distanceRatio =
+                                                (point.x - leftPoint.x) /
+                                                    (rightPoint.x - leftPoint.x);
+                                            point.plotY +=
+                                                distanceRatio *
+                                                    // the plotY distance
+                                                    (rightPoint[onKey] - leftPoint[onKey]);
+                                            point.y +=
+                                                distanceRatio *
+                                                    (rightPoint.y - leftPoint.y);
+                                        }
                                     }
                                 }
                             }

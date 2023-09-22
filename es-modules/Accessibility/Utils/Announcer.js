@@ -52,13 +52,14 @@ class Announcer {
         this.clearAnnouncementRegionTimer = setTimeout(() => {
             this.announceRegion.innerHTML = AST.emptyHTML;
             delete this.clearAnnouncementRegionTimer;
-        }, 1000);
+        }, 3000);
     }
     addAnnounceRegion(type) {
         const chartContainer = (this.chart.announcerContainer || this.createAnnouncerContainer()), div = this.domElementProvider.createElement('div');
         attr(div, {
             'aria-hidden': false,
-            'aria-live': type
+            'aria-live': type,
+            'aria-atomic': true
         });
         if (this.chart.styledMode) {
             addClass(div, 'highcharts-visually-hidden');

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Boost module
  *
@@ -30,12 +30,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -155,12 +153,28 @@
          * @function Highcharts.Chart#getBoostClipRect
          */
         function getBoostClipRect(chart, target) {
-            const clipBox = {
+            let clipBox = {
                 x: chart.plotLeft,
                 y: chart.plotTop,
                 width: chart.plotWidth,
                 height: chart.plotHeight
             };
+            // Clipping of individal series (#11906, #19039).
+            if (target.getClipBox) {
+                const { xAxis, yAxis } = target;
+                clipBox = target.getClipBox();
+                if (chart.inverted) {
+                    const lateral = clipBox.width;
+                    clipBox.width = clipBox.height;
+                    clipBox.height = lateral;
+                    clipBox.x = yAxis.pos;
+                    clipBox.y = xAxis.pos;
+                }
+                else {
+                    clipBox.x = xAxis.pos;
+                    clipBox.y = yAxis.pos;
+                }
+            }
             if (target === chart) {
                 const verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
                 if (verticalAxes.length <= 1) {
@@ -236,8 +250,12 @@
                     ++needBoostCount;
                 }
             }
-            boost.forceChartBoost = allowBoostForce && ((canBoostCount === allSeries.length &&
-                needBoostCount > 0) ||
+            boost.forceChartBoost = allowBoostForce && ((
+            // Even when the series that need a boost are less than or equal
+            // to 5, force a chart boost when all series are to be boosted.
+            // See #18815
+            canBoostCount === allSeries.length &&
+                needBoostCount === canBoostCount) ||
                 needBoostCount > 5);
             return boost.forceChartBoost;
         }
@@ -1255,8 +1273,8 @@
              */
             pushSeriesData(series, inst) {
                 const data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
-                    series.pointArrayMap.join(',') === 'low,high'), chart = series.chart, options = series.options, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
-                    series.processedZData), yAxis = series.yAxis, xAxis = series.xAxis, useRaw = !xData || xData.length === 0, 
+                    series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
+                    series.processedZData), useRaw = !xData || xData.length === 0, 
                 // threshold = options.threshold,
                 // yBottom = chart.yAxis[0].getThreshold(threshold),
                 // hasThreshold = isNumber(threshold),
@@ -1595,8 +1613,9 @@
                         continue;
                     }
                     // The first point before and first after extremes should be
-                    // rendered (#9962)
-                    if ((nx >= xMin || x >= xMin) &&
+                    // rendered (#9962, 19701)
+                    if (sorted &&
+                        (nx >= xMin || x >= xMin) &&
                         (px <= xMax || x <= xMax)) {
                         isXInside = true;
                     }
@@ -1982,12 +2001,19 @@
                     shader.reset();
                     // If there are entries in the colorData buffer, build and bind it.
                     if (s.colorData.length > 0) {
-                        shader.setUniform('hasColor', 1.0);
+                        shader.setUniform('hasColor', 1);
                         cbuffer = new WGLVertexBuffer(gl, shader);
-                        cbuffer.build(s.colorData, 'aColor', 4);
+                        cbuffer.build(
+                        // The color array attribute for vertex is assigned from 0,
+                        // so it needs to be shifted to be applied to further
+                        // segments. #18858
+                        Array(s.segments[0].from).concat(s.colorData), 'aColor', 4);
                         cbuffer.bind();
                     }
                     else {
+                        // Set the hasColor uniform to false (0) when the series
+                        // contains no colorData buffer points. #18858
+                        shader.setUniform('hasColor', 0);
                         // #15869, a buffer with fewer points might already be bound by
                         // a different series/chart causing out of range errors
                         gl.disableVertexAttribArray(gl.getAttribLocation(shader.getProgram(), 'aColor'));
@@ -2466,7 +2492,16 @@
                     }
                 };
                 boost.clipRect = chart.renderer.clipRect();
-                (boost.targetFo || boost.target).clip(boost.clipRect);
+                (boost.targetFo || boost.target)
+                    .attr({
+                    // Set the z index of the boost target to that of the last
+                    // series using it. This logic is not perfect, as it will not
+                    // handle interleaved series with boost enabled or disabled. But
+                    // it will cover the most common use case of one or more
+                    // successive boosted or non-boosted series (#9819).
+                    zIndex: series.options.zIndex
+                })
+                    .clip(boost.clipRect);
                 if (target instanceof ChartClass) {
                     target.boost.markerGroup = target.renderer
                         .g()
@@ -2871,7 +2906,7 @@
                     if (!requireSorting) {
                         isYInside = (y || 0) >= yMin && y <= yMax;
                     }
-                    if (x >= xMin && x <= xMax && isYInside) {
+                    if (y !== null && x >= xMin && x <= xMax && isYInside) {
                         clientX = xAxis.toPixels(x, true);
                         if (sampling) {
                             if (typeof minI === 'undefined' ||

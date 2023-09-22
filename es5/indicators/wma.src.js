@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,24 +46,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray,
-            merge = U.merge;
+        var isArray = U.isArray, merge = U.merge;
         /* *
          *
          *  Functions
@@ -76,8 +72,7 @@
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i, index) {
-            var xValue = xVal[i],
-                yValue = index < 0 ? yVal[i] : yVal[i][index];
+            var xValue = xVal[i], yValue = index < 0 ? yVal[i] : yVal[i][index];
             points.push([xValue, yValue]);
         }
         /**
@@ -97,10 +92,7 @@
          * @private
          */
         function populateAverage(points, xVal, yVal, i) {
-            var pLen = points.length,
-                wmaY = weightedSumArray(points,
-                pLen),
-                wmaX = xVal[i - 1];
+            var pLen = points.length, wmaY = weightedSumArray(points, pLen), wmaX = xVal[i - 1];
             points.shift(); // remove point until range < period
             return [wmaX, wmaY];
         }
@@ -119,15 +111,14 @@
          * @augments Highcharts.Series
          */
         var WMAIndicator = /** @class */ (function (_super) {
-                __extends(WMAIndicator, _super);
+            __extends(WMAIndicator, _super);
             function WMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -144,19 +135,8 @@
              *
              * */
             WMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    xValue = xVal[0],
-                    wma = [],
-                    xData = [],
-                    yData = [];
-                var range = 1,
-                    index = -1,
-                    i,
-                    wmaPoint,
-                    yValue = yVal[0];
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], wma = [], xData = [], yData = [];
+                var range = 1, index = -1, i, wmaPoint, yValue = yVal[0];
                 if (xVal.length < period) {
                     return;
                 }
@@ -166,8 +146,7 @@
                     yValue = yVal[0][index];
                 }
                 // Starting point
-                var points = [[xValue,
-                    yValue]];
+                var points = [[xValue, yValue]];
                 // Accumulate first N-points
                 while (range !== period) {
                     accumulateAverage(points, xVal, yVal, range, index);

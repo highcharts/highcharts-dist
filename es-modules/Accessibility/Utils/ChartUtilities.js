@@ -30,7 +30,7 @@ const { defined, find, fireEvent } = U;
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     const type = eventObject.type;
     const hcEvents = el.hcEvents;
-    if ((doc.createEvent) &&
+    if (!!doc.createEvent &&
         (el.dispatchEvent || el.fireEvent)) {
         if (el.dispatchEvent) {
             el.dispatchEvent(eventObject);
@@ -51,7 +51,7 @@ function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
  */
 function getChartTitle(chart) {
     return stripHTMLTags(chart.options.title.text ||
-        chart.langFormat('accessibility.defaultChartTitle', { chart: chart }));
+        chart.langFormat('accessibility.defaultChartTitle', { chart: chart }), chart.renderer.forExport);
 }
 /**
  * Return string with the axis name/title.
@@ -264,7 +264,7 @@ function getRelativePointAxisPosition(axis, point) {
  * Get relative position of point on an x/y axis from 0 to 1.
  * @private
  */
-function scrollToPoint(point) {
+function scrollAxisToPoint(point) {
     const xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);
     if (scrollbar && defined(scrollbar.to) && defined(scrollbar.from)) {
         const range = scrollbar.to - scrollbar.from;
@@ -294,6 +294,6 @@ const ChartUtilities = {
     getSeriesA11yElement,
     unhideChartElementFromAT,
     hideSeriesFromAT,
-    scrollToPoint
+    scrollAxisToPoint
 };
 export default ChartUtilities;

@@ -39,7 +39,8 @@
 const NetworkgraphSeriesDefaults = {
     stickyTracking: false,
     /**
-     * @ignore-option
+     * @default   true
+     * @extends   plotOptions.series.inactiveOtherPoints
      * @private
      */
     inactiveOtherPoints: true,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2022
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -44,7 +42,7 @@
                 this.subdomains = ['a', 'b', 'c'];
                 this.themes = {
                     Standard: {
-                        url: 'https://{s}.tile.openstreetmap.org/{zoom}/{x}/{y}.png',
+                        url: 'https://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
                         minZoom: 0,
                         maxZoom: 19
                     },
@@ -502,7 +500,9 @@
                             def.subdomains.indexOf(provider.subdomain) !== -1) {
                             subdomain = provider.subdomain;
                         }
-                        else if (defined(def.subdomains)) {
+                        else if (defined(def.subdomains) &&
+                            // Do not show warning if no subdomain in URL
+                            theme.url.indexOf('{s}') !== -1) {
                             subdomain = pick(def.subdomains && def.subdomains[0], '');
                             error('Highcharts warning: The Tiles Provider\'s Subdomain ' +
                                 '\'' + provider.subdomain + '\' is not defined in ' +

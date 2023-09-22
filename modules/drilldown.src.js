@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Highcharts Drilldown module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -1652,6 +1650,7 @@
                 // #3352, async loading
                 levelToRemove =
                     drilldownLevels[drilldownLevels.length - 1].levelNumber;
+                chart.hasCartesianSeries = drilldownLevels.some((level) => level.lowerSeries.isCartesian); // #19725
                 this.drilldownLevels.forEach(function (level) {
                     if (chart.mapView &&
                         chart.options.drilldown &&
@@ -1672,7 +1671,7 @@
                                 }
                             }
                             else {
-                                // deal with asonchrynous removing of map series after
+                                // Deal with asonchrynous removing of map series after
                                 // zooming into
                                 if (series.options &&
                                     series.options._levelNumber === levelToRemove &&
@@ -1721,6 +1720,13 @@
                 }
                 this.pointer.reset();
                 fireEvent(this, 'afterDrilldown');
+                // Axes shouldn't be visible after drilling into non-cartesian (#19725)
+                if (!chart.hasCartesianSeries) {
+                    chart.axes.forEach((axis) => {
+                        axis.destroy(true);
+                        axis.init(this, merge(axis.userOptions, axis.options));
+                    });
+                }
                 this.redraw();
                 fireEvent(this, 'afterApplyDrilldown');
             }
@@ -1809,6 +1815,8 @@
                 chart.redraw();
             };
             let i = drilldownLevels.length, seriesI, level, oldExtremes;
+            // Reset symbol and color counters after every drill-up. (#19134)
+            chart.symbolCounter = chart.colorCounter = 0;
             while (i--) {
                 let oldSeries, newSeries;
                 level = drilldownLevels[i];
@@ -2069,6 +2077,7 @@
                 const newSeries = this, level = newSeries.drilldownLevel;
                 // First hide all items before animating in again
                 this.points.forEach(function (point) {
+                    var _a;
                     const dataLabel = point.dataLabel;
                     if (point.graphic) { // #3407
                         point.graphic.hide();
@@ -2079,9 +2088,7 @@
                         dataLabel.hidden = dataLabel.attr('visibility') === 'hidden';
                         if (!dataLabel.hidden) {
                             dataLabel.hide();
-                            if (point.connector) {
-                                point.connector.hide();
-                            }
+                            (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.hide();
                         }
                     }
                 });
@@ -2097,6 +2104,7 @@
                             pointsWithNodes = pointsWithNodes.concat(newSeries.nodes);
                         }
                         pointsWithNodes.forEach(function (point, i) {
+                            var _a;
                             // Fade in other points
                             const verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                             if (point.graphic && // #3407
@@ -2106,9 +2114,7 @@
                             }
                             if (dataLabel && !dataLabel.hidden) { // #6127
                                 dataLabel.fadeIn(); // #7384
-                                if (point.connector) {
-                                    point.connector.fadeIn();
-                                }
+                                (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.fadeIn();
                             }
                         });
                     }
@@ -2241,14 +2247,18 @@
                  */
                 animateDrilldown(init) {
                     const series = this, chart = this.chart, group = this.group;
-                    if (chart && group && series.options) {
+                    if (chart &&
+                        group &&
+                        series.options &&
+                        chart.options.drilldown &&
+                        chart.options.drilldown.animation) {
                         // Initialize the animation
                         if (init && chart.mapView) {
                             group.attr({
                                 opacity: 0.01
                             });
                             chart.mapView.allowTransformAnimation = false;
-                            // stop duplicating and overriding animations
+                            // Stop duplicating and overriding animations
                             series.options.inactiveOtherPoints = true;
                             series.options.enableMouseTracking = false;
                             // Run the animation
@@ -2342,6 +2352,8 @@
             if (!chart.ddDupes) {
                 chart.ddDupes = [];
             }
+            // Reset the color and symbol counters after every drilldown. (#19134)
+            chart.colorCounter = chart.symbolCounter = 0;
             while (i-- && !seriesOptions) {
                 if (drilldown.series[i].id === this.drilldown &&
                     chart.ddDupes.indexOf(this.drilldown) === -1) {

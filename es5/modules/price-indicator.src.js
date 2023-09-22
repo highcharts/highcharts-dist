@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Advanced Highcharts Stock tools
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,9 +46,7 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          */
-        var addEvent = U.addEvent,
-            isArray = U.isArray,
-            merge = U.merge;
+        var addEvent = U.addEvent, isArray = U.isArray, merge = U.merge;
         /**
          * The line marks the last price from visible range of points.
          *
@@ -271,23 +267,10 @@
          */
         /* eslint-disable no-invalid-this */
         addEvent(Series, 'afterRender', function () {
-            var series = this,
-                seriesOptions = series.options,
-                lastVisiblePrice = seriesOptions.lastVisiblePrice,
-                lastPrice = seriesOptions.lastPrice;
+            var series = this, seriesOptions = series.options, lastVisiblePrice = seriesOptions.lastVisiblePrice, lastPrice = seriesOptions.lastPrice;
             if ((lastVisiblePrice || lastPrice) &&
                 seriesOptions.id !== 'highcharts-navigator-series') {
-                var xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    origOptions = yAxis.crosshair,
-                    origGraphic = yAxis.cross,
-                    origLabel = yAxis.crossLabel,
-                    points = series.points,
-                    yLength = series.yData.length,
-                    pLength = points.length,
-                    x = series.xData[series.xData.length - 1],
-                    y = series.yData[yLength - 1],
-                    yValue = void 0;
+                var xAxis = series.xAxis, yAxis = series.yAxis, origOptions = yAxis.crosshair, origGraphic = yAxis.cross, origLabel = yAxis.crossLabel, points = series.points, yLength = series.yData.length, pLength = points.length, x = series.xData[series.xData.length - 1], y = series.yData[yLength - 1], yValue = void 0;
                 if (lastPrice && lastPrice.enabled) {
                     yAxis.crosshair = yAxis.options.crosshair = seriesOptions.lastPrice;
                     if (!series.chart.styledMode &&
@@ -324,7 +307,7 @@
                     }, seriesOptions.lastVisiblePrice);
                     yAxis.cross = series.lastVisiblePrice;
                     var lastPoint = points[pLength - 1].isInside ?
-                            points[pLength - 1] : points[pLength - 2];
+                        points[pLength - 1] : points[pLength - 2];
                     if (series.lastVisiblePriceLabel) {
                         series.lastVisiblePriceLabel.destroy();
                     }

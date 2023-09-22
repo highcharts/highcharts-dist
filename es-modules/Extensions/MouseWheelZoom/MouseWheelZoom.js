@@ -70,12 +70,12 @@ const fitToBox = function (inner, outer) {
     }
     return inner;
 };
-let wheelTimer, originalOptions;
+let wheelTimer, startOnTick, endOnTick;
 /**
  * @private
  */
 const zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY, options) {
-    const xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
+    const xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], yOptions = yAxis.options, type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
     if (defined(xAxis.max) && defined(xAxis.min) &&
         defined(yAxis.max) && defined(yAxis.min) &&
         defined(xAxis.dataMax) && defined(xAxis.dataMin) &&
@@ -86,16 +86,21 @@ const zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY,
             if (defined(wheelTimer)) {
                 clearTimeout(wheelTimer);
             }
-            const { startOnTick, endOnTick } = yAxis.options;
-            if (!originalOptions) {
-                originalOptions = { startOnTick, endOnTick };
+            if (!defined(startOnTick)) {
+                startOnTick = yOptions.startOnTick;
+                endOnTick = yOptions.endOnTick;
             }
+            // Temporarily disable start and end on tick, because they would
+            // prevent small increments of zooming.
             if (startOnTick || endOnTick) {
-                yAxis.setOptions({ startOnTick: false, endOnTick: false });
+                yOptions.startOnTick = false;
+                yOptions.endOnTick = false;
             }
             wheelTimer = setTimeout(() => {
-                if (originalOptions) {
-                    yAxis.setOptions(originalOptions);
+                if (defined(startOnTick) && defined(endOnTick)) {
+                    // Repeat merge after the wheel zoom is finished, #19178
+                    yOptions.startOnTick = startOnTick;
+                    yOptions.endOnTick = endOnTick;
                     // Set the extremes to the same as they already are, but now
                     // with the original startOnTick and endOnTick. We need
                     // `forceRedraw` otherwise it will detect that the values
@@ -104,7 +109,7 @@ const zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY,
                     const { min, max } = yAxis.getExtremes();
                     yAxis.forceRedraw = true;
                     yAxis.setExtremes(min, max);
-                    originalOptions = void 0;
+                    startOnTick = endOnTick = void 0;
                 }
             }, 400);
         }

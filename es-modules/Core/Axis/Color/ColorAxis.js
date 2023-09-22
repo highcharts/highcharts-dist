@@ -17,7 +17,7 @@ import LegendSymbol from '../../Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Utilities.js';
-const { extend, isArray, isNumber, merge, pick } = U;
+const { extend, fireEvent, isArray, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -604,10 +604,17 @@ class ColorAxis extends Axis {
                     // data class
                     setVisible: function () {
                         this.visible = vis = axis.visible = !vis;
+                        const affectedSeries = [];
                         for (const point of getPointsInDataClass(i)) {
                             point.setVisible(vis);
+                            if (affectedSeries.indexOf(point.series) === -1) {
+                                affectedSeries.push(point.series);
+                            }
                         }
                         chart.legend.colorizeItem(this, vis);
+                        affectedSeries.forEach((series) => {
+                            fireEvent(series, 'afterDataClassLegendClick');
+                        });
                     }
                 }, dataClass));
             });

@@ -9,9 +9,8 @@
  * */
 'use strict';
 import FlowMapPoint from './FlowMapPoint.js';
-import MapSeries from '../Map/MapSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: ColumnSeries, mapline: MapLineSeries } } = SeriesRegistry;
+const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: ColumnSeries, map: MapSeries, mapline: MapLineSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
 const { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, pick, relativeLength } = U;
 /**

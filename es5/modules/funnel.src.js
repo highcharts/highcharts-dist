@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Highcharts funnel module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -50,31 +48,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var Series = SeriesRegistry.series,
-            PieSeries = SeriesRegistry.seriesTypes.pie;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isArray = U.isArray,
-            merge = U.merge,
-            pick = U.pick,
-            relativeLength = U.relativeLength;
+        var Series = SeriesRegistry.series, PieSeries = SeriesRegistry.seriesTypes.pie;
+        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength, splat = U.splat;
         /**
          * @private
          * @class
@@ -83,15 +73,14 @@
          * @augments Highcharts.Series
          */
         var FunnelSeries = /** @class */ (function (_super) {
-                __extends(FunnelSeries, _super);
+            __extends(FunnelSeries, _super);
             function FunnelSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -108,26 +97,14 @@
              * @private
              */
             FunnelSeries.prototype.alignDataLabel = function (point, dataLabel, options, alignTo, isNew) {
-                var series = point.series,
-                    reversed = series.options.reversed,
-                    dlBox = point.dlBox || point.shapeArgs,
-                    align = options.align,
-                    verticalAlign = options.verticalAlign,
-                    inside = ((series.options || {}).dataLabels || {}).inside,
-                    centerY = series.center[1],
-                    pointPlotY = (reversed ?
-                        2 * centerY - point.plotY :
-                        point.plotY),
-                    widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
-                        dataLabel.height),
-                    offset = verticalAlign === 'middle' ?
-                        (dlBox.topWidth - dlBox.bottomWidth) / 4 :
-                        (widthAtLabel - dlBox.bottomWidth) / 2,
-                    y = dlBox.y,
-                    x = dlBox.x;
+                var series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, align = options.align, verticalAlign = options.verticalAlign, inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], pointPlotY = (reversed ?
+                    2 * centerY - point.plotY :
+                    point.plotY), widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
+                    dataLabel.height), offset = verticalAlign === 'middle' ?
+                    (dlBox.topWidth - dlBox.bottomWidth) / 4 :
+                    (widthAtLabel - dlBox.bottomWidth) / 2, y = dlBox.y, x = dlBox.x;
                 // #16176: Only SVGLabel has height set
-                var dataLabelHeight = pick(dataLabel.height,
-                    dataLabel.getBBox().height);
+                var dataLabelHeight = pick(dataLabel.height, dataLabel.getBBox().height);
                 if (verticalAlign === 'middle') {
                     y = dlBox.y - dlBox.height / 2 + dataLabelHeight / 2;
                 }
@@ -170,63 +147,41 @@
                 }
             };
             /**
-             * Extend the pie data label method.
+             * Extend the data label method.
              * @private
              */
             FunnelSeries.prototype.drawDataLabels = function () {
-                var series = this,
-                    data = series.data,
-                    labelDistance = series.options.dataLabels.distance,
-                    leftSide,
-                    sign,
-                    point,
-                    i = data.length,
-                    x,
-                    y;
-                // In the original pie label anticollision logic, the slots are
-                // distributed from one labelDistance above to one labelDistance
-                // below the pie. In funnels we don't want this.
-                series.center[2] -= 2 * labelDistance;
-                // Set the label position array for each point.
-                while (i--) {
-                    point = data[i];
-                    leftSide = point.half;
-                    sign = leftSide ? 1 : -1;
-                    y = point.plotY;
-                    point.labelDistance = pick(point.options.dataLabels &&
-                        point.options.dataLabels.distance, labelDistance);
-                    series.maxLabelDistance = Math.max(point.labelDistance, series.maxLabelDistance || 0);
-                    x = series.getX(y, leftSide, point);
-                    // set the anchor point for data labels
-                    point.labelPosition = {
-                        // initial position of the data label - it's utilized for
-                        // finding the final position for the label
-                        natural: {
-                            x: 0,
+                SeriesRegistry.seriesTypes[splat(this.options.dataLabels)[0].inside ? 'column' : 'pie'].prototype.drawDataLabels.call(this);
+            };
+            /** @private */
+            FunnelSeries.prototype.getDataLabelPosition = function (point, distance) {
+                var y = point.plotY || 0, x = this.getX(y, !!point.half, point);
+                return {
+                    distance: distance,
+                    // Initial position of the data label - it's utilized for finding
+                    // the final position for the label
+                    natural: {
+                        x: 0,
+                        y: y
+                    },
+                    computed: {
+                    // Used for generating connector path - initialized later in
+                    // drawDataLabels function x: undefined, y: undefined
+                    },
+                    // Left - funnel on the left side of the data label
+                    // Right - funnel on the right side of the data label
+                    alignment: point.half ? 'right' : 'left',
+                    connectorPosition: {
+                        breakAt: {
+                            x: x - 5 * (point.half ? 1 : -1),
                             y: y
                         },
-                        computed: {
-                        // used for generating connector path -
-                        // initialized later in drawDataLabels function
-                        // x: undefined,
-                        // y: undefined
-                        },
-                        // left - funnel on the left side of the data label
-                        // right - funnel on the right side of the data label
-                        alignment: leftSide ? 'right' : 'left',
-                        connectorPosition: {
-                            breakAt: {
-                                x: x + (point.labelDistance - 5) * sign,
-                                y: y
-                            },
-                            touchingSliceAt: {
-                                x: x + point.labelDistance * sign,
-                                y: y
-                            }
+                        touchingSliceAt: {
+                            x: x,
+                            y: y
                         }
-                    };
-                }
-                SeriesRegistry.seriesTypes[series.options.dataLabels.inside ? 'column' : 'pie'].prototype.drawDataLabels.call(this);
+                    }
+                };
             };
             /**
              * Overrides the pie translate method.
@@ -234,9 +189,9 @@
              */
             FunnelSeries.prototype.translate = function () {
                 var sum = 0, series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, cumulative = 0, // start at top
-                    center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), tempWidth, height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, path, fraction, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, alpha, // the angle between top and left point's edges
-                    maxT, roundingFactors = function (angle) {
-                        var tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
+                center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), tempWidth, height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, path, fraction, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, alpha, // the angle between top and left point's edges
+                maxT, roundingFactors = function (angle) {
+                    var tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
                     var r = borderRadius, t = r / tan, k = Math.tan((Math.PI - angle) / 3.2104);
                     if (t > maxT) {
                         t = maxT;
@@ -275,9 +230,10 @@
                             (1 - (y - top) / (height - neckHeight));
                 };
                 series.getX = function (y, half, point) {
+                    var _a, _b;
                     return centerX + (half ? -1 : 1) *
                         ((series.getWidthAt(reversed ? 2 * centerY - y : y) / 2) +
-                            point.labelDistance);
+                            (((_b = (_a = point.dataLabel) === null || _a === void 0 ? void 0 : _a.dataLabelPosition) === null || _b === void 0 ? void 0 : _b.distance) || 0));
                 };
                 // Expose
                 series.center = [centerX, centerY, height];
@@ -346,10 +302,7 @@
                         y5 !== null)) {
                         // Creating the path of funnel points with rounded corners
                         // (#18839)
-                        var h = Math.abs(y3 - y1),
-                            xSide = x2 - x4,
-                            lBase = x4 - x3,
-                            lSide = Math.sqrt(xSide * xSide + h * h);
+                        var h = Math.abs(y3 - y1), xSide = x2 - x4, lBase = x4 - x3, lSide = Math.sqrt(xSide * xSide + h * h);
                         alpha = Math.atan(h / xSide);
                         maxT = lSide / 2;
                         if (y5 !== null) {
@@ -724,16 +677,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -755,15 +707,14 @@
          * @augments Highcharts.Series
          */
         var PyramidSeries = /** @class */ (function (_super) {
-                __extends(PyramidSeries, _super);
+            __extends(PyramidSeries, _super);
             function PyramidSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,41 +44,36 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes.area.prototype,
-            AreaPoint = _a.pointClass,
-            areaProto = _a.pointClass.prototype;
-        var defined = U.defined,
-            isNumber = U.isNumber;
+        var _a = SeriesRegistry.seriesTypes.area.prototype, AreaPoint = _a.pointClass, areaProto = _a.pointClass.prototype;
+        var defined = U.defined, isNumber = U.isNumber;
         /* *
          *
          *  Class
          *
          * */
         var AreaRangePoint = /** @class */ (function (_super) {
-                __extends(AreaRangePoint, _super);
+            __extends(AreaRangePoint, _super);
             function AreaRangePoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /**
                  * Range series only. The high or maximum value for each data point.
                  * @name Highcharts.Point#high
@@ -107,9 +100,7 @@
              * @private
              */
             AreaRangePoint.prototype.setState = function () {
-                var prevState = this.state,
-                    series = this.series,
-                    isPolar = series.chart.polar;
+                var prevState = this.state, series = this.series, isPolar = series.chart.polar;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -191,41 +182,37 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var extend = U.extend,
-            pick = U.pick;
+        var extend = U.extend, pick = U.pick;
         /* *
          *
          *  Class
          *
          * */
         var DumbbellPoint = /** @class */ (function (_super) {
-                __extends(DumbbellPoint, _super);
+            __extends(DumbbellPoint, _super);
             function DumbbellPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.series = void 0;
                 _this.options = void 0;
-                _this.connector = void 0;
                 _this.pointWidth = void 0;
                 return _this;
             }
@@ -243,29 +230,12 @@
              *
              */
             DumbbellPoint.prototype.setState = function () {
-                var point = this,
-                    series = point.series,
-                    chart = series.chart,
-                    seriesLowColor = series.options.lowColor,
-                    seriesMarker = series.options.marker,
-                    pointOptions = point.options,
-                    pointLowColor = pointOptions.lowColor,
-                    zoneColor = point.zone && point.zone.color,
-                    lowerGraphicColor = pick(pointLowColor,
-                    seriesLowColor,
-                    pointOptions.color,
-                    zoneColor,
-                    point.color,
-                    series.color),
-                    verb = 'attr',
-                    upperGraphicColor,
-                    origProps;
+                var _a;
+                var point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
                 this.pointSetState.apply(this, arguments);
                 if (!point.state) {
                     verb = 'animate';
-                    var _a = point.graphics || [],
-                        lowerGraphic = _a[0],
-                        upperGraphic = _a[1];
+                    var _b = point.graphics || [], lowerGraphic = _b[0], upperGraphic = _b[1];
                     if (lowerGraphic && !chart.styledMode) {
                         lowerGraphic.attr({
                             fill: lowerGraphicColor
@@ -285,7 +255,7 @@
                         }
                     }
                 }
-                point.connector[verb](series.getConnectorAttribs(point));
+                (_a = point.connector) === null || _a === void 0 ? void 0 : _a[verb](series.getConnectorAttribs(point));
             };
             DumbbellPoint.prototype.destroy = function () {
                 // #15560
@@ -319,16 +289,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -337,13 +306,9 @@
         var colProto = ColumnSeries.prototype;
         var noop = H.noop;
         var seriesProto = Series.prototype;
-        var _a = SeriesRegistry.seriesTypes,
-            AreaRangeSeries = _a.arearange,
-            columnRangeProto = _a.columnrange.prototype;
+        var _a = SeriesRegistry.seriesTypes, AreaRangeSeries = _a.arearange, columnRangeProto = _a.columnrange.prototype;
         var areaRangeProto = AreaRangeSeries.prototype;
-        var extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        var extend = U.extend, merge = U.merge, pick = U.pick;
         /**
          * The dumbbell series type
          *
@@ -354,15 +319,14 @@
          * @augments Highcharts.Series
          */
         var DumbbellSeries = /** @class */ (function (_super) {
-                __extends(DumbbellSeries, _super);
+            __extends(DumbbellSeries, _super);
             function DumbbellSeries() {
                 /* *
                  *
                  * Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  * Properties
@@ -389,34 +353,10 @@
              * @return {Highcharts.SVGAttributes} attribs The path and styles.
              */
             DumbbellSeries.prototype.getConnectorAttribs = function (point) {
-                var series = this,
-                    chart = series.chart,
-                    pointOptions = point.options,
-                    seriesOptions = series.options,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    connectorWidth = pick(pointOptions.connectorWidth,
-                    seriesOptions.connectorWidth),
-                    connectorColor = pick(pointOptions.connectorColor,
-                    seriesOptions.connectorColor,
-                    pointOptions.color,
-                    point.zone ? point.zone.color : void 0,
-                    point.color),
-                    connectorWidthPlus = pick(seriesOptions.states &&
-                        seriesOptions.states.hover &&
-                        seriesOptions.states.hover.connectorWidthPlus, 1),
-                    dashStyle = pick(pointOptions.dashStyle,
-                    seriesOptions.dashStyle),
-                    pointTop = pick(point.plotLow,
-                    point.plotY),
-                    pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0,
-                    true),
-                    pointHeight = chart.inverted ?
-                        yAxis.len - pxThreshold : pxThreshold,
-                    pointBottom = pick(point.plotHigh,
-                    pointHeight),
-                    attribs,
-                    origProps;
+                var series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidth = pick(pointOptions.connectorWidth, seriesOptions.connectorWidth), connectorColor = pick(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color), connectorWidthPlus = pick(seriesOptions.states &&
+                    seriesOptions.states.hover &&
+                    seriesOptions.states.hover.connectorWidthPlus, 1), dashStyle = pick(pointOptions.dashStyle, seriesOptions.dashStyle), pointTop = pick(point.plotLow, point.plotY), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
+                    yAxis.len - pxThreshold : pxThreshold, pointBottom = pick(point.plotHigh, pointHeight), attribs, origProps;
                 if (typeof pointTop !== 'number') {
                     return {};
                 }
@@ -477,10 +417,8 @@
              *
              */
             DumbbellSeries.prototype.drawConnector = function (point) {
-                var series = this,
-                    animationLimit = pick(series.options.animationLimit, 250),
-                    verb = point.connector && series.chart.pointCount < animationLimit ?
-                        'animate' : 'attr';
+                var series = this, animationLimit = pick(series.options.animationLimit, 250), verb = point.connector && series.chart.pointCount < animationLimit ?
+                    'animate' : 'attr';
                 if (!point.connector) {
                     point.connector = series.chart.renderer.path()
                         .addClass('highcharts-lollipop-stem')
@@ -505,8 +443,7 @@
              *
              */
             DumbbellSeries.prototype.getColumnMetrics = function () {
-                var metrics = colProto.getColumnMetrics.apply(this,
-                    arguments);
+                var metrics = colProto.getColumnMetrics.apply(this, arguments);
                 metrics.offset += metrics.width / 2;
                 return metrics;
             };
@@ -530,10 +467,7 @@
                 this.translatePoint.apply(this, arguments);
                 // Correct x position
                 this.points.forEach(function (point) {
-                    var pointWidth = point.pointWidth,
-                        _a = point.shapeArgs,
-                        shapeArgs = _a === void 0 ? {} : _a,
-                        tooltipPos = point.tooltipPos;
+                    var pointWidth = point.pointWidth, _a = point.shapeArgs, shapeArgs = _a === void 0 ? {} : _a, tooltipPos = point.tooltipPos;
                     point.plotX = shapeArgs.x || 0;
                     shapeArgs.x = point.plotX - pointWidth / 2;
                     if (tooltipPos) {
@@ -558,27 +492,19 @@
              *
              */
             DumbbellSeries.prototype.drawPoints = function () {
-                var series = this,
-                    chart = series.chart,
-                    pointLength = series.points.length,
-                    seriesLowColor = series.lowColor = series.options.lowColor,
-                    i = 0,
-                    lowerGraphicColor,
-                    point,
-                    zoneColor;
+                var _a;
+                var series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
                 this.seriesDrawPoints.apply(series, arguments);
                 // Draw connectors and color upper markers
                 while (i < pointLength) {
                     point = series.points[i];
-                    var _a = point.graphics || [],
-                        lowerGraphic = _a[0],
-                        upperGraphic = _a[1];
+                    var _b = point.graphics || [], lowerGraphic = _b[0], upperGraphic = _b[1];
                     series.drawConnector(point);
                     if (upperGraphic) {
                         upperGraphic.element.point = point;
                         upperGraphic.addClass('highcharts-lollipop-high');
                     }
-                    point.connector.element.point = point;
+                    ((_a = point.connector) === null || _a === void 0 ? void 0 : _a.element).point = point;
                     if (lowerGraphic) {
                         zoneColor = point.zone && point.zone.color;
                         lowerGraphicColor = pick(point.options.lowColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
@@ -608,8 +534,7 @@
              *         CSS.
              */
             DumbbellSeries.prototype.markerAttribs = function () {
-                var ret = areaRangeProto.markerAttribs.apply(this,
-                    arguments);
+                var ret = areaRangeProto.markerAttribs.apply(this, arguments);
                 ret.x = Math.floor(ret.x || 0);
                 ret.y = Math.floor(ret.y || 0);
                 return ret;

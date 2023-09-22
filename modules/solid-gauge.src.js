@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Solid angular gauge module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -211,7 +209,7 @@
             /**
              * Whether the strokes of the solid gauge should be `round` or `square`.
              *
-             * @sample {highcharts} highcharts/demo/gauge-activity/
+             * @sample {highcharts} highcharts/demo/gauge-multiple-kpi/
              *         Rounded gauge
              *
              * @type       {string}
@@ -253,8 +251,8 @@
              * `borderRadius` of 50% behaves like `rounded`, except the shape is not
              * extended past its value.
              *
-             * @sample {highcharts} highcharts/demo/gauge-activity/
-             *         Activity Gauge
+             * @sample {highcharts} highcharts/demo/gauge-multiple-kpi/
+             *         Gauge showing multiple KPIs
              *
              * @type      {boolean}
              * @default   false

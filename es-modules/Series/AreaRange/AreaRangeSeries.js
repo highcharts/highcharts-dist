@@ -291,6 +291,7 @@ class AreaRangeSeries extends AreaSeries {
      * @private
      */
     drawDataLabels() {
+        var _a, _b;
         const data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
         let i, point, up, upperDataLabelOptions, lowerDataLabelOptions;
         if (dataLabelOptions) {
@@ -321,7 +322,7 @@ class AreaRangeSeries extends AreaSeries {
                 lowerDataLabelOptions.y = dataLabelOptions.yLow;
             }
             // Draw upper labels
-            if (upperDataLabelOptions.enabled || this._hasPointLabels) {
+            if (upperDataLabelOptions.enabled || ((_a = this.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(this))) {
                 // Set preliminary values for plotY and dataLabel
                 // and draw the upper labels
                 i = length;
@@ -377,7 +378,7 @@ class AreaRangeSeries extends AreaSeries {
                 }
             }
             // Draw lower labels
-            if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
+            if (lowerDataLabelOptions.enabled || ((_b = this.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(this))) {
                 i = length;
                 while (i--) {
                     point = data[i];

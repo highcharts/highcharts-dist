@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,30 +44,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LineSeries = SeriesRegistry.seriesTypes.line;
-        var addEvent = U.addEvent,
-            fireEvent = U.fireEvent,
-            error = U.error,
-            extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge,
-            pick = U.pick,
-            splat = U.splat;
+        var addEvent = U.addEvent, fireEvent = U.fireEvent, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge, pick = U.pick, splat = U.splat;
         /* *
          *
          *  Class
@@ -81,15 +71,14 @@
          * @private
          */
         var SMAIndicator = /** @class */ (function (_super) {
-                __extends(SMAIndicator, _super);
+            __extends(SMAIndicator, _super);
             function SMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -136,18 +125,8 @@
              * @private
              */
             SMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal.length,
-                    SMA = [],
-                    xData = [],
-                    yData = [];
-                var i,
-                    index = -1,
-                    range = 0,
-                    SMAPoint,
-                    sum = 0;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal.length, SMA = [], xData = [], yData = [];
+                var i, index = -1, range = 0, SMAPoint, sum = 0;
                 if (xVal.length < period) {
                     return;
                 }
@@ -184,9 +163,8 @@
                 var indicator = this;
                 _super.prototype.init.call(indicator, chart, options);
                 // Only after series are linked indicator can be processed.
-                var linkedSeriesUnbiner = addEvent(Chart, 'afterLinkSeries',
-                    function (_a) {
-                        var isUpdating = _a.isUpdating;
+                var linkedSeriesUnbiner = addEvent(Chart, 'afterLinkSeries', function (_a) {
+                    var isUpdating = _a.isUpdating;
                     // #18643 indicator shouldn't recalculate
                     // values while series updating.
                     if (isUpdating) {
@@ -217,10 +195,8 @@
                         else if (!hasEvents) {
                             // Some indicators (like VBP) has to recalculate their
                             // values after other chart's events (render).
-                            var unbinder_1 = addEvent(indicator.chart,
-                                indicator.calculateOn.chart,
-                                function () {
-                                    indicator.recalculateValues();
+                            var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn.chart, function () {
+                                indicator.recalculateValues();
                                 // Call this just once.
                                 unbinder_1();
                             });
@@ -243,32 +219,21 @@
              * @private
              */
             SMAIndicator.prototype.recalculateValues = function () {
-                var croppedDataValues = [],
-                    indicator = this,
-                    oldData = indicator.points || [],
-                    oldDataLength = (indicator.xData || []).length,
-                    emptySet = {
-                        values: [],
-                        xData: [],
-                        yData: []
-                    };
-                var overwriteData = true,
-                    oldFirstPointIndex,
-                    oldLastPointIndex,
-                    croppedData,
-                    min,
-                    max,
-                    i;
+                var croppedDataValues = [], indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, emptySet = {
+                    values: [],
+                    xData: [],
+                    yData: []
+                };
+                var overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
                 // Updating an indicator with redraw=false may destroy data.
                 // If there will be a following update for the parent series,
                 // we will try to access Series object without any properties
                 // (except for prototyped ones). This is what happens
                 // for example when using Axis.setDataGrouping(). See #16670
                 var processedData = indicator.linkedParent.options &&
-                        indicator.linkedParent.yData && // #18176, #18177 indicators should
-                        indicator.linkedParent.yData.length ? // work with empty dataset
-                        (indicator.getValues(indicator.linkedParent,
-                    indicator.options.params) || emptySet) : emptySet;
+                    indicator.linkedParent.yData && // #18176, #18177 indicators should
+                    indicator.linkedParent.yData.length ? // work with empty dataset
+                    (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
                 // We need to update points to reflect changes in all,
                 // x and y's, values. However, do it only for non-grouped
                 // data - grouping does it for us (#8572)
@@ -327,9 +292,7 @@
              * @private
              */
             SMAIndicator.prototype.processData = function () {
-                var series = this,
-                    compareToMain = series.options.compareToMain,
-                    linkedParent = series.linkedParent;
+                var series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
                 _super.prototype.processData.apply(series, arguments);
                 if (series.dataModify &&
                     linkedParent &&
@@ -466,25 +429,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat,
-            isArray = U.isArray,
-            merge = U.merge;
+        var correctFloat = U.correctFloat, isArray = U.isArray, merge = U.merge;
         /* *
          *
          *  Class
@@ -500,15 +460,14 @@
          * @augments Highcharts.Series
          */
         var EMAIndicator = /** @class */ (function (_super) {
-                __extends(EMAIndicator, _super);
+            __extends(EMAIndicator, _super);
             function EMAIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -525,9 +484,7 @@
              *
              * */
             EMAIndicator.prototype.accumulatePeriodPoints = function (period, index, yVal) {
-                var sum = 0,
-                    i = 0,
-                    y = 0;
+                var sum = 0, i = 0, y = 0;
                 while (i < period) {
                     y = index < 0 ? yVal[i] : yVal[i][index];
                     sum = sum + y;
@@ -536,30 +493,16 @@
                 return sum;
             };
             EMAIndicator.prototype.calculateEma = function (xVal, yVal, i, EMApercent, calEMA, index, SMA) {
-                var x = xVal[i - 1],
-                    yValue = index < 0 ?
-                        yVal[i - 1] :
-                        yVal[i - 1][index],
-                    y = typeof calEMA === 'undefined' ?
-                        SMA : correctFloat((yValue * EMApercent) +
-                        (calEMA * (1 - EMApercent)));
+                var x = xVal[i - 1], yValue = index < 0 ?
+                    yVal[i - 1] :
+                    yVal[i - 1][index], y = typeof calEMA === 'undefined' ?
+                    SMA : correctFloat((yValue * EMApercent) +
+                    (calEMA * (1 - EMApercent)));
                 return [x, y];
             };
             EMAIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    EMApercent = 2 / (period + 1),
-                    EMA = [],
-                    xData = [],
-                    yData = [];
-                var calEMA,
-                    EMAPoint,
-                    i,
-                    index = -1,
-                    sum = 0,
-                    SMA = 0;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
+                var calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
                 // Check period, if bigger than points length, skip
                 if (yValLen < period) {
                     return;

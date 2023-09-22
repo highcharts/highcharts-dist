@@ -201,6 +201,7 @@ VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
      * The line width for each vector arrow.
      */
     lineWidth: 2,
+    marker: void 0,
     /**
      * What part of the vector it should be rotated around. Can be one of
      * `start`, `center` and `end`. When `start`, the vectors will start
@@ -233,8 +234,6 @@ VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
      * length is computed between 0 and this value.
      */
     vectorLength: 20
-}, {
-    marker: null
 });
 extend(VectorSeries.prototype, {
     /**

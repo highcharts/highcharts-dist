@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Dependency wheel module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -50,7 +48,7 @@
          *
          * */
         const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
-        const { wrap } = U;
+        const { pInt, wrap } = U;
         /* *
          *
          *  Class
@@ -86,6 +84,7 @@
              * @private
              */
             getDataLabelPath(label) {
+                var _a;
                 const renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
                 // First time
                 if (!this.dataLabelPath) {
@@ -111,7 +110,7 @@
                     .attr({
                     x: shapeArgs.x,
                     y: shapeArgs.y,
-                    r: (shapeArgs.r + (label.options.distance || 0)),
+                    r: ((shapeArgs.r || 0) + pInt(((_a = label.options) === null || _a === void 0 ? void 0 : _a.distance) || 0)),
                     start: (upperHalf ? start : end),
                     end: (upperHalf ? end : start),
                     clockwise: +upperHalf
@@ -157,7 +156,7 @@
          *         Dependency wheel
          *
          * @extends      plotOptions.sankey
-         * @exclude      dataSorting
+         * @exclude      dataSorting, nodeAlignment
          * @since        7.1.0
          * @product      highcharts
          * @requires     modules/dependency-wheel

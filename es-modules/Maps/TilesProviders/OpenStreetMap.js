@@ -7,7 +7,7 @@ class OpenStreetMap {
         this.subdomains = ['a', 'b', 'c'];
         this.themes = {
             Standard: {
-                url: 'https://{s}.tile.openstreetmap.org/{zoom}/{x}/{y}.png',
+                url: 'https://tile.openstreetmap.org/{zoom}/{x}/{y}.png',
                 minZoom: 0,
                 maxZoom: 19
             },

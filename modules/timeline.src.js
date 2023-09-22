@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Timeline series
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -78,17 +76,17 @@
              * */
             /* eslint-disable valid-jsdoc */
             alignConnector() {
-                let point = this, series = point.series, connector = point.connector, dl = point.dataLabel, dlOptions = point.dataLabel.options = merge(series.options.dataLabels, point.options.dataLabels), chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
-                    x: bBox.x + dl.translateX,
-                    y: bBox.y + dl.translateY
+                let point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
+                    x: bBox.x + dataLabel.translateX,
+                    y: bBox.y + dataLabel.translateY
                 }, isVisible;
                 // Include a half of connector width in order to run animation,
                 // when connectors are aligned to the plot area edge.
                 if (chart.inverted) {
-                    plotPos.y -= dl.options.connectorWidth / 2;
+                    plotPos.y -= connectorWidth / 2;
                 }
                 else {
-                    plotPos.x += dl.options.connectorWidth / 2;
+                    plotPos.x += connectorWidth / 2;
                 }
                 isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
                 connector[isVisible ? 'animate' : 'attr']({
@@ -99,26 +97,29 @@
                     connector.attr({
                         stroke: dlOptions.connectorColor || point.color,
                         'stroke-width': dlOptions.connectorWidth,
-                        opacity: dl[defined(dl.newOpacity) ? 'newOpacity' : 'opacity']
+                        opacity: dataLabel[defined(dataLabel.newOpacity) ? 'newOpacity' : 'opacity']
                     });
                 }
             }
             drawConnector() {
-                const point = this, series = point.series;
-                if (!point.connector) {
-                    point.connector = series.chart.renderer
-                        .path(point.getConnectorPath())
-                        .attr({
-                        zIndex: -1
-                    })
-                        .add(point.dataLabel);
-                }
-                if (point.series.chart.isInsidePlot(// #10507
-                point.dataLabel.x, point.dataLabel.y)) {
-                    point.alignConnector();
+                const point = this, { dataLabel, series } = point;
+                if (dataLabel) {
+                    if (!dataLabel.connector) {
+                        dataLabel.connector = series.chart.renderer
+                            .path(point.getConnectorPath())
+                            .attr({
+                            zIndex: -1
+                        })
+                            .add(dataLabel);
+                    }
+                    if (point.series.chart.isInsidePlot(// #10507
+                    dataLabel.x || 0, dataLabel.y || 0)) {
+                        point.alignConnector();
+                    }
                 }
             }
             getConnectorPath() {
+                var _a;
                 let point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
                     x1: point.plotX,
                     y1: point.plotY,
@@ -147,7 +148,7 @@
                 path = chart.renderer.crispLine([
                     ['M', coords.x1, coords.y1],
                     ['L', coords.x2, coords.y2]
-                ], dl.options.connectorWidth);
+                ], ((_a = dl.options) === null || _a === void 0 ? void 0 : _a.connectorWidth) || 0);
                 return path;
             }
             init() {
@@ -647,9 +648,9 @@
                     });
                 }));
                 series.eventsToUnbind.push(addEvent(series.chart, 'afterHideOverlappingLabel', function () {
-                    series.points.forEach(function (p) {
-                        if (p.connector &&
-                            p.dataLabel &&
+                    series.points.forEach((p) => {
+                        if (p.dataLabel &&
+                            p.dataLabel.connector &&
                             p.dataLabel.oldOpacity !== p.dataLabel.newOpacity) {
                             p.alignConnector();
                         }

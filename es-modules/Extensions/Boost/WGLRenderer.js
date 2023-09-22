@@ -217,8 +217,8 @@ class WGLRenderer {
      */
     pushSeriesData(series, inst) {
         const data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
-            series.pointArrayMap.join(',') === 'low,high'), chart = series.chart, options = series.options, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
-            series.processedZData), yAxis = series.yAxis, xAxis = series.xAxis, useRaw = !xData || xData.length === 0, 
+            series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
+            series.processedZData), useRaw = !xData || xData.length === 0, 
         // threshold = options.threshold,
         // yBottom = chart.yAxis[0].getThreshold(threshold),
         // hasThreshold = isNumber(threshold),
@@ -557,8 +557,9 @@ class WGLRenderer {
                 continue;
             }
             // The first point before and first after extremes should be
-            // rendered (#9962)
-            if ((nx >= xMin || x >= xMin) &&
+            // rendered (#9962, 19701)
+            if (sorted &&
+                (nx >= xMin || x >= xMin) &&
                 (px <= xMax || x <= xMax)) {
                 isXInside = true;
             }
@@ -944,12 +945,19 @@ class WGLRenderer {
             shader.reset();
             // If there are entries in the colorData buffer, build and bind it.
             if (s.colorData.length > 0) {
-                shader.setUniform('hasColor', 1.0);
+                shader.setUniform('hasColor', 1);
                 cbuffer = new WGLVertexBuffer(gl, shader);
-                cbuffer.build(s.colorData, 'aColor', 4);
+                cbuffer.build(
+                // The color array attribute for vertex is assigned from 0,
+                // so it needs to be shifted to be applied to further
+                // segments. #18858
+                Array(s.segments[0].from).concat(s.colorData), 'aColor', 4);
                 cbuffer.bind();
             }
             else {
+                // Set the hasColor uniform to false (0) when the series
+                // contains no colorData buffer points. #18858
+                shader.setUniform('hasColor', 0);
                 // #15869, a buffer with fewer points might already be bound by
                 // a different series/chart causing out of range errors
                 gl.disableVertexAttribArray(gl.getAttribLocation(shader.getProgram(), 'aColor'));

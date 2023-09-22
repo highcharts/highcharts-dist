@@ -75,6 +75,10 @@ class ColumnPyramidSeries extends ColumnSeries {
             // Don't draw too far outside plot area
             // (#1303, #2241, #4264)
             barX = point.plotX + pointXOffset, barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
+            // Adjust for null or missing points
+            if (options.centerInCategory) {
+                barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
+            }
             point.barX = barX;
             point.pointWidth = pointWidth;
             // Fix the tooltip on center of grouped pyramids

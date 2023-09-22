@@ -377,7 +377,7 @@ function onSeriesAfterTranslate() {
         if (!this.hasClipCircleSetter) {
             this.hasClipCircleSetter = !!series.eventsToUnbind.push(addEvent(series, 'afterRender', function () {
                 let circ;
-                if (chart.polar) {
+                if (chart.polar && this.options.clip !== false) {
                     // For clipping purposes there is a need for
                     // coordinates from the absolute center
                     circ = this.yAxis.pane.center;

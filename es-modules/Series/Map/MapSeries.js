@@ -152,10 +152,6 @@ class MapSeries extends ScatterSeries {
                 if (graphic && graphic.parentGroup !== point.group) {
                     graphic.add(point.group);
                 }
-                // Restore state color on update/redraw (#3529)
-                if (shapeArgs && chart.hasRendered && !chart.styledMode) {
-                    shapeArgs.fill = this.pointAttribs(point, point.state).fill;
-                }
             });
             // Draw the points
             ColumnSeries.prototype.drawPoints.apply(this);
@@ -651,7 +647,7 @@ class MapSeries extends ScatterSeries {
                 if (point.projectedPath && !point.projectedPath.length) {
                     point.setVisible(false);
                 }
-                else {
+                else if (!point.visible) {
                     point.setVisible(true);
                 }
             });

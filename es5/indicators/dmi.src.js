@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,9 +46,7 @@
          *
          * */
         var smaProto = SeriesRegistry.seriesTypes.sma.prototype;
-        var defined = U.defined,
-            error = U.error,
-            merge = U.merge;
+        var defined = U.defined, error = U.error, merge = U.merge;
         /* *
          *
          *  Composition
@@ -176,24 +172,14 @@
              * @private
              */
             function indicatorDrawGraph() {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    areaLinesNames = indicator.areaLinesNames,
-                    mainLinePoints = indicator.points,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    }, 
-                    // additional lines point place holders:
-                    secondaryLines = [],
-                    secondaryLinesNames = getTranslatedLinesNames(indicator,
-                    pointValKey);
-                var pointsLength = mainLinePoints.length,
-                    point;
+                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = getTranslatedLinesNames(indicator, pointValKey);
+                var pointsLength = mainLinePoints.length, point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach(function (plotLine, index) {
                     // create additional lines point place holders
@@ -211,12 +197,9 @@
                 });
                 // Modify options and generate area fill:
                 if (indicator.userOptions.fillColor && areaLinesNames.length) {
-                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
-                        secondLinePoints = secondaryLines[index],
-                        firstLinePoints = areaLinesNames.length === 1 ?
-                            mainLinePoints :
-                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
-                        originalColor = indicator.color;
+                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
+                        mainLinePoints :
+                        secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
                     indicator.points = firstLinePoints;
                     indicator.nextPoints = secondLinePoints;
                     indicator.color = indicator.userOptions.fillColor;
@@ -267,9 +250,7 @@
              * @param points Points on which the path should be created
              */
             function indicatorGetGraphPath(points) {
-                var areaPath,
-                    path = [],
-                    higherAreaPath = [];
+                var areaPath, path = [], higherAreaPath = [];
                 points = points || this.points;
                 // Render Span
                 if (this.fillGraph && this.nextPoints) {
@@ -311,8 +292,7 @@
             function indicatorTranslate() {
                 var _this = this;
                 var pointArrayMap = this.pointArrayMap;
-                var LinesNames = [],
-                    value;
+                var LinesNames = [], value;
                 LinesNames = getTranslatedLinesNames(this);
                 smaProto.translate.apply(this, arguments);
                 this.points.forEach(function (point) {
@@ -350,26 +330,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var correctFloat = U.correctFloat,
-            extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge;
+        var correctFloat = U.correctFloat, extend = U.extend, isArray = U.isArray, merge = U.merge;
         /* *
          *
          *  Class
@@ -385,15 +361,14 @@
          * @augments Highcharts.Series
          */
         var DMIIndicator = /** @class */ (function (_super) {
-                __extends(DMIIndicator, _super);
+            __extends(DMIIndicator, _super);
             function DMIIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -408,10 +383,7 @@
              *
              * */
             DMIIndicator.prototype.calculateDM = function (yVal, i, isPositiveDM) {
-                var currentHigh = yVal[i][1],
-                    currentLow = yVal[i][2],
-                    previousHigh = yVal[i - 1][1],
-                    previousLow = yVal[i - 1][2];
+                var currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
                 var DM;
                 if (currentHigh - previousHigh > previousLow - currentLow) {
                     // for +DM
@@ -442,13 +414,7 @@
                 !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
             };
             DMIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    DMI = [],
-                    xData = [],
-                    yData = [];
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DMI = [], xData = [], yData = [];
                 if (
                 // Check period, if bigger than points length, skip
                 (xVal.length <= period) ||
@@ -457,24 +423,17 @@
                     yVal[0].length !== 4) {
                     return;
                 }
-                var prevSmoothedPlusDM = 0,
-                    prevSmoothedMinusDM = 0,
-                    prevSmoothedTR = 0,
-                    i;
+                var prevSmoothedPlusDM = 0, prevSmoothedMinusDM = 0, prevSmoothedTR = 0, i;
                 for (i = 1; i < yValLen; i++) {
-                    var smoothedPlusDM = void 0,
-                        smoothedMinusDM = void 0,
-                        smoothedTR = void 0,
-                        plusDM = // +DM
-                         void 0, // +DM
-                        minusDM = // -DM
-                         void 0, // -DM
-                        TR = void 0,
-                        plusDI = // +DI
-                         void 0, // +DI
-                        minusDI = // -DI
-                         void 0, // -DI
-                        DX = void 0;
+                    var smoothedPlusDM = void 0, smoothedMinusDM = void 0, smoothedTR = void 0, plusDM = // +DM
+                     void 0, // +DM
+                    minusDM = // -DM
+                     void 0, // -DM
+                    TR = void 0, plusDI = // +DI
+                     void 0, // +DI
+                    minusDI = // -DI
+                     void 0, // -DI
+                    DX = void 0;
                     if (i <= period) {
                         plusDM = this.calculateDM(yVal, i, true);
                         minusDM = this.calculateDM(yVal, i);

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -1326,7 +1324,6 @@
                             'dataGrouping.smoothed': 'use dataGrouping.anchor'
                         });
                     }
-                    anchorPoints(series, groupedXData, xMax);
                     // Record what data grouping values were used
                     for (i = 1; i < groupPositions.length; i++) {
                         // The grouped gapSize needs to be the largest distance between
@@ -1342,6 +1339,8 @@
                     currentDataGrouping.gapSize = gapSize;
                     series.closestPointRange = groupPositions.info.totalRange;
                     series.groupMap = groupedData.groupMap;
+                    series.currentDataGrouping = currentDataGrouping;
+                    anchorPoints(series, groupedXData, xMax);
                     if (visible) {
                         adjustExtremes(xAxis, groupedXData);
                     }
@@ -1351,8 +1350,7 @@
                         // Keep the reference to all grouped points
                         // for further calculation (eg. heikinashi).
                         series.allGroupedData = groupedYData;
-                        croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max, 1 // Ordinal xAxis will remove left-most points otherwise
-                        );
+                        croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max);
                         groupedXData = croppedData.xData;
                         groupedYData = croppedData.yData;
                         series.cropStart = croppedData.start; // #15005
@@ -1365,7 +1363,6 @@
                     series.groupMap = null;
                 }
                 series.hasGroupedData = hasGroupedData;
-                series.currentDataGrouping = currentDataGrouping;
                 series.preventGraphAnimation =
                     (lastDataGrouping && lastDataGrouping.totalRange) !==
                         (currentDataGrouping && currentDataGrouping.totalRange);
@@ -1689,8 +1686,7 @@
                 // if we have grouped data, use the grouping information to get the
                 // right format
                 if (currentDataGrouping) {
-                    labelFormats =
-                        dateTimeLabelFormats[currentDataGrouping.unitName];
+                    labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
                     if (currentDataGrouping.count === 1) {
                         xDateFormat = labelFormats[0];
                     }
@@ -2181,12 +2177,12 @@
             }
             return inner;
         };
-        let wheelTimer, originalOptions;
+        let wheelTimer, startOnTick, endOnTick;
         /**
          * @private
          */
         const zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY, options) {
-            const xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
+            const xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], yOptions = yAxis.options, type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
             if (defined(xAxis.max) && defined(xAxis.min) &&
                 defined(yAxis.max) && defined(yAxis.min) &&
                 defined(xAxis.dataMax) && defined(xAxis.dataMin) &&
@@ -2197,16 +2193,21 @@
                     if (defined(wheelTimer)) {
                         clearTimeout(wheelTimer);
                     }
-                    const { startOnTick, endOnTick } = yAxis.options;
-                    if (!originalOptions) {
-                        originalOptions = { startOnTick, endOnTick };
+                    if (!defined(startOnTick)) {
+                        startOnTick = yOptions.startOnTick;
+                        endOnTick = yOptions.endOnTick;
                     }
+                    // Temporarily disable start and end on tick, because they would
+                    // prevent small increments of zooming.
                     if (startOnTick || endOnTick) {
-                        yAxis.setOptions({ startOnTick: false, endOnTick: false });
+                        yOptions.startOnTick = false;
+                        yOptions.endOnTick = false;
                     }
                     wheelTimer = setTimeout(() => {
-                        if (originalOptions) {
-                            yAxis.setOptions(originalOptions);
+                        if (defined(startOnTick) && defined(endOnTick)) {
+                            // Repeat merge after the wheel zoom is finished, #19178
+                            yOptions.startOnTick = startOnTick;
+                            yOptions.endOnTick = endOnTick;
                             // Set the extremes to the same as they already are, but now
                             // with the original startOnTick and endOnTick. We need
                             // `forceRedraw` otherwise it will detect that the values
@@ -2215,7 +2216,7 @@
                             const { min, max } = yAxis.getExtremes();
                             yAxis.forceRedraw = true;
                             yAxis.setExtremes(min, max);
-                            originalOptions = void 0;
+                            startOnTick = endOnTick = void 0;
                         }
                     }, 400);
                 }
@@ -4930,7 +4931,7 @@
          * */
         const { defaultOptions } = D;
         const { hasTouch, isTouchDevice } = H;
-        const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, isArray, isNumber, merge, pick, removeEvent, splat } = U;
+        const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, fireEvent, isArray, isNumber, merge, pick, removeEvent, splat } = U;
         /* *
          *
          *  Functions
@@ -5413,6 +5414,7 @@
                     navigator.zoomedMin / (navigatorSize || 1), navigator.zoomedMax / (navigatorSize || 1));
                 }
                 navigator.rendered = true;
+                fireEvent(this, 'afterRender');
             }
             /**
              * Set up the mouse and touch events for the navigator
@@ -7376,10 +7378,10 @@
                 const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
                     const minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
                     // #3274 in some case blur is not defined
-                    if (minInput && (minInput.blur)) {
+                    if (minInput && !!minInput.blur) {
                         fireEvent(minInput, 'blur');
                     }
-                    if (maxInput && (maxInput.blur)) {
+                    if (maxInput && !!maxInput.blur) {
                         fireEvent(maxInput, 'blur');
                     }
                 };
@@ -7695,9 +7697,7 @@
                  * @private
                  */
                 function updateExtremes() {
-                    const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], dataAxis = chart.scroller && chart.scroller.xAxis ?
-                        chart.scroller.xAxis :
-                        chartAxis, dataMin = dataAxis.dataMin, dataMax = dataAxis.dataMax;
+                    const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chartAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax;
                     let value = rangeSelector.getInputValue(name);
                     if (value !== Number(input.getAttribute('data-hc-time-previous')) &&
                         isNumber(value)) {
@@ -8924,12 +8924,7 @@
                 // If the value is not inside the plot area, use the extended positions.
                 // (array contains also points that are outside of the plotArea).
                 if (!isInside) {
-                    // When iterating for the first time,
-                    // get the extended ordinal positional and assign them.
-                    if (!ordinal.extendedOrdinalPositions) {
-                        ordinal.extendedOrdinalPositions = (ordinal.getExtendedPositions());
-                    }
-                    positions = ordinal.extendedOrdinalPositions;
+                    positions = ordinal.getExtendedPositions();
                 }
                 // In some cases (especially in early stages of the chart creation) the
                 // getExtendedPositions might return undefined.
@@ -8942,15 +8937,8 @@
                         const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                         return positions[Math.floor(index)] + mantissa * distance;
                     }
-                    // For cases when the index is not in the extended ordinal position
-                    // array, like when the value we are looking for exceed the
-                    // available data, approximate that value based on the calculated
-                    // slope.
-                    const positionsLength = positions.length, firstPositionsValue = positions[0], lastPositionsValue = positions[positionsLength - 1], slope = (lastPositionsValue - firstPositionsValue) / (positionsLength - 1);
-                    if (index < 0) {
-                        return firstPositionsValue + slope * index;
-                    }
-                    return lastPositionsValue + slope * (index - positionsLength);
+                    // If the value is outside positions array, return initial value
+                    return val; // #16784
                 }
                 return val;
             }
@@ -9124,7 +9112,6 @@
                 // and destroy extendedOrdinalPositions, #16055.
                 if (xAxis && xAxis.options.ordinal) {
                     delete xAxis.ordinal.index;
-                    delete xAxis.ordinal.extendedOrdinalPositions;
                 }
             }
             /**
@@ -9142,7 +9129,7 @@
              */
             function val2lin(val, toIndex) {
                 const axis = this, ordinal = axis.ordinal, ordinalPositions = ordinal.positions;
-                let slope = ordinal.slope, extendedOrdinalPositions = ordinal.extendedOrdinalPositions;
+                let slope = ordinal.slope, extendedOrdinalPositions;
                 if (!ordinalPositions) {
                     return val;
                 }
@@ -9156,12 +9143,9 @@
                     // final return value is based on ordinalIndex
                 }
                 else {
-                    if (!extendedOrdinalPositions) {
-                        extendedOrdinalPositions =
-                            ordinal.getExtendedPositions &&
-                                ordinal.getExtendedPositions();
-                        ordinal.extendedOrdinalPositions = extendedOrdinalPositions;
-                    }
+                    extendedOrdinalPositions =
+                        ordinal.getExtendedPositions &&
+                            ordinal.getExtendedPositions();
                     if (!(extendedOrdinalPositions && extendedOrdinalPositions.length)) {
                         return val;
                     }
@@ -9185,6 +9169,11 @@
                             originalPositionsReference;
                     }
                     else {
+                        if (!toIndex) {
+                            // If the value is outside positions array,
+                            // return initial value, #16784
+                            return val;
+                        }
                         // Since ordinal.slope is the average distance between 2
                         // points on visible plotArea, this can be used to calculete
                         // the approximate position of the point, which is outside
@@ -9444,6 +9433,7 @@
                                     max: extremes.dataMax + overscroll
                                 };
                             },
+                            applyGrouping: axisProto.applyGrouping,
                             getGroupPixelWidth: axisProto.getGroupPixelWidth,
                             getTimeTicks: axisProto.getTimeTicks,
                             options: {
@@ -9464,6 +9454,7 @@
                                 xAxis: fakeAxis,
                                 xData: series.xData.slice(),
                                 chart: chart,
+                                groupPixelWidth: series.groupPixelWidth,
                                 destroyGroupedData: H.noop,
                                 getProcessedData: Series.prototype.getProcessedData,
                                 applyGrouping: Series.prototype.applyGrouping
@@ -9489,6 +9480,7 @@
                             fakeAxis.series.push(fakeSeries);
                             series.processData.apply(fakeSeries);
                         });
+                        fakeAxis.applyGrouping({ hasExtremesChanged: true });
                         // Force to use the ordinal when points are evenly spaced (e.g.
                         // weeks), #3825.
                         if ((fakeSeries.closestPointRange !==
@@ -9568,7 +9560,11 @@
                     const ordinal = this, axis = ordinal.axis, firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
                     // Check whether the series has at least one point inside the chart
                     const hasPointsInside = function (series) {
-                        return series.points.some((point) => !!point.isInside);
+                        const { min, max } = axis;
+                        if (defined(min) && defined(max)) {
+                            return series.points.some((point) => point.x >= min && point.x <= max);
+                        }
+                        return false;
                     };
                     let firstPointX;
                     // When more series assign to axis, find the smallest one, #15987.
@@ -11334,6 +11330,8 @@
              * @private
              */
             function translate() {
+                var _a,
+                    _b;
                 columnProto.translate.apply(this);
                 const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
                     chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
@@ -11361,17 +11359,67 @@
                                     rightPoint = onData[i + 1];
                                     if (rightPoint &&
                                         typeof rightPoint[onKey] !== 'undefined') {
-                                        // the distance ratio, between 0 and 1
-                                        distanceRatio =
-                                            (point.x - leftPoint.x) /
-                                                (rightPoint.x - leftPoint.x);
-                                        point.plotY +=
-                                            distanceRatio *
-                                                // the plotY distance
-                                                (rightPoint[onKey] - leftPoint[onKey]);
-                                        point.y +=
-                                            distanceRatio *
-                                                (rightPoint.y - leftPoint.y);
+                                        // If the series is spline, calculate Y of the
+                                        // point on the bezier line. #19264
+                                        if (defined(point.plotX) &&
+                                            onSeries.is('spline')) {
+                                            leftPoint = leftPoint;
+                                            rightPoint = rightPoint;
+                                            const p0 = [
+                                                leftPoint.plotX || 0,
+                                                leftPoint.plotY || 0
+                                            ], p3 = [
+                                                rightPoint.plotX || 0,
+                                                rightPoint.plotY || 0
+                                            ], p1 = (((_a = leftPoint.controlPoints) === null || _a === void 0 ? void 0 : _a.high) ||
+                                                p0), p2 = (((_b = rightPoint.controlPoints) === null || _b === void 0 ? void 0 : _b.low) ||
+                                                p3), pixelThreshold = 0.25, maxIterations = 100, calculateCoord = (t, key) => (
+                                            // The parametric formula for the
+                                            // cubic Bezier curve.
+                                            Math.pow(1 - t, 3) * p0[key] +
+                                                3 * (1 - t) * (1 - t) * t *
+                                                    p1[key] + 3 * (1 - t) * t * t *
+                                                p2[key] + t * t * t * p3[key]);
+                                            let tMin = 0, tMax = 1, t;
+                                            // Find `t` of the parametric function of
+                                            // the bezier curve for the given `plotX`.
+                                            for (let i = 0; i < maxIterations; i++) {
+                                                const tMid = (tMin + tMax) / 2;
+                                                const xMid = calculateCoord(tMid, 0);
+                                                if (xMid === null) {
+                                                    break;
+                                                }
+                                                if (Math.abs(xMid - point.plotX) < pixelThreshold) {
+                                                    t = tMid;
+                                                    break;
+                                                }
+                                                if (xMid < point.plotX) {
+                                                    tMin = tMid;
+                                                }
+                                                else {
+                                                    tMax = tMid;
+                                                }
+                                            }
+                                            if (defined(t)) {
+                                                point.plotY =
+                                                    calculateCoord(t, 1);
+                                                point.y =
+                                                    yAxis.toValue(point.plotY, true);
+                                            }
+                                        }
+                                        else {
+                                            // the distance ratio, between 0 and 1
+                                            distanceRatio =
+                                                (point.x - leftPoint.x) /
+                                                    (rightPoint.x - leftPoint.x);
+                                            point.plotY +=
+                                                distanceRatio *
+                                                    // the plotY distance
+                                                    (rightPoint[onKey] - leftPoint[onKey]);
+                                            point.y +=
+                                                distanceRatio *
+                                                    (rightPoint.y - leftPoint.y);
+                                        }
                                     }
                                 }
                             }

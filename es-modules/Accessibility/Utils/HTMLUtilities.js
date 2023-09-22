@@ -270,9 +270,11 @@ function reverseChildNodes(node) {
  * text contains tags.
  * @private
  */
-function stripHTMLTagsFromString(str) {
-    return typeof str === 'string' ?
-        str.replace(/<\/?[^>]+(>|$)/g, '') : str;
+function stripHTMLTagsFromString(str, isForExport = false) {
+    return (typeof str === 'string') ?
+        (isForExport ?
+            str.replace(/<\/?[^>]+(>|$)/g, '') :
+            str.replace(/<\/?(?!\s)[^>]+(>|$)/g, '')) : str;
 }
 /**
  * Utility function for hiding an element visually, but still keeping it

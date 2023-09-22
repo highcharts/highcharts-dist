@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Variable Pie module for Highcharts
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -50,29 +48,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var PieSeries = SeriesRegistry.seriesTypes.pie;
-        var arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            clamp = U.clamp,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            merge = U.merge,
-            pick = U.pick;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, pick = U.pick, splat = U.splat;
         /* *
          *
          *  Class
@@ -88,15 +79,14 @@
          * @augments Highcharts.Series
          */
         var VariablePieSeries = /** @class */ (function (_super) {
-                __extends(VariablePieSeries, _super);
+            __extends(VariablePieSeries, _super);
             function VariablePieSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -121,22 +111,12 @@
              * @private
              */
             VariablePieSeries.prototype.calculateExtremes = function () {
-                var series = this,
-                    chart = series.chart,
-                    plotWidth = chart.plotWidth,
-                    plotHeight = chart.plotHeight,
-                    seriesOptions = series.options,
-                    slicingRoom = 2 * (seriesOptions.slicedOffset || 0),
-                    zMin,
-                    zMax,
-                    zData = series.zData,
-                    smallestSize = Math.min(plotWidth,
-                    plotHeight) - slicingRoom, 
-                    // Min and max size of pie slice:
-                    extremes = {}, 
-                    // In pie charts size of a pie is changed to make space for
-                    // dataLabels, then series.center is changing.
-                    positions = series.center || series.getCenter();
+                var series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zMin, zMax, zData = series.zData, smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
+                // Min and max size of pie slice:
+                extremes = {}, 
+                // In pie charts size of a pie is changed to make space for
+                // dataLabels, then series.center is changing.
+                positions = series.center || series.getCenter();
                 ['minPointSize', 'maxPointSize'].forEach(function (prop) {
                     var length = seriesOptions[prop], isPercent = /%$/.test(length);
                     length = parseInt(length, 10);
@@ -174,16 +154,7 @@
              * Minimal pixel size possible for radius.
              */
             VariablePieSeries.prototype.getRadii = function (zMin, zMax, minSize, maxSize) {
-                var i = 0,
-                    pos,
-                    zData = this.zData,
-                    len = zData.length,
-                    radii = [],
-                    options = this.options,
-                    sizeByArea = options.sizeBy !== 'radius',
-                    zRange = zMax - zMin,
-                    value,
-                    radius;
+                var i = 0, pos, zData = this.zData, len = zData.length, radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin, value, radius;
                 // Calculate radius for all pie slice's based on their Z values
                 for (i; i < len; i++) {
                     // if zData[i] is null/undefined/string we need to take zMin for
@@ -216,6 +187,41 @@
                 this.center = null;
                 _super.prototype.redraw.apply(this, arguments);
             };
+            /** @private */
+            VariablePieSeries.prototype.getDataLabelPosition = function (point, distance) {
+                var _a = this, center = _a.center, options = _a.options, angle = point.angle || 0, r = this.radii[point.index], x = center[0] + Math.cos(angle) * r, y = center[1] + Math.sin(angle) * r, connectorOffset = (options.slicedOffset || 0) +
+                    (options.borderWidth || 0), 
+                // Set the anchor point for data labels. Use point.labelDistance
+                // instead of labelDistance // #1174
+                // finalConnectorOffset - not override connectorOffset value.
+                finalConnectorOffset = Math.min(connectorOffset, distance / 5); // #1678
+                return {
+                    distance: distance,
+                    natural: {
+                        // Initial position of the data label - it's utilized for
+                        // finding the final position for the label
+                        x: x + Math.cos(angle) * distance,
+                        y: y + Math.sin(angle) * distance
+                    },
+                    computed: {
+                    // Used for generating connector path - initialized later in
+                    // drawDataLabels function x: undefined, y: undefined
+                    },
+                    // Left - pie on the left side of the data label
+                    // Right - pie on the right side of the data label
+                    alignment: point.half ? 'right' : 'left',
+                    connectorPosition: {
+                        breakAt: {
+                            x: x + Math.cos(angle) * finalConnectorOffset,
+                            y: y + Math.sin(angle) * finalConnectorOffset
+                        },
+                        touchingSliceAt: {
+                            x: x,
+                            y: y
+                        }
+                    }
+                };
+            };
             /**
              * Extend translate by updating radius for each pie slice instead of using
              * one global radius.
@@ -224,10 +230,10 @@
             VariablePieSeries.prototype.translate = function (positions) {
                 this.generatePoints();
                 var series = this, cumulative = 0, precision = 1000, // issue #172
-                    options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), finalConnectorOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
-                    points = series.points, 
-                    // the x component of the radius vector for a given point
-                    radiusX, radiusY, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii, pointRadiusX, pointRadiusY;
+                options = series.options, slicedOffset = options.slicedOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                points = series.points, 
+                // the x component of the radius vector for a given point
+                radiusX, radiusY, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
                 // Use calculateExtremes to get series.radii array.
@@ -242,18 +248,13 @@
                 for (i = 0; i < len; i++) {
                     point = points[i];
                     pointRadii = series.radii[i];
-                    // Used for distance calculation for specific point.
-                    point.labelDistance = pick(point.options.dataLabels &&
-                        point.options.dataLabels.distance, labelDistance);
-                    // Saved for later dataLabels distance calculation.
-                    series.maxLabelDistance = Math.max(series.maxLabelDistance || 0, point.labelDistance);
-                    // set start and end angle
+                    // Set start and end angle
                     start = startAngleRad + (cumulative * circ);
                     if (!ignoreHiddenPoint || point.visible) {
                         cumulative += point.percentage / 100;
                     }
                     end = startAngleRad + (cumulative * circ);
-                    // set the shape
+                    // Set the shape
                     point.shapeType = 'arc';
                     point.shapeArgs = {
                         x: positions[0],
@@ -276,11 +277,9 @@
                         translateX: Math.round(Math.cos(angle) * slicedOffset),
                         translateY: Math.round(Math.sin(angle) * slicedOffset)
                     };
-                    // set the anchor point for tooltips
+                    // Set the anchor point for tooltips
                     radiusX = Math.cos(angle) * positions[2] / 2;
                     radiusY = Math.sin(angle) * positions[2] / 2;
-                    pointRadiusX = Math.cos(angle) * pointRadii;
-                    pointRadiusY = Math.sin(angle) * pointRadii;
                     point.tooltipPos = [
                         positions[0] + radiusX * 0.7,
                         positions[1] + radiusY * 0.7
@@ -289,41 +288,6 @@
                         1 :
                         0;
                     point.angle = angle;
-                    // Set the anchor point for data labels. Use point.labelDistance
-                    // instead of labelDistance // #1174
-                    // finalConnectorOffset - not override connectorOffset value.
-                    finalConnectorOffset = Math.min(connectorOffset, point.labelDistance / 5); // #1678
-                    point.labelPosition = {
-                        natural: {
-                            // initial position of the data label - it's utilized
-                            // for finding the final position for the label
-                            x: positions[0] + pointRadiusX +
-                                Math.cos(angle) * point.labelDistance,
-                            y: positions[1] + pointRadiusY +
-                                Math.sin(angle) * point.labelDistance
-                        },
-                        computed: {
-                        // used for generating connector path -
-                        // initialized later in drawDataLabels function
-                        // x: undefined,
-                        // y: undefined
-                        },
-                        // left - pie on the left side of the data label
-                        // right - pie on the right side of the data label
-                        alignment: point.half ? 'right' : 'left',
-                        connectorPosition: {
-                            breakAt: {
-                                x: positions[0] + pointRadiusX +
-                                    Math.cos(angle) * finalConnectorOffset,
-                                y: positions[1] + pointRadiusY +
-                                    Math.sin(angle) * finalConnectorOffset
-                            },
-                            touchingSliceAt: {
-                                x: positions[0] + pointRadiusX,
-                                y: positions[1] + pointRadiusY
-                            }
-                        }
-                    };
                 }
                 fireEvent(series, 'afterTranslate');
             };

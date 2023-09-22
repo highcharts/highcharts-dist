@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Solid angular gauge module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,8 +46,7 @@
          *
          * */
         var color = Color.parse;
-        var extend = U.extend,
-            merge = U.merge;
+        var extend = U.extend, merge = U.merge;
         /**
          * @private
          */
@@ -73,11 +70,8 @@
              * If we implement an AMD system we should make ColorAxis a dependency.
              */
             var methods = {
-                    initDataClasses: function (userOptions) {
-                        var chart = this.chart,
-                dataClasses,
-                colorCounter = 0,
-                options = this.options;
+                initDataClasses: function (userOptions) {
+                    var chart = this.chart, dataClasses, colorCounter = 0, options = this.options;
                     this.dataClasses = dataClasses = [];
                     userOptions.dataClasses.forEach(function (dataClass, i) {
                         var colors;
@@ -109,14 +103,7 @@
                 },
                 // Translate from a value to a color
                 toColor: function (value, point) {
-                    var pos,
-                        stops = this.stops,
-                        from,
-                        to,
-                        color,
-                        dataClasses = this.dataClasses,
-                        dataClass,
-                        i;
+                    var pos, stops = this.stops, from, to, color, dataClasses = this.dataClasses, dataClass, i;
                     if (dataClasses) {
                         i = dataClasses.length;
                         while (i--) {
@@ -206,92 +193,92 @@
          * @optionparent plotOptions.solidgauge
          */
         var SolidGaugeSeriesDefaults = {
-                /**
-                 * The inner radius for points in a solid gauge. Can be given only in
-                 * percentage, either as a number or a string like `"50%"`.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
-                 *         Individual radius and innerRadius
-                 *
-                 * @type      {string}
-                 * @default   "60%"
-                 * @since     4.1.6
-                 * @product   highcharts
-                 * @apioption plotOptions.solidgauge.innerRadius
-                 */
-                /**
-                 * Whether the strokes of the solid gauge should be `round` or `square`.
-                 *
-                 * @sample {highcharts} highcharts/demo/gauge-activity/
-                 *         Rounded gauge
-                 *
-                 * @type       {string}
-                 * @default    round
-                 * @since      4.2.2
-                 * @product    highcharts
-                 * @validvalue ["square", "round"]
-                 * @apioption  plotOptions.solidgauge.linecap
-                 */
-                /**
-                 * Allow the gauge to overshoot the end of the perimeter axis by this
-                 * many degrees. Say if the gauge axis goes from 0 to 60, a value of
-                 * 100, or 1000, will show 5 degrees beyond the end of the axis when this
-                 * option is set to 5.
-                 *
-                 * @type      {number}
-                 * @default   0
-                 * @since     3.0.10
-                 * @product   highcharts
-                 * @apioption plotOptions.solidgauge.overshoot
-                 */
-                /**
-                 * The outer radius for points in a solid gauge. Can be given only in
-                 * percentage, either as a number or a string like `"100%"`.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
-                 *         Individual radius and innerRadius
-                 *
-                 * @type      {string}
-                 * @default   "100%"
-                 * @since     4.1.6
-                 * @product   highcharts
-                 * @apioption plotOptions.solidgauge.radius
-                 */
-                /**
-                 * Whether to draw rounded edges on the gauge. This options adds the radius
-                 * of the rounding to the ends of the arc, so it extends past the actual
-                 * values. When `borderRadius` is set, it takes precedence over `rounded`. A
-                 * `borderRadius` of 50% behaves like `rounded`, except the shape is not
-                 * extended past its value.
-                 *
-                 * @sample {highcharts} highcharts/demo/gauge-activity/
-                 *         Activity Gauge
-                 *
-                 * @type      {boolean}
-                 * @default   false
-                 * @since     5.0.8
-                 * @product   highcharts
-                 * @apioption plotOptions.solidgauge.rounded
-                 */
-                /**
-                 * The threshold or base level for the gauge.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/solidgauge-threshold/
-                 *         Zero threshold with negative and positive values
-                 *
-                 * @type      {number|null}
-                 * @since     5.0.3
-                 * @product   highcharts
-                 * @apioption plotOptions.solidgauge.threshold
-                 */
-                /**
-                 * Whether to give each point an individual color.
-                 */
-                colorByPoint: true,
-                dataLabels: {
-                    y: 0
-                }
-            };
+            /**
+             * The inner radius for points in a solid gauge. Can be given only in
+             * percentage, either as a number or a string like `"50%"`.
+             *
+             * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
+             *         Individual radius and innerRadius
+             *
+             * @type      {string}
+             * @default   "60%"
+             * @since     4.1.6
+             * @product   highcharts
+             * @apioption plotOptions.solidgauge.innerRadius
+             */
+            /**
+             * Whether the strokes of the solid gauge should be `round` or `square`.
+             *
+             * @sample {highcharts} highcharts/demo/gauge-multiple-kpi/
+             *         Rounded gauge
+             *
+             * @type       {string}
+             * @default    round
+             * @since      4.2.2
+             * @product    highcharts
+             * @validvalue ["square", "round"]
+             * @apioption  plotOptions.solidgauge.linecap
+             */
+            /**
+             * Allow the gauge to overshoot the end of the perimeter axis by this
+             * many degrees. Say if the gauge axis goes from 0 to 60, a value of
+             * 100, or 1000, will show 5 degrees beyond the end of the axis when this
+             * option is set to 5.
+             *
+             * @type      {number}
+             * @default   0
+             * @since     3.0.10
+             * @product   highcharts
+             * @apioption plotOptions.solidgauge.overshoot
+             */
+            /**
+             * The outer radius for points in a solid gauge. Can be given only in
+             * percentage, either as a number or a string like `"100%"`.
+             *
+             * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
+             *         Individual radius and innerRadius
+             *
+             * @type      {string}
+             * @default   "100%"
+             * @since     4.1.6
+             * @product   highcharts
+             * @apioption plotOptions.solidgauge.radius
+             */
+            /**
+             * Whether to draw rounded edges on the gauge. This options adds the radius
+             * of the rounding to the ends of the arc, so it extends past the actual
+             * values. When `borderRadius` is set, it takes precedence over `rounded`. A
+             * `borderRadius` of 50% behaves like `rounded`, except the shape is not
+             * extended past its value.
+             *
+             * @sample {highcharts} highcharts/demo/gauge-multiple-kpi/
+             *         Gauge showing multiple KPIs
+             *
+             * @type      {boolean}
+             * @default   false
+             * @since     5.0.8
+             * @product   highcharts
+             * @apioption plotOptions.solidgauge.rounded
+             */
+            /**
+             * The threshold or base level for the gauge.
+             *
+             * @sample {highcharts} highcharts/plotoptions/solidgauge-threshold/
+             *         Zero threshold with negative and positive values
+             *
+             * @type      {number|null}
+             * @since     5.0.3
+             * @product   highcharts
+             * @apioption plotOptions.solidgauge.threshold
+             */
+            /**
+             * Whether to give each point an individual color.
+             */
+            colorByPoint: true,
+            dataLabels: {
+                y: 0
+            }
+        };
         /**
          * A `solidgauge` series. If the [type](#series.solidgauge.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -393,30 +380,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            GaugeSeries = _a.gauge,
-            pieProto = _a.pie.prototype;
-        var clamp = U.clamp,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            pInt = U.pInt;
+        var _a = SeriesRegistry.seriesTypes, GaugeSeries = _a.gauge, pieProto = _a.pie.prototype;
+        var clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick, pInt = U.pInt;
         /* *
          *
          *  Class
@@ -432,15 +411,14 @@
          * @augments Highcarts.Series
          */
         var SolidGaugeSeries = /** @class */ (function (_super) {
-                __extends(SolidGaugeSeries, _super);
+            __extends(SolidGaugeSeries, _super);
             function SolidGaugeSeries() {
                 /* *
                  *
                  *  Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -475,16 +453,9 @@
             };
             // Draw the points where each point is one needle.
             SolidGaugeSeries.prototype.drawPoints = function () {
-                var series = this,
-                    yAxis = series.yAxis,
-                    center = yAxis.center,
-                    options = series.options,
-                    renderer = series.chart.renderer,
-                    overshoot = options.overshoot,
-                    rounded = options.rounded && options.borderRadius === void 0,
-                    overshootVal = isNumber(overshoot) ?
-                        overshoot / 180 * Math.PI :
-                        0;
+                var series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded && options.borderRadius === void 0, overshootVal = isNumber(overshoot) ?
+                    overshoot / 180 * Math.PI :
+                    0;
                 var thresholdAngleRad;
                 // Handle the threshold option
                 if (isNumber(options.threshold)) {
@@ -496,19 +467,10 @@
                     // #10630 null point should not be draw
                     if (!point.isNull) { // condition like in pie chart
                         var radius = ((pInt(pick(point.options.radius, options.radius, 100 // %
-                            )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
-                            )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
-                        var graphic = point.graphic,
-                            rotation = (yAxis.startAngleRad +
-                                yAxis.translate(point.y,
-                            void 0,
-                            void 0,
-                            void 0,
-                            true)),
-                            shapeArgs = void 0,
-                            d = void 0,
-                            toColor = yAxis.toColor(point.y,
-                            point);
+                        )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
+                        )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
+                        var graphic = point.graphic, rotation = (yAxis.startAngleRad +
+                            yAxis.translate(point.y, void 0, void 0, void 0, true)), shapeArgs = void 0, d = void 0, toColor = yAxis.toColor(point.y, point);
                         if (toColor === 'none') { // #3708
                             toColor = point.color || series.color || 'none';
                         }
@@ -522,12 +484,11 @@
                             rotation = clamp(rotation, axisMinAngle, axisMaxAngle);
                         }
                         var angleOfRounding = rounded ?
-                                ((radius - innerRadius) / 2) / radius :
-                                0, start = Math.min(rotation, series.thresholdAngleRad) -
-                                angleOfRounding;
-                        var end = Math.max(rotation,
-                            series.thresholdAngleRad) +
-                                angleOfRounding;
+                            ((radius - innerRadius) / 2) / radius :
+                            0, start = Math.min(rotation, series.thresholdAngleRad) -
+                            angleOfRounding;
+                        var end = Math.max(rotation, series.thresholdAngleRad) +
+                            angleOfRounding;
                         if (end - start > 2 * Math.PI) {
                             end = start + 2 * Math.PI;
                         }

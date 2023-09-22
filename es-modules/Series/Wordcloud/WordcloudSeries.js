@@ -13,7 +13,6 @@
 import DPU from '../DrawPointUtilities.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
@@ -55,20 +54,6 @@ class WordcloudSeries extends ColumnSeries {
      * Functions
      *
      */
-    bindAxes() {
-        const wordcloudAxis = {
-            endOnTick: false,
-            gridLineWidth: 0,
-            lineWidth: 0,
-            maxPadding: 0,
-            startOnTick: false,
-            title: void 0,
-            tickPositions: []
-        };
-        Series.prototype.bindAxes.call(this);
-        extend(this.yAxis.options, wordcloudAxis);
-        extend(this.xAxis.options, wordcloudAxis);
-    }
     pointAttribs(point, state) {
         const attribs = H.seriesTypes.column.prototype
             .pointAttribs.call(this, point, state);
@@ -375,6 +360,7 @@ extend(WordcloudSeries.prototype, {
     animate: noop,
     animateDrilldown: noop,
     animateDrillupFrom: noop,
+    isCartesian: false,
     pointClass: WordcloudPoint,
     setClip: noop,
     // Strategies used for deciding rotation and initial position of a word. To

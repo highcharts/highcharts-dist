@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,26 +44,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isNumber = U.isNumber,
-            error = U.error,
-            extend = U.extend,
-            merge = U.merge;
+        var isNumber = U.isNumber, error = U.error, extend = U.extend, merge = U.merge;
         /* *
          *
          *  Class
@@ -81,15 +75,14 @@
          * @augments Highcharts.Series
          */
         var OBVIndicator = /** @class */ (function (_super) {
-                __extends(OBVIndicator, _super);
+            __extends(OBVIndicator, _super);
             function OBVIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -106,20 +99,8 @@
              *
              * */
             OBVIndicator.prototype.getValues = function (series, params) {
-                var volumeSeries = series.chart.get(params.volumeSeriesID),
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    OBV = [],
-                    xData = [],
-                    yData = [],
-                    hasOHLC = !isNumber(yVal[0]);
-                var OBVPoint = [],
-                    i = 1,
-                    previousOBV = 0,
-                    curentOBV = 0,
-                    previousClose = 0,
-                    curentClose = 0,
-                    volume;
+                var volumeSeries = series.chart.get(params.volumeSeriesID), xVal = series.xData, yVal = series.yData, OBV = [], xData = [], yData = [], hasOHLC = !isNumber(yVal[0]);
+                var OBVPoint = [], i = 1, previousOBV = 0, curentOBV = 0, previousClose = 0, curentClose = 0, volume;
                 // Checks if volume series exists.
                 if (volumeSeries) {
                     volume = volumeSeries.yData;

@@ -144,6 +144,12 @@ extend(defaultOptions, {
          */
         type: 'straight',
         /**
+         * The corner radius for the connector line
+         *
+         * @since next
+         */
+        radius: 0,
+        /**
          * Set the default pixel width for this chart's Pathfinder connecting
          * lines.
          *

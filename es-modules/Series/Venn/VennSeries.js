@@ -480,7 +480,8 @@ VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
         }
     },
     /**
-     * @ignore-option
+     * @default   true
+     * @extends   plotOptions.series.inactiveOtherPoints
      * @private
      */
     inactiveOtherPoints: true,

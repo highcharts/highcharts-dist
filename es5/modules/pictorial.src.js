@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Pictorial graph series type for Highcharts
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -52,17 +50,10 @@
          * */
         var animObject = A.animObject;
         var getOptions = D.getOptions;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            erase = U.erase,
-            merge = U.merge,
-            pick = U.pick,
-            removeEvent = U.removeEvent,
-            wrap = U.wrap;
+        var addEvent = U.addEvent, defined = U.defined, erase = U.erase, merge = U.merge, pick = U.pick, removeEvent = U.removeEvent, wrap = U.wrap;
         // Add the predefined patterns
         var patterns = H.patterns = (function () {
-                var patterns = [],
-            colors = getOptions().colors;
+            var patterns = [], colors = getOptions().colors;
             // Start with subtle patterns
             [
                 'M 0 0 L 5 5 M 4.5 -0.5 L 5.5 0.5 M -0.5 4.5 L 0.5 5.5',
@@ -114,12 +105,8 @@
          *         The computed hash.
          */
         function hashFromObject(obj, preSeed) {
-            var str = JSON.stringify(obj),
-                strLen = str.length || 0;
-            var hash = 0,
-                i = 0,
-                char,
-                seedStep;
+            var str = JSON.stringify(obj), strLen = str.length || 0;
+            var hash = 0, i = 0, char, seedStep;
             if (preSeed) {
                 seedStep = Math.max(Math.floor(strLen / 500), 1);
                 for (var a = 0; a < strLen; a += seedStep) {
@@ -157,10 +144,9 @@
                 return;
             }
             var bBox = this.graphic && (this.graphic.getBBox &&
-                    this.graphic.getBBox(true) ||
-                    this.graphic.element &&
-                        this.graphic.element.getBBox()) || {},
-                shapeArgs = this.shapeArgs;
+                this.graphic.getBBox(true) ||
+                this.graphic.element &&
+                    this.graphic.element.getBBox()) || {}, shapeArgs = this.shapeArgs;
             // Prefer using shapeArgs, as it is animation agnostic
             if (shapeArgs) {
                 bBox.width = shapeArgs.width || bBox.width;
@@ -178,7 +164,7 @@
                     pattern._height = 'defer';
                     // Mark the pattern to be flipped later if upside down (#16810)
                     var scaleY = this.series.chart.mapView &&
-                            this.series.chart.mapView.getSVGTransform().scaleY;
+                        this.series.chart.mapView.getSVGTransform().scaleY;
                     if (defined(scaleY) && scaleY < 0) {
                         pattern._inverted = true;
                     }
@@ -237,23 +223,10 @@
          * @requires modules/pattern-fill
          */
         SVGRenderer.prototype.addPattern = function (options, animation) {
-            var pattern,
-                animate = pick(animation,
-                true),
-                animationOptions = animObject(animate),
-                path,
-                defaultSize = 32,
-                width = options.width || options._width || defaultSize,
-                height = (options.height || options._height || defaultSize),
-                color = options.color || '#343434',
-                id = options.id,
-                ren = this,
-                rect = function (fill) {
-                    ren.rect(0, 0,
-                width,
-                height)
-                        .attr({ fill: fill })
-                        .add(pattern);
+            var pattern, animate = pick(animation, true), animationOptions = animObject(animate), path, defaultSize = 32, width = options.width || options._width || defaultSize, height = (options.height || options._height || defaultSize), color = options.color || '#343434', id = options.id, ren = this, rect = function (fill) {
+                ren.rect(0, 0, width, height)
+                    .attr({ fill: fill })
+                    .add(pattern);
             }, attribs;
             if (!id) {
                 this.idCounter = this.idCounter || 0;
@@ -275,14 +248,14 @@
             this.defIds.push(id);
             // Calculate pattern element attributes
             var attrs = {
-                    id: id,
-                    patternUnits: 'userSpaceOnUse',
-                    patternContentUnits: options.patternContentUnits || 'userSpaceOnUse',
-                    width: width,
-                    height: height,
-                    x: options._x || options.x || 0,
-                    y: options._y || options.y || 0
-                };
+                id: id,
+                patternUnits: 'userSpaceOnUse',
+                patternContentUnits: options.patternContentUnits || 'userSpaceOnUse',
+                width: width,
+                height: height,
+                x: options._x || options.x || 0,
+                y: options._y || options.y || 0
+            };
             if (options._inverted) {
                 attrs.patternTransform = 'scale(1, -1)'; // (#16810)
                 if (options.patternTransform) {
@@ -395,8 +368,7 @@
         });
         // Merge series color options to points
         addEvent(Point, 'afterInit', function () {
-            var point = this,
-                colorOptions = point.options.color;
+            var point = this, colorOptions = point.options.color;
             // Only do this if we have defined a specific color on this point. Otherwise
             // we will end up trying to re-add the series color for each point.
             if (colorOptions && colorOptions.pattern) {
@@ -413,12 +385,8 @@
         });
         // Add functionality to SVG renderer to handle patterns as complex colors
         addEvent(SVGRenderer, 'complexColor', function (args) {
-            var color = args.args[0],
-                prop = args.args[1],
-                element = args.args[2],
-                chartIndex = (this.chartIndex || 0);
-            var pattern = color.pattern,
-                value = '#343434';
+            var color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
+            var pattern = color.pattern, value = '#343434';
             // Handle patternIndex
             if (typeof color.patternIndex !== 'undefined' && patterns) {
                 pattern = patterns[color.patternIndex];
@@ -437,7 +405,7 @@
                 // width/heights. We don't want them to highjack the width/height for
                 // this ID if it is defined by users.
                 var forceHashId = element.parentNode &&
-                        element.parentNode.getAttribute('class');
+                    element.parentNode.getAttribute('class');
                 forceHashId = forceHashId &&
                     forceHashId.indexOf('highcharts-legend') > -1;
                 // If we don't have a width/height yet, handle it. Try faking a point
@@ -505,25 +473,24 @@
         // Add a garbage collector to delete old patterns with autogenerated hashes that
         // are no longer being referenced.
         addEvent(Chart, 'redraw', function () {
-            var usedIds = {},
-                renderer = this.renderer, 
-                // Get the autocomputed patterns - these are the ones we might delete
-                patterns = (renderer.defIds || []).filter(function (pattern) {
-                    return (pattern.indexOf &&
-                        pattern.indexOf('highcharts-pattern-') === 0);
+            var usedIds = {}, renderer = this.renderer, 
+            // Get the autocomputed patterns - these are the ones we might delete
+            patterns = (renderer.defIds || []).filter(function (pattern) {
+                return (pattern.indexOf &&
+                    pattern.indexOf('highcharts-pattern-') === 0);
             });
             if (patterns.length) {
                 // Look through the DOM for usage of the patterns. This can be points,
                 // series, tooltips etc.
                 [].forEach.call(this.renderTo.querySelectorAll('[color^="url("], [fill^="url("], [stroke^="url("]'), function (node) {
                     var id = node.getAttribute('fill') ||
-                            node.getAttribute('color') ||
-                            node.getAttribute('stroke');
+                        node.getAttribute('color') ||
+                        node.getAttribute('stroke');
                     if (id) {
                         var sanitizedId = id
-                                .replace(renderer.url, '')
-                                .replace('url(#', '')
-                                .replace(')', '');
+                            .replace(renderer.url, '')
+                            .replace('url(#', '')
+                            .replace(')', '');
                         usedIds[sanitizedId] = true;
                     }
                 });
@@ -671,7 +638,7 @@
             if (borderWidth === void 0) { borderWidth = 1; }
             var fill = element && element.attr('fill'), match = fill && fill.match(/url\(([^)]+)\)/);
             if (match) {
-                var patternPath = document.querySelector("" + match[1] + " path");
+                var patternPath = document.querySelector("".concat(match[1], " path"));
                 if (patternPath) {
                     var bBox = patternPath.getBBox();
                     // Firefox (v108/Mac) is unable to detect the bounding box within
@@ -696,8 +663,7 @@
             }
         }
         function getStackMetrics(yAxis, shape) {
-            var height = yAxis.len,
-                y = 0;
+            var height = yAxis.len, y = 0;
             if (shape && defined(shape.max)) {
                 y = yAxis.toPixels(shape.max, true);
                 height = yAxis.len - y;
@@ -730,39 +696,36 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
-        var rescalePatternFill = PictorialUtilities.rescalePatternFill,
-            getStackMetrics = PictorialUtilities.getStackMetrics;
+        var rescalePatternFill = PictorialUtilities.rescalePatternFill, getStackMetrics = PictorialUtilities.getStackMetrics;
         /* *
          *
          *  Class
          *
          * */
         var PictorialPoint = /** @class */ (function (_super) {
-                __extends(PictorialPoint, _super);
+            __extends(PictorialPoint, _super);
             function PictorialPoint() {
                 /* *
                  *
                  * Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
                 _this.pathDef = void 0;
@@ -776,11 +739,10 @@
             PictorialPoint.prototype.setState = function () {
                 var point = this;
                 _super.prototype.setState.apply(point, arguments);
-                var series = point.series,
-                    paths = series.options.paths;
+                var series = point.series, paths = series.options.paths;
                 if (point.graphic && point.shapeArgs && paths) {
                     var shape = paths[point.index %
-                            paths.length];
+                        paths.length];
                     rescalePatternFill(point.graphic, getStackMetrics(series.yAxis, shape).height, point.shapeArgs.width || 0, point.shapeArgs.height || Infinity, point.series.options.borderWidth || 0);
                 }
             };
@@ -805,16 +767,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -827,14 +788,8 @@
          * */
         var ColumnSeries = SeriesRegistry.seriesTypes.column;
         var animObject = A.animObject;
-        var getStackMetrics = PictorialUtilities.getStackMetrics,
-            invertShadowGroup = PictorialUtilities.invertShadowGroup,
-            rescalePatternFill = PictorialUtilities.rescalePatternFill;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick;
+        var getStackMetrics = PictorialUtilities.getStackMetrics, invertShadowGroup = PictorialUtilities.invertShadowGroup, rescalePatternFill = PictorialUtilities.rescalePatternFill;
+        var addEvent = U.addEvent, defined = U.defined, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
         /* *
          *
          *  Class
@@ -850,15 +805,14 @@
          * @augments Highcharts.Series
          */
         var PictorialSeries = /** @class */ (function (_super) {
-                __extends(PictorialSeries, _super);
+            __extends(PictorialSeries, _super);
             function PictorialSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  * Properties
@@ -890,13 +844,13 @@
              */
             PictorialSeries.prototype.animate = function (init) {
                 var _a = this, chart = _a.chart, group = _a.group, animation = animObject(this.options.animation), 
-                    // The key for temporary animation clips
-                    animationClipKey = [
-                        this.getSharedClipKey(),
-                        animation.duration,
-                        animation.easing,
-                        animation.defer
-                    ].join(',');
+                // The key for temporary animation clips
+                animationClipKey = [
+                    this.getSharedClipKey(),
+                    animation.duration,
+                    animation.easing,
+                    animation.defer
+                ].join(',');
                 var animationClipRect = chart.sharedClips[animationClipKey];
                 // Initialize the animation. Set up the clipping rectangle.
                 if (init && group) {
@@ -923,18 +877,9 @@
             PictorialSeries.prototype.animateDrilldown = function () { };
             PictorialSeries.prototype.animateDrillupFrom = function () { };
             PictorialSeries.prototype.pointAttribs = function (point) {
-                var pointAttribs = _super.prototype.pointAttribs.apply(this,
-                    arguments),
-                    seriesOptions = this.options,
-                    series = this,
-                    paths = seriesOptions.paths;
+                var pointAttribs = _super.prototype.pointAttribs.apply(this, arguments), seriesOptions = this.options, series = this, paths = seriesOptions.paths;
                 if (point && point.shapeArgs && paths) {
-                    var shape = paths[point.index % paths.length],
-                        _a = getStackMetrics(series.yAxis,
-                        shape),
-                        y = _a.y,
-                        height = _a.height,
-                        pathDef = shape.definition;
+                    var shape = paths[point.index % paths.length], _a = getStackMetrics(series.yAxis, shape), y = _a.y, height = _a.height, pathDef = shape.definition;
                     // New pattern, replace
                     if (pathDef !== point.pathDef) {
                         point.pathDef = pathDef;
@@ -968,10 +913,7 @@
              * Make sure that path.max is also considered when calculating dataMax.
              */
             PictorialSeries.prototype.getExtremes = function () {
-                var extremes = _super.prototype.getExtremes.apply(this,
-                    arguments),
-                    series = this,
-                    paths = series.options.paths;
+                var extremes = _super.prototype.getExtremes.apply(this, arguments), series = this, paths = series.options.paths;
                 if (paths) {
                     paths.forEach(function (path) {
                         if (defined(path.max) &&
@@ -1015,13 +957,7 @@
             var series = this, paths = series.options.paths, fillUrlMatcher = /url\(([^)]+)\)/;
             series.points.forEach(function (point) {
                 if (point.graphic && point.shapeArgs && paths) {
-                    var shape = paths[point.index % paths.length],
-                        fill = point.graphic.attr('fill'),
-                        match = fill && fill.match(fillUrlMatcher),
-                        _a = getStackMetrics(series.yAxis,
-                        shape),
-                        y = _a.y,
-                        height = _a.height;
+                    var shape = paths[point.index % paths.length], fill = point.graphic.attr('fill'), match = fill && fill.match(fillUrlMatcher), _a = getStackMetrics(series.yAxis, shape), y = _a.y, height = _a.height;
                     if (match && series.chart.renderer.patternElements) {
                         var currentPattern = series.chart.renderer.patternElements[match[1].slice(1)];
                         if (currentPattern) {
@@ -1040,9 +976,9 @@
         function renderStackShadow(stack) {
             // Get first pictorial series
             var stackKeys = Object
-                    .keys(stack.points)
-                    .filter(function (p) { return p.split(',').length > 1; }), allSeries = stack.axis.chart.series, seriesIndexes = stackKeys.map(function (key) {
-                    return parseFloat(key.split(',')[0]);
+                .keys(stack.points)
+                .filter(function (p) { return p.split(',').length > 1; }), allSeries = stack.axis.chart.series, seriesIndexes = stackKeys.map(function (key) {
+                return parseFloat(key.split(',')[0]);
             });
             var seriesIndex = -1;
             seriesIndexes.forEach(function (index) {
@@ -1055,25 +991,8 @@
                 series.is('pictorial') &&
                 stack.axis.hasData() &&
                 series.xAxis.hasData()) {
-                var xAxis = series.xAxis,
-                    options = stack.axis.options,
-                    chart = stack.axis.chart,
-                    stackShadow = stack.shadow,
-                    xCenter = xAxis.toPixels(stack.x,
-                    true),
-                    x = chart.inverted ? xAxis.len - xCenter : xCenter,
-                    paths = series.options.paths || [],
-                    index = stack.x % paths.length,
-                    shape = paths[index],
-                    width = series.getColumnMetrics &&
-                        series.getColumnMetrics().width,
-                    _a = getStackMetrics(series.yAxis,
-                    shape),
-                    height = _a.height,
-                    y = _a.y,
-                    shadowOptions = options.stackShadow,
-                    strokeWidth = pick(shadowOptions && shadowOptions.borderWidth,
-                    series.options.borderWidth, 1);
+                var xAxis = series.xAxis, options = stack.axis.options, chart = stack.axis.chart, stackShadow = stack.shadow, xCenter = xAxis.toPixels(stack.x, true), x = chart.inverted ? xAxis.len - xCenter : xCenter, paths = series.options.paths || [], index = stack.x % paths.length, shape = paths[index], width = series.getColumnMetrics &&
+                    series.getColumnMetrics().width, _a = getStackMetrics(series.yAxis, shape), height = _a.height, y = _a.y, shadowOptions = options.stackShadow, strokeWidth = pick(shadowOptions && shadowOptions.borderWidth, series.options.borderWidth, 1);
                 if (!stackShadow &&
                     shadowOptions &&
                     shadowOptions.enabled &&
@@ -1171,13 +1090,7 @@
         });
         addEvent(StackItem, 'afterSetOffset', function (e) {
             if (this.shadow) {
-                var _a = this.axis,
-                    chart = _a.chart,
-                    len = _a.len,
-                    xOffset = e.xOffset,
-                    width = e.width,
-                    translateX = chart.inverted ? xOffset - chart.xAxis[0].len : xOffset,
-                    translateY = chart.inverted ? -len : 0;
+                var _a = this.axis, chart = _a.chart, len = _a.len, xOffset = e.xOffset, width = e.width, translateX = chart.inverted ? xOffset - chart.xAxis[0].len : xOffset, translateY = chart.inverted ? -len : 0;
                 this.shadow.attr({
                     translateX: translateX,
                     translateY: translateY

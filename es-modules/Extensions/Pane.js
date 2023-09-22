@@ -435,4 +435,4 @@ addEvent(Pointer, 'afterGetHoverData', function (eventArgs) {
     }
 });
 H.Pane = Pane;
-export default H.Pane;
+export default Pane;

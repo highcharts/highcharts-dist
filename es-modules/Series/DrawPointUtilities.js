@@ -33,9 +33,17 @@ function draw(point, params) {
     params.attribs = Object.assign(Object.assign({}, params.attribs), { 'class': point.getClassName() }) || {};
     if ((point.shouldDraw())) {
         if (!graphic) {
-            point.graphic = graphic = params.shapeType === 'text' ?
-                renderer.text() :
-                renderer[params.shapeType](params.shapeArgs || {});
+            if (params.shapeType === 'text') {
+                graphic = renderer.text();
+            }
+            else if (params.shapeType === 'image') {
+                graphic = renderer.image(params.imageUrl || '')
+                    .attr(params.shapeArgs || {});
+            }
+            else {
+                graphic = renderer[params.shapeType](params.shapeArgs || {});
+            }
+            point.graphic = graphic;
             graphic.add(params.group);
         }
         if (css) {

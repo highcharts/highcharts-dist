@@ -238,7 +238,7 @@ class LegendComponent extends AccessibilityComponent {
         const legendTitle = stripHTMLTags((chart.legend &&
             chart.legend.options.title &&
             chart.legend.options.title.text ||
-            '').replace(/<br ?\/?>/g, ' '));
+            '').replace(/<br ?\/?>/g, ' '), chart.renderer.forExport);
         const legendLabel = chart.langFormat('accessibility.legend.legendLabel' + (legendTitle ? '' : 'NoTitle'), {
             chart,
             legendTitle,
@@ -286,7 +286,7 @@ class LegendComponent extends AccessibilityComponent {
         }
         const itemLabel = this.chart.langFormat('accessibility.legend.legendItem', {
             chart: this.chart,
-            itemName: stripHTMLTags(item.name),
+            itemName: stripHTMLTags(item.name, this.chart.renderer.forExport),
             item
         });
         const attribs = {
@@ -301,7 +301,7 @@ class LegendComponent extends AccessibilityComponent {
         item.a11yProxyElement = this.proxyProvider.addProxyElement('legend', {
             click: legendItem.label,
             visual: proxyPositioningElement.element
-        }, attribs);
+        }, 'button', attribs);
     }
     /**
      * Get keyboard navigation handler for this component.
@@ -387,6 +387,13 @@ class LegendComponent extends AccessibilityComponent {
             legendA11yOptions.keyboardNavigation &&
             legendA11yOptions.keyboardNavigation.enabled);
     }
+    /**
+     * Clean up
+     * @private
+     */
+    destroy() {
+        this.removeProxies();
+    }
 }
 /* *
  *
@@ -427,7 +434,7 @@ class LegendComponent extends AccessibilityComponent {
             scrollLegendToItem(this.legend, ix);
             const legendItemProp = legendItem.label;
             const proxyBtn = itemToHighlight.a11yProxyElement &&
-                itemToHighlight.a11yProxyElement.buttonElement;
+                itemToHighlight.a11yProxyElement.innerElement;
             if (legendItemProp && legendItemProp.element && proxyBtn) {
                 this.setFocusToElement(legendItemProp, proxyBtn);
             }
@@ -456,7 +463,7 @@ class LegendComponent extends AccessibilityComponent {
     function legendOnAfterColorizeItem(e) {
         const chart = this.chart, a11yOptions = chart.options.accessibility, legendItem = e.item;
         if (a11yOptions.enabled && legendItem && legendItem.a11yProxyElement) {
-            legendItem.a11yProxyElement.buttonElement.setAttribute('aria-pressed', e.visible ? 'true' : 'false');
+            legendItem.a11yProxyElement.innerElement.setAttribute('aria-pressed', e.visible ? 'true' : 'false');
         }
     }
 })(LegendComponent || (LegendComponent = {}));

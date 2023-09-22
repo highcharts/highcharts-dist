@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-06-05)
+ * @license Highmaps JS v11.1.0 (2023-09-22)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,11 +46,7 @@
          *
          * */
         var color = Color.parse;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick,
-            splat = U.splat;
+        var addEvent = U.addEvent, extend = U.extend, merge = U.merge, pick = U.pick, splat = U.splat;
         /* *
          *
          *  Composition
@@ -144,18 +138,15 @@
              */
             function onLegendAfterGetAllItems(e) {
                 var _this = this;
-                var colorAxes = this.chart.colorAxis || [],
-                    destroyItem = function (item) {
-                        var i = e.allItems.indexOf(item);
+                var colorAxes = this.chart.colorAxis || [], destroyItem = function (item) {
+                    var i = e.allItems.indexOf(item);
                     if (i !== -1) {
                         // #15436
                         _this.destroyItem(e.allItems[i]);
                         e.allItems.splice(i, 1);
                     }
                 };
-                var colorAxisItems = [],
-                    options,
-                    i;
+                var colorAxisItems = [], options, i;
                 colorAxes.forEach(function (colorAxis) {
                     options = colorAxis.options;
                     if (options && options.showInLegend) {
@@ -203,13 +194,11 @@
              * Updates in the legend need to be reflected in the color axis. (#6888)
              * @private
              */
-            function onLegendAfterUpdate() {
-                var colorAxes = this.chart.colorAxis;
-                if (colorAxes) {
-                    colorAxes.forEach(function (colorAxis) {
-                        colorAxis.update({}, arguments[2]);
-                    });
-                }
+            function onLegendAfterUpdate(e) {
+                var _a;
+                (_a = this.chart.colorAxis) === null || _a === void 0 ? void 0 : _a.forEach(function (colorAxis) {
+                    colorAxis.update({}, e.redraw);
+                });
             }
             /**
              * Calculate and set colors for points.
@@ -242,8 +231,7 @@
              * @param {boolean} visible
              */
             function pointSetVisible(vis) {
-                var point = this,
-                    method = vis ? 'show' : 'hide';
+                var point = this, method = vis ? 'show' : 'hide';
                 point.visible = point.options.visible = Boolean(vis);
                 // Show and hide associated elements
                 ['graphic', 'dataLabel'].forEach(function (key) {
@@ -261,19 +249,13 @@
              * @function Highcharts.colorSeriesMixin.translateColors
              */
             function seriesTranslateColors() {
-                var series = this,
-                    points = this.data.length ? this.data : this.points,
-                    nullColor = this.options.nullColor,
-                    colorAxis = this.colorAxis,
-                    colorKey = this.colorKey;
+                var series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
                 points.forEach(function (point) {
-                    var value = point.getNestedProperty(colorKey),
-                        color = point.options.color || (point.isNull || point.value === null ?
-                            nullColor :
-                            (colorAxis && typeof value !== 'undefined') ?
-                                colorAxis.toColor(value,
-                        point) :
-                                point.color || series.color);
+                    var value = point.getNestedProperty(colorKey), color = point.options.color || (point.isNull || point.value === null ?
+                        nullColor :
+                        (colorAxis && typeof value !== 'undefined') ?
+                            colorAxis.toColor(value, point) :
+                            point.color || series.color);
                     if (color && point.color !== color) {
                         point.color = color;
                         if (series.options.legendType === 'point' &&
@@ -293,11 +275,10 @@
                     if (type !== 'colorAxis') {
                         return superCreateAxis.apply(this, arguments);
                     }
-                    var axis = new ColorAxisClass(this,
-                        merge(options.axis, {
-                            index: this[type].length,
-                            isX: false
-                        }));
+                    var axis = new ColorAxisClass(this, merge(options.axis, {
+                        index: this[type].length,
+                        isX: false
+                    }));
                     this.isDirtyLegend = true;
                     // Clear before 'bindAxes' (#11924)
                     this.axes.forEach(function (axis) {
@@ -406,368 +387,368 @@
          * @optionparent colorAxis
          */
         var colorAxisDefaults = {
+            /**
+             * Whether to allow decimals on the color axis.
+             * @type      {boolean}
+             * @default   true
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.allowDecimals
+             */
+            /**
+             * Determines how to set each data class' color if no individual
+             * color is set. The default value, `tween`, computes intermediate
+             * colors between `minColor` and `maxColor`. The other possible
+             * value, `category`, pulls colors from the global or chart specific
+             * [colors](#colors) array.
+             *
+             * @sample {highmaps} maps/coloraxis/dataclasscolor/
+             *         Category colors
+             *
+             * @type       {string}
+             * @default    tween
+             * @product    highcharts highstock highmaps
+             * @validvalue ["tween", "category"]
+             * @apioption  colorAxis.dataClassColor
+             */
+            /**
+             * An array of data classes or ranges for the choropleth map. If
+             * none given, the color axis is scalar and values are distributed
+             * as a gradient between the minimum and maximum colors.
+             *
+             * @sample {highmaps} maps/demo/data-class-ranges/
+             *         Multiple ranges
+             *
+             * @sample {highmaps} maps/demo/data-class-two-ranges/
+             *         Two ranges
+             *
+             * @type      {Array<*>}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.dataClasses
+             */
+            /**
+             * The layout of the color axis. Can be `'horizontal'` or `'vertical'`.
+             * If none given, the color axis has the same layout as the legend.
+             *
+             * @sample highcharts/coloraxis/horizontal-layout/
+             *         Horizontal color axis layout with vertical legend
+             *
+             * @type      {string|undefined}
+             * @since     7.2.0
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.layout
+             */
+            /**
+             * The color of each data class. If not set, the color is pulled
+             * from the global or chart-specific [colors](#colors) array. In
+             * styled mode, this option is ignored. Instead, use colors defined
+             * in CSS.
+             *
+             * @sample {highmaps} maps/demo/data-class-two-ranges/
+             *         Explicit colors
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.dataClasses.color
+             */
+            /**
+             * The start of the value range that the data class represents,
+             * relating to the point value.
+             *
+             * The range of each `dataClass` is closed in both ends, but can be
+             * overridden by the next `dataClass`.
+             *
+             * @type      {number}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.dataClasses.from
+             */
+            /**
+             * The name of the data class as it appears in the legend.
+             * If no name is given, it is automatically created based on the
+             * `from` and `to` values. For full programmatic control,
+             * [legend.labelFormatter](#legend.labelFormatter) can be used.
+             * In the formatter, `this.from` and `this.to` can be accessed.
+             *
+             * @sample {highmaps} maps/coloraxis/dataclasses-name/
+             *         Named data classes
+             *
+             * @sample {highmaps} maps/coloraxis/dataclasses-labelformatter/
+             *         Formatted data classes
+             *
+             * @type      {string}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.dataClasses.name
+             */
+            /**
+             * The end of the value range that the data class represents,
+             * relating to the point value.
+             *
+             * The range of each `dataClass` is closed in both ends, but can be
+             * overridden by the next `dataClass`.
+             *
+             * @type      {number}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.dataClasses.to
+             */
+            /** @ignore-option */
+            lineWidth: 0,
+            /**
+             * Padding of the min value relative to the length of the axis. A
+             * padding of 0.05 will make a 100px axis 5px longer.
+             *
+             * @product highcharts highstock highmaps
+             */
+            minPadding: 0,
+            /**
+             * The maximum value of the axis in terms of map point values. If
+             * `null`, the max value is automatically calculated. If the
+             * `endOnTick` option is true, the max value might be rounded up.
+             *
+             * @sample {highmaps} maps/coloraxis/gridlines/
+             *         Explicit min and max to reduce the effect of outliers
+             *
+             * @type      {number}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.max
+             */
+            /**
+             * The minimum value of the axis in terms of map point values. If
+             * `null`, the min value is automatically calculated. If the
+             * `startOnTick` option is true, the min value might be rounded
+             * down.
+             *
+             * @sample {highmaps} maps/coloraxis/gridlines/
+             *         Explicit min and max to reduce the effect of outliers
+             *
+             * @type      {number}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.min
+             */
+            /**
+             * Padding of the max value relative to the length of the axis. A
+             * padding of 0.05 will make a 100px axis 5px longer.
+             *
+             * @product highcharts highstock highmaps
+             */
+            maxPadding: 0,
+            /**
+             * Color of the grid lines extending from the axis across the
+             * gradient.
+             *
+             * @sample {highmaps} maps/coloraxis/gridlines/
+             *         Grid lines demonstrated
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @product   highcharts highstock highmaps
+             */
+            gridLineColor: "#ffffff" /* Palette.backgroundColor */,
+            /**
+             * The width of the grid lines extending from the axis across the
+             * gradient of a scalar color axis.
+             *
+             * @sample {highmaps} maps/coloraxis/gridlines/
+             *         Grid lines demonstrated
+             *
+             * @product highcharts highstock highmaps
+             */
+            gridLineWidth: 1,
+            /**
+             * The interval of the tick marks in axis units. When `null`, the
+             * tick interval is computed to approximately follow the
+             * `tickPixelInterval`.
+             *
+             * @type      {number}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.tickInterval
+             */
+            /**
+             * If [tickInterval](#colorAxis.tickInterval) is `null` this option
+             * sets the approximate pixel interval of the tick marks.
+             *
+             * @product highcharts highstock highmaps
+             */
+            tickPixelInterval: 72,
+            /**
+             * Whether to force the axis to start on a tick. Use this option
+             * with the `maxPadding` option to control the axis start.
+             *
+             * @product highcharts highstock highmaps
+             */
+            startOnTick: true,
+            /**
+             * Whether to force the axis to end on a tick. Use this option with
+             * the [maxPadding](#colorAxis.maxPadding) option to control the
+             * axis end.
+             *
+             * @product highcharts highstock highmaps
+             */
+            endOnTick: true,
+            /** @ignore */
+            offset: 0,
+            /**
+             * The triangular marker on a scalar color axis that points to the
+             * value of the hovered area. To disable the marker, set
+             * `marker: null`.
+             *
+             * @sample {highmaps} maps/coloraxis/marker/
+             *         Black marker
+             *
+             * @declare Highcharts.PointMarkerOptionsObject
+             * @product highcharts highstock highmaps
+             */
+            marker: {
                 /**
-                 * Whether to allow decimals on the color axis.
-                 * @type      {boolean}
-                 * @default   true
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.allowDecimals
-                 */
-                /**
-                 * Determines how to set each data class' color if no individual
-                 * color is set. The default value, `tween`, computes intermediate
-                 * colors between `minColor` and `maxColor`. The other possible
-                 * value, `category`, pulls colors from the global or chart specific
-                 * [colors](#colors) array.
+                 * Animation for the marker as it moves between values. Set to
+                 * `false` to disable animation. Defaults to `{ duration: 50 }`.
                  *
-                 * @sample {highmaps} maps/coloraxis/dataclasscolor/
-                 *         Category colors
-                 *
-                 * @type       {string}
-                 * @default    tween
-                 * @product    highcharts highstock highmaps
-                 * @validvalue ["tween", "category"]
-                 * @apioption  colorAxis.dataClassColor
-                 */
-                /**
-                 * An array of data classes or ranges for the choropleth map. If
-                 * none given, the color axis is scalar and values are distributed
-                 * as a gradient between the minimum and maximum colors.
-                 *
-                 * @sample {highmaps} maps/demo/data-class-ranges/
-                 *         Multiple ranges
-                 *
-                 * @sample {highmaps} maps/demo/data-class-two-ranges/
-                 *         Two ranges
-                 *
-                 * @type      {Array<*>}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.dataClasses
-                 */
-                /**
-                 * The layout of the color axis. Can be `'horizontal'` or `'vertical'`.
-                 * If none given, the color axis has the same layout as the legend.
-                 *
-                 * @sample highcharts/coloraxis/horizontal-layout/
-                 *         Horizontal color axis layout with vertical legend
-                 *
-                 * @type      {string|undefined}
-                 * @since     7.2.0
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.layout
-                 */
-                /**
-                 * The color of each data class. If not set, the color is pulled
-                 * from the global or chart-specific [colors](#colors) array. In
-                 * styled mode, this option is ignored. Instead, use colors defined
-                 * in CSS.
-                 *
-                 * @sample {highmaps} maps/demo/data-class-two-ranges/
-                 *         Explicit colors
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.dataClasses.color
-                 */
-                /**
-                 * The start of the value range that the data class represents,
-                 * relating to the point value.
-                 *
-                 * The range of each `dataClass` is closed in both ends, but can be
-                 * overridden by the next `dataClass`.
-                 *
-                 * @type      {number}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.dataClasses.from
-                 */
-                /**
-                 * The name of the data class as it appears in the legend.
-                 * If no name is given, it is automatically created based on the
-                 * `from` and `to` values. For full programmatic control,
-                 * [legend.labelFormatter](#legend.labelFormatter) can be used.
-                 * In the formatter, `this.from` and `this.to` can be accessed.
-                 *
-                 * @sample {highmaps} maps/coloraxis/dataclasses-name/
-                 *         Named data classes
-                 *
-                 * @sample {highmaps} maps/coloraxis/dataclasses-labelformatter/
-                 *         Formatted data classes
-                 *
-                 * @type      {string}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.dataClasses.name
-                 */
-                /**
-                 * The end of the value range that the data class represents,
-                 * relating to the point value.
-                 *
-                 * The range of each `dataClass` is closed in both ends, but can be
-                 * overridden by the next `dataClass`.
-                 *
-                 * @type      {number}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.dataClasses.to
-                 */
-                /** @ignore-option */
-                lineWidth: 0,
-                /**
-                 * Padding of the min value relative to the length of the axis. A
-                 * padding of 0.05 will make a 100px axis 5px longer.
-                 *
+                 * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
                  * @product highcharts highstock highmaps
                  */
-                minPadding: 0,
-                /**
-                 * The maximum value of the axis in terms of map point values. If
-                 * `null`, the max value is automatically calculated. If the
-                 * `endOnTick` option is true, the max value might be rounded up.
-                 *
-                 * @sample {highmaps} maps/coloraxis/gridlines/
-                 *         Explicit min and max to reduce the effect of outliers
-                 *
-                 * @type      {number}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.max
-                 */
-                /**
-                 * The minimum value of the axis in terms of map point values. If
-                 * `null`, the min value is automatically calculated. If the
-                 * `startOnTick` option is true, the min value might be rounded
-                 * down.
-                 *
-                 * @sample {highmaps} maps/coloraxis/gridlines/
-                 *         Explicit min and max to reduce the effect of outliers
-                 *
-                 * @type      {number}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.min
-                 */
-                /**
-                 * Padding of the max value relative to the length of the axis. A
-                 * padding of 0.05 will make a 100px axis 5px longer.
-                 *
-                 * @product highcharts highstock highmaps
-                 */
-                maxPadding: 0,
-                /**
-                 * Color of the grid lines extending from the axis across the
-                 * gradient.
-                 *
-                 * @sample {highmaps} maps/coloraxis/gridlines/
-                 *         Grid lines demonstrated
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @product   highcharts highstock highmaps
-                 */
-                gridLineColor: "#ffffff" /* Palette.backgroundColor */,
-                /**
-                 * The width of the grid lines extending from the axis across the
-                 * gradient of a scalar color axis.
-                 *
-                 * @sample {highmaps} maps/coloraxis/gridlines/
-                 *         Grid lines demonstrated
-                 *
-                 * @product highcharts highstock highmaps
-                 */
-                gridLineWidth: 1,
-                /**
-                 * The interval of the tick marks in axis units. When `null`, the
-                 * tick interval is computed to approximately follow the
-                 * `tickPixelInterval`.
-                 *
-                 * @type      {number}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.tickInterval
-                 */
-                /**
-                 * If [tickInterval](#colorAxis.tickInterval) is `null` this option
-                 * sets the approximate pixel interval of the tick marks.
-                 *
-                 * @product highcharts highstock highmaps
-                 */
-                tickPixelInterval: 72,
-                /**
-                 * Whether to force the axis to start on a tick. Use this option
-                 * with the `maxPadding` option to control the axis start.
-                 *
-                 * @product highcharts highstock highmaps
-                 */
-                startOnTick: true,
-                /**
-                 * Whether to force the axis to end on a tick. Use this option with
-                 * the [maxPadding](#colorAxis.maxPadding) option to control the
-                 * axis end.
-                 *
-                 * @product highcharts highstock highmaps
-                 */
-                endOnTick: true,
-                /** @ignore */
-                offset: 0,
-                /**
-                 * The triangular marker on a scalar color axis that points to the
-                 * value of the hovered area. To disable the marker, set
-                 * `marker: null`.
-                 *
-                 * @sample {highmaps} maps/coloraxis/marker/
-                 *         Black marker
-                 *
-                 * @declare Highcharts.PointMarkerOptionsObject
-                 * @product highcharts highstock highmaps
-                 */
-                marker: {
-                    /**
-                     * Animation for the marker as it moves between values. Set to
-                     * `false` to disable animation. Defaults to `{ duration: 50 }`.
-                     *
-                     * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
-                     * @product highcharts highstock highmaps
-                     */
-                    animation: {
-                        /** @internal */
-                        duration: 50
-                    },
+                animation: {
                     /** @internal */
-                    width: 0.01,
-                    /**
-                     * The color of the marker.
-                     *
-                     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     * @product highcharts highstock highmaps
-                     */
-                    color: "#999999" /* Palette.neutralColor40 */
+                    duration: 50
                 },
+                /** @internal */
+                width: 0.01,
                 /**
-                 * The axis labels show the number for each tick.
-                 *
-                 * For more live examples on label options, see [xAxis.labels in the
-                 * Highcharts API.](/highcharts#xAxis.labels)
-                 *
-                 * @extends xAxis.labels
-                 * @product highcharts highstock highmaps
-                 */
-                labels: {
-                    distance: 8,
-                    /**
-                     * How to handle overflowing labels on horizontal color axis. If set
-                     * to `"allow"`, it will not be aligned at all. By default it
-                     * `"justify"` labels inside the chart area. If there is room to
-                     * move it, it will be aligned to the edge, else it will be removed.
-                     *
-                     * @validvalue ["allow", "justify"]
-                     * @product    highcharts highstock highmaps
-                     */
-                    overflow: 'justify',
-                    rotation: 0
-                },
-                /**
-                 * The color to represent the minimum of the color axis. Unless
-                 * [dataClasses](#colorAxis.dataClasses) or
-                 * [stops](#colorAxis.stops) are set, the gradient starts at this
-                 * value.
-                 *
-                 * If dataClasses are set, the color is based on minColor and
-                 * maxColor unless a color is set for each data class, or the
-                 * [dataClassColor](#colorAxis.dataClassColor) is set.
-                 *
-                 * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/
-                 *         Min and max colors on scalar (gradient) axis
-                 * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/
-                 *         On data classes
+                 * The color of the marker.
                  *
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                minColor: "#e6e9ff" /* Palette.highlightColor10 */,
+                color: "#999999" /* Palette.neutralColor40 */
+            },
+            /**
+             * The axis labels show the number for each tick.
+             *
+             * For more live examples on label options, see [xAxis.labels in the
+             * Highcharts API.](/highcharts#xAxis.labels)
+             *
+             * @extends xAxis.labels
+             * @product highcharts highstock highmaps
+             */
+            labels: {
+                distance: 8,
                 /**
-                 * The color to represent the maximum of the color axis. Unless
-                 * [dataClasses](#colorAxis.dataClasses) or
-                 * [stops](#colorAxis.stops) are set, the gradient ends at this
-                 * value.
+                 * How to handle overflowing labels on horizontal color axis. If set
+                 * to `"allow"`, it will not be aligned at all. By default it
+                 * `"justify"` labels inside the chart area. If there is room to
+                 * move it, it will be aligned to the edge, else it will be removed.
                  *
-                 * If dataClasses are set, the color is based on minColor and
-                 * maxColor unless a color is set for each data class, or the
-                 * [dataClassColor](#colorAxis.dataClassColor) is set.
-                 *
-                 * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/
-                 *         Min and max colors on scalar (gradient) axis
-                 * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/
-                 *         On data classes
-                 *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @product highcharts highstock highmaps
+                 * @validvalue ["allow", "justify"]
+                 * @product    highcharts highstock highmaps
                  */
-                maxColor: "#0022ff" /* Palette.highlightColor100 */,
-                /**
-                 * Color stops for the gradient of a scalar color axis. Use this in
-                 * cases where a linear gradient between a `minColor` and `maxColor`
-                 * is not sufficient. The stops is an array of tuples, where the
-                 * first item is a float between 0 and 1 assigning the relative
-                 * position in the gradient, and the second item is the color.
-                 *
-                 * @sample highcharts/coloraxis/coloraxis-stops/
-                 *         Color axis stops
-                 * @sample highcharts/coloraxis/color-key-with-stops/
-                 *         Color axis stops with custom colorKey
-                 * @sample {highmaps} maps/demo/heatmap/
-                 *         Heatmap with three color stops
-                 *
-                 * @type      {Array<Array<number,Highcharts.ColorString>>}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.stops
-                 */
-                /**
-                 * The pixel length of the main tick marks on the color axis.
-                 */
-                tickLength: 5,
-                /**
-                 * The type of interpolation to use for the color axis. Can be
-                 * `linear` or `logarithmic`.
-                 *
-                 * @sample highcharts/coloraxis/logarithmic-with-emulate-negative-values/
-                 *         Logarithmic color axis with extension to emulate negative
-                 *         values
-                 *
-                 * @type      {Highcharts.ColorAxisTypeValue}
-                 * @default   linear
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.type
-                 */
-                /**
-                 * Whether to reverse the axis so that the highest number is closest
-                 * to the origin. Defaults to `false` in a horizontal legend and
-                 * `true` in a vertical legend, where the smallest value starts on
-                 * top.
-                 *
-                 * @type      {boolean}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.reversed
-                 */
-                /**
-                 * @product   highcharts highstock highmaps
-                 * @excluding afterBreaks, pointBreak, pointInBreak
-                 * @apioption colorAxis.events
-                 */
-                /**
-                 * Fires when the legend item belonging to the colorAxis is clicked.
-                 * One parameter, `event`, is passed to the function.
-                 *
-                 * @type      {Function}
-                 * @product   highcharts highstock highmaps
-                 * @apioption colorAxis.events.legendItemClick
-                 */
-                /**
-                 * Whether to display the colorAxis in the legend.
-                 *
-                 * @sample highcharts/coloraxis/hidden-coloraxis-with-3d-chart/
-                 *         Hidden color axis with 3d chart
-                 *
-                 * @see [heatmap.showInLegend](#series.heatmap.showInLegend)
-                 *
-                 * @since   4.2.7
-                 * @product highcharts highstock highmaps
-                 */
-                showInLegend: true
-            };
+                overflow: 'justify',
+                rotation: 0
+            },
+            /**
+             * The color to represent the minimum of the color axis. Unless
+             * [dataClasses](#colorAxis.dataClasses) or
+             * [stops](#colorAxis.stops) are set, the gradient starts at this
+             * value.
+             *
+             * If dataClasses are set, the color is based on minColor and
+             * maxColor unless a color is set for each data class, or the
+             * [dataClassColor](#colorAxis.dataClassColor) is set.
+             *
+             * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/
+             *         Min and max colors on scalar (gradient) axis
+             * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/
+             *         On data classes
+             *
+             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @product highcharts highstock highmaps
+             */
+            minColor: "#e6e9ff" /* Palette.highlightColor10 */,
+            /**
+             * The color to represent the maximum of the color axis. Unless
+             * [dataClasses](#colorAxis.dataClasses) or
+             * [stops](#colorAxis.stops) are set, the gradient ends at this
+             * value.
+             *
+             * If dataClasses are set, the color is based on minColor and
+             * maxColor unless a color is set for each data class, or the
+             * [dataClassColor](#colorAxis.dataClassColor) is set.
+             *
+             * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/
+             *         Min and max colors on scalar (gradient) axis
+             * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/
+             *         On data classes
+             *
+             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @product highcharts highstock highmaps
+             */
+            maxColor: "#0022ff" /* Palette.highlightColor100 */,
+            /**
+             * Color stops for the gradient of a scalar color axis. Use this in
+             * cases where a linear gradient between a `minColor` and `maxColor`
+             * is not sufficient. The stops is an array of tuples, where the
+             * first item is a float between 0 and 1 assigning the relative
+             * position in the gradient, and the second item is the color.
+             *
+             * @sample highcharts/coloraxis/coloraxis-stops/
+             *         Color axis stops
+             * @sample highcharts/coloraxis/color-key-with-stops/
+             *         Color axis stops with custom colorKey
+             * @sample {highmaps} maps/demo/heatmap/
+             *         Heatmap with three color stops
+             *
+             * @type      {Array<Array<number,Highcharts.ColorString>>}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.stops
+             */
+            /**
+             * The pixel length of the main tick marks on the color axis.
+             */
+            tickLength: 5,
+            /**
+             * The type of interpolation to use for the color axis. Can be
+             * `linear` or `logarithmic`.
+             *
+             * @sample highcharts/coloraxis/logarithmic-with-emulate-negative-values/
+             *         Logarithmic color axis with extension to emulate negative
+             *         values
+             *
+             * @type      {Highcharts.ColorAxisTypeValue}
+             * @default   linear
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.type
+             */
+            /**
+             * Whether to reverse the axis so that the highest number is closest
+             * to the origin. Defaults to `false` in a horizontal legend and
+             * `true` in a vertical legend, where the smallest value starts on
+             * top.
+             *
+             * @type      {boolean}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.reversed
+             */
+            /**
+             * @product   highcharts highstock highmaps
+             * @excluding afterBreaks, pointBreak, pointInBreak
+             * @apioption colorAxis.events
+             */
+            /**
+             * Fires when the legend item belonging to the colorAxis is clicked.
+             * One parameter, `event`, is passed to the function.
+             *
+             * @type      {Function}
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.events.legendItemClick
+             */
+            /**
+             * Whether to display the colorAxis in the legend.
+             *
+             * @sample highcharts/coloraxis/hidden-coloraxis-with-3d-chart/
+             *         Hidden color axis with 3d chart
+             *
+             * @see [heatmap.showInLegend](#series.heatmap.showInLegend)
+             *
+             * @since   4.2.7
+             * @product highcharts highstock highmaps
+             */
+            showInLegend: true
+        };
         /* *
          *
          *  Default Export
@@ -787,16 +768,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -804,11 +784,7 @@
         })();
         var color = Color.parse;
         var Series = SeriesRegistry.series;
-        var extend = U.extend,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick;
+        var extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
         /* *
          *
          *  Class
@@ -828,7 +804,7 @@
          * The color axis options for initialization.
          */
         var ColorAxis = /** @class */ (function (_super) {
-                __extends(ColorAxis, _super);
+            __extends(ColorAxis, _super);
             /* *
              *
              *  Constructors
@@ -838,9 +814,7 @@
              * @private
              */
             function ColorAxis(chart, userOptions) {
-                var _this = _super.call(this,
-                    chart,
-                    userOptions) || this;
+                var _this = _super.call(this, chart, userOptions) || this;
                 // Prevents unnecessary padding with `hc-more`
                 _this.beforePadding = false;
                 _this.chart = void 0;
@@ -878,17 +852,14 @@
              */
             ColorAxis.prototype.init = function (chart, userOptions) {
                 var axis = this;
-                var legend = chart.options.legend || {},
-                    horiz = userOptions.layout ?
-                        userOptions.layout !== 'vertical' :
-                        legend.layout !== 'vertical',
-                    visible = userOptions.visible;
-                var options = merge(ColorAxis.defaultColorAxisOptions,
-                    userOptions, {
-                        showEmpty: false,
-                        title: null,
-                        visible: legend.enabled && visible !== false
-                    });
+                var legend = chart.options.legend || {}, horiz = userOptions.layout ?
+                    userOptions.layout !== 'vertical' :
+                    legend.layout !== 'vertical', visible = userOptions.visible;
+                var options = merge(ColorAxis.defaultColorAxisOptions, userOptions, {
+                    showEmpty: false,
+                    title: null,
+                    visible: legend.enabled && visible !== false
+                });
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
@@ -912,14 +883,8 @@
              * @private
              */
             ColorAxis.prototype.initDataClasses = function (userOptions) {
-                var axis = this,
-                    chart = axis.chart,
-                    legendItem = axis.legendItem = axis.legendItem || {},
-                    len = userOptions.dataClasses.length,
-                    options = axis.options;
-                var dataClasses,
-                    colorCounter = 0,
-                    colorCount = chart.options.chart.colorCount;
+                var axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, len = userOptions.dataClasses.length, options = axis.options;
+                var dataClasses, colorCounter = 0, colorCount = chart.options.chart.colorCount;
                 axis.dataClasses = dataClasses = [];
                 legendItem.labels = [];
                 (userOptions.dataClasses || []).forEach(function (dataClass, i) {
@@ -998,10 +963,7 @@
                 var symbol = axis.legendItem && axis.legendItem.symbol;
                 var chart = axis.chart;
                 var legendOptions = chart.options.legend || {};
-                var x,
-                    y,
-                    width,
-                    height;
+                var x, y, width, height;
                 if (symbol) {
                     this.left = x = symbol.attr('x');
                     this.top = y = symbol.attr('y');
@@ -1039,12 +1001,7 @@
                 var axis = this;
                 var dataClasses = axis.dataClasses;
                 var stops = axis.stops;
-                var pos,
-                    from,
-                    to,
-                    color,
-                    dataClass,
-                    i;
+                var pos, from, to, color, dataClass, i;
                 if (dataClasses) {
                     i = dataClasses.length;
                     while (i--) {
@@ -1123,19 +1080,16 @@
                 var reversed = axis.reversed;
                 var one = reversed ? 1 : 0;
                 var zero = reversed ? 0 : 1;
-                var grad = horiz ? [one, 0,
-                    zero, 0] : [0,
-                    zero, 0,
-                    one]; // #3190
-                    axis.legendColor = {
-                        linearGradient: {
-                            x1: grad[0],
-                            y1: grad[1],
-                            x2: grad[2],
-                            y2: grad[3]
-                        },
-                        stops: axis.stops
-                    };
+                var grad = horiz ? [one, 0, zero, 0] : [0, zero, 0, one]; // #3190
+                axis.legendColor = {
+                    linearGradient: {
+                        x1: grad[0],
+                        y1: grad[1],
+                        x2: grad[2],
+                        y2: grad[3]
+                    },
+                    stops: axis.stops
+                };
             };
             /**
              * The color axis appears inside the legend and has its own legend symbol.
@@ -1143,22 +1097,10 @@
              */
             ColorAxis.prototype.drawLegendSymbol = function (legend, item) {
                 var _a;
-                var axis = this,
-                    legendItem = item.legendItem || {},
-                    padding = legend.padding,
-                    legendOptions = legend.options,
-                    labelOptions = axis.options.labels,
-                    itemDistance = pick(legendOptions.itemDistance, 10),
-                    horiz = axis.horiz,
-                    width = pick(legendOptions.symbolWidth,
-                    horiz ? ColorAxis.defaultLegendLength : 12),
-                    height = pick(legendOptions.symbolHeight,
-                    horiz ? 12 : ColorAxis.defaultLegendLength),
-                    labelPadding = pick(
-                    // @todo: This option is not documented, nor implemented when
-                    // vertical
-                    legendOptions.labelPadding,
-                    horiz ? 16 : 30);
+                var axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength), labelPadding = pick(
+                // @todo: This option is not documented, nor implemented when
+                // vertical
+                legendOptions.labelPadding, horiz ? 16 : 30);
                 this.setLegendColor();
                 // Create the gradient
                 if (!legendItem.symbol) {
@@ -1195,15 +1137,7 @@
             ColorAxis.prototype.getSeriesExtremes = function () {
                 var axis = this;
                 var series = axis.series;
-                var colorValArray,
-                    colorKey,
-                    colorValIndex,
-                    pointArrayMap,
-                    calculatedExtremes,
-                    cSeries,
-                    i = series.length,
-                    yData,
-                    j;
+                var colorValArray, colorKey, colorValIndex, pointArrayMap, calculatedExtremes, cSeries, i = series.length, yData, j;
                 this.dataMin = Infinity;
                 this.dataMax = -Infinity;
                 while (i--) { // x, y, value, other
@@ -1236,8 +1170,7 @@
                         cSeries.maxColorValue = cSeries[colorKey + 'Max'];
                     }
                     else {
-                        var cExtremes = Series.prototype.getExtremes.call(cSeries,
-                            colorValArray);
+                        var cExtremes = Series.prototype.getExtremes.call(cSeries, colorValArray);
                         cSeries.minColorValue = cExtremes.dataMin;
                         cSeries.maxColorValue = cExtremes.dataMax;
                     }
@@ -1268,12 +1201,7 @@
              * @emits Highcharts.ColorAxis#event:drawCrosshair
              */
             ColorAxis.prototype.drawCrosshair = function (e, point) {
-                var axis = this,
-                    legendItem = axis.legendItem || {},
-                    plotX = point && point.plotX,
-                    plotY = point && point.plotY,
-                    axisPos = axis.pos,
-                    axisLen = axis.len;
+                var axis = this, legendItem = axis.legendItem || {}, plotX = point && point.plotX, plotY = point && point.plotY, axisPos = axis.pos, axisLen = axis.len;
                 var crossPos;
                 if (point) {
                     crossPos = axis.toPixels(point.getNestedProperty(point.series.colorKey));
@@ -1308,10 +1236,7 @@
              * @private
              */
             ColorAxis.prototype.getPlotLinePath = function (options) {
-                var axis = this,
-                    left = axis.left,
-                    pos = options.translatedValue,
-                    top = axis.top;
+                var axis = this, left = axis.left, pos = options.translatedValue, top = axis.top;
                 // crosshairs only
                 return isNumber(pos) ? // pos can be 0 (#3969)
                     (axis.horiz ? [
@@ -1344,9 +1269,7 @@
              * and call {@link Highcharts.Chart#redraw} after.
              */
             ColorAxis.prototype.update = function (newOptions, redraw) {
-                var axis = this,
-                    chart = axis.chart,
-                    legend = chart.legend;
+                var axis = this, chart = axis.chart, legend = chart.legend;
                 this.series.forEach(function (series) {
                     // Needed for Axis.update when choropleth colors change
                     series.isDirtyData = true;
@@ -1367,9 +1290,7 @@
              * @private
              */
             ColorAxis.prototype.destroyItems = function () {
-                var axis = this,
-                    chart = axis.chart,
-                    legendItem = axis.legendItem || {};
+                var axis = this, chart = axis.chart, legendItem = axis.legendItem || {};
                 if (legendItem.label) {
                     chart.legend.destroyItem(axis);
                 }
@@ -1404,20 +1325,13 @@
              * @private
              */
             ColorAxis.prototype.getDataClassLegendSymbols = function () {
-                var axis = this,
-                    chart = axis.chart,
-                    legendItems = (axis.legendItem &&
-                        axis.legendItem.labels ||
-                        []),
-                    legendOptions = chart.options.legend,
-                    valueDecimals = pick(legendOptions.valueDecimals, -1),
-                    valueSuffix = pick(legendOptions.valueSuffix, '');
+                var axis = this, chart = axis.chart, legendItems = (axis.legendItem &&
+                    axis.legendItem.labels ||
+                    []), legendOptions = chart.options.legend, valueDecimals = pick(legendOptions.valueDecimals, -1), valueSuffix = pick(legendOptions.valueSuffix, '');
                 var getPointsInDataClass = function (i) {
-                        return axis.series.reduce(function (points,
-                    s) {
-                            points.push.apply(points,
-                    s.points.filter(function (point) {
-                                return point.dataClass === i;
+                    return axis.series.reduce(function (points, s) {
+                        points.push.apply(points, s.points.filter(function (point) {
+                            return point.dataClass === i;
                         }));
                         return points;
                     }, []);
@@ -1425,9 +1339,7 @@
                 var name;
                 if (!legendItems.length) {
                     axis.dataClasses.forEach(function (dataClass, i) {
-                        var from = dataClass.from,
-                            to = dataClass.to,
-                            numberFormatter = chart.numberFormatter;
+                        var from = dataClass.from, to = dataClass.to, numberFormatter = chart.numberFormatter;
                         var vis = true;
                         // Assemble the default name. This can be overridden
                         // by legend.options.labelFormatter
@@ -1467,11 +1379,18 @@
                             // data class
                             setVisible: function () {
                                 this.visible = vis = axis.visible = !vis;
+                                var affectedSeries = [];
                                 for (var _i = 0, _a = getPointsInDataClass(i); _i < _a.length; _i++) {
                                     var point = _a[_i];
                                     point.setVisible(vis);
+                                    if (affectedSeries.indexOf(point.series) === -1) {
+                                        affectedSeries.push(point.series);
+                                    }
                                 }
                                 chart.legend.colorizeItem(this, vis);
+                                affectedSeries.forEach(function (series) {
+                                    fireEvent(series, 'afterDataClassLegendClick');
+                                });
                             }
                         }, dataClass));
                     });
@@ -1543,118 +1462,118 @@
          * @optionparent mapNavigation
          */
         var MapNavigationDefaults = {
+            /**
+             * General options for the map navigation buttons. Individual options
+             * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
+             * option set.
+             *
+             * @sample {highmaps} maps/mapnavigation/button-theme/
+             *         Theming the navigation buttons
+             */
+            buttonOptions: {
                 /**
-                 * General options for the map navigation buttons. Individual options
-                 * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
-                 * option set.
+                 * What box to align the buttons to. Possible values are `plotBox`
+                 * and `spacingBox`.
                  *
-                 * @sample {highmaps} maps/mapnavigation/button-theme/
-                 *         Theming the navigation buttons
+                 * @type {Highcharts.ButtonRelativeToValue}
                  */
-                buttonOptions: {
-                    /**
-                     * What box to align the buttons to. Possible values are `plotBox`
-                     * and `spacingBox`.
-                     *
-                     * @type {Highcharts.ButtonRelativeToValue}
-                     */
-                    alignTo: 'plotBox',
-                    /**
-                     * The alignment of the navigation buttons.
-                     *
-                     * @type {Highcharts.AlignValue}
-                     */
-                    align: 'left',
-                    /**
-                     * The vertical alignment of the buttons. Individual alignment can
-                     * be adjusted by each button's `y` offset.
-                     *
-                     * @type {Highcharts.VerticalAlignValue}
-                     */
-                    verticalAlign: 'top',
-                    /**
-                     * The X offset of the buttons relative to its `align` setting.
-                     */
-                    x: 0,
-                    /**
-                     * The width of the map navigation buttons.
-                     */
-                    width: 18,
-                    /**
-                     * The pixel height of the map navigation buttons.
-                     */
-                    height: 18,
-                    /**
-                     * Padding for the navigation buttons.
-                     *
-                     * @since 5.0.0
-                     */
-                    padding: 5,
-                    /**
-                     * Text styles for the map navigation buttons.
-                     *
-                     * @type    {Highcharts.CSSObject}
-                     * @default {"fontSize": "1em", "fontWeight": "bold"}
-                     */
-                    style: {
-                        /** @ignore */
-                        color: "#666666" /* Palette.neutralColor60 */,
-                        /** @ignore */
-                        fontSize: '1em',
-                        /** @ignore */
-                        fontWeight: 'bold'
-                    },
-                    /**
-                     * A configuration object for the button theme. The object accepts
-                     * SVG properties like `stroke-width`, `stroke` and `fill`. Tri-state
-                     * button styles are supported by the `states.hover` and `states.select`
-                     * objects.
-                     *
-                     * @sample {highmaps} maps/mapnavigation/button-theme/
-                     *         Themed navigation buttons
-                     *
-                     * @type    {Highcharts.SVGAttributes}
-                     * @default {"stroke-width": 1, "text-align": "center"}
-                     */
-                    theme: {
-                        /** @ignore */
-                        fill: "#ffffff" /* Palette.backgroundColor */,
-                        /** @ignore */
-                        stroke: "#e6e6e6" /* Palette.neutralColor10 */,
-                        /** @ignore */
-                        'stroke-width': 1,
-                        /** @ignore */
-                        'text-align': 'center'
-                    }
+                alignTo: 'plotBox',
+                /**
+                 * The alignment of the navigation buttons.
+                 *
+                 * @type {Highcharts.AlignValue}
+                 */
+                align: 'left',
+                /**
+                 * The vertical alignment of the buttons. Individual alignment can
+                 * be adjusted by each button's `y` offset.
+                 *
+                 * @type {Highcharts.VerticalAlignValue}
+                 */
+                verticalAlign: 'top',
+                /**
+                 * The X offset of the buttons relative to its `align` setting.
+                 */
+                x: 0,
+                /**
+                 * The width of the map navigation buttons.
+                 */
+                width: 18,
+                /**
+                 * The pixel height of the map navigation buttons.
+                 */
+                height: 18,
+                /**
+                 * Padding for the navigation buttons.
+                 *
+                 * @since 5.0.0
+                 */
+                padding: 5,
+                /**
+                 * Text styles for the map navigation buttons.
+                 *
+                 * @type    {Highcharts.CSSObject}
+                 * @default {"fontSize": "1em", "fontWeight": "bold"}
+                 */
+                style: {
+                    /** @ignore */
+                    color: "#666666" /* Palette.neutralColor60 */,
+                    /** @ignore */
+                    fontSize: '1em',
+                    /** @ignore */
+                    fontWeight: 'bold'
                 },
                 /**
-                 * The individual buttons for the map navigation. This usually includes
-                 * the zoom in and zoom out buttons. Properties for each button is
-                 * inherited from
-                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
-                 * individual options can be overridden. But default, the `onclick`, `text`
-                 * and `y` options are individual.
+                 * A configuration object for the button theme. The object accepts
+                 * SVG properties like `stroke-width`, `stroke` and `fill`. Tri-state
+                 * button styles are supported by the `states.hover` and `states.select`
+                 * objects.
+                 *
+                 * @sample {highmaps} maps/mapnavigation/button-theme/
+                 *         Themed navigation buttons
+                 *
+                 * @type    {Highcharts.SVGAttributes}
+                 * @default {"stroke-width": 1, "text-align": "center"}
                  */
-                buttons: {
+                theme: {
+                    /** @ignore */
+                    fill: "#ffffff" /* Palette.backgroundColor */,
+                    /** @ignore */
+                    stroke: "#e6e6e6" /* Palette.neutralColor10 */,
+                    /** @ignore */
+                    'stroke-width': 1,
+                    /** @ignore */
+                    'text-align': 'center'
+                }
+            },
+            /**
+             * The individual buttons for the map navigation. This usually includes
+             * the zoom in and zoom out buttons. Properties for each button is
+             * inherited from
+             * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+             * individual options can be overridden. But default, the `onclick`, `text`
+             * and `y` options are individual.
+             */
+            buttons: {
+                /**
+                 * Options for the zoom in button. Properties for the zoom in and zoom
+                 * out buttons are inherited from
+                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+                 * individual options can be overridden. By default, the `onclick`,
+                 * `text` and `y` options are individual.
+                 *
+                 * @extends mapNavigation.buttonOptions
+                 */
+                zoomIn: {
+                    // eslint-disable-next-line valid-jsdoc
                     /**
-                     * Options for the zoom in button. Properties for the zoom in and zoom
-                     * out buttons are inherited from
-                     * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
-                     * individual options can be overridden. By default, the `onclick`,
-                     * `text` and `y` options are individual.
+                     * Click handler for the button.
                      *
-                     * @extends mapNavigation.buttonOptions
+                     * @type    {Function}
+                     * @default function () { this.mapZoom(0.5); }
                      */
-                    zoomIn: {
-                        // eslint-disable-next-line valid-jsdoc
-                        /**
-                         * Click handler for the button.
-                         *
-                         * @type    {Function}
-                         * @default function () { this.mapZoom(0.5); }
-                         */
-                        onclick: function () {
-                            this.mapZoom(0.5);
+                    onclick: function () {
+                        this.mapZoom(0.5);
                     },
                     /**
                      * The text for the button. The tooltip (title) is a language option
@@ -1800,12 +1719,7 @@
          *
          * */
         var doc = H.doc;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick;
+        var addEvent = U.addEvent, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -1861,13 +1775,8 @@
          * @return {void}
          */
         MapNavigation.prototype.update = function (options) {
-            var mapNav = this,
-                chart = this.chart,
-                o = chart.options.mapNavigation,
-                attr,
-                outerHandler = function (e) {
-                    this.handler.call(chart,
-                e);
+            var mapNav = this, chart = this.chart, o = chart.options.mapNavigation, attr, outerHandler = function (e) {
+                this.handler.call(chart, e);
                 stopEvent(e); // Stop default click event (#4444)
             }, navButtons = mapNav.navButtons;
             // Merge in new options in case of update, and register back to chart
@@ -1897,44 +1806,33 @@
                         attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                         );
                     }
-                    var text = buttonOptions.text,
-                        _b = buttonOptions.width,
-                        width = _b === void 0 ? 0 : _b,
-                        _c = buttonOptions.height,
-                        height = _c === void 0 ? 0 : _c,
-                        _d = buttonOptions.padding,
-                        padding = _d === void 0 ? 0 : _d;
+                    var text = buttonOptions.text, _b = buttonOptions.width, width = _b === void 0 ? 0 : _b, _c = buttonOptions.height, height = _c === void 0 ? 0 : _c, _d = buttonOptions.padding, padding = _d === void 0 ? 0 : _d;
                     var button = chart.renderer
-                            .button(
-                        // Display the text from options only if it is not plus or
-                        // minus
-                        (text !== '+' && text !== '-' && text) || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
-                            .addClass('highcharts-map-navigation highcharts-' + {
-                            zoomIn: 'zoom-in',
-                            zoomOut: 'zoom-out'
-                        }[n])
-                            .attr({
-                            width: width,
-                            height: height,
-                            title: chart.options.lang[n],
-                            padding: buttonOptions.padding,
-                            zIndex: 5
-                        })
-                            .add(mapNav.navButtonsGroup);
+                        .button(
+                    // Display the text from options only if it is not plus or
+                    // minus
+                    (text !== '+' && text !== '-' && text) || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                        .addClass('highcharts-map-navigation highcharts-' + {
+                        zoomIn: 'zoom-in',
+                        zoomOut: 'zoom-out'
+                    }[n])
+                        .attr({
+                        width: width,
+                        height: height,
+                        title: chart.options.lang[n],
+                        padding: buttonOptions.padding,
+                        zIndex: 5
+                    })
+                        .add(mapNav.navButtonsGroup);
                     // Add SVG paths for the default symbols, because the text
                     // representation of + and - is not sharp and position is not easy
                     // to control.
                     if (text === '+' || text === '-') {
                         // Mysterious +1 to achieve centering
-                        var w = width + 1,
-                            d = [
-                                ['M',
-                            padding + 3,
-                            padding + height / 2],
-                                ['L',
-                            padding + w - 3,
-                            padding + height / 2]
-                            ];
+                        var w = width + 1, d = [
+                            ['M', padding + 3, padding + height / 2],
+                            ['L', padding + w - 3, padding + height / 2]
+                        ];
                         if (text === '+') {
                             d.push(['M', padding + w / 2, padding + 3], ['L', padding + w / 2, padding + height - 3]);
                         }
@@ -1958,13 +1856,10 @@
                     });
                     if (!chart.hasLoaded) {
                         // Align it after the plotBox is known (#12776)
-                        var unbind_1 = addEvent(chart, 'load',
-                            function () {
-                                // #15406: Make sure button hasnt been destroyed
-                                if (button.element) {
-                                    button.align(buttonOptions,
-                            false,
-                            buttonOptions.alignTo);
+                        var unbind_1 = addEvent(chart, 'load', function () {
+                            // #15406: Make sure button hasnt been destroyed
+                            if (button.element) {
+                                button.align(buttonOptions, false, buttonOptions.alignTo);
                             }
                             unbind_1();
                         });
@@ -1974,15 +1869,14 @@
                     }
                 });
                 // Borrowed from overlapping-datalabels. Consider a shared module.
-                var isIntersectRect_1 = function (box1,
-                    box2) { return !(box2.x >= box1.x + box1.width ||
-                        box2.x + box2.width <= box1.x ||
-                        box2.y >= box1.y + box1.height ||
-                        box2.y + box2.height <= box1.y); };
+                var isIntersectRect_1 = function (box1, box2) { return !(box2.x >= box1.x + box1.width ||
+                    box2.x + box2.width <= box1.x ||
+                    box2.y >= box1.y + box1.height ||
+                    box2.y + box2.height <= box1.y); };
                 // Check the mapNavigation buttons collision with exporting button
                 // and translate the mapNavigation button if they overlap.
                 var adjustMapNavBtn = function () {
-                        var expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
+                    var expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
                     if (expBtnBBox) {
                         var navBtnsBBox = mapNav.navButtonsGroup.getBBox();
                         // If buttons overlap
@@ -1990,10 +1884,8 @@
                             // Adjust the mapNav buttons' position by translating them
                             // above or below the exporting button
                             var aboveExpBtn = -navBtnsBBox.y - navBtnsBBox.height +
-                                    expBtnBBox.y - 5,
-                                belowExpBtn = expBtnBBox.y + expBtnBBox.height -
-                                    navBtnsBBox.y + 5,
-                                mapNavVerticalAlign = o.buttonOptions && o.buttonOptions.verticalAlign;
+                                expBtnBBox.y - 5, belowExpBtn = expBtnBBox.y + expBtnBBox.height -
+                                navBtnsBBox.y + 5, mapNavVerticalAlign = o.buttonOptions && o.buttonOptions.verticalAlign;
                             // If bottom aligned and adjusting the mapNav button would
                             // translate it out of the plotBox, translate it up
                             // instead of down
@@ -2079,8 +1971,7 @@
              */
             fitToBox: function (inner, outer) {
                 [['x', 'width'], ['y', 'height']].forEach(function (dim) {
-                    var pos = dim[0],
-                        size = dim[1];
+                    var pos = dim[0], size = dim[1];
                     if (inner[pos] + inner[size] >
                         outer[pos] + outer[size]) { // right
                         // the general size is greater, fit fully to outer
@@ -2169,10 +2060,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
-            extend = U.extend,
-            pick = U.pick,
-            wrap = U.wrap;
+        var defined = U.defined, extend = U.extend, pick = U.pick, wrap = U.wrap;
         /* eslint-disable no-invalid-this */
         var normalize = Pointer.prototype.normalize;
         var totalWheelDelta = 0;
@@ -2185,9 +2073,9 @@
                 e = normalize.call(this, e, chartPosition);
                 if (chart && chart.mapView) {
                     var lonLat = chart.mapView.pixelsToLonLat({
-                            x: e.chartX - chart.plotLeft,
-                            y: e.chartY - chart.plotTop
-                        });
+                        x: e.chartX - chart.plotLeft,
+                        y: e.chartY - chart.plotTop
+                    });
                     if (lonLat) {
                         extend(e, lonLat);
                     }
@@ -2215,7 +2103,7 @@
                 // Firefox uses e.deltaY or e.detail, WebKit and IE uses wheelDelta
                 // try wheelDelta first #15656
                 var delta = (defined(e.wheelDelta) && -e.wheelDelta / 120) ||
-                        e.deltaY || e.detail;
+                    e.deltaY || e.detail;
                 // Wheel zooming on trackpads have different behaviours in Firefox vs
                 // WebKit. In Firefox the delta increments in steps by 1, so it is not
                 // distinguishable from true mouse wheel. Therefore we use this timer
@@ -2272,8 +2160,7 @@
          *
          * */
         var columnProto = SeriesRegistry.seriesTypes.column.prototype;
-        var addEvent = U.addEvent,
-            defined = U.defined;
+        var addEvent = U.addEvent, defined = U.defined;
         /* *
          *
          *  Composition
@@ -2420,24 +2307,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var getOptions = D.getOptions;
-        var merge = U.merge,
-            pick = U.pick;
+        var merge = U.merge, pick = U.pick;
         /**
          * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
          *
@@ -2448,7 +2333,7 @@
          * @extends Highcharts.Chart
          */
         var MapChart = /** @class */ (function (_super) {
-                __extends(MapChart, _super);
+            __extends(MapChart, _super);
             function MapChart() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
@@ -2472,25 +2357,24 @@
             MapChart.prototype.init = function (userOptions, callback) {
                 var defaultCreditsOptions = getOptions().credits;
                 var options = merge({
-                        chart: {
-                            panning: {
-                                enabled: true,
-                                type: 'xy'
-                            },
-                            type: 'map'
+                    chart: {
+                        panning: {
+                            enabled: true,
+                            type: 'xy'
                         },
-                        credits: {
-                            mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                                '{geojson.copyrightShort}</a>'),
-                            mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
-                        },
-                        mapView: {},
-                        tooltip: {
-                            followTouchMove: false
-                        }
+                        type: 'map'
                     },
-                    userOptions // user's options
-                    );
+                    credits: {
+                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                            '{geojson.copyrightShort}</a>'),
+                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                    },
+                    mapView: {},
+                    tooltip: {
+                        followTouchMove: false
+                    }
+                }, userOptions // user's options
+                );
                 _super.prototype.init.call(this, options, callback);
             };
             return MapChart;
@@ -2594,14 +2478,9 @@
          * */
         // Compute bounds from a path element
         var boundsFromPath = function (path) {
-                var x2 = -Number.MAX_VALUE,
-            x1 = Number.MAX_VALUE,
-            y2 = -Number.MAX_VALUE,
-            y1 = Number.MAX_VALUE,
-            validBounds;
+            var x2 = -Number.MAX_VALUE, x1 = Number.MAX_VALUE, y2 = -Number.MAX_VALUE, y1 = Number.MAX_VALUE, validBounds;
             path.forEach(function (seg) {
-                var x = seg[seg.length - 2],
-                    y = seg[seg.length - 1];
+                var x = seg[seg.length - 2], y = seg[seg.length - 1];
                 if (typeof x === 'number' &&
                     typeof y === 'number') {
                     x1 = Math.min(x1, x);
@@ -2619,15 +2498,8 @@
          * Test for point in polygon. Polygon defined as array of [x,y] points.
          * @private
          */
-        var pointInPolygon = function (point,
-            polygon) {
-                var i,
-            j,
-            rel1,
-            rel2,
-            c = false,
-            x = point.x,
-            y = point.y;
+        var pointInPolygon = function (point, polygon) {
+            var i, j, rel1, rel2, c = false, x = point.x, y = point.y;
             for (i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
                 rel1 = polygon[i][1] > y;
                 rel2 = polygon[j][1] > y;
@@ -2646,9 +2518,9 @@
          *
          * */
         var MapUtilities = {
-                boundsFromPath: boundsFromPath,
-                pointInPolygon: pointInPolygon
-            };
+            boundsFromPath: boundsFromPath,
+            pointInPolygon: pointInPolygon
+        };
 
         return MapUtilities;
     });
@@ -2663,16 +2535,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -2680,24 +2551,21 @@
         })();
         var boundsFromPath = MapUtilities.boundsFromPath;
         var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
-        var extend = U.extend,
-            isNumber = U.isNumber,
-            pick = U.pick;
+        var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
         /* *
          *
          *  Class
          *
          * */
         var MapPoint = /** @class */ (function (_super) {
-                __extends(MapPoint, _super);
+            __extends(MapPoint, _super);
             function MapPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.options = void 0;
                 _this.path = void 0;
                 _this.series = void 0;
@@ -2731,17 +2599,10 @@
              * @private
              */
             MapPoint.prototype.applyOptions = function (options, x) {
-                var series = this.series,
-                    point = _super.prototype.applyOptions.call(this,
-                    options,
-                    x),
-                    joinBy = series.joinBy;
+                var series = this.series, point = _super.prototype.applyOptions.call(this, options, x), joinBy = series.joinBy;
                 if (series.mapData && series.mapMap) {
-                    var joinKey = joinBy[1],
-                        mapKey = _super.prototype.getNestedProperty.call(point,
-                        joinKey),
-                        mapPoint = typeof mapKey !== 'undefined' &&
-                            series.mapMap[mapKey];
+                    var joinKey = joinBy[1], mapKey = _super.prototype.getNestedProperty.call(point, joinKey), mapPoint = typeof mapKey !== 'undefined' &&
+                        series.mapMap[mapKey];
                     if (mapPoint) {
                         extend(point, mapPoint); // copy over properties
                     }
@@ -2757,26 +2618,20 @@
              * @return MapBounds|undefined The computed bounds
              */
             MapPoint.prototype.getProjectedBounds = function (projection) {
-                var path = MapPoint.getProjectedPath(this,
-                    projection),
-                    bounds = boundsFromPath(path),
-                    properties = this.properties,
-                    mapView = this.series.chart.mapView;
+                var path = MapPoint.getProjectedPath(this, projection), bounds = boundsFromPath(path), properties = this.properties, mapView = this.series.chart.mapView;
                 if (bounds) {
                     // Cache point bounding box for use to position data labels, bubbles
                     // etc
                     var propMiddleLon = properties && properties['hc-middle-lon'], propMiddleLat = properties && properties['hc-middle-lat'];
                     if (mapView && isNumber(propMiddleLon) && isNumber(propMiddleLat)) {
-                        var projectedPoint = projection.forward([propMiddleLon,
-                            propMiddleLat]);
+                        var projectedPoint = projection.forward([propMiddleLon, propMiddleLat]);
                         bounds.midX = projectedPoint[0];
                         bounds.midY = projectedPoint[1];
                     }
                     else {
                         var propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
                         bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
-                        var middleYFraction = pick(this.middleY,
-                            isNumber(propMiddleY) ? propMiddleY : 0.5);
+                        var middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
                         // No geographic geometry, only path given => flip
                         if (!this.geometry) {
                             middleYFraction = 1 - middleYFraction;
@@ -2830,32 +2685,28 @@
              * @function Highcharts.Point#zoomTo
              */
             MapPoint.prototype.zoomTo = function (animOptions) {
-                var point = this,
-                    chart = point.series.chart,
-                    mapView = chart.mapView;
+                var point = this, chart = point.series.chart, mapView = chart.mapView;
                 var bounds = point.bounds;
                 if (mapView && bounds) {
                     var inset = isNumber(point.insetIndex) &&
-                            mapView.insets[point.insetIndex];
+                        mapView.insets[point.insetIndex];
                     if (inset) {
                         // If in an inset, translate the bounds to pixels ...
                         var px1 = inset.projectedUnitsToPixels({
-                                x: bounds.x1,
-                                y: bounds.y1
-                            }),
-                            px2 = inset.projectedUnitsToPixels({
-                                x: bounds.x2,
-                                y: bounds.y2
-                            }), 
-                            // ... then back to projected units in the main mapView
-                            proj1 = mapView.pixelsToProjectedUnits({
-                                x: px1.x,
-                                y: px1.y
-                            }),
-                            proj2 = mapView.pixelsToProjectedUnits({
-                                x: px2.x,
-                                y: px2.y
-                            });
+                            x: bounds.x1,
+                            y: bounds.y1
+                        }), px2 = inset.projectedUnitsToPixels({
+                            x: bounds.x2,
+                            y: bounds.y2
+                        }), 
+                        // ... then back to projected units in the main mapView
+                        proj1 = mapView.pixelsToProjectedUnits({
+                            x: px1.x,
+                            y: px1.y
+                        }), proj2 = mapView.pixelsToProjectedUnits({
+                            x: px2.x,
+                            y: px2.y
+                        });
                         bounds = {
                             x1: proj1.x,
                             y1: proj1.y,
@@ -2905,135 +2756,135 @@
          * @optionparent mapView
          */
         var defaultOptions = {
+            /**
+             * The center of the map in terms of longitude and latitude. For
+             * preprojected maps (like the GeoJSON files in Map Collection v1.x), the
+             * units are projected x and y units.
+             *
+             * @default [0, 0]
+             * @type   {Highcharts.LonLatArray}
+             *
+             * @sample {highmaps} maps/mapview/center-zoom Custom view of a world map
+             * @sample {highmaps} maps/mapview/get-view Report the current view of a
+             *         preprojected map
+             */
+            center: [0, 0],
+            /**
+             * Fit the map to a geometry object consisting of individual points or
+             * polygons. This is practical for responsive maps where we want to focus on
+             * a specific area regardless of map size - unlike setting `center` and
+             * `zoom`, where the view doesn't scale with different map sizes.
+             *
+             * The geometry can be combined with the [padding](#mapView.padding) option
+             * to avoid touching the edges of the chart.
+             *
+             * @type {object}
+             * @since 10.3.3
+             *
+             * @sample maps/mapview/fittogeometry Fitting the view to geometries
+             */
+            fitToGeometry: void 0,
+            /**
+             * Prevents the end user from zooming too far in on the map. See
+             * [zoom](#mapView.zoom).
+             *
+             * @type   {number|undefined}
+             *
+             * @sample {highmaps} maps/mapview/maxzoom
+             *         Prevent zooming in too far
+             */
+            maxZoom: void 0,
+            /**
+             * The padding inside the plot area when auto fitting to the map bounds. A
+             * number signifies pixels, and a percentage is relative to the plot area
+             * size.
+             *
+             * An array sets individual padding for the sides in the order [top, right,
+             * bottom, left].
+             *
+             * @sample {highmaps} maps/chart/plotbackgroundcolor-color
+             *         Visible plot area and percentage padding
+             * @sample {highmaps} maps/demo/mappoint-mapmarker
+             *         Padding for individual sides
+             * @type  {number|string|Array<number|string>}
+             */
+            padding: 0,
+            /**
+             * The projection options allow applying client side projection to a map
+             * given in geographic coordinates, typically from TopoJSON or GeoJSON.
+             *
+             * @type   {Object}
+             *
+             * @sample maps/demo/projection-explorer
+             *         Projection explorer
+             * @sample maps/demo/topojson-projection
+             *         Orthographic projection
+             * @sample maps/mapview/projection-custom-proj4js
+             *         Custom UTM projection definition
+             * @sample maps/mapview/projection-custom-d3geo
+             *         Custom Robinson projection definition
+             */
+            projection: {
                 /**
-                 * The center of the map in terms of longitude and latitude. For
-                 * preprojected maps (like the GeoJSON files in Map Collection v1.x), the
-                 * units are projected x and y units.
+                 * Projection name. Built-in projections are `EqualEarth`,
+                 * `LambertConformalConic`, `Miller`, `Orthographic` and `WebMercator`.
                  *
-                 * @default [0, 0]
-                 * @type   {Highcharts.LonLatArray}
-                 *
-                 * @sample {highmaps} maps/mapview/center-zoom Custom view of a world map
-                 * @sample {highmaps} maps/mapview/get-view Report the current view of a
-                 *         preprojected map
-                 */
-                center: [0, 0],
-                /**
-                 * Fit the map to a geometry object consisting of individual points or
-                 * polygons. This is practical for responsive maps where we want to focus on
-                 * a specific area regardless of map size - unlike setting `center` and
-                 * `zoom`, where the view doesn't scale with different map sizes.
-                 *
-                 * The geometry can be combined with the [padding](#mapView.padding) option
-                 * to avoid touching the edges of the chart.
-                 *
-                 * @type {object}
-                 * @since 10.3.3
-                 *
-                 * @sample maps/mapview/fittogeometry Fitting the view to geometries
-                 */
-                fitToGeometry: void 0,
-                /**
-                 * Prevents the end user from zooming too far in on the map. See
-                 * [zoom](#mapView.zoom).
-                 *
-                 * @type   {number|undefined}
-                 *
-                 * @sample {highmaps} maps/mapview/maxzoom
-                 *         Prevent zooming in too far
-                 */
-                maxZoom: void 0,
-                /**
-                 * The padding inside the plot area when auto fitting to the map bounds. A
-                 * number signifies pixels, and a percentage is relative to the plot area
-                 * size.
-                 *
-                 * An array sets individual padding for the sides in the order [top, right,
-                 * bottom, left].
-                 *
-                 * @sample {highmaps} maps/chart/plotbackgroundcolor-color
-                 *         Visible plot area and percentage padding
-                 * @sample {highmaps} maps/demo/mappoint-mapmarker
-                 *         Padding for individual sides
-                 * @type  {number|string|Array<number|string>}
-                 */
-                padding: 0,
-                /**
-                 * The projection options allow applying client side projection to a map
-                 * given in geographic coordinates, typically from TopoJSON or GeoJSON.
-                 *
-                 * @type   {Object}
-                 *
+                 * @type   {string}
                  * @sample maps/demo/projection-explorer
                  *         Projection explorer
-                 * @sample maps/demo/topojson-projection
-                 *         Orthographic projection
                  * @sample maps/mapview/projection-custom-proj4js
                  *         Custom UTM projection definition
                  * @sample maps/mapview/projection-custom-d3geo
                  *         Custom Robinson projection definition
+                 * @sample maps/demo/topojson-projection
+                 *         Orthographic projection
                  */
-                projection: {
-                    /**
-                     * Projection name. Built-in projections are `EqualEarth`,
-                     * `LambertConformalConic`, `Miller`, `Orthographic` and `WebMercator`.
-                     *
-                     * @type   {string}
-                     * @sample maps/demo/projection-explorer
-                     *         Projection explorer
-                     * @sample maps/mapview/projection-custom-proj4js
-                     *         Custom UTM projection definition
-                     * @sample maps/mapview/projection-custom-d3geo
-                     *         Custom Robinson projection definition
-                     * @sample maps/demo/topojson-projection
-                     *         Orthographic projection
-                     */
-                    name: void 0,
-                    /**
-                     * The two standard parallels that define the map layout in conic
-                     * projections, like the LambertConformalConic projection. If only one
-                     * number is given, the second parallel will be the same as the first.
-                     *
-                     * @sample maps/mapview/projection-parallels
-                     *         LCC projection with parallels
-                     * @sample maps/demo/projection-explorer
-                     *         Projection explorer
-                     * @type {Array<number>}
-                     */
-                    parallels: void 0,
-                    /**
-                     * Rotation of the projection in terms of degrees `[lambda, phi,
-                     * gamma]`. When given, a three-axis spherical rotation is be applied
-                     * to the globe prior to the projection.
-                     *
-                     * * `lambda` shifts the longitudes by the given value.
-                     * * `phi` shifts the latitudes by the given value. Can be omitted.
-                     * * `gamma` applies a _roll_. Can be omitted.
-                     *
-                     * @sample maps/demo/projection-explorer
-                     *         Projection explorer
-                     * @sample maps/mapview/projection-america-centric
-                     *         America-centric world map
-                     */
-                    rotation: void 0
-                },
+                name: void 0,
                 /**
-                 * The zoom level of a map. Higher zoom levels means more zoomed in. An
-                 * increase of 1 zooms in to a quarter of the viewed area (half the width
-                 * and height). Defaults to fitting to the map bounds.
+                 * The two standard parallels that define the map layout in conic
+                 * projections, like the LambertConformalConic projection. If only one
+                 * number is given, the second parallel will be the same as the first.
                  *
-                 * In a `WebMercator` projection, a zoom level of 0 represents
-                 * the world in a 256x256 pixel square. This is a common concept for WMS
-                 * tiling software.
-                 *
-                 * @type   {number|undefined}
-                 * @sample {highmaps} maps/mapview/center-zoom
-                 *         Custom view of a world map
-                 * @sample {highmaps} maps/mapview/get-view
-                 *         Report the current view of a preprojected map
+                 * @sample maps/mapview/projection-parallels
+                 *         LCC projection with parallels
+                 * @sample maps/demo/projection-explorer
+                 *         Projection explorer
+                 * @type {Array<number>}
                  */
-                zoom: void 0
-            };
+                parallels: void 0,
+                /**
+                 * Rotation of the projection in terms of degrees `[lambda, phi,
+                 * gamma]`. When given, a three-axis spherical rotation is be applied
+                 * to the globe prior to the projection.
+                 *
+                 * * `lambda` shifts the longitudes by the given value.
+                 * * `phi` shifts the latitudes by the given value. Can be omitted.
+                 * * `gamma` applies a _roll_. Can be omitted.
+                 *
+                 * @sample maps/demo/projection-explorer
+                 *         Projection explorer
+                 * @sample maps/mapview/projection-america-centric
+                 *         America-centric world map
+                 */
+                rotation: void 0
+            },
+            /**
+             * The zoom level of a map. Higher zoom levels means more zoomed in. An
+             * increase of 1 zooms in to a quarter of the viewed area (half the width
+             * and height). Defaults to fitting to the map bounds.
+             *
+             * In a `WebMercator` projection, a zoom level of 0 represents
+             * the world in a 256x256 pixel square. This is a common concept for WMS
+             * tiling software.
+             *
+             * @type   {number|undefined}
+             * @sample {highmaps} maps/mapview/center-zoom
+             *         Custom view of a world map
+             * @sample {highmaps} maps/mapview/get-view
+             *         Report the current view of a preprojected map
+             */
+            zoom: void 0
+        };
         /* *
          *
          *  Default Export
@@ -3061,52 +2912,52 @@
          * @optionparent mapView.insetOptions
          */
         var defaultOptions = {
-                /**
-                 * The border color of the insets.
-                 *
-                 * @sample maps/mapview/insetoptions-border
-                 *         Inset border options
-                 * @type {Highcharts.ColorType}
-                 */
-                borderColor: "#cccccc" /* Palette.neutralColor20 */,
-                /**
-                 * The pixel border width of the insets.
-                 *
-                 * @sample maps/mapview/insetoptions-border
-                 *         Inset border options
-                 */
-                borderWidth: 1,
-                /**
-                 * @ignore-option
-                 */
-                center: [0, 0],
-                /**
-                 * The padding of the insets. Can be either a number of pixels, a percentage
-                 * string, or an array of either. If an array is given, it sets the top,
-                 * right, bottom, left paddings respectively.
-                 *
-                 * @type {number|string|Array<number|string>}
-                 */
-                padding: '10%',
-                /**
-                 * What coordinate system the `field` and `borderPath` should relate to. If
-                 * `plotBox`, they will be fixed to the plot box and responsively move in
-                 * relation to the main map. If `mapBoundingBox`, they will be fixed to the
-                 * map bounding box, which is constant and centered in different chart sizes
-                 * and ratios.
-                 *
-                 * @validvalue ["plotBox", "mapBoundingBox"]
-                 */
-                relativeTo: 'mapBoundingBox',
-                /**
-                 * What units to use for the `field` and `borderPath` geometries. If
-                 * `percent` (default), they relate to the box given in `relativeTo`. If
-                 * `pixels`, they are absolute values.
-                 *
-                 * @validvalue ["percent", "pixels"]
-                 */
-                units: 'percent'
-            };
+            /**
+             * The border color of the insets.
+             *
+             * @sample maps/mapview/insetoptions-border
+             *         Inset border options
+             * @type {Highcharts.ColorType}
+             */
+            borderColor: "#cccccc" /* Palette.neutralColor20 */,
+            /**
+             * The pixel border width of the insets.
+             *
+             * @sample maps/mapview/insetoptions-border
+             *         Inset border options
+             */
+            borderWidth: 1,
+            /**
+             * @ignore-option
+             */
+            center: [0, 0],
+            /**
+             * The padding of the insets. Can be either a number of pixels, a percentage
+             * string, or an array of either. If an array is given, it sets the top,
+             * right, bottom, left paddings respectively.
+             *
+             * @type {number|string|Array<number|string>}
+             */
+            padding: '10%',
+            /**
+             * What coordinate system the `field` and `borderPath` should relate to. If
+             * `plotBox`, they will be fixed to the plot box and responsively move in
+             * relation to the main map. If `mapBoundingBox`, they will be fixed to the
+             * map bounding box, which is constant and centered in different chart sizes
+             * and ratios.
+             *
+             * @validvalue ["plotBox", "mapBoundingBox"]
+             */
+            relativeTo: 'mapBoundingBox',
+            /**
+             * What units to use for the `field` and `borderPath` geometries. If
+             * `percent` (default), they relate to the box given in `relativeTo`. If
+             * `pixels`, they are absolute values.
+             *
+             * @validvalue ["percent", "pixels"]
+             */
+            units: 'percent'
+        };
         /**
          * The individual MapView insets, typically used for non-contiguous areas of a
          * country. Each item inherits from the generic `insetOptions`.
@@ -3204,10 +3055,7 @@
          * */
         var format = F.format;
         var win = H.win;
-        var error = U.error,
-            extend = U.extend,
-            merge = U.merge,
-            wrap = U.wrap;
+        var error = U.error, extend = U.extend, merge = U.merge, wrap = U.wrap;
         /**
          * Represents the loose structure of a geographic JSON file.
          *
@@ -3388,33 +3236,13 @@
                 error(21, false, this);
                 return;
             }
-            var _a = transform.jsonmarginX,
-                jsonmarginX = _a === void 0 ? 0 : _a,
-                _b = transform.jsonmarginY,
-                jsonmarginY = _b === void 0 ? 0 : _b,
-                _c = transform.jsonres,
-                jsonres = _c === void 0 ? 1 : _c,
-                _d = transform.scale,
-                scale = _d === void 0 ? 1 : _d,
-                _e = transform.xoffset,
-                xoffset = _e === void 0 ? 0 : _e,
-                _f = transform.xpan,
-                xpan = _f === void 0 ? 0 : _f,
-                _g = transform.yoffset,
-                yoffset = _g === void 0 ? 0 : _g,
-                _h = transform.ypan,
-                ypan = _h === void 0 ? 0 : _h;
-            var projected = proj4(transform.crs,
-                [latLon.lon,
-                latLon.lat]),
-                cosAngle = transform.cosAngle ||
-                    (transform.rotation && Math.cos(transform.rotation)),
-                sinAngle = transform.sinAngle ||
-                    (transform.rotation && Math.sin(transform.rotation)),
-                rotated = transform.rotation ? [
-                    projected[0] * cosAngle + projected[1] * sinAngle,
-                    -projected[0] * sinAngle + projected[1] * cosAngle
-                ] : projected;
+            var _a = transform.jsonmarginX, jsonmarginX = _a === void 0 ? 0 : _a, _b = transform.jsonmarginY, jsonmarginY = _b === void 0 ? 0 : _b, _c = transform.jsonres, jsonres = _c === void 0 ? 1 : _c, _d = transform.scale, scale = _d === void 0 ? 1 : _d, _e = transform.xoffset, xoffset = _e === void 0 ? 0 : _e, _f = transform.xpan, xpan = _f === void 0 ? 0 : _f, _g = transform.yoffset, yoffset = _g === void 0 ? 0 : _g, _h = transform.ypan, ypan = _h === void 0 ? 0 : _h;
+            var projected = proj4(transform.crs, [latLon.lon, latLon.lat]), cosAngle = transform.cosAngle ||
+                (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
+                (transform.rotation && Math.sin(transform.rotation)), rotated = transform.rotation ? [
+                projected[0] * cosAngle + projected[1] * sinAngle,
+                -projected[0] * sinAngle + projected[1] * cosAngle
+            ] : projected;
             return {
                 x: ((rotated[0] - xoffset) * scale + xpan) * jsonres + jsonmarginX,
                 y: -(((yoffset - rotated[1]) * scale + ypan) * jsonres - jsonmarginY)
@@ -3449,33 +3277,18 @@
             if (point.y === null) {
                 return;
             }
-            var _a = transform.jsonmarginX,
-                jsonmarginX = _a === void 0 ? 0 : _a,
-                _b = transform.jsonmarginY,
-                jsonmarginY = _b === void 0 ? 0 : _b,
-                _c = transform.jsonres,
-                jsonres = _c === void 0 ? 1 : _c,
-                _d = transform.scale,
-                scale = _d === void 0 ? 1 : _d,
-                _e = transform.xoffset,
-                xoffset = _e === void 0 ? 0 : _e,
-                _f = transform.xpan,
-                xpan = _f === void 0 ? 0 : _f,
-                _g = transform.yoffset,
-                yoffset = _g === void 0 ? 0 : _g,
-                _h = transform.ypan,
-                ypan = _h === void 0 ? 0 : _h;
+            var _a = transform.jsonmarginX, jsonmarginX = _a === void 0 ? 0 : _a, _b = transform.jsonmarginY, jsonmarginY = _b === void 0 ? 0 : _b, _c = transform.jsonres, jsonres = _c === void 0 ? 1 : _c, _d = transform.scale, scale = _d === void 0 ? 1 : _d, _e = transform.xoffset, xoffset = _e === void 0 ? 0 : _e, _f = transform.xpan, xpan = _f === void 0 ? 0 : _f, _g = transform.yoffset, yoffset = _g === void 0 ? 0 : _g, _h = transform.ypan, ypan = _h === void 0 ? 0 : _h;
             var normalized = {
-                    x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
-                    y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
-                }, cosAngle = transform.cosAngle ||
-                    (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
-                    (transform.rotation && Math.sin(transform.rotation)), 
-                // Note: Inverted sinAngle to reverse rotation direction
-                projected = proj4(transform.crs, 'WGS84', transform.rotation ? {
-                    x: normalized.x * cosAngle + normalized.y * -sinAngle,
-                    y: normalized.x * sinAngle + normalized.y * cosAngle
-                } : normalized);
+                x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
+                y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
+            }, cosAngle = transform.cosAngle ||
+                (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
+                (transform.rotation && Math.sin(transform.rotation)), 
+            // Note: Inverted sinAngle to reverse rotation direction
+            projected = proj4(transform.crs, 'WGS84', transform.rotation ? {
+                x: normalized.x * cosAngle + normalized.y * -sinAngle,
+                y: normalized.x * sinAngle + normalized.y * cosAngle
+            } : normalized);
             return { lat: projected.y, lon: projected.x };
         };
         /**
@@ -3532,12 +3345,9 @@
             // Do the initial transform
             var arcsArray = topology.arcs;
             if (topology.transform) {
-                var _a = topology.transform,
-                    scale_1 = _a.scale,
-                    translate_1 = _a.translate;
+                var _a = topology.transform, scale_1 = _a.scale, translate_1 = _a.translate;
                 arcsArray = topology.arcs.map(function (arc) {
-                    var x = 0,
-                        y = 0;
+                    var x = 0, y = 0;
                     return arc.map(function (position) {
                         position = position.slice();
                         position[0] = (x += position[0]) * scale_1[0] + translate_1[0];
@@ -3549,11 +3359,9 @@
             // Recurse down any depth of multi-dimentional arrays of arcs and insert
             // the coordinates
             var arcsToCoordinates = function (arcs) {
-                    if (typeof arcs[0] === 'number') {
-                        return arcs.reduce(function (coordinates,
-                arcNo,
-                i) {
-                            var arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
+                if (typeof arcs[0] === 'number') {
+                    return arcs.reduce(function (coordinates, arcNo, i) {
+                        var arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
                         // The first point of an arc is always identical to the last
                         // point of the previes arc, so slice it off to save further
                         // processing.
@@ -3570,25 +3378,25 @@
                 return arcs.map(arcsToCoordinates);
             };
             var features = object.geometries
-                    .map(function (geometry) { return ({
-                    type: 'Feature',
-                    properties: geometry.properties,
-                    geometry: {
-                        type: geometry.type,
-                        coordinates: geometry.coordinates ||
-                            arcsToCoordinates(geometry.arcs)
-                    }
-                }); });
+                .map(function (geometry) { return ({
+                type: 'Feature',
+                properties: geometry.properties,
+                geometry: {
+                    type: geometry.type,
+                    coordinates: geometry.coordinates ||
+                        arcsToCoordinates(geometry.arcs)
+                }
+            }); });
             var geojson = {
-                    type: 'FeatureCollection',
-                    copyright: topology.copyright,
-                    copyrightShort: topology.copyrightShort,
-                    copyrightUrl: topology.copyrightUrl,
-                    features: features,
-                    'hc-recommended-mapview': object['hc-recommended-mapview'],
-                    bbox: topology.bbox,
-                    title: topology.title
-                };
+                type: 'FeatureCollection',
+                copyright: topology.copyright,
+                copyrightShort: topology.copyrightShort,
+                copyrightUrl: topology.copyrightUrl,
+                features: features,
+                'hc-recommended-mapview': object['hc-recommended-mapview'],
+                bbox: topology.bbox,
+                title: topology.title
+            };
             object['hc-decoded-geojson'] = geojson;
             return geojson;
         }
@@ -3625,10 +3433,7 @@
             var mapData = [];
             var geojson = json.type === 'Topology' ? topo2geo(json) : json;
             geojson.features.forEach(function (feature) {
-                var geometry = feature.geometry || {},
-                    type = geometry.type,
-                    coordinates = geometry.coordinates,
-                    properties = feature.properties;
+                var geometry = feature.geometry || {}, type = geometry.type, coordinates = geometry.coordinates, properties = feature.properties;
                 var pointOptions;
                 if ((hType === 'map' || hType === 'mapbubble') &&
                     (type === 'Polygon' || type === 'MultiPolygon')) {
@@ -3649,9 +3454,7 @@
                     }
                 }
                 if (pointOptions) {
-                    var name_1 = properties && (properties.name || properties.NAME),
-                        lon = properties && properties.lon,
-                        lat = properties && properties.lat;
+                    var name_1 = properties && (properties.name || properties.NAME), lon = properties && properties.lon, lat = properties && properties.lat;
                     mapData.push(extend(pointOptions, {
                         lat: typeof lat === 'number' ? lat : void 0,
                         lon: typeof lon === 'number' ? lon : void 0,
@@ -3695,9 +3498,9 @@
         H.geojson = geojson;
         H.topo2geo = topo2geo;
         var GeoJSONModule = {
-                geojson: geojson,
-                topo2geo: topo2geo
-            };
+            geojson: geojson,
+            topo2geo: topo2geo
+        };
 
         return GeoJSONModule;
     });
@@ -3711,31 +3514,21 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isInside = function (clipEdge1,
-            clipEdge2,
-            p) {
-                return (clipEdge2[0] - clipEdge1[0]) * (p[1] - clipEdge1[1]) >
-                    (clipEdge2[1] - clipEdge1[1]) * (p[0] - clipEdge1[0]);
+        var isInside = function (clipEdge1, clipEdge2, p) {
+            return (clipEdge2[0] - clipEdge1[0]) * (p[1] - clipEdge1[1]) >
+                (clipEdge2[1] - clipEdge1[1]) * (p[0] - clipEdge1[0]);
         };
-        var intersection = function (clipEdge1,
-            clipEdge2,
-            prevPoint,
-            currentPoint) {
-                var dc = [
-                    clipEdge1[0] - clipEdge2[0],
-                    clipEdge1[1] - clipEdge2[1]
-                ],
-            dp = [
-                    prevPoint[0] - currentPoint[0],
-                    prevPoint[1] - currentPoint[1]
-                ],
-            n1 = clipEdge1[0] * clipEdge2[1] - clipEdge1[1] * clipEdge2[0],
-            n2 = prevPoint[0] * currentPoint[1] - prevPoint[1] * currentPoint[0],
-            n3 = 1 / (dc[0] * dp[1] - dc[1] * dp[0]),
-            intersection = [
-                    (n1 * dp[0] - n2 * dc[0]) * n3,
-                    (n1 * dp[1] - n2 * dc[1]) * n3
-                ];
+        var intersection = function (clipEdge1, clipEdge2, prevPoint, currentPoint) {
+            var dc = [
+                clipEdge1[0] - clipEdge2[0],
+                clipEdge1[1] - clipEdge2[1]
+            ], dp = [
+                prevPoint[0] - currentPoint[0],
+                prevPoint[1] - currentPoint[1]
+            ], n1 = clipEdge1[0] * clipEdge2[1] - clipEdge1[1] * clipEdge2[0], n2 = prevPoint[0] * currentPoint[1] - prevPoint[1] * currentPoint[0], n3 = 1 / (dc[0] * dp[1] - dc[1] * dp[0]), intersection = [
+                (n1 * dp[0] - n2 * dc[0]) * n3,
+                (n1 * dp[1] - n2 * dc[1]) * n3
+            ];
             intersection.isIntersection = true;
             return intersection;
         };
@@ -3744,10 +3537,7 @@
             // Simple line string clipping. Clip to bounds and insert intersection
             // points.
             PolygonClip.clipLineString = function (line, boundsPolygon) {
-                var ret = [],
-                    l = PolygonClip.clipPolygon(line,
-                    boundsPolygon,
-                    false);
+                var ret = [], l = PolygonClip.clipPolygon(line, boundsPolygon, false);
                 for (var i = 1; i < l.length; i++) {
                     // Insert gap where two intersections follow each other
                     if (l[i].isIntersection && l[i - 1].isIntersection) {
@@ -3764,11 +3554,7 @@
             // Clip a polygon to another polygon using the Sutherland/Hodgman algorithm.
             PolygonClip.clipPolygon = function (subjectPolygon, boundsPolygon, closed) {
                 if (closed === void 0) { closed = true; }
-                var clipEdge1 = boundsPolygon[boundsPolygon.length - 1],
-                    clipEdge2,
-                    prevPoint,
-                    currentPoint,
-                    outputList = subjectPolygon;
+                var clipEdge1 = boundsPolygon[boundsPolygon.length - 1], clipEdge2, prevPoint, currentPoint, outputList = subjectPolygon;
                 for (var j = 0; j < boundsPolygon.length; j++) {
                     var inputList = outputList;
                     clipEdge2 = boundsPolygon[j];
@@ -3809,22 +3595,19 @@
          * Lambert Conformal Conic projection
          * */
         var sign = Math.sign ||
-                (function (n) { return (n === 0 ? 0 : n > 0 ? 1 : -1); }), scale = 63.78137, deg2rad = Math.PI / 180, halfPI = Math.PI / 2, eps10 = 1e-6, tany = function (y) { return Math.tan((halfPI + y) / 2); };
+            (function (n) { return (n === 0 ? 0 : n > 0 ? 1 : -1); }), scale = 63.78137, deg2rad = Math.PI / 180, halfPI = Math.PI / 2, eps10 = 1e-6, tany = function (y) { return Math.tan((halfPI + y) / 2); };
         var LambertConformalConic = /** @class */ (function () {
-                function LambertConformalConic(options) {
-                    var _a;
+            function LambertConformalConic(options) {
+                var _a;
                 var parallels = (options.parallels || [])
-                        .map(function (n) { return n * deg2rad; }),
-                    lat1 = parallels[0] || 0,
-                    lat2 = (_a = parallels[1]) !== null && _a !== void 0 ? _a : lat1,
-                    cosLat1 = Math.cos(lat1);
+                    .map(function (n) { return n * deg2rad; }), lat1 = parallels[0] || 0, lat2 = (_a = parallels[1]) !== null && _a !== void 0 ? _a : lat1, cosLat1 = Math.cos(lat1);
                 if (typeof options.projectedBounds === 'object') {
                     this.projectedBounds = options.projectedBounds;
                 }
                 // Apply the global variables
                 var n = lat1 === lat2 ?
-                        Math.sin(lat1) :
-                        Math.log(cosLat1 / Math.cos(lat2)) / Math.log(tany(lat2) / tany(lat1));
+                    Math.sin(lat1) :
+                    Math.log(cosLat1 / Math.cos(lat2)) / Math.log(tany(lat2) / tany(lat1));
                 if (Math.abs(n) < 1e-10) {
                     n = (sign(n) || 1) * 1e-10;
                 }
@@ -3832,11 +3615,7 @@
                 this.c = cosLat1 * Math.pow(tany(lat1), n) / n;
             }
             LambertConformalConic.prototype.forward = function (lonLat) {
-                var lon = lonLat[0] * deg2rad,
-                    _a = this,
-                    c = _a.c,
-                    n = _a.n,
-                    projectedBounds = _a.projectedBounds;
+                var lon = lonLat[0] * deg2rad, _a = this, c = _a.c, n = _a.n, projectedBounds = _a.projectedBounds;
                 var lat = lonLat[1] * deg2rad;
                 if (c > 0) {
                     if (lat < -halfPI + eps10) {
@@ -3848,12 +3627,7 @@
                         lat = halfPI - eps10;
                     }
                 }
-                var r = c / Math.pow(tany(lat),
-                    n),
-                    x = r * Math.sin(n * lon) * scale,
-                    y = (c - r * Math.cos(n * lon)) * scale,
-                    xy = [x,
-                    y];
+                var r = c / Math.pow(tany(lat), n), x = r * Math.sin(n * lon) * scale, y = (c - r * Math.cos(n * lon)) * scale, xy = [x, y];
                 if (projectedBounds && (x < projectedBounds.x1 ||
                     x > projectedBounds.x2 ||
                     y < projectedBounds.y1 ||
@@ -3864,8 +3638,7 @@
             };
             LambertConformalConic.prototype.inverse = function (xy) {
                 var x = xy[0] / scale, y = xy[1] / scale, _a = this, c = _a.c, n = _a.n, cy = c - y, rho = sign(n) * Math.sqrt(x * x + cy * cy);
-                var l = Math.atan2(x,
-                    Math.abs(cy)) * sign(cy);
+                var l = Math.atan2(x, Math.abs(cy)) * sign(cy);
                 if (cy * n < 0) {
                     l -= Math.PI * sign(x) * sign(cy);
                 }
@@ -3889,42 +3662,28 @@
          * inspired by the widely used Robinson projection.
          *
          * */
-        var A1 = 1.340264,
-            A2 = -0.081106,
-            A3 = 0.000893,
-            A4 = 0.003796,
-            M = Math.sqrt(3) / 2.0,
-            scale = 74.03120656864502;
+        var A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt(3) / 2.0, scale = 74.03120656864502;
         var EqualEarth = /** @class */ (function () {
-                function EqualEarth() {
-                    this.bounds = {
-                        x1: -200.37508342789243,
-                        x2: 200.37508342789243,
-                        y1: -97.52595454902263,
-                        y2: 97.52595454902263
-                    };
+            function EqualEarth() {
+                this.bounds = {
+                    x1: -200.37508342789243,
+                    x2: 200.37508342789243,
+                    y1: -97.52595454902263,
+                    y2: 97.52595454902263
+                };
             }
             EqualEarth.prototype.forward = function (lonLat) {
-                var d = Math.PI / 180,
-                    paramLat = Math.asin(M * Math.sin(lonLat[1] * d)),
-                    paramLatSq = paramLat * paramLat,
-                    paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
+                var d = Math.PI / 180, paramLat = Math.asin(M * Math.sin(lonLat[1] * d)), paramLatSq = paramLat * paramLat, paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
                 var x = lonLat[0] * d * Math.cos(paramLat) * scale / (M *
-                        (A1 +
-                            3 * A2 * paramLatSq +
-                            paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)));
+                    (A1 +
+                        3 * A2 * paramLatSq +
+                        paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)));
                 var y = paramLat * scale * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq));
                 return [x, y];
             };
             EqualEarth.prototype.inverse = function (xy) {
                 var x = xy[0] / scale, y = xy[1] / scale, d = 180 / Math.PI, epsilon = 1e-9, iterations = 12;
-                var paramLat = y,
-                    paramLatSq,
-                    paramLatPow6,
-                    fy,
-                    fpy,
-                    dlat,
-                    i;
+                var paramLat = y, paramLatSq, paramLatPow6, fy, fpy, dlat, i;
                 for (i = 0; i < iterations; ++i) {
                     paramLatSq = paramLat * paramLat;
                     paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
@@ -3939,6 +3698,10 @@
                 paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
                 var lon = d * M * x * (A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat);
                 var lat = d * Math.asin(Math.sin(paramLat) / M);
+                // If lons are beyond the border of a map -> resolve via break
+                if (Math.abs(lon) > 180) {
+                    return [NaN, NaN];
+                }
                 return [lon, lat];
             };
             return EqualEarth;
@@ -3952,13 +3715,13 @@
          * */
         var quarterPI = Math.PI / 4, deg2rad = Math.PI / 180, scale = 63.78137;
         var Miller = /** @class */ (function () {
-                function Miller() {
-                    this.bounds = {
-                        x1: -200.37508342789243,
-                        x2: 200.37508342789243,
-                        y1: -146.91480769173063,
-                        y2: 146.91480769173063
-                    };
+            function Miller() {
+                this.bounds = {
+                    x1: -200.37508342789243,
+                    x2: 200.37508342789243,
+                    y1: -146.91480769173063,
+                    y2: 146.91480769173063
+                };
             }
             Miller.prototype.forward = function (lonLat) {
                 return [
@@ -3981,11 +3744,10 @@
         /* *
          * Orthographic projection
          * */
-        var deg2rad = Math.PI / 180,
-            scale = 63.78460826781007;
+        var deg2rad = Math.PI / 180, scale = 63.78460826781007;
         var Orthographic = /** @class */ (function () {
-                function Orthographic() {
-                    this.antimeridianCutting = false;
+            function Orthographic() {
+                this.antimeridianCutting = false;
                 this.bounds = {
                     x1: -scale,
                     x2: scale,
@@ -3994,13 +3756,12 @@
                 };
             }
             Orthographic.prototype.forward = function (lonLat) {
-                var lonDeg = lonLat[0],
-                    latDeg = lonLat[1];
+                var lonDeg = lonLat[0], latDeg = lonLat[1];
                 var lat = latDeg * deg2rad;
                 var xy = [
-                        Math.cos(lat) * Math.sin(lonDeg * deg2rad) * scale,
-                        Math.sin(lat) * scale
-                    ];
+                    Math.cos(lat) * Math.sin(lonDeg * deg2rad) * scale,
+                    Math.sin(lat) * scale
+                ];
                 if (lonDeg < -90 || lonDeg > 90) {
                     xy.outside = true;
                 }
@@ -4023,24 +3784,23 @@
          * Web Mercator projection, used for most online map tile services
          * */
         var maxLatitude = 85.0511287798, // The latitude that defines a square
-            r = 63.78137,
-            deg2rad = Math.PI / 180;
+        r = 63.78137, deg2rad = Math.PI / 180;
         var WebMercator = /** @class */ (function () {
-                function WebMercator() {
-                    this.bounds = {
-                        x1: -200.37508342789243,
-                        x2: 200.37508342789243,
-                        y1: -200.3750834278071,
-                        y2: 200.3750834278071
-                    };
+            function WebMercator() {
+                this.bounds = {
+                    x1: -200.37508342789243,
+                    x2: 200.37508342789243,
+                    y1: -200.3750834278071,
+                    y2: 200.3750834278071
+                };
                 this.maxLatitude = maxLatitude;
             }
             WebMercator.prototype.forward = function (lonLat) {
                 var sinLat = Math.sin(lonLat[1] * deg2rad);
                 var xy = [
-                        r * lonLat[0] * deg2rad,
-                        r * Math.log((1 + sinLat) / (1 - sinLat)) / 2
-                    ];
+                    r * lonLat[0] * deg2rad,
+                    r * Math.log((1 + sinLat) / (1 - sinLat)) / 2
+                ];
                 if (Math.abs(lonLat[1]) > maxLatitude) {
                     xy.outside = true;
                 }
@@ -4064,12 +3824,12 @@
          *
          * */
         var registry = {
-                EqualEarth: EqualEarth,
-                LambertConformalConic: LambertConformalConic,
-                Miller: Miller,
-                Orthographic: Orthographic,
-                WebMercator: WebMercator
-            };
+            EqualEarth: EqualEarth,
+            LambertConformalConic: LambertConformalConic,
+            Miller: Miller,
+            Orthographic: Orthographic,
+            WebMercator: WebMercator
+        };
 
         return registry;
     });
@@ -4083,24 +3843,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __spreadArray = (this && this.__spreadArray) || function (to,
-            from,
-            pack) {
-                if (pack || arguments.length === 2) for (var i = 0,
-            l = from.length,
-            ar; i < l; i++) {
-                    if (ar || !(i in from)) {
-                        if (!ar) ar = Array.prototype.slice.call(from, 0,
-            i);
+        var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+            if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+                if (ar || !(i in from)) {
+                    if (!ar) ar = Array.prototype.slice.call(from, 0, i);
                     ar[i] = from[i];
                 }
             }
             return to.concat(ar || Array.prototype.slice.call(from));
         };
-        var clipLineString = PC.clipLineString,
-            clipPolygon = PC.clipPolygon;
-        var clamp = U.clamp,
-            erase = U.erase;
+        var clipLineString = PC.clipLineString, clipPolygon = PC.clipPolygon;
+        var clamp = U.clamp, erase = U.erase;
         var deg2rad = Math.PI * 2 / 360;
         // Safe padding on either side of the antimeridian to avoid points being
         // projected to the wrong side of the plane
@@ -4108,10 +3861,10 @@
         // Keep longitude within -180 and 180. This is faster than using the modulo
         // operator, and preserves the distinction between -180 and 180.
         var wrapLon = function (lon) {
-                // Replacing the if's with while would increase the range, but make it prone
-                // to crashes on bad data
-                if (lon < -180) {
-                    lon += 360;
+            // Replacing the if's with while would increase the range, but make it prone
+            // to crashes on bad data
+            if (lon < -180) {
+                lon += 360;
             }
             if (lon > 180) {
                 lon -= 360;
@@ -4119,28 +3872,24 @@
             return lon;
         };
         var Projection = /** @class */ (function () {
-                function Projection(options) {
-                    if (options === void 0) { options = {}; }
-                    // Whether the chart has points, lines or polygons given as coordinates
-                    // with positive up, as opposed to paths in the SVG plane with positive
-                    // down.
-                    this.hasCoordinates = false;
+            function Projection(options) {
+                if (options === void 0) { options = {}; }
+                // Whether the chart has points, lines or polygons given as coordinates
+                // with positive up, as opposed to paths in the SVG plane with positive
+                // down.
+                this.hasCoordinates = false;
                 // Whether the chart has true projection as opposed to pre-projected geojson
                 // as in the legacy map collection.
                 this.hasGeoProjection = false;
                 this.maxLatitude = 90;
                 this.options = options;
-                var name = options.name,
-                    projectedBounds = options.projectedBounds,
-                    rotation = options.rotation;
+                var name = options.name, projectedBounds = options.projectedBounds, rotation = options.rotation;
                 this.rotator = rotation ? this.getRotator(rotation) : void 0;
                 var ProjectionDefinition = name ? Projection.registry[name] : void 0;
                 if (ProjectionDefinition) {
                     this.def = new ProjectionDefinition(options);
                 }
-                var _a = this,
-                    def = _a.def,
-                    rotator = _a.rotator;
+                var _a = this, def = _a.def, rotator = _a.rotator;
                 if (def) {
                     this.maxLatitude = def.maxLatitude || 90;
                     this.hasGeoProjection = true;
@@ -4172,10 +3921,7 @@
             };
             // Calculate the great circle between two given coordinates
             Projection.greatCircle = function (point1, point2, inclusive) {
-                var atan2 = Math.atan2,
-                    cos = Math.cos,
-                    sin = Math.sin,
-                    sqrt = Math.sqrt;
+                var atan2 = Math.atan2, cos = Math.cos, sin = Math.sin, sqrt = Math.sqrt;
                 var lat1 = point1[1] * deg2rad;
                 var lon1 = point1[0] * deg2rad;
                 var lat2 = point2[1] * deg2rad;
@@ -4183,12 +3929,11 @@
                 var deltaLat = lat2 - lat1;
                 var deltaLng = lon2 - lon1;
                 var calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
-                        cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2);
-                var calcB = 2 * atan2(sqrt(calcA),
-                    sqrt(1 - calcA));
+                    cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2);
+                var calcB = 2 * atan2(sqrt(calcA), sqrt(1 - calcA));
                 var distance = calcB * 6371e3; // in meters
-                    var jumps = Math.round(distance / 500000); // 500 km each jump
-                    var lineString = [];
+                var jumps = Math.round(distance / 500000); // 500 km each jump
+                var lineString = [];
                 if (inclusive) {
                     lineString.push(point1);
                 }
@@ -4201,10 +3946,8 @@
                         var x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2);
                         var y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2);
                         var z = A * sin(lat1) + B * sin(lat2);
-                        var lat3 = atan2(z,
-                            sqrt(x * x + y * y));
-                        var lon3 = atan2(y,
-                            x);
+                        var lat3 = atan2(z, sqrt(x * x + y * y));
+                        var lon3 = atan2(y, x);
                         lineString.push([lon3 / deg2rad, lat3 / deg2rad]);
                     }
                 }
@@ -4218,11 +3961,9 @@
                 while (i--) {
                     // Distance in degrees, either in lon or lat. Avoid heavy
                     // calculation of true distance.
-                    var roughDistance = Math.max(Math.abs(poly[i][0] - poly[i + 1][0]),
-                        Math.abs(poly[i][1] - poly[i + 1][1]));
+                    var roughDistance = Math.max(Math.abs(poly[i][0] - poly[i + 1][0]), Math.abs(poly[i][1] - poly[i + 1][1]));
                     if (roughDistance > 10) {
-                        var greatCircle = Projection.greatCircle(poly[i],
-                            poly[i + 1]);
+                        var greatCircle = Projection.greatCircle(poly[i], poly[i + 1]);
                         if (greatCircle.length) {
                             poly.splice.apply(poly, __spreadArray([i + 1, 0], greatCircle, false));
                         }
@@ -4230,33 +3971,21 @@
                 }
             };
             Projection.toString = function (options) {
-                var _a = options || {},
-                    name = _a.name,
-                    rotation = _a.rotation;
+                var _a = options || {}, name = _a.name, rotation = _a.rotation;
                 return [name, rotation && rotation.join(',')].join(';');
             };
             Projection.prototype.lineIntersectsBounds = function (line) {
-                var _a = this.bounds || {},
-                    x1 = _a.x1,
-                    x2 = _a.x2,
-                    y1 = _a.y1,
-                    y2 = _a.y2;
-                var getIntersect = function (line,
-                    dim,
-                    val) {
-                        var p1 = line[0],
-                    p2 = line[1],
-                    otherDim = dim ? 0 : 1;
+                var _a = this.bounds || {}, x1 = _a.x1, x2 = _a.x2, y1 = _a.y1, y2 = _a.y2;
+                var getIntersect = function (line, dim, val) {
+                    var p1 = line[0], p2 = line[1], otherDim = dim ? 0 : 1;
                     // Check if points are on either side of the line
                     if (typeof val === 'number' && p1[dim] >= val !== p2[dim] >= val) {
-                        var fraction = ((val - p1[dim]) / (p2[dim] - p1[dim])),
-                            crossingVal = p1[otherDim] +
-                                fraction * (p2[otherDim] - p1[otherDim]);
+                        var fraction = ((val - p1[dim]) / (p2[dim] - p1[dim])), crossingVal = p1[otherDim] +
+                            fraction * (p2[otherDim] - p1[otherDim]);
                         return dim ? [crossingVal, val] : [val, crossingVal];
                     }
                 };
-                var intersection,
-                    ret = line[0];
+                var intersection, ret = line[0];
                 if ((intersection = getIntersect(line, 0, x1))) {
                     ret = intersection;
                     // Assuming line[1] was originally outside, replace it with the
@@ -4280,13 +4009,8 @@
              * Take the rotation options and return the appropriate projection functions
              */
             Projection.prototype.getRotator = function (rotation) {
-                var deltaLambda = rotation[0] * deg2rad,
-                    deltaPhi = (rotation[1] || 0) * deg2rad,
-                    deltaGamma = (rotation[2] || 0) * deg2rad;
-                var cosDeltaPhi = Math.cos(deltaPhi),
-                    sinDeltaPhi = Math.sin(deltaPhi),
-                    cosDeltaGamma = Math.cos(deltaGamma),
-                    sinDeltaGamma = Math.sin(deltaGamma);
+                var deltaLambda = rotation[0] * deg2rad, deltaPhi = (rotation[1] || 0) * deg2rad, deltaGamma = (rotation[2] || 0) * deg2rad;
+                var cosDeltaPhi = Math.cos(deltaPhi), sinDeltaPhi = Math.sin(deltaPhi), cosDeltaGamma = Math.cos(deltaGamma), sinDeltaGamma = Math.sin(deltaGamma);
                 if (deltaLambda === 0 && deltaPhi === 0 && deltaGamma === 0) {
                     // Don't waste processing time
                     return;
@@ -4296,12 +4020,7 @@
                         // Lambda (lon) rotation
                         var lon = lonLat[0] * deg2rad + deltaLambda;
                         // Phi (lat) and gamma rotation
-                        var lat = lonLat[1] * deg2rad,
-                            cosLat = Math.cos(lat),
-                            x = Math.cos(lon) * cosLat,
-                            y = Math.sin(lon) * cosLat,
-                            sinLat = Math.sin(lat),
-                            k = sinLat * cosDeltaPhi + x * sinDeltaPhi;
+                        var lat = lonLat[1] * deg2rad, cosLat = Math.cos(lat), x = Math.cos(lon) * cosLat, y = Math.sin(lon) * cosLat, sinLat = Math.sin(lat), k = sinLat * cosDeltaPhi + x * sinDeltaPhi;
                         return [
                             Math.atan2(y * cosDeltaGamma - k * sinDeltaGamma, x * cosDeltaPhi - sinLat * sinDeltaPhi) / deg2rad,
                             Math.asin(k * cosDeltaGamma + y * sinDeltaGamma) / deg2rad
@@ -4311,12 +4030,7 @@
                         // Lambda (lon) unrotation
                         var lon = rLonLat[0] * deg2rad;
                         // Phi (lat) and gamma unrotation
-                        var lat = rLonLat[1] * deg2rad,
-                            cosLat = Math.cos(lat),
-                            x = Math.cos(lon) * cosLat,
-                            y = Math.sin(lon) * cosLat,
-                            sinLat = Math.sin(lat),
-                            k = sinLat * cosDeltaGamma - y * sinDeltaGamma;
+                        var lat = rLonLat[1] * deg2rad, cosLat = Math.cos(lat), x = Math.cos(lon) * cosLat, y = Math.sin(lon) * cosLat, sinLat = Math.sin(lat), k = sinLat * cosDeltaGamma - y * sinDeltaGamma;
                         return [
                             (Math.atan2(y * cosDeltaGamma + sinLat * sinDeltaGamma, x * cosDeltaPhi + k * sinDeltaPhi) - deltaLambda) / deg2rad,
                             Math.asin(k * cosDeltaPhi - x * sinDeltaPhi) / deg2rad
@@ -4347,8 +4061,7 @@
                         // Else, wrap to beginning
                         previousLonLat = poly[poly.length - 1];
                     }
-                    var lon1 = previousLonLat[0],
-                        lon2 = lonLat[0];
+                    var lon1 = previousLonLat[0], lon2 = lonLat[0];
                     if (
                     // Both points, after rotating for antimeridian, are on the far
                     // side of the Earth
@@ -4358,9 +4071,8 @@
                         (lon1 > 0) !== (lon2 > 0)) {
                         // Interpolate to the intersection latitude
                         var fraction = clamp((antimeridian - (lon1 + 360) % 360) /
-                                ((lon2 + 360) % 360 - (lon1 + 360) % 360), 0, 1),
-                            lat = (previousLonLat[1] +
-                                fraction * (lonLat[1] - previousLonLat[1]));
+                            ((lon2 + 360) % 360 - (lon1 + 360) % 360), 0, 1), lat = (previousLonLat[1] +
+                            fraction * (lonLat[1] - previousLonLat[1]));
                         intersections.push({
                             i: i,
                             lat: lat,
@@ -4387,18 +4099,11 @@
                         while (i >= 0) {
                             var index = intersections[i].i;
                             var lonPlus = wrapLon(antimeridian +
-                                    intersections[i].direction * floatCorrection);
+                                intersections[i].direction * floatCorrection);
                             var lonMinus = wrapLon(antimeridian -
-                                    intersections[i].direction * floatCorrection);
-                            var slice = poly.splice.apply(poly,
-                                __spreadArray([index,
-                                    intersections[i + 1].i - index],
-                                Projection.greatCircle([lonPlus,
-                                intersections[i].lat],
-                                [lonPlus,
-                                intersections[i + 1].lat],
-                                true),
-                                false));
+                                intersections[i].direction * floatCorrection);
+                            var slice = poly.splice.apply(poly, __spreadArray([index,
+                                intersections[i + 1].i - index], Projection.greatCircle([lonPlus, intersections[i].lat], [lonPlus, intersections[i + 1].lat], true), false));
                             // Add interpolated points close to the cut
                             slice.push.apply(slice, Projection.greatCircle([lonMinus, intersections[i + 1].lat], [lonMinus, intersections[i].lat], true));
                             polygons.push(slice);
@@ -4407,22 +4112,15 @@
                         // Insert dummy points close to the pole
                         if (polarIntersection) {
                             for (var i_1 = 0; i_1 < polygons.length; i_1++) {
-                                var direction = polarIntersection.direction,
-                                    lat = polarIntersection.lat,
-                                    poly_1 = polygons[i_1],
-                                    indexOf = poly_1.indexOf(polarIntersection.lonLat);
+                                var direction = polarIntersection.direction, lat = polarIntersection.lat, poly_1 = polygons[i_1], indexOf = poly_1.indexOf(polarIntersection.lonLat);
                                 if (indexOf > -1) {
                                     var polarLatitude = (lat < 0 ? -1 : 1) *
-                                            this.maxLatitude;
+                                        this.maxLatitude;
                                     var lon1 = wrapLon(antimeridian +
-                                            direction * floatCorrection);
+                                        direction * floatCorrection);
                                     var lon2 = wrapLon(antimeridian -
-                                            direction * floatCorrection);
-                                    var polarSegment = Projection.greatCircle([lon1,
-                                        lat],
-                                        [lon1,
-                                        polarLatitude],
-                                        true);
+                                        direction * floatCorrection);
+                                    var polarSegment = Projection.greatCircle([lon1, lat], [lon1, polarLatitude], true);
                                     // Circle around the pole point in order to make
                                     // polygon clipping right. Without this, Antarctica
                                     // would wrap the wrong way in an LLC projection
@@ -4443,14 +4141,13 @@
                         var i = intersections.length;
                         while (i--) {
                             var index = intersections[i].i;
-                            var slice = poly.splice(index,
-                                poly.length, 
-                                // Add interpolated point close to the cut
-                                [
-                                    wrapLon(antimeridian +
-                                        intersections[i].direction * floatCorrection),
-                                    intersections[i].lat
-                                ]);
+                            var slice = poly.splice(index, poly.length, 
+                            // Add interpolated point close to the cut
+                            [
+                                wrapLon(antimeridian +
+                                    intersections[i].direction * floatCorrection),
+                                intersections[i].lat
+                            ]);
                             // Add interpolated point close to the cut
                             slice.unshift([
                                 wrapLon(antimeridian -
@@ -4466,14 +4163,11 @@
             // Take a GeoJSON geometry and return a translated SVGPath
             Projection.prototype.path = function (geometry) {
                 var _this = this;
-                var _a = this,
-                    bounds = _a.bounds,
-                    def = _a.def,
-                    rotator = _a.rotator;
+                var _a = this, bounds = _a.bounds, def = _a.def, rotator = _a.rotator;
                 var antimeridian = 180;
                 var path = [];
                 var isPolygon = geometry.type === 'Polygon' ||
-                        geometry.type === 'MultiPolygon';
+                    geometry.type === 'MultiPolygon';
                 // @todo: It doesn't really have to do with whether north is
                 // positive. It depends on whether the coordinates are
                 // pre-projected.
@@ -4496,15 +4190,15 @@
                     ];
                 }
                 var addToPath = function (polygon) {
-                        // Create a copy of the original coordinates. The copy applies a
-                        // correction of points close to the antimeridian in order to
-                        // prevent the points to be projected to the wrong side of the
-                        // plane. Float errors in topojson or in the projection may cause
-                        // that.
-                        var poly = polygon.map(function (lonLat) {
-                            if (projectingToPlane) {
-                                if (preclip) {
-                                    lonLat = preclip.forward(lonLat);
+                    // Create a copy of the original coordinates. The copy applies a
+                    // correction of points close to the antimeridian in order to
+                    // prevent the points to be projected to the wrong side of the
+                    // plane. Float errors in topojson or in the projection may cause
+                    // that.
+                    var poly = polygon.map(function (lonLat) {
+                        if (projectingToPlane) {
+                            if (preclip) {
+                                lonLat = preclip.forward(lonLat);
                             }
                             var lon = lonLat[0];
                             if (Math.abs(lon - antimeridian) < floatCorrection) {
@@ -4536,20 +4230,17 @@
                         var lastValidLonLat;
                         var gap = false;
                         var pushToPath = function (point) {
-                                if (!movedTo) {
-                                    path.push(['M',
-                            point[0],
-                            point[1]]);
+                            if (!movedTo) {
+                                path.push(['M', point[0], point[1]]);
                                 movedTo = true;
                             }
                             else {
                                 path.push(['L', point[0], point[1]]);
                             }
                         };
-                        var someOutside = false,
-                            someInside = false;
+                        var someOutside = false, someInside = false;
                         var points = poly.map(function (lonLat) {
-                                var xy = postclip.forward(lonLat);
+                            var xy = postclip.forward(lonLat);
                             if (xy.outside) {
                                 someOutside = true;
                             }
@@ -4598,8 +4289,7 @@
                         }
                         else {
                             for (var i = 0; i < points.length; i++) {
-                                var lonLat = poly[i],
-                                    point = points[i];
+                                var lonLat = poly[i], point = points[i];
                                 if (!point.outside) {
                                     // In order to be able to interpolate if the first
                                     // or last point is invalid (on the far side of the
@@ -4623,8 +4313,7 @@
                                         // we may have to rewrite this to use the small
                                         // circle related to the current lon0 and lat0.
                                         if (isPolygon && hasGeoProjection) {
-                                            var greatCircle = Projection.greatCircle(lastValidLonLat,
-                                                lonLat);
+                                            var greatCircle = Projection.greatCircle(lastValidLonLat, lonLat);
                                             greatCircle.forEach(function (lonLat) {
                                                 return pushToPath(postclip.forward(lonLat));
                                             });
@@ -4684,30 +4373,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var __spreadArray = (this && this.__spreadArray) || function (to,
-            from,
-            pack) {
-                if (pack || arguments.length === 2) for (var i = 0,
-            l = from.length,
-            ar; i < l; i++) {
-                    if (ar || !(i in from)) {
-                        if (!ar) ar = Array.prototype.slice.call(from, 0,
-            i);
+        var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+            if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+                if (ar || !(i in from)) {
+                    if (!ar) ar = Array.prototype.slice.call(from, 0, i);
                     ar[i] = from[i];
                 }
             }
@@ -4715,18 +4398,8 @@
         };
         var topo2geo = GeoJSONModule.topo2geo;
         var maps = MapChart.maps;
-        var boundsFromPath = MU.boundsFromPath,
-            pointInPolygon = MU.pointInPolygon;
-        var addEvent = U.addEvent,
-            clamp = U.clamp,
-            fireEvent = U.fireEvent,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            isString = U.isString,
-            merge = U.merge,
-            pick = U.pick,
-            relativeLength = U.relativeLength;
+        var boundsFromPath = MU.boundsFromPath, pointInPolygon = MU.pointInPolygon;
+        var addEvent = U.addEvent, clamp = U.clamp, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
         /**
          * The world size in terms of 10k meters in the Web Mercator projection, to
          * match a 256 square tile to zoom level 0.
@@ -4737,7 +4410,7 @@
         // Compute the zoom from given bounds and the size of the playing field. Used in
         // two places, hence the local function.
         var zoomFromBounds = function (b, playingField) {
-                var width = playingField.width, height = playingField.height, scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
+            var width = playingField.width, height = playingField.height, scaleToField = Math.max((b.x2 - b.x1) / (width / tileSize), (b.y2 - b.y1) / (height / tileSize));
             return Math.log(worldSize / scaleToField) / Math.log(2);
         };
         /*
@@ -4778,8 +4451,8 @@
          *        MapView options
          */
         var MapView = /** @class */ (function () {
-                function MapView(chart, options) {
-                    var _this = this;
+            function MapView(chart, options) {
+                var _this = this;
                 this.allowTransformAnimation = true;
                 this.insets = [];
                 this.padding = [0, 0, 0, 0];
@@ -4789,9 +4462,8 @@
                 if (!(this instanceof MapViewInset)) {
                     // Handle the global map and series-level mapData
                     var geoMaps = __spreadArray([
-                            chart.options.chart.map
-                        ], (chart.options.series || []).map(function (s) { return s.mapData; }),
-                        true).map(function (mapData) { return _this.getGeoMap(mapData); });
+                        chart.options.chart.map
+                    ], (chart.options.series || []).map(function (s) { return s.mapData; }), true).map(function (mapData) { return _this.getGeoMap(mapData); });
                     var allGeoBounds_1 = [];
                     geoMaps.forEach(function (geoMap) {
                         if (geoMap) {
@@ -4802,28 +4474,21 @@
                             }
                             // Combine the bounding boxes of all loaded maps
                             if (geoMap.bbox) {
-                                var _a = geoMap.bbox,
-                                    x1 = _a[0],
-                                    y1 = _a[1],
-                                    x2 = _a[2],
-                                    y2 = _a[3];
+                                var _a = geoMap.bbox, x1 = _a[0], y1 = _a[1], x2 = _a[2], y2 = _a[3];
                                 allGeoBounds_1.push({ x1: x1, y1: y1, x2: x2, y2: y2 });
                             }
                         }
                     });
                     // Get the composite bounds
                     var geoBounds_1 = (allGeoBounds_1.length &&
-                            MapView.compositeBounds(allGeoBounds_1));
+                        MapView.compositeBounds(allGeoBounds_1));
                     // Provide a best-guess recommended projection if not set in
                     // the map or in user options
                     fireEvent(chart, 'beforeMapViewInit', {
                         geoBounds: geoBounds_1
                     }, function () {
                         if (geoBounds_1) {
-                            var x1 = geoBounds_1.x1,
-                                y1 = geoBounds_1.y1,
-                                x2 = geoBounds_1.x2,
-                                y2 = geoBounds_1.y2;
+                            var x1 = geoBounds_1.x1, y1 = geoBounds_1.y1, x2 = geoBounds_1.x2, y2 = geoBounds_1.y2;
                             recommendedProjection =
                                 (x2 - x1 > 180 && y2 - y1 > 90) ?
                                     // Wide angle, go for the world view
@@ -4847,12 +4512,9 @@
                     chart.options.mapView.recommendedMapView) {
                     recommendedMapView = chart.options.mapView.recommendedMapView;
                 }
-                var o = merge(defaultOptions, { projection: recommendedProjection },
-                    recommendedMapView,
-                    options);
+                var o = merge(defaultOptions, { projection: recommendedProjection }, recommendedMapView, options);
                 // Merge the inset collections by id, or index if id missing
-                var recInsets = recommendedMapView && recommendedMapView.insets,
-                    optInsets = options && options.insets;
+                var recInsets = recommendedMapView && recommendedMapView.insets, optInsets = options && options.insets;
                 if (recInsets && optInsets) {
                     o.insets = MapView.mergeInsets(recInsets, optInsets);
                 }
@@ -4903,29 +4565,24 @@
             // Merge two collections of insets by the id
             MapView.mergeInsets = function (a, b) {
                 var toObject = function (insets) {
-                        var ob = {};
+                    var ob = {};
                     insets.forEach(function (inset, i) {
                         ob[inset && inset.id || "i".concat(i)] = inset;
                     });
                     return ob;
                 };
-                var insetsObj = merge(toObject(a),
-                    toObject(b)),
-                    insets = Object
-                        .keys(insetsObj)
-                        .map(function (key) { return insetsObj[key]; });
+                var insetsObj = merge(toObject(a), toObject(b)), insets = Object
+                    .keys(insetsObj)
+                    .map(function (key) { return insetsObj[key]; });
                 return insets;
             };
             // Create MapViewInset instances from insets options
             MapView.prototype.createInsets = function () {
                 var _this = this;
-                var options = this.options,
-                    insets = options.insets;
+                var options = this.options, insets = options.insets;
                 if (insets) {
                     insets.forEach(function (item) {
-                        var inset = new MapViewInset(_this,
-                            merge(options.insetOptions,
-                            item));
+                        var inset = new MapViewInset(_this, merge(options.insetOptions, item));
                         _this.insets.push(inset);
                     });
                 }
@@ -4950,13 +4607,7 @@
                 if (redraw === void 0) { redraw = true; }
                 var b = bounds || this.getProjectedBounds();
                 if (b) {
-                    var pad = pick(padding,
-                        bounds ? 0 : this.options.padding),
-                        fullField = this.getField(false),
-                        padArr = isArray(pad) ? pad : [pad,
-                        pad,
-                        pad,
-                        pad];
+                    var pad = pick(padding, bounds ? 0 : this.options.padding), fullField = this.getField(false), padArr = isArray(pad) ? pad : [pad, pad, pad, pad];
                     this.padding = [
                         relativeLength(padArr[0], fullField.height),
                         relativeLength(padArr[1], fullField.width),
@@ -4965,16 +4616,15 @@
                     ];
                     // Apply the playing field, corrected with padding
                     this.playingField = this.getField();
-                    var zoom = zoomFromBounds(b,
-                        this.playingField);
+                    var zoom = zoomFromBounds(b, this.playingField);
                     // Reset minZoom when fitting to natural bounds
                     if (!bounds) {
                         this.minZoom = zoom;
                     }
                     var center = this.projection.inverse([
-                            (b.x2 + b.x1) / 2,
-                            (b.y2 + b.y1) / 2
-                        ]);
+                        (b.x2 + b.x1) / 2,
+                        (b.y2 + b.y1) / 2
+                    ]);
                     this.setView(center, zoom, redraw, animation);
                 }
             };
@@ -5005,18 +4655,14 @@
                 }
             };
             MapView.prototype.getMapBBox = function () {
-                var bounds = this.getProjectedBounds(),
-                    scale = this.getScale();
+                var bounds = this.getProjectedBounds(), scale = this.getScale();
                 if (bounds) {
-                    var padding = this.padding,
-                        p1 = this.projectedUnitsToPixels({
-                            x: bounds.x1,
-                            y: bounds.y2
-                        }),
-                        width = ((bounds.x2 - bounds.x1) * scale +
-                            padding[1] + padding[3]),
-                        height = ((bounds.y2 - bounds.y1) * scale +
-                            padding[0] + padding[2]);
+                    var padding = this.padding, p1 = this.projectedUnitsToPixels({
+                        x: bounds.x1,
+                        y: bounds.y2
+                    }), width = ((bounds.x2 - bounds.x1) * scale +
+                        padding[1] + padding[3]), height = ((bounds.y2 - bounds.y1) * scale +
+                        padding[0] + padding[2]);
                     return {
                         width: width,
                         height: height,
@@ -5027,9 +4673,8 @@
             };
             MapView.prototype.getProjectedBounds = function () {
                 var projection = this.projection;
-                var allBounds = this.chart.series.reduce(function (acc,
-                    s) {
-                        var bounds = s.getProjectedBounds && s.getProjectedBounds();
+                var allBounds = this.chart.series.reduce(function (acc, s) {
+                    var bounds = s.getProjectedBounds && s.getProjectedBounds();
                     if (bounds &&
                         s.options.affectsMapView !== false) {
                         acc.push(bounds);
@@ -5042,8 +4687,8 @@
                     if (!this.fitToGeometryCache) {
                         if (fitToGeometry.type === 'MultiPoint') {
                             var positions = fitToGeometry.coordinates
-                                    .map(function (lonLat) {
-                                    return projection.forward(lonLat);
+                                .map(function (lonLat) {
+                                return projection.forward(lonLat);
                             }), xs = positions.map(function (pos) { return pos[0]; }), ys = positions.map(function (pos) { return pos[1]; });
                             this.fitToGeometryCache = {
                                 x1: Math.min.apply(0, xs),
@@ -5104,15 +4749,13 @@
              *      projected values
              */
             MapView.prototype.lonLatToProjectedUnits = function (lonLat) {
-                var chart = this.chart,
-                    mapTransforms = chart.mapTransforms;
+                var chart = this.chart, mapTransforms = chart.mapTransforms;
                 // Legacy, built-in transforms
                 if (mapTransforms) {
                     for (var transform in mapTransforms) {
                         if (Object.hasOwnProperty.call(mapTransforms, transform) &&
                             mapTransforms[transform].hitZone) {
-                            var coords = chart.transformFromLatLon(lonLat,
-                                mapTransforms[transform]);
+                            var coords = chart.transformFromLatLon(lonLat, mapTransforms[transform]);
                             if (coords && pointInPolygon(coords, mapTransforms[transform].hitZone.coordinates[0])) {
                                 return coords;
                             }
@@ -5126,15 +4769,11 @@
                     var inset = _a[_i];
                     if (inset.options.geoBounds &&
                         pointInPolygon({ x: lonLat.lon, y: lonLat.lat }, inset.options.geoBounds.coordinates[0])) {
-                        var insetProjectedPoint = inset.projection.forward([lonLat.lon,
-                            lonLat.lat]),
-                            pxPoint = inset.projectedUnitsToPixels({ x: insetProjectedPoint[0],
-                            y: insetProjectedPoint[1] });
+                        var insetProjectedPoint = inset.projection.forward([lonLat.lon, lonLat.lat]), pxPoint = inset.projectedUnitsToPixels({ x: insetProjectedPoint[0], y: insetProjectedPoint[1] });
                         return this.pixelsToProjectedUnits(pxPoint);
                     }
                 }
-                var point = this.projection.forward([lonLat.lon,
-                    lonLat.lat]);
+                var point = this.projection.forward([lonLat.lon, lonLat.lat]);
                 if (!point.outside) {
                     return { x: point[0], y: point[1] };
                 }
@@ -5159,8 +4798,7 @@
              *         `lon` properties.
              */
             MapView.prototype.projectedUnitsToLonLat = function (point) {
-                var chart = this.chart,
-                    mapTransforms = chart.mapTransforms;
+                var chart = this.chart, mapTransforms = chart.mapTransforms;
                 // Legacy, built-in transforms
                 if (mapTransforms) {
                     for (var transform in mapTransforms) {
@@ -5179,14 +4817,11 @@
                     if (inset.hitZone &&
                         pointInPolygon(pxPoint, inset.hitZone.coordinates[0])) {
                         var insetProjectedPoint = inset
-                                .pixelsToProjectedUnits(pxPoint),
-                            coordinates_1 = inset.projection.inverse([insetProjectedPoint.x,
-                            insetProjectedPoint.y]);
+                            .pixelsToProjectedUnits(pxPoint), coordinates_1 = inset.projection.inverse([insetProjectedPoint.x, insetProjectedPoint.y]);
                         return { lon: coordinates_1[0], lat: coordinates_1[1] };
                     }
                 }
-                var coordinates = this.projection.inverse([point.x,
-                    point.y]);
+                var coordinates = this.projection.inverse([point.x, point.y]);
                 return { lon: coordinates[0], lat: coordinates[1] };
             };
             MapView.prototype.redraw = function (animation) {
@@ -5231,35 +4866,22 @@
                 }
                 var bounds = this.getProjectedBounds();
                 if (bounds) {
-                    var projectedCenter = this.projection.forward(this.center),
-                        _a = this.playingField,
-                        x = _a.x,
-                        y = _a.y,
-                        width = _a.width,
-                        height = _a.height,
-                        scale = this.getScale(),
-                        bottomLeft = this.projectedUnitsToPixels({
-                            x: bounds.x1,
-                            y: bounds.y1
-                        }),
-                        topRight = this.projectedUnitsToPixels({
-                            x: bounds.x2,
-                            y: bounds.y2
-                        }),
-                        boundsCenterProjected = [
-                            (bounds.x1 + bounds.x2) / 2,
-                            (bounds.y1 + bounds.y2) / 2
-                        ],
-                        isDrilling = this.chart.series.some(function (series) {
-                            return series.isDrilling;
+                    var projectedCenter = this.projection.forward(this.center), _a = this.playingField, x = _a.x, y = _a.y, width = _a.width, height = _a.height, scale = this.getScale(), bottomLeft = this.projectedUnitsToPixels({
+                        x: bounds.x1,
+                        y: bounds.y1
+                    }), topRight = this.projectedUnitsToPixels({
+                        x: bounds.x2,
+                        y: bounds.y2
+                    }), boundsCenterProjected = [
+                        (bounds.x1 + bounds.x2) / 2,
+                        (bounds.y1 + bounds.y2) / 2
+                    ], isDrilling = this.chart.series.some(function (series) {
+                        return series.isDrilling;
                     });
                     if (!isDrilling) {
                         // Constrain to data bounds
                         // Pixel coordinate system is reversed vs projected
-                        var x1 = bottomLeft.x,
-                            y1 = topRight.y,
-                            x2 = topRight.x,
-                            y2 = bottomLeft.y;
+                        var x1 = bottomLeft.x, y1 = topRight.y, x2 = topRight.x, y2 = bottomLeft.y;
                         // Map smaller than plot area, center it
                         if (x2 - x1 < width) {
                             projectedCenter[0] = boundsCenterProjected[0];
@@ -5357,17 +4979,15 @@
                 var mouseDownKey;
                 var mouseDownRotation;
                 var onPan = function (e) {
-                        var pinchDown = chart.pointer.pinchDown,
-                    projection = _this.projection;
-                    var mouseDownX = chart.mouseDownX,
-                        mouseDownY = chart.mouseDownY;
+                    var pinchDown = chart.pointer.pinchDown, projection = _this.projection;
+                    var mouseDownX = chart.mouseDownX, mouseDownY = chart.mouseDownY;
                     if (pinchDown.length === 1) {
                         mouseDownX = pinchDown[0].chartX;
                         mouseDownY = pinchDown[0].chartY;
                     }
                     if (typeof mouseDownX === 'number' &&
                         typeof mouseDownY === 'number') {
-                        var key = "" + mouseDownX + ",".concat(mouseDownY), _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
+                        var key = "".concat(mouseDownX, ",").concat(mouseDownY), _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
                         // Reset starting position
                         if (key !== mouseDownKey) {
                             mouseDownKey = key;
@@ -5377,10 +4997,8 @@
                         }
                         // Get the natural zoom level of the projection itself when
                         // zoomed to view the full world
-                        var worldBounds = projection.def && projection.def.bounds,
-                            worldZoom = (worldBounds &&
-                                zoomFromBounds(worldBounds,
-                            _this.playingField)) || -Infinity;
+                        var worldBounds = projection.def && projection.def.bounds, worldZoom = (worldBounds &&
+                            zoomFromBounds(worldBounds, _this.playingField)) || -Infinity;
                         // Panning rotates the globe
                         if (projection.options.name === 'Orthographic' &&
                             // ... but don't rotate if we're loading only a part of the
@@ -5389,14 +5007,11 @@
                             // Empirical ratio where the globe rotates roughly the same
                             // speed as moving the pointer across the center of the
                             // projection
-                            var ratio = 440 / (_this.getScale() * Math.min(chart.plotWidth,
-                                chart.plotHeight));
+                            var ratio = 440 / (_this.getScale() * Math.min(chart.plotWidth, chart.plotHeight));
                             if (mouseDownRotation) {
                                 var lon = (mouseDownX - chartX) * ratio -
-                                        mouseDownRotation[0],
-                                    lat = clamp(-mouseDownRotation[1] -
-                                        (mouseDownY - chartY) * ratio, -80, 80),
-                                    zoom = _this.zoom;
+                                    mouseDownRotation[0], lat = clamp(-mouseDownRotation[1] -
+                                    (mouseDownY - chartY) * ratio, -80, 80), zoom = _this.zoom;
                                 _this.update({
                                     projection: {
                                         rotation: [-lon, -lat]
@@ -5410,15 +5025,17 @@
                         }
                         else if (isNumber(chartX) && isNumber(chartY)) {
                             // #17238
-                            var scale = _this.getScale(),
-                                flipFactor = _this.projection.hasCoordinates ? 1 : -1;
+                            var scale = _this.getScale(), flipFactor = _this.projection.hasCoordinates ? 1 : -1;
                             var newCenter = _this.projection.inverse([
-                                    mouseDownCenterProjected[0] +
-                                        (mouseDownX - chartX) / scale,
-                                    mouseDownCenterProjected[1] -
-                                        (mouseDownY - chartY) / scale * flipFactor
-                                ]);
-                            _this.setView(newCenter, void 0, true, false);
+                                mouseDownCenterProjected[0] +
+                                    (mouseDownX - chartX) / scale,
+                                mouseDownCenterProjected[1] -
+                                    (mouseDownY - chartY) / scale * flipFactor
+                            ]);
+                            // #19190 Skip NaN coords
+                            if (!isNaN(newCenter[0] + newCenter[1])) {
+                                _this.setView(newCenter, void 0, true, false);
+                            }
                         }
                         e.preventDefault();
                     }
@@ -5431,14 +5048,8 @@
                     if (!evt.resetSelection) {
                         var x = evt.x - chart.plotLeft;
                         var y = evt.y - chart.plotTop;
-                        var _a = _this.pixelsToProjectedUnits({ x: x,
-                            y: y }),
-                            y1 = _a.y,
-                            x1 = _a.x;
-                        var _b = _this.pixelsToProjectedUnits({ x: x + evt.width,
-                            y: y + evt.height }),
-                            y2 = _b.y,
-                            x2 = _b.x;
+                        var _a = _this.pixelsToProjectedUnits({ x: x, y: y }), y1 = _a.y, x1 = _a.x;
+                        var _b = _this.pixelsToProjectedUnits({ x: x + evt.width, y: y + evt.height }), y2 = _b.y, x2 = _b.x;
                         _this.fitToBounds({ x1: x1, y1: y1, x2: x2, y2: y2 }, void 0, true, evt.originalEvent.touches ?
                             // On touch zoom, don't animate, since we're already in
                             // transformed zoom preview
@@ -5481,8 +5092,7 @@
                 if (redraw === void 0) { redraw = true; }
                 var newProjection = options.projection;
                 var isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
-                        Projection.toString(this.options.projection))),
-                    isDirtyInsets = false;
+                    Projection.toString(this.options.projection))), isDirtyInsets = false;
                 merge(true, this.userOptions, options);
                 merge(true, this.options, options);
                 // If anything changed with the insets, destroy them all and create
@@ -5558,16 +5168,13 @@
                 var chart = this.chart;
                 var projectedCenter = this.projection.forward(this.center);
                 // let { x, y } = coords || {};
-                var _a = coords ? this.projection.forward(coords) : [],
-                    x = _a[0],
-                    y = _a[1];
+                var _a = coords ? this.projection.forward(coords) : [], x = _a[0], y = _a[1];
                 if (typeof howMuch === 'number') {
                     var zoom = this.zoom + howMuch;
                     var center = void 0;
                     // Keep chartX and chartY stationary - convert to lat and lng
                     if (chartCoords) {
-                        var chartX = chartCoords[0],
-                            chartY = chartCoords[1];
+                        var chartX = chartCoords[0], chartY = chartCoords[1];
                         var scale = this.getScale();
                         var offsetX = chartX - chart.plotLeft - chart.plotWidth / 2;
                         var offsetY = chartY - chart.plotTop - chart.plotHeight / 2;
@@ -5576,9 +5183,7 @@
                     }
                     // Keep lon and lat stationary by adjusting the center
                     if (typeof x === 'number' && typeof y === 'number') {
-                        var scale = 1 - Math.pow(2,
-                            this.zoom) / Math.pow(2,
-                            zoom);
+                        var scale = 1 - Math.pow(2, this.zoom) / Math.pow(2, zoom);
                         // const projectedCenter = this.projection.forward(this.center);
                         var offsetX = projectedCenter[0] - x;
                         var offsetY = projectedCenter[1] - y;
@@ -5614,11 +5219,9 @@
         }());
         // Putting this in the same file due to circular dependency with MapView
         var MapViewInset = /** @class */ (function (_super) {
-                __extends(MapViewInset, _super);
+            __extends(MapViewInset, _super);
             function MapViewInset(mapView, options) {
-                var _this = _super.call(this,
-                    mapView.chart,
-                    options) || this;
+                var _this = _super.call(this, mapView.chart, options) || this;
                 _this.id = options.id;
                 _this.mapView = mapView;
                 _this.options = merge(defaultInsetsOptions, options);
@@ -5640,18 +5243,7 @@
                 if (padded === void 0) { padded = true; }
                 var hitZone = this.hitZone;
                 if (hitZone) {
-                    var padding = padded ? this.padding : [0, 0, 0, 0],
-                        polygon = hitZone.coordinates[0],
-                        xs = polygon.map(function (xy) { return xy[0]; }),
-                        ys = polygon.map(function (xy) { return xy[1]; }),
-                        x = Math.min.apply(0,
-                        xs) + padding[3],
-                        x2 = Math.max.apply(0,
-                        xs) - padding[1],
-                        y = Math.min.apply(0,
-                        ys) + padding[0],
-                        y2 = Math.max.apply(0,
-                        ys) - padding[2];
+                    var padding = padded ? this.padding : [0, 0, 0, 0], polygon = hitZone.coordinates[0], xs = polygon.map(function (xy) { return xy[0]; }), ys = polygon.map(function (xy) { return xy[1]; }), x = Math.min.apply(0, xs) + padding[3], x2 = Math.max.apply(0, xs) - padding[1], y = Math.min.apply(0, ys) + padding[0], y2 = Math.max.apply(0, ys) - padding[2];
                     if (isNumber(x) && isNumber(y)) {
                         return {
                             x: x,
@@ -5666,21 +5258,16 @@
             };
             // Get the hit zone in pixels
             MapViewInset.prototype.getHitZone = function () {
-                var _a = this,
-                    chart = _a.chart,
-                    mapView = _a.mapView,
-                    options = _a.options,
-                    coordinates = (options.field || {}).coordinates;
+                var _a = this, chart = _a.chart, mapView = _a.mapView, options = _a.options, coordinates = (options.field || {}).coordinates;
                 if (coordinates) {
                     var polygon = coordinates[0];
                     if (options.units === 'percent') {
                         var relativeTo_1 = options.relativeTo === 'mapBoundingBox' &&
-                                mapView.getMapBBox() ||
-                                merge(chart.plotBox, { x: 0,
-                            y: 0 });
+                            mapView.getMapBBox() ||
+                            merge(chart.plotBox, { x: 0, y: 0 });
                         polygon = polygon.map(function (xy) { return [
-                            relativeLength("" + xy[0] + "%", relativeTo_1.width, relativeTo_1.x),
-                            relativeLength("" + xy[1] + "%", relativeTo_1.height, relativeTo_1.y)
+                            relativeLength("".concat(xy[0], "%"), relativeTo_1.width, relativeTo_1.x),
+                            relativeLength("".concat(xy[1], "%"), relativeTo_1.height, relativeTo_1.y)
                         ]; });
                     }
                     return {
@@ -5695,9 +5282,7 @@
             // Determine whether a point on the main projected plane is inside the
             // geoBounds of the inset.
             MapViewInset.prototype.isInside = function (point) {
-                var _a = this,
-                    geoBoundsProjectedBox = _a.geoBoundsProjectedBox,
-                    geoBoundsProjectedPolygon = _a.geoBoundsProjectedPolygon;
+                var _a = this, geoBoundsProjectedBox = _a.geoBoundsProjectedBox, geoBoundsProjectedPolygon = _a.geoBoundsProjectedPolygon;
                 return Boolean(
                 // First we do a pre-pass to check whether the test point is inside
                 // the rectangular bounding box of the polygon. This is less
@@ -5714,11 +5299,7 @@
             };
             // Render the map view inset with the border path
             MapViewInset.prototype.render = function () {
-                var _a = this,
-                    chart = _a.chart,
-                    mapView = _a.mapView,
-                    options = _a.options,
-                    borderPath = options.borderPath || options.field;
+                var _a = this, chart = _a.chart, mapView = _a.mapView, options = _a.options, borderPath = options.borderPath || options.field;
                 if (borderPath && mapView.group) {
                     var animate = true;
                     if (!this.border) {
@@ -5734,19 +5315,14 @@
                             'stroke-width': options.borderWidth
                         });
                     }
-                    var crisp_1 = Math.round(this.border.strokeWidth()) % 2 / 2,
-                        field_1 = (options.relativeTo === 'mapBoundingBox' &&
-                            mapView.getMapBBox()) || mapView.playingField;
-                    var d = (borderPath.coordinates || []).reduce(function (d,
-                        lineString) {
-                            return lineString.reduce(function (d,
-                        point,
-                        i) {
-                                var x = point[0],
-                        y = point[1];
+                    var crisp_1 = Math.round(this.border.strokeWidth()) % 2 / 2, field_1 = (options.relativeTo === 'mapBoundingBox' &&
+                        mapView.getMapBBox()) || mapView.playingField;
+                    var d = (borderPath.coordinates || []).reduce(function (d, lineString) {
+                        return lineString.reduce(function (d, point, i) {
+                            var x = point[0], y = point[1];
                             if (options.units === 'percent') {
-                                x = chart.plotLeft + relativeLength("" + x + "%", field_1.width, field_1.x);
-                                y = chart.plotTop + relativeLength("" + y + "%", field_1.height, field_1.y);
+                                x = chart.plotLeft + relativeLength("".concat(x, "%"), field_1.width, field_1.x);
+                                y = chart.plotTop + relativeLength("".concat(y, "%"), field_1.height, field_1.y);
                             }
                             x = Math.floor(x) + crisp_1;
                             y = Math.floor(y) + crisp_1;
@@ -5778,7 +5354,7 @@
              * @type {Highcharts.MapView|undefined}
              */
             this.mapView = new MapView(this, this.options.mapView);
-        });
+        }, { order: 0 });
 
         return MapView;
     });
@@ -5793,42 +5369,27 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var animObject = A.animObject,
-            stop = A.stop;
+        var animObject = A.animObject, stop = A.stop;
         var noop = H.noop;
         var splitPath = MapChart.splitPath;
         var 
-            // indirect dependency to keep product size low
-            _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
-            ScatterSeries = _a.scatter;
-        var extend = U.extend,
-            find = U.find,
-            fireEvent = U.fireEvent,
-            getNestedProperty = U.getNestedProperty,
-            isArray = U.isArray,
-            defined = U.defined,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            splat = U.splat;
+        // indirect dependency to keep product size low
+        _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, ScatterSeries = _a.scatter;
+        var extend = U.extend, find = U.find, fireEvent = U.fireEvent, getNestedProperty = U.getNestedProperty, isArray = U.isArray, defined = U.defined, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
         /* *
          *
          *  Class
@@ -5842,15 +5403,14 @@
          * @augments Highcharts.Series
          */
         var MapSeries = /** @class */ (function (_super) {
-                __extends(MapSeries, _super);
+            __extends(MapSeries, _super);
             function MapSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.chart = void 0;
                 _this.data = void 0;
                 _this.group = void 0;
@@ -5873,10 +5433,7 @@
              * @private
              */
             MapSeries.prototype.animate = function (init) {
-                var _a = this,
-                    chart = _a.chart,
-                    group = _a.group,
-                    animation = animObject(this.options.animation);
+                var _a = this, chart = _a.chart, group = _a.group, animation = animObject(this.options.animation);
                 // Initialize the animation
                 if (init) {
                     // Scale down the group and place it in the center
@@ -5933,14 +5490,7 @@
              */
             MapSeries.prototype.drawPoints = function () {
                 var _this = this;
-                var series = this,
-                    _a = this,
-                    chart = _a.chart,
-                    group = _a.group,
-                    _b = _a.transformGroups,
-                    transformGroups = _b === void 0 ? [] : _b,
-                    mapView = chart.mapView,
-                    renderer = chart.renderer;
+                var series = this, _a = this, chart = _a.chart, group = _a.group, _b = _a.transformGroups, transformGroups = _b === void 0 ? [] : _b, mapView = chart.mapView, renderer = chart.renderer;
                 if (!mapView) {
                     return;
                 }
@@ -5959,8 +5509,7 @@
                 if (this.doFullTranslate()) {
                     // Individual point actions.
                     this.points.forEach(function (point) {
-                        var graphic = point.graphic,
-                            shapeArgs = point.shapeArgs;
+                        var graphic = point.graphic, shapeArgs = point.shapeArgs;
                         // Points should be added in the corresponding transform group
                         point.group = transformGroups[typeof point.insetIndex === 'number' ?
                             point.insetIndex + 1 :
@@ -5969,10 +5518,6 @@
                         // MapView.update
                         if (graphic && graphic.parentGroup !== point.group) {
                             graphic.add(point.group);
-                        }
-                        // Restore state color on update/redraw (#3529)
-                        if (shapeArgs && chart.hasRendered && !chart.styledMode) {
-                            shapeArgs.fill = _this.pointAttribs(point, point.state).fill;
                         }
                     });
                     // Draw the points
@@ -6002,16 +5547,15 @@
                             }
                             graphic.animate = function (params, options, complete) {
                                 var animateIn = (isNumber(params['stroke-width']) &&
-                                        !isNumber(graphic['stroke-width'])), animateOut = (isNumber(graphic['stroke-width']) &&
-                                        !isNumber(params['stroke-width']));
+                                    !isNumber(graphic['stroke-width'])), animateOut = (isNumber(graphic['stroke-width']) &&
+                                    !isNumber(params['stroke-width']));
                                 // When strokeWidth is animating
                                 if (animateIn || animateOut) {
                                     var strokeWidth = pick(series.getStrokeWidth(series.options), 1 // Styled mode
-                                        ),
-                                        inheritedStrokeWidth = (strokeWidth /
-                                            (chart.mapView &&
-                                                chart.mapView.getScale() ||
-                                                1));
+                                    ), inheritedStrokeWidth = (strokeWidth /
+                                        (chart.mapView &&
+                                            chart.mapView.getScale() ||
+                                            1));
                                     // For animating from undefined, .attr() reads the
                                     // property as the starting point
                                     if (animateIn) {
@@ -6022,12 +5566,9 @@
                                         params['stroke-width'] = inheritedStrokeWidth;
                                     }
                                 }
-                                var ret = animate_1.call(graphic,
-                                    params,
-                                    options,
-                                    animateOut ? function () {
-                                        // Remove the attribute after finished animation
-                                        graphic.element.removeAttribute('stroke-width');
+                                var ret = animate_1.call(graphic, params, options, animateOut ? function () {
+                                    // Remove the attribute after finished animation
+                                    graphic.element.removeAttribute('stroke-width');
                                     delete graphic['stroke-width'];
                                     // Proceed
                                     if (complete) {
@@ -6041,10 +5582,8 @@
                 }
                 // Apply the SVG transform
                 transformGroups.forEach(function (transformGroup, i) {
-                    var view = i === 0 ? mapView : mapView.insets[i - 1],
-                        svgTransform = view.getSVGTransform(),
-                        strokeWidth = pick(_this.getStrokeWidth(_this.options), 1 // Styled mode
-                        );
+                    var view = i === 0 ? mapView : mapView.insets[i - 1], svgTransform = view.getSVGTransform(), strokeWidth = pick(_this.getStrokeWidth(_this.options), 1 // Styled mode
+                    );
                     /*
                     Animate or move to the new zoom level. In order to prevent
                     flickering as the different transform components are set out of sync
@@ -6058,11 +5597,10 @@
                     transform properties, it should induce a single updateTransform and
                     symbolAttr call.
                     */
-                    var scale = svgTransform.scaleX,
-                        flipFactor = svgTransform.scaleY > 0 ? 1 : -1;
+                    var scale = svgTransform.scaleX, flipFactor = svgTransform.scaleY > 0 ? 1 : -1;
                     var animatePoints = function (scale) {
-                            (series.points || []).forEach(function (point) {
-                                var graphic = point.graphic;
+                        (series.points || []).forEach(function (point) {
+                            var graphic = point.graphic;
                             var strokeWidth;
                             if (graphic &&
                                 graphic['stroke-width'] &&
@@ -6079,10 +5617,9 @@
                         var startTranslateX_1 = Number(transformGroup.attr('translateX'));
                         var startTranslateY_1 = Number(transformGroup.attr('translateY'));
                         var startScale_1 = Number(transformGroup.attr('scaleX'));
-                        var step_1 = function (now,
-                            fx) {
-                                var scaleStep = startScale_1 +
-                                    (scale - startScale_1) * fx.pos;
+                        var step_1 = function (now, fx) {
+                            var scaleStep = startScale_1 +
+                                (scale - startScale_1) * fx.pos;
                             transformGroup.attr({
                                 translateX: (startTranslateX_1 + (svgTransform.translateX - startTranslateX_1) * fx.pos),
                                 translateY: (startTranslateY_1 + (svgTransform.translateY - startTranslateY_1) * fx.pos),
@@ -6092,8 +5629,7 @@
                             });
                             animatePoints(scaleStep); // #18166
                         };
-                        var animOptions = merge(animObject(renderer.globalAnimation)),
-                            userStep_1 = animOptions.step;
+                        var animOptions = merge(animObject(renderer.globalAnimation)), userStep_1 = animOptions.step;
                         animOptions.step =
                             function (obj) {
                                 if (userStep_1) {
@@ -6130,10 +5666,7 @@
              */
             MapSeries.prototype.getProjectedBounds = function () {
                 if (!this.bounds && this.chart.mapView) {
-                    var _a = this.chart.mapView,
-                        insets_1 = _a.insets,
-                        projection_1 = _a.projection,
-                        allBounds_1 = [];
+                    var _a = this.chart.mapView, insets_1 = _a.insets, projection_1 = _a.projection, allBounds_1 = [];
                     // Find the bounding box of each point
                     (this.points || []).forEach(function (point) {
                         if (point.path || point.geometry) {
@@ -6155,14 +5688,11 @@
                                     // Bigger shape, higher rank
                                     ((bounds.x2 - bounds.x1) *
                                         (bounds.y2 - bounds.y1)));
-                                    var midX_1 = bounds.midX,
-                                        midY_1 = bounds.midY;
+                                    var midX_1 = bounds.midX, midY_1 = bounds.midY;
                                     if (insets_1 && isNumber(midX_1) && isNumber(midY_1)) {
-                                        var inset = find(insets_1,
-                                            function (inset) { return inset.isInside({
-                                                x: midX_1,
-                                            y: midY_1
-                                            }); });
+                                        var inset = find(insets_1, function (inset) { return inset.isInside({
+                                            x: midX_1, y: midY_1
+                                        }); });
                                         if (inset) {
                                             // Project again, but with the inset
                                             // projection
@@ -6214,23 +5744,17 @@
              */
             MapSeries.prototype.pointAttribs = function (point, state) {
                 var _a;
-                var _b = point.series.chart,
-                    mapView = _b.mapView,
-                    styledMode = _b.styledMode;
+                var _b = point.series.chart, mapView = _b.mapView, styledMode = _b.styledMode;
                 var attr = styledMode ?
-                        this.colorAttribs(point) :
-                        ColumnSeries.prototype.pointAttribs.call(this,
-                    point,
-                    state);
+                    this.colorAttribs(point) :
+                    ColumnSeries.prototype.pointAttribs.call(this, point, state);
                 // Individual stroke width
                 var pointStrokeWidth = this.getStrokeWidth(point.options);
                 // Handle state specific border or line width
                 if (state) {
-                    var stateOptions = merge(this.options.states[state],
-                        point.options.states &&
-                            point.options.states[state] ||
-                            {}),
-                        stateStrokeWidth = this.getStrokeWidth(stateOptions);
+                    var stateOptions = merge(this.options.states[state], point.options.states &&
+                        point.options.states[state] ||
+                        {}), stateStrokeWidth = this.getStrokeWidth(stateOptions);
                     if (defined(stateStrokeWidth)) {
                         pointStrokeWidth = stateStrokeWidth;
                     }
@@ -6295,23 +5819,11 @@
              * @private
              */
             MapSeries.prototype.processData = function () {
-                var options = this.options,
-                    data = options.data,
-                    chartOptions = this.chart.options.chart,
-                    joinBy = this.joinBy,
-                    pointArrayMap = options.keys || this.pointArrayMap,
-                    dataUsed = [],
-                    mapMap = {};
-                var mapView = this.chart.mapView,
-                    mapDataObject = mapView && (
-                    // Get map either from series or global
-                    isObject(options.mapData,
-                    true) ?
-                        mapView.getGeoMap(options.mapData) : mapView.geoMap),
-                    mapTransforms = this.chart.mapTransforms,
-                    mapPoint,
-                    props,
-                    i;
+                var options = this.options, data = options.data, chartOptions = this.chart.options.chart, joinBy = this.joinBy, pointArrayMap = options.keys || this.pointArrayMap, dataUsed = [], mapMap = {};
+                var mapView = this.chart.mapView, mapDataObject = mapView && (
+                // Get map either from series or global
+                isObject(options.mapData, true) ?
+                    mapView.getGeoMap(options.mapData) : mapView.geoMap), mapTransforms = this.chart.mapTransforms, mapPoint, props, i;
                 // Pick up transform definitions for chart
                 this.chart.mapTransforms = mapTransforms =
                     chartOptions.mapTransforms ||
@@ -6398,8 +5910,7 @@
                     if (joinBy[1]) {
                         var joinKey_1 = joinBy[1];
                         processedData.forEach(function (pointOptions) {
-                            var mapKey = getNestedProperty(joinKey_1,
-                                pointOptions);
+                            var mapKey = getNestedProperty(joinKey_1, pointOptions);
                             if (mapMap[mapKey]) {
                                 dataUsed.push(mapMap[mapKey]);
                             }
@@ -6417,9 +5928,9 @@
                         // will be drawn as null points. Searching a string is faster
                         // than Array.indexOf
                         var dataUsedString_1 = ('|' +
-                                dataUsed
-                                    .map(function (point) {
-                                    return point && point[joinBy[0]];
+                            dataUsed
+                                .map(function (point) {
+                                return point && point[joinBy[0]];
                             })
                                 .join('|') +
                             '|');
@@ -6442,10 +5953,7 @@
              * @private
              */
             MapSeries.prototype.setOptions = function (itemOptions) {
-                var options = Series.prototype.setOptions.call(this,
-                    itemOptions),
-                    joinBy = options.joinBy,
-                    joinByNull = joinBy === null;
+                var options = Series.prototype.setOptions.call(this, itemOptions), joinBy = options.joinBy, joinByNull = joinBy === null;
                 if (joinByNull) {
                     joinBy = '_i';
                 }
@@ -6461,10 +5969,7 @@
              * @private
              */
             MapSeries.prototype.translate = function () {
-                var series = this,
-                    doFullTranslate = series.doFullTranslate(),
-                    mapView = this.chart.mapView,
-                    projection = mapView && mapView.projection;
+                var series = this, doFullTranslate = series.doFullTranslate(), mapView = this.chart.mapView, projection = mapView && mapView.projection;
                 // Recalculate box on updated data
                 if (this.chart.hasRendered && (this.isDirtyData || !this.hasRendered)) {
                     this.processData();
@@ -6489,7 +5994,7 @@
                     var mainSvgTransform_1 = mapView.getSVGTransform();
                     series.points.forEach(function (point) {
                         var svgTransform = (isNumber(point.insetIndex) &&
-                                mapView.insets[point.insetIndex].getSVGTransform()) || mainSvgTransform_1;
+                            mapView.insets[point.insetIndex].getSVGTransform()) || mainSvgTransform_1;
                         // Record the middle point (loosely based on centroid),
                         // determined by the middleX and middleY options.
                         if (svgTransform &&
@@ -6510,7 +6015,7 @@
                         if (point.projectedPath && !point.projectedPath.length) {
                             point.setVisible(false);
                         }
-                        else {
+                        else if (!point.visible) {
                             point.setVisible(true);
                         }
                     });
@@ -7106,24 +6611,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var Series = SeriesRegistry.series;
-        var extend = U.extend,
-            merge = U.merge;
+        var extend = U.extend, merge = U.merge;
         /* *
          *
          *  Class
@@ -7137,15 +6640,14 @@
          * @augments Highcharts.Series
          */
         var MapLineSeries = /** @class */ (function (_super) {
-                __extends(MapLineSeries, _super);
+            __extends(MapLineSeries, _super);
             function MapLineSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -7169,9 +6671,7 @@
              * @function Highcharts.seriesTypes.mapline#pointAttribs
              */
             MapLineSeries.prototype.pointAttribs = function (point, state) {
-                var attr = MapSeries.prototype.pointAttribs.call(this,
-                    point,
-                    state);
+                var attr = MapSeries.prototype.pointAttribs.call(this, point, state);
                 // The difference from a map series is that the stroke takes the
                 // point color
                 attr.fill = this.options.fillColor;
@@ -7327,16 +6827,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -7350,10 +6849,9 @@
          *
          * */
         var MapPointPoint = /** @class */ (function (_super) {
-                __extends(MapPointPoint, _super);
+            __extends(MapPointPoint, _super);
             function MapPointPoint() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
                 return _this;
@@ -7391,30 +6889,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var noop = H.noop;
-        var _a = SeriesRegistry.seriesTypes,
-            MapSeries = _a.map,
-            ScatterSeries = _a.scatter;
-        var extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick;
+        var _a = SeriesRegistry.seriesTypes, MapSeries = _a.map, ScatterSeries = _a.scatter;
+        var extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
         /* *
          *
          *  Class
@@ -7428,15 +6919,14 @@
          * @augments Highcharts.Series
          */
         var MapPointSeries = /** @class */ (function (_super) {
-                __extends(MapPointSeries, _super);
+            __extends(MapPointSeries, _super);
             function MapPointSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -7471,12 +6961,10 @@
             MapPointSeries.prototype.projectPoint = function (pointOptions) {
                 var mapView = this.chart.mapView;
                 if (mapView) {
-                    var geometry = pointOptions.geometry,
-                        lon = pointOptions.lon,
-                        lat = pointOptions.lat;
+                    var geometry = pointOptions.geometry, lon = pointOptions.lon, lat = pointOptions.lat;
                     var coordinates = (geometry &&
-                            geometry.type === 'Point' &&
-                            geometry.coordinates);
+                        geometry.type === 'Point' &&
+                        geometry.coordinates);
                     if (isNumber(lon) && isNumber(lat)) {
                         coordinates = [lon, lat];
                     }
@@ -7501,18 +6989,14 @@
                 }
                 // Create map based translation
                 if (mapView) {
-                    var mainSvgTransform_1 = mapView.getSVGTransform(),
-                        hasCoordinates_1 = mapView.projection.hasCoordinates;
+                    var mainSvgTransform_1 = mapView.getSVGTransform(), hasCoordinates_1 = mapView.projection.hasCoordinates;
                     this.points.forEach(function (p) {
-                        var _a = p.x,
-                            x = _a === void 0 ? void 0 : _a,
-                            _b = p.y,
-                            y = _b === void 0 ? void 0 : _b;
+                        var _a = p.x, x = _a === void 0 ? void 0 : _a, _b = p.y, y = _b === void 0 ? void 0 : _b;
                         var svgTransform = (isNumber(p.insetIndex) &&
-                                mapView.insets[p.insetIndex].getSVGTransform()) || mainSvgTransform_1;
+                            mapView.insets[p.insetIndex].getSVGTransform()) || mainSvgTransform_1;
                         var xy = (_this.projectPoint(p.options) ||
-                                (p.properties &&
-                                    _this.projectPoint(p.properties)));
+                            (p.properties &&
+                                _this.projectPoint(p.properties)));
                         var didBounds;
                         if (xy) {
                             x = xy.x;
@@ -7533,8 +7017,7 @@
                         if (isNumber(x) && isNumber(y)) {
                             // Establish plotX and plotY
                             if (!didBounds) {
-                                var plotCoords = mapView.projectedUnitsToPixels({ x: x,
-                                    y: y });
+                                var plotCoords = mapView.projectedUnitsToPixels({ x: x, y: y });
                                 p.plotX = plotCoords.x;
                                 p.plotY = hasCoordinates_1 ?
                                     plotCoords.y :
@@ -7592,14 +7075,9 @@
         /* *
          * The mapmarker symbol
          */
-        var mapmarker = function (x,
-            y,
-            w,
-            h,
-            options) {
-                var isLegendSymbol = options && options.context === 'legend';
-            var anchorX,
-                anchorY;
+        var mapmarker = function (x, y, w, h, options) {
+            var isLegendSymbol = options && options.context === 'legend';
+            var anchorX, anchorY;
             if (isLegendSymbol) {
                 anchorX = x + w / 2;
                 anchorY = y + h;
@@ -7828,26 +7306,90 @@
          * @optionparent legend.bubbleLegend
          */
         var BubbleLegendDefaults = {
+            /**
+             * The color of the ranges borders, can be also defined for an
+             * individual range.
+             *
+             * @sample highcharts/bubble-legend/similartoseries/
+             *         Similar look to the bubble series
+             * @sample highcharts/bubble-legend/bordercolor/
+             *         Individual bubble border color
+             *
+             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             */
+            borderColor: void 0,
+            /**
+             * The width of the ranges borders in pixels, can be also
+             * defined for an individual range.
+             */
+            borderWidth: 2,
+            /**
+             * An additional class name to apply to the bubble legend'
+             * circle graphical elements. This option does not replace
+             * default class names of the graphical element.
+             *
+             * @sample {highcharts} highcharts/css/bubble-legend/
+             *         Styling by CSS
+             *
+             * @type {string}
+             */
+            className: void 0,
+            /**
+             * The main color of the bubble legend. Applies to ranges, if
+             * individual color is not defined.
+             *
+             * @sample highcharts/bubble-legend/similartoseries/
+             *         Similar look to the bubble series
+             * @sample highcharts/bubble-legend/color/
+             *         Individual bubble color
+             *
+             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             */
+            color: void 0,
+            /**
+             * An additional class name to apply to the bubble legend's
+             * connector graphical elements. This option does not replace
+             * default class names of the graphical element.
+             *
+             * @sample {highcharts} highcharts/css/bubble-legend/
+             *         Styling by CSS
+             *
+             * @type {string}
+             */
+            connectorClassName: void 0,
+            /**
+             * The color of the connector, can be also defined
+             * for an individual range.
+             *
+             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             */
+            connectorColor: void 0,
+            /**
+             * The length of the connectors in pixels. If labels are
+             * centered, the distance is reduced to 0.
+             *
+             * @sample highcharts/bubble-legend/connectorandlabels/
+             *         Increased connector length
+             */
+            connectorDistance: 60,
+            /**
+             * The width of the connectors in pixels.
+             *
+             * @sample highcharts/bubble-legend/connectorandlabels/
+             *         Increased connector width
+             */
+            connectorWidth: 1,
+            /**
+             * Enable or disable the bubble legend.
+             */
+            enabled: false,
+            /**
+             * Options for the bubble legend labels.
+             */
+            labels: {
                 /**
-                 * The color of the ranges borders, can be also defined for an
-                 * individual range.
-                 *
-                 * @sample highcharts/bubble-legend/similartoseries/
-                 *         Similar look to the bubble series
-                 * @sample highcharts/bubble-legend/bordercolor/
-                 *         Individual bubble border color
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                borderColor: void 0,
-                /**
-                 * The width of the ranges borders in pixels, can be also
-                 * defined for an individual range.
-                 */
-                borderWidth: 2,
-                /**
-                 * An additional class name to apply to the bubble legend'
-                 * circle graphical elements. This option does not replace
+                 * An additional class name to apply to the bubble legend
+                 * label graphical elements. This option does not replace
                  * default class names of the graphical element.
                  *
                  * @sample {highcharts} highcharts/css/bubble-legend/
@@ -7857,207 +7399,143 @@
                  */
                 className: void 0,
                 /**
-                 * The main color of the bubble legend. Applies to ranges, if
-                 * individual color is not defined.
+                 * Whether to allow data labels to overlap.
+                 */
+                allowOverlap: false,
+                /**
+                 * A format string for the bubble legend labels. Available
+                 * variables are the same as for `formatter`.
                  *
-                 * @sample highcharts/bubble-legend/similartoseries/
-                 *         Similar look to the bubble series
-                 * @sample highcharts/bubble-legend/color/
-                 *         Individual bubble color
+                 * @sample highcharts/bubble-legend/format/
+                 *         Add a unit
                  *
+                 * @type {string}
+                 */
+                format: '',
+                /**
+                 * Available `this` properties are:
+                 *
+                 * - `this.value`: The bubble value.
+                 *
+                 * - `this.radius`: The radius of the bubble range.
+                 *
+                 * - `this.center`: The center y position of the range.
+                 *
+                 * @type {Highcharts.FormatterCallbackFunction<Highcharts.BubbleLegendFormatterContextObject>}
+                 */
+                formatter: void 0,
+                /**
+                 * The alignment of the labels compared to the bubble
+                 * legend. Can be one of `left`, `center` or `right`.
+                 *
+                 * @sample highcharts/bubble-legend/connectorandlabels/
+                 *         Labels on left
+                 *
+                 * @type {Highcharts.AlignValue}
+                 */
+                align: 'right',
+                /**
+                 * CSS styles for the labels.
+                 *
+                 * @type {Highcharts.CSSObject}
+                 */
+                style: {
+                    /** @ignore-option */
+                    fontSize: '0.9em',
+                    /** @ignore-option */
+                    color: "#000000" /* Palette.neutralColor100 */
+                },
+                /**
+                 * The x position offset of the label relative to the
+                 * connector.
+                 */
+                x: 0,
+                /**
+                 * The y position offset of the label relative to the
+                 * connector.
+                 */
+                y: 0
+            },
+            /**
+             * Miximum bubble legend range size. If values for ranges are
+             * not specified, the `minSize` and the `maxSize` are calculated
+             * from bubble series.
+             */
+            maxSize: 60,
+            /**
+             * Minimum bubble legend range size. If values for ranges are
+             * not specified, the `minSize` and the `maxSize` are calculated
+             * from bubble series.
+             */
+            minSize: 10,
+            /**
+             * The position of the bubble legend in the legend.
+             * @sample highcharts/bubble-legend/connectorandlabels/
+             *         Bubble legend as last item in legend
+             */
+            legendIndex: 0,
+            /**
+             * Options for specific range. One range consists of bubble,
+             * label and connector.
+             *
+             * @sample highcharts/bubble-legend/ranges/
+             *         Manually defined ranges
+             * @sample highcharts/bubble-legend/autoranges/
+             *         Auto calculated ranges
+             *
+             * @type {Array<*>}
+             */
+            ranges: {
+                /**
+                 * Range size value, similar to bubble Z data.
+                 * @type {number}
+                 */
+                value: void 0,
+                /**
+                 * The color of the border for individual range.
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                borderColor: void 0,
+                /**
+                 * The color of the bubble for individual range.
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
                 color: void 0,
                 /**
-                 * An additional class name to apply to the bubble legend's
-                 * connector graphical elements. This option does not replace
-                 * default class names of the graphical element.
-                 *
-                 * @sample {highcharts} highcharts/css/bubble-legend/
-                 *         Styling by CSS
-                 *
-                 * @type {string}
-                 */
-                connectorClassName: void 0,
-                /**
-                 * The color of the connector, can be also defined
-                 * for an individual range.
-                 *
+                 * The color of the connector for individual range.
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                connectorColor: void 0,
-                /**
-                 * The length of the connectors in pixels. If labels are
-                 * centered, the distance is reduced to 0.
-                 *
-                 * @sample highcharts/bubble-legend/connectorandlabels/
-                 *         Increased connector length
-                 */
-                connectorDistance: 60,
-                /**
-                 * The width of the connectors in pixels.
-                 *
-                 * @sample highcharts/bubble-legend/connectorandlabels/
-                 *         Increased connector width
-                 */
-                connectorWidth: 1,
-                /**
-                 * Enable or disable the bubble legend.
-                 */
-                enabled: false,
-                /**
-                 * Options for the bubble legend labels.
-                 */
-                labels: {
-                    /**
-                     * An additional class name to apply to the bubble legend
-                     * label graphical elements. This option does not replace
-                     * default class names of the graphical element.
-                     *
-                     * @sample {highcharts} highcharts/css/bubble-legend/
-                     *         Styling by CSS
-                     *
-                     * @type {string}
-                     */
-                    className: void 0,
-                    /**
-                     * Whether to allow data labels to overlap.
-                     */
-                    allowOverlap: false,
-                    /**
-                     * A format string for the bubble legend labels. Available
-                     * variables are the same as for `formatter`.
-                     *
-                     * @sample highcharts/bubble-legend/format/
-                     *         Add a unit
-                     *
-                     * @type {string}
-                     */
-                    format: '',
-                    /**
-                     * Available `this` properties are:
-                     *
-                     * - `this.value`: The bubble value.
-                     *
-                     * - `this.radius`: The radius of the bubble range.
-                     *
-                     * - `this.center`: The center y position of the range.
-                     *
-                     * @type {Highcharts.FormatterCallbackFunction<Highcharts.BubbleLegendFormatterContextObject>}
-                     */
-                    formatter: void 0,
-                    /**
-                     * The alignment of the labels compared to the bubble
-                     * legend. Can be one of `left`, `center` or `right`.
-                     *
-                     * @sample highcharts/bubble-legend/connectorandlabels/
-                     *         Labels on left
-                     *
-                     * @type {Highcharts.AlignValue}
-                     */
-                    align: 'right',
-                    /**
-                     * CSS styles for the labels.
-                     *
-                     * @type {Highcharts.CSSObject}
-                     */
-                    style: {
-                        /** @ignore-option */
-                        fontSize: '0.9em',
-                        /** @ignore-option */
-                        color: "#000000" /* Palette.neutralColor100 */
-                    },
-                    /**
-                     * The x position offset of the label relative to the
-                     * connector.
-                     */
-                    x: 0,
-                    /**
-                     * The y position offset of the label relative to the
-                     * connector.
-                     */
-                    y: 0
-                },
-                /**
-                 * Miximum bubble legend range size. If values for ranges are
-                 * not specified, the `minSize` and the `maxSize` are calculated
-                 * from bubble series.
-                 */
-                maxSize: 60,
-                /**
-                 * Minimum bubble legend range size. If values for ranges are
-                 * not specified, the `minSize` and the `maxSize` are calculated
-                 * from bubble series.
-                 */
-                minSize: 10,
-                /**
-                 * The position of the bubble legend in the legend.
-                 * @sample highcharts/bubble-legend/connectorandlabels/
-                 *         Bubble legend as last item in legend
-                 */
-                legendIndex: 0,
-                /**
-                 * Options for specific range. One range consists of bubble,
-                 * label and connector.
-                 *
-                 * @sample highcharts/bubble-legend/ranges/
-                 *         Manually defined ranges
-                 * @sample highcharts/bubble-legend/autoranges/
-                 *         Auto calculated ranges
-                 *
-                 * @type {Array<*>}
-                 */
-                ranges: {
-                    /**
-                     * Range size value, similar to bubble Z data.
-                     * @type {number}
-                     */
-                    value: void 0,
-                    /**
-                     * The color of the border for individual range.
-                     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     */
-                    borderColor: void 0,
-                    /**
-                     * The color of the bubble for individual range.
-                     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     */
-                    color: void 0,
-                    /**
-                     * The color of the connector for individual range.
-                     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     */
-                    connectorColor: void 0
-                },
-                /**
-                 * Whether the bubble legend range value should be represented
-                 * by the area or the width of the bubble. The default, area,
-                 * corresponds best to the human perception of the size of each
-                 * bubble.
-                 *
-                 * @sample highcharts/bubble-legend/ranges/
-                 *         Size by width
-                 *
-                 * @type {Highcharts.BubbleSizeByValue}
-                 */
-                sizeBy: 'area',
-                /**
-                 * When this is true, the absolute value of z determines the
-                 * size of the bubble. This means that with the default
-                 * zThreshold of 0, a bubble of value -1 will have the same size
-                 * as a bubble of value 1, while a bubble of value 0 will have a
-                 * smaller size according to minSize.
-                 */
-                sizeByAbsoluteValue: false,
-                /**
-                 * Define the visual z index of the bubble legend.
-                 */
-                zIndex: 1,
-                /**
-                 * Ranges with with lower value than zThreshold, are skipped.
-                 */
-                zThreshold: 0
-            };
+                connectorColor: void 0
+            },
+            /**
+             * Whether the bubble legend range value should be represented
+             * by the area or the width of the bubble. The default, area,
+             * corresponds best to the human perception of the size of each
+             * bubble.
+             *
+             * @sample highcharts/bubble-legend/ranges/
+             *         Size by width
+             *
+             * @type {Highcharts.BubbleSizeByValue}
+             */
+            sizeBy: 'area',
+            /**
+             * When this is true, the absolute value of z determines the
+             * size of the bubble. This means that with the default
+             * zThreshold of 0, a bubble of value -1 will have the same size
+             * as a bubble of value 1, while a bubble of value 0 will have a
+             * smaller size according to minSize.
+             */
+            sizeByAbsoluteValue: false,
+            /**
+             * Define the visual z index of the bubble legend.
+             */
+            zIndex: 1,
+            /**
+             * Ranges with with lower value than zThreshold, are skipped.
+             */
+            zThreshold: 0
+        };
         /* *
          *
          *  Default Export
@@ -8080,12 +7558,7 @@
          * */
         var color = Color.parse;
         var noop = H.noop;
-        var arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            stableSort = U.stableSort;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, merge = U.merge, pick = U.pick, stableSort = U.stableSort;
         /* *
          *
          *  Class
@@ -8104,18 +7577,18 @@
          * Legend of item.
          */
         var BubbleLegendItem = /** @class */ (function () {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            function BubbleLegendItem(options, legend) {
                 /* *
                  *
-                 *  Constructor
+                 *  Properties
                  *
                  * */
-                function BubbleLegendItem(options, legend) {
-                    /* *
-                     *
-                     *  Properties
-                     *
-                     * */
-                    this.chart = void 0;
+                this.chart = void 0;
                 this.legend = void 0;
                 this.maxLabel = void 0;
                 this.movementX = void 0;
@@ -8164,12 +7637,7 @@
              *        Legend instance
              */
             BubbleLegendItem.prototype.drawLegendSymbol = function (legend) {
-                var chart = this.chart,
-                    itemDistance = pick(legend.options.itemDistance, 20),
-                    legendItem = this.legendItem || {},
-                    options = this.options,
-                    ranges = options.ranges,
-                    connectorDistance = options.connectorDistance;
+                var chart = this.chart, itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
                 var connectorSpace;
                 // Do not create bubbleLegend now if ranges or ranges valeus are not
                 // specified or if are empty array.
@@ -8185,9 +7653,7 @@
                 this.setOptions();
                 this.render();
                 // Get max label size
-                var maxLabel = this.getMaxLabelSize(),
-                    radius = this.ranges[0].radius,
-                    size = radius * 2;
+                var maxLabel = this.getMaxLabelSize(), radius = this.ranges[0].radius, size = radius * 2;
                 // Space for connectors and labels.
                 connectorSpace =
                     connectorDistance - radius + maxLabel.width;
@@ -8203,25 +7669,17 @@
              * @private
              */
             BubbleLegendItem.prototype.setOptions = function () {
-                var ranges = this.ranges,
-                    options = this.options,
-                    series = this.chart.series[options.seriesIndex],
-                    baseline = this.legend.baseline,
-                    bubbleAttribs = {
-                        zIndex: options.zIndex,
-                        'stroke-width': options.borderWidth
-                    },
-                    connectorAttribs = {
-                        zIndex: options.zIndex,
-                        'stroke-width': options.connectorWidth
-                    },
-                    labelAttribs = {
-                        align: (this.legend.options.rtl ||
-                            options.labels.align === 'left') ? 'right' : 'left',
-                        zIndex: options.zIndex
-                    },
-                    fillOpacity = series.options.marker.fillOpacity,
-                    styledMode = this.chart.styledMode;
+                var ranges = this.ranges, options = this.options, series = this.chart.series[options.seriesIndex], baseline = this.legend.baseline, bubbleAttribs = {
+                    zIndex: options.zIndex,
+                    'stroke-width': options.borderWidth
+                }, connectorAttribs = {
+                    zIndex: options.zIndex,
+                    'stroke-width': options.connectorWidth
+                }, labelAttribs = {
+                    align: (this.legend.options.rtl ||
+                        options.labels.align === 'left') ? 'right' : 'left',
+                    zIndex: options.zIndex
+                }, fillOpacity = series.options.marker.fillOpacity, styledMode = this.chart.styledMode;
                 // Allow to parts of styles be used individually for range
                 ranges.forEach(function (range, i) {
                     if (!styledMode) {
@@ -8260,13 +7718,7 @@
              *         Radius for one range
              */
             BubbleLegendItem.prototype.getRangeRadius = function (value) {
-                var options = this.options,
-                    seriesIndex = this.options.seriesIndex,
-                    bubbleSeries = this.chart.series[seriesIndex],
-                    zMax = options.ranges[0].value,
-                    zMin = options.ranges[options.ranges.length - 1].value,
-                    minSize = options.minSize,
-                    maxSize = options.maxSize;
+                var options = this.options, seriesIndex = this.options.seriesIndex, bubbleSeries = this.chart.series[seriesIndex], zMax = options.ranges[0].value, zMin = options.ranges[options.ranges.length - 1].value, minSize = options.minSize, maxSize = options.maxSize;
                 return bubbleSeries.getRadius.call(this, zMin, zMax, minSize, maxSize, value);
             };
             /**
@@ -8274,9 +7726,7 @@
              * @private
              */
             BubbleLegendItem.prototype.render = function () {
-                var legendItem = this.legendItem || {},
-                    renderer = this.chart.renderer,
-                    zThreshold = this.options.zThreshold;
+                var legendItem = this.legendItem || {}, renderer = this.chart.renderer, zThreshold = this.options.zThreshold;
                 if (!this.symbols) {
                     this.symbols = {
                         connectors: [],
@@ -8312,10 +7762,10 @@
              */
             BubbleLegendItem.prototype.renderRange = function (range) {
                 var mainRange = this.ranges[0], legend = this.legend, options = this.options, labelsOptions = options.labels, chart = this.chart, bubbleSeries = chart.series[options.seriesIndex], renderer = chart.renderer, symbols = this.symbols, labels = symbols.labels, elementCenter = range.center, absoluteRadius = Math.abs(range.radius), connectorDistance = options.connectorDistance || 0, labelsAlign = labelsOptions.align, rtl = legend.options.rtl, borderWidth = options.borderWidth, connectorWidth = options.connectorWidth, posX = mainRange.radius || 0, posY = elementCenter - absoluteRadius -
-                        borderWidth / 2 + connectorWidth / 2, crispMovement = (posY % 1 ? 1 : 0.5) -
-                        (connectorWidth % 2 ? 0 : 0.5), styledMode = renderer.styledMode;
+                    borderWidth / 2 + connectorWidth / 2, crispMovement = (posY % 1 ? 1 : 0.5) -
+                    (connectorWidth % 2 ? 0 : 0.5), styledMode = renderer.styledMode;
                 var connectorLength = rtl || labelsAlign === 'left' ?
-                        -connectorDistance : connectorDistance;
+                    -connectorDistance : connectorDistance;
                 // Set options for centered labels
                 if (labelsAlign === 'center') {
                     connectorLength = 0; // do not use connector
@@ -8346,17 +7796,17 @@
                     (options.connectorClassName || '')).add(this.legendItem.symbol));
                 // Render label
                 var label = renderer
-                        .text(this.formatLabel(range))
-                        .attr((styledMode ? {} : range.labelAttribs))
-                        .css(styledMode ? {} : labelsOptions.style)
-                        .addClass('highcharts-bubble-legend-labels ' +
-                        (options.labels.className || '')).add(this.legendItem.symbol);
+                    .text(this.formatLabel(range))
+                    .attr((styledMode ? {} : range.labelAttribs))
+                    .css(styledMode ? {} : labelsOptions.style)
+                    .addClass('highcharts-bubble-legend-labels ' +
+                    (options.labels.className || '')).add(this.legendItem.symbol);
                 // Now that the label is added we can read the bounding box and
                 // vertically align
                 var position = {
-                        x: posX + connectorLength + options.labels.x,
-                        y: posY + options.labels.y + label.getBBox().height * 0.4
-                    };
+                    x: posX + connectorLength + options.labels.x,
+                    y: posY + options.labels.y + label.getBBox().height * 0.4
+                };
                 label.attr(position);
                 labels.push(label);
                 // To enable default 'hideOverlappingLabels' method
@@ -8369,8 +7819,7 @@
              */
             BubbleLegendItem.prototype.getMaxLabelSize = function () {
                 var labels = this.symbols.labels;
-                var maxLabel,
-                    labelSize;
+                var maxLabel, labelSize;
                 labels.forEach(function (label) {
                     labelSize = label.getBBox(true);
                     if (maxLabel) {
@@ -8395,9 +7844,7 @@
              *         Range label text
              */
             BubbleLegendItem.prototype.formatLabel = function (range) {
-                var options = this.options,
-                    formatter = options.labels.formatter,
-                    format = options.labels.format;
+                var options = this.options, formatter = options.labels.formatter, format = options.labels.format;
                 var numberFormatter = this.chart.numberFormatter;
                 return format ? F.format(format, range) :
                     formatter ? formatter.call(range) :
@@ -8409,9 +7856,7 @@
              * @private
              */
             BubbleLegendItem.prototype.hideOverlappingLabels = function () {
-                var chart = this.chart,
-                    allowOverlap = this.options.labels.allowOverlap,
-                    symbols = this.symbols;
+                var chart = this.chart, allowOverlap = this.options.labels.allowOverlap, symbols = this.symbols;
                 if (!allowOverlap && symbols) {
                     chart.hideOverlappingLabels(symbols.labels);
                     // Hide or show connectors
@@ -8434,13 +7879,8 @@
              *         Array of range objects
              */
             BubbleLegendItem.prototype.getRanges = function () {
-                var bubbleLegend = this.legend.bubbleLegend,
-                    series = bubbleLegend.chart.series,
-                    rangesOptions = bubbleLegend.options.ranges;
-                var ranges,
-                    zData,
-                    minZ = Number.MAX_VALUE,
-                    maxZ = -Number.MAX_VALUE;
+                var bubbleLegend = this.legend.bubbleLegend, series = bubbleLegend.chart.series, rangesOptions = bubbleLegend.options.ranges;
+                var ranges, zData, minZ = Number.MAX_VALUE, maxZ = -Number.MAX_VALUE;
                 series.forEach(function (s) {
                     // Find the min and max Z, like in bubble series
                     if (s.isBubble && !s.ignoreSeries) {
@@ -8486,21 +7926,8 @@
              *         Calculated min and max bubble sizes
              */
             BubbleLegendItem.prototype.predictBubbleSizes = function () {
-                var chart = this.chart,
-                    legendOptions = chart.legend.options,
-                    floating = legendOptions.floating,
-                    horizontal = legendOptions.layout === 'horizontal',
-                    lastLineHeight = horizontal ? chart.legend.lastLineHeight : 0,
-                    plotSizeX = chart.plotSizeX,
-                    plotSizeY = chart.plotSizeY,
-                    bubbleSeries = chart.series[this.options.seriesIndex],
-                    pxSizes = bubbleSeries.getPxExtremes(),
-                    minSize = Math.ceil(pxSizes.minPxSize),
-                    maxPxSize = Math.ceil(pxSizes.maxPxSize),
-                    plotSize = Math.min(plotSizeY,
-                    plotSizeX);
-                var calculatedSize,
-                    maxSize = bubbleSeries.options.maxSize;
+                var chart = this.chart, legendOptions = chart.legend.options, floating = legendOptions.floating, horizontal = legendOptions.layout === 'horizontal', lastLineHeight = horizontal ? chart.legend.lastLineHeight : 0, plotSizeX = chart.plotSizeX, plotSizeY = chart.plotSizeY, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), minSize = Math.ceil(pxSizes.minPxSize), maxPxSize = Math.ceil(pxSizes.maxPxSize), plotSize = Math.min(plotSizeY, plotSizeX);
+                var calculatedSize, maxSize = bubbleSeries.options.maxSize;
                 // Calculate prediceted max size of bubble
                 if (floating || !(/%$/.test(maxSize))) {
                     calculatedSize = maxPxSize;
@@ -8536,12 +7963,7 @@
              * @private
              */
             BubbleLegendItem.prototype.correctSizes = function () {
-                var legend = this.legend,
-                    chart = this.chart,
-                    bubbleSeries = chart.series[this.options.seriesIndex],
-                    pxSizes = bubbleSeries.getPxExtremes(),
-                    bubbleSeriesSize = pxSizes.maxPxSize,
-                    bubbleLegendSize = this.options.maxSize;
+                var legend = this.legend, chart = this.chart, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), bubbleSeriesSize = pxSizes.maxPxSize, bubbleLegendSize = this.options.maxSize;
                 if (Math.abs(Math.ceil(bubbleSeriesSize) - bubbleLegendSize) >
                     1) {
                     this.updateRanges(this.options.minSize, pxSizes.maxPxSize);
@@ -8592,9 +8014,7 @@
          *
          * */
         var setOptions = D.setOptions;
-        var addEvent = U.addEvent,
-            objectEach = U.objectEach,
-            wrap = U.wrap;
+        var addEvent = U.addEvent, objectEach = U.objectEach, wrap = U.wrap;
         /* *
          *
          *  Constants
@@ -8611,12 +8031,8 @@
          * and render legend again.
          */
         function chartDrawChartBox(proceed, options, callback) {
-            var chart = this,
-                legend = chart.legend,
-                bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
-            var bubbleLegendOptions,
-                bubbleSizes,
-                legendItem;
+            var chart = this, legend = chart.legend, bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
+            var bubbleLegendOptions, bubbleSizes, legendItem;
             if (legend && legend.options.enabled && legend.bubbleLegend &&
                 legend.options.bubbleLegend.autoRanges && bubbleSeries) {
                 bubbleLegendOptions = legend.bubbleLegend.options;
@@ -8735,14 +8151,8 @@
          * Informations about line height and items amount
          */
         function getLinesHeights(legend) {
-            var items = legend.allItems,
-                lines = [],
-                length = items.length;
-            var lastLine,
-                legendItem,
-                legendItem2,
-                i = 0,
-                j = 0;
+            var items = legend.allItems, lines = [], length = items.length;
+            var lastLine, legendItem, legendItem2, i = 0, j = 0;
             for (i = 0; i < length; i++) {
                 legendItem = items[i].legendItem || {};
                 legendItem2 = (items[i + 1] || {}).legendItem || {};
@@ -8770,11 +8180,7 @@
          * Start the bubble legend creation process.
          */
         function onLegendAfterGetAllItems(e) {
-            var legend = this,
-                bubbleLegend = legend.bubbleLegend,
-                legendOptions = legend.options,
-                options = legendOptions.bubbleLegend,
-                bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
+            var legend = this, bubbleLegend = legend.bubbleLegend, legendOptions = legend.options, options = legendOptions.bubbleLegend, bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
             // Remove unnecessary element
             if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
                 // Allow change the way of calculating ranges in update
@@ -8802,10 +8208,7 @@
             if (e.defaultPrevented) {
                 return false;
             }
-            var series = this,
-                chart = series.chart,
-                visible = series.visible,
-                legend = series.chart.legend;
+            var series = this, chart = series.chart, visible = series.visible, legend = series.chart.legend;
             var status;
             if (legend && legend.bubbleLegend) {
                 // Temporary correct 'visible' property
@@ -8838,13 +8241,8 @@
          * Informations about line height and items amount
          */
         function retranslateItems(legend, lines) {
-            var items = legend.allItems,
-                rtl = legend.options.rtl;
-            var orgTranslateX,
-                orgTranslateY,
-                movementX,
-                legendItem,
-                actualLine = 0;
+            var items = legend.allItems, rtl = legend.options.rtl;
+            var orgTranslateX, orgTranslateY, movementX, legendItem, actualLine = 0;
             items.forEach(function (item, index) {
                 legendItem = item.legendItem || {};
                 if (!legendItem.group) {
@@ -8874,8 +8272,8 @@
          *
          * */
         var BubbleLegendComposition = {
-                compose: compose
-            };
+            compose: compose
+        };
 
         return BubbleLegendComposition;
     });
@@ -8890,16 +8288,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -8913,15 +8310,14 @@
          *
          * */
         var BubblePoint = /** @class */ (function (_super) {
-                __extends(BubblePoint, _super);
+            __extends(BubblePoint, _super);
             function BubblePoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
                 return _this;
@@ -8970,16 +8366,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -8987,18 +8382,8 @@
         })();
         var color = Color.parse;
         var noop = H.noop;
-        var Series = SeriesRegistry.series,
-            _a = SeriesRegistry.seriesTypes,
-            columnProto = _a.column.prototype,
-            ScatterSeries = _a.scatter;
-        var addEvent = U.addEvent,
-            arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            clamp = U.clamp,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick;
+        var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, columnProto = _a.column.prototype, ScatterSeries = _a.scatter;
+        var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
         /* *
          *
          *  Constants
@@ -9016,16 +8401,8 @@
          */
         function axisBeforePadding() {
             var _this = this;
-            var axisLength = this.len,
-                chart = this.chart,
-                isXAxis = this.isXAxis,
-                dataKey = isXAxis ? 'xData' : 'yData',
-                min = this.min,
-                range = this.max - min;
-            var pxMin = 0,
-                pxMax = axisLength,
-                transA = axisLength / range,
-                hasActiveSeries;
+            var axisLength = this.len, chart = this.chart, isXAxis = this.isXAxis, dataKey = isXAxis ? 'xData' : 'yData', min = this.min, range = this.max - min;
+            var pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
             // Handle padding on the second pass, or on redraw
             this.series.forEach(function (series) {
                 if (series.bubblePadding &&
@@ -9076,15 +8453,14 @@
          *
          * */
         var BubbleSeries = /** @class */ (function (_super) {
-                __extends(BubbleSeries, _super);
+            __extends(BubbleSeries, _super);
             function BubbleSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -9150,16 +8526,9 @@
              */
             BubbleSeries.prototype.getRadii = function () {
                 var _this = this;
-                var zData = this.zData,
-                    yData = this.yData,
-                    radii = [];
-                var len,
-                    i,
-                    value,
-                    zExtremes = this.chart.bubbleZExtremes;
-                var _a = this.getPxExtremes(),
-                    minPxSize = _a.minPxSize,
-                    maxPxSize = _a.maxPxSize;
+                var zData = this.zData, yData = this.yData, radii = [];
+                var len, i, value, zExtremes = this.chart.bubbleZExtremes;
+                var _a = this.getPxExtremes(), minPxSize = _a.minPxSize, maxPxSize = _a.maxPxSize;
                 // Get the collective Z extremes of all bubblish series. The chart-level
                 // `bubbleZExtremes` are only computed once, and reset on `updatedData`
                 // in any member series.
@@ -9201,11 +8570,8 @@
              * @private
              */
             BubbleSeries.prototype.getRadius = function (zMin, zMax, minSize, maxSize, value, yValue) {
-                var options = this.options,
-                    sizeByArea = options.sizeBy !== 'width',
-                    zThreshold = options.zThreshold;
-                var zRange = zMax - zMin,
-                    pos = 0.5;
+                var options = this.options, sizeByArea = options.sizeBy !== 'width', zThreshold = options.zThreshold;
+                var zRange = zMax - zMin, pos = 0.5;
                 // #8608 - bubble should be visible when z is undefined
                 if (yValue === null || value === null) {
                     return null;
@@ -9245,11 +8611,7 @@
              * @private
              */
             BubbleSeries.prototype.pointAttribs = function (point, state) {
-                var markerOptions = this.options.marker,
-                    fillOpacity = markerOptions.fillOpacity,
-                    attr = Series.prototype.pointAttribs.call(this,
-                    point,
-                    state);
+                var markerOptions = this.options.marker, fillOpacity = markerOptions.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
                 if (fillOpacity !== 1) {
                     attr.fill = color(attr.fill)
                         .setOpacity(fillOpacity)
@@ -9268,19 +8630,15 @@
                 this.translateBubble();
             };
             BubbleSeries.prototype.translateBubble = function () {
-                var _a = this,
-                    data = _a.data,
-                    options = _a.options,
-                    radii = _a.radii,
-                    minPxSize = this.getPxExtremes().minPxSize;
+                var _a = this, data = _a.data, options = _a.options, radii = _a.radii, minPxSize = this.getPxExtremes().minPxSize;
                 // Set the shape type and arguments to be picked up in drawPoints
                 var i = data.length;
                 while (i--) {
                     var point = data[i];
                     var radius = radii ? radii[i] : 0; // #1737
-                        // Negative points means negative z values (#9728)
-                        if (this.zoneAxis === 'z') {
-                            point.negative = (point.z || 0) < (options.zThreshold || 0);
+                    // Negative points means negative z values (#9728)
+                    if (this.zoneAxis === 'z') {
+                        point.negative = (point.z || 0) < (options.zThreshold || 0);
                     }
                     if (isNumber(radius) && radius >= minPxSize / 2) {
                         // Shape arguments
@@ -9305,10 +8663,9 @@
                 }
             };
             BubbleSeries.prototype.getPxExtremes = function () {
-                var smallestSize = Math.min(this.chart.plotWidth,
-                    this.chart.plotHeight);
+                var smallestSize = Math.min(this.chart.plotWidth, this.chart.plotHeight);
                 var getPxSize = function (length) {
-                        var isPercent;
+                    var isPercent;
                     if (typeof length === 'string') {
                         isPercent = /%$/.test(length);
                         length = parseInt(length, 10);
@@ -9318,22 +8675,16 @@
                 var minPxSize = getPxSize(pick(this.options.minSize, 8));
                 // Prioritize min size if conflict to make sure bubbles are
                 // always visible. #5873
-                var maxPxSize = Math.max(getPxSize(pick(this.options.maxSize, '20%')),
-                    minPxSize);
+                var maxPxSize = Math.max(getPxSize(pick(this.options.maxSize, '20%')), minPxSize);
                 return { minPxSize: minPxSize, maxPxSize: maxPxSize };
             };
             BubbleSeries.prototype.getZExtremes = function () {
-                var options = this.options,
-                    zData = (this.zData || []).filter(isNumber);
+                var options = this.options, zData = (this.zData || []).filter(isNumber);
                 if (zData.length) {
-                    var zMin = pick(options.zMin,
-                        clamp(arrayMin(zData),
-                        options.displayNegative === false ?
-                            (options.zThreshold || 0) :
-                            -Number.MAX_VALUE,
-                        Number.MAX_VALUE));
-                    var zMax = pick(options.zMax,
-                        arrayMax(zData));
+                    var zMin = pick(options.zMin, clamp(arrayMin(zData), options.displayNegative === false ?
+                        (options.zThreshold || 0) :
+                        -Number.MAX_VALUE, Number.MAX_VALUE));
+                    var zMax = pick(options.zMax, arrayMax(zData));
                     if (isNumber(zMin) && isNumber(zMax)) {
                         return { zMin: zMin, zMax: zMax };
                     }
@@ -9580,8 +8931,6 @@
             alignDataLabel: columnProto.alignDataLabel,
             applyZones: noop,
             bubblePadding: true,
-            buildKDTree: noop,
-            directTouch: true,
             isBubble: true,
             pointArrayMap: ['y', 'z'],
             pointClass: BubblePoint,
@@ -9716,16 +9065,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -9744,7 +9092,7 @@
          *
          * */
         var MapBubblePoint = /** @class */ (function (_super) {
-                __extends(MapBubblePoint, _super);
+            __extends(MapBubblePoint, _super);
             function MapBubblePoint() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
@@ -9781,26 +9129,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            mapProto = _a.map.prototype,
-            mapPointProto = _a.mappoint.prototype;
-        var extend = U.extend,
-            merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes, mapProto = _a.map.prototype, mapPointProto = _a.mappoint.prototype;
+        var extend = U.extend, merge = U.merge;
         /* *
          *
          *  Class
@@ -9817,15 +9161,14 @@
          * @requires MapPointSeries
          */
         var MapBubbleSeries = /** @class */ (function (_super) {
-                __extends(MapBubbleSeries, _super);
+            __extends(MapBubbleSeries, _super);
             function MapBubbleSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -9850,8 +9193,7 @@
             };
             MapBubbleSeries.prototype.updateParallelArrays = function (point, i, iArgs) {
                 _super.prototype.updateParallelArrays.call(this, point, i, iArgs);
-                var processedXData = this.processedXData,
-                    xData = this.xData;
+                var processedXData = this.processedXData, xData = this.xData;
                 if (processedXData && xData) {
                     processedXData.length = xData.length;
                 }
@@ -10140,41 +9482,36 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
-        var clamp = U.clamp,
-            defined = U.defined,
-            extend = U.extend,
-            pick = U.pick;
+        var clamp = U.clamp, defined = U.defined, extend = U.extend, pick = U.pick;
         /* *
          *
          *  Class
          *
          * */
         var HeatmapPoint = /** @class */ (function (_super) {
-                __extends(HeatmapPoint, _super);
+            __extends(HeatmapPoint, _super);
             function HeatmapPoint() {
                 /* *
                  *
                  *  Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.options = void 0;
                 _this.series = void 0;
                 _this.value = void 0;
@@ -10204,26 +9541,22 @@
             };
             HeatmapPoint.prototype.getCellAttributes = function () {
                 var point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
-                    pointPadding = pick(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
-                        x1: clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x - xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
-                        x2: clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x + xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
-                        y1: clamp(Math.round(yAxis.translate(point.y - yPad, false, true, false, true)), -yAxis.len, 2 * yAxis.len),
-                        y2: clamp(Math.round(yAxis.translate(point.y + yPad, false, true, false, true)), -yAxis.len, 2 * yAxis.len)
-                    };
+                pointPadding = pick(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
+                    x1: clamp(Math.round(xAxis.len -
+                        xAxis.translate(point.x - xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                    x2: clamp(Math.round(xAxis.len -
+                        xAxis.translate(point.x + xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                    y1: clamp(Math.round(yAxis.translate(point.y - yPad, false, true, false, true)), -yAxis.len, 2 * yAxis.len),
+                    y2: clamp(Math.round(yAxis.translate(point.y + yPad, false, true, false, true)), -yAxis.len, 2 * yAxis.len)
+                };
                 var dimensions = [['width', 'x'], ['height', 'y']];
                 // Handle marker's fixed width, and height values including border
                 // and pointPadding while calculating cell attributes.
                 dimensions.forEach(function (dimension) {
-                    var prop = dimension[0],
-                        direction = dimension[1];
+                    var prop = dimension[0], direction = dimension[1];
                     var start = direction + '1', end = direction + '2';
-                    var side = Math.abs(cellAttr[start] - cellAttr[end]),
-                        borderWidth = markerOptions &&
-                            markerOptions.lineWidth || 0,
-                        plotPos = Math.abs(cellAttr[start] + cellAttr[end]) / 2,
-                        widthOrHeight = markerOptions && markerOptions[prop];
+                    var side = Math.abs(cellAttr[start] - cellAttr[end]), borderWidth = markerOptions &&
+                        markerOptions.lineWidth || 0, plotPos = Math.abs(cellAttr[start] + cellAttr[end]) / 2, widthOrHeight = markerOptions && markerOptions[prop];
                     if (defined(widthOrHeight) && widthOrHeight < side) {
                         var halfCellSize = widthOrHeight / 2 + borderWidth / 2;
                         cellAttr[start] = plotPos - halfCellSize;
@@ -10249,15 +9582,7 @@
                 if (!size) {
                     return [];
                 }
-                var _a = this.shapeArgs || {},
-                    _b = _a.x,
-                    x = _b === void 0 ? 0 : _b,
-                    _c = _a.y,
-                    y = _c === void 0 ? 0 : _c,
-                    _d = _a.width,
-                    width = _d === void 0 ? 0 : _d,
-                    _e = _a.height,
-                    height = _e === void 0 ? 0 : _e;
+                var _a = this.shapeArgs || {}, _b = _a.x, x = _b === void 0 ? 0 : _b, _c = _a.y, y = _c === void 0 ? 0 : _c, _d = _a.width, width = _d === void 0 ? 0 : _d, _e = _a.height, height = _e === void 0 ? 0 : _e;
                 return [
                     ['M', x - size, y - size],
                     ['L', x - size, y + height + size],
@@ -10291,7 +9616,79 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2010-2023 Hubert Kozik
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var doc = H.doc;
+        var defined = U.defined, pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Find color of point based on color axis.
+         *
+         * @function Highcharts.colorFromPoint
+         *
+         * @param {number | null} value
+         *        Value to find corresponding color on the color axis.
+         *
+         * @param {Highcharts.Point} point
+         *        Point to find it's color from color axis.
+         *
+         * @return {number[]}
+         *        Color in RGBa array.
+         */
+        function colorFromPoint(value, point) {
+            var colorAxis = point.series.colorAxis;
+            if (colorAxis) {
+                var rgba = (colorAxis.toColor(value || 0, point)
+                    .split(')')[0]
+                    .split('(')[1]
+                    .split(',')
+                    .map(function (s) { return pick(parseFloat(s), parseInt(s, 10)); }));
+                rgba[3] = pick(rgba[3], 1.0) * 255;
+                if (!defined(value) || !point.visible) {
+                    rgba[3] = 0;
+                }
+                return rgba;
+            }
+            return [0, 0, 0, 0];
+        }
+        /**
+         * Method responsible for creating a canvas for interpolation image.
+         * @private
+         */
+        function getContext(series) {
+            var canvas = series.canvas, context = series.context;
+            if (canvas && context) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            else {
+                series.canvas = doc.createElement('canvas');
+                series.context = series.canvas.getContext('2d', {
+                    willReadFrequently: true
+                }) || void 0;
+                return series.context;
+            }
+            return context;
+        }
+        var InterpolationUtilities = {
+            colorFromPoint: colorFromPoint,
+            getContext: getContext
+        };
+
+        return InterpolationUtilities;
+    });
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Series/InterpolationUtilities.js']], function (Color, ColorMapComposition, H, HeatmapPoint, SeriesRegistry, SVGRenderer, U, IU) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -10302,27 +9699,24 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var __assign = (this && this.__assign) || function () {
-                __assign = Object.assign || function(t) {
-                    for (var s,
-            i = 1,
-            n = arguments.length; i < n; i++) {
-                        s = arguments[i];
+            __assign = Object.assign || function(t) {
+                for (var s, i = 1, n = arguments.length; i < n; i++) {
+                    s = arguments[i];
                     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
                         t[p] = s[p];
                 }
@@ -10331,18 +9725,10 @@
             return __assign.apply(this, arguments);
         };
         var doc = H.doc;
-        var Series = SeriesRegistry.series,
-            _a = SeriesRegistry.seriesTypes,
-            ColumnSeries = _a.column,
-            ScatterSeries = _a.scatter;
+        var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, ScatterSeries = _a.scatter;
         var symbols = SVGRenderer.prototype.symbols;
-        var clamp = U.clamp,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            defined = U.defined;
+        var addEvent = U.addEvent, clamp = U.clamp, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, defined = U.defined;
+        var colorFromPoint = IU.colorFromPoint, getContext = IU.getContext;
         /* *
          *
          *  Class
@@ -10356,15 +9742,14 @@
          * @augments Highcharts.Series
          */
         var HeatmapSeries = /** @class */ (function (_super) {
-                __extends(HeatmapSeries, _super);
+            __extends(HeatmapSeries, _super);
             function HeatmapSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -10378,6 +9763,7 @@
                 _this.points = void 0;
                 _this.valueMax = NaN;
                 _this.valueMin = NaN;
+                _this.isDirtyCanvas = true;
                 return _this;
                 /* eslint-enable valid-jsdoc */
             }
@@ -10391,79 +9777,42 @@
              * @private
              */
             HeatmapSeries.prototype.drawPoints = function () {
-                var series = this,
-                    seriesOptions = series.options,
-                    interpolation = seriesOptions.interpolation,
-                    seriesMarkerOptions = seriesOptions.marker || {};
+                var series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
                 if (interpolation) {
-                    var image = series.image, chart = series.chart, xAxis_1 = series.xAxis, yAxis = series.yAxis, points = series.points, lastPointIndex = points.length - 1, xAxisLen = xAxis_1.len, xRev = xAxis_1.reversed, yAxisLen = yAxis.len, yRev = yAxis.reversed, _a = xAxis_1.getExtremes(), xMin_1 = _a.min, xMax_1 = _a.max, _b = yAxis.getExtremes(), yMin_1 = _b.min, yMax_1 = _b.max, _c = [
-                            pick(seriesOptions.colsize, 1),
-                            pick(seriesOptions.rowsize, 1)
-                        ], colsize = _c[0], rowsize = _c[1], inverted = chart.inverted, xTranslationPad = colsize / 2, userMinPadding = xAxis_1.userOptions.minPadding, isUserMinPadZero = (defined(userMinPadding) &&
-                            !(userMinPadding > 0)), noOffset = (inverted || isUserMinPadZero), padIfMinSet = (isUserMinPadZero && xTranslationPad || 0), _d = [
-                            xMin_1 - padIfMinSet,
-                            xMax_1 + (padIfMinSet * 2),
-                            isUserMinPadZero && 0 || (xMin_1 + colsize)
-                        ].map(function (side) { return (clamp(Math.round(xAxis_1.len -
-                            xAxis_1.translate(side, false, true, false, true, -series.pointPlacementToXValue())), -xAxis_1.len, 2 * xAxis_1.len)); }), x1 = _d[0], x2 = _d[1], postTranslationOffset = _d[2], _e = xRev ? [x2, x1] : [x1, x2], xStart = _e[0], xEnd = _e[1], xOffset = (noOffset && 0 ||
-                            (((xAxisLen / postTranslationOffset) / 2) / 2) / 2), dimensions = inverted ?
-                            {
-                                width: xAxisLen,
-                                height: yAxisLen,
-                                x: 0,
-                                y: 0
-                            } : {
-                            x: xStart - xOffset,
-                            width: xEnd - xOffset,
-                            height: yAxisLen,
-                            y: 0
-                        };
-                    if (!image || series.isDirtyData) {
-                        var colorAxis_1 = (chart.colorAxis &&
-                                chart.colorAxis[0]),
-                            ctx = series.getContext(),
-                            canvas = series.canvas;
-                        if (canvas && ctx && colorAxis_1) {
-                            var canvasWidth_1 = canvas.width = ~~((xMax_1 - xMin_1) / colsize) + 1, canvasHeight = canvas.height = ~~((yMax_1 - yMin_1) / rowsize) + 1, canvasArea = canvasWidth_1 * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4), widthLastIndex_1 = (canvasWidth_1 - (noOffset && 1 || 0)), heightLastIndex_1 = canvasHeight - 1, colorFromPoint = function (p) {
-                                    var rgba = (colorAxis_1.toColor(p.value ||
-                                        0, pick(p))
-                                        .split(')')[0]
-                                        .split('(')[1]
-                                        .split(',')
-                                        .map(function (s) { return pick(parseFloat(s), parseInt(s, 10)); }));
-                                rgba[3] = pick(rgba[3], 1.0) * 255;
-                                return rgba;
-                            }, scaleToImg_1 = function (val, fromMin, fromMax, toMin, toMax) { return ~~((val - fromMin) * ((toMax - toMin) /
-                                (fromMax - fromMin))); }, xPlacement_1 = (xRev ?
-                                function (xToImg) { return (widthLastIndex_1 - xToImg); } :
-                                function (xToImg) { return xToImg; }), yPlacement_1 = (yRev ?
-                                function (yToImg) { return (heightLastIndex_1 - yToImg); } :
-                                function (yToImg) { return yToImg; }), scaledPointPos = function (x, y) { return (Math.ceil(canvasWidth_1 *
-                                yPlacement_1(scaleToImg_1(yMax_1 - y, yMin_1, yMax_1, 0, heightLastIndex_1)) +
-                                xPlacement_1(scaleToImg_1(x, xMin_1, xMax_1, 0, widthLastIndex_1)))); };
+                    var image = series.image, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, _a = xAxis.reversed, xRev = _a === void 0 ? false : _a, width = xAxis.len, _b = yAxis.reversed, yRev = _b === void 0 ? false : _b, height = yAxis.len, dimensions = { width: width, height: height };
+                    if (!image || series.isDirtyData || series.isDirtyCanvas) {
+                        var ctx = getContext(series), canvas = series.canvas, _c = series.options, _d = _c.colsize, colsize = _d === void 0 ? 1 : _d, _e = _c.rowsize, rowsize = _e === void 0 ? 1 : _e, points = series.points, length_1 = series.points.length, pointsLen = length_1 - 1, colorAxis = (chart.colorAxis && chart.colorAxis[0]);
+                        if (canvas && ctx && colorAxis) {
+                            var _f = xAxis.getExtremes(), xMin_1 = _f.min, xMax = _f.max, _g = yAxis.getExtremes(), yMin_1 = _g.min, yMax = _g.max, xDelta = xMax - xMin_1, yDelta = yMax - yMin_1, imgMultiple = 8.0, lastX = Math.round(imgMultiple * ((xDelta / colsize) / imgMultiple)), lastY = Math.round(imgMultiple * ((yDelta / rowsize) / imgMultiple)), _h = [
+                                [lastX, lastX / xDelta, xRev, 'ceil'],
+                                [lastY, lastY / yDelta, !yRev, 'floor']
+                            ].map(function (_a) {
+                                var last = _a[0], scale = _a[1], rev = _a[2], rounding = _a[3];
+                                return (rev ?
+                                    function (v) { return (Math[rounding](last -
+                                        (scale * (v)))); } :
+                                    function (v) { return (Math[rounding](scale * v)); });
+                            }), transformX_1 = _h[0], transformY_1 = _h[1], canvasWidth_1 = canvas.width = lastX + 1, canvasHeight = canvas.height = lastY + 1, canvasArea = canvasWidth_1 * canvasHeight, pixelToPointScale = pointsLen / canvasArea, pixelData = new Uint8ClampedArray(canvasArea * 4), pointInPixels = function (x, y) { return (Math.ceil((canvasWidth_1 * transformY_1(y - yMin_1)) +
+                                transformX_1(x - xMin_1)) * 4); };
                             series.buildKDTree();
-                            series.directTouch = false;
                             for (var i = 0; i < canvasArea; i++) {
-                                var toPointScale = scaleToImg_1(i * 4, 0,
-                                    pixelData.length - 4, 0,
-                                    lastPointIndex),
-                                    p = points[toPointScale],
-                                    sourceArr = new Uint8ClampedArray(colorFromPoint(p));
-                                pixelData.set(sourceArr, scaledPointPos(p.x, p.y) * 4);
+                                var point = points[Math.ceil(pixelToPointScale * i)], x = point.x, y = point.y;
+                                pixelData.set(colorFromPoint(point.value, point), pointInPixels(x, y));
                             }
-                            ctx.putImageData(new ImageData(pixelData, canvasWidth_1, canvasHeight), 0, 0);
+                            ctx.putImageData(new ImageData(pixelData, canvasWidth_1), 0, 0);
                             if (image) {
-                                image.attr(__assign(__assign({}, dimensions), { href: canvas.toDataURL() }));
+                                image.attr(__assign(__assign({}, dimensions), { href: canvas.toDataURL('image/png', 1) }));
                             }
                             else {
-                                series.image = chart.renderer.image(canvas.toDataURL())
+                                series.directTouch = false;
+                                series.image = chart.renderer.image(canvas.toDataURL('image/png', 1))
                                     .attr(dimensions)
                                     .add(series.group);
                             }
                         }
+                        series.isDirtyCanvas = false;
                     }
-                    else if (image.width !== dimensions.width ||
-                        image.height !== dimensions.height) {
+                    else if (image.width !== width || image.height !== height) {
                         image.attr(dimensions);
                     }
                 }
@@ -10485,30 +9834,10 @@
             /**
              * @private
              */
-            HeatmapSeries.prototype.getContext = function () {
-                var series = this,
-                    canvas = series.canvas,
-                    context = series.context;
-                if (canvas && context) {
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                }
-                else {
-                    series.canvas = doc.createElement('canvas');
-                    series.context = series.canvas.getContext('2d') || void 0;
-                    return series.context;
-                }
-                return context;
-            };
-            /**
-             * @private
-             */
             HeatmapSeries.prototype.getExtremes = function () {
                 // Get the extremes from the value data
                 var _a = Series.prototype.getExtremes
-                        .call(this,
-                    this.valueData),
-                    dataMin = _a.dataMin,
-                    dataMax = _a.dataMax;
+                    .call(this, this.valueData), dataMin = _a.dataMin, dataMax = _a.dataMax;
                 if (isNumber(dataMin)) {
                     this.valueMin = dataMin;
                 }
@@ -10574,25 +9903,22 @@
                 // Setting width and height attributes on image does not affect on its
                 // dimensions.
                 if (state && state !== 'normal') {
-                    var pointMarkerOptions = point.options.marker || {},
-                        seriesMarkerOptions = this.options.marker || {},
-                        seriesStateOptions = (seriesMarkerOptions.states &&
-                            seriesMarkerOptions.states[state]) || {},
-                        pointStateOptions = (pointMarkerOptions.states &&
-                            pointMarkerOptions.states[state]) || {};
+                    var pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states &&
+                        seriesMarkerOptions.states[state]) || {}, pointStateOptions = (pointMarkerOptions.states &&
+                        pointMarkerOptions.states[state]) || {};
                     // Set new width and height basing on state options.
                     var width = (pointStateOptions.width ||
-                            seriesStateOptions.width ||
-                            shapeArgs.width ||
-                            0) + (pointStateOptions.widthPlus ||
-                            seriesStateOptions.widthPlus ||
-                            0);
+                        seriesStateOptions.width ||
+                        shapeArgs.width ||
+                        0) + (pointStateOptions.widthPlus ||
+                        seriesStateOptions.widthPlus ||
+                        0);
                     var height = (pointStateOptions.height ||
-                            seriesStateOptions.height ||
-                            shapeArgs.height ||
-                            0) + (pointStateOptions.heightPlus ||
-                            seriesStateOptions.heightPlus ||
-                            0);
+                        seriesStateOptions.height ||
+                        shapeArgs.height ||
+                        0) + (pointStateOptions.heightPlus ||
+                        seriesStateOptions.heightPlus ||
+                        0);
                     // Align marker by the new size.
                     var x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2, y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
                     return { x: x, y: y, width: width, height: height };
@@ -10603,24 +9929,16 @@
              * @private
              */
             HeatmapSeries.prototype.pointAttribs = function (point, state) {
-                var series = this,
-                    attr = Series.prototype.pointAttribs.call(series,
-                    point,
-                    state),
-                    seriesOptions = series.options || {},
-                    plotOptions = series.chart.options.plotOptions || {},
-                    seriesPlotOptions = plotOptions.series || {},
-                    heatmapPlotOptions = plotOptions.heatmap || {}, 
-                    // Get old properties in order to keep backward compatibility
-                    borderColor = (point && point.options.borderColor) ||
-                        seriesOptions.borderColor ||
-                        heatmapPlotOptions.borderColor ||
-                        seriesPlotOptions.borderColor,
-                    borderWidth = (point && point.options.borderWidth) ||
-                        seriesOptions.borderWidth ||
-                        heatmapPlotOptions.borderWidth ||
-                        seriesPlotOptions.borderWidth ||
-                        attr['stroke-width'];
+                var series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+                // Get old properties in order to keep backward compatibility
+                borderColor = (point && point.options.borderColor) ||
+                    seriesOptions.borderColor ||
+                    heatmapPlotOptions.borderColor ||
+                    seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
+                    seriesOptions.borderWidth ||
+                    heatmapPlotOptions.borderWidth ||
+                    seriesPlotOptions.borderWidth ||
+                    attr['stroke-width'];
                 // Apply lineColor, or set it to default series color.
                 attr.stroke = ((point && point.marker && point.marker.lineColor) ||
                     (seriesOptions.marker && seriesOptions.marker.lineColor) ||
@@ -10630,11 +9948,11 @@
                 attr['stroke-width'] = borderWidth;
                 if (state && state !== 'normal') {
                     var stateOptions = merge((seriesOptions.states &&
-                            seriesOptions.states[state]), (seriesOptions.marker &&
-                            seriesOptions.marker.states &&
-                            seriesOptions.marker.states[state]), (point &&
-                            point.options.states &&
-                            point.options.states[state] || {}));
+                        seriesOptions.states[state]), (seriesOptions.marker &&
+                        seriesOptions.marker.states &&
+                        seriesOptions.marker.states[state]), (point &&
+                        point.options.states &&
+                        point.options.states[state] || {}));
                     attr.fill =
                         stateOptions.color ||
                             Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
@@ -10650,12 +9968,7 @@
                 series.generatePoints();
                 series.points.forEach(function (point) {
                     var cellAttr = point.getCellAttributes();
-                    var x = Math.min(cellAttr.x1,
-                        cellAttr.x2),
-                        y = Math.min(cellAttr.y1,
-                        cellAttr.y2),
-                        width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0),
-                        height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
+                    var x = Math.min(cellAttr.x1, cellAttr.x2), y = Math.min(cellAttr.y1, cellAttr.y2), width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0), height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
                     point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
                     // If marker shape is regular (square), find the shorter cell's
                     // side.
@@ -10969,6 +10282,10 @@
             });
             return HeatmapSeries;
         }(ScatterSeries));
+        addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
+            this.isDirtyCanvas = true;
+            this.drawPoints();
+        });
         extend(HeatmapSeries.prototype, {
             axisTypes: ColorMapComposition.seriesMembers.axisTypes,
             colorKey: ColorMapComposition.seriesMembers.colorKey,

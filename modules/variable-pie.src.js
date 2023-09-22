@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Variable Pie module for Highcharts
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -50,7 +48,7 @@
          *
          * */
         const { seriesTypes: { pie: PieSeries } } = SeriesRegistry;
-        const { arrayMax, arrayMin, clamp, extend, fireEvent, merge, pick } = U;
+        const { arrayMax, arrayMin, clamp, extend, fireEvent, merge, pick, splat } = U;
         /* *
          *
          *  Class
@@ -172,6 +170,41 @@
                 this.center = null;
                 super.redraw.apply(this, arguments);
             }
+            /** @private */
+            getDataLabelPosition(point, distance) {
+                const { center, options } = this, angle = point.angle || 0, r = this.radii[point.index], x = center[0] + Math.cos(angle) * r, y = center[1] + Math.sin(angle) * r, connectorOffset = (options.slicedOffset || 0) +
+                    (options.borderWidth || 0), 
+                // Set the anchor point for data labels. Use point.labelDistance
+                // instead of labelDistance // #1174
+                // finalConnectorOffset - not override connectorOffset value.
+                finalConnectorOffset = Math.min(connectorOffset, distance / 5); // #1678
+                return {
+                    distance,
+                    natural: {
+                        // Initial position of the data label - it's utilized for
+                        // finding the final position for the label
+                        x: x + Math.cos(angle) * distance,
+                        y: y + Math.sin(angle) * distance
+                    },
+                    computed: {
+                    // Used for generating connector path - initialized later in
+                    // drawDataLabels function x: undefined, y: undefined
+                    },
+                    // Left - pie on the left side of the data label
+                    // Right - pie on the right side of the data label
+                    alignment: point.half ? 'right' : 'left',
+                    connectorPosition: {
+                        breakAt: {
+                            x: x + Math.cos(angle) * finalConnectorOffset,
+                            y: y + Math.sin(angle) * finalConnectorOffset
+                        },
+                        touchingSliceAt: {
+                            x,
+                            y
+                        }
+                    }
+                };
+            }
             /**
              * Extend translate by updating radius for each pie slice instead of using
              * one global radius.
@@ -180,10 +213,10 @@
             translate(positions) {
                 this.generatePoints();
                 let series = this, cumulative = 0, precision = 1000, // issue #172
-                options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), finalConnectorOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                options = series.options, slicedOffset = options.slicedOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
                 points = series.points, 
                 // the x component of the radius vector for a given point
-                radiusX, radiusY, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii, pointRadiusX, pointRadiusY;
+                radiusX, radiusY, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
                 // Use calculateExtremes to get series.radii array.
@@ -198,18 +231,13 @@
                 for (i = 0; i < len; i++) {
                     point = points[i];
                     pointRadii = series.radii[i];
-                    // Used for distance calculation for specific point.
-                    point.labelDistance = pick(point.options.dataLabels &&
-                        point.options.dataLabels.distance, labelDistance);
-                    // Saved for later dataLabels distance calculation.
-                    series.maxLabelDistance = Math.max(series.maxLabelDistance || 0, point.labelDistance);
-                    // set start and end angle
+                    // Set start and end angle
                     start = startAngleRad + (cumulative * circ);
                     if (!ignoreHiddenPoint || point.visible) {
                         cumulative += point.percentage / 100;
                     }
                     end = startAngleRad + (cumulative * circ);
-                    // set the shape
+                    // Set the shape
                     point.shapeType = 'arc';
                     point.shapeArgs = {
                         x: positions[0],
@@ -232,11 +260,9 @@
                         translateX: Math.round(Math.cos(angle) * slicedOffset),
                         translateY: Math.round(Math.sin(angle) * slicedOffset)
                     };
-                    // set the anchor point for tooltips
+                    // Set the anchor point for tooltips
                     radiusX = Math.cos(angle) * positions[2] / 2;
                     radiusY = Math.sin(angle) * positions[2] / 2;
-                    pointRadiusX = Math.cos(angle) * pointRadii;
-                    pointRadiusY = Math.sin(angle) * pointRadii;
                     point.tooltipPos = [
                         positions[0] + radiusX * 0.7,
                         positions[1] + radiusY * 0.7
@@ -245,41 +271,6 @@
                         1 :
                         0;
                     point.angle = angle;
-                    // Set the anchor point for data labels. Use point.labelDistance
-                    // instead of labelDistance // #1174
-                    // finalConnectorOffset - not override connectorOffset value.
-                    finalConnectorOffset = Math.min(connectorOffset, point.labelDistance / 5); // #1678
-                    point.labelPosition = {
-                        natural: {
-                            // initial position of the data label - it's utilized
-                            // for finding the final position for the label
-                            x: positions[0] + pointRadiusX +
-                                Math.cos(angle) * point.labelDistance,
-                            y: positions[1] + pointRadiusY +
-                                Math.sin(angle) * point.labelDistance
-                        },
-                        computed: {
-                        // used for generating connector path -
-                        // initialized later in drawDataLabels function
-                        // x: undefined,
-                        // y: undefined
-                        },
-                        // left - pie on the left side of the data label
-                        // right - pie on the right side of the data label
-                        alignment: point.half ? 'right' : 'left',
-                        connectorPosition: {
-                            breakAt: {
-                                x: positions[0] + pointRadiusX +
-                                    Math.cos(angle) * finalConnectorOffset,
-                                y: positions[1] + pointRadiusY +
-                                    Math.sin(angle) * finalConnectorOffset
-                            },
-                            touchingSliceAt: {
-                                x: positions[0] + pointRadiusX,
-                                y: positions[1] + pointRadiusY
-                            }
-                        }
-                    };
                 }
                 fireEvent(series, 'afterTranslate');
             }

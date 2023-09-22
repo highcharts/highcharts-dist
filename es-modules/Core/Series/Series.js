@@ -1078,30 +1078,28 @@ class Series {
      * @private
      * @function Highcharts.Series#cropData
      */
-    cropData(xData, yData, min, max, cropShoulder) {
+    cropData(xData, yData, min, max) {
         const dataLength = xData.length;
-        let i, j, cropStart = 0, cropEnd = dataLength;
-        // line-type series need one point outside
-        cropShoulder = pick(cropShoulder, this.cropShoulder);
-        // iterate up to find slice start
+        let i, j, start = 0, end = dataLength;
+        // Iterate up to find slice start
         for (i = 0; i < dataLength; i++) {
             if (xData[i] >= min) {
-                cropStart = Math.max(0, i - cropShoulder);
+                start = Math.max(0, i - 1);
                 break;
             }
         }
-        // proceed to find slice end
+        // Proceed to find slice end
         for (j = i; j < dataLength; j++) {
             if (xData[j] > max) {
-                cropEnd = j + cropShoulder;
+                end = j + 1;
                 break;
             }
         }
         return {
-            xData: xData.slice(cropStart, cropEnd),
-            yData: yData.slice(cropStart, cropEnd),
-            start: cropStart,
-            end: cropEnd
+            xData: xData.slice(start, end),
+            yData: yData.slice(start, end),
+            start,
+            end
         };
     }
     /**
@@ -1243,8 +1241,10 @@ class Series {
         const xAxis = this.xAxis, yAxis = this.yAxis, xData = this.processedXData || this.xData, activeYData = [], 
         // Handle X outside the viewed area. This does not work with
         // non-sorted data like scatter (#7639).
-        shoulder = this.requireSorting ? this.cropShoulder : 0, positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
+        shoulder = this.requireSorting && !this.is('column') ?
+            1 : 0, 
         // #2117, need to compensate for log X axis
+        positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
         let xExtremes, validValue, withinRange, x, y, i, j, xMin = 0, xMax = 0, activeCounter = 0;
         yData = yData || this.stackedYData || this.processedYData || [];
         const yDataLength = yData.length;
@@ -1258,8 +1258,9 @@ class Series {
             y = yData[i];
             // For points within the visible range, including the first
             // point outside the visible range (#7061), consider y extremes.
-            validValue = ((isNumber(y) || isArray(y)) &&
-                ((y.length || y > 0) || !positiveValuesOnly));
+            validValue = ((isNumber(y) ||
+                isArray(y)) && ((isNumber(y) ? y > 0 : y.length) ||
+                !positiveValuesOnly));
             withinRange = (forceExtremesFromAll ||
                 this.getExtremesFromAll ||
                 this.options.getExtremesFromAll ||
@@ -1380,6 +1381,12 @@ class Series {
              * to the X axis position if the series has one, otherwise relative
              * to the plot area. Depending on the series type this value might
              * not be defined.
+             *
+             * In an inverted chart the x-axis is going from the bottom to the
+             * top so the `plotX` value is the number of pixels from the bottom
+             * of the axis.
+             *
+             * @see Highcharts.Point#pos
              * @name Highcharts.Point#plotX
              * @type {number|undefined}
              */
@@ -1442,6 +1449,12 @@ class Series {
              * to the Y axis position if the series has one, otherwise relative
              * to the plot area. Depending on the series type this value might
              * not be defined.
+             *
+             * In an inverted chart the y-axis is going from right to left
+             * so the `plotY` value is the number of pixels from the right
+             * of the `yAxis`.
+             *
+             * @see Highcharts.Point#pos
              * @name Highcharts.Point#plotY
              * @type {number|undefined}
              */
@@ -2303,32 +2316,29 @@ class Series {
      * @function Highcharts.Series#searchKDTree
      */
     searchKDTree(point, compareX, e) {
-        const series = this, kdX = this.kdAxisArray[0], kdY = this.kdAxisArray[1], kdComparer = compareX ? 'distX' : 'dist', kdDimensions = series.options.findNearestPointBy
-            .indexOf('y') > -1 ? 2 : 1;
+        const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
+            .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble;
         /**
          * Set the one and two dimensional distance on the point object.
          * @private
          */
         function setDistance(p1, p2) {
-            const x = (defined(p1[kdX]) &&
-                defined(p2[kdX])) ?
-                Math.pow(p1[kdX] - p2[kdX], 2) :
-                null, y = (defined(p1[kdY]) &&
-                defined(p2[kdY])) ?
-                Math.pow(p1[kdY] - p2[kdY], 2) :
-                null, r = (x || 0) + (y || 0);
-            p2.dist = defined(r) ? Math.sqrt(r) : Number.MAX_VALUE;
-            p2.distX = defined(x) ? Math.sqrt(x) : Number.MAX_VALUE;
+            var _a;
+            const p1kdX = p1[kdX], p2kdX = p2[kdX], x = (defined(p1kdX) && defined(p2kdX)) ? p1kdX - p2kdX : null, p1kdY = p1[kdY], p2kdY = p2[kdY], y = (defined(p1kdY) && defined(p2kdY)) ? p1kdY - p2kdY : 0, radius = useRadius ? (((_a = p2.marker) === null || _a === void 0 ? void 0 : _a.radius) || 0) : 0;
+            p2.dist = Math.sqrt(((x && x * x) || 0) + y * y) - radius;
+            p2.distX = defined(x) ? (Math.abs(x) - radius) : Number.MAX_VALUE;
         }
         /**
          * @private
          */
         function _search(search, tree, depth, dimensions) {
+            var _a;
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
             let nPoint1, nPoint2, ret = point;
             setDistance(search, point);
             // Pick side based on distance to splitting point
-            const tdist = search[axis] - point[axis], sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
+            const tdist = (search[axis] || 0) - (point[axis] || 0) +
+                (useRadius ? (((_a = point.marker) === null || _a === void 0 ? void 0 : _a.radius) || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
             // End of tree
             if (tree[sideA]) {
                 nPoint1 = _search(search, tree[sideA], depth + 1, dimensions);
@@ -2553,7 +2563,7 @@ class Series {
         }
         // Shift the first point off the parallel arrays
         if (shift) {
-            if (data[0] && (data[0].remove)) {
+            if (data[0] && !!data[0].remove) {
                 data[0].remove(false);
             }
             else {
@@ -2700,6 +2710,7 @@ class Series {
      * @emits Highcharts.Series#event:afterUpdate
      */
     update(options, redraw) {
+        var _a, _b;
         options = diffObjects(options, this.userOptions);
         fireEvent(this, 'update', { options: options });
         const series = this, chart = series.chart, 
@@ -2710,6 +2721,12 @@ class Series {
             'markerGroup',
             'dataLabelsGroup',
             'transformGroup'
+        ], optionsToCheck = [
+            'dataGrouping',
+            'pointStart',
+            'pointInterval',
+            'pointIntervalUnit',
+            'keys'
         ], 
         // Animation must be enabled when calling update before the initial
         // animation has first run. This happens when calling update
@@ -2738,15 +2755,13 @@ class Series {
             options.joinBy ||
             options.mapData || // #11636
             // Changes to data grouping requires new points in new group
-            series.hasOptionChanged('dataGrouping') ||
-            series.hasOptionChanged('pointStart') ||
-            series.hasOptionChanged('pointInterval') ||
-            series.hasOptionChanged('pointIntervalUnit') ||
-            series.hasOptionChanged('keys'));
+            optionsToCheck.some((option) => series.hasOptionChanged(option)));
         newType = newType || initialType;
         if (keepPoints) {
-            preserve.push('data', 'isDirtyData', 'points', 'processedData', // #17057
-            'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
+            preserve.push('data', 'isDirtyData', 
+            // GeoHeatMap interpolation
+            'isDirtyCanvas', 'points', 'processedData', // #17057
+            'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', 'hasDataLabels', 'clips', // #15420
             // Networkgraph (#14397)
             'nodes', 'layout', 
             // Treemap
@@ -2776,11 +2791,9 @@ class Series {
             index: typeof oldOptions.index === 'undefined' ?
                 series.index : oldOptions.index,
             pointStart: pick(
-            // when updating from blank (#7933)
-            (plotOptions &&
-                plotOptions.series &&
-                plotOptions.series.pointStart), oldOptions.pointStart, 
-            // when updating after addPoint
+            // When updating from blank (#7933)
+            (_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.pointStart, oldOptions.pointStart, 
+            // When updating after addPoint
             series.xData[0])
         }, (!keepPoints && { data: series.options.data }), options);
         // Merge does not merge arrays, but replaces them. Since points were
@@ -2843,19 +2856,19 @@ class Series {
                 kinds.graphic = 1;
                 kinds.dataLabel = 1;
             }
-            else if (!series._hasPointLabels) {
-                const { marker, dataLabels } = seriesOptions, oldMarker = oldOptions.marker || {};
+            else {
+                const { marker } = seriesOptions, oldMarker = oldOptions.marker || {};
                 // If the  marker got disabled or changed its symbol, width or
                 // height - destroy
-                if (marker && (marker.enabled === false ||
-                    oldMarker.symbol !== marker.symbol || // #10870, #15946
-                    oldMarker.height !== marker.height || // #16274
-                    oldMarker.width !== marker.width // #16274
-                )) {
+                if (marker &&
+                    ((oldMarker.enabled && !marker.enabled) ||
+                        oldMarker.symbol !== marker.symbol || // #10870, #15946
+                        oldMarker.height !== marker.height || // #16274
+                        oldMarker.width !== marker.width // #16274
+                    )) {
                     kinds.graphic = 1;
                 }
-                if (dataLabels &&
-                    dataLabels.enabled === false) {
+                if (!((_b = series.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(series))) {
                     kinds.dataLabel = 1;
                 }
             }
@@ -2899,16 +2912,13 @@ class Series {
      * @private
      */
     hasOptionChanged(optionName) {
-        const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName];
-        if (oldOption) {
+        var _a, _b;
+        const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = pick((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[this.type]) === null || _a === void 0 ? void 0 : _a[optionName], (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _b === void 0 ? void 0 : _b[optionName]);
+        // Check if `plotOptions` are defined already, #19203
+        if (oldOption && !defined(plotOptionsOption)) {
             return option !== oldOption;
         }
-        return option !==
-            pick(plotOptions &&
-                plotOptions[this.type] &&
-                plotOptions[this.type][optionName], plotOptions &&
-                plotOptions.series &&
-                plotOptions.series[optionName], option);
+        return option !== pick(plotOptionsOption, option);
     }
     /**
      * Runs on mouse over the series graphical items.
@@ -3247,15 +3257,14 @@ extend(Series.prototype, {
     axisTypes: ['xAxis', 'yAxis'],
     coll: 'series',
     colorCounter: 0,
-    cropShoulder: 1,
     directTouch: false,
     isCartesian: true,
     kdAxisArray: ['clientX', 'plotY'],
-    // each point's x and y values are stored in this.xData and this.yData:
+    // Each point's x and y values are stored in this.xData and this.yData:
     parallelArrays: ['x', 'y'],
     pointClass: Point,
     requireSorting: true,
-    // requires the data to be sorted:
+    // Requires the data to be sorted:
     sorted: true
 });
 /* *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Annotations module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -931,6 +929,12 @@
              * @apioption annotations.events.click
              */
             /**
+             * Fires when the annotation is dragged.
+             *
+             * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
+             * @apioption annotations.events.drag
+             */
+            /**
              * Event callback when annotation is removed from the chart.
              *
              * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
@@ -1123,6 +1127,7 @@
              * @private
              */
             onMouseDown(e) {
+                var _a;
                 if (e.preventDefault) {
                     e.preventDefault();
                 }
@@ -1130,12 +1135,15 @@
                 if (e.button === 2) {
                     return;
                 }
-                const emitter = this, pointer = emitter.chart.pointer;
+                const emitter = this, pointer = emitter.chart.pointer, 
+                // Using experimental property on event object to check if event was
+                // created by touch on screen on hybrid device (#18122)
+                firesTouchEvents = ((_a = e === null || e === void 0 ? void 0 : e.sourceCapabilities) === null || _a === void 0 ? void 0 : _a.firesTouchEvents) || false;
                 e = pointer.normalize(e);
                 let prevChartX = e.chartX, prevChartY = e.chartY;
                 emitter.cancelClick = false;
                 emitter.chart.hasDraggedAnnotation = true;
-                emitter.removeDrag = addEvent(doc, isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                emitter.removeDrag = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchmove' : 'mousemove', function (e) {
                     emitter.hasDragged = true;
                     e = pointer.normalize(e);
                     e.prevChartX = prevChartX;
@@ -1143,8 +1151,8 @@
                     fireEvent(emitter, 'drag', e);
                     prevChartX = e.chartX;
                     prevChartY = e.chartY;
-                }, isTouchDevice ? { passive: false } : void 0);
-                emitter.removeMouseUp = addEvent(doc, isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+                }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
+                emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function (e) {
                     // Sometimes the target is the annotation and sometimes its the
                     // controllable
                     const annotation = pick(emitter.target && emitter.target.annotation, emitter.target);
@@ -1159,7 +1167,7 @@
                     fireEvent(pick(annotation, // #15952
                     emitter), 'afterUpdate');
                     emitter.onMouseUp(e);
-                }, isTouchDevice ? { passive: false } : void 0);
+                }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
             }
             /**
              * Mouse up handler.
@@ -4112,7 +4120,9 @@
                             langKey: 'label',
                             type: 'basicAnnotation',
                             labelOptions: {
-                                format: '{y:.2f}'
+                                format: '{y:.2f}',
+                                overflow: 'none',
+                                crop: true
                             },
                             labels: [{
                                     point: {
@@ -4120,9 +4130,7 @@
                                         yAxis: coordsY.axis.index,
                                         x: coordsX.value,
                                         y: coordsY.value
-                                    },
-                                    overflow: 'none',
-                                    crop: true
+                                    }
                                 }]
                         }, navigation
                             .annotationsOptions, navigation
@@ -4790,7 +4798,7 @@
                 function traverse(option, key, parentEditables, parent, parentKey) {
                     let nextParent;
                     if (parentEditables &&
-                        option &&
+                        defined(option) &&
                         nonEditables.indexOf(key) === -1 &&
                         ((parentEditables.indexOf &&
                             parentEditables.indexOf(key)) >= 0 ||
@@ -5109,6 +5117,12 @@
                         iconsURL : iconsURL + 'close.svg') + ')';
                 ['click', 'touchstart'].forEach((eventName) => {
                     addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
+                });
+                // close popup when press ESC
+                addEvent(document, 'keydown', function (event) {
+                    if (event.code === 'Escape') {
+                        popup.closeButtonEvents();
+                    }
                 });
                 return closeButton;
             }
@@ -6151,7 +6165,7 @@
             constructor(parentDiv, iconsURL, chart) {
                 super(parentDiv, iconsURL);
                 this.chart = chart;
-                this.lang = getOptions().lang.navigation.popup;
+                this.lang = (getOptions().lang.navigation || {}).popup || {};
                 addEvent(this.container, 'mousedown', () => {
                     const activeAnnotation = chart &&
                         chart.navigationBindings &&
@@ -7495,9 +7509,19 @@
              *
              * */
             getPointsOptions() {
-                const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this);
+                const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this), yAxisIndex = this.options.typeOptions.yAxis || 0, yAxis = this.chart.yAxis[yAxisIndex];
                 pointsOptions[2] = this.heightPointOptions(pointsOptions[1]);
                 pointsOptions[3] = this.heightPointOptions(pointsOptions[0]);
+                // In case of log axis, translate the bottom left point again, #16769
+                if (yAxis && yAxis.logarithmic) {
+                    // Get the height in pixels
+                    const h = yAxis.toPixels(pointsOptions[2].y) -
+                        yAxis.toPixels(pointsOptions[1].y), 
+                    // Get the pixel position of the last point
+                    y3 = yAxis.toPixels(pointsOptions[0].y) + h;
+                    // Set the new value
+                    pointsOptions[3].y = yAxis.toValue(y3);
+                }
                 return pointsOptions;
             }
             getControlPointsOptions() {
@@ -8028,11 +8052,12 @@
             linkRetracementsPoints() {
                 const points = this.points, startDiff = points[0].y - points[3].y, endDiff = points[1].y - points[2].y, startX = points[0].x, endX = points[1].x;
                 Fibonacci.levels.forEach((level, i) => {
-                    const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level;
+                    const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level, index = this.options.typeOptions.reversed ?
+                        (Fibonacci.levels.length - i - 1) : i;
                     this.startRetracements = this.startRetracements || [];
                     this.endRetracements = this.endRetracements || [];
-                    this.linkRetracementPoint(i, startX, startRetracement, this.startRetracements);
-                    this.linkRetracementPoint(i, endX, endRetracement, this.endRetracements);
+                    this.linkRetracementPoint(index, startX, startRetracement, this.startRetracements);
+                    this.linkRetracementPoint(index, endX, endRetracement, this.endRetracements);
                 });
             }
             linkRetracementPoint(pointIndex, x, y, retracements) {
@@ -8101,6 +8126,17 @@
          */
         {
             typeOptions: {
+                /**
+                 * Whether the annotation levels should be reversed. By default they
+                 * start from 0 and go to 1.
+                 *
+                 * @sample highcharts/annotations-advanced/fibonacci-reversed/
+                 *         Fibonacci annotation reversed
+                 *
+                 * @type {boolean}
+                 * @apioption annotations.fibonacci.typeOptions.reversed
+                 */
+                reversed: false,
                 /**
                  * The height of the fibonacci in terms of yAxis.
                  */
@@ -8897,6 +8933,16 @@
                 this.offsetX = 0;
                 this.offsetY = 0;
             }
+            this.options.typeOptions.point = {
+                x: this.startXMin,
+                y: this.startYMin
+            };
+            // We need to update userOptions as well as they are used in
+            // the Annotation.update() method to initialize the annotation, #19121.
+            this.userOptions.typeOptions.point = {
+                x: this.startXMin,
+                y: this.startYMin
+            };
         }
         /* *
          *
@@ -9196,10 +9242,6 @@
             }
             translate(dx, dy) {
                 this.shapes.forEach((item) => item.translate(dx, dy));
-                this.options.typeOptions.point = {
-                    x: this.startXMin,
-                    y: this.startYMin
-                };
             }
         }
         Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, 

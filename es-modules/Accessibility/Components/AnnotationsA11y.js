@@ -110,7 +110,7 @@ function getAnnotationLabelDescription(label) {
 function getAnnotationListItems(chart) {
     const labels = getChartAnnotationLabels(chart);
     return labels.map((label) => {
-        const desc = escapeStringForHTML(stripHTMLTagsFromString(getAnnotationLabelDescription(label)));
+        const desc = escapeStringForHTML(stripHTMLTagsFromString(getAnnotationLabelDescription(label), chart.renderer.forExport));
         return desc ? `<li>${desc}</li>` : '';
     });
 }

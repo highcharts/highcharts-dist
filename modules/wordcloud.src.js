@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -27,12 +27,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -70,9 +68,17 @@
             params.attribs = Object.assign(Object.assign({}, params.attribs), { 'class': point.getClassName() }) || {};
             if ((point.shouldDraw())) {
                 if (!graphic) {
-                    point.graphic = graphic = params.shapeType === 'text' ?
-                        renderer.text() :
-                        renderer[params.shapeType](params.shapeArgs || {});
+                    if (params.shapeType === 'text') {
+                        graphic = renderer.text();
+                    }
+                    else if (params.shapeType === 'image') {
+                        graphic = renderer.image(params.imageUrl || '')
+                            .attr(params.shapeArgs || {});
+                    }
+                    else {
+                        graphic = renderer[params.shapeType](params.shapeArgs || {});
+                    }
+                    point.graphic = graphic;
                     graphic.add(params.group);
                 }
                 if (css) {
@@ -873,7 +879,7 @@
 
         return WordcloudUtils;
     });
-    _registerModule(_modules, 'Series/Wordcloud/WordcloudSeries.js', [_modules['Series/DrawPointUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Series/Wordcloud/WordcloudPoint.js'], _modules['Series/Wordcloud/WordcloudUtils.js']], function (DPU, H, Series, SeriesRegistry, U, WordcloudPoint, WordcloudUtils) {
+    _registerModule(_modules, 'Series/Wordcloud/WordcloudSeries.js', [_modules['Series/DrawPointUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Series/Wordcloud/WordcloudPoint.js'], _modules['Series/Wordcloud/WordcloudUtils.js']], function (DPU, H, SeriesRegistry, U, WordcloudPoint, WordcloudUtils) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
@@ -923,20 +929,6 @@
              * Functions
              *
              */
-            bindAxes() {
-                const wordcloudAxis = {
-                    endOnTick: false,
-                    gridLineWidth: 0,
-                    lineWidth: 0,
-                    maxPadding: 0,
-                    startOnTick: false,
-                    title: void 0,
-                    tickPositions: []
-                };
-                Series.prototype.bindAxes.call(this);
-                extend(this.yAxis.options, wordcloudAxis);
-                extend(this.xAxis.options, wordcloudAxis);
-            }
             pointAttribs(point, state) {
                 const attribs = H.seriesTypes.column.prototype
                     .pointAttribs.call(this, point, state);
@@ -1243,6 +1235,7 @@
             animate: noop,
             animateDrilldown: noop,
             animateDrillupFrom: noop,
+            isCartesian: false,
             pointClass: WordcloudPoint,
             setClip: noop,
             // Strategies used for deciding rotation and initial position of a word. To

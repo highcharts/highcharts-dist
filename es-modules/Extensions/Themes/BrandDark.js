@@ -193,8 +193,7 @@ var BrandDarkTheme;
                             }
                         }
                     }
-                },
-                verticalAlign: 'bottom'
+                }
             }
         },
         // scroll charts

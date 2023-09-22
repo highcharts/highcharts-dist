@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -45,24 +43,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray,
-            merge = U.merge;
+        var isArray = U.isArray, merge = U.merge;
         /* *
          *
          *  Functions
@@ -82,8 +78,7 @@
          */
         function meanDeviation(arr, sma) {
             var len = arr.length;
-            var sum = 0,
-                i;
+            var sum = 0, i;
             for (i = 0; i < len; i++) {
                 sum += Math.abs(sma - (arr[i]));
             }
@@ -104,15 +99,14 @@
          * @augments Highcharts.Series
          */
         var CCIIndicator = /** @class */ (function (_super) {
-                __extends(CCIIndicator, _super);
+            __extends(CCIIndicator, _super);
             function CCIIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -129,23 +123,8 @@
              *
              * */
             CCIIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    TP = [],
-                    CCI = [],
-                    xData = [],
-                    yData = [];
-                var CCIPoint,
-                    p,
-                    periodTP = [],
-                    len,
-                    range = 1,
-                    smaTP,
-                    TPtemp,
-                    meanDev,
-                    i;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
+                var CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
                 // CCI requires close value
                 if (xVal.length <= period ||
                     !isArray(yVal[0]) ||

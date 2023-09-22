@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Sankey diagram module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -343,6 +341,7 @@
                 this.fromNode = void 0;
                 this.level = void 0;
                 this.linkBase = void 0;
+                this.linkColorMode = void 0;
                 this.linksFrom = void 0;
                 this.linksTo = void 0;
                 this.mass = void 0;
@@ -533,8 +532,8 @@
                 inside: true
             },
             /**
-             * @ignore-option
-             *
+             * @default   true
+             * @extends   plotOptions.series.inactiveOtherPoints
              * @private
              */
             inactiveOtherPoints: true,
@@ -601,6 +600,25 @@
              * @apioption plotOptions.sankey.levels.states
              */
             /**
+             * Determines color mode for sankey links. Available options:
+             *
+             * - `from` color of the sankey link will be the same as the 'from node'
+             *
+             * - `gradient` color of the sankey link will be set to gradient between
+             * colors of 'from node' and 'to node'
+             *
+             * - `to` color of the sankey link will be same as the 'to node'.
+             *
+             * @sample highcharts/demo/vertical-sankey
+             *         Vertical sankey diagram with gradients
+             * @sample highcharts/series-sankey/link-color-mode
+             *         Sankey diagram with gradients and explanation
+             *
+             * @type      {('from'|'gradient'|'to')}
+             * @since     @next
+             */
+            linkColorMode: 'from',
+            /**
              * Opacity for the links between nodes in the sankey diagram.
              *
              * @private
@@ -627,6 +645,18 @@
              * @private
              */
             minLinkWidth: 0,
+            /**
+             * Determines which side of the chart the nodes are to be aligned to. When
+             * the chart is inverted, `top` aligns to the left and `bottom` to the
+             * right.
+             *
+             * @sample highcharts/plotoptions/sankey-nodealignment
+             *         Node alignment demonstrated
+             *
+             * @type      {'top'|'center'|'bottom'}
+             * @apioption plotOptions.sankey.nodeAlignment
+             */
+            nodeAlignment: 'center',
             /**
              * The pixel width of each node in a sankey diagram or dependency wheel,
              * or the height in case the chart is inverted.
@@ -1015,7 +1045,8 @@
                         while (i--) {
                             if (column[i].getSum() * factor < minLinkWidth) {
                                 column.splice(i, 1);
-                                remainingHeight -= minLinkWidth;
+                                remainingHeight =
+                                    Math.max(0, remainingHeight - minLinkWidth);
                                 skipPoint = true;
                             }
                         }
@@ -1051,7 +1082,12 @@
                         height += nodeHeight;
                         return height;
                     }, 0);
-                    return ((series.chart.plotSizeY || 0) - height) / 2;
+                    // Node alignment option handling #19096
+                    return {
+                        top: 0,
+                        center: 0.5,
+                        bottom: 1
+                    }[series.options.nodeAlignment || 'center'] * ((series.chart.plotSizeY || 0) - height);
                 }
                 /**
                  * Get the left position of the column in pixels
@@ -1337,7 +1373,7 @@
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/NodesComposition.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Series/Sankey/SankeySeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (Color, H, NodesComposition, SankeyPoint, SankeySeriesDefaults, SeriesRegistry, SankeyColumnComposition, TU, U) {
+    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Globals.js'], _modules['Series/NodesComposition.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Series/Sankey/SankeySeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Color/Color.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (H, NodesComposition, SankeyPoint, SankeySeriesDefaults, SeriesRegistry, SankeyColumnComposition, Color, TU, U) {
         /* *
          *
          *  Sankey diagram module
@@ -1350,6 +1386,7 @@
          *
          * */
         const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+        const { parse: color } = Color;
         const { getLevelOptions } = TU;
         const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
         /* *
@@ -1622,8 +1659,9 @@
                     node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
                     return y;
                 };
-                let fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-                    options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.nodeX, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
+                const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = pick(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+                    options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
+                let linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
                 if (chart.inverted) {
                     fromY = chart.plotSizeY - fromY;
                     toY = (chart.plotSizeY || 0) - toY;
@@ -1716,8 +1754,28 @@
                 // #15863
                 point.y = point.plotY = 1;
                 point.x = point.plotX = 1;
-                if (!point.color) {
-                    point.color = fromNode.color;
+                if (!point.options.color) {
+                    if (linkColorMode === 'from') {
+                        point.color = fromNode.color;
+                    }
+                    else if (linkColorMode === 'to') {
+                        point.color = toNode.color;
+                    }
+                    else if (linkColorMode === 'gradient') {
+                        const fromColor = color(fromNode.color).get(), toColor = color(toNode.color).get();
+                        point.color = {
+                            linearGradient: {
+                                x1: 1,
+                                x2: 0,
+                                y1: 0,
+                                y2: 0
+                            },
+                            stops: [
+                                [0, inverted ? fromColor : toColor],
+                                [1, inverted ? toColor : fromColor]
+                            ]
+                        };
+                    }
                 }
             }
             /**
@@ -1727,7 +1785,9 @@
             translateNode(node, column) {
                 const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
                     nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-                    borderWidth / 2) + relativeLength(node.options.offsetHorizontal || 0, nodeWidth) +
+                    borderWidth / 2) + relativeLength(node.options[chart.inverted ?
+                    'offsetVertical' :
+                    'offsetHorizontal'] || 0, nodeWidth) +
                     crisp, nodeLeft = chart.inverted ?
                     chart.plotSizeX - left :
                     left;
@@ -1739,7 +1799,7 @@
                     node.nodeX = nodeLeft;
                     node.nodeY = fromNodeTop;
                     let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
-                    // border radius should not greater than half the height of the node
+                    // Border radius should not greater than half the height of the node
                     // #18956
                     const r = clamp(relativeLength((typeof borderRadius === 'object' ?
                         borderRadius.radius :

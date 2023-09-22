@@ -319,7 +319,7 @@ class TreemapSeries extends ScatterSeries {
             // If options for level exists, include them as well
             if (level && level.dataLabels) {
                 options = merge(options, level.dataLabels);
-                series._hasPointLabels = true;
+                series.hasDataLabels = () => true;
             }
             // Set dataLabel width to the width of the point shape.
             if (point.shapeArgs) {
@@ -382,6 +382,7 @@ class TreemapSeries extends ScatterSeries {
                 attribs,
                 css,
                 group: series[groupKey],
+                imageUrl: point.imageUrl,
                 renderer,
                 shadow,
                 shapeArgs,
@@ -567,11 +568,9 @@ class TreemapSeries extends ScatterSeries {
             }));
             series.eventsToUnbind.push(addEvent(series, 'destroy', function destroyEvents(e) {
                 const chart = this.chart;
-                if (chart.breadcrumbs) {
+                if (chart.breadcrumbs && !e.keepEventsForUpdate) {
                     chart.breadcrumbs.destroy();
-                    if (!e.keepEventsForUpdate) {
-                        chart.breadcrumbs = void 0;
-                    }
+                    chart.breadcrumbs = void 0;
                 }
             }));
         }

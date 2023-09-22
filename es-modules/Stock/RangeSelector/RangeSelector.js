@@ -251,10 +251,10 @@ class RangeSelector {
         const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
             const minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
             // #3274 in some case blur is not defined
-            if (minInput && (minInput.blur)) {
+            if (minInput && !!minInput.blur) {
                 fireEvent(minInput, 'blur');
             }
-            if (maxInput && (maxInput.blur)) {
+            if (maxInput && !!maxInput.blur) {
                 fireEvent(maxInput, 'blur');
             }
         };
@@ -570,9 +570,7 @@ class RangeSelector {
          * @private
          */
         function updateExtremes() {
-            const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], dataAxis = chart.scroller && chart.scroller.xAxis ?
-                chart.scroller.xAxis :
-                chartAxis, dataMin = dataAxis.dataMin, dataMax = dataAxis.dataMax;
+            const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chartAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax;
             let value = rangeSelector.getInputValue(name);
             if (value !== Number(input.getAttribute('data-hc-time-previous')) &&
                 isNumber(value)) {

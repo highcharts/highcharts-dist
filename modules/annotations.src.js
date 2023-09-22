@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Annotations module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -931,6 +929,12 @@
              * @apioption annotations.events.click
              */
             /**
+             * Fires when the annotation is dragged.
+             *
+             * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
+             * @apioption annotations.events.drag
+             */
+            /**
              * Event callback when annotation is removed from the chart.
              *
              * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
@@ -1123,6 +1127,7 @@
              * @private
              */
             onMouseDown(e) {
+                var _a;
                 if (e.preventDefault) {
                     e.preventDefault();
                 }
@@ -1130,12 +1135,15 @@
                 if (e.button === 2) {
                     return;
                 }
-                const emitter = this, pointer = emitter.chart.pointer;
+                const emitter = this, pointer = emitter.chart.pointer, 
+                // Using experimental property on event object to check if event was
+                // created by touch on screen on hybrid device (#18122)
+                firesTouchEvents = ((_a = e === null || e === void 0 ? void 0 : e.sourceCapabilities) === null || _a === void 0 ? void 0 : _a.firesTouchEvents) || false;
                 e = pointer.normalize(e);
                 let prevChartX = e.chartX, prevChartY = e.chartY;
                 emitter.cancelClick = false;
                 emitter.chart.hasDraggedAnnotation = true;
-                emitter.removeDrag = addEvent(doc, isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                emitter.removeDrag = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchmove' : 'mousemove', function (e) {
                     emitter.hasDragged = true;
                     e = pointer.normalize(e);
                     e.prevChartX = prevChartX;
@@ -1143,8 +1151,8 @@
                     fireEvent(emitter, 'drag', e);
                     prevChartX = e.chartX;
                     prevChartY = e.chartY;
-                }, isTouchDevice ? { passive: false } : void 0);
-                emitter.removeMouseUp = addEvent(doc, isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+                }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
+                emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function (e) {
                     // Sometimes the target is the annotation and sometimes its the
                     // controllable
                     const annotation = pick(emitter.target && emitter.target.annotation, emitter.target);
@@ -1159,7 +1167,7 @@
                     fireEvent(pick(annotation, // #15952
                     emitter), 'afterUpdate');
                     emitter.onMouseUp(e);
-                }, isTouchDevice ? { passive: false } : void 0);
+                }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
             }
             /**
              * Mouse up handler.
@@ -4112,7 +4120,9 @@
                             langKey: 'label',
                             type: 'basicAnnotation',
                             labelOptions: {
-                                format: '{y:.2f}'
+                                format: '{y:.2f}',
+                                overflow: 'none',
+                                crop: true
                             },
                             labels: [{
                                     point: {
@@ -4120,9 +4130,7 @@
                                         yAxis: coordsY.axis.index,
                                         x: coordsX.value,
                                         y: coordsY.value
-                                    },
-                                    overflow: 'none',
-                                    crop: true
+                                    }
                                 }]
                         }, navigation
                             .annotationsOptions, navigation
@@ -4790,7 +4798,7 @@
                 function traverse(option, key, parentEditables, parent, parentKey) {
                     let nextParent;
                     if (parentEditables &&
-                        option &&
+                        defined(option) &&
                         nonEditables.indexOf(key) === -1 &&
                         ((parentEditables.indexOf &&
                             parentEditables.indexOf(key)) >= 0 ||
@@ -5109,6 +5117,12 @@
                         iconsURL : iconsURL + 'close.svg') + ')';
                 ['click', 'touchstart'].forEach((eventName) => {
                     addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
+                });
+                // close popup when press ESC
+                addEvent(document, 'keydown', function (event) {
+                    if (event.code === 'Escape') {
+                        popup.closeButtonEvents();
+                    }
                 });
                 return closeButton;
             }
@@ -6151,7 +6165,7 @@
             constructor(parentDiv, iconsURL, chart) {
                 super(parentDiv, iconsURL);
                 this.chart = chart;
-                this.lang = getOptions().lang.navigation.popup;
+                this.lang = (getOptions().lang.navigation || {}).popup || {};
                 addEvent(this.container, 'mousedown', () => {
                     const activeAnnotation = chart &&
                         chart.navigationBindings &&

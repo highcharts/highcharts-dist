@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Sonification module
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -51,831 +49,837 @@
          *
          * */
         var Options = {
+            /**
+             * Options for configuring sonification and audio charts. Requires the
+             * [sonification module](https://code.highcharts.com/modules/sonification.js)
+             * to be loaded.
+             *
+             * @sample  highcharts/demo/all-instruments
+             *          All predefined instruments
+             * @sample  highcharts/demo/audio-boxplot
+             *          Audio boxplots
+             * @sample  highcharts/demo/plotline-context
+             *          Context tracks
+             * @sample  highcharts/demo/sonification-music
+             *          Musical chart
+             *
+             * @since 11.0.0
+             * @requires     modules/sonification
+             * @optionparent sonification
+             */
+            sonification: {
                 /**
-                 * Options for configuring sonification and audio charts. Requires the
-                 * [sonification module](https://code.highcharts.com/modules/sonification.js)
-                 * to be loaded.
+                 * Global tracks to add to every series.
                  *
-                 * @sample  highcharts/demo/all-instruments
-                 *          All predefined instruments
-                 * @sample  highcharts/demo/audio-boxplot
-                 *          Audio boxplots
-                 * @sample  highcharts/demo/plotline-context
-                 *          Context tracks
-                 * @sample  highcharts/demo/sonification-music
-                 *          Musical chart
+                 * Defined as an array of either instrument or speech tracks,
+                 * or a combination.
                  *
-                 * @since 11.0.0
-                 * @requires     modules/sonification
-                 * @optionparent sonification
+                 * @type {Array<*>}
+                 * @extends sonification.defaultSpeechOptions
+                 * @extends sonification.defaultInstrumentOptions
+                 * @apioption sonification.globalTracks
                  */
-                sonification: {
+                /**
+                 * Rate mapping for speech tracks.
+                 * @extends sonification.defaultSpeechOptions.mapping.rate
+                 * @apioption sonification.globalTracks.mapping.rate
+                 */
+                /**
+                 * Text mapping for speech tracks.
+                 * @extends sonification.defaultSpeechOptions.mapping.text
+                 * @apioption sonification.globalTracks.mapping.text
+                 */
+                /**
+                 * Context tracks to add globally, an array of either instrument
+                 * tracks, speech tracks, or a mix.
+                 *
+                 * Context tracks are not tied to data points, but play at a set
+                 * interval - either based on time or on prop values.
+                 *
+                 * @sample  highcharts/demo/plotline-context
+                 *          Using contexts
+                 * @type {Array<*>}
+                 * @extends sonification.globalTracks
+                 * @apioption sonification.globalContextTracks
+                 */
+                /**
+                 * Set a context track to play periodically every `timeInterval`
+                 * milliseconds while the sonification is playing.
+                 *
+                 * @sample  highcharts/demo/plotline-context
+                 *          Using contexts
+                 * @type {number}
+                 * @apioption sonification.globalContextTracks.timeInterval
+                 */
+                /**
+                 * Set a context track to play periodically every `valueInterval`
+                 * units of a data property `valueProp` while the sonification is
+                 * playing.
+                 *
+                 * For example, setting `valueProp` to `x` and `valueInterval` to 5
+                 * will play the context track for every 5th X value.
+                 *
+                 * The context audio events will be mapped to time according to the
+                 * prop value relative to the min/max values for that prop.
+                 *
+                 * @sample  highcharts/demo/plotline-context
+                 *          Using contexts
+                 * @type {number}
+                 * @apioption sonification.globalContextTracks.valueInterval
+                 */
+                /**
+                 * The point property to play context for when using `valueInterval`.
+                 * @type {string}
+                 * @default "x"
+                 * @apioption sonification.globalContextTracks.valueProp
+                 */
+                /**
+                 * How to map context events to time when using the `valueInterval`
+                 * option.
+                 * @type {"linear"|"logarithmic"}
+                 * @default "linear"
+                 * @apioption sonification.globalContextTracks.valueMapFunction
+                 */
+                /**
+                 * Set up event handlers for the sonification
+                 * @apioption sonification.events
+                 */
+                /**
+                 * Called on play.
+                 *
+                 * A context object is passed to the function, with properties `chart`
+                 * and `timeline`.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.onPlay
+                 */
+                /**
+                 * Called on pause, cancel, or if play is completed.
+                 *
+                 * A context object is passed to the function, with properties `chart`,
+                 * `timeline` and `pointsPlayed`. `pointsPlayed` is an array of `Point`
+                 * objects, referencing data points that were related to the audio
+                 * events played.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.onStop
+                 */
+                /**
+                 * Called when play is completed.
+                 *
+                 * A context object is passed to the function, with properties `chart`,
+                 * `timeline` and `pointsPlayed`. `pointsPlayed` is an array of `Point`
+                 * objects, referencing data points that were related to the audio
+                 * events played.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.onEnd
+                 */
+                /**
+                 * Called immediately when a play is requested.
+                 *
+                 * A context object is passed to the function, with properties `chart`
+                 * and `timeline`.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.beforePlay
+                 */
+                /**
+                 * Called before updating the sonification.
+                 *
+                 * A context object is passed to the function, with properties `chart`
+                 * and `timeline`.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.beforeUpdate
+                 */
+                /**
+                 * Called after updating the sonification.
+                 *
+                 * A context object is passed to the function, with properties `chart`
+                 * and `timeline`.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.afterUpdate
+                 */
+                /**
+                 * Called on the beginning of playing a series.
+                 *
+                 * A context object is passed to the function, with properties `series`
+                 * and `timeline`.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.onSeriesStart
+                 */
+                /**
+                 * Called when finished playing a series.
+                 *
+                 * A context object is passed to the function, with properties `series`
+                 * and `timeline`.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.onSeriesEnd
+                 */
+                /**
+                 * Called when attempting to play an adjacent point or series, and
+                 * there is none.
+                 *
+                 * By default a percussive sound is played.
+                 *
+                 * A context object is passed to the function, with properties `chart`,
+                 * `timeline`, and `attemptedNext`. `attemptedNext` is a boolean
+                 * property that is `true` if the boundary hit was from trying to play
+                 * the next series/point, and `false` if it was from trying to play the
+                 * previous.
+                 *
+                 * @type {Function}
+                 * @apioption sonification.events.onBoundaryHit
+                 */
+                /**
+                 * Enable sonification functionality for the chart.
+                 */
+                enabled: true,
+                /**
+                 * The total duration of the sonification, in milliseconds.
+                 */
+                duration: 6000,
+                /**
+                 * The time to wait in milliseconds after each data series when playing
+                 * the series one after the other.
+                 * @see [order](#sonification.order)
+                 * @sample  highcharts/sonification/chart-earcon
+                 *          Notification after series
+                 */
+                afterSeriesWait: 700,
+                /**
+                 * How long to wait between each recomputation of the sonification, if
+                 * the chart updates rapidly. This avoids slowing down processes like
+                 * panning. Given in milliseconds.
+                 */
+                updateInterval: 200,
+                /**
+                 * Overall/master volume for the sonification, from 0 to 1.
+                 */
+                masterVolume: 0.7,
+                /**
+                 * What order to play the data series in, either `sequential` where
+                 * the series play individually one after the other, or `simultaneous`
+                 * where the series play all at once.
+                 * @sample  highcharts/sonification/chart-simultaneous
+                 *          Simultaneous sonification
+                 * @type  {"sequential"|"simultaneous"}
+                 */
+                order: 'sequential',
+                /**
+                 * Show tooltip as the chart plays.
+                 *
+                 * Note that if multiple tracks that play at different times try to
+                 * show the tooltip, it can be glitchy, so it is recommended in
+                 * those cases to turn this on/off for individual tracks using the
+                 * [showPlayMarker](#plotOptions.series.sonification.tracks.showPlayMarker)
+                 * option.
+                 *
+                 * @see [showCrosshair](#sonification.showCrosshair)
+                 */
+                showTooltip: true,
+                /**
+                 * Show X and Y axis crosshairs (if they exist) as the chart plays.
+                 *
+                 * Note that if multiple tracks that play at different times try to
+                 * show the crosshairs, it can be glitchy, so it is recommended in
+                 * those cases to turn this on/off for individual tracks using the
+                 * [showPlayMarker](#plotOptions.series.sonification.tracks.showPlayMarker)
+                 * option.
+                 *
+                 * @see [showTooltip](#sonification.showTooltip)
+                 * @see [crosshair](#xAxis.crosshair)
+                 */
+                showCrosshair: true,
+                /**
+                 * Options for grouping data points together when sonifying. This
+                 * allows for the visual presentation to contain more points than what
+                 * is being played. If not enabled, all visible / uncropped points are
+                 * played.
+                 *
+                 * @see [series.cropThreshold](#plotOptions.series.cropThreshold)
+                 */
+                pointGrouping: {
                     /**
-                     * Global tracks to add to every series.
-                     *
-                     * Defined as an array of either instrument or speech tracks,
-                     * or a combination.
-                     *
-                     * @type {Array<*>}
-                     * @extends sonification.defaultSpeechOptions
-                     * @extends sonification.defaultInstrumentOptions
-                     * @apioption sonification.globalTracks
-                     */
-                    /**
-                     * Rate mapping for speech tracks.
-                     * @extends sonification.defaultSpeechOptions.mapping.rate
-                     * @apioption sonification.globalTracks.mapping.rate
-                     */
-                    /**
-                     * Text mapping for speech tracks.
-                     * @extends sonification.defaultSpeechOptions.mapping.text
-                     * @apioption sonification.globalTracks.mapping.text
-                     */
-                    /**
-                     * Context tracks to add globally, an array of either instrument
-                     * tracks, speech tracks, or a mix.
-                     *
-                     * Context tracks are not tied to data points, but play at a set
-                     * interval - either based on time or on prop values.
-                     *
-                     * @sample  highcharts/demo/plotline-context
-                     *          Using contexts
-                     * @type {Array<*>}
-                     * @extends sonification.globalTracks
-                     * @apioption sonification.globalContextTracks
-                     */
-                    /**
-                     * Set a context track to play periodically every `timeInterval`
-                     * milliseconds while the sonification is playing.
-                     *
-                     * @sample  highcharts/demo/plotline-context
-                     *          Using contexts
-                     * @type {number}
-                     * @apioption sonification.globalContextTracks.timeInterval
-                     */
-                    /**
-                     * Set a context track to play periodically every `valueInterval`
-                     * units of a data property `valueProp` while the sonification is
-                     * playing.
-                     *
-                     * For example, setting `valueProp` to `x` and `valueInterval` to 5
-                     * will play the context track for every 5th X value.
-                     *
-                     * The context audio events will be mapped to time according to the
-                     * prop value relative to the min/max values for that prop.
-                     *
-                     * @sample  highcharts/demo/plotline-context
-                     *          Using contexts
-                     * @type {number}
-                     * @apioption sonification.globalContextTracks.valueInterval
-                     */
-                    /**
-                     * The point property to play context for when using `valueInterval`.
-                     * @type {string}
-                     * @default "x"
-                     * @apioption sonification.globalContextTracks.valueProp
-                     */
-                    /**
-                     * How to map context events to time when using the `valueInterval`
-                     * option.
-                     * @type {"linear"|"logarithmic"}
-                     * @default "linear"
-                     * @apioption sonification.globalContextTracks.valueMapFunction
-                     */
-                    /**
-                     * Set up event handlers for the sonification
-                     * @apioption sonification.events
-                     */
-                    /**
-                     * Called on play.
-                     *
-                     * A context object is passed to the function, with properties `chart`
-                     * and `timeline`.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.onPlay
-                     */
-                    /**
-                     * Called on pause, cancel, or if play is completed.
-                     *
-                     * A context object is passed to the function, with properties `chart`,
-                     * `timeline` and `pointsPlayed`. `pointsPlayed` is an array of `Point`
-                     * objects, referencing data points that were related to the audio
-                     * events played.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.onStop
-                     */
-                    /**
-                     * Called when play is completed.
-                     *
-                     * A context object is passed to the function, with properties `chart`,
-                     * `timeline` and `pointsPlayed`. `pointsPlayed` is an array of `Point`
-                     * objects, referencing data points that were related to the audio
-                     * events played.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.onEnd
-                     */
-                    /**
-                     * Called immediately when a play is requested.
-                     *
-                     * A context object is passed to the function, with properties `chart`
-                     * and `timeline`.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.beforePlay
-                     */
-                    /**
-                     * Called before updating the sonification.
-                     *
-                     * A context object is passed to the function, with properties `chart`
-                     * and `timeline`.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.beforeUpdate
-                     */
-                    /**
-                     * Called after updating the sonification.
-                     *
-                     * A context object is passed to the function, with properties `chart`
-                     * and `timeline`.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.afterUpdate
-                     */
-                    /**
-                     * Called on the beginning of playing a series.
-                     *
-                     * A context object is passed to the function, with properties `series`
-                     * and `timeline`.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.onSeriesStart
-                     */
-                    /**
-                     * Called when finished playing a series.
-                     *
-                     * A context object is passed to the function, with properties `series`
-                     * and `timeline`.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.onSeriesEnd
-                     */
-                    /**
-                     * Called when attempting to play an adjacent point or series, and
-                     * there is none.
-                     *
-                     * By default a percussive sound is played.
-                     *
-                     * A context object is passed to the function, with properties `chart`,
-                     * `timeline`, and `attemptedNext`. `attemptedNext` is a boolean
-                     * property that is `true` if the boundary hit was from trying to play
-                     * the next series/point, and `false` if it was from trying to play the
-                     * previous.
-                     *
-                     * @type {Function}
-                     * @apioption sonification.events.onBoundaryHit
-                     */
-                    /**
-                     * Enable sonification functionality for the chart.
+                     * Whether or not to group points
                      */
                     enabled: true,
                     /**
-                     * The total duration of the sonification, in milliseconds.
+                     * The size of each group in milliseconds. Audio events closer than
+                     * this are grouped together.
                      */
-                    duration: 6000,
+                    groupTimespan: 15,
                     /**
-                     * The time to wait in milliseconds after each data series when playing
-                     * the series one after the other.
-                     * @see [order](#sonification.order)
-                     * @sample  highcharts/sonification/chart-earcon
-                     *          Notification after series
-                     */
-                    afterSeriesWait: 700,
-                    /**
-                     * How long to wait between each recomputation of the sonification, if
-                     * the chart updates rapidly. This avoids slowing down processes like
-                     * panning. Given in milliseconds.
-                     */
-                    updateInterval: 200,
-                    /**
-                     * Overall/master volume for the sonification, from 0 to 1.
-                     */
-                    masterVolume: 0.7,
-                    /**
-                     * What order to play the data series in, either `sequential` where
-                     * the series play individually one after the other, or `simultaneous`
-                     * where the series play all at once.
-                     * @sample  highcharts/sonification/chart-simultaneous
-                     *          Simultaneous sonification
-                     * @type  {"sequential"|"simultaneous"}
-                     */
-                    order: 'sequential',
-                    /**
-                     * Show tooltip as the chart plays.
+                     * The grouping algorithm, deciding which points to keep when
+                     * grouping a set of points together. By default `"minmax"` is
+                     * used, which keeps both the minimum and maximum points.
                      *
-                     * Note that if multiple tracks that play at different times try to
-                     * show the tooltip, it can be glitchy, so it is recommended in
-                     * those cases to turn this on/off for individual tracks using the
-                     * [showPlayMarker](#plotOptions.series.sonification.tracks.showPlayMarker)
-                     * option.
+                     * The other algorithms will either keep the first point in the
+                     * group (time wise), last point, middle point, or both the first
+                     * and the last point.
                      *
-                     * @see [showCrosshair](#sonification.showCrosshair)
+                     * The timing of the resulting point(s) is then adjusted to play
+                     * evenly, regardless of its original position within the group.
+                     *
+                     * @type {"minmax"|"first"|"last"|"middle"|"firstlast"}
                      */
-                    showTooltip: true,
+                    algorithm: 'minmax',
                     /**
-                     * Show X and Y axis crosshairs (if they exist) as the chart plays.
+                     * The data property for each point to compare when deciding which
+                     * points to keep in the group.
                      *
-                     * Note that if multiple tracks that play at different times try to
-                     * show the crosshairs, it can be glitchy, so it is recommended in
-                     * those cases to turn this on/off for individual tracks using the
-                     * [showPlayMarker](#plotOptions.series.sonification.tracks.showPlayMarker)
-                     * option.
-                     *
-                     * @see [showTooltip](#sonification.showTooltip)
-                     * @see [crosshair](#xAxis.crosshair)
+                     * By default it is "y", which means that if the `"minmax"`
+                     * algorithm is used, the two points the group with the lowest and
+                     * highest `y` value will be kept, and the others not played.
                      */
-                    showCrosshair: true,
+                    prop: 'y'
+                },
+                /**
+                 * Default sonification options for all instrument tracks.
+                 *
+                 * If specific options are also set on individual tracks or per
+                 * series, those will override these options.
+                 *
+                 * @sample  highcharts/sonification/point-sonify
+                 *          Sonify points on click
+                 */
+                defaultInstrumentOptions: {
                     /**
-                     * Options for grouping data points together when sonifying. This
-                     * allows for the visual presentation to contain more points than what
-                     * is being played. If not enabled, all visible / uncropped points are
-                     * played.
+                     * Round pitch mapping to musical notes.
                      *
-                     * @see [series.cropThreshold](#plotOptions.series.cropThreshold)
+                     * If `false`, will play the exact mapped note, even if it is out
+                     * of tune compared to the musical notes as defined by 440Hz
+                     * standard tuning.
                      */
-                    pointGrouping: {
+                    roundToMusicalNotes: true,
+                    /**
+                     * Type of track. Always `"instrument"` for instrument tracks, and
+                     * `"speech"` for speech tracks.
+                     *
+                     * @declare    Highcharts.SonifcationTypeValue
+                     * @type       {string}
+                     * @default    instrument
+                     * @validvalue ["instrument","speech"]
+                     * @apioption  sonification.defaultInstrumentOptions.type
+                     */
+                    /**
+                     * Show play marker (tooltip and/or crosshair) for a track.
+                     * @type {boolean}
+                     * @default true
+                     * @apioption sonification.defaultInstrumentOptions.showPlayMarker
+                     */
+                    /**
+                     * Name to use for a track when exporting to MIDI.
+                     * By default it uses the series name if the track is related to
+                     * a series.
+                     * @type {string}
+                     * @apioption sonification.defaultInstrumentOptions.midiName
+                     */
+                    /**
+                     * Options for point grouping, specifically for instrument tracks.
+                     * @extends sonification.pointGrouping
+                     * @apioption sonification.defaultInstrumentOptions.pointGrouping
+                     */
+                    /**
+                     * Define a condition for when a track should be active and not.
+                     *
+                     * Can either be a function callback or a configuration object.
+                     *
+                     * If a function is used, it should return a `boolean` for whether
+                     * or not the track should be active. The function is called for
+                     * each audio event, and receives a parameter object with `time`,
+                     * and potentially `point` and `value` properties depending on the
+                     * track. `point` is available if the audio event is related to a
+                     * data point. `value` is available if the track is used as a
+                     * context track, and `valueInterval` is used.
+                     *
+                     * @sample  highcharts/sonification/mapping-zones
+                     *          Mapping zones
+                     * @type {Function|object}
+                     * @apioption sonification.defaultInstrumentOptions.activeWhen
+                     */
+                    /**
+                     * Track is only active when `prop` is above or at this value.
+                     * @type {number}
+                     * @apioption sonification.defaultInstrumentOptions.activeWhen.min
+                     */
+                    /**
+                     * Track is only active when `prop` is below or at this value.
+                     * @type {number}
+                     * @apioption sonification.defaultInstrumentOptions.activeWhen.max
+                     */
+                    /**
+                     * Track is only active when `prop` was below, and is now at or
+                     * above this value.
+                     *
+                     * If both `crossingUp` and `crossingDown` are defined, the track
+                     * is active if either condition is met.
+                     * @type {number}
+                     * @apioption sonification.defaultInstrumentOptions.activeWhen.crossingUp
+                     */
+                    /**
+                     * Track is only active when `prop` was above, and is now at or
+                     * below this value.
+                     *
+                     * If both `crossingUp` and `crossingDown` are defined, the track
+                     * is active if either condition is met.
+                     * @type {number}
+                     * @apioption sonification.defaultInstrumentOptions.activeWhen.crossingDown
+                     */
+                    /**
+                     * The point property to compare, for example `y` or `x`.
+                     * @type {string}
+                     * @apioption sonification.defaultInstrumentOptions.activeWhen.prop
+                     */
+                    /**
+                     * Instrument to use for playing.
+                     *
+                     * Can either be a string referencing a synth preset, or it can be
+                     * a synth configuration object.
+                     *
+                     * @sample  highcharts/demo/all-instruments
+                     *          Overview of available presets
+                     * @sample  highcharts/sonification/custom-instrument
+                     *          Custom instrument
+                     *
+                     * @type {string|Highcharts.SynthPatchOptionsObject}
+                     */
+                    instrument: 'piano',
+                    /**
+                     * Mapping options for the audio parameters.
+                     *
+                     * All parameters can be either:
+                     *  - A string, referencing a point property to map to.
+                     *  - A number, setting the value of the audio parameter directly.
+                     *  - A callback function, returning the value programmatically.
+                     *  - An object defining detailed configuration of the mapping.
+                     *
+                     * If a function is used, it should return the desired value for
+                     * the audio parameter. The function is called for each audio event
+                     * to be played, and receives a context object parameter with
+                     * `time`, and potentially `point` and `value` depending on the
+                     * track. `point` is available if the audio event is related to a
+                     * data point, and `value` is available if the track is used for a
+                     * context track using `valueInterval`.
+                     *
+                     * @sample  highcharts/sonification/mapping-overview
+                     *          Overview of common mapping parameters
+                     * @sample  highcharts/sonification/pitch-mapping
+                     *          Various types of mapping used
+                     * @sample  highcharts/sonification/polarity-invert
+                     *          Inverted mapping to property
+                     * @sample  highcharts/sonification/log-mapping
+                     *          Logarithmic mapping to property
+                     */
+                    mapping: {
                         /**
-                         * Whether or not to group points
+                         * The volume of notes, from 0 to 1.
+                         * @default 1
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.volume
                          */
-                        enabled: true,
                         /**
-                         * The size of each group in milliseconds. Audio events closer than
-                         * this are grouped together.
+                         * Frequency in Hertz of notes. Overrides pitch mapping if set.
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.frequency
                          */
-                        groupTimespan: 15,
                         /**
-                         * The grouping algorithm, deciding which points to keep when
-                         * grouping a set of points together. By default `"minmax"` is
-                         * used, which keeps both the minimum and maximum points.
+                         * Milliseconds to wait before playing, comes in addition to
+                         * the time determined by the `time` mapping.
                          *
-                         * The other algorithms will either keep the first point in the
-                         * group (time wise), last point, middle point, or both the first
-                         * and the last point.
+                         * Can also be negative to play before the mapped time.
                          *
-                         * The timing of the resulting point(s) is then adjusted to play
-                         * evenly, regardless of its original position within the group.
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.playDelay
+                         */
+                        /**
+                         * Mapping options for tremolo effects.
                          *
-                         * @type {"minmax"|"first"|"last"|"middle"|"firstlast"}
-                         */
-                        algorithm: 'minmax',
-                        /**
-                         * The data property for each point to compare when deciding which
-                         * points to keep in the group.
+                         * Tremolo is repeated changes of volume over time.
                          *
-                         * By default it is "y", which means that if the `"minmax"`
-                         * algorithm is used, the two points the group with the lowest and
-                         * highest `y` value will be kept, and the others not played.
+                         * @apioption sonification.defaultInstrumentOptions.mapping.tremolo
                          */
-                        prop: 'y'
-                    },
-                    /**
-                     * Default sonification options for all instrument tracks.
-                     *
-                     * If specific options are also set on individual tracks or per
-                     * series, those will override these options.
-                     *
-                     * @sample  highcharts/sonification/point-sonify
-                     *          Sonify points on click
-                     */
-                    defaultInstrumentOptions: {
                         /**
-                         * Round pitch mapping to musical notes.
+                         * Map to tremolo depth, from 0 to 1.
                          *
-                         * If `false`, will play the exact mapped note, even if it is out
-                         * of tune compared to the musical notes as defined by 440Hz
-                         * standard tuning.
-                         */
-                        roundToMusicalNotes: true,
-                        /**
-                         * Type of track. Always `"instrument"` for instrument tracks, and
-                         * `"speech"` for speech tracks.
-                         * @type {"instrument"|"speech"}
-                         * @default instrument
-                         * @apioption sonification.defaultInstrumentOptions.type
+                         * This determines the intensity of the tremolo effect, how
+                         * much the volume changes.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.tremolo.depth
                          */
                         /**
-                         * Show play marker (tooltip and/or crosshair) for a track.
-                         * @type {boolean}
-                         * @default true
-                         * @apioption sonification.defaultInstrumentOptions.showPlayMarker
+                         * Map to tremolo speed, from 0 to 1.
+                         *
+                         * This determines the speed of the tremolo effect, how fast
+                         * the volume changes.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.tremolo.speed
                          */
                         /**
-                         * Name to use for a track when exporting to MIDI.
-                         * By default it uses the series name if the track is related to
-                         * a series.
+                         * Mapping options for the lowpass filter.
+                         *
+                         * A lowpass filter lets low frequencies through, but stops high
+                         * frequencies, making the sound more dull.
+                         *
+                         * @apioption sonification.defaultInstrumentOptions.mapping.lowpass
+                         */
+                        /**
+                         * Map to filter frequency in Hertz from 1 to 20,000Hz.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.lowpass.frequency
+                         */
+                        /**
+                         * Map to filter resonance in dB. Can be negative to cause a
+                         * dip, or positive to cause a bump.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultInstrumentOptions.mapping.lowpass.resonance
+                         */
+                        /**
+                         * Mapping options for the highpass filter.
+                         *
+                         * A highpass filter lets high frequencies through, but stops
+                         * low frequencies, making the sound thinner.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.lowpass
+                         * @apioption sonification.defaultInstrumentOptions.mapping.highpass
+                         */
+                        /**
+                         * Time mapping determines what time each point plays. It is
+                         * defined as an offset in milliseconds, where 0 means it
+                         * plays immediately when the chart is sonified.
+                         *
+                         * By default time is mapped to `x`, meaning points with the
+                         * lowest `x` value plays first, and points with the highest
+                         * `x` value plays last.
+                         *
+                         * Can be set to a fixed value, a prop to map to, a function,
+                         * or a mapping object.
+                         *
+                         * @sample  highcharts/sonification/point-play-time
+                         *          Play points in order of Y value
+                         * @default "x"
+                         * @type {string|number|Function|object}
+                         */
+                        time: 'x',
+                        /**
+                         * A point property to map the mapping parameter to.
+                         *
+                         * A negative sign `-` can be placed before the property name
+                         * to make mapping inverted.
+                         *
+                         * @sample  highcharts/sonification/polarity-invert
+                         *          Inverted mapping to property
                          * @type {string}
-                         * @apioption sonification.defaultInstrumentOptions.midiName
+                         * @apioption sonification.defaultInstrumentOptions.mapping.time.mapTo
                          */
                         /**
-                         * Options for point grouping, specifically for instrument tracks.
-                         * @extends sonification.pointGrouping
-                         * @apioption sonification.defaultInstrumentOptions.pointGrouping
-                         */
-                        /**
-                         * Define a condition for when a track should be active and not.
-                         *
-                         * Can either be a function callback or a configuration object.
-                         *
-                         * If a function is used, it should return a `boolean` for whether
-                         * or not the track should be active. The function is called for
-                         * each audio event, and receives a parameter object with `time`,
-                         * and potentially `point` and `value` properties depending on the
-                         * track. `point` is available if the audio event is related to a
-                         * data point. `value` is available if the track is used as a
-                         * context track, and `valueInterval` is used.
-                         *
-                         * @sample  highcharts/sonification/mapping-zones
-                         *          Mapping zones
-                         * @type {Function|object}
-                         * @apioption sonification.defaultInstrumentOptions.activeWhen
-                         */
-                        /**
-                         * Track is only active when `prop` is above or at this value.
+                         * The minimum value for the audio parameter. This is the
+                         * lowest value the audio parameter will be mapped to.
                          * @type {number}
-                         * @apioption sonification.defaultInstrumentOptions.activeWhen.min
+                         * @apioption sonification.defaultInstrumentOptions.mapping.time.min
                          */
                         /**
-                         * Track is only active when `prop` is below or at this value.
+                         * The maximum value for the audio parameter. This is the
+                         * highest value the audio parameter will be mapped to.
                          * @type {number}
-                         * @apioption sonification.defaultInstrumentOptions.activeWhen.max
+                         * @apioption sonification.defaultInstrumentOptions.mapping.time.max
                          */
                         /**
-                         * Track is only active when `prop` was below, and is now at or
-                         * above this value.
+                         * What data values to map the parameter within.
                          *
-                         * If both `crossingUp` and `crossingDown` are defined, the track
-                         * is active if either condition is met.
+                         * Mapping within `"series"` will make the lowest value point
+                         * in the series map to the min audio parameter value, and the
+                         * highest value will map to the max audio parameter.
+                         *
+                         * Mapping within `"chart"` will make the lowest value point in
+                         * the whole chart map to the min audio parameter value, and
+                         * the highest value in the whole chart will map to the max
+                         * audio parameter.
+                         *
+                         * You can also map within the X or Y axis of each series.
+                         *
+                         * @sample  highcharts/sonification/mapping-within
+                         *          Mapping within demonstrated
+                         * @type {"chart"|"series"|"xAxis"|"yAxis"}
+                         * @apioption sonification.defaultInstrumentOptions.mapping.time.within
+                         */
+                        /**
+                         * How to perform the mapping.
+                         * @sample  highcharts/sonification/log-mapping
+                         *          Logarithmic mapping to property
+                         * @type {"linear"|"logarithmic"}
+                         * @apioption sonification.defaultInstrumentOptions.mapping.time.mapFunction
+                         */
+                        /**
+                         * A fixed value to use for the prop when mapping.
+                         *
+                         * For example, if mapping to `y`, setting value to `4` will
+                         * map as if all points had a y value of 4.
+                         *
+                         * @sample  highcharts/demo/plotline-context
+                         *          Map to fixed y value
                          * @type {number}
-                         * @apioption sonification.defaultInstrumentOptions.activeWhen.crossingUp
+                         * @apioption sonification.defaultInstrumentOptions.mapping.time.value
                          */
                         /**
-                         * Track is only active when `prop` was above, and is now at or
-                         * below this value.
+                         * Pan refers to the stereo panning position of the sound.
+                         * It is defined from -1 (left) to 1 (right).
                          *
-                         * If both `crossingUp` and `crossingDown` are defined, the track
-                         * is active if either condition is met.
-                         * @type {number}
-                         * @apioption sonification.defaultInstrumentOptions.activeWhen.crossingDown
+                         * By default it is mapped to `x`, making the sound move from
+                         * left to right as the chart plays.
+                         *
+                         * Can be set to a fixed value, a prop to map to, a function,
+                         * or a mapping object.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @default "x"
                          */
+                        pan: 'x',
                         /**
-                         * The point property to compare, for example `y` or `x`.
-                         * @type {string}
-                         * @apioption sonification.defaultInstrumentOptions.activeWhen.prop
+                         * Note duration determines for how long a note plays, in
+                         * milliseconds.
+                         *
+                         * It only affects instruments that are able to play
+                         * continuous sustained notes. Examples of these instruments
+                         * from the presets include `flute`, `saxophone`, `trumpet`,
+                         * `sawsynth`, `wobble`, `basic1`, `basic2`, `sine`,
+                         * `sineGlide`, `triangle`, `square`, `sawtooth`, `noise`,
+                         * `filteredNoise`, and `wind`.
+                         *
+                         * Can be set to a fixed value, a prop to map to, a function,
+                         * or a mapping object.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @default 200
                          */
+                        noteDuration: 200,
                         /**
-                         * Instrument to use for playing.
+                         * Musical pitch refers to how high or low notes are played.
                          *
-                         * Can either be a string referencing a synth preset, or it can be
-                         * a synth configuration object.
+                         * By default it is mapped to `y` so low `y` values are played
+                         * with a lower pitch, and high values are played with a higher
+                         * pitch.
                          *
-                         * @sample  highcharts/demo/all-instruments
-                         *          Overview of available presets
-                         * @sample  highcharts/sonification/custom-instrument
-                         *          Custom instrument
+                         * Pitch mapping has a few extra features compared to other
+                         * audio parameters.
                          *
-                         * @type {string|Highcharts.SynthPatchOptionsObject}
-                         */
-                        instrument: 'piano',
-                        /**
-                         * Mapping options for the audio parameters.
+                         * Firstly, it accepts not only number values, but also string
+                         * values denoting note names. These are given in the form
+                         * `<note><octave>`, for example `"c6"` or `"F#2"`.
                          *
-                         * All parameters can be either:
-                         *  - A string, referencing a point property to map to.
-                         *  - A number, setting the value of the audio parameter directly.
-                         *  - A callback function, returning the value programmatically.
-                         *  - An object defining detailed configuration of the mapping.
+                         * Secondly, it is possible to map pitch to an array of notes.
+                         * In this case, the `[gapBetweenNotes](#sonification.defaultInstrumentOptions.mapping.gapBetweenNotes)`
+                         * mapping determines the delay between these notes.
                          *
-                         * If a function is used, it should return the desired value for
-                         * the audio parameter. The function is called for each audio event
-                         * to be played, and receives a context object parameter with
-                         * `time`, and potentially `point` and `value` depending on the
-                         * track. `point` is available if the audio event is related to a
-                         * data point, and `value` is available if the track is used for a
-                         * context track using `valueInterval`.
+                         * Thirdly, it is possible to define a musical scale to follow
+                         * when mapping.
                          *
-                         * @sample  highcharts/sonification/mapping-overview
-                         *          Overview of common mapping parameters
+                         * Can be set to a fixed value, an array, a prop to map to, a
+                         * function, or a mapping object.
+                         *
                          * @sample  highcharts/sonification/pitch-mapping
                          *          Various types of mapping used
                          * @sample  highcharts/sonification/polarity-invert
                          *          Inverted mapping to property
                          * @sample  highcharts/sonification/log-mapping
                          *          Logarithmic mapping to property
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @type {string|number|Function|object|Array<string|number>}
                          */
-                        mapping: {
-                            /**
-                             * The volume of notes, from 0 to 1.
-                             * @default 1
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.volume
-                             */
-                            /**
-                             * Frequency in Hertz of notes. Overrides pitch mapping if set.
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.frequency
-                             */
-                            /**
-                             * Milliseconds to wait before playing, comes in addition to
-                             * the time determined by the `time` mapping.
-                             *
-                             * Can also be negative to play before the mapped time.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.playDelay
-                             */
-                            /**
-                             * Mapping options for tremolo effects.
-                             *
-                             * Tremolo is repeated changes of volume over time.
-                             *
-                             * @apioption sonification.defaultInstrumentOptions.mapping.tremolo
-                             */
-                            /**
-                             * Map to tremolo depth, from 0 to 1.
-                             *
-                             * This determines the intensity of the tremolo effect, how
-                             * much the volume changes.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.tremolo.depth
-                             */
-                            /**
-                             * Map to tremolo speed, from 0 to 1.
-                             *
-                             * This determines the speed of the tremolo effect, how fast
-                             * the volume changes.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.tremolo.speed
-                             */
-                            /**
-                             * Mapping options for the lowpass filter.
-                             *
-                             * A lowpass filter lets low frequencies through, but stops high
-                             * frequencies, making the sound more dull.
-                             *
-                             * @apioption sonification.defaultInstrumentOptions.mapping.lowpass
-                             */
-                            /**
-                             * Map to filter frequency in Hertz from 1 to 20,000Hz.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.lowpass.frequency
-                             */
-                            /**
-                             * Map to filter resonance in dB. Can be negative to cause a
-                             * dip, or positive to cause a bump.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultInstrumentOptions.mapping.lowpass.resonance
-                             */
-                            /**
-                             * Mapping options for the highpass filter.
-                             *
-                             * A highpass filter lets high frequencies through, but stops
-                             * low frequencies, making the sound thinner.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.lowpass
-                             * @apioption sonification.defaultInstrumentOptions.mapping.highpass
-                             */
-                            /**
-                             * Time mapping determines what time each point plays. It is
-                             * defined as an offset in milliseconds, where 0 means it
-                             * plays immediately when the chart is sonified.
-                             *
-                             * By default time is mapped to `x`, meaning points with the
-                             * lowest `x` value plays first, and points with the highest
-                             * `x` value plays last.
-                             *
-                             * Can be set to a fixed value, a prop to map to, a function,
-                             * or a mapping object.
-                             *
-                             * @sample  highcharts/sonification/point-play-time
-                             *          Play points in order of Y value
-                             * @default "x"
-                             * @type {string|number|Function|object}
-                             */
-                            time: 'x',
-                            /**
-                             * A point property to map the mapping parameter to.
-                             *
-                             * A negative sign `-` can be placed before the property name
-                             * to make mapping inverted.
-                             *
-                             * @sample  highcharts/sonification/polarity-invert
-                             *          Inverted mapping to property
-                             * @type {string}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.time.mapTo
-                             */
-                            /**
-                             * The minimum value for the audio parameter. This is the
-                             * lowest value the audio parameter will be mapped to.
-                             * @type {number}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.time.min
-                             */
-                            /**
-                             * The maximum value for the audio parameter. This is the
-                             * highest value the audio parameter will be mapped to.
-                             * @type {number}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.time.max
-                             */
-                            /**
-                             * What data values to map the parameter within.
-                             *
-                             * Mapping within `"series"` will make the lowest value point
-                             * in the series map to the min audio parameter value, and the
-                             * highest value will map to the max audio parameter.
-                             *
-                             * Mapping within `"chart"` will make the lowest value point in
-                             * the whole chart map to the min audio parameter value, and
-                             * the highest value in the whole chart will map to the max
-                             * audio parameter.
-                             *
-                             * You can also map within the X or Y axis of each series.
-                             *
-                             * @sample  highcharts/sonification/mapping-within
-                             *          Mapping within demonstrated
-                             * @type {"chart"|"series"|"xAxis"|"yAxis"}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.time.within
-                             */
-                            /**
-                             * How to perform the mapping.
-                             * @sample  highcharts/sonification/log-mapping
-                             *          Logarithmic mapping to property
-                             * @type {"linear"|"logarithmic"}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.time.mapFunction
-                             */
-                            /**
-                             * A fixed value to use for the prop when mapping.
-                             *
-                             * For example, if mapping to `y`, setting value to `4` will
-                             * map as if all points had a y value of 4.
-                             *
-                             * @sample  highcharts/demo/plotline-context
-                             *          Map to fixed y value
-                             * @type {number}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.time.value
-                             */
-                            /**
-                             * Pan refers to the stereo panning position of the sound.
-                             * It is defined from -1 (left) to 1 (right).
-                             *
-                             * By default it is mapped to `x`, making the sound move from
-                             * left to right as the chart plays.
-                             *
-                             * Can be set to a fixed value, a prop to map to, a function,
-                             * or a mapping object.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @default "x"
-                             */
-                            pan: 'x',
-                            /**
-                             * Note duration determines for how long a note plays, in
-                             * milliseconds.
-                             *
-                             * It only affects instruments that are able to play
-                             * continuous sustained notes. Examples of these instruments
-                             * from the presets include `flute`, `saxophone`, `trumpet`,
-                             * `sawsynth`, `wobble`, `basic1`, `basic2`, `sine`,
-                             * `sineGlide`, `triangle`, `square`, `sawtooth`, `noise`,
-                             * `filteredNoise`, and `wind`.
-                             *
-                             * Can be set to a fixed value, a prop to map to, a function,
-                             * or a mapping object.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @default 200
-                             */
-                            noteDuration: 200,
-                            /**
-                             * Musical pitch refers to how high or low notes are played.
-                             *
-                             * By default it is mapped to `y` so low `y` values are played
-                             * with a lower pitch, and high values are played with a higher
-                             * pitch.
-                             *
-                             * Pitch mapping has a few extra features compared to other
-                             * audio parameters.
-                             *
-                             * Firstly, it accepts not only number values, but also string
-                             * values denoting note names. These are given in the form
-                             * `<note><octave>`, for example `"c6"` or `"F#2"`.
-                             *
-                             * Secondly, it is possible to map pitch to an array of notes.
-                             * In this case, the `[gapBetweenNotes](#sonification.defaultInstrumentOptions.mapping.gapBetweenNotes)`
-                             * mapping determines the delay between these notes.
-                             *
-                             * Thirdly, it is possible to define a musical scale to follow
-                             * when mapping.
-                             *
-                             * Can be set to a fixed value, an array, a prop to map to, a
-                             * function, or a mapping object.
-                             *
-                             * @sample  highcharts/sonification/pitch-mapping
-                             *          Various types of mapping used
-                             * @sample  highcharts/sonification/polarity-invert
-                             *          Inverted mapping to property
-                             * @sample  highcharts/sonification/log-mapping
-                             *          Logarithmic mapping to property
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @type {string|number|Function|object|Array<string|number>}
-                             */
-                            pitch: {
-                                mapTo: 'y',
-                                min: 'c2',
-                                max: 'c6',
-                                within: 'yAxis'
-                            },
-                            /**
-                             * Map pitches to a musical scale. The scale is defined as an
-                             * array of semitone offsets from the root note.
-                             *
-                             * @sample  highcharts/sonification/all-scales
-                             *          Predefined scale presets
-                             * @type {Array<number>}
-                             * @apioption sonification.defaultInstrumentOptions.mapping.pitch.scale
-                             */
-                            /**
-                             * Gap in milliseconds between notes if pitch is mapped to an
-                             * array of notes.
-                             *
-                             * Can be set to a fixed value, a prop to map to, a function,
-                             * or a mapping object.
-                             *
-                             * @sample  maps/demo/audio-map
-                             *          Mapping to gap between notes
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @default 100
-                             */
-                            gapBetweenNotes: 100
-                        }
-                    },
-                    /**
-                     * Default sonification options for all speech tracks.
-                     *
-                     * If specific options are also set on individual tracks or per
-                     * series, those will override these options.
-                     *
-                     * @sample  highcharts/sonification/speak-values
-                     *          Speak values
-                     * @extends sonification.defaultInstrumentOptions
-                     * @excluding roundToMusicalNotes, midiName, instrument
-                     */
-                    defaultSpeechOptions: {
+                        pitch: {
+                            mapTo: 'y',
+                            min: 'c2',
+                            max: 'c6',
+                            within: 'yAxis'
+                        },
                         /**
-                         * Type of track. Always `"instrument"` for instrument tracks, and
-                         * `"speech"` for speech tracks.
-                         * @type {"instrument"|"speech"}
-                         * @default speech
-                         * @apioption sonification.defaultSpeechOptions.type
+                         * Map pitches to a musical scale. The scale is defined as an
+                         * array of semitone offsets from the root note.
+                         *
+                         * @sample  highcharts/sonification/all-scales
+                         *          Predefined scale presets
+                         * @type {Array<number>}
+                         * @apioption sonification.defaultInstrumentOptions.mapping.pitch.scale
                          */
                         /**
-                         * Name of the voice synthesis to prefer for speech tracks.
+                         * Gap in milliseconds between notes if pitch is mapped to an
+                         * array of notes.
                          *
-                         * If not available, falls back to the default voice for the
-                         * selected language.
-                         *
-                         * Different platforms provide different voices for web speech
-                         * synthesis.
-                         *
-                         * @type {string}
-                         * @apioption sonification.defaultSpeechOptions.preferredVoice
-                         */
-                        /**
-                         * The language to speak in for speech tracks, as an IETF BCP 47
-                         * language tag.
+                         * Can be set to a fixed value, a prop to map to, a function,
+                         * or a mapping object.
                          *
                          * @sample  maps/demo/audio-map
-                         *          French language speech
+                         *          Mapping to gap between notes
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @default 100
                          */
-                        language: 'en-US',
-                        /**
-                         * Mapping configuration for the speech/audio parameters.
-                         *
-                         * All parameters except `text` can be either:
-                         *  - A string, referencing a point property to map to.
-                         *  - A number, setting the value of the speech parameter directly.
-                         *  - A callback function, returning the value programmatically.
-                         *  - An object defining detailed configuration of the mapping.
-                         *
-                         * If a function is used, it should return the desired value for
-                         * the speech parameter. The function is called for each speech
-                         * event to be played, and receives a context object parameter with
-                         * `time`, and potentially `point` and `value` depending on the
-                         * track. `point` is available if the audio event is related to a
-                         * data point, and `value` is available if the track is used for a
-                         * context track using `valueInterval`.
-                         *
-                         * @extends sonification.defaultInstrumentOptions.mapping
-                         * @excluding frequency, gapBetweenNotes, highpass, lowpass, tremolo,
-                         *  noteDuration, pan
-                         * @apioption sonification.defaultSpeechOptions.mapping
-                         */
-                        mapping: {
-                            /**
-                             * Milliseconds to wait before playing, comes in addition to
-                             * the time determined by the `time` mapping.
-                             *
-                             * Can also be negative to play before the mapped time.
-                             *
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @apioption sonification.defaultSpeechOptions.mapping.playDelay
-                             */
-                            /**
-                             * Speech pitch (how high/low the voice is) multiplier.
-                             * @sample  highcharts/sonification/speak-values
-                             *          Speak values
-                             * @default 1
-                             * @type {string|number|Function|object}
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @excluding scale
-                             * @apioption sonification.defaultSpeechOptions.mapping.pitch
-                             */
-                            /**
-                             * @default undefined
-                             * @apioption sonification.defaultSpeechOptions.mapping.pitch.mapTo
-                             */
-                            /**
-                             * @default undefined
-                             * @apioption sonification.defaultSpeechOptions.mapping.pitch.min
-                             */
-                            /**
-                             * @default undefined
-                             * @apioption sonification.defaultSpeechOptions.mapping.pitch.max
-                             */
-                            /**
-                             * @default undefined
-                             * @apioption sonification.defaultSpeechOptions.mapping.pitch.within
-                             */
-                            /**
-                             * The text to announce for speech tracks. Can either be a
-                             * format string or a function.
-                             *
-                             * If it is a function, it should return the format string to
-                             * announce. The function is called for each audio event, and
-                             * receives a parameter object with `time`, and potentially
-                             * `point` and `value` properties depending on the track.
-                             * `point` is available if the audio event is related to a data
-                             * point. `value` is available if the track is used as a
-                             * context track, and `valueInterval` is used.
-                             *
-                             * If it is a format string, in addition to normal string
-                             * content, format values can be accessed using bracket
-                             * notation. For example `"Value is {point.y}%"`.
-                             *
-                             * `time`, `point` and `value` are available to the format
-                             * strings similarly to with functions. Nested properties can
-                             * be accessed with dot notation, for example
-                             * `"Density: {point.options.custom.density}"`
-                             *
-                             * @sample  highcharts/sonification/speak-values
-                             *          Speak values
-                             * @type {string|Function}
-                             * @apioption sonification.defaultSpeechOptions.mapping.text
-                             */
-                            /**
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @default "x"
-                             */
-                            time: 'x',
-                            /**
-                             * Speech rate (speed) multiplier.
-                             * @extends sonification.defaultInstrumentOptions.mapping.time
-                             * @default 1.3
-                             */
-                            rate: 1.3,
-                            /**
-                             * Volume of the speech announcement.
-                             * @extends sonification.defaultInstrumentOptions.mapping.volume
-                             * @default 0.4
-                             */
-                            volume: 0.4
-                        },
-                        pointGrouping: {
-                            algorithm: 'last'
-                        }
+                        gapBetweenNotes: 100
                     }
                 },
-                exporting: {
-                    menuItemDefinitions: {
-                        downloadMIDI: {
-                            textKey: 'downloadMIDI',
-                            onclick: function () {
-                                if (this.sonification) {
-                                    this.sonification.downloadMIDI();
+                /**
+                 * Default sonification options for all speech tracks.
+                 *
+                 * If specific options are also set on individual tracks or per
+                 * series, those will override these options.
+                 *
+                 * @sample  highcharts/sonification/speak-values
+                 *          Speak values
+                 * @extends sonification.defaultInstrumentOptions
+                 * @excluding roundToMusicalNotes, midiName, instrument
+                 */
+                defaultSpeechOptions: {
+                    /**
+                     * Type of track. Always `"instrument"` for instrument tracks, and
+                     * `"speech"` for speech tracks.
+                     *
+                     * @declare    Highcharts.SonifcationTypeValue
+                     * @type       {string}
+                     * @default    speech
+                     * @validvalue ["instrument","speech"]
+                     * @apioption  sonification.defaultSpeechOptions.type
+                     */
+                    /**
+                     * Name of the voice synthesis to prefer for speech tracks.
+                     *
+                     * If not available, falls back to the default voice for the
+                     * selected language.
+                     *
+                     * Different platforms provide different voices for web speech
+                     * synthesis.
+                     *
+                     * @type {string}
+                     * @apioption sonification.defaultSpeechOptions.preferredVoice
+                     */
+                    /**
+                     * The language to speak in for speech tracks, as an IETF BCP 47
+                     * language tag.
+                     *
+                     * @sample  maps/demo/audio-map
+                     *          French language speech
+                     */
+                    language: 'en-US',
+                    /**
+                     * Mapping configuration for the speech/audio parameters.
+                     *
+                     * All parameters except `text` can be either:
+                     *  - A string, referencing a point property to map to.
+                     *  - A number, setting the value of the speech parameter directly.
+                     *  - A callback function, returning the value programmatically.
+                     *  - An object defining detailed configuration of the mapping.
+                     *
+                     * If a function is used, it should return the desired value for
+                     * the speech parameter. The function is called for each speech
+                     * event to be played, and receives a context object parameter with
+                     * `time`, and potentially `point` and `value` depending on the
+                     * track. `point` is available if the audio event is related to a
+                     * data point, and `value` is available if the track is used for a
+                     * context track using `valueInterval`.
+                     *
+                     * @extends sonification.defaultInstrumentOptions.mapping
+                     * @excluding frequency, gapBetweenNotes, highpass, lowpass, tremolo,
+                     *  noteDuration, pan
+                     * @apioption sonification.defaultSpeechOptions.mapping
+                     */
+                    mapping: {
+                        /**
+                         * Milliseconds to wait before playing, comes in addition to
+                         * the time determined by the `time` mapping.
+                         *
+                         * Can also be negative to play before the mapped time.
+                         *
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @apioption sonification.defaultSpeechOptions.mapping.playDelay
+                         */
+                        /**
+                         * Speech pitch (how high/low the voice is) multiplier.
+                         * @sample  highcharts/sonification/speak-values
+                         *          Speak values
+                         * @default 1
+                         * @type {string|number|Function|object}
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @excluding scale
+                         * @apioption sonification.defaultSpeechOptions.mapping.pitch
+                         */
+                        /**
+                         * @default undefined
+                         * @apioption sonification.defaultSpeechOptions.mapping.pitch.mapTo
+                         */
+                        /**
+                         * @default undefined
+                         * @apioption sonification.defaultSpeechOptions.mapping.pitch.min
+                         */
+                        /**
+                         * @default undefined
+                         * @apioption sonification.defaultSpeechOptions.mapping.pitch.max
+                         */
+                        /**
+                         * @default undefined
+                         * @apioption sonification.defaultSpeechOptions.mapping.pitch.within
+                         */
+                        /**
+                         * The text to announce for speech tracks. Can either be a
+                         * format string or a function.
+                         *
+                         * If it is a function, it should return the format string to
+                         * announce. The function is called for each audio event, and
+                         * receives a parameter object with `time`, and potentially
+                         * `point` and `value` properties depending on the track.
+                         * `point` is available if the audio event is related to a data
+                         * point. `value` is available if the track is used as a
+                         * context track, and `valueInterval` is used.
+                         *
+                         * If it is a format string, in addition to normal string
+                         * content, format values can be accessed using bracket
+                         * notation. For example `"Value is {point.y}%"`.
+                         *
+                         * `time`, `point` and `value` are available to the format
+                         * strings similarly to with functions. Nested properties can
+                         * be accessed with dot notation, for example
+                         * `"Density: {point.options.custom.density}"`
+                         *
+                         * @sample  highcharts/sonification/speak-values
+                         *          Speak values
+                         * @type {string|Function}
+                         * @apioption sonification.defaultSpeechOptions.mapping.text
+                         */
+                        /**
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @default "x"
+                         */
+                        time: 'x',
+                        /**
+                         * Speech rate (speed) multiplier.
+                         * @extends sonification.defaultInstrumentOptions.mapping.time
+                         * @default 1.3
+                         */
+                        rate: 1.3,
+                        /**
+                         * Volume of the speech announcement.
+                         * @extends sonification.defaultInstrumentOptions.mapping.volume
+                         * @default 0.4
+                         */
+                        volume: 0.4
+                    },
+                    pointGrouping: {
+                        algorithm: 'last'
+                    }
+                }
+            },
+            exporting: {
+                menuItemDefinitions: {
+                    downloadMIDI: {
+                        textKey: 'downloadMIDI',
+                        onclick: function () {
+                            if (this.sonification) {
+                                this.sonification.downloadMIDI();
                             }
                         }
                     },
@@ -1025,11 +1029,9 @@
          *
          * */
         var __assign = (this && this.__assign) || function () {
-                __assign = Object.assign || function(t) {
-                    for (var s,
-            i = 1,
-            n = arguments.length; i < n; i++) {
-                        s = arguments[i];
+            __assign = Object.assign || function(t) {
+                for (var s, i = 1, n = arguments.length; i < n; i++) {
+                    s = arguments[i];
                     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
                         t[p] = s[p];
                 }
@@ -1037,9 +1039,7 @@
             };
             return __assign.apply(this, arguments);
         };
-        var clamp = U.clamp,
-            defined = U.defined,
-            pick = U.pick;
+        var clamp = U.clamp, defined = U.defined, pick = U.pick;
         /**
          * Get the multipler value from a pitch tracked multiplier. The parameter
          * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between
@@ -1049,8 +1049,7 @@
          * @param {number} freq The current frequency.
          */
         function getPitchTrackedMultiplierVal(multiplier, freq) {
-            var a = 0.2414 * multiplier - 0.2414,
-                b = (3.5 - 1.7 * multiplier) / 1.8;
+            var a = 0.2414 * multiplier - 0.2414, b = (3.5 - 1.7 * multiplier) / 1.8;
             return a * Math.log(freq) + b;
         }
         /**
@@ -1076,8 +1075,7 @@
          */
         function scheduleGainEnvelope(envelope, type, time, gainNode, volumeMultiplier) {
             if (volumeMultiplier === void 0) { volumeMultiplier = 1; }
-            var isAtk = type === 'attack',
-                gain = gainNode.gain;
+            var isAtk = type === 'attack', gain = gainNode.gain;
             gain.cancelScheduledValues(time);
             if (!envelope.length) {
                 miniRampToVolAtTime(gainNode, time, isAtk ? volumeMultiplier : 0);
@@ -1099,14 +1097,13 @@
          * @private
          */
         var PulseOscNode = /** @class */ (function () {
-                function PulseOscNode(context, options) {
-                    this.pulseWidth = Math.min(Math.max(0, options.pulseWidth || 0.5));
+            function PulseOscNode(context, options) {
+                this.pulseWidth = Math.min(Math.max(0, options.pulseWidth || 0.5));
                 var makeOsc = function () { return new OscillatorNode(context, {
-                        type: 'sawtooth',
-                        detune: options.detune,
-                        frequency: Math.max(1,
-                    options.frequency || 350)
-                    }); };
+                    type: 'sawtooth',
+                    detune: options.detune,
+                    frequency: Math.max(1, options.frequency || 350)
+                }); };
                 this.sawOscA = makeOsc();
                 this.sawOscB = makeOsc();
                 this.phaseInverter = new GainNode(context, { gain: -1 });
@@ -1169,8 +1166,8 @@
          * @private
          */
         var Oscillator = /** @class */ (function () {
-                function Oscillator(audioContext, options, destination) {
-                    this.audioContext = audioContext;
+            function Oscillator(audioContext, options, destination) {
+                this.audioContext = audioContext;
                 this.options = options;
                 this.fmOscillatorIx = options.fmOscillator;
                 this.vmOscillatorIx = options.vmOscillator;
@@ -1225,12 +1222,8 @@
             };
             Oscillator.prototype.setFreqAtTime = function (time, frequency, glideDuration) {
                 if (glideDuration === void 0) { glideDuration = 0; }
-                var opts = this.options,
-                    f = clamp(pick(opts.fixedFrequency,
-                    frequency) *
-                        (opts.freqMultiplier || 1), 0, 21000),
-                    oscTarget = this.getOscTarget(),
-                    timeConstant = glideDuration / 5000;
+                var opts = this.options, f = clamp(pick(opts.fixedFrequency, frequency) *
+                    (opts.freqMultiplier || 1), 0, 21000), oscTarget = this.getOscTarget(), timeConstant = glideDuration / 5000;
                 if (oscTarget) {
                     oscTarget.cancelScheduledValues(time);
                     if (glideDuration && time - (this.lastUpdateTime || -1) > 0.01) {
@@ -1263,7 +1256,7 @@
                     return;
                 }
                 var env = (type === 'attack' ? this.options.attackEnvelope :
-                        this.options.releaseEnvelope) || [];
+                    this.options.releaseEnvelope) || [];
                 scheduleGainEnvelope(env, type, time, this.gainNode, this.options.volume);
             };
             // Cancel any envelopes or frequency changes currently scheduled
@@ -1289,10 +1282,8 @@
             // Set the pitch dependent volume to fit some frequency at some time
             Oscillator.prototype.scheduleVolTrackingChange = function (frequency, time, glideDuration) {
                 if (this.volTrackingNode) {
-                    var v = getPitchTrackedMultiplierVal(this.options.volumePitchTrackingMultiplier || 1,
-                        frequency),
-                        rampTime = glideDuration ? glideDuration / 1000 :
-                            SynthPatch.stopRampTime;
+                    var v = getPitchTrackedMultiplierVal(this.options.volumePitchTrackingMultiplier || 1, frequency), rampTime = glideDuration ? glideDuration / 1000 :
+                        SynthPatch.stopRampTime;
                     this.volTrackingNode.gain.cancelScheduledValues(time);
                     this.volTrackingNode.gain.setTargetAtTime(v, time, rampTime / 5);
                     this.volTrackingNode.gain.setValueAtTime(v, time + rampTime);
@@ -1300,14 +1291,9 @@
             };
             // Set the pitch dependent filter frequency to fit frequency at some time
             Oscillator.prototype.scheduleFilterTrackingChange = function (frequency, time, glideDuration) {
-                var opts = this.options,
-                    rampTime = glideDuration ? glideDuration / 1000 :
-                        SynthPatch.stopRampTime,
-                    scheduleFilterTarget = function (filterNode,
-                    filterOptions) {
-                        var multiplier = getPitchTrackedMultiplierVal(filterOptions.frequencyPitchTrackingMultiplier || 1,
-                    frequency),
-                    f = clamp((filterOptions.frequency || 1000) * multiplier, 0, 21000);
+                var opts = this.options, rampTime = glideDuration ? glideDuration / 1000 :
+                    SynthPatch.stopRampTime, scheduleFilterTarget = function (filterNode, filterOptions) {
+                    var multiplier = getPitchTrackedMultiplierVal(filterOptions.frequencyPitchTrackingMultiplier || 1, frequency), f = clamp((filterOptions.frequency || 1000) * multiplier, 0, 21000);
                     filterNode.frequency.cancelScheduledValues(time);
                     filterNode.frequency.setTargetAtTime(f, time, rampTime / 5);
                     filterNode.frequency.setValueAtTime(f, time + rampTime);
@@ -1320,10 +1306,9 @@
                 }
             };
             Oscillator.prototype.createGain = function () {
-                var opts = this.options,
-                    needsGainNode = defined(opts.volume) ||
-                        opts.attackEnvelope && opts.attackEnvelope.length ||
-                        opts.releaseEnvelope && opts.releaseEnvelope.length;
+                var opts = this.options, needsGainNode = defined(opts.volume) ||
+                    opts.attackEnvelope && opts.attackEnvelope.length ||
+                    opts.releaseEnvelope && opts.releaseEnvelope.length;
                 if (needsGainNode) {
                     this.gainNode = new GainNode(this.audioContext, {
                         gain: pick(opts.volume, 1)
@@ -1334,16 +1319,10 @@
             };
             // Create the oscillator or audio buffer acting as the sound source
             Oscillator.prototype.createSoundSource = function () {
-                var opts = this.options,
-                    ctx = this.audioContext,
-                    frequency = (opts.fixedFrequency || 0) *
-                        (opts.freqMultiplier || 1);
+                var opts = this.options, ctx = this.audioContext, frequency = (opts.fixedFrequency || 0) *
+                    (opts.freqMultiplier || 1);
                 if (opts.type === 'whitenoise') {
-                    var bSize = ctx.sampleRate * 2,
-                        buffer = ctx.createBuffer(1,
-                        bSize,
-                        ctx.sampleRate),
-                        data = buffer.getChannelData(0);
+                    var bSize = ctx.sampleRate * 2, buffer = ctx.createBuffer(1, bSize, ctx.sampleRate), data = buffer.getChannelData(0);
                     for (var i = 0; i < bSize; ++i) {
                         // More pleasant "white" noise with less variance than -1 to +1
                         data[i] = Math.random() * 1.2 - 0.6;
@@ -1423,8 +1402,8 @@
          *        Configuration for the synth.
          */
         var SynthPatch = /** @class */ (function () {
-                function SynthPatch(audioContext, options) {
-                    var _this = this;
+            function SynthPatch(audioContext, options) {
+                var _this = this;
                 this.audioContext = audioContext;
                 this.options = options;
                 this.eqNodes = [];
@@ -1432,16 +1411,15 @@
                 this.outputNode = new GainNode(audioContext, { gain: 0 });
                 this.createEqChain(this.outputNode);
                 var inputNode = this.eqNodes.length ?
-                        this.eqNodes[0] : this.outputNode;
+                    this.eqNodes[0] : this.outputNode;
                 this.oscillators = (this.options.oscillators || []).map(function (oscOpts) { return new Oscillator(audioContext, oscOpts, defined(oscOpts.fmOscillator) || defined(oscOpts.vmOscillator) ?
                     void 0 : inputNode); });
                 // Now that we have all oscillators, connect the ones
                 // that are used for modulation.
                 this.oscillators.forEach(function (osc) {
-                    var connectTarget = function (targetFunc,
-                        targetOsc) {
-                            if (targetOsc) {
-                                var target = targetOsc[targetFunc]();
+                    var connectTarget = function (targetFunc, targetOsc) {
+                        if (targetOsc) {
+                            var target = targetOsc[targetFunc]();
                             if (target) {
                                 osc.connect(target);
                             }
@@ -1468,8 +1446,7 @@
              * @function Highcharts.SynthPatch#stop
              */
             SynthPatch.prototype.stop = function () {
-                var curTime = this.audioContext.currentTime,
-                    endTime = curTime + SynthPatch.stopRampTime;
+                var curTime = this.audioContext.currentTime, endTime = curTime + SynthPatch.stopRampTime;
                 miniRampToVolAtTime(this.outputNode, curTime, 0);
                 this.oscillators.forEach(function (o) { return o.stopAtTime(endTime); });
                 this.outputNode.disconnect();
@@ -1506,8 +1483,7 @@
              * @param {number|undefined} noteDuration Duration to play, in milliseconds
              */
             SynthPatch.prototype.playFreqAtTime = function (time, frequency, noteDuration) {
-                var t = (time || 0) + this.audioContext.currentTime,
-                    opts = this.options;
+                var t = (time || 0) + this.audioContext.currentTime, opts = this.options;
                 this.oscillators.forEach(function (o) {
                     o.setFreqAtTime(t, frequency, opts.noteGlideDuration);
                     o.runEnvelopeAtTime('attack', t);
@@ -1763,1158 +1739,851 @@
          *
          * */
         var InstrumentPresets = {
-                // PIANO ----------------------------
-                piano: {
-                    masterVolume: 0.45,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0.71 },
-                        { t: 40,
-            vol: 0.79 },
-                        { t: 82,
-            vol: 0.64 },
-                        { t: 147,
-            vol: 0.29 },
-                        { t: 260,
-            vol: 0.15 },
-                        { t: 417,
-            vol: 0.05 },
-                        { t: 589,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 200,
-            Q: 0.7,
-            gain: 6 },
-                        { frequency: 450,
-            gain: 6 },
-                        { frequency: 1300,
-            gain: 2 },
-                        { frequency: 2600,
-            Q: 0.8,
-            gain: 8 },
-                        { frequency: 3500,
-            Q: 0.8,
-            gain: 6 },
-                        { frequency: 6200,
-            Q: 0.8,
-            gain: 10 },
-                        { frequency: 8000,
-            gain: -23 },
-                        { frequency: 10000,
-            Q: 0.4,
-            gain: -12 }
-                    ],
-                    oscillators: [{
-                            type: 'pulse',
-                            volume: 0.5,
-                            pulseWidth: 0.55,
-                            volumePitchTrackingMultiplier: 0.1,
-                            lowpass: {
-                                frequency: 4.5,
-                                frequencyPitchTrackingMultiplier: 900,
-                                Q: -2
-                            },
-                            highpass: { frequency: 270 },
-                            attackEnvelope: [{ t: 1,
-            vol: 1 }],
-                            releaseEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 282,
-            vol: 0.64 },
-                                { t: 597,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.8,
-                            lowpass: { frequency: 400 },
-                            highpass: { frequency: 300 },
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 19,
-            vol: 0 }
-                            ]
-                        }]
-                },
-                // PLUCKED --------------------------
-                plucked: {
-                    masterVolume: 0.5,
-                    midiInstrument: 25,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0.71 },
-                        { t: 4,
-            vol: 0.71 },
-                        { t: 31,
-            vol: 0.4 },
-                        { t: 109,
-            vol: 0.12 },
-                        { t: 234,
-            vol: 0.04 },
-                        { t: 442,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 800,
-            gain: -8 },
-                        { frequency: 1400,
-            Q: 4,
-            gain: 4 },
-                        { frequency: 1600,
-            gain: -14 },
-                        { frequency: 2200,
-            gain: -8 },
-                        { frequency: 3600,
-            gain: -2 },
-                        { frequency: 6400,
-            Q: 2,
-            gain: -6 }
-                    ],
-                    oscillators: [{
-                            type: 'sawtooth',
-                            volume: 0.9,
-                            volumePitchTrackingMultiplier: 0.6,
-                            highpass: { frequency: 100 },
-                            lowpass: { frequency: 8000 },
-                            releaseEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 315,
-            vol: 0.56 },
-                                { t: 550,
-            vol: 0 }
-                            ]
-                        }]
-                },
-                // FLUTE ----------------------------
-                flute: {
-                    masterVolume: 1.1,
-                    midiInstrument: 74,
-                    noteGlideDuration: 30,
-                    masterAttackEnvelope: [
-                        { t: 0,
-            vol: 0 },
-                        { t: 29,
-            vol: 1 },
-                        { t: 76,
-            vol: 0.48 },
-                        { t: 600,
-            vol: 0.36 }
-                    ],
-                    masterReleaseEnvelope: [
-                        { t: 1,
-            vol: 0.36 },
-                        { t: 24,
-            vol: 0.15 },
-                        { t: 119,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 150,
-            Q: 0.6,
-            gain: -10 },
-                        { frequency: 500,
-            gain: 4 },
-                        { frequency: 1100,
-            gain: -4 },
-                        { frequency: 2200,
-            gain: -14 },
-                        { frequency: 5000,
-            gain: 8 },
-                        { frequency: 6400,
-            gain: 10 },
-                        { frequency: 8000,
-            gain: 12 },
-                        { frequency: 10800,
-            gain: 8 }
-                    ],
-                    oscillators: [{
-                            type: 'triangle',
-                            volume: 1,
-                            volumePitchTrackingMultiplier: 0.4,
-                            lowpass: {
-                                frequency: 12,
-                                frequencyPitchTrackingMultiplier: 100
-                            },
-                            highpass: {
-                                frequency: 200
-                            }
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 5,
-                            volume: 0.2,
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 48,
-            vol: 0 },
-                                { t: 225,
-            vol: 0.05 },
-                                { t: 600,
-            vol: 0.77 }
-                            ]
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.13,
-                            lowpass: {
-                                frequency: 9000,
-                                Q: 3
-                            },
-                            highpass: {
-                                frequency: 6000,
-                                Q: 3
-                            },
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 0,
-            vol: 0 },
-                                { t: 26,
-            vol: 1 },
-                                { t: 93,
-            vol: 0.8 }
-                            ]
-                        }]
-                },
-                // LEAD -----------------------------
-                lead: {
-                    masterVolume: 1,
-                    midiInstrument: 20,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0.81 },
-                        { t: 98,
-            vol: 0.5 },
-                        { t: 201,
-            vol: 0.18 },
-                        { t: 377,
-            vol: 0.04 },
-                        { t: 586,
-            vol: 0 },
-                        { t: 586,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 200,
-            gain: -6 },
-                        { frequency: 400,
-            gain: -8 },
-                        { frequency: 800,
-            Q: 0.5,
-            gain: -10 },
-                        { frequency: 1200,
-            gain: 4 },
-                        { frequency: 3600,
-            gain: -4 },
-                        { frequency: 4200,
-            gain: -12 },
-                        { frequency: 7400,
-            gain: -14 },
-                        { frequency: 10000,
-            gain: 2 }
-                    ],
-                    oscillators: [{
-                            type: 'triangle',
-                            volume: 1.1,
-                            volumePitchTrackingMultiplier: 0.6,
-                            lowpass: { frequency: 5000 },
-                            highpass: { frequency: 100 }
-                        }, {
-                            type: 'sawtooth',
-                            volume: 0.4,
-                            lowpass: { frequency: 7000 },
-                            highpass: { frequency: 800,
-            Q: 6 },
-                            releaseEnvelope: [
-                                { t: 0,
-            vol: 0.99 },
-                                { t: 200,
-            vol: 0.83 },
-                                { t: 495,
-            vol: 0 }
-                            ]
-                        }]
-                },
-                // VIBRAPHONE -----------------------
-                vibraphone: {
-                    masterVolume: 1,
-                    midiInstrument: 12,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0 },
-                        { t: 10,
-            vol: 0.63 },
-                        { t: 82,
-            vol: 0.64 },
-                        { t: 149,
-            vol: 0.26 },
-                        { t: 600,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 200,
-            Q: 0.8,
-            gain: -12 },
-                        { frequency: 400,
-            gain: -4 },
-                        { frequency: 1600,
-            Q: 0.5,
-            gain: 6 },
-                        { frequency: 2200,
-            Q: 0.5,
-            gain: 6 },
-                        { frequency: 6400,
-            gain: 4 },
-                        { frequency: 12800,
-            gain: 4 }
-                    ],
-                    oscillators: [{
-                            type: 'sine',
-                            volume: 1.5,
-                            volumePitchTrackingMultiplier: 0.0000001,
-                            attackEnvelope: [{ t: 1,
-            vol: 1 }],
-                            releaseEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 146,
-            vol: 0.39 },
-                                { t: 597,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.03,
-                            volumePitchTrackingMultiplier: 0.0001,
-                            lowpass: {
-                                frequency: 900
-                            },
-                            highpass: {
-                                frequency: 800
-                            },
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 9,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            freqMultiplier: 4,
-                            volume: 0.15,
-                            volumePitchTrackingMultiplier: 0.0001
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 3,
-                            volume: 6,
-                            fmOscillator: 0,
-                            releaseEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 190,
-            vol: 0.41 },
-                                { t: 600,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 6,
-                            volume: 3,
-                            fmOscillator: 2
-                        }, {
-                            type: 'sine',
-                            freqMultiplier: 9,
-                            volume: 0.0005,
-                            volumePitchTrackingMultiplier: 0.0001,
-                            releaseEnvelope: [
-                                { t: 1,
-            vol: 0.97 },
-                                { t: 530,
-            vol: 0 }
-                            ]
-                        }]
-                },
-                // SAXOPHONE ------------------------
-                saxophone: {
-                    masterVolume: 1,
-                    midiInstrument: 67,
-                    noteGlideDuration: 10,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0.57 },
-                        { t: 35,
-            vol: 1 },
-                        { t: 87,
-            vol: 0.84 },
-                        { t: 111,
-            vol: 0.6 },
-                        { t: 296,
-            vol: 0.49 },
-                        { t: 600,
-            vol: 0.58 }
-                    ],
-                    masterReleaseEnvelope: [
-                        { t: 1,
-            vol: 0.58 },
-                        { t: 47,
-            vol: 0.16 },
-                        { t: 119,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 200,
-            gain: -2 },
-                        { frequency: 600,
-            gain: 2 },
-                        { frequency: 800,
-            gain: -10 },
-                        { frequency: 1100,
-            gain: -2 },
-                        { frequency: 2200,
-            gain: -2 },
-                        { frequency: 3500,
-            gain: 10 },
-                        { frequency: 12800,
-            gain: 4 }
-                    ],
-                    oscillators: [{
-                            type: 'sawtooth',
-                            volume: 0.45,
-                            volumePitchTrackingMultiplier: 0.06,
-                            lowpass: {
-                                frequency: 18,
-                                frequencyPitchTrackingMultiplier: 200
-                            },
-                            highpass: {
-                                frequency: 300
-                            }
-                        }, {
-                            type: 'whitenoise',
-                            fixedFrequency: 1,
-                            volume: 0.4,
-                            highpass: {
-                                frequency: 7000
-                            },
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 51,
-            vol: 1 },
-                                { t: 86,
-            vol: 0.84 },
-                                { t: 500,
-            vol: 0.78 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 4,
-                            volume: 2,
-                            fmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 0,
-            vol: 0 },
-                                { t: 15,
-            vol: 0.94 },
-                                { t: 79,
-            vol: 1 },
-                                { t: 172,
-            vol: 0.47 },
-                                { t: 500,
-            vol: 0.26 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 7,
-                            volume: 6,
-                            fmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 0,
-            vol: 0 },
-                                { t: 25,
-            vol: 0.99 },
-                                { t: 85,
-            vol: 0 },
-                                { t: 85,
-            vol: 0 },
-                                { t: 387,
-            vol: 0.02 },
-                                { t: 511,
-            vol: 0.43 },
-                                { t: 600,
-            vol: 0 }
-                            ]
-                        }]
-                },
-                // TRUMPET ------------------------
-                trumpet: {
-                    masterVolume: 0.3,
-                    midiInstrument: 57,
-                    noteGlideDuration: 40,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0 },
-                        { t: 17,
-            vol: 1 },
-                        { t: 42,
-            vol: 0.85 },
-                        { t: 76,
-            vol: 1 },
-                        { t: 202,
-            vol: 0.65 },
-                        { t: 226,
-            vol: 0.86 },
-                        { t: 282,
-            vol: 0.63 }
-                    ],
-                    masterReleaseEnvelope: [
-                        { t: 1,
-            vol: 0.62 },
-                        { t: 34,
-            vol: 0.14 },
-                        { t: 63,
-            vol: 0.21 },
-                        { t: 96,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 200,
-            Q: 0.6,
-            gain: 10 },
-                        { frequency: 600,
-            Q: 0.5,
-            gain: 6 },
-                        { frequency: 1500,
-            Q: 0.7,
-            gain: 14 },
-                        { frequency: 3200,
-            Q: 2,
-            gain: 8 },
-                        { frequency: 3800,
-            Q: 0.8,
-            gain: 10 },
-                        { frequency: 6200,
-            gain: 12 },
-                        { frequency: 8400,
-            gain: -20 },
-                        { frequency: 12800,
-            Q: 0.5,
-            gain: -18 }
-                    ],
-                    oscillators: [{
-                            type: 'sawtooth',
-                            volume: 0.15,
-                            pulseWidth: 0.5,
-                            volumePitchTrackingMultiplier: 0.5,
-                            lowpass: { frequency: 1900,
-            Q: 3 }
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 6,
-                            volume: 0.2,
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 102,
-            vol: 0.13 },
-                                { t: 556,
-            vol: 0.24 }
-                            ]
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.45,
-                            highpass: { frequency: 7000,
-            Q: 9 },
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 89,
-            vol: 0.51 },
-                                { t: 577,
-            vol: 0.29 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 5.7,
-                            volume: 20,
-                            fmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 89,
-            vol: 1 },
-                                { t: 137,
-            vol: 0.46 },
-                                { t: 283,
-            vol: 0.15 },
-                                { t: 600,
-            vol: 0.28 }
-                            ]
-                        }]
-                },
-                // SAWSYNTH --------------------------
-                sawsynth: {
-                    masterVolume: 0.3,
-                    midiInstrument: 51,
-                    noteGlideDuration: 40,
-                    masterAttackEnvelope: [
-                        { t: 0,
-            vol: 0.6 },
-                        { t: 9,
-            vol: 1 },
-                        { t: 102,
-            vol: 0.48 }
-                    ],
-                    eq: [{ frequency: 200,
-            gain: -6 }],
-                    oscillators: [{
-                            type: 'sawtooth',
-                            volume: 0.4,
-                            volumePitchTrackingMultiplier: 0.3
-                        }, {
-                            type: 'sawtooth',
-                            volume: 0.4,
-                            detune: 11,
-                            volumePitchTrackingMultiplier: 0.3
-                        }, {
-                            type: 'sawtooth',
-                            volume: 0.4,
-                            detune: -11,
-                            volumePitchTrackingMultiplier: 0.3
-                        }]
-                },
-                // BASIC1 ---------------------------
-                basic1: {
-                    masterVolume: 1,
-                    noteGlideDuration: 0,
-                    masterReleaseEnvelope: [
-                        { t: 1,
-            vol: 0.36 },
-                        { t: 24,
-            vol: 0.15 },
-                        { t: 119,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 150,
-            Q: 0.6,
-            gain: -12 },
-                        { frequency: 1100,
-            gain: -2 },
-                        { frequency: 2200,
-            gain: -16 },
-                        { frequency: 5000,
-            gain: 8 },
-                        { frequency: 6400,
-            gain: 10 },
-                        { frequency: 8000,
-            gain: 12 },
-                        { frequency: 10800,
-            gain: 8 }
-                    ],
-                    oscillators: [{
-                            type: 'triangle',
-                            volume: 1,
-                            volumePitchTrackingMultiplier: 0.05,
-                            lowpass: { frequency: 17,
-            frequencyPitchTrackingMultiplier: 100 },
-                            highpass: { frequency: 200 }
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.04,
-                            lowpass: { frequency: 9000,
-            Q: 3 },
-                            highpass: { frequency: 6000,
-            Q: 3 },
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 0,
-            vol: 0 },
-                                { t: 26,
-            vol: 1 },
-                                { t: 71,
-            vol: 0.73 }
-                            ]
-                        }]
-                },
-                // BASIC2 ---------------------------
-                basic2: {
-                    masterVolume: 0.3,
-                    eq: [
-                        { frequency: 200,
-            Q: 0.7,
-            gain: 6 },
-                        { frequency: 450,
-            gain: 2 },
-                        { frequency: 1300,
-            gain: -2 },
-                        { frequency: 2600,
-            Q: 0.8,
-            gain: 6 },
-                        { frequency: 3500,
-            Q: 0.8,
-            gain: 6 },
-                        { frequency: 6200,
-            Q: 0.8,
-            gain: 10 },
-                        { frequency: 8000,
-            gain: -18 },
-                        { frequency: 10000,
-            Q: 0.4,
-            gain: -12 }
-                    ],
-                    oscillators: [{
-                            type: 'pulse',
-                            volume: 0.4,
-                            pulseWidth: 0.55,
-                            volumePitchTrackingMultiplier: 0.1,
-                            lowpass: {
-                                frequency: 4.5,
-                                frequencyPitchTrackingMultiplier: 900,
-                                Q: -2
-                            },
-                            highpass: { frequency: 270 }
-                        }]
-                },
-                // CHORD -------------------------------
-                chord: {
-                    masterVolume: 1,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0.79 },
-                        { t: 27,
-            vol: 0.86 },
-                        { t: 62,
-            vol: 0.81 },
-                        { t: 150,
-            vol: 0.35 },
-                        { t: 408,
-            vol: 0.04 },
-                        { t: 600,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 200,
-            gain: -8 },
-                        { frequency: 600,
-            Q: 2,
-            gain: 4 },
-                        { frequency: 800,
-            gain: -10 },
-                        { frequency: 1600,
-            gain: -2 },
-                        { frequency: 2200,
-            gain: -6 },
-                        { frequency: 3600,
-            Q: 0.7,
-            gain: -2 },
-                        { frequency: 6400,
-            gain: 6 },
-                        { frequency: 12800,
-            gain: 6 }
-                    ],
-                    oscillators: [{
-                            type: 'triangle',
-                            volume: 1.1,
-                            volumePitchTrackingMultiplier: 0.05,
-                            lowpass: { frequency: 8000 },
-                            highpass: { frequency: 100 },
-                            releaseEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 315,
-            vol: 0.56 },
-                                { t: 540,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'triangle',
-                            freqMultiplier: 1.17,
-                            volume: 0.4,
-                            volumePitchTrackingMultiplier: 0.07,
-                            lowpass: { frequency: 5000 },
-                            highpass: { frequency: 100 },
-                            releaseEnvelope: [
-                                { t: 0,
-            vol: 1 },
-                                { t: 476,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'triangle',
-                            freqMultiplier: 1.58333,
-                            volume: 0.7,
-                            volumePitchTrackingMultiplier: 0.02,
-                            highpass: { frequency: 200 },
-                            releaseEnvelope: [
-                                { t: 0,
-            vol: 1 },
-                                { t: 422,
-            vol: 0.56 },
-                                { t: 577,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 10,
-                            volume: 4,
-                            fmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 157,
-            vol: 0.65 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            fixedFrequency: 5,
-                            volume: 0.3,
-                            vmOscillator: 2,
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 155,
-            vol: 0.91 },
-                                { t: 289,
-            vol: 0.78 }
-                            ]
-                        }]
-                },
-                // WOBBLE ---------------------------
-                wobble: {
-                    masterVolume: 0.9,
-                    masterReleaseEnvelope: [
-                        { t: 1,
-            vol: 0.36 },
-                        { t: 24,
-            vol: 0.15 },
-                        { t: 119,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 150,
-            Q: 0.6,
-            gain: -12 },
-                        { frequency: 1100,
-            gain: -2 },
-                        { frequency: 2200,
-            gain: -16 },
-                        { frequency: 5000,
-            gain: 8 },
-                        { frequency: 6400,
-            gain: 10 },
-                        { frequency: 8000,
-            gain: 12 },
-                        { frequency: 10800,
-            gain: 8 }
-                    ],
-                    oscillators: [{
-                            type: 'triangle',
-                            volume: 0.9,
-                            volumePitchTrackingMultiplier: 0.1,
-                            lowpass: { frequency: 17,
-            frequencyPitchTrackingMultiplier: 100 },
-                            highpass: { frequency: 200 }
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.04,
-                            lowpass: { frequency: 9000,
-            Q: 3 },
-                            highpass: { frequency: 6000,
-            Q: 3 },
-                            vmOscillator: 0,
-                            attackEnvelope: [
-                                { t: 0,
-            vol: 0 },
-                                { t: 26,
-            vol: 1 },
-                                { t: 71,
-            vol: 0.73 }
-                            ]
-                        }, {
-                            type: 'sine',
-                            freqMultiplier: 0.011,
-                            volume: 30,
-                            fmOscillator: 0
-                        }]
-                },
-                // SINE -----------------------------
-                sine: {
-                    masterVolume: 1,
-                    oscillators: [{
-                            type: 'sine',
-                            volumePitchTrackingMultiplier: 0.07
-                        }]
-                },
-                // SINE GLIDE -----------------------
-                sineGlide: {
-                    masterVolume: 1,
-                    noteGlideDuration: 100,
-                    oscillators: [{
-                            type: 'sine',
-                            volumePitchTrackingMultiplier: 0.07
-                        }]
-                },
-                // TRIANGLE -------------------------
-                triangle: {
-                    masterVolume: 0.5,
-                    oscillators: [{
-                            type: 'triangle',
-                            volume: 1,
-                            volumePitchTrackingMultiplier: 0.07
-                        }]
-                },
-                // SAWTOOTH -------------------------
-                sawtooth: {
-                    masterVolume: 0.25,
-                    midiInstrument: 82,
-                    oscillators: [{
-                            type: 'sawtooth',
-                            volume: 0.3,
-                            volumePitchTrackingMultiplier: 0.07
-                        }]
-                },
-                // SQUARE ---------------------------
-                square: {
-                    masterVolume: 0.3,
-                    midiInstrument: 81,
-                    oscillators: [{
-                            type: 'square',
-                            volume: 0.2,
-                            volumePitchTrackingMultiplier: 0.07
-                        }]
-                },
-                // PERCUSSION INSTRUMENTS ----------
-                chop: {
-                    masterVolume: 1,
-                    midiInstrument: 116,
-                    masterAttackEnvelope: [{ t: 1,
-            vol: 1 }, { t: 44,
-            vol: 0 }],
-                    oscillators: [{
-                            type: 'whitenoise',
-                            volume: 1,
-                            lowpass: { frequency: 600 },
-                            highpass: { frequency: 200 }
-                        }]
-                },
-                shaker: {
-                    masterVolume: 0.4,
-                    midiInstrument: 116,
-                    masterAttackEnvelope: [{ t: 1,
-            vol: 1 }, { t: 44,
-            vol: 0 }],
-                    oscillators: [{
-                            type: 'whitenoise',
-                            volume: 1,
-                            lowpass: { frequency: 6500 },
-                            highpass: { frequency: 5000 }
-                        }]
-                },
-                step: {
-                    masterVolume: 1,
-                    midiInstrument: 116,
-                    masterAttackEnvelope: [{ t: 1,
-            vol: 1 }, { t: 44,
-            vol: 0 }],
-                    eq: [
-                        { frequency: 200,
-            gain: -1 },
-                        { frequency: 400,
-            gain: -14 },
-                        { frequency: 800,
-            gain: 8 },
-                        { frequency: 1000,
-            Q: 5,
-            gain: -24 },
-                        { frequency: 1600,
-            gain: 8 },
-                        { frequency: 2200,
-            gain: -10 },
-                        { frequency: 5400,
-            gain: 4 },
-                        { frequency: 12800,
-            gain: -36 }
-                    ],
-                    oscillators: [{
-                            type: 'whitenoise',
-                            volume: 1.5,
-                            lowpass: { frequency: 300 },
-                            highpass: { frequency: 100,
-            Q: 6 }
-                        }]
-                },
-                kick: {
-                    masterVolume: 0.55,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 0.8 },
-                        { t: 15,
-            vol: 1 },
-                        { t: 45,
-            vol: 0.35 },
-                        { t: 121,
-            vol: 0.11 },
-                        { t: 242,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 50,
-            gain: 6 },
-                        { frequency: 400,
-            gain: -18 },
-                        { frequency: 1600,
-            gain: 18 }
-                    ],
-                    oscillators: [{
-                            type: 'triangle',
-                            fixedFrequency: 90,
-                            volume: 1,
-                            lowpass: { frequency: 300 },
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 6,
-            vol: 1 },
-                                { t: 45,
-            vol: 0.01 }
-                            ]
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.4,
-                            lowpass: { frequency: 200 },
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 30,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'triangle',
-                            freqMultiplier: 0.1,
-                            volume: 1,
-                            lowpass: { frequency: 200 }
-                        }]
-                },
-                shortnote: {
-                    masterVolume: 0.8,
-                    midiInstrument: 116,
-                    masterAttackEnvelope: [
-                        { t: 1,
-            vol: 1 },
-                        { t: 15,
-            vol: 0 }
-                    ],
-                    eq: [
-                        { frequency: 400,
-            gain: -4 },
-                        { frequency: 800,
-            gain: -12 },
-                        { frequency: 2400,
-            gain: 4 },
-                        { frequency: 7200,
-            gain: -20 },
-                        { frequency: 1000,
-            Q: 5,
-            gain: -12 },
-                        { frequency: 5400,
-            gain: -32 },
-                        { frequency: 12800,
-            gain: -14 }
-                    ],
-                    oscillators: [{
-                            type: 'sawtooth',
-                            volume: 0.6,
-                            lowpass: { frequency: 1000 }
-                        }, {
-                            type: 'whitenoise',
-                            volume: 0.2,
-                            lowpass: { frequency: 10000 },
-                            highpass: { frequency: 7000 },
-                            attackEnvelope: [
-                                { t: 1,
-            vol: 1 },
-                                { t: 10,
-            vol: 0 }
-                            ]
-                        }, {
-                            type: 'whitenoise',
-                            volume: 1.3,
-                            lowpass: { frequency: 700,
-            Q: 4 },
-                            highpass: { frequency: 250 }
-                        }]
-                },
-                // NOISE ----------------------------
-                noise: {
-                    masterVolume: 0.3,
-                    midiInstrument: 122,
-                    oscillators: [{
-                            type: 'whitenoise'
-                        }]
-                },
-                // FILTERED NOISE -------------------
-                filteredNoise: {
-                    masterVolume: 0.3,
-                    midiInstrument: 122,
-                    eq: [
-                        { frequency: 1600,
-            gain: -8 },
-                        { frequency: 2200,
-            gain: -4 }
-                    ],
-                    oscillators: [{
-                            type: 'whitenoise',
-                            lowpass: {
-                                frequency: 5,
-                                frequencyPitchTrackingMultiplier: 1300,
-                                Q: 6
-                            },
-                            highpass: {
-                                frequency: 5,
-                                frequencyPitchTrackingMultiplier: 300,
-                                Q: 6
-                            }
-                        }]
-                },
-                // WIND -------------------------------
-                wind: {
-                    masterVolume: 0.75,
-                    midiInstrument: 122,
-                    noteGlideDuration: 150,
-                    masterReleaseEnvelope: [
-                        { t: 0,
-            vol: 1 },
-                        { t: 124,
-            vol: 0.24 },
-                        { t: 281,
-            vol: 0 }
-                    ],
-                    oscillators: [{
-                            type: 'whitenoise',
-                            volume: 1,
-                            lowpass: {
-                                frequency: 100,
-                                frequencyPitchTrackingMultiplier: 6,
-                                Q: 23
-                            },
-                            highpass: {
-                                frequency: 170,
-                                frequencyPitchTrackingMultiplier: 6
-                            }
-                        }, {
-                            type: 'sine',
-                            freqMultiplier: 0.016,
-                            volume: 1000,
-                            fmOscillator: 0
-                        }]
-                }
-            };
+            // PIANO ----------------------------
+            piano: {
+                masterVolume: 0.45,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0.71 },
+                    { t: 40, vol: 0.79 },
+                    { t: 82, vol: 0.64 },
+                    { t: 147, vol: 0.29 },
+                    { t: 260, vol: 0.15 },
+                    { t: 417, vol: 0.05 },
+                    { t: 589, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 200, Q: 0.7, gain: 6 },
+                    { frequency: 450, gain: 6 },
+                    { frequency: 1300, gain: 2 },
+                    { frequency: 2600, Q: 0.8, gain: 8 },
+                    { frequency: 3500, Q: 0.8, gain: 6 },
+                    { frequency: 6200, Q: 0.8, gain: 10 },
+                    { frequency: 8000, gain: -23 },
+                    { frequency: 10000, Q: 0.4, gain: -12 }
+                ],
+                oscillators: [{
+                        type: 'pulse',
+                        volume: 0.5,
+                        pulseWidth: 0.55,
+                        volumePitchTrackingMultiplier: 0.1,
+                        lowpass: {
+                            frequency: 4.5,
+                            frequencyPitchTrackingMultiplier: 900,
+                            Q: -2
+                        },
+                        highpass: { frequency: 270 },
+                        attackEnvelope: [{ t: 1, vol: 1 }],
+                        releaseEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 282, vol: 0.64 },
+                            { t: 597, vol: 0 }
+                        ]
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.8,
+                        lowpass: { frequency: 400 },
+                        highpass: { frequency: 300 },
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 19, vol: 0 }
+                        ]
+                    }]
+            },
+            // PLUCKED --------------------------
+            plucked: {
+                masterVolume: 0.5,
+                midiInstrument: 25,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0.71 },
+                    { t: 4, vol: 0.71 },
+                    { t: 31, vol: 0.4 },
+                    { t: 109, vol: 0.12 },
+                    { t: 234, vol: 0.04 },
+                    { t: 442, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 800, gain: -8 },
+                    { frequency: 1400, Q: 4, gain: 4 },
+                    { frequency: 1600, gain: -14 },
+                    { frequency: 2200, gain: -8 },
+                    { frequency: 3600, gain: -2 },
+                    { frequency: 6400, Q: 2, gain: -6 }
+                ],
+                oscillators: [{
+                        type: 'sawtooth',
+                        volume: 0.9,
+                        volumePitchTrackingMultiplier: 0.6,
+                        highpass: { frequency: 100 },
+                        lowpass: { frequency: 8000 },
+                        releaseEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 315, vol: 0.56 },
+                            { t: 550, vol: 0 }
+                        ]
+                    }]
+            },
+            // FLUTE ----------------------------
+            flute: {
+                masterVolume: 1.1,
+                midiInstrument: 74,
+                noteGlideDuration: 30,
+                masterAttackEnvelope: [
+                    { t: 0, vol: 0 },
+                    { t: 29, vol: 1 },
+                    { t: 76, vol: 0.48 },
+                    { t: 600, vol: 0.36 }
+                ],
+                masterReleaseEnvelope: [
+                    { t: 1, vol: 0.36 },
+                    { t: 24, vol: 0.15 },
+                    { t: 119, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 150, Q: 0.6, gain: -10 },
+                    { frequency: 500, gain: 4 },
+                    { frequency: 1100, gain: -4 },
+                    { frequency: 2200, gain: -14 },
+                    { frequency: 5000, gain: 8 },
+                    { frequency: 6400, gain: 10 },
+                    { frequency: 8000, gain: 12 },
+                    { frequency: 10800, gain: 8 }
+                ],
+                oscillators: [{
+                        type: 'triangle',
+                        volume: 1,
+                        volumePitchTrackingMultiplier: 0.4,
+                        lowpass: {
+                            frequency: 12,
+                            frequencyPitchTrackingMultiplier: 100
+                        },
+                        highpass: {
+                            frequency: 200
+                        }
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 5,
+                        volume: 0.2,
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 48, vol: 0 },
+                            { t: 225, vol: 0.05 },
+                            { t: 600, vol: 0.77 }
+                        ]
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.13,
+                        lowpass: {
+                            frequency: 9000,
+                            Q: 3
+                        },
+                        highpass: {
+                            frequency: 6000,
+                            Q: 3
+                        },
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 0, vol: 0 },
+                            { t: 26, vol: 1 },
+                            { t: 93, vol: 0.8 }
+                        ]
+                    }]
+            },
+            // LEAD -----------------------------
+            lead: {
+                masterVolume: 1,
+                midiInstrument: 20,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0.81 },
+                    { t: 98, vol: 0.5 },
+                    { t: 201, vol: 0.18 },
+                    { t: 377, vol: 0.04 },
+                    { t: 586, vol: 0 },
+                    { t: 586, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 200, gain: -6 },
+                    { frequency: 400, gain: -8 },
+                    { frequency: 800, Q: 0.5, gain: -10 },
+                    { frequency: 1200, gain: 4 },
+                    { frequency: 3600, gain: -4 },
+                    { frequency: 4200, gain: -12 },
+                    { frequency: 7400, gain: -14 },
+                    { frequency: 10000, gain: 2 }
+                ],
+                oscillators: [{
+                        type: 'triangle',
+                        volume: 1.1,
+                        volumePitchTrackingMultiplier: 0.6,
+                        lowpass: { frequency: 5000 },
+                        highpass: { frequency: 100 }
+                    }, {
+                        type: 'sawtooth',
+                        volume: 0.4,
+                        lowpass: { frequency: 7000 },
+                        highpass: { frequency: 800, Q: 6 },
+                        releaseEnvelope: [
+                            { t: 0, vol: 0.99 },
+                            { t: 200, vol: 0.83 },
+                            { t: 495, vol: 0 }
+                        ]
+                    }]
+            },
+            // VIBRAPHONE -----------------------
+            vibraphone: {
+                masterVolume: 1,
+                midiInstrument: 12,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0 },
+                    { t: 10, vol: 0.63 },
+                    { t: 82, vol: 0.64 },
+                    { t: 149, vol: 0.26 },
+                    { t: 600, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 200, Q: 0.8, gain: -12 },
+                    { frequency: 400, gain: -4 },
+                    { frequency: 1600, Q: 0.5, gain: 6 },
+                    { frequency: 2200, Q: 0.5, gain: 6 },
+                    { frequency: 6400, gain: 4 },
+                    { frequency: 12800, gain: 4 }
+                ],
+                oscillators: [{
+                        type: 'sine',
+                        volume: 1.5,
+                        volumePitchTrackingMultiplier: 0.0000001,
+                        attackEnvelope: [{ t: 1, vol: 1 }],
+                        releaseEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 146, vol: 0.39 },
+                            { t: 597, vol: 0 }
+                        ]
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.03,
+                        volumePitchTrackingMultiplier: 0.0001,
+                        lowpass: {
+                            frequency: 900
+                        },
+                        highpass: {
+                            frequency: 800
+                        },
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 9, vol: 0 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        freqMultiplier: 4,
+                        volume: 0.15,
+                        volumePitchTrackingMultiplier: 0.0001
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 3,
+                        volume: 6,
+                        fmOscillator: 0,
+                        releaseEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 190, vol: 0.41 },
+                            { t: 600, vol: 0 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 6,
+                        volume: 3,
+                        fmOscillator: 2
+                    }, {
+                        type: 'sine',
+                        freqMultiplier: 9,
+                        volume: 0.0005,
+                        volumePitchTrackingMultiplier: 0.0001,
+                        releaseEnvelope: [
+                            { t: 1, vol: 0.97 },
+                            { t: 530, vol: 0 }
+                        ]
+                    }]
+            },
+            // SAXOPHONE ------------------------
+            saxophone: {
+                masterVolume: 1,
+                midiInstrument: 67,
+                noteGlideDuration: 10,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0.57 },
+                    { t: 35, vol: 1 },
+                    { t: 87, vol: 0.84 },
+                    { t: 111, vol: 0.6 },
+                    { t: 296, vol: 0.49 },
+                    { t: 600, vol: 0.58 }
+                ],
+                masterReleaseEnvelope: [
+                    { t: 1, vol: 0.58 },
+                    { t: 47, vol: 0.16 },
+                    { t: 119, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 200, gain: -2 },
+                    { frequency: 600, gain: 2 },
+                    { frequency: 800, gain: -10 },
+                    { frequency: 1100, gain: -2 },
+                    { frequency: 2200, gain: -2 },
+                    { frequency: 3500, gain: 10 },
+                    { frequency: 12800, gain: 4 }
+                ],
+                oscillators: [{
+                        type: 'sawtooth',
+                        volume: 0.45,
+                        volumePitchTrackingMultiplier: 0.06,
+                        lowpass: {
+                            frequency: 18,
+                            frequencyPitchTrackingMultiplier: 200
+                        },
+                        highpass: {
+                            frequency: 300
+                        }
+                    }, {
+                        type: 'whitenoise',
+                        fixedFrequency: 1,
+                        volume: 0.4,
+                        highpass: {
+                            frequency: 7000
+                        },
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 51, vol: 1 },
+                            { t: 86, vol: 0.84 },
+                            { t: 500, vol: 0.78 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 4,
+                        volume: 2,
+                        fmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 0, vol: 0 },
+                            { t: 15, vol: 0.94 },
+                            { t: 79, vol: 1 },
+                            { t: 172, vol: 0.47 },
+                            { t: 500, vol: 0.26 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 7,
+                        volume: 6,
+                        fmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 0, vol: 0 },
+                            { t: 25, vol: 0.99 },
+                            { t: 85, vol: 0 },
+                            { t: 85, vol: 0 },
+                            { t: 387, vol: 0.02 },
+                            { t: 511, vol: 0.43 },
+                            { t: 600, vol: 0 }
+                        ]
+                    }]
+            },
+            // TRUMPET ------------------------
+            trumpet: {
+                masterVolume: 0.3,
+                midiInstrument: 57,
+                noteGlideDuration: 40,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0 },
+                    { t: 17, vol: 1 },
+                    { t: 42, vol: 0.85 },
+                    { t: 76, vol: 1 },
+                    { t: 202, vol: 0.65 },
+                    { t: 226, vol: 0.86 },
+                    { t: 282, vol: 0.63 }
+                ],
+                masterReleaseEnvelope: [
+                    { t: 1, vol: 0.62 },
+                    { t: 34, vol: 0.14 },
+                    { t: 63, vol: 0.21 },
+                    { t: 96, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 200, Q: 0.6, gain: 10 },
+                    { frequency: 600, Q: 0.5, gain: 6 },
+                    { frequency: 1500, Q: 0.7, gain: 14 },
+                    { frequency: 3200, Q: 2, gain: 8 },
+                    { frequency: 3800, Q: 0.8, gain: 10 },
+                    { frequency: 6200, gain: 12 },
+                    { frequency: 8400, gain: -20 },
+                    { frequency: 12800, Q: 0.5, gain: -18 }
+                ],
+                oscillators: [{
+                        type: 'sawtooth',
+                        volume: 0.15,
+                        pulseWidth: 0.5,
+                        volumePitchTrackingMultiplier: 0.5,
+                        lowpass: { frequency: 1900, Q: 3 }
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 6,
+                        volume: 0.2,
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 102, vol: 0.13 },
+                            { t: 556, vol: 0.24 }
+                        ]
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.45,
+                        highpass: { frequency: 7000, Q: 9 },
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 89, vol: 0.51 },
+                            { t: 577, vol: 0.29 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 5.7,
+                        volume: 20,
+                        fmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 89, vol: 1 },
+                            { t: 137, vol: 0.46 },
+                            { t: 283, vol: 0.15 },
+                            { t: 600, vol: 0.28 }
+                        ]
+                    }]
+            },
+            // SAWSYNTH --------------------------
+            sawsynth: {
+                masterVolume: 0.3,
+                midiInstrument: 51,
+                noteGlideDuration: 40,
+                masterAttackEnvelope: [
+                    { t: 0, vol: 0.6 },
+                    { t: 9, vol: 1 },
+                    { t: 102, vol: 0.48 }
+                ],
+                eq: [{ frequency: 200, gain: -6 }],
+                oscillators: [{
+                        type: 'sawtooth',
+                        volume: 0.4,
+                        volumePitchTrackingMultiplier: 0.3
+                    }, {
+                        type: 'sawtooth',
+                        volume: 0.4,
+                        detune: 11,
+                        volumePitchTrackingMultiplier: 0.3
+                    }, {
+                        type: 'sawtooth',
+                        volume: 0.4,
+                        detune: -11,
+                        volumePitchTrackingMultiplier: 0.3
+                    }]
+            },
+            // BASIC1 ---------------------------
+            basic1: {
+                masterVolume: 1,
+                noteGlideDuration: 0,
+                masterReleaseEnvelope: [
+                    { t: 1, vol: 0.36 },
+                    { t: 24, vol: 0.15 },
+                    { t: 119, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 150, Q: 0.6, gain: -12 },
+                    { frequency: 1100, gain: -2 },
+                    { frequency: 2200, gain: -16 },
+                    { frequency: 5000, gain: 8 },
+                    { frequency: 6400, gain: 10 },
+                    { frequency: 8000, gain: 12 },
+                    { frequency: 10800, gain: 8 }
+                ],
+                oscillators: [{
+                        type: 'triangle',
+                        volume: 1,
+                        volumePitchTrackingMultiplier: 0.05,
+                        lowpass: { frequency: 17, frequencyPitchTrackingMultiplier: 100 },
+                        highpass: { frequency: 200 }
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.04,
+                        lowpass: { frequency: 9000, Q: 3 },
+                        highpass: { frequency: 6000, Q: 3 },
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 0, vol: 0 },
+                            { t: 26, vol: 1 },
+                            { t: 71, vol: 0.73 }
+                        ]
+                    }]
+            },
+            // BASIC2 ---------------------------
+            basic2: {
+                masterVolume: 0.3,
+                eq: [
+                    { frequency: 200, Q: 0.7, gain: 6 },
+                    { frequency: 450, gain: 2 },
+                    { frequency: 1300, gain: -2 },
+                    { frequency: 2600, Q: 0.8, gain: 6 },
+                    { frequency: 3500, Q: 0.8, gain: 6 },
+                    { frequency: 6200, Q: 0.8, gain: 10 },
+                    { frequency: 8000, gain: -18 },
+                    { frequency: 10000, Q: 0.4, gain: -12 }
+                ],
+                oscillators: [{
+                        type: 'pulse',
+                        volume: 0.4,
+                        pulseWidth: 0.55,
+                        volumePitchTrackingMultiplier: 0.1,
+                        lowpass: {
+                            frequency: 4.5,
+                            frequencyPitchTrackingMultiplier: 900,
+                            Q: -2
+                        },
+                        highpass: { frequency: 270 }
+                    }]
+            },
+            // CHORD -------------------------------
+            chord: {
+                masterVolume: 1,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0.79 },
+                    { t: 27, vol: 0.86 },
+                    { t: 62, vol: 0.81 },
+                    { t: 150, vol: 0.35 },
+                    { t: 408, vol: 0.04 },
+                    { t: 600, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 200, gain: -8 },
+                    { frequency: 600, Q: 2, gain: 4 },
+                    { frequency: 800, gain: -10 },
+                    { frequency: 1600, gain: -2 },
+                    { frequency: 2200, gain: -6 },
+                    { frequency: 3600, Q: 0.7, gain: -2 },
+                    { frequency: 6400, gain: 6 },
+                    { frequency: 12800, gain: 6 }
+                ],
+                oscillators: [{
+                        type: 'triangle',
+                        volume: 1.1,
+                        volumePitchTrackingMultiplier: 0.05,
+                        lowpass: { frequency: 8000 },
+                        highpass: { frequency: 100 },
+                        releaseEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 315, vol: 0.56 },
+                            { t: 540, vol: 0 }
+                        ]
+                    }, {
+                        type: 'triangle',
+                        freqMultiplier: 1.17,
+                        volume: 0.4,
+                        volumePitchTrackingMultiplier: 0.07,
+                        lowpass: { frequency: 5000 },
+                        highpass: { frequency: 100 },
+                        releaseEnvelope: [
+                            { t: 0, vol: 1 },
+                            { t: 476, vol: 0 }
+                        ]
+                    }, {
+                        type: 'triangle',
+                        freqMultiplier: 1.58333,
+                        volume: 0.7,
+                        volumePitchTrackingMultiplier: 0.02,
+                        highpass: { frequency: 200 },
+                        releaseEnvelope: [
+                            { t: 0, vol: 1 },
+                            { t: 422, vol: 0.56 },
+                            { t: 577, vol: 0 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 10,
+                        volume: 4,
+                        fmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 157, vol: 0.65 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        fixedFrequency: 5,
+                        volume: 0.3,
+                        vmOscillator: 2,
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 155, vol: 0.91 },
+                            { t: 289, vol: 0.78 }
+                        ]
+                    }]
+            },
+            // WOBBLE ---------------------------
+            wobble: {
+                masterVolume: 0.9,
+                masterReleaseEnvelope: [
+                    { t: 1, vol: 0.36 },
+                    { t: 24, vol: 0.15 },
+                    { t: 119, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 150, Q: 0.6, gain: -12 },
+                    { frequency: 1100, gain: -2 },
+                    { frequency: 2200, gain: -16 },
+                    { frequency: 5000, gain: 8 },
+                    { frequency: 6400, gain: 10 },
+                    { frequency: 8000, gain: 12 },
+                    { frequency: 10800, gain: 8 }
+                ],
+                oscillators: [{
+                        type: 'triangle',
+                        volume: 0.9,
+                        volumePitchTrackingMultiplier: 0.1,
+                        lowpass: { frequency: 17, frequencyPitchTrackingMultiplier: 100 },
+                        highpass: { frequency: 200 }
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.04,
+                        lowpass: { frequency: 9000, Q: 3 },
+                        highpass: { frequency: 6000, Q: 3 },
+                        vmOscillator: 0,
+                        attackEnvelope: [
+                            { t: 0, vol: 0 },
+                            { t: 26, vol: 1 },
+                            { t: 71, vol: 0.73 }
+                        ]
+                    }, {
+                        type: 'sine',
+                        freqMultiplier: 0.011,
+                        volume: 30,
+                        fmOscillator: 0
+                    }]
+            },
+            // SINE -----------------------------
+            sine: {
+                masterVolume: 1,
+                oscillators: [{
+                        type: 'sine',
+                        volumePitchTrackingMultiplier: 0.07
+                    }]
+            },
+            // SINE GLIDE -----------------------
+            sineGlide: {
+                masterVolume: 1,
+                noteGlideDuration: 100,
+                oscillators: [{
+                        type: 'sine',
+                        volumePitchTrackingMultiplier: 0.07
+                    }]
+            },
+            // TRIANGLE -------------------------
+            triangle: {
+                masterVolume: 0.5,
+                oscillators: [{
+                        type: 'triangle',
+                        volume: 1,
+                        volumePitchTrackingMultiplier: 0.07
+                    }]
+            },
+            // SAWTOOTH -------------------------
+            sawtooth: {
+                masterVolume: 0.25,
+                midiInstrument: 82,
+                oscillators: [{
+                        type: 'sawtooth',
+                        volume: 0.3,
+                        volumePitchTrackingMultiplier: 0.07
+                    }]
+            },
+            // SQUARE ---------------------------
+            square: {
+                masterVolume: 0.3,
+                midiInstrument: 81,
+                oscillators: [{
+                        type: 'square',
+                        volume: 0.2,
+                        volumePitchTrackingMultiplier: 0.07
+                    }]
+            },
+            // PERCUSSION INSTRUMENTS ----------
+            chop: {
+                masterVolume: 1,
+                midiInstrument: 116,
+                masterAttackEnvelope: [{ t: 1, vol: 1 }, { t: 44, vol: 0 }],
+                oscillators: [{
+                        type: 'whitenoise',
+                        volume: 1,
+                        lowpass: { frequency: 600 },
+                        highpass: { frequency: 200 }
+                    }]
+            },
+            shaker: {
+                masterVolume: 0.4,
+                midiInstrument: 116,
+                masterAttackEnvelope: [{ t: 1, vol: 1 }, { t: 44, vol: 0 }],
+                oscillators: [{
+                        type: 'whitenoise',
+                        volume: 1,
+                        lowpass: { frequency: 6500 },
+                        highpass: { frequency: 5000 }
+                    }]
+            },
+            step: {
+                masterVolume: 1,
+                midiInstrument: 116,
+                masterAttackEnvelope: [{ t: 1, vol: 1 }, { t: 44, vol: 0 }],
+                eq: [
+                    { frequency: 200, gain: -1 },
+                    { frequency: 400, gain: -14 },
+                    { frequency: 800, gain: 8 },
+                    { frequency: 1000, Q: 5, gain: -24 },
+                    { frequency: 1600, gain: 8 },
+                    { frequency: 2200, gain: -10 },
+                    { frequency: 5400, gain: 4 },
+                    { frequency: 12800, gain: -36 }
+                ],
+                oscillators: [{
+                        type: 'whitenoise',
+                        volume: 1.5,
+                        lowpass: { frequency: 300 },
+                        highpass: { frequency: 100, Q: 6 }
+                    }]
+            },
+            kick: {
+                masterVolume: 0.55,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 0.8 },
+                    { t: 15, vol: 1 },
+                    { t: 45, vol: 0.35 },
+                    { t: 121, vol: 0.11 },
+                    { t: 242, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 50, gain: 6 },
+                    { frequency: 400, gain: -18 },
+                    { frequency: 1600, gain: 18 }
+                ],
+                oscillators: [{
+                        type: 'triangle',
+                        fixedFrequency: 90,
+                        volume: 1,
+                        lowpass: { frequency: 300 },
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 6, vol: 1 },
+                            { t: 45, vol: 0.01 }
+                        ]
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.4,
+                        lowpass: { frequency: 200 },
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 30, vol: 0 }
+                        ]
+                    }, {
+                        type: 'triangle',
+                        freqMultiplier: 0.1,
+                        volume: 1,
+                        lowpass: { frequency: 200 }
+                    }]
+            },
+            shortnote: {
+                masterVolume: 0.8,
+                midiInstrument: 116,
+                masterAttackEnvelope: [
+                    { t: 1, vol: 1 },
+                    { t: 15, vol: 0 }
+                ],
+                eq: [
+                    { frequency: 400, gain: -4 },
+                    { frequency: 800, gain: -12 },
+                    { frequency: 2400, gain: 4 },
+                    { frequency: 7200, gain: -20 },
+                    { frequency: 1000, Q: 5, gain: -12 },
+                    { frequency: 5400, gain: -32 },
+                    { frequency: 12800, gain: -14 }
+                ],
+                oscillators: [{
+                        type: 'sawtooth',
+                        volume: 0.6,
+                        lowpass: { frequency: 1000 }
+                    }, {
+                        type: 'whitenoise',
+                        volume: 0.2,
+                        lowpass: { frequency: 10000 },
+                        highpass: { frequency: 7000 },
+                        attackEnvelope: [
+                            { t: 1, vol: 1 },
+                            { t: 10, vol: 0 }
+                        ]
+                    }, {
+                        type: 'whitenoise',
+                        volume: 1.3,
+                        lowpass: { frequency: 700, Q: 4 },
+                        highpass: { frequency: 250 }
+                    }]
+            },
+            // NOISE ----------------------------
+            noise: {
+                masterVolume: 0.3,
+                midiInstrument: 122,
+                oscillators: [{
+                        type: 'whitenoise'
+                    }]
+            },
+            // FILTERED NOISE -------------------
+            filteredNoise: {
+                masterVolume: 0.3,
+                midiInstrument: 122,
+                eq: [
+                    { frequency: 1600, gain: -8 },
+                    { frequency: 2200, gain: -4 }
+                ],
+                oscillators: [{
+                        type: 'whitenoise',
+                        lowpass: {
+                            frequency: 5,
+                            frequencyPitchTrackingMultiplier: 1300,
+                            Q: 6
+                        },
+                        highpass: {
+                            frequency: 5,
+                            frequencyPitchTrackingMultiplier: 300,
+                            Q: 6
+                        }
+                    }]
+            },
+            // WIND -------------------------------
+            wind: {
+                masterVolume: 0.75,
+                midiInstrument: 122,
+                noteGlideDuration: 150,
+                masterReleaseEnvelope: [
+                    { t: 0, vol: 1 },
+                    { t: 124, vol: 0.24 },
+                    { t: 281, vol: 0 }
+                ],
+                oscillators: [{
+                        type: 'whitenoise',
+                        volume: 1,
+                        lowpass: {
+                            frequency: 100,
+                            frequencyPitchTrackingMultiplier: 6,
+                            Q: 23
+                        },
+                        highpass: {
+                            frequency: 170,
+                            frequencyPitchTrackingMultiplier: 6
+                        }
+                    }, {
+                        type: 'sine',
+                        freqMultiplier: 0.016,
+                        volume: 1000,
+                        fmOscillator: 0
+                    }]
+            }
+        };
         /* *
          *
          *  Default Export
@@ -2945,8 +2614,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
-            extend = U.extend;
+        var defined = U.defined, extend = U.extend;
         /**
          * The SonificationInstrument class. This class represents an instrument with
          * mapping capabilities. The instrument wraps a SynthPatch object, and extends
@@ -2969,8 +2637,8 @@
          *        Configuration for the instrument.
          */
         var SonificationInstrument = /** @class */ (function () {
-                function SonificationInstrument(audioContext, outputNode, options) {
-                    this.audioContext = audioContext;
+            function SonificationInstrument(audioContext, outputNode, options) {
+                this.audioContext = audioContext;
                 this.curParams = {};
                 this.midiTrackName = options.midiTrackName;
                 this.masterVolNode = new GainNode(audioContext);
@@ -3003,12 +2671,10 @@
              * Parameters for the instrument event.
              */
             SonificationInstrument.prototype.scheduleEventAtTime = function (time, params) {
-                var mergedParams = extend(this.curParams,
-                    params),
-                    freq = defined(params.frequency) ?
-                        params.frequency : defined(params.note) ?
-                        SonificationInstrument.musicalNoteToFrequency(params.note) :
-                        220;
+                var mergedParams = extend(this.curParams, params), freq = defined(params.frequency) ?
+                    params.frequency : defined(params.note) ?
+                    SonificationInstrument.musicalNoteToFrequency(params.note) :
+                    220;
                 if (defined(freq)) {
                     this.synthPatch.playFreqAtTime(time, freq, mergedParams.noteDuration);
                 }
@@ -3086,8 +2752,7 @@
              * @private
              */
             SonificationInstrument.prototype.setFilterAtTime = function (filter, time, frequency, resonance) {
-                var node = this[filter + 'Node'],
-                    audioTime = this.audioContext.currentTime + time;
+                var node = this[filter + 'Node'], audioTime = this.audioContext.currentTime + time;
                 if (node) {
                     if (defined(resonance)) {
                         node.Q.setTargetAtTime(resonance, audioTime, SonificationInstrument.rampTime);
@@ -3174,7 +2839,7 @@
             SonificationInstrument.noteStringToC0Distance = function (note) {
                 // eslint-disable-next-line require-unicode-regexp
                 var match = note.match(/^([a-g][#b]?)([0-8])$/i), semitone = match ? match[1] : 'a', wholetone = semitone[0].toLowerCase(), accidental = semitone[1], octave = match ? parseInt(match[2], 10) : 4, accidentalOffset = accidental === '#' ?
-                        1 : accidental === 'b' ? -1 : 0;
+                    1 : accidental === 'b' ? -1 : 0;
                 return ({
                     c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11
                 }[wholetone] || 0) + accidentalOffset + octave * 12;
@@ -3190,7 +2855,7 @@
              */
             SonificationInstrument.musicalNoteToFrequency = function (note) {
                 var notesFromC0 = typeof note === 'string' ?
-                        this.noteStringToC0Distance(note) : note;
+                    this.noteStringToC0Distance(note) : note;
                 return 16.3516 * Math.pow(2, Math.min(notesFromC0, 107) / 12);
             };
             SonificationInstrument.rampTime = SynthPatch.stopRampTime / 4;
@@ -3336,8 +3001,8 @@
          *        Configuration for the speaker
          */
         var SonificationSpeaker = /** @class */ (function () {
-                function SonificationSpeaker(options) {
-                    this.options = options;
+            function SonificationSpeaker(options) {
+                this.options = options;
                 this.masterVolume = 1;
                 this.synthesis = window.speechSynthesis;
                 if (typeof speechSynthesis.onvoiceschanged !== 'undefined') {
@@ -3416,10 +3081,7 @@
              */
             SonificationSpeaker.prototype.setVoice = function () {
                 if (this.synthesis) {
-                    var name_1 = this.options.name,
-                        lang = this.options.language || 'en-US',
-                        voices = this.synthesis.getVoices(),
-                        len = voices.length;
+                    var name_1 = this.options.name, lang = this.options.language || 'en-US', voices = this.synthesis.getVoices(), len = voices.length;
                     var langFallback = void 0;
                     for (var i = 0; i < len; ++i) {
                         if (name_1 && voices[i].name === name_1) {
@@ -3497,9 +3159,9 @@
          * @private
          */
         var TimelineChannel = /** @class */ (function () {
-                function TimelineChannel(type, engine, showPlayMarker, events, muted) {
-                    if (showPlayMarker === void 0) { showPlayMarker = false; }
-                    this.type = type;
+            function TimelineChannel(type, engine, showPlayMarker, events, muted) {
+                if (showPlayMarker === void 0) { showPlayMarker = false; }
+                this.type = type;
                 this.engine = engine;
                 this.showPlayMarker = showPlayMarker;
                 this.muted = muted;
@@ -3592,16 +3254,16 @@
         /* eslint-disable no-multi-spaces */
         var pick = U.pick;
         var freqToNote = function (f) { return Math.round(12 * Math.log(f) / Math.LN2 - 48.37632); }, b = function (byte, n) { return n >>> 8 * byte & 0xFF; }, getHeader = function (nTracks) { return [
-                0x4D, 0x54, 0x68, 0x64,
-                0, 0, 0, 6,
-                0, nTracks > 1 ? 1 : 0,
-                b(1, nTracks), b(0, nTracks),
-                // SMTPE: 0xE7 0x28
-                // -25/40 time div gives us millisecond SMTPE, but not widely supported.
-                1, 0xF4 // HD_TIMEDIV, 500 ticks per beat = millisecond at 120bpm
-            ]; }, timeInfo = [0, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20], // META_TEMPO
-            varLenEnc = function (n) {
-                var buf = n & 0x7F;
+            0x4D, 0x54, 0x68, 0x64,
+            0, 0, 0, 6,
+            0, nTracks > 1 ? 1 : 0,
+            b(1, nTracks), b(0, nTracks),
+            // SMTPE: 0xE7 0x28
+            // -25/40 time div gives us millisecond SMTPE, but not widely supported.
+            1, 0xF4 // HD_TIMEDIV, 500 ticks per beat = millisecond at 120bpm
+        ]; }, timeInfo = [0, 0xFF, 0x51, 0x03, 0x07, 0xA1, 0x20], // META_TEMPO
+        varLenEnc = function (n) {
+            var buf = n & 0x7F;
             var res = [];
             while (n >>= 7) { // eslint-disable-line no-cond-assign
                 buf <<= 8;
@@ -3618,38 +3280,29 @@
             }
             return res;
         }, toMIDIEvents = function (events) {
-            var cachedVel,
-                cachedDur;
-            var res = [],
-                add = function (el) {
-                    var ix = res.length;
+            var cachedVel, cachedDur;
+            var res = [], add = function (el) {
+                var ix = res.length;
                 while (ix-- && res[ix].timeMS > el.timeMS) { /* */ }
                 res.splice(ix + 1, 0, el);
             };
             events.forEach(function (e) {
-                var o = e.instrumentEventOptions || {},
-                    t = e.time,
-                    dur = cachedDur = pick(o.noteDuration,
-                    cachedDur),
-                    tNOF = dur && e.time + dur,
-                    ctrl = [{
-                            valMap: function (n) { return 64 + 63 * n & 0x7F; },
-                            data: {
-                                0x0A: o.pan,
-                                0x5C: o.tremoloDepth,
-                                0x5D: o.tremoloSpeed
-                            }
-                        }, {
-                            valMap: function (n) { return 127 * n / 20000 & 0x7F; },
-                            data: {
-                                0x4A: o.lowpassFreq,
-                                0x4B: o.highpassFreq
-                            }
-                        }, {
-                            valMap: function (n) {
-                                return 63 * Math.min(18,
-                    Math.max(-18,
-                    n)) / 18 + 63 & 0x7F;
+                var o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = pick(o.noteDuration, cachedDur), tNOF = dur && e.time + dur, ctrl = [{
+                        valMap: function (n) { return 64 + 63 * n & 0x7F; },
+                        data: {
+                            0x0A: o.pan,
+                            0x5C: o.tremoloDepth,
+                            0x5D: o.tremoloSpeed
+                        }
+                    }, {
+                        valMap: function (n) { return 127 * n / 20000 & 0x7F; },
+                        data: {
+                            0x4A: o.lowpassFreq,
+                            0x4B: o.highpassFreq
+                        }
+                    }, {
+                        valMap: function (n) {
+                            return 63 * Math.min(18, Math.max(-18, n)) / 18 + 63 & 0x7F;
                         },
                         data: {
                             0x47: o.lowpassResonance,
@@ -3699,18 +3352,14 @@
             return events;
         }, getTrackChunk = function (events, addTimeInfo, midiTrackName, midiInstrument) {
             var prevTime = 0;
-            var metaEvents = getMetaEvents(midiTrackName,
-                midiInstrument),
-                trackEvents = toMIDIEvents(events).reduce(function (data,
-                e) {
-                    var t = varLenEnc(e.timeMS - prevTime);
+            var metaEvents = getMetaEvents(midiTrackName, midiInstrument), trackEvents = toMIDIEvents(events).reduce(function (data, e) {
+                var t = varLenEnc(e.timeMS - prevTime);
                 prevTime = e.timeMS;
                 return data.concat(t, e.data);
             }, []);
-            var trackEnd = [0, 0xFF, 0x2F, 0],
-                size = (addTimeInfo ? timeInfo.length : 0) +
-                    metaEvents.length +
-                    trackEvents.length + trackEnd.length;
+            var trackEnd = [0, 0xFF, 0x2F, 0], size = (addTimeInfo ? timeInfo.length : 0) +
+                metaEvents.length +
+                trackEvents.length + trackEnd.length;
             return [
                 0x4D, 0x54, 0x72, 0x6B,
                 b(3, size), b(2, size),
@@ -3726,9 +3375,7 @@
          * @private
          */
         function toMIDI(channels) {
-            var channelsToAdd = channels.filter(function (c) { return !!c.events.length; }),
-                numCh = channelsToAdd.length,
-                multiCh = numCh > 1;
+            var channelsToAdd = channels.filter(function (c) { return !!c.events.length; }), numCh = channelsToAdd.length, multiCh = numCh > 1;
             return new Uint8Array(getHeader(multiCh ? numCh + 1 : numCh).concat(multiCh ? getTrackChunk([], true) : [], // Time info only
             channelsToAdd.reduce(function (chunks, channel) {
                 var engine = channel.engine;
@@ -3751,9 +3398,7 @@
          *
          * */
         var isSafari = Highcharts.isSafari;
-        var win = Highcharts.win,
-            doc = win.document,
-            domurl = win.URL || win.webkitURL || win;
+        var win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -3764,9 +3409,9 @@
          *         Blob
          */
         var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-                var parts = dataURL
-                    .replace(/filename=.*;/, '')
-                    .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+            var parts = dataURL
+                .replace(/filename=.*;/, '')
+                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
                 parts.length > 3 &&
                 (win.atob) &&
@@ -3775,9 +3420,7 @@
                 win.Blob &&
                 (domurl.createObjectURL)) {
                 // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]),
-                    buf = new win.ArrayBuffer(binStr.length),
-                    binary = new win.Uint8Array(buf);
+                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
@@ -3796,10 +3439,8 @@
          *        The name of the resulting file (w/extension)
          * @return {void}
          */
-        var downloadURL = Highcharts.downloadURL = function (dataURL,
-            filename) {
-                var nav = win.navigator,
-            a = doc.createElement('a');
+        var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
+            var nav = win.navigator, a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -3814,8 +3455,8 @@
             var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
             // Safari on iOS needs Blob in order to download PDF
             var safariBlob = (isSafari &&
-                    typeof dataURL === 'string' &&
-                    dataURL.indexOf('data:application/pdf') === 0);
+                typeof dataURL === 'string' &&
+                dataURL.indexOf('data:application/pdf') === 0);
             if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
@@ -3845,9 +3486,9 @@
             }
         };
         var DownloadURL = {
-                dataURLtoBlob: dataURLtoBlob,
-                downloadURL: downloadURL
-            };
+            dataURLtoBlob: dataURLtoBlob,
+            downloadURL: downloadURL
+        };
 
         return DownloadURL;
     });
@@ -3864,9 +3505,7 @@
          *
          * */
         var downloadURL = DU.downloadURL;
-        var defined = U.defined,
-            find = U.find,
-            merge = U.merge;
+        var defined = U.defined, find = U.find, merge = U.merge;
         /**
          * Get filtered channels. Timestamps are compensated, so that the first
          * event starts immediately.
@@ -3874,7 +3513,7 @@
          */
         function filterChannels(filter, channels) {
             var filtered = channels.map(function (channel) {
-                    channel.cancel();
+                channel.cancel();
                 return {
                     channel: channel,
                     filteredEvents: channel.muted ?
@@ -3895,8 +3534,8 @@
          * @private
          */
         var SonificationTimeline = /** @class */ (function () {
-                function SonificationTimeline(options, chart) {
-                    this.chart = chart;
+            function SonificationTimeline(options, chart) {
+                this.chart = chart;
                 this.isPaused = false;
                 this.isPlaying = false;
                 this.channels = [];
@@ -3915,10 +3554,7 @@
                         !engine.sayAtTime) {
                     throw new Error('Highcharts Sonification: Invalid channel engine.');
                 }
-                var channel = new TimelineChannel(type,
-                    engine,
-                    showPlayMarker,
-                    events);
+                var channel = new TimelineChannel(type, engine, showPlayMarker, events);
                 this.channels.push(channel);
                 return channel;
             };
@@ -3943,18 +3579,12 @@
                 this.resumeFromTime = 0;
                 this.isPaused = false;
                 this.isPlaying = true;
-                var skipThreshold = this.options.skipThreshold || 2,
-                    onPlay = this.options.onPlay,
-                    showTooltip = this.options.showTooltip,
-                    showCrosshair = this.options.showCrosshair,
-                    channels = filter ?
-                        filterChannels(filter,
-                    this.playingChannels || this.channels) :
-                        this.channels,
-                    getEventKeysSignature = function (e) {
-                        return Object.keys(e.speechOptions || {})
-                            .concat(Object.keys(e.instrumentEventOptions || {}))
-                            .join();
+                var skipThreshold = this.options.skipThreshold || 2, onPlay = this.options.onPlay, showTooltip = this.options.showTooltip, showCrosshair = this.options.showCrosshair, channels = filter ?
+                    filterChannels(filter, this.playingChannels || this.channels) :
+                    this.channels, getEventKeysSignature = function (e) {
+                    return Object.keys(e.speechOptions || {})
+                        .concat(Object.keys(e.instrumentEventOptions || {}))
+                        .join();
                 }, pointsPlayed = [];
                 if (filterPersists) {
                     this.playingChannels = channels;
@@ -3968,14 +3598,11 @@
                         return;
                     }
                     var numEvents = channel.events.length;
-                    var lastCallbackTime = -Infinity,
-                        lastEventTime = -Infinity,
-                        lastEventKeys = '';
+                    var lastCallbackTime = -Infinity, lastEventTime = -Infinity, lastEventKeys = '';
                     maxTime = Math.max(channel.events[numEvents - 1] &&
                         channel.events[numEvents - 1].time || 0, maxTime);
                     var _loop_1 = function (i) {
-                            var e = channel.events[i],
-                        keysSig = getEventKeysSignature(e);
+                        var e = channel.events[i], keysSig = getEventKeysSignature(e);
                         // Optimize by skipping extremely close events (<2ms apart by
                         // default), as long as they don't introduce new event options
                         if (keysSig === lastEventKeys &&
@@ -3991,12 +3618,10 @@
                         else {
                             channel.engine.sayAtTime(e.time, e.message || '', e.speechOptions || {});
                         }
-                        var point = e.relatedPoint,
-                            chart = point && point.series && point.series.chart,
-                            needsCallback = e.callback ||
-                                point && (showTooltip || showCrosshair) &&
-                                    channel.showPlayMarker !== false &&
-                                    (e.time - lastCallbackTime > 50 || i === numEvents - 1);
+                        var point = e.relatedPoint, chart = point && point.series && point.series.chart, needsCallback = e.callback ||
+                            point && (showTooltip || showCrosshair) &&
+                                channel.showPlayMarker !== false &&
+                                (e.time - lastCallbackTime > 50 || i === numEvents - 1);
                         if (point) {
                             pointsPlayed.push(point);
                         }
@@ -4033,13 +3658,9 @@
                         _loop_1(i);
                     }
                 });
-                var onEndOpt = this.options.onEnd,
-                    onStop = this.options.onStop;
+                var onEndOpt = this.options.onEnd, onStop = this.options.onStop;
                 this.scheduledCallbacks.push(setTimeout(function () {
-                    var chart = _this.chart,
-                        context = { chart: chart,
-                        timeline: _this,
-                        pointsPlayed: pointsPlayed };
+                    var chart = _this.chart, context = { chart: chart, timeline: _this, pointsPlayed: pointsPlayed };
                     _this.isPlaying = false;
                     if (resetAfter) {
                         _this.resetPlayState();
@@ -4106,9 +3727,7 @@
                 this.play(function (e, ix, arr) {
                     // We have to keep track of final event time ourselves, since
                     // play() messes with the time internally upon filtering.
-                    var res = eventFilter(e,
-                        ix,
-                        arr);
+                    var res = eventFilter(e, ix, arr);
                     if (res && e.time > finalEventTime) {
                         finalEventTime = e.time;
                     }
@@ -4124,19 +3743,13 @@
                 if (this.isPlaying) {
                     this.pause();
                 }
-                var fromTime = this.resumeFromTime,
-                    closestTime = this.channels.reduce(function (time,
-                    channel) {
-                        // Adapted binary search since events are sorted by time
-                        var events = eventFilter ?
-                            channel.events.filter(eventFilter) : channel.events;
-                    var s = 0,
-                        e = events.length,
-                        lastValidTime = time;
+                var fromTime = this.resumeFromTime, closestTime = this.channels.reduce(function (time, channel) {
+                    // Adapted binary search since events are sorted by time
+                    var events = eventFilter ?
+                        channel.events.filter(eventFilter) : channel.events;
+                    var s = 0, e = events.length, lastValidTime = time;
                     while (s < e) {
-                        var mid = (s + e) >> 1,
-                            t = events[mid].time,
-                            cmp = t - fromTime;
+                        var mid = (s + e) >> 1, t = events[mid].time, cmp = t - fromTime;
                         if (cmp > 0) { // ahead
                             if (next && t < lastValidTime) {
                                 lastValidTime = t;
@@ -4170,8 +3783,8 @@
                 }
                 this.anchorPlayMoment(function (e, ix, arr) {
                     var withinTime = next ?
-                            e.time > fromTime && e.time <= closestTime + margin :
-                            e.time < fromTime && e.time >= closestTime - margin;
+                        e.time > fromTime && e.time <= closestTime + margin :
+                        e.time < fromTime && e.time >= closestTime - margin;
                     return eventFilter ? withinTime && eventFilter(e, ix, arr) :
                         withinTime;
                 }, onEnd);
@@ -4180,15 +3793,10 @@
             // related point is closest to a target value.
             // Note: not very efficient.
             SonificationTimeline.prototype.playClosestToPropValue = function (prop, targetVal, onEnd, onBoundaryHit, eventFilter) {
-                var filter = function (e,
-                    ix,
-                    arr) { return !!(eventFilter ?
-                        eventFilter(e,
-                    ix,
-                    arr) && e.relatedPoint :
-                        e.relatedPoint); };
-                var closestValDiff = Infinity,
-                    closestEvent = null;
+                var filter = function (e, ix, arr) { return !!(eventFilter ?
+                    eventFilter(e, ix, arr) && e.relatedPoint :
+                    e.relatedPoint); };
+                var closestValDiff = Infinity, closestEvent = null;
                 (this.playingChannels || this.channels).forEach(function (channel) {
                     var events = channel.events;
                     var i = events.length;
@@ -4196,8 +3804,7 @@
                         if (!filter(events[i], i, events)) {
                             continue;
                         }
-                        var val = events[i].relatedPoint[prop],
-                            diff = defined(val) && Math.abs(targetVal - val);
+                        var val = events[i].relatedPoint[prop], diff = defined(val) && Math.abs(targetVal - val);
                         if (diff !== false && diff < closestValDiff) {
                             closestValDiff = diff;
                             closestEvent = events[i];
@@ -4224,7 +3831,7 @@
             SonificationTimeline.prototype.getEventsForPoint = function (point) {
                 return this.channels.reduce(function (events, channel) {
                     var pointEvents = channel.events
-                            .filter(function (e) { return e.relatedPoint === point; });
+                        .filter(function (e) { return e.relatedPoint === point; });
                     return events.concat(pointEvents);
                 }, []);
             };
@@ -4234,9 +3841,9 @@
             SonificationTimeline.prototype.playSegment = function (segment, onEnd) {
                 var numSegments = 100;
                 var eventTimes = {
-                        first: Infinity,
-                        last: -Infinity
-                    };
+                    first: Infinity,
+                    last: -Infinity
+                };
                 this.channels.forEach(function (c) {
                     if (c.events.length) {
                         eventTimes.first = Math.min(c.events[0].time, eventTimes.first);
@@ -4244,17 +3851,13 @@
                     }
                 });
                 if (eventTimes.first < Infinity) {
-                    var segmentSize = (eventTimes.last - eventTimes.first) / numSegments,
-                        fromTime_1 = eventTimes.first + segment * segmentSize,
-                        toTime_1 = fromTime_1 + segmentSize;
+                    var segmentSize = (eventTimes.last - eventTimes.first) / numSegments, fromTime_1 = eventTimes.first + segment * segmentSize, toTime_1 = fromTime_1 + segmentSize;
                     // Binary search, do we have any events within time range?
                     if (!this.channels.some(function (c) {
                         var events = c.events;
-                        var s = 0,
-                            e = events.length;
+                        var s = 0, e = events.length;
                         while (s < e) {
-                            var mid = (s + e) >> 1,
-                                t = events[mid].time;
+                            var mid = (s + e) >> 1, t = events[mid].time;
                             if (t < fromTime_1) { // behind
                                 s = mid + 1;
                             }
@@ -4279,21 +3882,13 @@
             // Get last played / current point
             // Since events are scheduled we can't just store points as we play them
             SonificationTimeline.prototype.getLastPlayedPoint = function (filter) {
-                var curTime = this.getCurrentTime(),
-                    channels = this.playingChannels || this.channels;
-                var closestDiff = Infinity,
-                    closestPoint = null;
+                var curTime = this.getCurrentTime(), channels = this.playingChannels || this.channels;
+                var closestDiff = Infinity, closestPoint = null;
                 channels.forEach(function (c) {
-                    var events = c.events.filter(function (e,
-                        ix,
-                        arr) { return !!(e.relatedPoint && e.time <= curTime &&
-                            (!filter || filter(e,
-                        ix,
-                        arr))); }),
-                        closestEvent = events[events.length - 1];
+                    var events = c.events.filter(function (e, ix, arr) { return !!(e.relatedPoint && e.time <= curTime &&
+                        (!filter || filter(e, ix, arr))); }), closestEvent = events[events.length - 1];
                     if (closestEvent) {
-                        var closestTime = closestEvent.time,
-                            diff = Math.abs(closestTime - curTime);
+                        var closestTime = closestEvent.time, diff = Math.abs(closestTime - curTime);
                         if (diff < closestDiff) {
                             closestDiff = diff;
                             closestPoint = closestEvent.relatedPoint;
@@ -4337,10 +3932,10 @@
             };
             SonificationTimeline.prototype.downloadMIDI = function (filename) {
                 var data = this.getMIDIData(), name = (filename ||
-                        this.chart &&
-                            this.chart.options.title &&
-                            this.chart.options.title.text ||
-                        'chart') + '.mid', blob = new Blob([data], { type: 'application/octet-stream' }), url = window.URL.createObjectURL(blob);
+                    this.chart &&
+                        this.chart.options.title &&
+                        this.chart.options.title.text ||
+                    'chart') + '.mid', blob = new Blob([data], { type: 'application/octet-stream' }), url = window.URL.createObjectURL(blob);
                 downloadURL(url, name);
                 window.URL.revokeObjectURL(url);
             };
@@ -4398,11 +3993,9 @@
          *
          * */
         var __assign = (this && this.__assign) || function () {
-                __assign = Object.assign || function(t) {
-                    for (var s,
-            i = 1,
-            n = arguments.length; i < n; i++) {
-                        s = arguments[i];
+            __assign = Object.assign || function(t) {
+                for (var s, i = 1, n = arguments.length; i < n; i++) {
+                    s = arguments[i];
                     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
                         t[p] = s[p];
                 }
@@ -4410,16 +4003,11 @@
             };
             return __assign.apply(this, arguments);
         };
-        var clamp = U.clamp,
-            defined = U.defined,
-            extend = U.extend,
-            getNestedProperty = U.getNestedProperty,
-            merge = U.merge,
-            pick = U.pick;
+        var clamp = U.clamp, defined = U.defined, extend = U.extend, getNestedProperty = U.getNestedProperty, merge = U.merge, pick = U.pick;
         var format = T.format;
         var isNoteDefinition = function (str) {
-                // eslint-disable-next-line require-unicode-regexp
-                return (/^([a-g][#b]?)[0-8]$/i).test(str);
+            // eslint-disable-next-line require-unicode-regexp
+            return (/^([a-g][#b]?)[0-8]$/i).test(str);
         };
         /**
          * Get the value of a point property from string.
@@ -4442,15 +4030,9 @@
          * @private
          */
         function getChartExtremesForProps(chart, props, perSeriesProps) {
-            var series = chart.series,
-                numProps = props.length,
-                numSeriesProps = perSeriesProps.length,
-                initCache = function (propList) {
-                    return propList.reduce(function (cache,
-                prop) {
-                        ((cache[prop] = { min: Infinity,
-                max: -Infinity }),
-                cache);
+            var series = chart.series, numProps = props.length, numSeriesProps = perSeriesProps.length, initCache = function (propList) {
+                return propList.reduce(function (cache, prop) {
+                    ((cache[prop] = { min: Infinity, max: -Infinity }), cache);
                     return cache;
                 }, {});
             }, updateCache = function (cache, point, prop) {
@@ -4498,12 +4080,12 @@
          */
         function getPropMetrics(chart) {
             var globalOpts = chart.options.sonification ||
-                    {}, defaultInstrMapping = (globalOpts.defaultInstrumentOptions || {})
-                    .mapping || { time: 'x', pitch: 'y' }, defaultSpeechMapping = globalOpts.defaultSpeechOptions &&
-                    globalOpts.defaultSpeechOptions.mapping || {}, seriesTimeProps = [], commonTimeProps = {}, addTimeProp = function (prop, seriesIx) {
-                    if (seriesIx !== null) {
-                        seriesTimeProps[seriesIx] =
-                            seriesTimeProps[seriesIx] || {};
+                {}, defaultInstrMapping = (globalOpts.defaultInstrumentOptions || {})
+                .mapping || { time: 'x', pitch: 'y' }, defaultSpeechMapping = globalOpts.defaultSpeechOptions &&
+                globalOpts.defaultSpeechOptions.mapping || {}, seriesTimeProps = [], commonTimeProps = {}, addTimeProp = function (prop, seriesIx) {
+                if (seriesIx !== null) {
+                    seriesTimeProps[seriesIx] =
+                        seriesTimeProps[seriesIx] || {};
                     seriesTimeProps[seriesIx][prop] = true;
                 }
                 else {
@@ -4560,8 +4142,7 @@
                         seriesTimeProps[series.index] = merge(commonTimeProps);
                     }
                     if (sOpts) {
-                        var defaultInstrMapping_1 = (sOpts.defaultInstrumentOptions || {}).mapping,
-                            defaultSpeechMapping_1 = (sOpts.defaultSpeechOptions || {}).mapping;
+                        var defaultInstrMapping_1 = (sOpts.defaultInstrumentOptions || {}).mapping, defaultSpeechMapping_1 = (sOpts.defaultSpeechOptions || {}).mapping;
                         if (defaultInstrMapping_1) {
                             addPropsFromMappingOptions(defaultInstrMapping_1, series.index);
                         }
@@ -4591,16 +4172,15 @@
             if (lenValueAxis <= 0) {
                 return virtualAxisExtremes.min;
             }
-            var lenVirtualAxis = virtualAxisExtremes.max - virtualAxisExtremes.min,
-                valueDelta = value - valueExtremes.min;
+            var lenVirtualAxis = virtualAxisExtremes.max - virtualAxisExtremes.min, valueDelta = value - valueExtremes.min;
             var virtualValueDelta = lenVirtualAxis * valueDelta / lenValueAxis;
             if (logarithmic) {
                 var log = valueExtremes.min > 0 ?
-                        // Normal log formula
-                        function (x) { return Math.log(x) / Math.LOG10E; } :
-                        // Negative logarithmic support needed
-                        function (x) {
-                            var adjustedNum = Math.abs(x);
+                    // Normal log formula
+                    function (x) { return Math.log(x) / Math.LOG10E; } :
+                    // Negative logarithmic support needed
+                    function (x) {
+                        var adjustedNum = Math.abs(x);
                         if (adjustedNum < 10) {
                             adjustedNum += (10 - adjustedNum) / 10;
                         }
@@ -4613,8 +4193,8 @@
                     (log(valueExtremes.max) - logValMin);
             }
             var val = invert ?
-                    virtualAxisExtremes.max - virtualValueDelta :
-                    virtualAxisExtremes.min + virtualValueDelta;
+                virtualAxisExtremes.max - virtualValueDelta :
+                virtualAxisExtremes.min + virtualValueDelta;
             return clamp(val, virtualAxisExtremes.min, virtualAxisExtremes.max);
         }
         /**
@@ -4628,12 +4208,7 @@
             if (typeof mappingOptions === 'function') {
                 return mappingOptions(extend({ time: 0 }, context));
             }
-            var mapTo = mappingOptions,
-                mapFunc = defaultMapping.mapFunction,
-                min = defaultMapping.min,
-                max = defaultMapping.max,
-                within = defaultMapping.within,
-                scale;
+            var mapTo = mappingOptions, mapFunc = defaultMapping.mapFunction, min = defaultMapping.min, max = defaultMapping.max, within = defaultMapping.within, scale;
             if (typeof mappingOptions === 'object') {
                 mapTo = mappingOptions.mapTo;
                 mapFunc = mappingOptions.mapFunction || mapFunc;
@@ -4651,7 +4226,7 @@
             }
             var value = context.value;
             var useContextValue = mapTo === 'value' && value !== void 0 &&
-                    contextValueProp;
+                contextValueProp;
             if (!useContextValue) {
                 var fixedValue = mappingOptions.value;
                 if (fixedValue !== void 0) {
@@ -4702,11 +4277,7 @@
                     }
                 }
                 // Map to the scale
-                var noteNum = mapToVirtualAxis(value,
-                    extremes, { min: 0,
-                    max: scaleAxis.length - 1 },
-                    isInverted,
-                    mapFunc === 'logarithmic');
+                var noteNum = mapToVirtualAxis(value, extremes, { min: 0, max: scaleAxis.length - 1 }, isInverted, mapFunc === 'logarithmic');
                 return scaleAxis[Math.round(noteNum)];
             }
             return mapToVirtualAxis(value, extremes, { min: min, max: max }, isInverted, mapFunc === 'logarithmic');
@@ -4725,13 +4296,7 @@
          * @private
          */
         function getPointTime(point, startTime, duration, timeMappingOptions, propMetrics, useSeriesExtremes) {
-            var time = getParamValWithDefault({ point: point,
-                time: 0 },
-                propMetrics,
-                useSeriesExtremes,
-                timeMappingOptions, 0, { min: 0,
-                max: duration,
-                mapTo: 'x' });
+            var time = getParamValWithDefault({ point: point, time: 0 }, propMetrics, useSeriesExtremes, timeMappingOptions, 0, { min: 0, max: duration, mapTo: 'x' });
             return time + startTime;
         }
         /**
@@ -4739,12 +4304,10 @@
          * @private
          */
         function getAvailableDurationForSeries(series, totalDuration, propMetrics, afterSeriesWait) {
-            var timeProp,
-                seriesDuration;
+            var timeProp, seriesDuration;
             var availableDuration = totalDuration -
-                    (series.chart.series.length - 1) * afterSeriesWait,
-                hasGlobalTimeProp = propMetrics.seriesTimeProps.every(function (timeProps) {
-                    var props = Object.keys(timeProps);
+                (series.chart.series.length - 1) * afterSeriesWait, hasGlobalTimeProp = propMetrics.seriesTimeProps.every(function (timeProps) {
+                var props = Object.keys(timeProps);
                 if (props.length > 1) {
                     return false;
                 }
@@ -4756,18 +4319,14 @@
             if (hasGlobalTimeProp) {
                 // Chart-wide single time prop, use time prop extremes
                 var seriesExtremes = propMetrics
-                        .seriesExtremes[series.index][timeProp],
-                    seriesTimeLen = seriesExtremes.max - seriesExtremes.min,
-                    totalTimeLen = propMetrics.seriesExtremes.reduce(function (sum,
-                    s) { return (s[timeProp] ?
-                        sum + s[timeProp].max - s[timeProp].min :
-                        sum); }, 0);
+                    .seriesExtremes[series.index][timeProp], seriesTimeLen = seriesExtremes.max - seriesExtremes.min, totalTimeLen = propMetrics.seriesExtremes.reduce(function (sum, s) { return (s[timeProp] ?
+                    sum + s[timeProp].max - s[timeProp].min :
+                    sum); }, 0);
                 seriesDuration = Math.round(seriesTimeLen / totalTimeLen * availableDuration);
             }
             else {
                 // No common time prop, so use percent of total points
-                var totalPoints = series.chart.series.reduce(function (sum,
-                    s) { return sum + s.points.length; }, 0);
+                var totalPoints = series.chart.series.reduce(function (sum, s) { return sum + s.points.length; }, 0);
                 seriesDuration = Math.round((series.points || []).length / totalPoints * availableDuration);
             }
             return Math.max(50, seriesDuration);
@@ -4777,24 +4336,21 @@
          * @private
          */
         function addTimelineChannelFromTrack(timeline, audioContext, destinationNode, options) {
-            var speechOpts = options,
-                instrMappingOpts = (options.mapping || {}),
-                engine = options.type === 'speech' ?
-                    new SonificationSpeaker({
-                        language: speechOpts.language,
-                        name: speechOpts.preferredVoice
-                    }) :
-                    new SonificationInstrument(audioContext,
-                destinationNode, {
-                        capabilities: {
-                            pan: !!instrMappingOpts.pan,
-                            tremolo: !!instrMappingOpts.tremolo,
-                            filters: !!(instrMappingOpts.highpass ||
-                                instrMappingOpts.lowpass)
-                        },
-                        synthPatch: options.instrument,
-                        midiTrackName: options.midiName
-                    });
+            var speechOpts = options, instrMappingOpts = (options.mapping || {}), engine = options.type === 'speech' ?
+                new SonificationSpeaker({
+                    language: speechOpts.language,
+                    name: speechOpts.preferredVoice
+                }) :
+                new SonificationInstrument(audioContext, destinationNode, {
+                    capabilities: {
+                        pan: !!instrMappingOpts.pan,
+                        tremolo: !!instrMappingOpts.tremolo,
+                        filters: !!(instrMappingOpts.highpass ||
+                            instrMappingOpts.lowpass)
+                    },
+                    synthPatch: options.instrument,
+                    midiTrackName: options.midiName
+                });
             return timeline.addChannel(options.type || 'instrument', engine, pick(options.showPlayMarker, true));
         }
         /**
@@ -4802,24 +4358,12 @@
          * @private
          */
         function addMappedInstrumentEvent(context, channel, mappingOptions, propMetrics, roundToMusicalNotes, contextValueProp) {
-            var getParam = function (param,
-                fallback,
-                defaults,
-                parent) { return getParamValWithDefault(context,
-                propMetrics,
-                false, (parent || mappingOptions)[param],
-                fallback,
-                defaults,
-                contextValueProp); };
-            var eventsAdded = [],
-                eventOpts = {
-                    noteDuration: getParam('noteDuration', 200, { min: 40,
-                max: 1000 }),
-                    pan: getParam('pan', 0, { min: -1,
-                max: 1 }),
-                    volume: getParam('volume', 1, { min: 0.1,
-                max: 1 })
-                };
+            var getParam = function (param, fallback, defaults, parent) { return getParamValWithDefault(context, propMetrics, false, (parent || mappingOptions)[param], fallback, defaults, contextValueProp); };
+            var eventsAdded = [], eventOpts = {
+                noteDuration: getParam('noteDuration', 200, { min: 40, max: 1000 }),
+                pan: getParam('pan', 0, { min: -1, max: 1 }),
+                volume: getParam('volume', 1, { min: 0.1, max: 1 })
+            };
             if (mappingOptions.frequency) {
                 eventOpts.frequency = getParam('frequency', 440, { min: 50, max: 6000 });
             }
@@ -4836,10 +4380,9 @@
                 eventOpts.tremoloSpeed = getParam('speed', 0, { min: 0, max: 0.8 }, mappingOptions.tremolo);
             }
             var gapBetweenNotes = getParam('gapBetweenNotes', 150, { min: 50, max: 1000 }), playDelay = getParam('playDelay', 0, { max: 200 });
-            var addNoteEvent = function (noteDef,
-                ix) {
-                    if (ix === void 0) { ix = 0; }
-                    var opts = noteDef;
+            var addNoteEvent = function (noteDef, ix) {
+                if (ix === void 0) { ix = 0; }
+                var opts = noteDef;
                 if (noteDef.mapTo) {
                     // Transform the pitch mapping options to normal mapping options
                     if (typeof noteDef.min === 'string') {
@@ -4897,15 +4440,7 @@
          * @private
          */
         function addMappedSpeechEvent(context, channel, mappingOptions, propMetrics, contextValueProp) {
-            var getParam = function (param,
-                fallback,
-                defaults) { return getParamValWithDefault(context,
-                propMetrics,
-                false,
-                mappingOptions[param],
-                fallback,
-                defaults,
-                contextValueProp); };
+            var getParam = function (param, fallback, defaults) { return getParamValWithDefault(context, propMetrics, false, mappingOptions[param], fallback, defaults, contextValueProp); };
             var playDelay = getParam('playDelay', 0, { max: 200 }), pitch = getParam('pitch', 1, { min: 0.3, max: 2 }), rate = getParam('rate', 1, { min: 0.4, max: 4 }), volume = getParam('volume', 1, { min: 0.1 }), message = getSpeechMessageValue(context, mappingOptions.text);
             if (message) {
                 return channel.addEvent({
@@ -4927,10 +4462,7 @@
         function addMappedEventForPoint(context, channel, trackOptions, propMetrics) {
             var eventsAdded = [];
             if (trackOptions.type === 'speech' && trackOptions.mapping) {
-                var eventAdded = addMappedSpeechEvent(context,
-                    channel,
-                    trackOptions.mapping,
-                    propMetrics);
+                var eventAdded = addMappedSpeechEvent(context, channel, trackOptions.mapping, propMetrics);
                 if (eventAdded) {
                     eventsAdded = [eventAdded];
                 }
@@ -4946,8 +4478,7 @@
          * @private
          */
         function getGroupedPoints(pointGroupOpts, points) {
-            var alg = pointGroupOpts.algorithm || 'minmax',
-                r = function (ix) { return (points[ix] ? [points[ix].point] : []); };
+            var alg = pointGroupOpts.algorithm || 'minmax', r = function (ix) { return (points[ix] ? [points[ix].point] : []); };
             if (alg === 'first') {
                 return r(0);
             }
@@ -4962,13 +4493,9 @@
             }
             if (alg === 'minmax') {
                 var prop_1 = pointGroupOpts.prop || 'y';
-                var min_1,
-                    max_1,
-                    minVal_1,
-                    maxVal_1;
+                var min_1, max_1, minVal_1, maxVal_1;
                 points.forEach(function (p) {
-                    var val = getPointPropValue(p.point,
-                        prop_1);
+                    var val = getPointPropValue(p.point, prop_1);
                     if (val === void 0) {
                         return;
                     }
@@ -5001,17 +4528,12 @@
                 return activeWhen(context);
             }
             if (typeof activeWhen === 'object') {
-                var prop = activeWhen.prop,
-                    val = pick(context.value,
-                    context.point && getPointPropValue(context.point,
-                    prop));
+                var prop = activeWhen.prop, val = pick(context.value, context.point && getPointPropValue(context.point, prop));
                 if (typeof val !== 'number') {
                     return false;
                 }
                 var crossingOk = true;
-                var crossingUp = activeWhen.crossingUp,
-                    crossingDown = activeWhen.crossingDown,
-                    hasLastValue = typeof lastPropValue === 'number';
+                var crossingUp = activeWhen.crossingUp, crossingDown = activeWhen.crossingDown, hasLastValue = typeof lastPropValue === 'number';
                 if (crossingUp && crossingDown) {
                     crossingOk = hasLastValue && (lastPropValue < crossingUp && val >= crossingUp ||
                         lastPropValue > crossingDown && val <= crossingDown);
@@ -5023,9 +4545,7 @@
                         hasLastValue && lastPropValue > crossingDown &&
                             val <= crossingDown);
                 }
-                var max = pick(activeWhen.max,
-                    Infinity),
-                    min = pick(activeWhen.min, -Infinity);
+                var max = pick(activeWhen.max, Infinity), min = pick(activeWhen.min, -Infinity);
                 return val <= max && val >= min && crossingOk;
             }
             return true;
@@ -5036,33 +4556,20 @@
          */
         function timelineFromChart(audioContext, destinationNode, chart) {
             var options = chart.options.sonification ||
-                    {},
-                defaultInstrOpts = options.defaultInstrumentOptions,
-                defaultSpeechOpts = options.defaultSpeechOptions,
-                defaultPointGroupOpts = merge({
-                    enabled: true,
-                    groupTimespan: 15,
-                    algorithm: 'minmax',
-                    prop: 'y'
-                },
-                options.pointGrouping),
-                globalTracks = options.globalTracks || [],
-                globalContextTracks = options.globalContextTracks || [],
-                isSequential = options.order === 'sequential', 
-                // Slight margin for note end
-                totalDuration = Math.max(50,
-                options.duration - 300),
-                afterSeriesWait = options.afterSeriesWait,
-                eventOptions = options.events || {},
-                propMetrics = getPropMetrics(chart),
-                timeline = new SonificationTimeline({
-                    onPlay: eventOptions.onPlay,
-                    onEnd: eventOptions.onEnd,
-                    onStop: eventOptions.onStop,
-                    showCrosshair: options.showCrosshair,
-                    showTooltip: options.showTooltip
-                },
-                chart);
+                {}, defaultInstrOpts = options.defaultInstrumentOptions, defaultSpeechOpts = options.defaultSpeechOptions, defaultPointGroupOpts = merge({
+                enabled: true,
+                groupTimespan: 15,
+                algorithm: 'minmax',
+                prop: 'y'
+            }, options.pointGrouping), globalTracks = options.globalTracks || [], globalContextTracks = options.globalContextTracks || [], isSequential = options.order === 'sequential', 
+            // Slight margin for note end
+            totalDuration = Math.max(50, options.duration - 300), afterSeriesWait = options.afterSeriesWait, eventOptions = options.events || {}, propMetrics = getPropMetrics(chart), timeline = new SonificationTimeline({
+                onPlay: eventOptions.onPlay,
+                onEnd: eventOptions.onEnd,
+                onStop: eventOptions.onStop,
+                showCrosshair: options.showCrosshair,
+                showTooltip: options.showTooltip
+            }, chart);
             // Expose PropMetrics for tests
             if (chart.sonification) {
                 chart.sonification.propMetrics = propMetrics;
@@ -5070,68 +4577,38 @@
             var startTime = 0;
             chart.series.forEach(function (series, seriesIx) {
                 var sOptions = series.options.sonification ||
-                        {};
+                    {};
                 if (series.visible && sOptions.enabled !== false) {
-                    var seriesDuration_1 = isSequential ? getAvailableDurationForSeries(series,
-                        totalDuration,
-                        propMetrics,
-                        afterSeriesWait) : totalDuration,
-                        seriesDefaultInstrOpts_1 = merge(defaultInstrOpts,
-                        sOptions.defaultInstrumentOptions),
-                        seriesDefaultSpeechOpts_1 = merge(defaultSpeechOpts,
-                        sOptions.defaultSpeechOptions),
-                        seriesPointGroupOpts_1 = merge(defaultPointGroupOpts,
-                        sOptions.pointGrouping),
-                        mainTracks = (sOptions.tracks || [seriesDefaultInstrOpts_1])
-                            .concat(globalTracks),
-                        hasAddedSeries = !!timeline.channels.length,
-                        contextTracks = hasAddedSeries && !isSequential ?
-                            sOptions.contextTracks || [] :
-                            (sOptions.contextTracks || []).concat(globalContextTracks),
-                        eventsAdded_1 = [];
+                    var seriesDuration_1 = isSequential ? getAvailableDurationForSeries(series, totalDuration, propMetrics, afterSeriesWait) : totalDuration, seriesDefaultInstrOpts_1 = merge(defaultInstrOpts, sOptions.defaultInstrumentOptions), seriesDefaultSpeechOpts_1 = merge(defaultSpeechOpts, sOptions.defaultSpeechOptions), seriesPointGroupOpts_1 = merge(defaultPointGroupOpts, sOptions.pointGrouping), mainTracks = (sOptions.tracks || [seriesDefaultInstrOpts_1])
+                        .concat(globalTracks), hasAddedSeries = !!timeline.channels.length, contextTracks = hasAddedSeries && !isSequential ?
+                        sOptions.contextTracks || [] :
+                        (sOptions.contextTracks || []).concat(globalContextTracks), eventsAdded_1 = [];
                     // For crossing threshold notifications
                     var lastPropValue_1;
                     // Add events for the mapped tracks
                     mainTracks.forEach(function (trackOpts) {
                         var mergedOpts = merge({
-                                pointGrouping: seriesPointGroupOpts_1,
-                                midiName: trackOpts.midiName || series.name
-                            },
-                            trackOpts.type === 'speech' ?
-                                seriesDefaultSpeechOpts_1 : seriesDefaultInstrOpts_1,
-                            trackOpts),
-                            pointGroupOpts = mergedOpts.pointGrouping,
-                            activeWhen = mergedOpts.activeWhen,
-                            updateLastPropValue = function (point) {
-                                if (typeof activeWhen === 'object' &&
-                                    activeWhen.prop) {
-                                    lastPropValue_1 = getPointPropValue(point,
-                            activeWhen.prop);
+                            pointGrouping: seriesPointGroupOpts_1,
+                            midiName: trackOpts.midiName || series.name
+                        }, trackOpts.type === 'speech' ?
+                            seriesDefaultSpeechOpts_1 : seriesDefaultInstrOpts_1, trackOpts), pointGroupOpts = mergedOpts.pointGrouping, activeWhen = mergedOpts.activeWhen, updateLastPropValue = function (point) {
+                            if (typeof activeWhen === 'object' &&
+                                activeWhen.prop) {
+                                lastPropValue_1 = getPointPropValue(point, activeWhen.prop);
                             }
                         };
-                        var channel = addTimelineChannelFromTrack(timeline,
-                            audioContext,
-                            destinationNode,
-                            mergedOpts),
-                            add = function (c) { return eventsAdded_1.push.apply(eventsAdded_1,
-                            addMappedEventForPoint(c,
-                            channel,
-                            mergedOpts,
-                            propMetrics)); };
+                        var channel = addTimelineChannelFromTrack(timeline, audioContext, destinationNode, mergedOpts), add = function (c) { return eventsAdded_1.push.apply(eventsAdded_1, addMappedEventForPoint(c, channel, mergedOpts, propMetrics)); };
                         // Go through the points and add events to channel
-                        var pointGroup = [],
-                            pointGroupTime = 0;
+                        var pointGroup = [], pointGroupTime = 0;
                         var addCurrentPointGroup = function (groupSpanTime) {
-                                if (pointGroup.length === 1) {
-                                    add({
-                                        point: pointGroup[0].point,
-                                        time: pointGroupTime + groupSpanTime / 2
-                                    });
+                            if (pointGroup.length === 1) {
+                                add({
+                                    point: pointGroup[0].point,
+                                    time: pointGroupTime + groupSpanTime / 2
+                                });
                             }
                             else {
-                                var points = getGroupedPoints(pointGroupOpts,
-                                    pointGroup),
-                                    t_1 = groupSpanTime / points.length;
+                                var points = getGroupedPoints(pointGroupOpts, pointGroup), t_1 = groupSpanTime / points.length;
                                 points.forEach(function (p, ix) { return add({
                                     point: p,
                                     time: pointGroupTime + t_1 / 2 + t_1 * ix
@@ -5141,14 +4618,8 @@
                         };
                         (series.points || []).forEach(function (point, pointIx) {
                             var isLastPoint = pointIx === series.points.length - 1;
-                            var time = getPointTime(point,
-                                startTime,
-                                seriesDuration_1,
-                                mergedOpts.mapping && mergedOpts.mapping.time || 0,
-                                propMetrics,
-                                isSequential);
-                            var context = { point: point,
-                                time: time };
+                            var time = getPointTime(point, startTime, seriesDuration_1, mergedOpts.mapping && mergedOpts.mapping.time || 0, propMetrics, isSequential);
+                            var context = { point: point, time: time };
                             // Is this point active?
                             if (!mergedOpts.mapping ||
                                 !isActive(context, activeWhen, lastPropValue_1)) {
@@ -5166,10 +4637,8 @@
                                 add(context);
                             }
                             else {
-                                var dT = time - pointGroupTime,
-                                    groupSpan = pointGroupOpts.groupTimespan,
-                                    spanTime = isLastPoint &&
-                                        dT <= groupSpan ? dT : groupSpan;
+                                var dT = time - pointGroupTime, groupSpan = pointGroupOpts.groupTimespan, spanTime = isLastPoint &&
+                                    dT <= groupSpan ? dT : groupSpan;
                                 if (isLastPoint || dT > groupSpan) {
                                     if (dT <= groupSpan) {
                                         // Only happens if last point is within group
@@ -5195,10 +4664,8 @@
                         });
                     });
                     // Add callbacks to first/last events
-                    var firstEvent = eventsAdded_1.reduce(function (first,
-                        e) { return (e.time < first.time ? e : first); }, { time: Infinity });
-                    var lastEvent = eventsAdded_1.reduce(function (last,
-                        e) { return (e.time > last.time ? e : last); }, { time: -Infinity });
+                    var firstEvent = eventsAdded_1.reduce(function (first, e) { return (e.time < first.time ? e : first); }, { time: Infinity });
+                    var lastEvent = eventsAdded_1.reduce(function (last, e) { return (e.time > last.time ? e : last); }, { time: -Infinity });
                     firstEvent.callback = eventOptions.onSeriesStart ?
                         eventOptions.onSeriesStart.bind(null, { series: series, timeline: timeline }) :
                         void 0;
@@ -5208,34 +4675,19 @@
                     // Add the context tracks that are not related to points
                     contextTracks.forEach(function (trackOpts) {
                         var mergedOpts = trackOpts.type === 'speech' ?
-                                merge(defaultSpeechOpts,
-                            trackOpts) :
-                                merge(defaultInstrOpts, {
-                                    mapping: { pitch: { mapTo: 'value' } }
-                                },
-                            trackOpts);
-                        var contextChannel = addTimelineChannelFromTrack(timeline,
-                            audioContext,
-                            destinationNode,
-                            mergedOpts);
+                            merge(defaultSpeechOpts, trackOpts) :
+                            merge(defaultInstrOpts, {
+                                mapping: { pitch: { mapTo: 'value' } }
+                            }, trackOpts);
+                        var contextChannel = addTimelineChannelFromTrack(timeline, audioContext, destinationNode, mergedOpts);
                         lastPropValue_1 = void 0;
-                        var timeInterval = mergedOpts.timeInterval,
-                            valueInterval = mergedOpts.valueInterval,
-                            valueProp = mergedOpts.valueProp || 'x',
-                            activeWhen = mergedOpts.activeWhen,
-                            contextExtremes = propMetrics
-                                .seriesExtremes[seriesIx][valueProp],
-                            addContextEvent = function (time,
-                            value) {
-                                if (!mergedOpts.mapping ||
-                                    !isActive({ time: time,
-                            value: value },
-                            typeof activeWhen === 'object' ?
-                                        extend({ prop: valueProp },
-                            activeWhen) :
-                                        activeWhen,
-                            lastPropValue_1)) {
-                                    lastPropValue_1 = value;
+                        var timeInterval = mergedOpts.timeInterval, valueInterval = mergedOpts.valueInterval, valueProp = mergedOpts.valueProp || 'x', activeWhen = mergedOpts.activeWhen, contextExtremes = propMetrics
+                            .seriesExtremes[seriesIx][valueProp], addContextEvent = function (time, value) {
+                            if (!mergedOpts.mapping ||
+                                !isActive({ time: time, value: value }, typeof activeWhen === 'object' ?
+                                    extend({ prop: valueProp }, activeWhen) :
+                                    activeWhen, lastPropValue_1)) {
+                                lastPropValue_1 = value;
                                 return;
                             }
                             lastPropValue_1 = value;
@@ -5249,9 +4701,7 @@
                         if (timeInterval) {
                             var time = 0;
                             while (time <= seriesDuration_1) {
-                                var val = mapToVirtualAxis(time, { min: 0,
-                                    max: seriesDuration_1 },
-                                    contextExtremes);
+                                var val = mapToVirtualAxis(time, { min: 0, max: seriesDuration_1 }, contextExtremes);
                                 addContextEvent(time + startTime, val);
                                 time += timeInterval;
                             }
@@ -5259,11 +4709,7 @@
                         if (valueInterval) {
                             var val = contextExtremes.min;
                             while (val <= contextExtremes.max) {
-                                var time = mapToVirtualAxis(val,
-                                    contextExtremes, { min: 0,
-                                    max: seriesDuration_1 },
-                                    false,
-                                    mergedOpts.valueMapFunction === 'logarithmic');
+                                var time = mapToVirtualAxis(val, contextExtremes, { min: 0, max: seriesDuration_1 }, false, mergedOpts.valueMapFunction === 'logarithmic');
                                 addContextEvent(time + startTime, val);
                                 val += valueInterval;
                             }
@@ -5301,15 +4747,9 @@
          *  Imports
          *
          * */
-        var defaultOptions = D.defaultOptions,
-            getOptions = D.getOptions;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            merge = U.merge,
-            pick = U.pick;
-        var doc = H.doc,
-            win = H.win;
+        var defaultOptions = D.defaultOptions, getOptions = D.getOptions;
+        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, pick = U.pick;
+        var doc = H.doc, win = H.win;
         /**
          * The Sonification class. This class represents a chart's sonification
          * capabilities. A chart automatically gets an instance of this class when
@@ -5328,8 +4768,8 @@
          * @param {Highcharts.Chart} chart The chart to tie the sonification to
          */
         var Sonification = /** @class */ (function () {
-                function Sonification(chart) {
-                    this.chart = chart;
+            function Sonification(chart) {
+                this.chart = chart;
                 this.retryContextCounter = 0;
                 this.lastUpdate = 0;
                 this.unbindKeydown = addEvent(doc, 'keydown', function (e) {
@@ -5403,8 +4843,7 @@
                     return;
                 }
                 if (this.timeline) {
-                    var opts = this.chart.options.sonification,
-                        onHit = opts && opts.events && opts.events.onBoundaryHit;
+                    var opts = this.chart.options.sonification, onHit = opts && opts.events && opts.events.onBoundaryHit;
                     if (!onHit) {
                         this.initBoundaryInstrument();
                     }
@@ -5457,8 +4896,7 @@
                     return;
                 }
                 if (this.timeline) {
-                    var opts = this.chart.options.sonification,
-                        onHit = opts && opts.events && opts.events.onBoundaryHit;
+                    var opts = this.chart.options.sonification, onHit = opts && opts.events && opts.events.onBoundaryHit;
                     if (!onHit) {
                         this.initBoundaryInstrument();
                     }
@@ -5503,15 +4941,14 @@
                     return;
                 }
                 var duration = options.noteDuration = options.noteDuration || 500;
-                var instr = new SonificationInstrument(this.audioContext,
-                    this.audioDestination, {
-                        synthPatch: instrument,
-                        capabilities: {
-                            filters: true,
-                            tremolo: true,
-                            pan: true
-                        }
-                    });
+                var instr = new SonificationInstrument(this.audioContext, this.audioDestination, {
+                    synthPatch: instrument,
+                    capabilities: {
+                        filters: true,
+                        tremolo: true,
+                        pan: true
+                    }
+                });
                 instr.scheduleEventAtTime(delayMs / 1000, options);
                 setTimeout(function () { return instr && instr.destroy(); }, delayMs + duration + 500);
             };
@@ -5531,11 +4968,10 @@
             Sonification.prototype.speak = function (text, speakerOptions, delayMs) {
                 if (delayMs === void 0) { delayMs = 0; }
                 var speaker = new SonificationSpeaker(merge({
-                        language: 'en-US',
-                        rate: 1.5,
-                        volume: 0.4
-                    },
-                    speakerOptions || {}));
+                    language: 'en-US',
+                    rate: 1.5,
+                    volume: 0.4
+                }, speakerOptions || {}));
                 speaker.sayAtTime(delayMs, text);
             };
             /**
@@ -5647,8 +5083,7 @@
                     return;
                 }
                 // Don't update too often, it gets performance intensive
-                var now = Date.now(),
-                    updateInterval = sOpts.updateInterval;
+                var now = Date.now(), updateInterval = sOpts.updateInterval;
                 if (now - this.lastUpdate < updateInterval && !this.forceReady) {
                     clearTimeout(this.scheduledUpdate);
                     this.scheduledUpdate = setTimeout(this.update.bind(this), updateInterval / 2);
@@ -5708,8 +5143,7 @@
              * @private
              */
             Sonification.prototype.beforePlay = function () {
-                var opts = this.chart.options.sonification,
-                    beforePlay = opts && opts.events && opts.events.beforePlay;
+                var opts = this.chart.options.sonification, beforePlay = opts && opts.events && opts.events.beforePlay;
                 if (beforePlay) {
                     beforePlay({ chart: this.chart, timeline: this.timeline });
                 }
@@ -5744,8 +5178,7 @@
              * @private
              */
             function updateSonificationEnabled() {
-                var sonification = this.sonification,
-                    sOptions = this.options && this.options.sonification;
+                var sonification = this.sonification, sOptions = this.options && this.options.sonification;
                 if (sOptions && sOptions.enabled) {
                     if (sonification) {
                         sonification.update();
@@ -5970,16 +5403,16 @@
          *
          * */
         var Scales = {
-                minor: [0, 2, 3, 5, 7, 8, 10],
-                dorian: [0, 2, 3, 5, 7, 9, 10],
-                harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
-                phrygian: [0, 1, 3, 5, 7, 8, 11],
-                major: [0, 2, 4, 5, 7, 9, 11],
-                lydian: [0, 2, 4, 6, 7, 9, 11],
-                mixolydian: [0, 2, 4, 5, 7, 9, 10],
-                majorPentatonic: [0, 2, 4, 7, 9],
-                minorPentatonic: [0, 3, 5, 7, 10]
-            };
+            minor: [0, 2, 3, 5, 7, 8, 10],
+            dorian: [0, 2, 3, 5, 7, 9, 10],
+            harmonicMinor: [0, 2, 3, 5, 7, 8, 11],
+            phrygian: [0, 1, 3, 5, 7, 8, 11],
+            major: [0, 2, 4, 5, 7, 9, 11],
+            lydian: [0, 2, 4, 6, 7, 9, 11],
+            mixolydian: [0, 2, 4, 5, 7, 9, 10],
+            majorPentatonic: [0, 2, 4, 7, 9],
+            minorPentatonic: [0, 3, 5, 7, 10]
+        };
         /* *
          *
          *  Default Export

@@ -168,6 +168,7 @@ GanttSeries.defaultOptions = merge(XRangeSeries.defaultOptions, {
         animation: {
             reversed: true // Dependencies go from child to parent
         },
+        radius: 0,
         startMarker: {
             enabled: true,
             symbol: 'arrow-filled',
@@ -202,7 +203,7 @@ export default GanttSeries;
  * A `gantt` series.
  *
  * @extends   series,plotOptions.gantt
- * @excluding boostThreshold, connectors, dashStyle, findNearestPointBy,
+ * @excluding boostThreshold, dashStyle, findNearestPointBy,
  *            getExtremesFromAll, marker, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointStart
  * @product   gantt

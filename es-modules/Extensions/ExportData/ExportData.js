@@ -22,7 +22,7 @@ const { getOptions, setOptions } = D;
 import DownloadURL from '../DownloadURL.js';
 const { downloadURL } = DownloadURL;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries } } = SeriesRegistry;
+const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries, xrange: XRangeSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, extend, find, fireEvent, isNumber, pick } = U;
 /* *
@@ -201,22 +201,16 @@ function chartGetDataRows(multiLevelHeaders) {
     // Create point array depends if xAxis is category
     // or point.name is defined #13293
     getPointArray = function (series, xAxis) {
-        const namedPoints = series.data.filter((d) => (typeof d.y !== 'undefined') && d.name);
-        if (namedPoints.length &&
+        const pointArrayMap = series.pointArrayMap || ['y'], namedPoints = series.data.some((d) => (typeof d.y !== 'undefined') && d.name);
+        // If there are points with a name, we also want the x value in the
+        // table
+        if (namedPoints &&
             xAxis &&
             !xAxis.categories &&
-            !series.keyToAxis) {
-            if (series.pointArrayMap) {
-                const pointArrayMapCheck = series.pointArrayMap
-                    .filter((p) => p === 'x');
-                if (pointArrayMapCheck.length) {
-                    series.pointArrayMap.unshift('x');
-                    return series.pointArrayMap;
-                }
-            }
-            return ['x', 'y'];
+            series.exportKey !== 'name') {
+            return ['x', ...pointArrayMap];
         }
-        return series.pointArrayMap || ['y'];
+        return pointArrayMap;
     }, xAxisIndices = [];
     let xAxis, dataRows, columnTitleObj, i = 0, // Loop the series and index values
     x, xTitle;
@@ -254,9 +248,11 @@ function chartGetDataRows(multiLevelHeaders) {
                 pointArrayMap: series.pointArrayMap,
                 index: series.index
             };
+            const seriesIndex = mockSeries.index;
             // Export directly from options.data because we need the uncropped
             // data (#7913), and we need to support Boost (#7026).
             series.options.data.forEach(function eachData(options, pIdx) {
+                var _a;
                 const mockPoint = { series: mockSeries };
                 let key, prop, val;
                 // In parallel coordinates chart, each data point is connected
@@ -265,18 +261,18 @@ function chartGetDataRows(multiLevelHeaders) {
                     categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap, pIdx);
                 }
                 series.pointClass.prototype.applyOptions.apply(mockPoint, [options]);
-                key = mockPoint.x;
+                const name = series.data[pIdx] && series.data[pIdx].name;
+                key = ((_a = mockPoint.x) !== null && _a !== void 0 ? _a : '') + ',' + name;
                 if (defined(rows[key]) &&
-                    rows[key].seriesIndices.includes(mockSeries.index)) {
+                    rows[key].seriesIndices.includes(seriesIndex)) {
                     // find keys, which belong to actual series
-                    const keysFromActualSeries = Object.keys(rows).filter((i) => rows[i].seriesIndices.includes(mockSeries.index) &&
+                    const keysFromActualSeries = Object.keys(rows).filter((i) => rows[i].seriesIndices.includes(seriesIndex) &&
                         key), 
                     // find all properties, which start with actual key
                     existingKeys = keysFromActualSeries
                         .filter((propertyName) => propertyName.indexOf(String(key)) === 0);
-                    key = key.toString() + ',' + existingKeys.length;
+                    key = key + ',' + existingKeys.length;
                 }
-                const name = series.data[pIdx] && series.data[pIdx].name;
                 j = 0;
                 // Pies, funnels, geo maps etc. use point name in X row
                 if (!xAxis ||
@@ -303,7 +299,7 @@ function chartGetDataRows(multiLevelHeaders) {
                     rows[key].seriesIndices = [];
                 }
                 rows[key].seriesIndices = [
-                    ...rows[key].seriesIndices, mockSeries.index
+                    ...rows[key].seriesIndices, seriesIndex
                 ];
                 while (j < valueCount) {
                     prop = pointArrayMap[j]; // y, z etc
@@ -636,6 +632,9 @@ function chartToggleDataTable(show) {
                 wasHidden: createContainer || oldDisplay !== style.display
             });
         }
+        else {
+            fireEvent(this, 'afterHideData');
+        }
     }
     // Set the flag
     this.isDataTableVisible = show;
@@ -724,9 +723,15 @@ function compose(ChartClass) {
         };
     }
     if (GanttSeries && U.pushUnique(composedMembers, GanttSeries)) {
+        GanttSeries.prototype.exportKey = 'name';
         GanttSeries.prototype.keyToAxis = {
             start: 'x',
             end: 'x'
+        };
+    }
+    if (XRangeSeries && U.pushUnique(composedMembers, XRangeSeries)) {
+        XRangeSeries.prototype.keyToAxis = {
+            x2: 'x'
         };
     }
     if (MapSeries && U.pushUnique(composedMembers, MapSeries)) {

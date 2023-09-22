@@ -111,19 +111,19 @@ class Legend {
         if (options.enabled) {
             // Render it
             this.render();
-            // move checkboxes
+            // Move checkboxes
             addEvent(this.chart, 'endResize', function () {
                 this.legend.positionCheckboxes();
             });
-            // On Legend.init and Legend.update, make sure that proximate layout
-            // events are either added or removed (#18362).
-            addEvent(this.chart, 'render', () => {
-                if (this.proximate) {
-                    this.proximatePositions();
-                    this.positionItems();
-                }
-            });
         }
+        // On Legend.init and Legend.update, make sure that proximate layout
+        // events are either added or removed (#18362).
+        addEvent(this.chart, 'render', () => {
+            if (this.options.enabled && this.proximate) {
+                this.proximatePositions();
+                this.positionItems();
+            }
+        });
     }
     /**
      * @private
@@ -181,7 +181,7 @@ class Legend {
         if (pick(redraw, true)) {
             chart.redraw();
         }
-        fireEvent(this, 'afterUpdate');
+        fireEvent(this, 'afterUpdate', { redraw });
     }
     /**
      * Set the colors for the legend item.
@@ -407,9 +407,9 @@ class Legend {
     renderItem(item) {
         const legend = this, legendItem = item.legendItem = item.legendItem || {}, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
             item.series :
-            item, seriesOptions = series.options, showCheckbox = (legend.createCheckboxForItem) &&
+            item, seriesOptions = series.options, showCheckbox = (!!legend.createCheckboxForItem &&
             seriesOptions &&
-            seriesOptions.showCheckbox, useHTML = options.useHTML, itemClassName = item.options.className;
+            seriesOptions.showCheckbox), useHTML = options.useHTML, itemClassName = item.options.className;
         let label = legendItem.label, 
         // full width minus text width
         itemExtraWidth = symbolWidth + symbolPadding +

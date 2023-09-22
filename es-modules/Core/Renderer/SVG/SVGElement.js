@@ -805,6 +805,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#destroy
      */
     destroy() {
+        var _a;
         const wrapper = this, element = wrapper.element || {}, renderer = wrapper.renderer, ownerSVGElement = element.ownerSVGElement;
         let parentToClean = (element.nodeName === 'SPAN' &&
             wrapper.parentGroup ||
@@ -825,6 +826,7 @@ class SVGElement {
             });
             wrapper.clipPath = clipPath.destroy();
         }
+        wrapper.connector = (_a = wrapper.connector) === null || _a === void 0 ? void 0 : _a.destroy();
         // Destroy stops in case this is a gradient object @todo old code?
         if (wrapper.stops) {
             for (i = 0; i < wrapper.stops.length; i++) {
@@ -895,27 +897,6 @@ class SVGElement {
         }
     }
     /**
-     * Fade out an element by animating its opacity down to 0, and hide it on
-     * complete. Used internally for the tooltip.
-     *
-     * @function Highcharts.SVGElement#fadeOut
-     *
-     * @param {number} [duration=150]
-     * The fade duration in milliseconds.
-     */
-    fadeOut(duration) {
-        const elemWrapper = this;
-        elemWrapper.animate({
-            opacity: 0
-        }, {
-            duration: pick(duration, 150),
-            complete: function () {
-                // #3088, assuming we're only using this for tooltips
-                elemWrapper.hide();
-            }
-        });
-    }
-    /**
      * @private
      * @function Highcharts.SVGElement#fillSetter
      * @param {Highcharts.ColorType} value
@@ -929,6 +910,17 @@ class SVGElement {
         else if (value) {
             this.complexColor(value, key, element);
         }
+    }
+    /**
+     * @private
+     * @function Highcharts.SVGElement#hrefSetter
+     * @param {Highcharts.ColorType} value
+     * @param {string} key
+     * @param {Highcharts.SVGDOMElement} element
+     */
+    hrefSetter(value, key, element) {
+        // Namespace is needed for offline export, #19106
+        element.setAttributeNS('http://www.w3.org/1999/xlink', key, value);
     }
     /**
      * Get the bounding box (width, height, x and y) for the element. Generally

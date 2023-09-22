@@ -210,7 +210,7 @@ var OfflineExporting;
                     curParent = curParent.parentNode;
                 }
             };
-            let titleElements;
+            let titleElements, outlineElements;
             // Workaround for the text styling. Making sure it does pick up
             // settings for parent elements.
             [].forEach.call(textElements, function (el) {
@@ -232,6 +232,12 @@ var OfflineExporting;
                 [].forEach.call(titleElements, function (titleElement) {
                     el.removeChild(titleElement);
                 });
+                // Remove all .highcharts-text-outline elements, #17170
+                outlineElements =
+                    el.getElementsByClassName('highcharts-text-outline');
+                while (outlineElements.length > 0) {
+                    el.removeChild(outlineElements[0]);
+                }
             });
             const svgNode = dummySVGContainer.querySelector('svg');
             if (svgNode) {

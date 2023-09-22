@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Highcharts variwide module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -49,8 +47,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            wrap = U.wrap;
+        var addEvent = U.addEvent, wrap = U.wrap;
         /* *
          *
          *  Constants
@@ -110,8 +107,7 @@
          * @private
          */
         function onTickAfterGetPosition(e) {
-            var axis = this.axis,
-                xOrY = axis.horiz ? 'x' : 'y';
+            var axis = this.axis, xOrY = axis.horiz ? 'x' : 'y';
             if (axis.variwide) {
                 this[xOrY + 'Orig'] = e.pos[xOrY];
                 this.postTranslate(e.pos, xOrY, this.pos);
@@ -136,15 +132,13 @@
          * @private
          */
         function wrapTickGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index) {
-            var args = Array.prototype.slice.call(arguments, 1),
-                xOrY = horiz ? 'x' : 'y';
+            var args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
             // Replace the x with the original x
             if (this.axis.variwide &&
                 typeof this[xOrY + 'Orig'] === 'number') {
                 args[horiz ? 0 : 1] = this[xOrY + 'Orig'];
             }
-            var xy = proceed.apply(this,
-                args);
+            var xy = proceed.apply(this, args);
             // Post-translate
             if (this.axis.variwide && this.axis.categories) {
                 this.postTranslate(xy, xOrY, this.pos);
@@ -157,8 +151,8 @@
          *
          * */
         var VariwideComposition = {
-                compose: compose
-            };
+            compose: compose
+        };
 
         return VariwideComposition;
     });
@@ -175,16 +169,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -198,15 +191,14 @@
          *
          * */
         var VariwidePoint = /** @class */ (function (_super) {
-                __extends(VariwidePoint, _super);
+            __extends(VariwidePoint, _super);
             function VariwidePoint() {
                 /* *
                  *
                  *  Properites
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.crosshairWidth = void 0;
                 _this.options = void 0;
                 _this.series = void 0;
@@ -243,26 +235,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        var addEvent = U.addEvent, extend = U.extend, merge = U.merge, pick = U.pick;
         /* *
          *
          *  Class
@@ -276,15 +264,14 @@
          * @augments Highcharts.Series
          */
         var VariwideSeries = /** @class */ (function (_super) {
-                __extends(VariwideSeries, _super);
+            __extends(VariwideSeries, _super);
             function VariwideSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
@@ -335,12 +322,12 @@
              */
             VariwideSeries.prototype.postTranslate = function (index, x, point) {
                 var axis = this.xAxis, relZ = this.relZ, i = axis.reversed ? relZ.length - index : index, goRight = axis.reversed ? -1 : 1, minPx = axis.toPixels(axis.reversed ?
-                        (axis.dataMax || 0) + axis.pointRange :
-                        (axis.dataMin || 0)), maxPx = axis.toPixels(axis.reversed ?
-                        (axis.dataMin || 0) :
-                        (axis.dataMax || 0) + axis.pointRange), len = Math.abs(maxPx - minPx), totalZ = this.totalZ, left = this.chart.inverted ?
-                        maxPx - (this.chart.plotTop - goRight * axis.minPixelPadding) :
-                        minPx - this.chart.plotLeft - goRight * axis.minPixelPadding, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = (pick(relZ[i], totalZ) / totalZ) * len, slotRight = (pick(relZ[i + goRight], totalZ) / totalZ) * len, xInsideLinearSlot = (x - (left + linearSlotLeft));
+                    (axis.dataMax || 0) + axis.pointRange :
+                    (axis.dataMin || 0)), maxPx = axis.toPixels(axis.reversed ?
+                    (axis.dataMin || 0) :
+                    (axis.dataMax || 0) + axis.pointRange), len = Math.abs(maxPx - minPx), totalZ = this.totalZ, left = this.chart.inverted ?
+                    maxPx - (this.chart.plotTop - goRight * axis.minPixelPadding) :
+                    minPx - this.chart.plotLeft - goRight * axis.minPixelPadding, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = (pick(relZ[i], totalZ) / totalZ) * len, slotRight = (pick(relZ[i + goRight], totalZ) / totalZ) * len, xInsideLinearSlot = (x - (left + linearSlotLeft));
                 // Set crosshairWidth for every point (#8173)
                 if (point) {
                     point.crosshairWidth = slotRight - slotLeft;
@@ -363,13 +350,8 @@
              * @private
              */
             VariwideSeries.prototype.correctStackLabels = function () {
-                var series = this,
-                    options = series.options,
-                    yAxis = series.yAxis;
-                var pointStack,
-                    pointWidth,
-                    stack,
-                    xValue;
+                var series = this, options = series.options, yAxis = series.yAxis;
+                var pointStack, pointWidth, stack, xValue;
                 for (var _i = 0, _a = series.points; _i < _a.length; _i++) {
                     var point = _a[_i];
                     xValue = point.x;
@@ -426,23 +408,11 @@
         addEvent(VariwideSeries, 'afterColumnTranslate', function () {
             var _this = this;
             // Temporarily disable crisping when computing original shapeArgs
-            var xAxis = this.xAxis,
-                inverted = this.chart.inverted,
-                crisp = this.borderWidth % 2 / 2;
+            var xAxis = this.xAxis, inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;
             // Distort the points to reflect z dimension
             this.points.forEach(function (point, i) {
-                var shapeArgs = point.shapeArgs || {},
-                    _a = shapeArgs.x,
-                    x = _a === void 0 ? 0 : _a,
-                    _b = shapeArgs.width,
-                    width = _b === void 0 ? 0 : _b,
-                    _c = point.plotX,
-                    plotX = _c === void 0 ? 0 : _c,
-                    tooltipPos = point.tooltipPos,
-                    _d = point.z,
-                    z = _d === void 0 ? 0 : _d;
-                var left,
-                    right;
+                var shapeArgs = point.shapeArgs || {}, _a = shapeArgs.x, x = _a === void 0 ? 0 : _a, _b = shapeArgs.width, width = _b === void 0 ? 0 : _b, _c = point.plotX, plotX = _c === void 0 ? 0 : _c, tooltipPos = point.tooltipPos, _d = point.z, z = _d === void 0 ? 0 : _d;
+                var left, right;
                 if (xAxis.variwide) {
                     left = _this.postTranslate(i, x, point);
                     right = _this.postTranslate(i, x + width);

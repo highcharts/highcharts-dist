@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Sonification module
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -361,9 +359,12 @@
                     /**
                      * Type of track. Always `"instrument"` for instrument tracks, and
                      * `"speech"` for speech tracks.
-                     * @type {"instrument"|"speech"}
-                     * @default instrument
-                     * @apioption sonification.defaultInstrumentOptions.type
+                     *
+                     * @declare    Highcharts.SonifcationTypeValue
+                     * @type       {string}
+                     * @default    instrument
+                     * @validvalue ["instrument","speech"]
+                     * @apioption  sonification.defaultInstrumentOptions.type
                      */
                     /**
                      * Show play marker (tooltip and/or crosshair) for a track.
@@ -738,9 +739,12 @@
                     /**
                      * Type of track. Always `"instrument"` for instrument tracks, and
                      * `"speech"` for speech tracks.
-                     * @type {"instrument"|"speech"}
-                     * @default speech
-                     * @apioption sonification.defaultSpeechOptions.type
+                     *
+                     * @declare    Highcharts.SonifcationTypeValue
+                     * @type       {string}
+                     * @default    speech
+                     * @validvalue ["instrument","speech"]
+                     * @apioption  sonification.defaultSpeechOptions.type
                      */
                     /**
                      * Name of the voice synthesis to prefer for speech tracks.

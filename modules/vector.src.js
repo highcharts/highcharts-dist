@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Vector plot series module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -236,6 +234,7 @@
              * The line width for each vector arrow.
              */
             lineWidth: 2,
+            marker: void 0,
             /**
              * What part of the vector it should be rotated around. Can be one of
              * `start`, `center` and `end`. When `start`, the vectors will start
@@ -268,8 +267,6 @@
              * length is computed between 0 and this value.
              */
             vectorLength: 20
-        }, {
-            marker: null
         });
         extend(VectorSeries.prototype, {
             /**

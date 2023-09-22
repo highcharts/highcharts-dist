@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,26 +44,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var EMAIndicator = SeriesRegistry.seriesTypes.ema;
-        var correctFloat = U.correctFloat,
-            extend = U.extend,
-            merge = U.merge,
-            error = U.error;
+        var correctFloat = U.correctFloat, extend = U.extend, merge = U.merge, error = U.error;
         /* *
          *
          *  Class
@@ -81,15 +75,14 @@
          * @augments Highcharts.Series
          */
         var PPOIndicator = /** @class */ (function (_super) {
-                __extends(PPOIndicator, _super);
+            __extends(PPOIndicator, _super);
             function PPOIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *   Properties
@@ -106,14 +99,10 @@
              *
              * */
             PPOIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods,
-                    index = params.index, 
-                    // 0- date, 1- Percentage Price Oscillator
-                    PPO = [],
-                    xData = [],
-                    yData = [];
-                var oscillator,
-                    i;
+                var periods = params.periods, index = params.index, 
+                // 0- date, 1- Percentage Price Oscillator
+                PPO = [], xData = [], yData = [];
+                var oscillator, i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "PPO requires two periods. Notice, first period ' +
@@ -121,17 +110,15 @@
                     return;
                 }
                 // Shorter Period EMA
-                var SPE = _super.prototype.getValues.call(this,
-                    series, {
-                        index: index,
-                        period: periods[0]
-                    });
+                var SPE = _super.prototype.getValues.call(this, series, {
+                    index: index,
+                    period: periods[0]
+                });
                 // Longer Period EMA
-                var LPE = _super.prototype.getValues.call(this,
-                    series, {
-                        index: index,
-                        period: periods[1]
-                    });
+                var LPE = _super.prototype.getValues.call(this, series, {
+                    index: index,
+                    period: periods[1]
+                });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
                     return;

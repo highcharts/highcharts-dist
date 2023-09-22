@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -181,7 +179,6 @@
                 super(...arguments);
                 this.series = void 0;
                 this.options = void 0;
-                this.connector = void 0;
                 this.pointWidth = void 0;
             }
             /* *
@@ -198,6 +195,7 @@
              *
              */
             setState() {
+                var _a;
                 let point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
                 this.pointSetState.apply(this, arguments);
                 if (!point.state) {
@@ -222,7 +220,7 @@
                         }
                     }
                 }
-                point.connector[verb](series.getConnectorAttribs(point));
+                (_a = point.connector) === null || _a === void 0 ? void 0 : _a[verb](series.getConnectorAttribs(point));
             }
             destroy() {
                 // #15560
@@ -440,6 +438,7 @@
              *
              */
             drawPoints() {
+                var _a;
                 let series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
                 this.seriesDrawPoints.apply(series, arguments);
                 // Draw connectors and color upper markers
@@ -451,7 +450,7 @@
                         upperGraphic.element.point = point;
                         upperGraphic.addClass('highcharts-lollipop-high');
                     }
-                    point.connector.element.point = point;
+                    ((_a = point.connector) === null || _a === void 0 ? void 0 : _a.element).point = point;
                     if (lowerGraphic) {
                         zoneColor = point.zone && point.zone.color;
                         lowerGraphicColor = pick(point.options.lowColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,30 +44,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            ATRIndicator = _a.atr,
-            SMAIndicator = _a.sma;
-        var addEvent = U.addEvent,
-            correctFloat = U.correctFloat,
-            isArray = U.isArray,
-            extend = U.extend,
-            merge = U.merge,
-            objectEach = U.objectEach;
+        var _a = SeriesRegistry.seriesTypes, ATRIndicator = _a.atr, SMAIndicator = _a.sma;
+        var addEvent = U.addEvent, correctFloat = U.correctFloat, isArray = U.isArray, extend = U.extend, merge = U.merge, objectEach = U.objectEach;
         /* *
          *
          *  Functions
@@ -101,15 +91,14 @@
          * @augments Highcharts.Series
          */
         var SupertrendIndicator = /** @class */ (function (_super) {
-                __extends(SupertrendIndicator, _super);
+            __extends(SupertrendIndicator, _super);
             function SupertrendIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -130,13 +119,11 @@
                 var indicator = this;
                 _super.prototype.init.apply(indicator, arguments);
                 // Only after series are linked add some additional logic/properties.
-                var unbinder = addEvent(StockChart, 'afterLinkSeries',
-                    function () {
-                        // Protection for a case where the indicator is being updated,
-                        // for a brief moment the indicator is deleted.
-                        if (indicator.options) {
-                            var options = indicator.options,
-                    parentOptions = indicator.linkedParent.options;
+                var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+                    // Protection for a case where the indicator is being updated,
+                    // for a brief moment the indicator is deleted.
+                    if (indicator.options) {
+                        var options = indicator.options, parentOptions = indicator.linkedParent.options;
                         // Indicator cropThreshold has to be equal linked series one
                         // reduced by period due to points comparison in drawGraph
                         // (#9787)
@@ -149,66 +136,56 @@
                 });
             };
             SupertrendIndicator.prototype.drawGraph = function () {
-                var indicator = this,
-                    indicOptions = indicator.options, 
-                    // Series that indicator is linked to
-                    mainSeries = indicator.linkedParent,
-                    mainLinePoints = (mainSeries ? mainSeries.points : []),
-                    indicPoints = indicator.points,
-                    indicPath = indicator.graph, 
-                    // Points offset between lines
-                    tempOffset = mainLinePoints.length - indicPoints.length,
-                    offset = tempOffset > 0 ? tempOffset : 0, 
-                    // @todo: fix when ichi-moku indicator is merged to master.
-                    gappedExtend = {
-                        options: {
-                            gapSize: indicOptions.gapSize
+                var indicator = this, indicOptions = indicator.options, 
+                // Series that indicator is linked to
+                mainSeries = indicator.linkedParent, mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, 
+                // Points offset between lines
+                tempOffset = mainLinePoints.length - indicPoints.length, offset = tempOffset > 0 ? tempOffset : 0, 
+                // @todo: fix when ichi-moku indicator is merged to master.
+                gappedExtend = {
+                    options: {
+                        gapSize: indicOptions.gapSize
+                    }
+                }, 
+                // Sorted supertrend points array
+                groupedPoitns = {
+                    top: [],
+                    bottom: [],
+                    intersect: [] // Change trend line points
+                }, 
+                // Options for trend lines
+                supertrendLineOptions = {
+                    top: {
+                        styles: {
+                            lineWidth: indicOptions.lineWidth,
+                            lineColor: (indicOptions.fallingTrendColor ||
+                                indicOptions.color),
+                            dashStyle: indicOptions.dashStyle
                         }
-                    }, 
-                    // Sorted supertrend points array
-                    groupedPoitns = {
-                        top: [],
-                        bottom: [],
-                        intersect: [] // Change trend line points
-                    }, 
-                    // Options for trend lines
-                    supertrendLineOptions = {
-                        top: {
-                            styles: {
-                                lineWidth: indicOptions.lineWidth,
-                                lineColor: (indicOptions.fallingTrendColor ||
-                                    indicOptions.color),
-                                dashStyle: indicOptions.dashStyle
-                            }
-                        },
-                        bottom: {
-                            styles: {
-                                lineWidth: indicOptions.lineWidth,
-                                lineColor: (indicOptions.risingTrendColor ||
-                                    indicOptions.color),
-                                dashStyle: indicOptions.dashStyle
-                            }
-                        },
-                        intersect: indicOptions.changeTrendLine
                     },
-                    close = 3;
+                    bottom: {
+                        styles: {
+                            lineWidth: indicOptions.lineWidth,
+                            lineColor: (indicOptions.risingTrendColor ||
+                                indicOptions.color),
+                            dashStyle: indicOptions.dashStyle
+                        }
+                    },
+                    intersect: indicOptions.changeTrendLine
+                }, close = 3;
                 var // Supertrend line point
-                    point, 
-                    // Supertrend line next point (has smaller x pos than point)
-                    nextPoint, 
-                    // Main series points
-                    mainPoint,
-                    nextMainPoint, 
-                    // Used when supertrend and main points are shifted
-                    // relative to each other
-                    prevMainPoint,
-                    prevPrevMainPoint, 
-                    // Used when particular point color is set
-                    pointColor, 
-                    // Temporary points that fill groupedPoitns array
-                    newPoint,
-                    newNextPoint,
-                    indicPointsLen = indicPoints.length;
+                point, 
+                // Supertrend line next point (has smaller x pos than point)
+                nextPoint, 
+                // Main series points
+                mainPoint, nextMainPoint, 
+                // Used when supertrend and main points are shifted
+                // relative to each other
+                prevMainPoint, prevPrevMainPoint, 
+                // Used when particular point color is set
+                pointColor, 
+                // Temporary points that fill groupedPoitns array
+                newPoint, newNextPoint, indicPointsLen = indicPoints.length;
                 // Loop which sort supertrend points
                 while (indicPointsLen--) {
                     point = indicPoints[indicPointsLen];
@@ -377,30 +354,11 @@
             //      Current Close > Current FINAL LOWERBAND
             //     ) THAN Current FINAL LOWERBAND
             SupertrendIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    multiplier = params.multiplier,
-                    xVal = series.xData,
-                    yVal = series.yData, 
-                    // 0- date, 1- Supertrend indicator
-                    st = [],
-                    xData = [],
-                    yData = [],
-                    close = 3,
-                    low = 2,
-                    high = 1,
-                    periodsOffset = (period === 0) ? 0 : period - 1,
-                    finalUp = [],
-                    finalDown = [];
-                var atrData = [],
-                    basicUp,
-                    basicDown,
-                    supertrend,
-                    prevFinalUp,
-                    prevFinalDown,
-                    prevST, // previous Supertrend
-                    prevY,
-                    y,
-                    i;
+                var period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, 
+                // 0- date, 1- Supertrend indicator
+                st = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, finalUp = [], finalDown = [];
+                var atrData = [], basicUp, basicDown, supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
+                prevY, y, i;
                 if ((xVal.length <= period) || !isArray(yVal[0]) ||
                     yVal[0].length !== 4 || period < 0) {
                     return;

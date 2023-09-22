@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -468,7 +466,7 @@
         });
         H.Pane = Pane;
 
-        return H.Pane;
+        return Pane;
     });
     _registerModule(_modules, 'Series/AreaRange/AreaRangePoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
@@ -879,6 +877,8 @@
              * @private
              */
             drawDataLabels() {
+                var _a,
+                    _b;
                 const data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
                 let i, point, up, upperDataLabelOptions, lowerDataLabelOptions;
                 if (dataLabelOptions) {
@@ -909,7 +909,7 @@
                         lowerDataLabelOptions.y = dataLabelOptions.yLow;
                     }
                     // Draw upper labels
-                    if (upperDataLabelOptions.enabled || this._hasPointLabels) {
+                    if (upperDataLabelOptions.enabled || ((_a = this.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(this))) {
                         // Set preliminary values for plotY and dataLabel
                         // and draw the upper labels
                         i = length;
@@ -965,7 +965,7 @@
                         }
                     }
                     // Draw lower labels
-                    if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
+                    if (lowerDataLabelOptions.enabled || ((_b = this.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(this))) {
                         i = length;
                         while (i--) {
                             point = data[i];
@@ -3723,8 +3723,6 @@
             alignDataLabel: columnProto.alignDataLabel,
             applyZones: noop,
             bubblePadding: true,
-            buildKDTree: noop,
-            directTouch: true,
             isBubble: true,
             pointArrayMap: ['y', 'z'],
             pointClass: BubblePoint,
@@ -4272,6 +4270,10 @@
                     // Don't draw too far outside plot area
                     // (#1303, #2241, #4264)
                     barX = point.plotX + pointXOffset, barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
+                    // Adjust for null or missing points
+                    if (options.centerInCategory) {
+                        barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
+                    }
                     point.barX = barX;
                     point.pointWidth = pointWidth;
                     // Fix the tooltip on center of grouped pyramids
@@ -11104,7 +11106,7 @@
                 if (!this.hasClipCircleSetter) {
                     this.hasClipCircleSetter = !!series.eventsToUnbind.push(addEvent(series, 'afterRender', function () {
                         let circ;
-                        if (chart.polar) {
+                        if (chart.polar && this.options.clip !== false) {
                             // For clipping purposes there is a need for
                             // coordinates from the absolute center
                             circ = this.yAxis.pane.center;

@@ -207,9 +207,9 @@ class TimelineSeries extends LineSeries {
             });
         }));
         series.eventsToUnbind.push(addEvent(series.chart, 'afterHideOverlappingLabel', function () {
-            series.points.forEach(function (p) {
-                if (p.connector &&
-                    p.dataLabel &&
+            series.points.forEach((p) => {
+                if (p.dataLabel &&
+                    p.dataLabel.connector &&
                     p.dataLabel.oldOpacity !== p.dataLabel.newOpacity) {
                     p.alignConnector();
                 }

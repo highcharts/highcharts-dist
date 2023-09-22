@@ -13,7 +13,7 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { wrap } = U;
+const { pInt, wrap } = U;
 /* *
  *
  *  Class
@@ -49,6 +49,7 @@ class DependencyWheelPoint extends SankeyPoint {
      * @private
      */
     getDataLabelPath(label) {
+        var _a;
         const renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
         // First time
         if (!this.dataLabelPath) {
@@ -74,7 +75,7 @@ class DependencyWheelPoint extends SankeyPoint {
             .attr({
             x: shapeArgs.x,
             y: shapeArgs.y,
-            r: (shapeArgs.r + (label.options.distance || 0)),
+            r: ((shapeArgs.r || 0) + pInt(((_a = label.options) === null || _a === void 0 ? void 0 : _a.distance) || 0)),
             start: (upperHalf ? start : end),
             end: (upperHalf ? end : start),
             clockwise: +upperHalf

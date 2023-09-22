@@ -44,6 +44,10 @@ class EqualEarth {
         paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
         const lon = d * M * x * (A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat);
         const lat = d * Math.asin(Math.sin(paramLat) / M);
+        // If lons are beyond the border of a map -> resolve via break
+        if (Math.abs(lon) > 180) {
+            return [NaN, NaN];
+        }
         return [lon, lat];
     }
 }

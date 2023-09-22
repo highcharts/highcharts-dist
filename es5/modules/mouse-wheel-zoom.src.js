@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Mousewheel zoom module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -47,21 +45,16 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            isObject = U.isObject,
-            pick = U.pick,
-            defined = U.defined,
-            merge = U.merge;
+        var addEvent = U.addEvent, isObject = U.isObject, pick = U.pick, defined = U.defined, merge = U.merge;
         /* *
          *
          *  Constants
          *
          * */
-        var composedClasses = [],
-            defaultOptions = {
-                enabled: true,
-                sensitivity: 1.1
-            };
+        var composedClasses = [], defaultOptions = {
+            enabled: true,
+            sensitivity: 1.1
+        };
         /* *
          *
          *  Functions
@@ -71,19 +64,18 @@
          * @private
          */
         var optionsToObject = function (options) {
-                if (!isObject(options)) {
-                    return merge(defaultOptions, { enabled: defined(options) ? options : true });
+            if (!isObject(options)) {
+                return merge(defaultOptions, { enabled: defined(options) ? options : true });
             }
             return merge(defaultOptions, options);
         };
         /**
          * @private
          */
-        var fitToBox = function (inner,
-            outer) {
-                if (inner.x + inner.width > outer.x + outer.width) {
-                    if (inner.width > outer.width) {
-                        inner.width = outer.width;
+        var fitToBox = function (inner, outer) {
+            if (inner.x + inner.width > outer.x + outer.width) {
+                if (inner.width > outer.width) {
+                    inner.width = outer.width;
                     inner.x = outer.x;
                 }
                 else {
@@ -114,13 +106,12 @@
             }
             return inner;
         };
-        var wheelTimer,
-            originalOptions;
+        var wheelTimer, startOnTick, endOnTick;
         /**
          * @private
          */
         var zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY, options) {
-                var xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
+            var xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], yOptions = yAxis.options, type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
             if (defined(xAxis.max) && defined(xAxis.min) &&
                 defined(yAxis.max) && defined(yAxis.min) &&
                 defined(xAxis.dataMax) && defined(xAxis.dataMin) &&
@@ -131,29 +122,30 @@
                     if (defined(wheelTimer)) {
                         clearTimeout(wheelTimer);
                     }
-                    var _a = yAxis.options,
-                        startOnTick = _a.startOnTick,
-                        endOnTick = _a.endOnTick;
-                    if (!originalOptions) {
-                        originalOptions = { startOnTick: startOnTick, endOnTick: endOnTick };
+                    if (!defined(startOnTick)) {
+                        startOnTick = yOptions.startOnTick;
+                        endOnTick = yOptions.endOnTick;
                     }
+                    // Temporarily disable start and end on tick, because they would
+                    // prevent small increments of zooming.
                     if (startOnTick || endOnTick) {
-                        yAxis.setOptions({ startOnTick: false, endOnTick: false });
+                        yOptions.startOnTick = false;
+                        yOptions.endOnTick = false;
                     }
                     wheelTimer = setTimeout(function () {
-                        if (originalOptions) {
-                            yAxis.setOptions(originalOptions);
+                        if (defined(startOnTick) && defined(endOnTick)) {
+                            // Repeat merge after the wheel zoom is finished, #19178
+                            yOptions.startOnTick = startOnTick;
+                            yOptions.endOnTick = endOnTick;
                             // Set the extremes to the same as they already are, but now
                             // with the original startOnTick and endOnTick. We need
                             // `forceRedraw` otherwise it will detect that the values
                             // haven't changed. We do not use a simple yAxis.update()
                             // because it will destroy the ticks and prevent animation.
-                            var _a = yAxis.getExtremes(),
-                                min = _a.min,
-                                max = _a.max;
+                            var _a = yAxis.getExtremes(), min = _a.min, max = _a.max;
                             yAxis.forceRedraw = true;
                             yAxis.setExtremes(min, max);
-                            originalOptions = void 0;
+                            startOnTick = endOnTick = void 0;
                         }
                     }, 400);
                 }
@@ -179,22 +171,22 @@
                     fixToY = 1 - fixToY;
                 }
                 var xRange = xAxis.max - xAxis.min, centerX = pick(centerXArg, xAxis.min + xRange / 2), newXRange = xRange * howMuch, yRange = yAxis.max - yAxis.min, centerY = pick(centerYArg, yAxis.min + yRange / 2), newYRange = yRange * howMuch, newXMin = centerX - newXRange * fixToX, newYMin = centerY - newYRange * fixToY, dataRangeX = xAxis.dataMax - xAxis.dataMin, dataRangeY = yAxis.dataMax - yAxis.dataMin, outerX = xAxis.dataMin - dataRangeX * xAxis.options.minPadding, outerWidth_1 = dataRangeX + dataRangeX * xAxis.options.minPadding +
-                        dataRangeX * xAxis.options.maxPadding, outerY = yAxis.dataMin - dataRangeY * yAxis.options.minPadding, outerHeight_1 = dataRangeY + dataRangeY * yAxis.options.minPadding +
-                        dataRangeY * yAxis.options.maxPadding, newExt = fitToBox({
-                        x: newXMin,
-                        y: newYMin,
-                        width: newXRange,
-                        height: newYRange
-                    }, {
-                        x: outerX,
-                        y: outerY,
-                        width: outerWidth_1,
-                        height: outerHeight_1
-                    }), zoomOut = (newExt.x <= outerX &&
-                        newExt.width >=
-                            outerWidth_1 &&
-                        newExt.y <= outerY &&
-                        newExt.height >= outerHeight_1);
+                    dataRangeX * xAxis.options.maxPadding, outerY = yAxis.dataMin - dataRangeY * yAxis.options.minPadding, outerHeight_1 = dataRangeY + dataRangeY * yAxis.options.minPadding +
+                    dataRangeY * yAxis.options.maxPadding, newExt = fitToBox({
+                    x: newXMin,
+                    y: newYMin,
+                    width: newXRange,
+                    height: newYRange
+                }, {
+                    x: outerX,
+                    y: outerY,
+                    width: outerWidth_1,
+                    height: outerHeight_1
+                }), zoomOut = (newExt.x <= outerX &&
+                    newExt.width >=
+                        outerWidth_1 &&
+                    newExt.y <= outerY &&
+                    newExt.height >= outerHeight_1);
                 // Zoom
                 if (defined(howMuch) && !zoomOut) {
                     if (zoomX) {
@@ -221,15 +213,13 @@
          */
         function onAfterGetContainer() {
             var _this = this;
-            var chart = this,
-                wheelZoomOptions = optionsToObject(chart.options.chart.zooming.mouseWheel);
+            var chart = this, wheelZoomOptions = optionsToObject(chart.options.chart.zooming.mouseWheel);
             if (wheelZoomOptions.enabled) {
                 addEvent(this.container, 'wheel', function (e) {
                     e = _this.pointer.normalize(e);
                     // Firefox uses e.detail, WebKit and IE uses deltaX, deltaY, deltaZ.
                     if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
-                        var wheelSensitivity = pick(wheelZoomOptions.sensitivity, 1.1),
-                            delta = e.detail || ((e.deltaY || 0) / 120);
+                        var wheelSensitivity = pick(wheelZoomOptions.sensitivity, 1.1), delta = e.detail || ((e.deltaY || 0) / 120);
                         zoomBy(chart, Math.pow(wheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, wheelZoomOptions);
                     }
                     // prevent page scroll
@@ -254,8 +244,8 @@
          *
          * */
         var MouseWheelZoomComposition = {
-                compose: compose
-            };
+            compose: compose
+        };
         /* *
          *
          *  API Options

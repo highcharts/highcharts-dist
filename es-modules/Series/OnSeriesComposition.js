@@ -67,6 +67,7 @@ var OnSeriesComposition;
      * @private
      */
     function translate() {
+        var _a, _b;
         columnProto.translate.apply(this);
         const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
             chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
@@ -94,17 +95,67 @@ var OnSeriesComposition;
                             rightPoint = onData[i + 1];
                             if (rightPoint &&
                                 typeof rightPoint[onKey] !== 'undefined') {
-                                // the distance ratio, between 0 and 1
-                                distanceRatio =
-                                    (point.x - leftPoint.x) /
-                                        (rightPoint.x - leftPoint.x);
-                                point.plotY +=
-                                    distanceRatio *
-                                        // the plotY distance
-                                        (rightPoint[onKey] - leftPoint[onKey]);
-                                point.y +=
-                                    distanceRatio *
-                                        (rightPoint.y - leftPoint.y);
+                                // If the series is spline, calculate Y of the
+                                // point on the bezier line. #19264
+                                if (defined(point.plotX) &&
+                                    onSeries.is('spline')) {
+                                    leftPoint = leftPoint;
+                                    rightPoint = rightPoint;
+                                    const p0 = [
+                                        leftPoint.plotX || 0,
+                                        leftPoint.plotY || 0
+                                    ], p3 = [
+                                        rightPoint.plotX || 0,
+                                        rightPoint.plotY || 0
+                                    ], p1 = (((_a = leftPoint.controlPoints) === null || _a === void 0 ? void 0 : _a.high) ||
+                                        p0), p2 = (((_b = rightPoint.controlPoints) === null || _b === void 0 ? void 0 : _b.low) ||
+                                        p3), pixelThreshold = 0.25, maxIterations = 100, calculateCoord = (t, key) => (
+                                    // The parametric formula for the
+                                    // cubic Bezier curve.
+                                    Math.pow(1 - t, 3) * p0[key] +
+                                        3 * (1 - t) * (1 - t) * t *
+                                            p1[key] + 3 * (1 - t) * t * t *
+                                        p2[key] + t * t * t * p3[key]);
+                                    let tMin = 0, tMax = 1, t;
+                                    // Find `t` of the parametric function of
+                                    // the bezier curve for the given `plotX`.
+                                    for (let i = 0; i < maxIterations; i++) {
+                                        const tMid = (tMin + tMax) / 2;
+                                        const xMid = calculateCoord(tMid, 0);
+                                        if (xMid === null) {
+                                            break;
+                                        }
+                                        if (Math.abs(xMid - point.plotX) < pixelThreshold) {
+                                            t = tMid;
+                                            break;
+                                        }
+                                        if (xMid < point.plotX) {
+                                            tMin = tMid;
+                                        }
+                                        else {
+                                            tMax = tMid;
+                                        }
+                                    }
+                                    if (defined(t)) {
+                                        point.plotY =
+                                            calculateCoord(t, 1);
+                                        point.y =
+                                            yAxis.toValue(point.plotY, true);
+                                    }
+                                }
+                                else {
+                                    // the distance ratio, between 0 and 1
+                                    distanceRatio =
+                                        (point.x - leftPoint.x) /
+                                            (rightPoint.x - leftPoint.x);
+                                    point.plotY +=
+                                        distanceRatio *
+                                            // the plotY distance
+                                            (rightPoint[onKey] - leftPoint[onKey]);
+                                    point.y +=
+                                        distanceRatio *
+                                            (rightPoint.y - leftPoint.y);
+                                }
                             }
                         }
                     }

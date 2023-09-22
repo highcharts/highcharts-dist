@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -81,8 +79,8 @@
          *
          * */
         var ArrayUtilities = {
-                getArrayExtremes: getArrayExtremes
-            };
+            getArrayExtremes: getArrayExtremes
+        };
 
         return ArrayUtilities;
     });
@@ -95,25 +93,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var extend = U.extend,
-            isArray = U.isArray,
-            merge = U.merge;
+        var extend = U.extend, isArray = U.isArray, merge = U.merge;
         /* *
          *
          *  Class
@@ -129,15 +124,14 @@
          * @augments Highcharts.Series
          */
         var WilliamsRIndicator = /** @class */ (function (_super) {
-                __extends(WilliamsRIndicator, _super);
+            __extends(WilliamsRIndicator, _super);
             function WilliamsRIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -154,23 +148,12 @@
              *
              * */
             WilliamsRIndicator.prototype.getValues = function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    WR = [], // 0- date, 1- Williams %R
-                    xData = [],
-                    yData = [],
-                    close = 3,
-                    low = 2,
-                    high = 1;
-                var slicedY,
-                    extremes,
-                    R,
-                    HH, // Highest high value in period
-                    LL, // Lowest low value in period
-                    CC, // Current close value
-                    i;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, WR = [], // 0- date, 1- Williams %R
+                xData = [], yData = [], close = 3, low = 2, high = 1;
+                var slicedY, extremes, R, HH, // Highest high value in period
+                LL, // Lowest low value in period
+                CC, // Current close value
+                i;
                 // Williams %R requires close value
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Wind barb series module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -64,8 +62,8 @@
          * @private
          */
         var ApproximationRegistry = {
-            // approximations added programmatically
-            };
+        // approximations added programmatically
+        };
         /* *
          *
          *  Default Export
@@ -86,8 +84,7 @@
          * */
         var columnProto = ColumnSeries.prototype;
         var seriesProto = Series.prototype;
-        var defined = U.defined,
-            stableSort = U.stableSort;
+        var defined = U.defined, stableSort = U.stableSort;
         /* *
          *
          *  Composition
@@ -141,30 +138,11 @@
              * @private
              */
             function translate() {
+                var _a, _b;
                 columnProto.translate.apply(this);
-                var series = this,
-                    options = series.options,
-                    chart = series.chart,
-                    points = series.points,
-                    optionsOnSeries = options.onSeries,
-                    onSeries = (optionsOnSeries &&
-                        chart.get(optionsOnSeries)),
-                    step = onSeries && onSeries.options.step,
-                    onData = (onSeries && onSeries.points),
-                    inverted = chart.inverted,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis;
-                var cursor = points.length - 1,
-                    point,
-                    lastPoint,
-                    onKey = options.onKey || 'y',
-                    i = onData && onData.length,
-                    xOffset = 0,
-                    leftPoint,
-                    lastX,
-                    rightPoint,
-                    currentDataGrouping,
-                    distanceRatio;
+                var series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
+                    chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
+                var cursor = points.length - 1, point, lastPoint, onKey = options.onKey || 'y', i = onData && onData.length, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
@@ -174,7 +152,7 @@
                     // sort the data points
                     stableSort(points, function (a, b) { return (a.x - b.x); });
                     onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
-                    while (i-- && points[cursor]) {
+                    var _loop_1 = function () {
                         leftPoint = onData[i];
                         point = points[cursor];
                         point.y = leftPoint.y;
@@ -188,26 +166,81 @@
                                     rightPoint = onData[i + 1];
                                     if (rightPoint &&
                                         typeof rightPoint[onKey] !== 'undefined') {
-                                        // the distance ratio, between 0 and 1
-                                        distanceRatio =
-                                            (point.x - leftPoint.x) /
-                                                (rightPoint.x - leftPoint.x);
-                                        point.plotY +=
-                                            distanceRatio *
-                                                // the plotY distance
-                                                (rightPoint[onKey] - leftPoint[onKey]);
-                                        point.y +=
-                                            distanceRatio *
-                                                (rightPoint.y - leftPoint.y);
+                                        // If the series is spline, calculate Y of the
+                                        // point on the bezier line. #19264
+                                        if (defined(point.plotX) &&
+                                            onSeries.is('spline')) {
+                                            leftPoint = leftPoint;
+                                            rightPoint = rightPoint;
+                                            var p0_1 = [
+                                                leftPoint.plotX || 0,
+                                                leftPoint.plotY || 0
+                                            ], p3_1 = [
+                                                rightPoint.plotX || 0,
+                                                rightPoint.plotY || 0
+                                            ], p1_1 = (((_a = leftPoint.controlPoints) === null || _a === void 0 ? void 0 : _a.high) ||
+                                                p0_1), p2_1 = (((_b = rightPoint.controlPoints) === null || _b === void 0 ? void 0 : _b.low) ||
+                                                p3_1), pixelThreshold = 0.25, maxIterations = 100, calculateCoord = function (t, key) { return (
+                                            // The parametric formula for the
+                                            // cubic Bezier curve.
+                                            Math.pow(1 - t, 3) * p0_1[key] +
+                                                3 * (1 - t) * (1 - t) * t *
+                                                    p1_1[key] + 3 * (1 - t) * t * t *
+                                                p2_1[key] + t * t * t * p3_1[key]); };
+                                            var tMin = 0, tMax = 1, t = void 0;
+                                            // Find `t` of the parametric function of
+                                            // the bezier curve for the given `plotX`.
+                                            for (var i_1 = 0; i_1 < maxIterations; i_1++) {
+                                                var tMid = (tMin + tMax) / 2;
+                                                var xMid = calculateCoord(tMid, 0);
+                                                if (xMid === null) {
+                                                    break;
+                                                }
+                                                if (Math.abs(xMid - point.plotX) < pixelThreshold) {
+                                                    t = tMid;
+                                                    break;
+                                                }
+                                                if (xMid < point.plotX) {
+                                                    tMin = tMid;
+                                                }
+                                                else {
+                                                    tMax = tMid;
+                                                }
+                                            }
+                                            if (defined(t)) {
+                                                point.plotY =
+                                                    calculateCoord(t, 1);
+                                                point.y =
+                                                    yAxis.toValue(point.plotY, true);
+                                            }
+                                        }
+                                        else {
+                                            // the distance ratio, between 0 and 1
+                                            distanceRatio =
+                                                (point.x - leftPoint.x) /
+                                                    (rightPoint.x - leftPoint.x);
+                                            point.plotY +=
+                                                distanceRatio *
+                                                    // the plotY distance
+                                                    (rightPoint[onKey] - leftPoint[onKey]);
+                                            point.y +=
+                                                distanceRatio *
+                                                    (rightPoint.y - leftPoint.y);
+                                        }
                                     }
                                 }
                             }
                             cursor--;
                             i++; // check again for points in the same x position
                             if (cursor < 0) {
-                                break;
+                                return "break";
                             }
                         }
+                    };
+                    while (i-- && points[cursor]) {
+                        var state_1 = _loop_1();
+                        if (state_1 === "break")
+                            break;
                     }
                 }
                 // Add plotY position and handle stacking
@@ -274,16 +307,15 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -296,10 +328,9 @@
          *
          * */
         var WindbarbPoint = /** @class */ (function (_super) {
-                __extends(WindbarbPoint, _super);
+            __extends(WindbarbPoint, _super);
             function WindbarbPoint() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  * Properties
@@ -343,27 +374,23 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var animObject = A.animObject;
-        var Series = SeriesRegistry.series,
-            ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var extend = U.extend,
-            merge = U.merge,
-            pick = U.pick;
+        var Series = SeriesRegistry.series, ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var extend = U.extend, merge = U.merge, pick = U.pick;
         /**
          * @private
          * @class
@@ -372,15 +399,14 @@
          * @augments Highcharts.Series
          */
         var WindbarbSeries = /** @class */ (function (_super) {
-                __extends(WindbarbSeries, _super);
+            __extends(WindbarbSeries, _super);
             function WindbarbSeries() {
                 /* *
                  *
                  * Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  * Properties
@@ -407,10 +433,7 @@
             WindbarbSeries.registerApproximation = function () {
                 if (!ApproximationRegistry.windbarb) {
                     ApproximationRegistry.windbarb = function (values, directions) {
-                        var vectorX = 0,
-                            vectorY = 0,
-                            i,
-                            len = values.length;
+                        var vectorX = 0, vectorY = 0, i, len = values.length;
                         for (i = 0; i < len; i++) {
                             vectorX += values[i] * Math.cos(directions[i] * H.deg2rad);
                             vectorY += values[i] * Math.sin(directions[i] * H.deg2rad);
@@ -437,9 +460,7 @@
             };
             // Get presentational attributes.
             WindbarbSeries.prototype.pointAttribs = function (point, state) {
-                var options = this.options,
-                    stroke = point.color || this.color,
-                    strokeWidth = this.options.lineWidth;
+                var options = this.options, stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
                 if (state) {
                     stroke = options.states[state].color || stroke;
                     strokeWidth =
@@ -454,12 +475,7 @@
             // Create a single wind arrow. It is later rotated around the zero
             // centerpoint.
             WindbarbSeries.prototype.windArrow = function (point) {
-                var knots = point.value * 1.943844,
-                    level = point.beaufortLevel,
-                    path,
-                    barbs,
-                    u = this.options.vectorLength / 20,
-                    pos = -10;
+                var knots = point.value * 1.943844, level = point.beaufortLevel, path, barbs, u = this.options.vectorLength / 20, pos = -10;
                 if (point.isNull) {
                     return [];
                 }
@@ -506,13 +522,9 @@
                 return path;
             };
             WindbarbSeries.prototype.drawPoints = function () {
-                var chart = this.chart,
-                    yAxis = this.yAxis,
-                    inverted = chart.inverted,
-                    shapeOffset = this.options.vectorLength / 2;
+                var chart = this.chart, yAxis = this.yAxis, inverted = chart.inverted, shapeOffset = this.options.vectorLength / 2;
                 this.points.forEach(function (point) {
-                    var plotX = point.plotX,
-                        plotY = point.plotY;
+                    var plotX = point.plotX, plotY = point.plotY;
                     // Check if it's inside the plot area, but only for the X
                     // dimension.
                     if (this.options.clip === false ||
@@ -700,8 +712,7 @@
             pointClass: WindbarbPoint,
             trackerGroups: ['markerGroup'],
             translate: function () {
-                var beaufortFloor = this.beaufortFloor,
-                    beaufortName = this.beaufortName;
+                var beaufortFloor = this.beaufortFloor, beaufortName = this.beaufortName;
                 OnSeriesComposition.translate.call(this);
                 this.points.forEach(function (point) {
                     var level = 0;

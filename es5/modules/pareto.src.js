@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Pareto series type for Highcharts
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -44,8 +42,7 @@
          *
          * */
         var noop = H.noop;
-        var addEvent = U.addEvent,
-            defined = U.defined;
+        var addEvent = U.addEvent, defined = U.defined;
         /* *
          *
          *  Composition
@@ -116,11 +113,9 @@
              * @private
              */
             function setBaseSeries() {
-                var chart = this.chart,
-                    baseSeriesOptions = this.options.baseSeries,
-                    baseSeries = (defined(baseSeriesOptions) &&
-                        (chart.series[baseSeriesOptions] ||
-                            chart.get(baseSeriesOptions)));
+                var chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
+                    (chart.series[baseSeriesOptions] ||
+                        chart.get(baseSeriesOptions)));
                 this.baseSeries = baseSeries || null;
             }
             DerivedComposition.setBaseSeries = setBaseSeries;
@@ -186,25 +181,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var LineSeries = SeriesRegistry.seriesTypes.line;
-        var correctFloat = U.correctFloat,
-            merge = U.merge,
-            extend = U.extend;
+        var correctFloat = U.correctFloat, merge = U.merge, extend = U.extend;
         /* *
          *
          *  Class
@@ -220,15 +212,14 @@
          * @augments Highcharts.Series
          */
         var ParetoSeries = /** @class */ (function (_super) {
-                __extends(ParetoSeries, _super);
+            __extends(ParetoSeries, _super);
             function ParetoSeries() {
                 /* *
                  *
                  *  Static properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -268,10 +259,7 @@
              * @requires modules/pareto
              */
             ParetoSeries.prototype.sumPointsPercents = function (yValues, xValues, sum, isSum) {
-                var sumY = 0,
-                    sumPercent = 0,
-                    percentPoints = [],
-                    percentPoint;
+                var sumY = 0, sumPercent = 0, percentPoints = [], percentPoint;
                 yValues.forEach(function (point, i) {
                     if (point !== null) {
                         if (isSum) {
@@ -297,12 +285,7 @@
              * @requires modules/pareto
              */
             ParetoSeries.prototype.setDerivedData = function () {
-                var xValues = this.baseSeries.xData,
-                    yValues = this.baseSeries.yData,
-                    sum = this.sumPointsPercents(yValues,
-                    xValues,
-                    null,
-                    true);
+                var xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
                 this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
             };
             /**

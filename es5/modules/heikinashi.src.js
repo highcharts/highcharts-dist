@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * HeikinAshi series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,34 +46,30 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            CandlestickPoint = _a.candlestick.prototype.pointClass,
-            HLCPoint = _a.hlc.prototype.pointClass;
+        var _a = SeriesRegistry.seriesTypes, CandlestickPoint = _a.candlestick.prototype.pointClass, HLCPoint = _a.hlc.prototype.pointClass;
         /* *
          *
          *  Class
          *
          * */
         var HeikinAshiPoint = /** @class */ (function (_super) {
-                __extends(HeikinAshiPoint, _super);
+            __extends(HeikinAshiPoint, _super);
             function HeikinAshiPoint() {
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 // clone inheritence
                 _this.resolveColor = HLCPoint.prototype.resolveColor;
                 return _this;
@@ -119,10 +113,10 @@
          * @optionparent plotOptions.heikinashi
          */
         var HeikinAshiDefaults = {
-                dataGrouping: {
-                    groupAll: true
-                }
-            };
+            dataGrouping: {
+                groupAll: true
+            }
+        };
         /**
          * A `heikinashi` series. If the [type](#series.heikinashi.type)
          * option is not specified, it is inherited from [chart.type](
@@ -205,24 +199,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
         var CandlestickSeries = SeriesRegistry.seriesTypes.candlestick;
-        var addEvent = U.addEvent,
-            merge = U.merge;
+        var addEvent = U.addEvent, merge = U.merge;
         /* *
          *
          *  Constants
@@ -255,16 +247,12 @@
          * @todo move to HeikinAshiPoint class
          */
         function onHeikinAshiSeriesAfterTranslate() {
-            var series = this,
-                points = series.points,
-                heikiashiData = series.heikiashiData,
-                cropStart = series.cropStart || 0;
+            var series = this, points = series.points, heikiashiData = series.heikiashiData, cropStart = series.cropStart || 0;
             // Reset the proccesed data.
             series.processedYData.length = 0;
             // Modify points.
             for (var i = 0; i < points.length; i++) {
-                var point = points[i],
-                    heikiashiDataPoint = heikiashiData[i + cropStart];
+                var point = points[i], heikiashiDataPoint = heikiashiData[i + cropStart];
                 point.open = heikiashiDataPoint[0];
                 point.high = heikiashiDataPoint[1];
                 point.low = heikiashiDataPoint[2];
@@ -296,15 +284,14 @@
          * @augments Highcharts.Series
          */
         var HeikinAshiSeries = /** @class */ (function (_super) {
-                __extends(HeikinAshiSeries, _super);
+            __extends(HeikinAshiSeries, _super);
             function HeikinAshiSeries() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -347,9 +334,7 @@
              * @private
              */
             HeikinAshiSeries.prototype.getHeikinashiData = function () {
-                var series = this,
-                    processedYData = series.allGroupedData || series.yData,
-                    heikiashiData = series.heikiashiData;
+                var series = this, processedYData = series.allGroupedData || series.yData, heikiashiData = series.heikiashiData;
                 if (!heikiashiData.length && processedYData && processedYData.length) {
                     // Cast to `any` in order to avoid checks before calculation.
                     // Adding null doesn't change anything.
@@ -358,8 +343,7 @@
                     this.modifyFirstPointValue(firstPoint);
                     // Modify other points.
                     for (var i = 1; i < processedYData.length; i++) {
-                        var dataPoint = processedYData[i],
-                            previousDataPoint = heikiashiData[i - 1];
+                        var dataPoint = processedYData[i], previousDataPoint = heikiashiData[i - 1];
                         this.modifyDataPoint(dataPoint, previousDataPoint);
                     }
                 }
@@ -380,9 +364,9 @@
              */
             HeikinAshiSeries.prototype.modifyFirstPointValue = function (dataPoint) {
                 var open = (dataPoint[0] +
-                        dataPoint[1] +
-                        dataPoint[2] +
-                        dataPoint[3]) / 4, close = (dataPoint[0] + dataPoint[3]) / 2;
+                    dataPoint[1] +
+                    dataPoint[2] +
+                    dataPoint[3]) / 4, close = (dataPoint[0] + dataPoint[3]) / 2;
                 this.heikiashiData.push([open, dataPoint[1], dataPoint[2], close]);
             };
             /**
@@ -394,17 +378,10 @@
              *        Previous data point.
              */
             HeikinAshiSeries.prototype.modifyDataPoint = function (dataPoint, previousDataPoint) {
-                var newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2,
-                    newClose = (dataPoint[0] +
-                        dataPoint[1] +
-                        dataPoint[2] +
-                        dataPoint[3]) / 4,
-                    newHigh = Math.max(dataPoint[1],
-                    newClose,
-                    newOpen),
-                    newLow = Math.min(dataPoint[2],
-                    newClose,
-                    newOpen);
+                var newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2, newClose = (dataPoint[0] +
+                    dataPoint[1] +
+                    dataPoint[2] +
+                    dataPoint[3]) / 4, newHigh = Math.max(dataPoint[1], newClose, newOpen), newLow = Math.min(dataPoint[2], newClose, newOpen);
                 // Add new points to the array in order to properly calculate extremes.
                 this.heikiashiData.push([newOpen, newHigh, newLow, newClose]);
             };

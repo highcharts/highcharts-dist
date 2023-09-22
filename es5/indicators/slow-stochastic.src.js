@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Slow Stochastic series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -46,26 +44,22 @@
          *
          * */
         var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
                 return extendStatics(d, b);
             };
             return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
                 extendStatics(d, b);
                 function __() { this.constructor = d; }
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            StochasticIndicator = _a.stochastic;
-        var extend = U.extend,
-            merge = U.merge;
+        var _a = SeriesRegistry.seriesTypes, SMAIndicator = _a.sma, StochasticIndicator = _a.stochastic;
+        var extend = U.extend, merge = U.merge;
         /* *
          *
          *  Class
@@ -81,15 +75,14 @@
          * @augments Highcharts.Series
          */
         var SlowStochasticIndicator = /** @class */ (function (_super) {
-                __extends(SlowStochasticIndicator, _super);
+            __extends(SlowStochasticIndicator, _super);
             function SlowStochasticIndicator() {
                 /* *
                  *
                  *  Static Properties
                  *
                  * */
-                var _this = _super !== null && _super.apply(this,
-                    arguments) || this;
+                var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
                  *  Properties
@@ -106,15 +99,11 @@
              *
              * */
             SlowStochasticIndicator.prototype.getValues = function (series, params) {
-                var periods = params.periods,
-                    fastValues = _super.prototype.getValues.call(this,
-                    series,
-                    params),
-                    slowValues = {
-                        values: [],
-                        xData: [],
-                        yData: []
-                    };
+                var periods = params.periods, fastValues = _super.prototype.getValues.call(this, series, params), slowValues = {
+                    values: [],
+                    xData: [],
+                    yData: []
+                };
                 if (!fastValues) {
                     return;
                 }
@@ -122,12 +111,12 @@
                 var fastYData = fastValues.yData.slice(periods[1] - 1);
                 // Get SMA(%D)
                 var smoothedValues = SMAIndicator.prototype.getValues.call(this, {
-                        xData: slowValues.xData,
-                        yData: fastYData
-                    }, {
-                        index: 1,
-                        period: periods[2]
-                    });
+                    xData: slowValues.xData,
+                    yData: fastYData
+                }, {
+                    index: 1,
+                    period: periods[2]
+                });
                 if (!smoothedValues) {
                     return;
                 }

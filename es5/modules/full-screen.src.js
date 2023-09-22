@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.1.0 (2023-09-22)
  *
  * Advanced Highcharts Stock tools
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -60,8 +58,7 @@
          *  Imports
          *
          * */
-        var addEvent = U.addEvent,
-            fireEvent = U.fireEvent;
+        var addEvent = U.addEvent, fireEvent = U.fireEvent;
         /* *
          *
          *  Constants
@@ -100,18 +97,18 @@
          * @requires modules/exporting
          */
         var Fullscreen = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                function Fullscreen(chart) {
-                    /**
-                     * Chart managed by the fullscreen controller.
-                     * @name Highcharts.Fullscreen#chart
-                     * @type {Highcharts.Chart}
-                     */
-                    this.chart = chart;
+            /* *
+             *
+             *  Constructors
+             *
+             * */
+            function Fullscreen(chart) {
+                /**
+                 * Chart managed by the fullscreen controller.
+                 * @name Highcharts.Fullscreen#chart
+                 * @type {Highcharts.Chart}
+                 */
+                this.chart = chart;
                 /**
                  * The flag is set to `true` when the chart is displayed in
                  * the fullscreen mode.
@@ -187,9 +184,7 @@
              * @requires    modules/full-screen
              */
             Fullscreen.prototype.close = function () {
-                var fullscreen = this,
-                    chart = fullscreen.chart,
-                    optionsChart = chart.options.chart;
+                var fullscreen = this, chart = fullscreen.chart, optionsChart = chart.options.chart;
                 fireEvent(chart, 'fullscreenClose', null, function () {
                     // Don't fire exitFullscreen() when user exited
                     // using 'Escape' button.
@@ -228,9 +223,7 @@
              * @requires    modules/full-screen
              */
             Fullscreen.prototype.open = function () {
-                var fullscreen = this,
-                    chart = fullscreen.chart,
-                    optionsChart = chart.options.chart;
+                var fullscreen = this, chart = fullscreen.chart, optionsChart = chart.options.chart;
                 fireEvent(chart, 'fullscreenOpen', null, function () {
                     if (optionsChart) {
                         fullscreen.origWidthOption = optionsChart.width;
@@ -241,12 +234,11 @@
                     // Handle exitFullscreen() method when user clicks 'Escape' button.
                     if (fullscreen.browserProps) {
                         var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
-                            fullscreen.browserProps.fullscreenChange,
-                            function () {
-                                // Handle lack of async of browser's
-                                // fullScreenChange event.
-                                if (fullscreen.isOpen) {
-                                    fullscreen.isOpen = false;
+                        fullscreen.browserProps.fullscreenChange, function () {
+                            // Handle lack of async of browser's
+                            // fullScreenChange event.
+                            if (fullscreen.isOpen) {
+                                fullscreen.isOpen = false;
                                 fullscreen.close();
                             }
                             else {
@@ -255,8 +247,7 @@
                                 fullscreen.setButtonText();
                             }
                         });
-                        var unbindDestroy_1 = addEvent(chart, 'destroy',
-                            unbindChange_1);
+                        var unbindDestroy_1 = addEvent(chart, 'destroy', unbindChange_1);
                         fullscreen.unbindFullscreenEvent = function () {
                             unbindChange_1();
                             unbindDestroy_1();
@@ -282,13 +273,9 @@
              * @requires modules/full-screen
              */
             Fullscreen.prototype.setButtonText = function () {
-                var chart = this.chart,
-                    exportDivElements = chart.exportDivElements,
-                    exportingOptions = chart.options.exporting,
-                    menuItems = (exportingOptions &&
-                        exportingOptions.buttons &&
-                        exportingOptions.buttons.contextButton.menuItems),
-                    lang = chart.options.lang;
+                var chart = this.chart, exportDivElements = chart.exportDivElements, exportingOptions = chart.options.exporting, menuItems = (exportingOptions &&
+                    exportingOptions.buttons &&
+                    exportingOptions.buttons.contextButton.menuItems), lang = chart.options.lang;
                 if (exportingOptions &&
                     exportingOptions.menuItemDefinitions &&
                     lang &&

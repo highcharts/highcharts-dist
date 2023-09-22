@@ -26,7 +26,6 @@ class DumbbellPoint extends AreaRangePoint {
         super(...arguments);
         this.series = void 0;
         this.options = void 0;
-        this.connector = void 0;
         this.pointWidth = void 0;
     }
     /* *
@@ -43,6 +42,7 @@ class DumbbellPoint extends AreaRangePoint {
      *
      */
     setState() {
+        var _a;
         let point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
         this.pointSetState.apply(this, arguments);
         if (!point.state) {
@@ -67,7 +67,7 @@ class DumbbellPoint extends AreaRangePoint {
                 }
             }
         }
-        point.connector[verb](series.getConnectorAttribs(point));
+        (_a = point.connector) === null || _a === void 0 ? void 0 : _a[verb](series.getConnectorAttribs(point));
     }
     destroy() {
         // #15560

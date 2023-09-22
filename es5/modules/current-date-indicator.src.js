@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.1.0 (2023-09-22)
  *
  * CurrentDateIndicator
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -49,9 +47,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            merge = U.merge,
-            wrap = U.wrap;
+        var addEvent = U.addEvent, merge = U.merge, wrap = U.wrap;
         /* *
          *
          *  Constants
@@ -77,24 +73,24 @@
          * @apioption xAxis.currentDateIndicator
          */
         var defaultOptions = {
-                color: "#ccd3ff" /* Palette.highlightColor20 */,
-                width: 2,
+            color: "#ccd3ff" /* Palette.highlightColor20 */,
+            width: 2,
+            /**
+             * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
+             */
+            label: {
                 /**
-                 * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
+                 * Format of the label. This options is passed as the fist argument to
+                 * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
+                 *
+                 * @type      {string}
+                 * @default   %a, %b %d %Y, %H:%M
+                 * @product   gantt
+                 * @apioption xAxis.currentDateIndicator.label.format
                  */
-                label: {
-                    /**
-                     * Format of the label. This options is passed as the fist argument to
-                     * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
-                     *
-                     * @type      {string}
-                     * @default   %a, %b %d %Y, %H:%M
-                     * @product   gantt
-                     * @apioption xAxis.currentDateIndicator.label.format
-                     */
-                    format: '%a, %b %d %Y, %H:%M',
-                    formatter: function (value, format) {
-                        return this.axis.chart.time.dateFormat(format || '', value);
+                format: '%a, %b %d %Y, %H:%M',
+                formatter: function (value, format) {
+                    return this.axis.chart.time.dateFormat(format || '', value);
                 },
                 rotation: 0,
                 /**
@@ -127,13 +123,11 @@
          * @private
          */
         function onAxisAfterSetOptions() {
-            var options = this.options,
-                cdiOptions = options.currentDateIndicator;
+            var options = this.options, cdiOptions = options.currentDateIndicator;
             if (cdiOptions) {
                 var plotLineOptions = typeof cdiOptions === 'object' ?
-                        merge(defaultOptions,
-                    cdiOptions) :
-                        merge(defaultOptions);
+                    merge(defaultOptions, cdiOptions) :
+                    merge(defaultOptions);
                 plotLineOptions.value = Date.now();
                 plotLineOptions.className = 'highcharts-current-date-indicator';
                 if (!options.plotLines) {
@@ -175,8 +169,8 @@
          *
          * */
         var CurrentDateIndication = {
-                compose: compose
-            };
+            compose: compose
+        };
 
         return CurrentDateIndication;
     });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Highcharts Drilldown module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -58,14 +56,14 @@
          * @optionparent lang
          */
         var lang = {
-                /**
-                 * @since   10.0.0
-                 * @product highcharts
-                 *
-                 * @private
-                 */
-                mainBreadcrumb: 'Main'
-            };
+            /**
+             * @since   10.0.0
+             * @product highcharts
+             *
+             * @private
+             */
+            mainBreadcrumb: 'Main'
+        };
         /**
          * Options for breadcrumbs. Breadcrumbs general options are defined in
          * `navigation.breadcrumbs`. Specific options for drilldown are set in
@@ -77,59 +75,59 @@
          * @optionparent navigation.breadcrumbs
          */
         var options = {
-                /**
-                 * A collection of attributes for the buttons. The object takes SVG
-                 * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
-                 * a collection of CSS properties for the text.
-                 *
-                 * The object can also be extended with states, so you can set
-                 * presentational options for `hover`, `select` or `disabled` button
-                 * states.
-                 *
-                 * @sample {highcharts} highcharts/breadcrumbs/single-button
-                 *         Themed, single button
-                 *
-                 * @type    {Highcharts.SVGAttributes}
-                 * @since   10.0.0
-                 * @product highcharts
-                 */
-                buttonTheme: {
-                    /** @ignore */
-                    fill: 'none',
-                    /** @ignore */
-                    height: 18,
-                    /** @ignore */
-                    padding: 2,
-                    /** @ignore */
-                    'stroke-width': 0,
-                    /** @ignore */
-                    zIndex: 7,
-                    /** @ignore */
-                    states: {
-                        select: {
-                            fill: 'none'
-                        }
-                    },
-                    style: {
-                        color: "#334eff" /* Palette.highlightColor80 */
+            /**
+             * A collection of attributes for the buttons. The object takes SVG
+             * attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
+             * a collection of CSS properties for the text.
+             *
+             * The object can also be extended with states, so you can set
+             * presentational options for `hover`, `select` or `disabled` button
+             * states.
+             *
+             * @sample {highcharts} highcharts/breadcrumbs/single-button
+             *         Themed, single button
+             *
+             * @type    {Highcharts.SVGAttributes}
+             * @since   10.0.0
+             * @product highcharts
+             */
+            buttonTheme: {
+                /** @ignore */
+                fill: 'none',
+                /** @ignore */
+                height: 18,
+                /** @ignore */
+                padding: 2,
+                /** @ignore */
+                'stroke-width': 0,
+                /** @ignore */
+                zIndex: 7,
+                /** @ignore */
+                states: {
+                    select: {
+                        fill: 'none'
                     }
                 },
-                /**
-                 * The default padding for each button and separator in each direction.
-                 *
-                 * @type  {number}
-                 * @since 10.0.0
-                 */
-                buttonSpacing: 5,
-                /**
-                 * Fires when clicking on the breadcrumbs button. Two arguments are
-                 * passed to the function. First breadcrumb button as an SVG element.
-                 * Second is the breadcrumbs class, containing reference to the chart,
-                 * series etc.
-                 *
-                 * ```js
-                 * click: function(button, breadcrumbs) {
-                 *   console.log(button);
+                style: {
+                    color: "#334eff" /* Palette.highlightColor80 */
+                }
+            },
+            /**
+             * The default padding for each button and separator in each direction.
+             *
+             * @type  {number}
+             * @since 10.0.0
+             */
+            buttonSpacing: 5,
+            /**
+             * Fires when clicking on the breadcrumbs button. Two arguments are
+             * passed to the function. First breadcrumb button as an SVG element.
+             * Second is the breadcrumbs class, containing reference to the chart,
+             * series etc.
+             *
+             * ```js
+             * click: function(button, breadcrumbs) {
+             *   console.log(button);
              * }
              * ```
              *
@@ -300,9 +298,9 @@
          *
          * */
         var BreadcrumbsDefaults = {
-                lang: lang,
-                options: options
-            };
+            lang: lang,
+            options: options
+        };
 
         return BreadcrumbsDefaults;
     });
@@ -319,14 +317,7 @@
          *
          * */
         var format = F.format;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isString = U.isString,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick;
+        var addEvent = U.addEvent, defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
         /* *
          *
          *  Constants
@@ -346,8 +337,7 @@
             var chart = this;
             if (chart.breadcrumbs) {
                 var bbox = chart.resetZoomButton &&
-                        chart.resetZoomButton.getBBox(),
-                    breadcrumbsOptions = chart.breadcrumbs.options;
+                    chart.resetZoomButton.getBBox(), breadcrumbsOptions = chart.breadcrumbs.options;
                 if (bbox &&
                     breadcrumbsOptions.position.align === 'right' &&
                     breadcrumbsOptions.relativeTo === 'plotBox') {
@@ -374,12 +364,9 @@
             if (breadcrumbs &&
                 !breadcrumbs.options.floating &&
                 breadcrumbs.level) {
-                var breadcrumbsOptions = breadcrumbs.options,
-                    buttonTheme = breadcrumbsOptions.buttonTheme,
-                    breadcrumbsHeight = ((buttonTheme.height || 0) +
-                        2 * (buttonTheme.padding || 0) +
-                        breadcrumbsOptions.buttonSpacing),
-                    verticalAlign = breadcrumbsOptions.position.verticalAlign;
+                var breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, breadcrumbsHeight = ((buttonTheme.height || 0) +
+                    2 * (buttonTheme.padding || 0) +
+                    breadcrumbsOptions.buttonSpacing), verticalAlign = breadcrumbsOptions.position.verticalAlign;
                 if (verticalAlign === 'bottom') {
                     this.marginBottom = (this.marginBottom || 0) + breadcrumbsHeight;
                     breadcrumbs.yOffset = breadcrumbsHeight;
@@ -427,21 +414,18 @@
          *        User options
          */
         var Breadcrumbs = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructor
-                 *
-                 * */
-                function Breadcrumbs(chart, userOptions) {
-                    this.elementList = {};
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            function Breadcrumbs(chart, userOptions) {
+                this.elementList = {};
                 this.isDirty = true;
                 this.level = 0;
                 this.list = [];
                 var chartOptions = merge(chart.options.drilldown &&
-                        chart.options.drilldown.drillUpButton,
-                    Breadcrumbs.defaultOptions,
-                    chart.options.navigation && chart.options.navigation.breadcrumbs,
-                    userOptions);
+                    chart.options.drilldown.drillUpButton, Breadcrumbs.defaultOptions, chart.options.navigation && chart.options.navigation.breadcrumbs, userOptions);
                 this.chart = chart;
                 this.options = chartOptions || {};
             }
@@ -534,19 +518,11 @@
              *         Formatted text.
              */
             Breadcrumbs.prototype.getButtonText = function (breadcrumb) {
-                var breadcrumbs = this,
-                    chart = breadcrumbs.chart,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    lang = chart.options.lang,
-                    textFormat = pick(breadcrumbsOptions.format,
-                    breadcrumbsOptions.showFullPath ?
-                        '{level.name}' : '← {level.name}'),
-                    defaultText = lang && pick(lang.drillUpText,
-                    lang.mainBreadcrumb);
+                var breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = pick(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
+                    '{level.name}' : '← {level.name}'), defaultText = lang && pick(lang.drillUpText, lang.mainBreadcrumb);
                 var returnText = breadcrumbsOptions.formatter &&
-                        breadcrumbsOptions.formatter(breadcrumb) ||
-                        format(textFormat, { level: breadcrumb.levelOptions },
-                    chart) || '';
+                    breadcrumbsOptions.formatter(breadcrumb) ||
+                    format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
                 if (((isString(returnText) &&
                     !returnText.length) ||
                     returnText === '← ') &&
@@ -585,9 +561,7 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.render = function () {
-                var breadcrumbs = this,
-                    chart = breadcrumbs.chart,
-                    breadcrumbsOptions = breadcrumbs.options;
+                var breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options;
                 // A main group for the breadcrumbs.
                 if (!breadcrumbs.group && breadcrumbsOptions) {
                     breadcrumbs.group = chart.renderer
@@ -633,19 +607,14 @@
              * @param {Highcharts.Breadcrumbs} this Breadcrumbs class.
              */
             Breadcrumbs.prototype.renderSingleButton = function () {
-                var breadcrumbs = this,
-                    chart = breadcrumbs.chart,
-                    list = breadcrumbs.list,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    buttonSpacing = breadcrumbsOptions.buttonSpacing;
+                var breadcrumbs = this, chart = breadcrumbs.chart, list = breadcrumbs.list, breadcrumbsOptions = breadcrumbs.options, buttonSpacing = breadcrumbsOptions.buttonSpacing;
                 // Make sure that only one type of button is visible.
                 this.destroyListElements();
                 // Draw breadcrumbs. Inital position for calculating the breadcrumbs
                 // group.
                 var posX = breadcrumbs.group ?
-                        breadcrumbs.group.getBBox().width :
-                        buttonSpacing,
-                    posY = buttonSpacing;
+                    breadcrumbs.group.getBBox().width :
+                    buttonSpacing, posY = buttonSpacing;
                 var previousBreadcrumb = list[list.length - 2];
                 if (!chart.drillUpButton && (this.level > 0)) {
                     chart.drillUpButton = breadcrumbs.renderButton(previousBreadcrumb, posX, posY);
@@ -672,16 +641,11 @@
             Breadcrumbs.prototype.alignBreadcrumbsGroup = function (xOffset) {
                 var breadcrumbs = this;
                 if (breadcrumbs.group) {
-                    var breadcrumbsOptions = breadcrumbs.options,
-                        buttonTheme = breadcrumbsOptions.buttonTheme,
-                        positionOptions = breadcrumbsOptions.position,
-                        alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
-                            breadcrumbsOptions.relativeTo === 'spacingBox' ?
-                            void 0 :
-                            'scrollablePlotBox'),
-                        bBox = breadcrumbs.group.getBBox(),
-                        additionalSpace = 2 * (buttonTheme.padding || 0) +
-                            breadcrumbsOptions.buttonSpacing;
+                    var breadcrumbsOptions = breadcrumbs.options, buttonTheme = breadcrumbsOptions.buttonTheme, positionOptions = breadcrumbsOptions.position, alignTo = (breadcrumbsOptions.relativeTo === 'chart' ||
+                        breadcrumbsOptions.relativeTo === 'spacingBox' ?
+                        void 0 :
+                        'scrollablePlotBox'), bBox = breadcrumbs.group.getBBox(), additionalSpace = 2 * (buttonTheme.padding || 0) +
+                        breadcrumbsOptions.buttonSpacing;
                     // Store positionOptions
                     positionOptions.width = bBox.width + additionalSpace;
                     positionOptions.height = bBox.height + additionalSpace;
@@ -715,18 +679,12 @@
              *        Returns the SVG button
              */
             Breadcrumbs.prototype.renderButton = function (breadcrumb, posX, posY) {
-                var breadcrumbs = this,
-                    chart = this.chart,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    buttonTheme = merge(breadcrumbsOptions.buttonTheme);
+                var breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
                 var button = chart.renderer
-                        .button(breadcrumbs.getButtonText(breadcrumb),
-                    posX,
-                    posY,
-                    function (e) {
-                        // Extract events from button object and call
-                        var buttonEvents = breadcrumbsOptions.events &&
-                            breadcrumbsOptions.events.click;
+                    .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
+                    // Extract events from button object and call
+                    var buttonEvents = breadcrumbsOptions.events &&
+                        breadcrumbsOptions.events.click;
                     var callDefaultEvent;
                     if (buttonEvents) {
                         callDefaultEvent = buttonEvents.call(breadcrumbs, e, breadcrumb);
@@ -767,20 +725,11 @@
              *        Returns the SVG button
              */
             Breadcrumbs.prototype.renderSeparator = function (posX, posY) {
-                var breadcrumbs = this,
-                    chart = this.chart,
-                    breadcrumbsOptions = breadcrumbs.options,
-                    separatorOptions = breadcrumbsOptions.separator;
+                var breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, separatorOptions = breadcrumbsOptions.separator;
                 var separator = chart.renderer
-                        .label(separatorOptions.text,
-                    posX,
-                    posY,
-                    void 0,
-                    void 0,
-                    void 0,
-                    false)
-                        .addClass('highcharts-breadcrumbs-separator')
-                        .add(breadcrumbs.group);
+                    .label(separatorOptions.text, posX, posY, void 0, void 0, void 0, false)
+                    .addClass('highcharts-breadcrumbs-separator')
+                    .add(breadcrumbs.group);
                 if (!chart.styledMode) {
                     separator.css(separatorOptions.style);
                 }
@@ -814,8 +763,7 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.updateSingleButton = function () {
-                var chart = this.chart,
-                    currentBreadcrumb = this.list[this.level - 1];
+                var chart = this.chart, currentBreadcrumb = this.list[this.level - 1];
                 if (chart.drillUpButton) {
                     chart.drillUpButton.attr({
                         text: this.getButtonText(currentBreadcrumb)
@@ -908,31 +856,19 @@
              *        Breadcrumbs class.
              */
             Breadcrumbs.prototype.updateListElements = function () {
-                var breadcrumbs = this,
-                    elementList = breadcrumbs.elementList,
-                    buttonSpacing = breadcrumbs.options.buttonSpacing,
-                    posY = buttonSpacing,
-                    list = breadcrumbs.list,
-                    rtl = breadcrumbs.options.rtl,
-                    rtlFactor = rtl ? -1 : 1,
-                    updateXPosition = function (element,
-                    spacing) {
-                        return rtlFactor * element.getBBox().width +
-                            rtlFactor * spacing;
+                var breadcrumbs = this, elementList = breadcrumbs.elementList, buttonSpacing = breadcrumbs.options.buttonSpacing, posY = buttonSpacing, list = breadcrumbs.list, rtl = breadcrumbs.options.rtl, rtlFactor = rtl ? -1 : 1, updateXPosition = function (element, spacing) {
+                    return rtlFactor * element.getBBox().width +
+                        rtlFactor * spacing;
                 }, adjustToRTL = function (element, posX, posY) {
                     element.translate(posX - element.getBBox().width, posY);
                 };
                 // Inital position for calculating the breadcrumbs group.
                 var posX = breadcrumbs.group ?
-                        updateXPosition(breadcrumbs.group,
-                    buttonSpacing) :
-                        buttonSpacing,
-                    currentBreadcrumb,
-                    breadcrumb;
+                    updateXPosition(breadcrumbs.group, buttonSpacing) :
+                    buttonSpacing, currentBreadcrumb, breadcrumb;
                 for (var i = 0, iEnd = list.length; i < iEnd; ++i) {
                     var isLast = i === iEnd - 1;
-                    var button = void 0,
-                        separator = void 0;
+                    var button = void 0, separator = void 0;
                     breadcrumb = list[i];
                     if (elementList[breadcrumb.level]) {
                         currentBreadcrumb = elementList[breadcrumb.level];
@@ -1100,18 +1036,8 @@
         var noop = H.noop;
         var defaultOptions = D.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            diffObjects = U.diffObjects,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            removeEvent = U.removeEvent,
-            syncTimeout = U.syncTimeout;
-        var PieSeries = seriesTypes.pie,
-            MapSeries = seriesTypes.map;
+        var addEvent = U.addEvent, defined = U.defined, diffObjects = U.diffObjects, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, objectEach = U.objectEach, pick = U.pick, removeEvent = U.removeEvent, syncTimeout = U.syncTimeout;
+        var PieSeries = seriesTypes.pie, MapSeries = seriesTypes.map;
         var ddSeriesId = 1;
         /**
          * Gets fired when a drilldown point is clicked, before the new series is added.
@@ -1591,8 +1517,7 @@
                 if (chart.options.drilldown &&
                     !chart.mapView.projection.hasGeoProjection &&
                     defaultOptions.drilldown) {
-                    var userDrilldown = diffObjects(chart.options.drilldown,
-                        defaultOptions.drilldown);
+                    var userDrilldown = diffObjects(chart.options.drilldown, defaultOptions.drilldown);
                     // set mapZooming to false if user didn't set any in chart config
                     if (!defined(userDrilldown.mapZooming)) {
                         chart.options.drilldown.mapZooming = false;
@@ -1605,11 +1530,9 @@
                     chart.mapView.allowTransformAnimation = true;
                     var animOptions = animObject(chart.options.drilldown.animation);
                     if (typeof animOptions !== 'boolean') {
-                        var userComplete_1 = animOptions.complete,
-                            drilldownComplete_1 = function (obj) {
-                                if (obj && obj.applyDrilldown && chart.mapView) {
-                                    chart.addSingleSeriesAsDrilldown(point,
-                            options);
+                        var userComplete_1 = animOptions.complete, drilldownComplete_1 = function (obj) {
+                            if (obj && obj.applyDrilldown && chart.mapView) {
+                                chart.addSingleSeriesAsDrilldown(point, options);
                                 chart.applyDrilldown();
                                 chart.mapView.allowTransformAnimation = false;
                             }
@@ -1635,17 +1558,7 @@
             }
         };
         Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
-            var oldSeries = point.series,
-                xAxis = oldSeries.xAxis,
-                yAxis = oldSeries.yAxis,
-                newSeries,
-                pointIndex,
-                levelSeries = [],
-                levelSeriesOptions = [],
-                level,
-                levelNumber,
-                last,
-                colorProp;
+            var oldSeries = point.series, xAxis = oldSeries.xAxis, yAxis = oldSeries.yAxis, newSeries, pointIndex, levelSeries = [], levelSeriesOptions = [], level, levelNumber, last, colorProp;
             colorProp = this.styledMode ?
                 { colorIndex: pick(point.colorIndex, oldSeries.colorIndex) } :
                 { color: point.color || oldSeries.color };
@@ -1732,13 +1645,16 @@
             }
         };
         Chart.prototype.applyDrilldown = function () {
-            var chart = this,
-                drilldownLevels = this.drilldownLevels;
+            var _this = this;
+            var chart = this, drilldownLevels = this.drilldownLevels;
             var levelToRemove;
             if (drilldownLevels && drilldownLevels.length > 0) {
                 // #3352, async loading
                 levelToRemove =
                     drilldownLevels[drilldownLevels.length - 1].levelNumber;
+                chart.hasCartesianSeries = drilldownLevels.some(function (level) {
+                    return level.lowerSeries.isCartesian;
+                }); // #19725
                 this.drilldownLevels.forEach(function (level) {
                     if (chart.mapView &&
                         chart.options.drilldown &&
@@ -1759,7 +1675,7 @@
                                 }
                             }
                             else {
-                                // deal with asonchrynous removing of map series after
+                                // Deal with asonchrynous removing of map series after
                                 // zooming into
                                 if (series.options &&
                                     series.options._levelNumber === levelToRemove &&
@@ -1810,6 +1726,13 @@
                 }
                 this.pointer.reset();
                 fireEvent(this, 'afterDrilldown');
+                // Axes shouldn't be visible after drilling into non-cartesian (#19725)
+                if (!chart.hasCartesianSeries) {
+                    chart.axes.forEach(function (axis) {
+                        axis.destroy(true);
+                        axis.init(_this, merge(axis.userOptions, axis.options));
+                    });
+                }
                 this.redraw();
                 fireEvent(this, 'afterApplyDrilldown');
             }
@@ -1827,8 +1750,7 @@
          *        List for Highcharts Breadcrumbs.
          */
         var createBreadcrumbsList = function (chart) {
-                var list = [],
-            drilldownLevels = chart.drilldownLevels;
+            var list = [], drilldownLevels = chart.drilldownLevels;
             // The list is based on drilldown levels from the chart object
             if (drilldownLevels && drilldownLevels.length) {
                 // Add the initial series as the first element.
@@ -1872,14 +1794,8 @@
                 return;
             }
             fireEvent(this, 'beforeDrillUp');
-            var chart = this,
-                drilldownLevels = chart.drilldownLevels,
-                levelNumber = drilldownLevels[drilldownLevels.length - 1].levelNumber,
-                chartSeries = chart.series,
-                drilldownLevelsNumber = chart.drilldownLevels.length,
-                addSeries = function (seriesOptions,
-                oldSeries) {
-                    var addedSeries;
+            var chart = this, drilldownLevels = chart.drilldownLevels, levelNumber = drilldownLevels[drilldownLevels.length - 1].levelNumber, chartSeries = chart.series, drilldownLevelsNumber = chart.drilldownLevels.length, addSeries = function (seriesOptions, oldSeries) {
+                var addedSeries;
                 chartSeries.forEach(function (series) {
                     if (series.options._ddSeriesId === seriesOptions._ddSeriesId) {
                         addedSeries = series;
@@ -1904,13 +1820,11 @@
                 });
                 chart.redraw();
             };
-            var i = drilldownLevels.length,
-                seriesI,
-                level,
-                oldExtremes;
+            var i = drilldownLevels.length, seriesI, level, oldExtremes;
+            // Reset symbol and color counters after every drill-up. (#19134)
+            chart.symbolCounter = chart.colorCounter = 0;
             var _loop_1 = function () {
-                    var oldSeries,
-                newSeries;
+                var oldSeries, newSeries;
                 level = drilldownLevels[i];
                 if (level.levelNumber === levelNumber) {
                     drilldownLevels.pop();
@@ -1938,8 +1852,7 @@
                         oldSeries.xAxis.names.length = 0;
                     }
                     level.levelSeriesOptions.forEach(function (el) {
-                        var addedSeries = addSeries(el,
-                            oldSeries);
+                        var addedSeries = addSeries(el, oldSeries);
                         if (addedSeries) {
                             newSeries = addedSeries;
                         }
@@ -1988,10 +1901,9 @@
                     }
                     else {
                         var shouldAnimate = level.levelNumber === levelNumber &&
-                                isMultipleDrillUp,
-                            zoomingDrill = chart.options.drilldown &&
-                                chart.options.drilldown.animation &&
-                                chart.options.drilldown.mapZooming;
+                            isMultipleDrillUp, zoomingDrill = chart.options.drilldown &&
+                            chart.options.drilldown.animation &&
+                            chart.options.drilldown.mapZooming;
                         if (shouldAnimate) {
                             oldSeries.remove(false);
                         }
@@ -2106,10 +2018,7 @@
             (this.xAxis || []).forEach(function (axis) {
                 axis.ddPoints = {};
                 axis.series.forEach(function (series) {
-                    var i,
-                        xData = series.xData || [],
-                        points = series.points,
-                        p;
+                    var i, xData = series.xData || [], points = series.points, p;
                     for (i = 0; i < xData.length; i++) {
                         p = series.options.data[i];
                         // The `drilldown` property can only be set on an array or an
@@ -2136,8 +2045,7 @@
             });
         });
         addEvent(Breadcrumbs, 'up', function (e) {
-            var chart = this.chart,
-                drillUpsNumber = this.getLevel() - e.newLevel;
+            var chart = this.chart, drillUpsNumber = this.getLevel() - e.newLevel;
             var isMultipleDrillUp = drillUpsNumber > 1;
             for (var i = 0; i < drillUpsNumber; i++) {
                 if (i === drillUpsNumber - 1) {
@@ -2147,9 +2055,7 @@
             }
         });
         addEvent(Chart, 'afterDrilldown', function () {
-            var chart = this,
-                drilldownOptions = chart.options.drilldown,
-                breadcrumbsOptions = drilldownOptions && drilldownOptions.breadcrumbs;
+            var chart = this, drilldownOptions = chart.options.drilldown, breadcrumbsOptions = drilldownOptions && drilldownOptions.breadcrumbs;
             if (!chart.breadcrumbs) {
                 chart.breadcrumbs = new Breadcrumbs(chart, breadcrumbsOptions);
             }
@@ -2161,9 +2067,8 @@
                 chart.breadcrumbs.updateProperties(createBreadcrumbsList(chart));
         });
         addEvent(Chart, 'update', function (e) {
-            var breadcrumbs = this.breadcrumbs,
-                breadcrumbOptions = e.options.drilldown &&
-                    e.options.drilldown.breadcrumbs;
+            var breadcrumbs = this.breadcrumbs, breadcrumbOptions = e.options.drilldown &&
+                e.options.drilldown.breadcrumbs;
             if (breadcrumbs && breadcrumbOptions) {
                 breadcrumbs.update(e.options.drilldown.breadcrumbs);
             }
@@ -2179,10 +2084,10 @@
          */
         ColumnSeries.prototype.animateDrillupTo = function (init) {
             if (!init) {
-                var newSeries_1 = this,
-                    level_1 = newSeries_1.drilldownLevel;
+                var newSeries_1 = this, level_1 = newSeries_1.drilldownLevel;
                 // First hide all items before animating in again
                 this.points.forEach(function (point) {
+                    var _a;
                     var dataLabel = point.dataLabel;
                     if (point.graphic) { // #3407
                         point.graphic.hide();
@@ -2193,9 +2098,7 @@
                         dataLabel.hidden = dataLabel.attr('visibility') === 'hidden';
                         if (!dataLabel.hidden) {
                             dataLabel.hide();
-                            if (point.connector) {
-                                point.connector.hide();
-                            }
+                            (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.hide();
                         }
                     }
                 });
@@ -2211,6 +2114,7 @@
                             pointsWithNodes_1 = pointsWithNodes_1.concat(newSeries_1.nodes);
                         }
                         pointsWithNodes_1.forEach(function (point, i) {
+                            var _a;
                             // Fade in other points
                             var verb = i === (level_1 && level_1.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                             if (point.graphic && // #3407
@@ -2220,9 +2124,7 @@
                             }
                             if (dataLabel && !dataLabel.hidden) { // #6127
                                 dataLabel.fadeIn(); // #7384
-                                if (point.connector) {
-                                    point.connector.fadeIn();
-                                }
+                                (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.fadeIn();
                             }
                         });
                     }
@@ -2232,13 +2134,7 @@
             }
         };
         ColumnSeries.prototype.animateDrilldown = function (init) {
-            var series = this,
-                chart = this.chart,
-                drilldownLevels = chart.drilldownLevels,
-                animateFrom,
-                animationOptions = animObject(chart.options.drilldown.animation),
-                xAxis = this.xAxis,
-                styledMode = chart.styledMode;
+            var series = this, chart = this.chart, drilldownLevels = chart.drilldownLevels, animateFrom, animationOptions = animObject(chart.options.drilldown.animation), xAxis = this.xAxis, styledMode = chart.styledMode;
             if (!init) {
                 drilldownLevels.forEach(function (level) {
                     if (series.options._ddSeriesId ===
@@ -2281,12 +2177,10 @@
          * @return {void}
          */
         ColumnSeries.prototype.animateDrillupFrom = function (level) {
-            var animationOptions = animObject(this.chart.options.drilldown.animation),
-                group = this.group, 
-                // For 3d column series all columns are added to one group
-                // so we should not delete the whole group. #5297
-                removeGroup = group !== this.chart.columnGroup,
-                series = this;
+            var animationOptions = animObject(this.chart.options.drilldown.animation), group = this.group, 
+            // For 3d column series all columns are added to one group
+            // so we should not delete the whole group. #5297
+            removeGroup = group !== this.chart.columnGroup, series = this;
             // Cancel mouse events on the series group (#2787)
             series.trackerGroups.forEach(function (key) {
                 if (series[key]) { // we don't always have dataLabelsGroup
@@ -2297,10 +2191,8 @@
                 delete this.group;
             }
             this.points.forEach(function (point) {
-                var graphic = point.graphic,
-                    animateTo = level.shapeArgs,
-                    complete = function () {
-                        graphic.destroy();
+                var graphic = point.graphic, animateTo = level.shapeArgs, complete = function () {
+                    graphic.destroy();
                     if (group && removeGroup) {
                         group = group.destroy();
                     }
@@ -2325,18 +2217,13 @@
                 animateDrillupTo: ColumnSeries.prototype.animateDrillupTo,
                 animateDrillupFrom: ColumnSeries.prototype.animateDrillupFrom,
                 animateDrilldown: function (init) {
-                    var level = this.chart.drilldownLevels[this.chart.drilldownLevels.length - 1],
-                        animationOptions = this.chart.options.drilldown.animation;
+                    var level = this.chart.drilldownLevels[this.chart.drilldownLevels.length - 1], animationOptions = this.chart.options.drilldown.animation;
                     if (this.is('item')) {
                         animationOptions.duration = 0;
                     }
                     // Unable to drill down in the horizontal item series #13372
                     if (this.center) {
-                        var animateFrom_1 = level.shapeArgs,
-                            start_1 = animateFrom_1.start,
-                            angle = animateFrom_1.end - start_1,
-                            startAngle_1 = angle / this.points.length,
-                            styledMode_1 = this.chart.styledMode;
+                        var animateFrom_1 = level.shapeArgs, start_1 = animateFrom_1.start, angle = animateFrom_1.end - start_1, startAngle_1 = angle / this.points.length, styledMode_1 = this.chart.styledMode;
                         if (!init) {
                             this.points.forEach(function (point, i) {
                                 var animateTo = point.shapeArgs;
@@ -2369,17 +2256,19 @@
                  * @private
                  */
                 animateDrilldown: function (init) {
-                    var series = this,
-                        chart = this.chart,
-                        group = this.group;
-                    if (chart && group && series.options) {
+                    var series = this, chart = this.chart, group = this.group;
+                    if (chart &&
+                        group &&
+                        series.options &&
+                        chart.options.drilldown &&
+                        chart.options.drilldown.animation) {
                         // Initialize the animation
                         if (init && chart.mapView) {
                             group.attr({
                                 opacity: 0.01
                             });
                             chart.mapView.allowTransformAnimation = false;
-                            // stop duplicating and overriding animations
+                            // Stop duplicating and overriding animations
                             series.options.inactiveOtherPoints = true;
                             series.options.enableMouseTracking = false;
                             // Run the animation
@@ -2410,8 +2299,7 @@
                  * @private
                  */
                 animateDrillupFrom: function () {
-                    var series = this,
-                        chart = this.chart;
+                    var series = this, chart = this.chart;
                     if (chart && chart.mapView) {
                         chart.mapView.allowTransformAnimation = false;
                     }
@@ -2426,9 +2314,7 @@
                  * @private
                  */
                 animateDrillupTo: function (init) {
-                    var series = this,
-                        chart = this.chart,
-                        group = this.group;
+                    var series = this, chart = this.chart, group = this.group;
                     if (chart && group) {
                         // Initialize the animation
                         if (init) {
@@ -2471,14 +2357,13 @@
             this.runDrilldown();
         };
         Point.prototype.runDrilldown = function (holdRedraw, category, originalEvent) {
-            var series = this.series,
-                chart = series.chart,
-                drilldown = chart.options.drilldown;
-            var i = (drilldown.series || []).length,
-                seriesOptions;
+            var series = this.series, chart = series.chart, drilldown = chart.options.drilldown;
+            var i = (drilldown.series || []).length, seriesOptions;
             if (!chart.ddDupes) {
                 chart.ddDupes = [];
             }
+            // Reset the color and symbol counters after every drilldown. (#19134)
+            chart.colorCounter = chart.symbolCounter = 0;
             while (i-- && !seriesOptions) {
                 if (drilldown.series[i].id === this.drilldown &&
                     chart.ddDupes.indexOf(this.drilldown) === -1) {
@@ -2496,8 +2381,7 @@
                 points: (typeof category !== 'undefined' &&
                     this.series.xAxis.getDDPoints(category).slice(0))
             }, function (e) {
-                var chart = e.point.series && e.point.series.chart,
-                    seriesOptions = e.seriesOptions;
+                var chart = e.point.series && e.point.series.chart, seriesOptions = e.seriesOptions;
                 if (chart && seriesOptions) {
                     if (holdRedraw) {
                         chart.addSingleSeriesAsDrilldown(e.point, seriesOptions);
@@ -2556,12 +2440,7 @@
          * @function Highcharts.Axis#drillable
          */
         Tick.prototype.drillable = function () {
-            var pos = this.pos,
-                label = this.label,
-                axis = this.axis,
-                isDrillable = axis.coll === 'xAxis' && axis.getDDPoints,
-                ddPointsX = isDrillable && axis.getDDPoints(pos),
-                styledMode = axis.chart.styledMode;
+            var pos = this.pos, label = this.label, axis = this.axis, isDrillable = axis.coll === 'xAxis' && axis.getDDPoints, ddPointsX = isDrillable && axis.getDDPoints(pos), styledMode = axis.chart.styledMode;
             if (isDrillable) {
                 if (label && ddPointsX && ddPointsX.length) {
                     label.drillable = true;
@@ -2603,8 +2482,7 @@
             return point;
         });
         addEvent(Point, 'update', function (e) {
-            var point = this,
-                options = e.options || {};
+            var point = this, options = e.options || {};
             if (options.drilldown && !point.unbindDrilldownClick) {
                 // Add the click event to the point
                 point.unbindDrilldownClick = addEvent(point, 'click', handlePointClick);
@@ -2616,8 +2494,7 @@
             }
         });
         var handlePointClick = function (e) {
-                var point = this,
-            series = point.series;
+            var point = this, series = point.series;
             if (series.xAxis &&
                 series.chart.options.drilldown.allowPointDrilldown ===
                     false) {
@@ -2629,13 +2506,9 @@
             }
         };
         addEvent(Series, 'afterDrawDataLabels', function () {
-            var css = this.chart.options.drilldown.activeDataLabelStyle,
-                renderer = this.chart.renderer,
-                styledMode = this.chart.styledMode;
+            var css = this.chart.options.drilldown.activeDataLabelStyle, renderer = this.chart.renderer, styledMode = this.chart.styledMode;
             this.points.forEach(function (point) {
-                var dataLabelsOptions = point.options.dataLabels,
-                    pointCSS = pick(point.dlOptions,
-                    dataLabelsOptions && dataLabelsOptions.style, {});
+                var dataLabelsOptions = point.options.dataLabels, pointCSS = pick(point.dlOptions, dataLabelsOptions && dataLabelsOptions.style, {});
                 if (point.drilldown && point.dataLabel) {
                     if (css.color === 'contrast' && !styledMode) {
                         pointCSS.color = renderer.getContrast(point.color || this.color);
@@ -2653,11 +2526,8 @@
                 }
             }, this);
         });
-        var applyCursorCSS = function (element,
-            cursor,
-            addClass,
-            styledMode) {
-                element[addClass ? 'addClass' : 'removeClass']('highcharts-drilldown-point');
+        var applyCursorCSS = function (element, cursor, addClass, styledMode) {
+            element[addClass ? 'addClass' : 'removeClass']('highcharts-drilldown-point');
             if (!styledMode) {
                 element.css({ cursor: cursor });
             }

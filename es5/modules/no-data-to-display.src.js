@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.1.0 (2023-09-22)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -53,10 +51,8 @@
          *
          * */
         var getOptions = D.getOptions;
-        var addEvent = U.addEvent,
-            extend = U.extend;
-        var chartPrototype = Chart.prototype,
-            defaultOptions = getOptions();
+        var addEvent = U.addEvent, extend = U.extend;
+        var chartPrototype = Chart.prototype, defaultOptions = getOptions();
         // Add language option
         extend(defaultOptions.lang, 
         /**
@@ -169,10 +165,7 @@
          * @requires modules/no-data-to-display
          */
         chartPrototype.showNoData = function (str) {
-            var chart = this,
-                options = chart.options,
-                text = str || (options && options.lang.noData) || '',
-                noDataOptions = options && (options.noData || {});
+            var chart = this, options = chart.options, text = str || (options && options.lang.noData) || '', noDataOptions = options && (options.noData || {});
             if (chart.renderer) { // Meaning chart is not destroyed
                 if (!chart.noDataLabel) {
                     chart.noDataLabel = chart.renderer
@@ -211,9 +204,7 @@
          * @requires modules/no-data-to-display
          */
         chartPrototype.hasData = function () {
-            var chart = this,
-                series = chart.series || [],
-                i = series.length;
+            var chart = this, series = chart.series || [], i = series.length;
             while (i--) {
                 if (series[i].hasData() && !series[i].options.isInternal) {
                     return true;

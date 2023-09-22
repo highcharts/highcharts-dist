@@ -25,15 +25,15 @@ const { addEvent, fireEvent, isArray, isNumber, objectEach, pick } = U;
 addEvent(Chart, 'render', function collectAndHide() {
     let chart = this, labels = [];
     // Consider external label collectors
-    (this.labelCollectors || []).forEach(function (collector) {
+    (this.labelCollectors || []).forEach((collector) => {
         labels = labels.concat(collector());
     });
-    (this.yAxis || []).forEach(function (yAxis) {
+    (this.yAxis || []).forEach((yAxis) => {
         if (yAxis.stacking &&
             yAxis.options.stackLabels &&
             !yAxis.options.stackLabels.allowOverlap) {
-            objectEach(yAxis.stacking.stacks, function (stack) {
-                objectEach(stack, function (stackItem) {
+            objectEach(yAxis.stacking.stacks, (stack) => {
+                objectEach(stack, (stackItem) => {
                     if (stackItem.label) {
                         labels.push(stackItem.label);
                     }
@@ -41,25 +41,24 @@ addEvent(Chart, 'render', function collectAndHide() {
             });
         }
     });
-    (this.series || []).forEach(function (series) {
-        const dlOptions = series.options.dataLabels;
-        if (series.visible &&
-            !(dlOptions.enabled === false && !series._hasPointLabels)) { // #3866
+    (this.series || []).forEach((series) => {
+        var _a;
+        if (series.visible && ((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) { // #3866
             const push = (points) => points.forEach((point) => {
                 if (point.visible) {
-                    const dataLabels = (isArray(point.dataLabels) ?
-                        point.dataLabels :
-                        (point.dataLabel ? [point.dataLabel] : []));
-                    dataLabels.forEach(function (label) {
-                        const options = label.options;
-                        label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
-                        if (!options.allowOverlap) {
-                            labels.push(label);
-                        }
-                        else { // #13449
+                    (point.dataLabels || []).forEach((label) => {
+                        var _a;
+                        const options = label.options || {};
+                        label.labelrank = pick(options.labelrank, point.labelrank, (_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.height); // #4118
+                        // Allow overlap if the option is explicitly true
+                        if (options.allowOverlap) { // #13449
                             label.oldOpacity = label.opacity;
                             label.newOpacity = 1;
                             hideOrShow(label, chart);
+                            // Do not allow overlap
+                        }
+                        else {
+                            labels.push(label);
                         }
                     });
                 }

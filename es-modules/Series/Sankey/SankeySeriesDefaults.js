@@ -103,8 +103,8 @@ const SankeySeriesDefaults = {
         inside: true
     },
     /**
-     * @ignore-option
-     *
+     * @default   true
+     * @extends   plotOptions.series.inactiveOtherPoints
      * @private
      */
     inactiveOtherPoints: true,
@@ -171,6 +171,25 @@ const SankeySeriesDefaults = {
      * @apioption plotOptions.sankey.levels.states
      */
     /**
+     * Determines color mode for sankey links. Available options:
+     *
+     * - `from` color of the sankey link will be the same as the 'from node'
+     *
+     * - `gradient` color of the sankey link will be set to gradient between
+     * colors of 'from node' and 'to node'
+     *
+     * - `to` color of the sankey link will be same as the 'to node'.
+     *
+     * @sample highcharts/demo/vertical-sankey
+     *         Vertical sankey diagram with gradients
+     * @sample highcharts/series-sankey/link-color-mode
+     *         Sankey diagram with gradients and explanation
+     *
+     * @type      {('from'|'gradient'|'to')}
+     * @since     @next
+     */
+    linkColorMode: 'from',
+    /**
      * Opacity for the links between nodes in the sankey diagram.
      *
      * @private
@@ -197,6 +216,18 @@ const SankeySeriesDefaults = {
      * @private
      */
     minLinkWidth: 0,
+    /**
+     * Determines which side of the chart the nodes are to be aligned to. When
+     * the chart is inverted, `top` aligns to the left and `bottom` to the
+     * right.
+     *
+     * @sample highcharts/plotoptions/sankey-nodealignment
+     *         Node alignment demonstrated
+     *
+     * @type      {'top'|'center'|'bottom'}
+     * @apioption plotOptions.sankey.nodeAlignment
+     */
+    nodeAlignment: 'center',
     /**
      * The pixel width of each node in a sankey diagram or dependency wheel,
      * or the height in case the chart is inverted.
