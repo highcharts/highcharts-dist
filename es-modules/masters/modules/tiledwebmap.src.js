@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-09-22)
+ * @license Highcharts JS v11.1.0 (2023-10-03)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
@@ -10,6 +10,6 @@
 'use strict';
 import Highcharts from '../../Core/Globals.js';
 import '../../Series/TiledWebMap/TiledWebMapSeries.js';
-import TilesProvidersRegistry from '../../Maps/TilesProviders/TilesProvidersRegistry.js';
+import TilesProviderRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 const G = Highcharts;
-G.TilesProvidersRegistry = TilesProvidersRegistry;
+G.TilesProviderRegistry = TilesProviderRegistry;

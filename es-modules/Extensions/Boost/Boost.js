@@ -14,7 +14,6 @@ import BoostChart from './BoostChart.js';
 import BoostSeries from './BoostSeries.js';
 import H from '../../Core/Globals.js';
 const { win, doc } = H;
-import initCanvasBoost from '../../Extensions/BoostCanvas.js';
 import NamedColors from './NamedColors.js';
 import U from '../../Core/Utilities.js';
 const { error } = U;
@@ -41,9 +40,9 @@ const contexts = [
 function compose(ChartClass, SeriesClass, seriesTypes, ColorClass) {
     const wglMode = hasWebGLSupport();
     if (!wglMode) {
-        if (typeof initCanvasBoost !== 'undefined') {
+        if (typeof H.initCanvasBoost !== 'undefined') {
             // Fallback to canvas boost
-            initCanvasBoost();
+            H.initCanvasBoost();
         }
         else {
             error(26);

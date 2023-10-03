@@ -92,7 +92,7 @@ const NavigatorDefaults = {
      * Whether the mask should be inside the range marking the zoomed
      * range, or outside. In Highcharts Stock 1.x it was always `false`.
      *
-     * @sample {highstock} stock/navigator/maskinside-false/
+     * @sample {highstock} stock/demo/maskinside-false/
      *         False, mask outside
      *
      * @since   2.0

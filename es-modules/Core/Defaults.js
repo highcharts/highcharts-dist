@@ -9,8 +9,6 @@
  * */
 'use strict';
 import ChartDefaults from './Chart/ChartDefaults.js';
-import Color from './Color/Color.js';
-const { parse: color } = Color;
 import H from './Globals.js';
 const { isTouchDevice, svg } = H;
 import Palettes from './Color/Palettes.js';

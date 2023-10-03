@@ -1,5 +1,5 @@
 /*
- Highcharts Stock JS v11.1.0 (2023-09-22)
+ Highcharts Stock JS v11.1.0 (2023-10-03)
 
  Indicator series type for Highcharts Stock
 

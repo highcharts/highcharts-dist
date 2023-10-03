@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-09-22)
+ * @license Highcharts JS v11.1.0 (2023-10-03)
  *
  * Exporting module
  *
@@ -35,6 +35,132 @@
             }
         }
     }
+    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
+        /* *
+         *
+         *  (c) 2015-2023 Oystein Moseng
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         *  Mixin for downloading content in the browser
+         *
+         * */
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        var isSafari = H.isSafari, win = H.win, doc = H.win.document;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var domurl = win.URL || win.webkitURL || win;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
+         * @private
+         * @function Highcharts.dataURLtoBlob
+         * @param {string} dataURL
+         *        URL to convert
+         * @return {string|undefined}
+         *         Blob
+         */
+        function dataURLtoBlob(dataURL) {
+            var parts = dataURL
+                .replace(/filename=.*;/, '')
+                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+            if (parts &&
+                parts.length > 3 &&
+                (win.atob) &&
+                win.ArrayBuffer &&
+                win.Uint8Array &&
+                win.Blob &&
+                (domurl.createObjectURL)) {
+                // Try to convert data URL to Blob
+                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
+                for (var i = 0; i < binary.length; ++i) {
+                    binary[i] = binStr.charCodeAt(i);
+                }
+                return domurl
+                    .createObjectURL(new win.Blob([binary], { 'type': parts[1] }));
+            }
+        }
+        /**
+         * Download a data URL in the browser. Can also take a blob as first param.
+         *
+         * @private
+         * @function Highcharts.downloadURL
+         * @param {string|global.URL} dataURL
+         *        The dataURL/Blob to download
+         * @param {string} filename
+         *        The name of the resulting file (w/extension)
+         * @return {void}
+         */
+        function downloadURL(dataURL, filename) {
+            var nav = win.navigator, a = doc.createElement('a');
+            // IE specific blob implementation
+            // Don't use for normal dataURLs
+            if (typeof dataURL !== 'string' &&
+                !(dataURL instanceof String) &&
+                nav.msSaveOrOpenBlob) {
+                nav.msSaveOrOpenBlob(dataURL, filename);
+                return;
+            }
+            dataURL = '' + dataURL;
+            var // Some browsers have limitations for data URL lengths. Try to convert
+            // to Blob or fall back. Edge always needs that blob.
+            isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 
+            // Safari on iOS needs Blob in order to download PDF
+            safariBlob = (isSafari &&
+                typeof dataURL === 'string' &&
+                dataURL.indexOf('data:application/pdf') === 0);
+            if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
+                dataURL = dataURLtoBlob(dataURL) || '';
+                if (!dataURL) {
+                    throw new Error('Failed to convert to blob');
+                }
+            }
+            // Try HTML5 download attr if supported
+            if (typeof a.download !== 'undefined') {
+                a.href = dataURL;
+                a.download = filename; // HTML5 download attribute
+                doc.body.appendChild(a);
+                a.click();
+                doc.body.removeChild(a);
+            }
+            else {
+                // No download attr, just opening data URI
+                try {
+                    if (!win.open(dataURL, 'chart')) {
+                        throw new Error('Failed to open window');
+                    }
+                }
+                catch (_a) {
+                    // If window.open failed, try location.href
+                    win.location.href = dataURL;
+                }
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var DownloadURL = {
+            dataURLtoBlob: dataURLtoBlob,
+            downloadURL: downloadURL
+        };
+
+        return DownloadURL;
+    });
     _registerModule(_modules, 'Extensions/ExportData/ExportDataDefaults.js', [], function () {
         /* *
          *
@@ -308,113 +434,6 @@
         (''); // keep doclets above in JS file
 
         return ExportDataDefaults;
-    });
-    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
-        /* *
-         *
-         *  (c) 2015-2021 Oystein Moseng
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         *  Mixin for downloading content in the browser
-         *
-         * */
-        var isSafari = Highcharts.isSafari;
-        var win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
-        /**
-         * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
-         * @private
-         * @function Highcharts.dataURLtoBlob
-         * @param {string} dataURL
-         *        URL to convert
-         * @return {string|undefined}
-         *         Blob
-         */
-        var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-            var parts = dataURL
-                .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
-            if (parts &&
-                parts.length > 3 &&
-                (win.atob) &&
-                win.ArrayBuffer &&
-                win.Uint8Array &&
-                win.Blob &&
-                (domurl.createObjectURL)) {
-                // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
-                for (var i = 0; i < binary.length; ++i) {
-                    binary[i] = binStr.charCodeAt(i);
-                }
-                var blob = new win.Blob([binary], { 'type': parts[1] });
-                return domurl.createObjectURL(blob);
-            }
-        };
-        /**
-         * Download a data URL in the browser. Can also take a blob as first param.
-         *
-         * @private
-         * @function Highcharts.downloadURL
-         * @param {string|global.URL} dataURL
-         *        The dataURL/Blob to download
-         * @param {string} filename
-         *        The name of the resulting file (w/extension)
-         * @return {void}
-         */
-        var downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
-            var nav = win.navigator, a = doc.createElement('a');
-            // IE specific blob implementation
-            // Don't use for normal dataURLs
-            if (typeof dataURL !== 'string' &&
-                !(dataURL instanceof String) &&
-                nav.msSaveOrOpenBlob) {
-                nav.msSaveOrOpenBlob(dataURL, filename);
-                return;
-            }
-            dataURL = "".concat(dataURL);
-            // Some browsers have limitations for data URL lengths. Try to convert to
-            // Blob or fall back. Edge always needs that blob.
-            var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-            // Safari on iOS needs Blob in order to download PDF
-            var safariBlob = (isSafari &&
-                typeof dataURL === 'string' &&
-                dataURL.indexOf('data:application/pdf') === 0);
-            if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
-                dataURL = dataURLtoBlob(dataURL) || '';
-                if (!dataURL) {
-                    throw new Error('Failed to convert to blob');
-                }
-            }
-            // Try HTML5 download attr if supported
-            if (typeof a.download !== 'undefined') {
-                a.href = dataURL;
-                a.download = filename; // HTML5 download attribute
-                doc.body.appendChild(a);
-                a.click();
-                doc.body.removeChild(a);
-            }
-            else {
-                // No download attr, just opening data URI
-                try {
-                    var windowRef = win.open(dataURL, 'chart');
-                    if (typeof windowRef === 'undefined' || windowRef === null) {
-                        throw new Error('Failed to open window');
-                    }
-                }
-                catch (e) {
-                    // window.open failed, trying location.href
-                    win.location.href = dataURL;
-                }
-            }
-        };
-        var DownloadURL = {
-            dataURLtoBlob: dataURLtoBlob,
-            downloadURL: downloadURL
-        };
-
-        return DownloadURL;
     });
     _registerModule(_modules, 'Extensions/ExportData/ExportData.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Extensions/ExportData/ExportDataDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Extensions/DownloadURL.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AST, ExportDataDefaults, H, D, DownloadURL, SeriesRegistry, U) {
         /* *
@@ -1299,9 +1318,13 @@
 
         return ExportData;
     });
-    _registerModule(_modules, 'masters/modules/export-data.src.js', [_modules['Core/Globals.js'], _modules['Extensions/ExportData/ExportData.js']], function (Highcharts, ExportData) {
+    _registerModule(_modules, 'masters/modules/export-data.src.js', [_modules['Core/Globals.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/ExportData/ExportData.js']], function (Highcharts, DownloadURL, ExportData) {
 
         var G = Highcharts;
+        // Compatibility
+        G.dataURLtoBlob = DownloadURL.dataURLtoBlob;
+        G.downloadURL = DownloadURL.downloadURL;
+        // Compose
         ExportData.compose(G.Chart);
 
     });

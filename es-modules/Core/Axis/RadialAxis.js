@@ -629,7 +629,7 @@ var RadialAxis;
      * Modify axis instance with radial logic before common axis init.
      */
     function onAxisInit(e) {
-        const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, chartOptions = chart.options, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
+        const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
         let isCircular;
         // Prevent changes for colorAxis
         if (coll === 'colorAxis') {

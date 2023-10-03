@@ -2,8 +2,21 @@
  * OpenStreetMap provider, used for tile map services
  * */
 'use strict';
+/* *
+ *
+ *  Class
+ *
+ * */
 class OpenStreetMap {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.defaultCredits = ('Map data &copy2023' +
+            ' <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>');
+        this.initialProjectionName = 'WebMercator';
         this.subdomains = ['a', 'b', 'c'];
         this.themes = {
             Standard: {
@@ -26,9 +39,11 @@ class OpenStreetMap {
                 (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)`
             }
         };
-        this.initialProjectionName = 'WebMercator';
-        this.defaultCredits = `Map data \u00a92023 <a href="https://www.openstreetmap.org/copyright">
-            OpenStreetMap</a>`;
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default OpenStreetMap;

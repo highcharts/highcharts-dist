@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-09-22)
+ * @license Highmaps JS v11.1.0 (2023-10-03)
  *
  * (c) 2011-2021 Torstein Honsi
  *
@@ -3497,420 +3497,6 @@
 
         return ChartDefaults;
     });
-    _registerModule(_modules, 'Core/Color/Color.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { isNumber, merge, pInt } = U;
-        /* *
-         *
-         *  Class
-         *
-         * */
-        /* eslint-disable valid-jsdoc */
-        /**
-         * Handle color operations. Some object methods are chainable.
-         *
-         * @class
-         * @name Highcharts.Color
-         *
-         * @param {Highcharts.ColorType} input
-         * The input color in either rbga or hex format
-         */
-        class Color {
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            /**
-             * Creates a color instance out of a color string or object.
-             *
-             * @function Highcharts.Color.parse
-             *
-             * @param {Highcharts.ColorType} [input]
-             * The input color in either rbga or hex format.
-             *
-             * @return {Highcharts.Color}
-             * Color instance.
-             */
-            static parse(input) {
-                return input ? new Color(input) : Color.None;
-            }
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            constructor(input) {
-                this.rgba = [NaN, NaN, NaN, NaN];
-                this.input = input;
-                const GlobalColor = H.Color;
-                // Backwards compatibility, allow class overwrite
-                if (GlobalColor && GlobalColor !== Color) {
-                    return new GlobalColor(input);
-                }
-                this.init(input);
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Parse the input color to rgba array
-             *
-             * @private
-             * @function Highcharts.Color#init
-             *
-             * @param {Highcharts.ColorType} input
-             * The input color in either rbga or hex format
-             */
-            init(input) {
-                let result, rgba, i, parser;
-                // Gradients
-                if (typeof input === 'object' &&
-                    typeof input.stops !== 'undefined') {
-                    this.stops = input.stops.map((stop) => new Color(stop[1]));
-                    // Solid colors
-                }
-                else if (typeof input === 'string') {
-                    this.input = input = (Color.names[input.toLowerCase()] || input);
-                    // Bitmasking as input[0] is not working for legacy IE.
-                    if (input.charAt(0) === '#') {
-                        const len = input.length, col = parseInt(input.substr(1), 16);
-                        // Handle long-form, e.g. #AABBCC
-                        if (len === 7) {
-                            rgba = [
-                                (col & 0xFF0000) >> 16,
-                                (col & 0xFF00) >> 8,
-                                (col & 0xFF),
-                                1
-                            ];
-                            // Handle short-form, e.g. #ABC
-                            // In short form, the value is assumed to be the same
-                            // for both nibbles for each component. e.g. #ABC = #AABBCC
-                        }
-                        else if (len === 4) {
-                            rgba = [
-                                (((col & 0xF00) >> 4) |
-                                    (col & 0xF00) >> 8),
-                                (((col & 0xF0) >> 4) |
-                                    (col & 0xF0)),
-                                ((col & 0xF) << 4) | (col & 0xF),
-                                1
-                            ];
-                        }
-                    }
-                    // Otherwise, check regex parsers
-                    if (!rgba) {
-                        i = Color.parsers.length;
-                        while (i-- && !rgba) {
-                            parser = Color.parsers[i];
-                            result = parser.regex.exec(input);
-                            if (result) {
-                                rgba = parser.parse(result);
-                            }
-                        }
-                    }
-                }
-                if (rgba) {
-                    this.rgba = rgba;
-                }
-            }
-            /**
-             * Return the color or gradient stops in the specified format
-             *
-             * @function Highcharts.Color#get
-             *
-             * @param {string} [format]
-             * Possible values are 'a', 'rgb', 'rgba' (default).
-             *
-             * @return {Highcharts.ColorType}
-             * This color as a string or gradient stops.
-             */
-            get(format) {
-                const input = this.input, rgba = this.rgba;
-                if (typeof input === 'object' &&
-                    typeof this.stops !== 'undefined') {
-                    const ret = merge(input);
-                    ret.stops = [].slice.call(ret.stops);
-                    this.stops.forEach((stop, i) => {
-                        ret.stops[i] = [
-                            ret.stops[i][0],
-                            stop.get(format)
-                        ];
-                    });
-                    return ret;
-                }
-                // it's NaN if gradient colors on a column chart
-                if (rgba && isNumber(rgba[0])) {
-                    if (format === 'rgb' || (!format && rgba[3] === 1)) {
-                        return 'rgb(' + rgba[0] + ',' + rgba[1] + ',' + rgba[2] + ')';
-                    }
-                    if (format === 'a') {
-                        return `${rgba[3]}`;
-                    }
-                    return 'rgba(' + rgba.join(',') + ')';
-                }
-                return input;
-            }
-            /**
-             * Brighten the color instance.
-             *
-             * @function Highcharts.Color#brighten
-             *
-             * @param {number} alpha
-             * The alpha value.
-             *
-             * @return {Highcharts.Color}
-             * This color with modifications.
-             */
-            brighten(alpha) {
-                const rgba = this.rgba;
-                if (this.stops) {
-                    this.stops.forEach(function (stop) {
-                        stop.brighten(alpha);
-                    });
-                }
-                else if (isNumber(alpha) && alpha !== 0) {
-                    for (let i = 0; i < 3; i++) {
-                        rgba[i] += pInt(alpha * 255);
-                        if (rgba[i] < 0) {
-                            rgba[i] = 0;
-                        }
-                        if (rgba[i] > 255) {
-                            rgba[i] = 255;
-                        }
-                    }
-                }
-                return this;
-            }
-            /**
-             * Set the color's opacity to a given alpha value.
-             *
-             * @function Highcharts.Color#setOpacity
-             *
-             * @param {number} alpha
-             *        Opacity between 0 and 1.
-             *
-             * @return {Highcharts.Color}
-             *         Color with modifications.
-             */
-            setOpacity(alpha) {
-                this.rgba[3] = alpha;
-                return this;
-            }
-            /**
-             * Return an intermediate color between two colors.
-             *
-             * @function Highcharts.Color#tweenTo
-             *
-             * @param {Highcharts.Color} to
-             * The color object to tween to.
-             *
-             * @param {number} pos
-             * The intermediate position, where 0 is the from color (current color
-             * item), and 1 is the `to` color.
-             *
-             * @return {Highcharts.ColorType}
-             * The intermediate color in rgba notation, or unsupported type.
-             */
-            tweenTo(to, pos) {
-                const fromRgba = this.rgba, toRgba = to.rgba;
-                // Unsupported color, return to-color (#3920, #7034)
-                if (!isNumber(fromRgba[0]) || !isNumber(toRgba[0])) {
-                    return to.input || 'none';
-                }
-                // Check for has alpha, because rgba colors perform worse due to
-                // lack of support in WebKit.
-                const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1);
-                return (hasAlpha ? 'rgba(' : 'rgb(') +
-                    Math.round(toRgba[0] + (fromRgba[0] - toRgba[0]) * (1 - pos)) +
-                    ',' +
-                    Math.round(toRgba[1] + (fromRgba[1] - toRgba[1]) * (1 - pos)) +
-                    ',' +
-                    Math.round(toRgba[2] + (fromRgba[2] - toRgba[2]) * (1 - pos)) +
-                    (hasAlpha ?
-                        (',' +
-                            (toRgba[3] + (fromRgba[3] - toRgba[3]) * (1 - pos))) :
-                        '') +
-                    ')';
-            }
-        }
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        /**
-         * Collection of named colors. Can be extended from the outside by adding
-         * colors to Highcharts.Color.names.
-         * @private
-         */
-        Color.names = {
-            white: '#ffffff',
-            black: '#000000'
-        };
-        /**
-         * Collection of parsers. This can be extended from the outside by pushing
-         * parsers to `Color.parsers`.
-         */
-        Color.parsers = [{
-                // RGBA color
-                // eslint-disable-next-line max-len
-                regex: /rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,
-                parse: function (result) {
-                    return [
-                        pInt(result[1]),
-                        pInt(result[2]),
-                        pInt(result[3]),
-                        parseFloat(result[4], 10)
-                    ];
-                }
-            }, {
-                // RGB color
-                regex: /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,
-                parse: function (result) {
-                    return [pInt(result[1]), pInt(result[2]), pInt(result[3]), 1];
-                }
-            }];
-        // Must be last static member for init cycle
-        Color.None = new Color('');
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * A valid color to be parsed and handled by Highcharts. Highcharts internally
-         * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
-         * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
-         * browsers and displayed correctly, but Highcharts is not able to process them
-         * and apply concepts like opacity and brightening.
-         *
-         * @typedef {string} Highcharts.ColorString
-         */
-        /**
-         * A valid color type than can be parsed and handled by Highcharts. It can be a
-         * color string, a gradient object, or a pattern object.
-         *
-         * @typedef {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject} Highcharts.ColorType
-         */
-        /**
-         * Gradient options instead of a solid color.
-         *
-         * @example
-         * // Linear gradient used as a color option
-         * color: {
-         *     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-         *     stops: [
-         *         [0, '#003399'], // start
-         *         [0.5, '#ffffff'], // middle
-         *         [1, '#3366AA'] // end
-         *     ]
-         * }
-         *
-         * @interface Highcharts.GradientColorObject
-         */ /**
-        * Holds an object that defines the start position and the end position relative
-        * to the shape.
-        * @name Highcharts.GradientColorObject#linearGradient
-        * @type {Highcharts.LinearGradientColorObject|undefined}
-        */ /**
-        * Holds an object that defines the center position and the radius.
-        * @name Highcharts.GradientColorObject#radialGradient
-        * @type {Highcharts.RadialGradientColorObject|undefined}
-        */ /**
-        * The first item in each tuple is the position in the gradient, where 0 is the
-        * start of the gradient and 1 is the end of the gradient. Multiple stops can be
-        * applied. The second item is the color for each stop. This color can also be
-        * given in the rgba format.
-        * @name Highcharts.GradientColorObject#stops
-        * @type {Array<Highcharts.GradientColorStopObject>}
-        */
-        /**
-         * Color stop tuple.
-         *
-         * @see Highcharts.GradientColorObject
-         *
-         * @interface Highcharts.GradientColorStopObject
-         */ /**
-        * @name Highcharts.GradientColorStopObject#0
-        * @type {number}
-        */ /**
-        * @name Highcharts.GradientColorStopObject#1
-        * @type {Highcharts.ColorString}
-        */ /**
-        * @name Highcharts.GradientColorStopObject#color
-        * @type {Highcharts.Color|undefined}
-        */
-        /**
-         * Defines the start position and the end position for a gradient relative
-         * to the shape. Start position (x1, y1) and end position (x2, y2) are relative
-         * to the shape, where 0 means top/left and 1 is bottom/right.
-         *
-         * @interface Highcharts.LinearGradientColorObject
-         */ /**
-        * Start horizontal position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#x1
-        * @type {number}
-        */ /**
-        * End horizontal position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#x2
-        * @type {number}
-        */ /**
-        * Start vertical position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#y1
-        * @type {number}
-        */ /**
-        * End vertical position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#y2
-        * @type {number}
-        */
-        /**
-         * Defines the center position and the radius for a gradient.
-         *
-         * @interface Highcharts.RadialGradientColorObject
-         */ /**
-        * Center horizontal position relative to the shape. Float ranges 0-1.
-        * @name Highcharts.RadialGradientColorObject#cx
-        * @type {number}
-        */ /**
-        * Center vertical position relative to the shape. Float ranges 0-1.
-        * @name Highcharts.RadialGradientColorObject#cy
-        * @type {number}
-        */ /**
-        * Radius relative to the shape. Float ranges 0-1.
-        * @name Highcharts.RadialGradientColorObject#r
-        * @type {number}
-        */
-        /**
-         * Creates a color instance out of a color string.
-         *
-         * @function Highcharts.color
-         *
-         * @param {Highcharts.ColorType} input
-         *        The input color in either rbga or hex format
-         *
-         * @return {Highcharts.Color}
-         *         Color instance
-         */
-        (''); // detach doclets above
-
-        return Color;
-    });
     _registerModule(_modules, 'Core/Color/Palettes.js', [], function () {
         /**
          * Series palettes for Highcharts. Series colors are defined in highcharts.css.
@@ -4353,7 +3939,7 @@
                     // Lower case AM or PM
                     P: hours < 12 ? 'am' : 'pm',
                     // Two digits seconds, 00 through  59
-                    S: pad(date.getSeconds()),
+                    S: pad(this.get('Seconds', date)),
                     // Milliseconds (naming from Ruby)
                     L: pad(Math.floor(timestamp % 1000), 3)
                 }, H.dateFormats);
@@ -4675,7 +4261,7 @@
 
         return Time;
     });
-    _registerModule(_modules, 'Core/Defaults.js', [_modules['Core/Chart/ChartDefaults.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palettes.js'], _modules['Core/Time.js'], _modules['Core/Utilities.js']], function (ChartDefaults, Color, H, Palettes, Time, U) {
+    _registerModule(_modules, 'Core/Defaults.js', [_modules['Core/Chart/ChartDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palettes.js'], _modules['Core/Time.js'], _modules['Core/Utilities.js']], function (ChartDefaults, H, Palettes, Time, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4685,7 +4271,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { parse: color } = Color;
         const { isTouchDevice, svg } = H;
         const { merge } = U;
         /* *
@@ -7405,6 +6990,420 @@
         (''); // detach doclets above
 
         return DefaultOptions;
+    });
+    _registerModule(_modules, 'Core/Color/Color.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { isNumber, merge, pInt } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
+        /**
+         * Handle color operations. Some object methods are chainable.
+         *
+         * @class
+         * @name Highcharts.Color
+         *
+         * @param {Highcharts.ColorType} input
+         * The input color in either rbga or hex format
+         */
+        class Color {
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /**
+             * Creates a color instance out of a color string or object.
+             *
+             * @function Highcharts.Color.parse
+             *
+             * @param {Highcharts.ColorType} [input]
+             * The input color in either rbga or hex format.
+             *
+             * @return {Highcharts.Color}
+             * Color instance.
+             */
+            static parse(input) {
+                return input ? new Color(input) : Color.None;
+            }
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(input) {
+                this.rgba = [NaN, NaN, NaN, NaN];
+                this.input = input;
+                const GlobalColor = H.Color;
+                // Backwards compatibility, allow class overwrite
+                if (GlobalColor && GlobalColor !== Color) {
+                    return new GlobalColor(input);
+                }
+                this.init(input);
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Parse the input color to rgba array
+             *
+             * @private
+             * @function Highcharts.Color#init
+             *
+             * @param {Highcharts.ColorType} input
+             * The input color in either rbga or hex format
+             */
+            init(input) {
+                let result, rgba, i, parser;
+                // Gradients
+                if (typeof input === 'object' &&
+                    typeof input.stops !== 'undefined') {
+                    this.stops = input.stops.map((stop) => new Color(stop[1]));
+                    // Solid colors
+                }
+                else if (typeof input === 'string') {
+                    this.input = input = (Color.names[input.toLowerCase()] || input);
+                    // Bitmasking as input[0] is not working for legacy IE.
+                    if (input.charAt(0) === '#') {
+                        const len = input.length, col = parseInt(input.substr(1), 16);
+                        // Handle long-form, e.g. #AABBCC
+                        if (len === 7) {
+                            rgba = [
+                                (col & 0xFF0000) >> 16,
+                                (col & 0xFF00) >> 8,
+                                (col & 0xFF),
+                                1
+                            ];
+                            // Handle short-form, e.g. #ABC
+                            // In short form, the value is assumed to be the same
+                            // for both nibbles for each component. e.g. #ABC = #AABBCC
+                        }
+                        else if (len === 4) {
+                            rgba = [
+                                (((col & 0xF00) >> 4) |
+                                    (col & 0xF00) >> 8),
+                                (((col & 0xF0) >> 4) |
+                                    (col & 0xF0)),
+                                ((col & 0xF) << 4) | (col & 0xF),
+                                1
+                            ];
+                        }
+                    }
+                    // Otherwise, check regex parsers
+                    if (!rgba) {
+                        i = Color.parsers.length;
+                        while (i-- && !rgba) {
+                            parser = Color.parsers[i];
+                            result = parser.regex.exec(input);
+                            if (result) {
+                                rgba = parser.parse(result);
+                            }
+                        }
+                    }
+                }
+                if (rgba) {
+                    this.rgba = rgba;
+                }
+            }
+            /**
+             * Return the color or gradient stops in the specified format
+             *
+             * @function Highcharts.Color#get
+             *
+             * @param {string} [format]
+             * Possible values are 'a', 'rgb', 'rgba' (default).
+             *
+             * @return {Highcharts.ColorType}
+             * This color as a string or gradient stops.
+             */
+            get(format) {
+                const input = this.input, rgba = this.rgba;
+                if (typeof input === 'object' &&
+                    typeof this.stops !== 'undefined') {
+                    const ret = merge(input);
+                    ret.stops = [].slice.call(ret.stops);
+                    this.stops.forEach((stop, i) => {
+                        ret.stops[i] = [
+                            ret.stops[i][0],
+                            stop.get(format)
+                        ];
+                    });
+                    return ret;
+                }
+                // it's NaN if gradient colors on a column chart
+                if (rgba && isNumber(rgba[0])) {
+                    if (format === 'rgb' || (!format && rgba[3] === 1)) {
+                        return 'rgb(' + rgba[0] + ',' + rgba[1] + ',' + rgba[2] + ')';
+                    }
+                    if (format === 'a') {
+                        return `${rgba[3]}`;
+                    }
+                    return 'rgba(' + rgba.join(',') + ')';
+                }
+                return input;
+            }
+            /**
+             * Brighten the color instance.
+             *
+             * @function Highcharts.Color#brighten
+             *
+             * @param {number} alpha
+             * The alpha value.
+             *
+             * @return {Highcharts.Color}
+             * This color with modifications.
+             */
+            brighten(alpha) {
+                const rgba = this.rgba;
+                if (this.stops) {
+                    this.stops.forEach(function (stop) {
+                        stop.brighten(alpha);
+                    });
+                }
+                else if (isNumber(alpha) && alpha !== 0) {
+                    for (let i = 0; i < 3; i++) {
+                        rgba[i] += pInt(alpha * 255);
+                        if (rgba[i] < 0) {
+                            rgba[i] = 0;
+                        }
+                        if (rgba[i] > 255) {
+                            rgba[i] = 255;
+                        }
+                    }
+                }
+                return this;
+            }
+            /**
+             * Set the color's opacity to a given alpha value.
+             *
+             * @function Highcharts.Color#setOpacity
+             *
+             * @param {number} alpha
+             *        Opacity between 0 and 1.
+             *
+             * @return {Highcharts.Color}
+             *         Color with modifications.
+             */
+            setOpacity(alpha) {
+                this.rgba[3] = alpha;
+                return this;
+            }
+            /**
+             * Return an intermediate color between two colors.
+             *
+             * @function Highcharts.Color#tweenTo
+             *
+             * @param {Highcharts.Color} to
+             * The color object to tween to.
+             *
+             * @param {number} pos
+             * The intermediate position, where 0 is the from color (current color
+             * item), and 1 is the `to` color.
+             *
+             * @return {Highcharts.ColorType}
+             * The intermediate color in rgba notation, or unsupported type.
+             */
+            tweenTo(to, pos) {
+                const fromRgba = this.rgba, toRgba = to.rgba;
+                // Unsupported color, return to-color (#3920, #7034)
+                if (!isNumber(fromRgba[0]) || !isNumber(toRgba[0])) {
+                    return to.input || 'none';
+                }
+                // Check for has alpha, because rgba colors perform worse due to
+                // lack of support in WebKit.
+                const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1);
+                return (hasAlpha ? 'rgba(' : 'rgb(') +
+                    Math.round(toRgba[0] + (fromRgba[0] - toRgba[0]) * (1 - pos)) +
+                    ',' +
+                    Math.round(toRgba[1] + (fromRgba[1] - toRgba[1]) * (1 - pos)) +
+                    ',' +
+                    Math.round(toRgba[2] + (fromRgba[2] - toRgba[2]) * (1 - pos)) +
+                    (hasAlpha ?
+                        (',' +
+                            (toRgba[3] + (fromRgba[3] - toRgba[3]) * (1 - pos))) :
+                        '') +
+                    ')';
+            }
+        }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        /**
+         * Collection of named colors. Can be extended from the outside by adding
+         * colors to Highcharts.Color.names.
+         * @private
+         */
+        Color.names = {
+            white: '#ffffff',
+            black: '#000000'
+        };
+        /**
+         * Collection of parsers. This can be extended from the outside by pushing
+         * parsers to `Color.parsers`.
+         */
+        Color.parsers = [{
+                // RGBA color
+                // eslint-disable-next-line max-len
+                regex: /rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,
+                parse: function (result) {
+                    return [
+                        pInt(result[1]),
+                        pInt(result[2]),
+                        pInt(result[3]),
+                        parseFloat(result[4], 10)
+                    ];
+                }
+            }, {
+                // RGB color
+                regex: /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,
+                parse: function (result) {
+                    return [pInt(result[1]), pInt(result[2]), pInt(result[3]), 1];
+                }
+            }];
+        // Must be last static member for init cycle
+        Color.None = new Color('');
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * A valid color to be parsed and handled by Highcharts. Highcharts internally
+         * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
+         * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
+         * browsers and displayed correctly, but Highcharts is not able to process them
+         * and apply concepts like opacity and brightening.
+         *
+         * @typedef {string} Highcharts.ColorString
+         */
+        /**
+         * A valid color type than can be parsed and handled by Highcharts. It can be a
+         * color string, a gradient object, or a pattern object.
+         *
+         * @typedef {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject} Highcharts.ColorType
+         */
+        /**
+         * Gradient options instead of a solid color.
+         *
+         * @example
+         * // Linear gradient used as a color option
+         * color: {
+         *     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+         *     stops: [
+         *         [0, '#003399'], // start
+         *         [0.5, '#ffffff'], // middle
+         *         [1, '#3366AA'] // end
+         *     ]
+         * }
+         *
+         * @interface Highcharts.GradientColorObject
+         */ /**
+        * Holds an object that defines the start position and the end position relative
+        * to the shape.
+        * @name Highcharts.GradientColorObject#linearGradient
+        * @type {Highcharts.LinearGradientColorObject|undefined}
+        */ /**
+        * Holds an object that defines the center position and the radius.
+        * @name Highcharts.GradientColorObject#radialGradient
+        * @type {Highcharts.RadialGradientColorObject|undefined}
+        */ /**
+        * The first item in each tuple is the position in the gradient, where 0 is the
+        * start of the gradient and 1 is the end of the gradient. Multiple stops can be
+        * applied. The second item is the color for each stop. This color can also be
+        * given in the rgba format.
+        * @name Highcharts.GradientColorObject#stops
+        * @type {Array<Highcharts.GradientColorStopObject>}
+        */
+        /**
+         * Color stop tuple.
+         *
+         * @see Highcharts.GradientColorObject
+         *
+         * @interface Highcharts.GradientColorStopObject
+         */ /**
+        * @name Highcharts.GradientColorStopObject#0
+        * @type {number}
+        */ /**
+        * @name Highcharts.GradientColorStopObject#1
+        * @type {Highcharts.ColorString}
+        */ /**
+        * @name Highcharts.GradientColorStopObject#color
+        * @type {Highcharts.Color|undefined}
+        */
+        /**
+         * Defines the start position and the end position for a gradient relative
+         * to the shape. Start position (x1, y1) and end position (x2, y2) are relative
+         * to the shape, where 0 means top/left and 1 is bottom/right.
+         *
+         * @interface Highcharts.LinearGradientColorObject
+         */ /**
+        * Start horizontal position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#x1
+        * @type {number}
+        */ /**
+        * End horizontal position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#x2
+        * @type {number}
+        */ /**
+        * Start vertical position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#y1
+        * @type {number}
+        */ /**
+        * End vertical position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#y2
+        * @type {number}
+        */
+        /**
+         * Defines the center position and the radius for a gradient.
+         *
+         * @interface Highcharts.RadialGradientColorObject
+         */ /**
+        * Center horizontal position relative to the shape. Float ranges 0-1.
+        * @name Highcharts.RadialGradientColorObject#cx
+        * @type {number}
+        */ /**
+        * Center vertical position relative to the shape. Float ranges 0-1.
+        * @name Highcharts.RadialGradientColorObject#cy
+        * @type {number}
+        */ /**
+        * Radius relative to the shape. Float ranges 0-1.
+        * @name Highcharts.RadialGradientColorObject#r
+        * @type {number}
+        */
+        /**
+         * Creates a color instance out of a color string.
+         *
+         * @function Highcharts.color
+         *
+         * @param {Highcharts.ColorType} input
+         *        The input color in either rbga or hex format
+         *
+         * @return {Highcharts.Color}
+         *         Color instance
+         */
+        (''); // detach doclets above
+
+        return Color;
     });
     _registerModule(_modules, 'Core/Animation/Fx.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, H, U) {
         /* *
@@ -45088,7 +45087,7 @@
         }
 
     });
-    _registerModule(_modules, 'Extensions/BorderRadius.js', [_modules['Core/Defaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (D, Series, SeriesRegistry, SVGElement, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/BorderRadius.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (D, G, U) {
         /* *
          *
          *  Highcharts Border Radius module
@@ -45101,25 +45100,35 @@
          *
          * */
         const { defaultOptions } = D;
-        const { seriesTypes } = SeriesRegistry;
-        const { addEvent, extend, isObject, merge, relativeLength } = U;
+        const { noop } = G;
+        const { addEvent, extend, isObject, merge, pushUnique, relativeLength } = U;
         /* *
          *
          *  Constants
          *
          * */
+        const composedMembers = [];
         const defaultBorderRadiusOptions = {
             radius: 0,
             scope: 'stack',
             where: void 0
         };
-        const optionsToObject = (options, seriesBROptions) => {
-            if (!isObject(options)) {
-                options = { radius: options || 0 };
-            }
-            return merge(defaultBorderRadiusOptions, seriesBROptions, options);
-        };
-        const applyBorderRadius = (path, i, r) => {
+        /* *
+         *
+         *  Variables
+         *
+         * */
+        let oldArc = noop;
+        let oldRoundedRect = noop;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function applyBorderRadius(path, i, r) {
             const a = path[i];
             let b = path[i + 1];
             if (b[0] === 'Z') {
@@ -45197,196 +45206,218 @@
                 // start and end points
                 arc[4] = Math.abs(params.end - params.start) < Math.PI ? 0 : 1;
             }
-        };
-        /* *
-         *
-         *  Modifications
-         *
-         * */
-        // Check if the module has already been imported
-        // @todo implement as composition
-        if (SVGElement.symbolCustomAttribs.indexOf('borderRadius') === -1) {
-            SVGElement.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
-            // Extend arc with borderRadius
-            const arc = SVGRenderer.prototype.symbols.arc;
-            SVGRenderer.prototype.symbols.arc = function (x, y, w, h, options = {}) {
-                const path = arc(x, y, w, h, options), { innerR = 0, r = w, start = 0, end = 0 } = options;
-                if (options.open || !options.borderRadius) {
-                    return path;
-                }
-                const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
-                // Cap to half the sector radius
-                (r - innerR) / 2, 
-                // For smaller pie slices, cap to the largest small circle that
-                // can be fitted within the sector
-                (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
-                // For the inner radius, we need an extra cap because the inner arc
-                // is shorter than the outer arc
-                innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
-                // Apply turn-by-turn border radius. Start at the end since we're
-                // splicing in arc segments.
-                let i = path.length - 1;
-                while (i--) {
-                    applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
-                }
+        }
+        /**
+         * Extend arc with borderRadius.
+         * @private
+         */
+        function arc(x, y, w, h, options = {}) {
+            const path = oldArc(x, y, w, h, options), { innerR = 0, r = w, start = 0, end = 0 } = options;
+            if (options.open || !options.borderRadius) {
                 return path;
-            };
-            // Extend roundedRect with individual cutting through rOffset
-            const roundedRect = SVGRenderer.prototype.symbols.roundedRect;
-            SVGRenderer.prototype.symbols.roundedRect = function (x, y, width, height, options = {}) {
-                const path = roundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
-                // When the distance to the border-radius box is greater than the r
-                // itself, it means no border radius. The -0.1 accounts for float
-                // rounding errors.
-                rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
-                /*
-
-                The naming of control points:
-
-                  / a -------- b \
-                 /                \
-                h                  c
-                |                  |
-                |                  |
-                |                  |
-                g                  d
-                 \                /
-                  \ f -------- e /
-
-                */
-                const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
-                    x + width, y + height - rBtm
-                ], e = [
-                    x + width - rBtm,
-                    y + height
-                ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
-                const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
-                // Inside stacks, cut off part of the top
-                if (cutTop) {
-                    const base = applyPythagoras(rTop, rTop - cutTop);
-                    a[0] -= base;
-                    b[0] += base;
-                    c[1] = h[1] = y + rTop - cutTop;
-                }
-                // Column is lower than the radius. Cut off bottom inside the top
-                // radius.
-                if (height < rTop - cutTop) {
-                    const base = applyPythagoras(rTop, rTop - cutTop - height);
-                    c[0] = d[0] = x + width - rTop + base;
-                    e[0] = Math.min(c[0], e[0]);
-                    f[0] = Math.max(d[0], f[0]);
-                    g[0] = h[0] = x + rTop - base;
-                    c[1] = h[1] = y + height;
-                }
-                // Inside stacks, cut off part of the bottom
-                if (cutBtm) {
-                    const base = applyPythagoras(rBtm, rBtm - cutBtm);
-                    e[0] += base;
-                    f[0] -= base;
-                    d[1] = g[1] = y + height - rBtm + cutBtm;
-                }
-                // Cut off top inside the bottom radius
-                if (height < rBtm - cutBtm) {
-                    const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
-                    c[0] = d[0] = x + width - rBtm + base;
-                    b[0] = Math.min(c[0], b[0]);
-                    a[0] = Math.max(d[0], a[0]);
-                    g[0] = h[0] = x + rBtm - base;
-                    d[1] = g[1] = y;
-                }
-                // Preserve the box for data labels
-                path.length = 0;
-                path.push(['M', ...a], 
-                // top side
-                ['L', ...b], 
-                // top right corner
-                ['A', rTop, rTop, 0, 0, 1, ...c], 
-                // right side
-                ['L', ...d], 
-                // bottom right corner
-                ['A', rBtm, rBtm, 0, 0, 1, ...e], 
-                // bottom side
-                ['L', ...f], 
-                // bottom left corner
-                ['A', rBtm, rBtm, 0, 0, 1, ...g], 
-                // left side
-                ['L', ...h], 
-                // top left corner
-                ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
-                return path;
-            };
-            addEvent(seriesTypes.pie, 'afterTranslate', function () {
-                const borderRadius = optionsToObject(this.options.borderRadius);
+            }
+            const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
+            // Cap to half the sector radius
+            (r - innerR) / 2, 
+            // For smaller pie slices, cap to the largest small circle that
+            // can be fitted within the sector
+            (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
+            // For the inner radius, we need an extra cap because the inner arc
+            // is shorter than the outer arc
+            innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
+            // Apply turn-by-turn border radius. Start at the end since we're
+            // splicing in arc segments.
+            let i = path.length - 1;
+            while (i--) {
+                applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
+            }
+            return path;
+        }
+        /** @private */
+        function columnSeriesOnAfterColumnTranslate() {
+            var _a,
+                _b;
+            if (this.options.borderRadius &&
+                !(this.chart.is3d && this.chart.is3d())) {
+                const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = (_b = (_a = defaultOptions.plotOptions) === null || _a === void 0 ? void 0 : _a[this.type]) === null || _b === void 0 ? void 0 : _b.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
                 for (const point of this.points) {
-                    const shapeArgs = point.shapeArgs;
-                    if (shapeArgs) {
-                        shapeArgs.borderRadius = relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
-                    }
-                }
-            });
-            addEvent(Series, 'afterColumnTranslate', function () {
-                var _a,
-                    _b;
-                if (this.options.borderRadius &&
-                    !(this.chart.is3d && this.chart.is3d())) {
-                    const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = (_b = (_a = defaultOptions.plotOptions) === null || _a === void 0 ? void 0 : _a[this.type]) === null || _b === void 0 ? void 0 : _b.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
-                    for (const point of this.points) {
-                        const { shapeArgs } = point;
-                        if (point.shapeType === 'roundedRect' && shapeArgs) {
-                            const { width = 0, height = 0, y = 0 } = shapeArgs;
-                            let brBoxY = y, brBoxHeight = height;
-                            // It would be nice to refactor StackItem.getStackBox/
-                            // setOffset so that we could get a reliable box out of
-                            // it. Currently it is close if we remove the label
-                            // offset, but we still need to run crispCol and also
-                            // flip it if inverted, so atm it is simpler to do it
-                            // like the below.
-                            if (borderRadius.scope === 'stack' &&
-                                point.stackTotal) {
-                                const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
-                                brBoxY = box.y;
-                                brBoxHeight = box.height;
-                            }
-                            const flip = (point.negative ? -1 : 1) *
-                                (reversed ? -1 : 1) === -1;
-                            // Handle the where option
-                            let where = borderRadius.where;
-                            // Waterfall, hanging columns should have rounding on
-                            // all sides
-                            if (!where &&
-                                this.is('waterfall') &&
-                                Math.abs((point.yBottom || 0) -
-                                    (this.translatedThreshold || 0)) > this.borderWidth) {
-                                where = 'all';
-                            }
-                            if (!where) {
-                                where = 'end';
-                            }
-                            // Get the radius
-                            const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
-                            // Cap to the height, but not if where is `end`
-                            where === 'all' ? height / 2 : Infinity) || 0;
-                            // If the `where` option is 'end', cut off the
-                            // rectangles by making the border-radius box one r
-                            // greater, so that the imaginary radius falls outside
-                            // the rectangle.
-                            if (where === 'end') {
-                                if (flip) {
-                                    brBoxY -= r;
-                                    brBoxHeight += r;
-                                }
-                                else {
-                                    brBoxHeight += r;
-                                }
-                            }
-                            extend(shapeArgs, { brBoxHeight, brBoxY, r });
+                    const { shapeArgs } = point;
+                    if (point.shapeType === 'roundedRect' && shapeArgs) {
+                        const { width = 0, height = 0, y = 0 } = shapeArgs;
+                        let brBoxY = y, brBoxHeight = height;
+                        // It would be nice to refactor StackItem.getStackBox/
+                        // setOffset so that we could get a reliable box out of
+                        // it. Currently it is close if we remove the label
+                        // offset, but we still need to run crispCol and also
+                        // flip it if inverted, so atm it is simpler to do it
+                        // like the below.
+                        if (borderRadius.scope === 'stack' &&
+                            point.stackTotal) {
+                            const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
+                            brBoxY = box.y;
+                            brBoxHeight = box.height;
                         }
+                        const flip = (point.negative ? -1 : 1) *
+                            (reversed ? -1 : 1) === -1;
+                        // Handle the where option
+                        let where = borderRadius.where;
+                        // Waterfall, hanging columns should have rounding on
+                        // all sides
+                        if (!where &&
+                            this.is('waterfall') &&
+                            Math.abs((point.yBottom || 0) -
+                                (this.translatedThreshold || 0)) > this.borderWidth) {
+                            where = 'all';
+                        }
+                        if (!where) {
+                            where = 'end';
+                        }
+                        // Get the radius
+                        const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
+                        // Cap to the height, but not if where is `end`
+                        where === 'all' ? height / 2 : Infinity) || 0;
+                        // If the `where` option is 'end', cut off the
+                        // rectangles by making the border-radius box one r
+                        // greater, so that the imaginary radius falls outside
+                        // the rectangle.
+                        if (where === 'end') {
+                            if (flip) {
+                                brBoxY -= r;
+                                brBoxHeight += r;
+                            }
+                            else {
+                                brBoxHeight += r;
+                            }
+                        }
+                        extend(shapeArgs, { brBoxHeight, brBoxY, r });
                     }
                 }
-            }, {
-                // After columnrange and polar column modifications
-                order: 9
-            });
+            }
+        }
+        /** @private */
+        function compose(ColumnSeriesClass, PieSeriesClass, SVGElementClass, SVGRendererClass) {
+            if (pushUnique(composedMembers, ColumnSeriesClass)) {
+                addEvent(ColumnSeriesClass, 'afterColumnTranslate', columnSeriesOnAfterColumnTranslate, {
+                    // After columnrange and polar column modifications
+                    order: 9
+                });
+            }
+            if (pushUnique(composedMembers, PieSeriesClass)) {
+                addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
+            }
+            if (pushUnique(composedMembers, SVGElementClass)) {
+                SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
+            }
+            if (pushUnique(composedMembers, SVGRendererClass)) {
+                const symbols = SVGRendererClass.prototype.symbols;
+                oldArc = symbols.arc;
+                oldRoundedRect = symbols.roundedRect;
+                symbols.arc = arc;
+                symbols.roundedRect = roundedRect;
+            }
+        }
+        /** @private */
+        function optionsToObject(options, seriesBROptions) {
+            if (!isObject(options)) {
+                options = { radius: options || 0 };
+            }
+            return merge(defaultBorderRadiusOptions, seriesBROptions, options);
+        }
+        /** @private */
+        function pieSeriesOnAfterTranslate() {
+            const borderRadius = optionsToObject(this.options.borderRadius);
+            for (const point of this.points) {
+                const shapeArgs = point.shapeArgs;
+                if (shapeArgs) {
+                    shapeArgs.borderRadius = relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
+                }
+            }
+        }
+        /**
+         * Extend roundedRect with individual cutting through rOffset.
+         * @private
+         */
+        function roundedRect(x, y, width, height, options = {}) {
+            const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
+            // When the distance to the border-radius box is greater than the r
+            // itself, it means no border radius. The -0.1 accounts for float
+            // rounding errors.
+            rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
+            /*
+
+            The naming of control points:
+
+              / a -------- b \
+             /                \
+            h                  c
+            |                  |
+            |                  |
+            |                  |
+            g                  d
+             \                /
+              \ f -------- e /
+
+            */
+            const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
+                x + width, y + height - rBtm
+            ], e = [
+                x + width - rBtm,
+                y + height
+            ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
+            const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
+            // Inside stacks, cut off part of the top
+            if (cutTop) {
+                const base = applyPythagoras(rTop, rTop - cutTop);
+                a[0] -= base;
+                b[0] += base;
+                c[1] = h[1] = y + rTop - cutTop;
+            }
+            // Column is lower than the radius. Cut off bottom inside the top
+            // radius.
+            if (height < rTop - cutTop) {
+                const base = applyPythagoras(rTop, rTop - cutTop - height);
+                c[0] = d[0] = x + width - rTop + base;
+                e[0] = Math.min(c[0], e[0]);
+                f[0] = Math.max(d[0], f[0]);
+                g[0] = h[0] = x + rTop - base;
+                c[1] = h[1] = y + height;
+            }
+            // Inside stacks, cut off part of the bottom
+            if (cutBtm) {
+                const base = applyPythagoras(rBtm, rBtm - cutBtm);
+                e[0] += base;
+                f[0] -= base;
+                d[1] = g[1] = y + height - rBtm + cutBtm;
+            }
+            // Cut off top inside the bottom radius
+            if (height < rBtm - cutBtm) {
+                const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
+                c[0] = d[0] = x + width - rBtm + base;
+                b[0] = Math.min(c[0], b[0]);
+                a[0] = Math.max(d[0], a[0]);
+                g[0] = h[0] = x + rBtm - base;
+                d[1] = g[1] = y;
+            }
+            // Preserve the box for data labels
+            path.length = 0;
+            path.push(['M', ...a], 
+            // top side
+            ['L', ...b], 
+            // top right corner
+            ['A', rTop, rTop, 0, 0, 1, ...c], 
+            // right side
+            ['L', ...d], 
+            // bottom right corner
+            ['A', rBtm, rBtm, 0, 0, 1, ...e], 
+            // bottom side
+            ['L', ...f], 
+            // bottom left corner
+            ['A', rBtm, rBtm, 0, 0, 1, ...g], 
+            // left side
+            ['L', ...h], 
+            // top left corner
+            ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
+            return path;
         }
         /* *
          *
@@ -45394,6 +45425,7 @@
          *
          * */
         const BorderRadius = {
+            compose,
             optionsToObject
         };
         /* *
@@ -45702,7 +45734,7 @@
 
         return Responsive;
     });
-    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Defaults.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Templating.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Renderer/HTML/HTMLElement.js'], _modules['Core/Renderer/HTML/HTMLRenderer.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Axis/LogarithmicAxis.js'], _modules['Core/Axis/PlotLineOrBand/PlotLineOrBand.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Tooltip.js'], _modules['Core/Series/Point.js'], _modules['Core/Pointer.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Axis/Stacking/StackingAxis.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Series/Column/ColumnDataLabel.js'], _modules['Series/Pie/PieSeries.js'], _modules['Series/Pie/PieDataLabel.js'], _modules['Core/Series/DataLabel.js'], _modules['Core/Responsive.js'], _modules['Core/Color/Color.js'], _modules['Core/Time.js']], function (Highcharts, Utilities, Defaults, Fx, Animation, AST, Templating, RendererUtilities, SVGElement, SVGRenderer, HTMLElement, HTMLRenderer, Axis, DateTimeAxis, LogarithmicAxis, PlotLineOrBand, Tick, Tooltip, Point, Pointer, Legend, Chart, StackingAxis, StackItem, Series, SeriesRegistry, ColumnSeries, ColumnDataLabel, PieSeries, PieDataLabel, DataLabel, Responsive, Color, Time) {
+    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Defaults.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Templating.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Renderer/HTML/HTMLElement.js'], _modules['Core/Renderer/HTML/HTMLRenderer.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Axis/LogarithmicAxis.js'], _modules['Core/Axis/PlotLineOrBand/PlotLineOrBand.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Tooltip.js'], _modules['Core/Series/Point.js'], _modules['Core/Pointer.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Axis/Stacking/StackingAxis.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Series/Column/ColumnDataLabel.js'], _modules['Series/Pie/PieSeries.js'], _modules['Series/Pie/PieDataLabel.js'], _modules['Core/Series/DataLabel.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Responsive.js'], _modules['Core/Color/Color.js'], _modules['Core/Time.js']], function (Highcharts, Utilities, Defaults, Fx, Animation, AST, Templating, RendererUtilities, SVGElement, SVGRenderer, HTMLElement, HTMLRenderer, Axis, DateTimeAxis, LogarithmicAxis, PlotLineOrBand, Tick, Tooltip, Point, Pointer, Legend, Chart, StackingAxis, StackItem, Series, SeriesRegistry, ColumnSeries, ColumnDataLabel, PieSeries, PieDataLabel, DataLabel, BorderRadius, Responsive, Color, Time) {
 
         const G = Highcharts;
         // Animation
@@ -45796,6 +45828,7 @@
         G.wrap = Utilities.wrap;
         // Compositions
         ColumnDataLabel.compose(ColumnSeries);
+        BorderRadius.compose(ColumnSeries, PieSeries, SVGElement, SVGRenderer);
         DataLabel.compose(Series);
         DateTimeAxis.compose(Axis);
         LogarithmicAxis.compose(Axis);
@@ -45843,7 +45876,7 @@
              *  Variables
              *
              * */
-            let ColorAxisClass;
+            let ColorAxisConstructor;
             /* *
              *
              *  Functions
@@ -45853,9 +45886,9 @@
             /**
              * @private
              */
-            function compose(ColorAxisType, ChartClass, FxClass, LegendClass, SeriesClass) {
-                if (!ColorAxisClass) {
-                    ColorAxisClass = ColorAxisType;
+            function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
+                if (!ColorAxisConstructor) {
+                    ColorAxisConstructor = ColorAxisClass;
                 }
                 if (U.pushUnique(composedMembers, ChartClass)) {
                     const chartProto = ChartClass.prototype;
@@ -45898,9 +45931,7 @@
                 this.colorAxis = [];
                 if (options.colorAxis) {
                     options.colorAxis = splat(options.colorAxis);
-                    options.colorAxis.forEach((axisOptions) => {
-                        new ColorAxisClass(this, axisOptions); // eslint-disable-line no-new
-                    });
+                    options.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
                 }
             }
             /**
@@ -46043,24 +46074,25 @@
             function wrapChartCreateAxis(ChartClass) {
                 const superCreateAxis = ChartClass.prototype.createAxis;
                 ChartClass.prototype.createAxis = function (type, options) {
+                    const chart = this;
                     if (type !== 'colorAxis') {
-                        return superCreateAxis.apply(this, arguments);
+                        return superCreateAxis.apply(chart, arguments);
                     }
-                    const axis = new ColorAxisClass(this, merge(options.axis, {
-                        index: this[type].length,
+                    const axis = new ColorAxisConstructor(chart, merge(options.axis, {
+                        index: chart[type].length,
                         isX: false
                     }));
-                    this.isDirtyLegend = true;
+                    chart.isDirtyLegend = true;
                     // Clear before 'bindAxes' (#11924)
-                    this.axes.forEach(function (axis) {
+                    chart.axes.forEach((axis) => {
                         axis.series = [];
                     });
-                    this.series.forEach(function (series) {
+                    chart.series.forEach((series) => {
                         series.bindAxes();
                         series.isDirtyData = true;
                     });
                     if (pick(options.redraw, true)) {
-                        this.redraw(options.animation);
+                        chart.redraw(options.animation);
                     }
                     return axis;
                 };
@@ -46528,7 +46560,7 @@
 
         return colorAxisDefaults;
     });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Color/Color.js'], _modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Axis/Color/ColorAxisDefaults.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Color, ColorAxisComposition, ColorAxisDefaults, LegendSymbol, SeriesRegistry, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisLike.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -46539,6 +46571,149 @@
          *
          * */
         const { parse: color } = Color;
+        const { merge } = U;
+        /* *
+         *
+         *  Namespace
+         *
+         * */
+        var ColorAxisLike;
+        (function (ColorAxisLike) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Initialize defined data classes.
+             * @private
+             */
+            function initDataClasses(userOptions) {
+                const axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, options = axis.options, userDataClasses = userOptions.dataClasses || [];
+                let dataClass, dataClasses, colorCount = chart.options.chart.colorCount, colorCounter = 0, colors;
+                axis.dataClasses = dataClasses = [];
+                legendItem.labels = [];
+                for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
+                    dataClass = userDataClasses[i];
+                    dataClass = merge(dataClass);
+                    dataClasses.push(dataClass);
+                    if (!chart.styledMode && dataClass.color) {
+                        continue;
+                    }
+                    if (options.dataClassColor === 'category') {
+                        if (!chart.styledMode) {
+                            colors = chart.options.colors || [];
+                            colorCount = colors.length;
+                            dataClass.color = colors[colorCounter];
+                        }
+                        dataClass.colorIndex = colorCounter;
+                        // Loop back to zero
+                        colorCounter++;
+                        if (colorCounter === colorCount) {
+                            colorCounter = 0;
+                        }
+                    }
+                    else {
+                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
+                        );
+                    }
+                }
+            }
+            ColorAxisLike.initDataClasses = initDataClasses;
+            /**
+             * Create initial color stops.
+             * @private
+             */
+            function initStops() {
+                const axis = this, options = axis.options, stops = axis.stops = options.stops || [
+                    [0, options.minColor || ''],
+                    [1, options.maxColor || '']
+                ];
+                for (let i = 0, iEnd = stops.length; i < iEnd; ++i) {
+                    stops[i].color = color(stops[i][1]);
+                }
+            }
+            ColorAxisLike.initStops = initStops;
+            /**
+             * Normalize logarithmic values.
+             * @private
+             */
+            function normalizedValue(value) {
+                const axis = this, max = axis.max || 0, min = axis.min || 0;
+                if (axis.logarithmic) {
+                    value = axis.logarithmic.log2lin(value);
+                }
+                return 1 - ((max - value) /
+                    ((max - min) || 1));
+            }
+            ColorAxisLike.normalizedValue = normalizedValue;
+            /**
+             * Translate from a value to a color.
+             * @private
+             */
+            function toColor(value, point) {
+                const axis = this;
+                const dataClasses = axis.dataClasses;
+                const stops = axis.stops;
+                let pos, from, to, color, dataClass, i;
+                if (dataClasses) {
+                    i = dataClasses.length;
+                    while (i--) {
+                        dataClass = dataClasses[i];
+                        from = dataClass.from;
+                        to = dataClass.to;
+                        if ((typeof from === 'undefined' || value >= from) &&
+                            (typeof to === 'undefined' || value <= to)) {
+                            color = dataClass.color;
+                            if (point) {
+                                point.dataClass = i;
+                                point.colorIndex = dataClass.colorIndex;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    pos = axis.normalizedValue(value);
+                    i = stops.length;
+                    while (i--) {
+                        if (pos > stops[i][0]) {
+                            break;
+                        }
+                    }
+                    from = stops[i] || stops[i + 1];
+                    to = stops[i + 1] || from;
+                    // The position within the gradient
+                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
+                    color = from.color.tweenTo(to.color, pos);
+                }
+                return color;
+            }
+            ColorAxisLike.toColor = toColor;
+        })(ColorAxisLike || (ColorAxisLike = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ColorAxisLike;
+    });
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Axis/Color/ColorAxisDefaults.js'], _modules['Core/Axis/Color/ColorAxisLike.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, ColorAxisComposition, ColorAxisDefaults, ColorAxisLike, LegendSymbol, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         const { series: Series } = SeriesRegistry;
         const { extend, fireEvent, isArray, isNumber, merge, pick } = U;
         /* *
@@ -46634,40 +46809,6 @@
                 axis.zoomEnabled = false;
             }
             /**
-             * @private
-             */
-            initDataClasses(userOptions) {
-                const axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, len = userOptions.dataClasses.length, options = axis.options;
-                let dataClasses, colorCounter = 0, colorCount = chart.options.chart.colorCount;
-                axis.dataClasses = dataClasses = [];
-                legendItem.labels = [];
-                (userOptions.dataClasses || []).forEach(function (dataClass, i) {
-                    let colors;
-                    dataClass = merge(dataClass);
-                    dataClasses.push(dataClass);
-                    if (!chart.styledMode && dataClass.color) {
-                        return;
-                    }
-                    if (options.dataClassColor === 'category') {
-                        if (!chart.styledMode) {
-                            colors = chart.options.colors;
-                            colorCount = colors.length;
-                            dataClass.color = colors[colorCounter];
-                        }
-                        dataClass.colorIndex = colorCounter;
-                        // increase and loop back to zero
-                        colorCounter++;
-                        if (colorCounter === colorCount) {
-                            colorCounter = 0;
-                        }
-                    }
-                    else {
-                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), len < 2 ? 0.5 : i / (len - 1) // #3219
-                        );
-                    }
-                });
-            }
-            /**
              * Returns true if the series has points at all.
              *
              * @function Highcharts.ColorAxis#hasData
@@ -46686,19 +46827,6 @@
                 if (!this.dataClasses) {
                     return super.setTickPositions();
                 }
-            }
-            /**
-             * @private
-             */
-            initStops() {
-                const axis = this;
-                axis.stops = axis.options.stops || [
-                    [0, axis.options.minColor],
-                    [1, axis.options.maxColor]
-                ];
-                axis.stops.forEach(function (stop) {
-                    stop.color = color(stop[1]);
-                });
             }
             /**
              * Extend the setOptions method to process extreme colors and color stops.
@@ -46735,59 +46863,6 @@
                         legendOptions.symbolWidth :
                         legendOptions.symbolHeight) || ColorAxis.defaultLegendLength;
                 }
-            }
-            /**
-             * @private
-             */
-            normalizedValue(value) {
-                const axis = this;
-                if (axis.logarithmic) {
-                    value = axis.logarithmic.log2lin(value);
-                }
-                return 1 - ((axis.max - value) /
-                    ((axis.max - axis.min) || 1));
-            }
-            /**
-             * Translate from a value to a color.
-             * @private
-             */
-            toColor(value, point) {
-                const axis = this;
-                const dataClasses = axis.dataClasses;
-                const stops = axis.stops;
-                let pos, from, to, color, dataClass, i;
-                if (dataClasses) {
-                    i = dataClasses.length;
-                    while (i--) {
-                        dataClass = dataClasses[i];
-                        from = dataClass.from;
-                        to = dataClass.to;
-                        if ((typeof from === 'undefined' || value >= from) &&
-                            (typeof to === 'undefined' || value <= to)) {
-                            color = dataClass.color;
-                            if (point) {
-                                point.dataClass = i;
-                                point.colorIndex = dataClass.colorIndex;
-                            }
-                            break;
-                        }
-                    }
-                }
-                else {
-                    pos = axis.normalizedValue(value);
-                    i = stops.length;
-                    while (i--) {
-                        if (pos > stops[i][0]) {
-                            break;
-                        }
-                    }
-                    from = stops[i] || stops[i + 1];
-                    to = stops[i + 1] || from;
-                    // The position within the gradient
-                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
-                    color = from.color.tweenTo(to.color, pos);
-                }
-                return color;
             }
             /**
              * Override the getOffset method to add the whole axis groups inside the
@@ -47158,6 +47233,7 @@
         ColorAxis.keepProps = [
             'legendItem'
         ];
+        extend(ColorAxis.prototype, ColorAxisLike);
         /* *
          *
          *  Registry
@@ -47184,7 +47260,7 @@
 
         return ColorAxis;
     });
-    _registerModule(_modules, 'Maps/MapNavigationDefaults.js', [_modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (D, U) {
+    _registerModule(_modules, 'Maps/MapNavigationDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -47194,12 +47270,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { extend } = U;
         /* *
          *
          *  Constants
          *
          * */
+        const lang = {
+            zoomIn: 'Zoom in',
+            zoomOut: 'Zoom out'
+        };
         /**
          * The `mapNavigation` option handles buttons for navigation in addition to
          * `mousewheel` and `doubleclick` handlers for map zooming.
@@ -47207,7 +47286,7 @@
          * @product      highmaps
          * @optionparent mapNavigation
          */
-        const MapNavigationDefaults = {
+        const mapNavigation = {
             /**
              * General options for the map navigation buttons. Individual options
              * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
@@ -47436,25 +47515,17 @@
         };
         /* *
          *
-         *  Composition
-         *
-         * */
-        // Add language
-        extend(D.defaultOptions.lang, {
-            zoomIn: 'Zoom in',
-            zoomOut: 'Zoom out'
-        });
-        // Set the default map navigation options
-        D.defaultOptions.mapNavigation = MapNavigationDefaults;
-        /* *
-         *
          *  Default Export
          *
          * */
+        const mapNavigationDefaults = {
+            lang,
+            mapNavigation
+        };
 
-        return MapNavigationDefaults;
+        return mapNavigationDefaults;
     });
-    _registerModule(_modules, 'Maps/MapNavigation.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -47464,372 +47535,54 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { doc } = H;
-        const { addEvent, extend, isNumber, merge, objectEach, pick } = U;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * @private
-         */
-        function stopEvent(e) {
-            if (e) {
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                if (e.stopPropagation) {
-                    e.stopPropagation();
-                }
-                e.cancelBubble = true;
-            }
-        }
-        /**
-         * The MapNavigation handles buttons for navigation in addition to mousewheel
-         * and doubleclick handlers for chart zooming.
-         *
-         * @private
-         * @class
-         * @name MapNavigation
-         *
-         * @param {Highcharts.Chart} chart
-         *        The Chart instance.
-         */
-        function MapNavigation(chart) {
-            this.navButtons = [];
-            this.init(chart);
-        }
-        /**
-         * Initialize function.
-         *
-         * @function MapNavigation#init
-         *
-         * @param {Highcharts.Chart} chart
-         *        The Chart instance.
-         *
-         * @return {void}
-         */
-        MapNavigation.prototype.init = function (chart) {
-            this.chart = chart;
-        };
-        /**
-         * Update the map navigation with new options. Calling this is the same as
-         * calling `chart.update({ mapNavigation: {} })`.
-         *
-         * @function MapNavigation#update
-         *
-         * @param {Highcharts.MapNavigationOptions} [options]
-         *        New options for the map navigation.
-         *
-         * @return {void}
-         */
-        MapNavigation.prototype.update = function (options) {
-            let mapNav = this, chart = this.chart, o = chart.options.mapNavigation, attr, outerHandler = function (e) {
-                this.handler.call(chart, e);
-                stopEvent(e); // Stop default click event (#4444)
-            }, navButtons = mapNav.navButtons;
-            // Merge in new options in case of update, and register back to chart
-            // options.
-            if (options) {
-                o = chart.options.mapNavigation =
-                    merge(chart.options.mapNavigation, options);
-            }
-            // Destroy buttons in case of dynamic update
-            while (navButtons.length) {
-                navButtons.pop().destroy();
-            }
-            if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
-                if (!mapNav.navButtonsGroup) {
-                    mapNav.navButtonsGroup = chart.renderer.g()
-                        .attr({
-                        zIndex: 4 // #4955, // #8392
-                    })
-                        .add();
-                }
-                objectEach(o.buttons, function (buttonOptions, n) {
-                    var _a;
-                    buttonOptions = merge(o.buttonOptions, buttonOptions);
-                    // Presentational
-                    if (!chart.styledMode && buttonOptions.theme) {
-                        attr = buttonOptions.theme;
-                        attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
-                        );
-                    }
-                    const { text, width = 0, height = 0, padding = 0 } = buttonOptions;
-                    const button = chart.renderer
-                        .button(
-                    // Display the text from options only if it is not plus or
-                    // minus
-                    (text !== '+' && text !== '-' && text) || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
-                        .addClass('highcharts-map-navigation highcharts-' + {
-                        zoomIn: 'zoom-in',
-                        zoomOut: 'zoom-out'
-                    }[n])
-                        .attr({
-                        width,
-                        height,
-                        title: chart.options.lang[n],
-                        padding: buttonOptions.padding,
-                        zIndex: 5
-                    })
-                        .add(mapNav.navButtonsGroup);
-                    // Add SVG paths for the default symbols, because the text
-                    // representation of + and - is not sharp and position is not easy
-                    // to control.
-                    if (text === '+' || text === '-') {
-                        // Mysterious +1 to achieve centering
-                        const w = width + 1, d = [
-                            ['M', padding + 3, padding + height / 2],
-                            ['L', padding + w - 3, padding + height / 2]
-                        ];
-                        if (text === '+') {
-                            d.push(['M', padding + w / 2, padding + 3], ['L', padding + w / 2, padding + height - 3]);
-                        }
-                        chart.renderer
-                            .path(d)
-                            .addClass('highcharts-button-symbol')
-                            .attr(chart.styledMode ? {} : {
-                            stroke: (_a = buttonOptions.style) === null || _a === void 0 ? void 0 : _a.color,
-                            'stroke-width': 3,
-                            'stroke-linecap': 'round'
-                        })
-                            .add(button);
-                    }
-                    button.handler = buttonOptions.onclick;
-                    // Stop double click event (#4444)
-                    addEvent(button.element, 'dblclick', stopEvent);
-                    navButtons.push(button);
-                    extend(buttonOptions, {
-                        width: button.width,
-                        height: 2 * button.height
-                    });
-                    if (!chart.hasLoaded) {
-                        // Align it after the plotBox is known (#12776)
-                        const unbind = addEvent(chart, 'load', () => {
-                            // #15406: Make sure button hasnt been destroyed
-                            if (button.element) {
-                                button.align(buttonOptions, false, buttonOptions.alignTo);
-                            }
-                            unbind();
-                        });
-                    }
-                    else {
-                        button.align(buttonOptions, false, buttonOptions.alignTo);
-                    }
-                });
-                // Borrowed from overlapping-datalabels. Consider a shared module.
-                const isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
-                    box2.x + box2.width <= box1.x ||
-                    box2.y >= box1.y + box1.height ||
-                    box2.y + box2.height <= box1.y);
-                // Check the mapNavigation buttons collision with exporting button
-                // and translate the mapNavigation button if they overlap.
-                const adjustMapNavBtn = function () {
-                    const expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
-                    if (expBtnBBox) {
-                        const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
-                        // If buttons overlap
-                        if (isIntersectRect(expBtnBBox, navBtnsBBox)) {
-                            // Adjust the mapNav buttons' position by translating them
-                            // above or below the exporting button
-                            const aboveExpBtn = -navBtnsBBox.y - navBtnsBBox.height +
-                                expBtnBBox.y - 5, belowExpBtn = expBtnBBox.y + expBtnBBox.height -
-                                navBtnsBBox.y + 5, mapNavVerticalAlign = o.buttonOptions && o.buttonOptions.verticalAlign;
-                            // If bottom aligned and adjusting the mapNav button would
-                            // translate it out of the plotBox, translate it up
-                            // instead of down
-                            mapNav.navButtonsGroup.attr({
-                                translateY: mapNavVerticalAlign === 'bottom' ?
-                                    aboveExpBtn :
-                                    belowExpBtn
-                            });
-                        }
-                    }
-                };
-                if (!chart.hasLoaded) {
-                    // Align it after the plotBox is known (#12776) and after the
-                    // hamburger button's position is known so they don't overlap
-                    // (#15782)
-                    addEvent(chart, 'render', adjustMapNavBtn);
-                }
-            }
-            this.updateEvents(o);
-        };
-        /**
-         * Update events, called internally from the update function. Add new event
-         * handlers, or unbinds events if disabled.
-         *
-         * @function MapNavigation#updateEvents
-         *
-         * @param {Highcharts.MapNavigationOptions} options
-         *        Options for map navigation.
-         *
-         * @return {void}
-         */
-        MapNavigation.prototype.updateEvents = function (options) {
-            const chart = this.chart;
-            // Add the double click event
-            if (pick(options.enableDoubleClickZoom, options.enabled) ||
-                options.enableDoubleClickZoomTo) {
-                this.unbindDblClick = this.unbindDblClick || addEvent(chart.container, 'dblclick', function (e) {
-                    chart.pointer.onContainerDblClick(e);
-                });
-            }
-            else if (this.unbindDblClick) {
-                // Unbind and set unbinder to undefined
-                this.unbindDblClick = this.unbindDblClick();
-            }
-            // Add the mousewheel event
-            if (pick(options.enableMouseWheelZoom, options.enabled)) {
-                this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, doc.onwheel !== void 0 ? 'wheel' : // Newer Firefox
-                    doc.onmousewheel !== void 0 ? 'mousewheel' :
-                        'DOMMouseScroll', function (e) {
-                    // Prevent scrolling when the pointer is over the element with
-                    // that class, for example anotation popup #12100.
-                    if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
-                        chart.pointer.onContainerMouseWheel(e);
-                        // Issue #5011, returning false from non-jQuery event does
-                        // not prevent default
-                        stopEvent(e);
-                    }
-                    return false;
-                });
-            }
-            else if (this.unbindMouseWheel) {
-                // Unbind and set unbinder to undefined
-                this.unbindMouseWheel = this.unbindMouseWheel();
-            }
-        };
-        // Add events to the Chart object itself
-        extend(Chart.prototype, /** @lends Chart.prototype */ {
-            /**
-             * Fit an inner box to an outer. If the inner box overflows left or right,
-             * align it to the sides of the outer. If it overflows both sides, fit it
-             * within the outer. This is a pattern that occurs more places in
-             * Highcharts, perhaps it should be elevated to a common utility function.
-             *
-             * @ignore
-             * @function Highcharts.Chart#fitToBox
-             *
-             * @param {Highcharts.BBoxObject} inner
-             *
-             * @param {Highcharts.BBoxObject} outer
-             *
-             * @return {Highcharts.BBoxObject}
-             *         The inner box
-             */
-            fitToBox: function (inner, outer) {
-                [['x', 'width'], ['y', 'height']].forEach(function (dim) {
-                    const pos = dim[0], size = dim[1];
-                    if (inner[pos] + inner[size] >
-                        outer[pos] + outer[size]) { // right
-                        // the general size is greater, fit fully to outer
-                        if (inner[size] > outer[size]) {
-                            inner[size] = outer[size];
-                            inner[pos] = outer[pos];
-                        }
-                        else { // align right
-                            inner[pos] = outer[pos] +
-                                outer[size] - inner[size];
-                        }
-                    }
-                    if (inner[size] > outer[size]) {
-                        inner[size] = outer[size];
-                    }
-                    if (inner[pos] < outer[pos]) {
-                        inner[pos] = outer[pos];
-                    }
-                });
-                return inner;
-            },
-            /**
-             * Highcharts Maps only. Zoom in or out of the map. See also
-             * {@link Point#zoomTo}. See {@link Chart#fromLatLonToPoint} for how to get
-             * the `centerX` and `centerY` parameters for a geographic location.
-             *
-             * Deprecated as of v9.3 in favor of [MapView.zoomBy](https://api.highcharts.com/class-reference/Highcharts.MapView#zoomBy).
-             *
-             * @deprecated
-             * @function Highcharts.Chart#mapZoom
-             *
-             * @param {number} [howMuch]
-             *        How much to zoom the map. Values less than 1 zooms in. 0.5 zooms
-             *        in to half the current view. 2 zooms to twice the current view. If
-             *        omitted, the zoom is reset.
-             *
-             * @param {number} [xProjected]
-             *        The projected x position to keep stationary when zooming, if
-             *        available space.
-             *
-             * @param {number} [yProjected]
-             *        The projected y position to keep stationary when zooming, if
-             *        available space.
-             *
-             * @param {number} [chartX]
-             *        Keep this chart position stationary if possible. This is used for
-             *        example in `mousewheel` events, where the area under the mouse
-             *        should be fixed as we zoom in.
-             *
-             * @param {number} [chartY]
-             *        Keep this chart position stationary if possible.
-             *
-             * @deprecated
-             */
-            mapZoom: function (howMuch, xProjected, yProjected, chartX, chartY) {
-                if (this.mapView) {
-                    if (isNumber(howMuch)) {
-                        // Compliance, mapView.zoomBy uses different values
-                        howMuch = Math.log(howMuch) / Math.log(0.5);
-                    }
-                    this.mapView.zoomBy(howMuch, isNumber(xProjected) && isNumber(yProjected) ?
-                        this.mapView.projection.inverse([xProjected, yProjected]) :
-                        void 0, isNumber(chartX) && isNumber(chartY) ?
-                        [chartX, chartY] :
-                        void 0);
-                }
-            }
-        });
-        // Extend the Chart.render method to add zooming and panning
-        addEvent(Chart, 'beforeRender', function () {
-            // Render the plus and minus buttons. Doing this before the shapes makes
-            // getBBox much quicker, at least in Chrome.
-            this.mapNavigation = new MapNavigation(this);
-            this.mapNavigation.update();
-        });
-        H.MapNavigation = MapNavigation;
-
-    });
-    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (Pointer, U) {
+        const { defined, extend, pick, pushUnique, wrap } = U;
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *  Composition
          *
          * */
-        const { defined, extend, pick, wrap } = U;
-        /* eslint-disable no-invalid-this */
-        const normalize = Pointer.prototype.normalize;
-        let totalWheelDelta = 0;
-        let totalWheelDeltaTimer;
-        // Extend the Pointer
-        extend(Pointer.prototype, {
-            // Add lon and lat information to pointer events
-            normalize: function (e, chartPosition) {
-                const chart = this.chart;
-                e = normalize.call(this, e, chartPosition);
-                if (chart && chart.mapView) {
-                    const lonLat = chart.mapView.pixelsToLonLat({
-                        x: e.chartX - chart.plotLeft,
-                        y: e.chartY - chart.plotTop
+        var MapPointer;
+        (function (MapPointer) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            const composedMembers = [];
+            /* *
+             *
+             *  Variables
+             *
+             * */
+            let totalWheelDelta = 0;
+            let totalWheelDeltaTimer;
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Extend the Pointer.
+             * @private
+             */
+            function compose(PointerClass) {
+                if (pushUnique(composedMembers, PointerClass)) {
+                    const pointerProto = PointerClass.prototype;
+                    extend(pointerProto, {
+                        onContainerDblClick,
+                        onContainerMouseWheel
                     });
-                    if (lonLat) {
-                        extend(e, lonLat);
-                    }
+                    wrap(pointerProto, 'normalize', wrapNormalize);
+                    wrap(pointerProto, 'pinchTranslate', wrapPinchTranslate);
+                    wrap(pointerProto, 'zoomOption', wrapZoomOption);
                 }
-                return e;
-            },
-            // The event handler for the doubleclick event
-            onContainerDblClick: function (e) {
+            }
+            MapPointer.compose = compose;
+            /**
+             * The event handler for the doubleclick event.
+             * @private
+             */
+            function onContainerDblClick(e) {
                 const chart = this.chart;
                 e = this.normalize(e);
                 if (chart.options.mapNavigation.enableDoubleClickZoomTo) {
@@ -47841,9 +47594,12 @@
                 else if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
                     chart.mapZoom(0.5, void 0, void 0, e.chartX, e.chartY);
                 }
-            },
-            // The event handler for the mouse scroll event
-            onContainerMouseWheel: function (e) {
+            }
+            /**
+             * The event handler for the mouse scroll event.
+             * @private
+             */
+            function onContainerMouseWheel(e) {
                 const chart = this.chart;
                 e = this.normalize(e);
                 // Firefox uses e.deltaY or e.detail, WebKit and IE uses wheelDelta
@@ -47873,27 +47629,417 @@
                     Math.abs(delta) < 1 ? false : void 0);
                 }
             }
-        });
-        // The pinchType is inferred from mapNavigation options.
-        wrap(Pointer.prototype, 'zoomOption', function (proceed) {
-            const mapNavigation = this.chart.options.mapNavigation;
-            // Pinch status
-            if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
-                this.chart.zooming.pinchType = 'xy';
+            /**
+             * Add lon and lat information to pointer events
+             * @private
+             */
+            function wrapNormalize(proceed, e, chartPosition) {
+                const chart = this.chart;
+                e = proceed.call(this, e, chartPosition);
+                if (chart && chart.mapView) {
+                    const lonLat = chart.mapView.pixelsToLonLat({
+                        x: e.chartX - chart.plotLeft,
+                        y: e.chartY - chart.plotTop
+                    });
+                    if (lonLat) {
+                        extend(e, lonLat);
+                    }
+                }
+                return e;
             }
-            proceed.apply(this, [].slice.call(arguments, 1));
-        });
-        // Extend the pinchTranslate method to preserve fixed ratio when zooming
-        wrap(Pointer.prototype, 'pinchTranslate', function (proceed, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch) {
-            let xBigger;
-            proceed.call(this, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
-            // Keep ratio
-            if (this.chart.options.chart.type === 'map' && this.hasZoom) {
-                xBigger = transform.scaleX > transform.scaleY;
-                this.pinchTranslateDirection(!xBigger, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch, xBigger ? transform.scaleX : transform.scaleY);
+            /**
+             * Extend the pinchTranslate method to preserve fixed ratio when zooming.
+             * @private
+             */
+            function wrapPinchTranslate(proceed, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch) {
+                let xBigger;
+                proceed.call(this, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
+                // Keep ratio
+                if (this.chart.options.chart.type === 'map' && this.hasZoom) {
+                    xBigger = transform.scaleX > transform.scaleY;
+                    this.pinchTranslateDirection(!xBigger, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch, xBigger ? transform.scaleX : transform.scaleY);
+                }
             }
-        });
+            /**
+             * The pinchType is inferred from mapNavigation options.
+             * @private
+             */
+            function wrapZoomOption(proceed) {
+                const mapNavigation = this.chart.options.mapNavigation;
+                // Pinch status
+                if (mapNavigation &&
+                    pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
+                    this.chart.zooming.pinchType = 'xy';
+                }
+                proceed.apply(this, [].slice.call(arguments, 1));
+            }
+        })(MapPointer || (MapPointer = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
+        return MapPointer;
+    });
+    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { pushUnique } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const composedMembers = [];
+        /* *
+         *
+         *  Variables
+         *
+         * */
+        let symbols;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        function bottomButton(x, y, w, h, options) {
+            if (options) {
+                const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+                options.brBoxY = y - r;
+                options.brBoxHeight = h + r;
+            }
+            return symbols.roundedRect(x, y, w, h, options);
+        }
+        function compose(SVGRendererClass) {
+            if (pushUnique(composedMembers, SVGRendererClass)) {
+                symbols = SVGRendererClass.prototype.symbols;
+                symbols.bottombutton = bottomButton;
+                symbols.topbutton = topButton;
+            }
+        }
+        function topButton(x, y, w, h, options) {
+            if (options) {
+                const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+                options.brBoxHeight = h + r;
+            }
+            return symbols.roundedRect(x, y, w, h, options);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const MapSymbols = {
+            compose
+        };
+
+        return MapSymbols;
+    });
+    _registerModule(_modules, 'Maps/MapNavigation.js', [_modules['Core/Defaults.js'], _modules['Maps/MapNavigationDefaults.js'], _modules['Maps/MapPointer.js'], _modules['Maps/MapSymbols.js'], _modules['Core/Utilities.js']], function (D, MapNavigationDefaults, MapPointer, MapSymbols, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { setOptions } = D;
+        const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function stopEvent(e) {
+            if (e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                }
+                e.cancelBubble = true;
+            }
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The MapNavigation handles buttons for navigation in addition to mousewheel
+         * and doubleclick handlers for chart zooming.
+         *
+         * @private
+         * @class
+         * @name MapNavigation
+         *
+         * @param {Highcharts.Chart} chart
+         *        The Chart instance.
+         */
+        class MapNavigation {
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            static compose(MapChartClass, PointerClass, SVGRendererClass) {
+                MapPointer.compose(PointerClass);
+                MapSymbols.compose(SVGRendererClass);
+                if (pushUnique(composedMembers, MapChartClass)) {
+                    // Extend the Chart.render method to add zooming and panning
+                    addEvent(MapChartClass, 'beforeRender', function () {
+                        // Render the plus and minus buttons. Doing this before the
+                        // shapes makes getBBox much quicker, at least in Chrome.
+                        this.mapNavigation = new MapNavigation(this);
+                        this.mapNavigation.update();
+                    });
+                }
+                if (pushUnique(composedMembers, setOptions)) {
+                    setOptions(MapNavigationDefaults);
+                }
+            }
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(chart) {
+                this.navButtonsGroup = void 0;
+                this.chart = chart;
+                this.navButtons = [];
+                this.init(chart);
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Initialize function.
+             *
+             * @function MapNavigation#init
+             *
+             * @param {Highcharts.Chart} chart
+             *        The Chart instance.
+             *
+             * @return {void}
+             */
+            init(chart) {
+                this.chart = chart;
+            }
+            /**
+             * Update the map navigation with new options. Calling this is the same as
+             * calling `chart.update({ mapNavigation: {} })`.
+             *
+             * @function MapNavigation#update
+             *
+             * @param {Partial<Highcharts.MapNavigationOptions>} [options]
+             *        New options for the map navigation.
+             */
+            update(options) {
+                const mapNav = this, chart = mapNav.chart, navButtons = mapNav.navButtons, outerHandler = function (e) {
+                    this.handler.call(chart, e);
+                    stopEvent(e); // Stop default click event (#4444)
+                };
+                let navOptions = chart.options.mapNavigation, attr;
+                // Merge in new options in case of update, and register back to chart
+                // options.
+                if (options) {
+                    navOptions = chart.options.mapNavigation =
+                        merge(chart.options.mapNavigation, options);
+                }
+                // Destroy buttons in case of dynamic update
+                while (navButtons.length) {
+                    navButtons.pop().destroy();
+                }
+                if (!chart.renderer.forExport &&
+                    pick(navOptions.enableButtons, navOptions.enabled)) {
+                    if (!mapNav.navButtonsGroup) {
+                        mapNav.navButtonsGroup = chart.renderer.g()
+                            .attr({
+                            zIndex: 4 // #4955, // #8392
+                        })
+                            .add();
+                    }
+                    objectEach(navOptions.buttons, (buttonOptions, n) => {
+                        var _a;
+                        buttonOptions = merge(navOptions.buttonOptions, buttonOptions);
+                        // Presentational
+                        if (!chart.styledMode && buttonOptions.theme) {
+                            attr = buttonOptions.theme;
+                            attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
+                            );
+                        }
+                        const { text, width = 0, height = 0, padding = 0 } = buttonOptions;
+                        const button = chart.renderer
+                            .button(
+                        // Display the text from options only if it is not plus
+                        // or minus
+                        (text !== '+' && text !== '-' && text) || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                            .addClass('highcharts-map-navigation highcharts-' + {
+                            zoomIn: 'zoom-in',
+                            zoomOut: 'zoom-out'
+                        }[n])
+                            .attr({
+                            width,
+                            height,
+                            title: chart.options.lang[n],
+                            padding: buttonOptions.padding,
+                            zIndex: 5
+                        })
+                            .add(mapNav.navButtonsGroup);
+                        // Add SVG paths for the default symbols, because the text
+                        // representation of + and - is not sharp and position is not
+                        // easy to control.
+                        if (text === '+' || text === '-') {
+                            // Mysterious +1 to achieve centering
+                            const w = width + 1, d = [
+                                ['M', padding + 3, padding + height / 2],
+                                ['L', padding + w - 3, padding + height / 2]
+                            ];
+                            if (text === '+') {
+                                d.push(['M', padding + w / 2, padding + 3], ['L', padding + w / 2, padding + height - 3]);
+                            }
+                            chart.renderer
+                                .path(d)
+                                .addClass('highcharts-button-symbol')
+                                .attr(chart.styledMode ? {} : {
+                                stroke: (_a = buttonOptions.style) === null || _a === void 0 ? void 0 : _a.color,
+                                'stroke-width': 3,
+                                'stroke-linecap': 'round'
+                            })
+                                .add(button);
+                        }
+                        button.handler = buttonOptions.onclick;
+                        // Stop double click event (#4444)
+                        addEvent(button.element, 'dblclick', stopEvent);
+                        navButtons.push(button);
+                        extend(buttonOptions, {
+                            width: button.width,
+                            height: 2 * button.height
+                        });
+                        if (!chart.hasLoaded) {
+                            // Align it after the plotBox is known (#12776)
+                            const unbind = addEvent(chart, 'load', () => {
+                                // #15406: Make sure button hasnt been destroyed
+                                if (button.element) {
+                                    button.align(buttonOptions, false, buttonOptions.alignTo);
+                                }
+                                unbind();
+                            });
+                        }
+                        else {
+                            button.align(buttonOptions, false, buttonOptions.alignTo);
+                        }
+                    });
+                    // Borrowed from overlapping-datalabels. Consider a shared module.
+                    const isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
+                        box2.x + box2.width <= box1.x ||
+                        box2.y >= box1.y + box1.height ||
+                        box2.y + box2.height <= box1.y);
+                    // Check the mapNavigation buttons collision with exporting button
+                    // and translate the mapNavigation button if they overlap.
+                    const adjustMapNavBtn = function () {
+                        const expBtnBBox = chart.exportingGroup && chart.exportingGroup.getBBox();
+                        if (expBtnBBox) {
+                            const navBtnsBBox = mapNav.navButtonsGroup.getBBox();
+                            // If buttons overlap
+                            if (isIntersectRect(expBtnBBox, navBtnsBBox)) {
+                                // Adjust the mapNav buttons' position by translating
+                                // them above or below the exporting button
+                                const aboveExpBtn = -navBtnsBBox.y -
+                                    navBtnsBBox.height + expBtnBBox.y - 5, belowExpBtn = expBtnBBox.y + expBtnBBox.height -
+                                    navBtnsBBox.y + 5, mapNavVerticalAlign = (navOptions.buttonOptions &&
+                                    navOptions.buttonOptions.verticalAlign);
+                                // If bottom aligned and adjusting the mapNav button
+                                // would translate it out of the plotBox, translate it
+                                // up instead of down
+                                mapNav.navButtonsGroup.attr({
+                                    translateY: mapNavVerticalAlign === 'bottom' ?
+                                        aboveExpBtn :
+                                        belowExpBtn
+                                });
+                            }
+                        }
+                    };
+                    if (!chart.hasLoaded) {
+                        // Align it after the plotBox is known (#12776) and after the
+                        // hamburger button's position is known so they don't overlap
+                        // (#15782)
+                        addEvent(chart, 'render', adjustMapNavBtn);
+                    }
+                }
+                this.updateEvents(navOptions);
+            }
+            /**
+             * Update events, called internally from the update function. Add new event
+             * handlers, or unbinds events if disabled.
+             *
+             * @function MapNavigation#updateEvents
+             *
+             * @param {Partial<Highcharts.MapNavigationOptions>} options
+             *        Options for map navigation.
+             */
+            updateEvents(options) {
+                const chart = this.chart;
+                // Add the double click event
+                if (pick(options.enableDoubleClickZoom, options.enabled) ||
+                    options.enableDoubleClickZoomTo) {
+                    this.unbindDblClick = this.unbindDblClick || addEvent(chart.container, 'dblclick', function (e) {
+                        chart.pointer.onContainerDblClick(e);
+                    });
+                }
+                else if (this.unbindDblClick) {
+                    // Unbind and set unbinder to undefined
+                    this.unbindDblClick = this.unbindDblClick();
+                }
+                // Add the mousewheel event
+                if (pick(options.enableMouseWheelZoom, options.enabled)) {
+                    this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, 'wheel', function (e) {
+                        // Prevent scrolling when the pointer is over the element
+                        // with that class, for example anotation popup #12100.
+                        if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
+                            chart.pointer.onContainerMouseWheel(e);
+                            // Issue #5011, returning false from non-jQuery event
+                            // does not prevent default
+                            stopEvent(e);
+                        }
+                        return false;
+                    });
+                }
+                else if (this.unbindMouseWheel) {
+                    // Unbind and set unbinder to undefined
+                    this.unbindMouseWheel = this.unbindMouseWheel();
+                }
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return MapNavigation;
     });
     _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
@@ -48000,48 +48146,6 @@
 
         return ColorMapComposition;
     });
-    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { prototype: { symbols } } = SVGRenderer;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /* eslint-disable require-jsdoc, valid-jsdoc */
-        function bottomButton(x, y, w, h, options) {
-            if (options) {
-                const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
-                options.brBoxY = y - r;
-                options.brBoxHeight = h + r;
-            }
-            return symbols.roundedRect(x, y, w, h, options);
-        }
-        function topButton(x, y, w, h, options) {
-            if (options) {
-                const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
-                options.brBoxHeight = h + r;
-            }
-            return symbols.roundedRect(x, y, w, h, options);
-        }
-        symbols.bottombutton = bottomButton;
-        symbols.topbutton = topButton;
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-
-        return symbols;
-    });
     _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, D, SVGRenderer, U) {
         /* *
          *
@@ -48053,7 +48157,12 @@
          *
          * */
         const { getOptions } = D;
-        const { merge, pick } = U;
+        const { isNumber, merge, pick } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
          *
@@ -48064,6 +48173,11 @@
          * @extends Highcharts.Chart
          */
         class MapChart extends Chart {
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Initializes the chart. The constructor's arguments are passed on
              * directly.
@@ -48104,9 +48218,62 @@
                 );
                 super.init(options, callback);
             }
+            /**
+             * Highcharts Maps only. Zoom in or out of the map. See also
+             * {@link Point#zoomTo}. See {@link Chart#fromLatLonToPoint} for how to get
+             * the `centerX` and `centerY` parameters for a geographic location.
+             *
+             * Deprecated as of v9.3 in favor of [MapView.zoomBy](https://api.highcharts.com/class-reference/Highcharts.MapView#zoomBy).
+             *
+             * @deprecated
+             * @function Highcharts.Chart#mapZoom
+             *
+             * @param {number} [howMuch]
+             *        How much to zoom the map. Values less than 1 zooms in. 0.5 zooms
+             *        in to half the current view. 2 zooms to twice the current view. If
+             *        omitted, the zoom is reset.
+             *
+             * @param {number} [xProjected]
+             *        The projected x position to keep stationary when zooming, if
+             *        available space.
+             *
+             * @param {number} [yProjected]
+             *        The projected y position to keep stationary when zooming, if
+             *        available space.
+             *
+             * @param {number} [chartX]
+             *        Keep this chart position stationary if possible. This is used for
+             *        example in `mousewheel` events, where the area under the mouse
+             *        should be fixed as we zoom in.
+             *
+             * @param {number} [chartY]
+             *        Keep this chart position stationary if possible.
+             */
+            mapZoom(howMuch, xProjected, yProjected, chartX, chartY) {
+                if (this.mapView) {
+                    if (isNumber(howMuch)) {
+                        // Compliance, mapView.zoomBy uses different values
+                        howMuch = Math.log(howMuch) / Math.log(0.5);
+                    }
+                    this.mapView.zoomBy(howMuch, isNumber(xProjected) && isNumber(yProjected) ?
+                        this.mapView.projection.inverse([xProjected, yProjected]) :
+                        void 0, isNumber(chartX) && isNumber(chartY) ?
+                        [chartX, chartY] :
+                        void 0);
+                }
+            }
         }
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
         (function (MapChart) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
             /**
              * Contains all loaded map data for Highmaps.
              *
@@ -48116,6 +48283,11 @@
              * @type {Record<string,*>}
              */
             MapChart.maps = {};
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * The factory function for creating new map charts. Creates a new {@link
              * Highcharts.MapChart|MapChart} object with different default options than
@@ -48153,7 +48325,8 @@
              *
              * @function Highcharts.splitPath
              *
-             * @param {string|Array<string|number>} path
+             * @param {string|Array<(string|number)>} path
+             *        Path to split.
              *
              * @return {Highcharts.SVGPathArray}
              * Splitted SVG path
@@ -48753,7 +48926,7 @@
 
         return defaultOptions;
     });
-    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
+    _registerModule(_modules, 'Maps/GeoJSONComposition.js', [_modules['Core/Globals.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (H, T, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -48763,9 +48936,365 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { format } = F;
         const { win } = H;
-        const { error, extend, merge, wrap } = U;
+        const { format } = T;
+        const { error, extend, merge, pushUnique, wrap } = U;
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var GeoJSONComposition;
+        (function (GeoJSONComposition) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            const composedMembers = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Deprecated. Use `MapView.lonLatToProjectedUnits` instead.
+             *
+             * @deprecated
+             *
+             * @requires modules/map
+             *
+             * @function Highcharts.Chart#fromLatLonToPoint
+             *
+             * @param {Highcharts.MapLonLatObject} lonLat
+             *        Coordinates.
+             *
+             * @return {Highcharts.ProjectedXY}
+             * X and Y coordinates in terms of projected values
+             */
+            function chartFromLatLonToPoint(lonLat) {
+                return this.mapView && this.mapView.lonLatToProjectedUnits(lonLat);
+            }
+            /**
+             * Deprecated. Use `MapView.projectedUnitsToLonLat` instead.
+             *
+             * @deprecated
+             *
+             * @requires modules/map
+             *
+             * @function Highcharts.Chart#fromPointToLatLon
+             *
+             * @param {Highcharts.Point|Highcharts.ProjectedXY} point
+             *        A `Point` instance or anything containing `x` and `y` properties
+             *        with numeric values.
+             *
+             * @return {Highcharts.MapLonLatObject|undefined}
+             * An object with `lat` and `lon` properties.
+             */
+            function chartFromPointToLatLon(point) {
+                return this.mapView && this.mapView.projectedUnitsToLonLat(point);
+            }
+            /**
+             * Highcharts Maps only. Get point from latitude and longitude using
+             * specified transform definition.
+             *
+             * @requires modules/map
+             *
+             * @sample maps/series/latlon-transform/
+             *         Use specific transformation for lat/lon
+             *
+             * @function Highcharts.Chart#transformFromLatLon
+             *
+             * @param {Highcharts.MapLonLatObject} latLon
+             *        A latitude/longitude object.
+             *
+             * @param {*} transform
+             *        The transform definition to use as explained in the
+             *        {@link https://www.highcharts.com/docs/maps/latlon|documentation}.
+             *
+             * @return {ProjectedXY}
+             * An object with `x` and `y` properties.
+             */
+            function chartTransformFromLatLon(latLon, transform) {
+                /**
+                 * Allows to manually load the proj4 library from Highcharts options
+                 * instead of the `window`.
+                 * In case of loading the library from a `script` tag,
+                 * this option is not needed, it will be loaded from there by default.
+                 *
+                 * @type      {Function}
+                 * @product   highmaps
+                 * @apioption chart.proj4
+                 */
+                const proj4 = this.options.chart.proj4 || win.proj4;
+                if (!proj4) {
+                    error(21, false, this);
+                    return;
+                }
+                const { jsonmarginX = 0, jsonmarginY = 0, jsonres = 1, scale = 1, xoffset = 0, xpan = 0, yoffset = 0, ypan = 0 } = transform;
+                const projected = proj4(transform.crs, [latLon.lon, latLon.lat]), cosAngle = transform.cosAngle ||
+                    (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
+                    (transform.rotation && Math.sin(transform.rotation)), rotated = transform.rotation ? [
+                    projected[0] * cosAngle + projected[1] * sinAngle,
+                    -projected[0] * sinAngle + projected[1] * cosAngle
+                ] : projected;
+                return {
+                    x: ((rotated[0] - xoffset) * scale + xpan) * jsonres + jsonmarginX,
+                    y: -(((yoffset - rotated[1]) * scale + ypan) * jsonres - jsonmarginY)
+                };
+            }
+            /**
+             * Highcharts Maps only. Get latLon from point using specified transform
+             * definition. The method returns an object with the numeric properties
+             * `lat` and `lon`.
+             *
+             * @requires modules/map
+             *
+             * @sample maps/series/latlon-transform/
+             *         Use specific transformation for lat/lon
+             *
+             * @function Highcharts.Chart#transformToLatLon
+             *
+             * @param {Highcharts.Point|Highcharts.ProjectedXY} point
+             *        A `Point` instance, or any object containing the properties `x`
+             *        and `y` with numeric values.
+             *
+             * @param {*} transform
+             *        The transform definition to use as explained in the
+             *        {@link https://www.highcharts.com/docs/maps/latlon|documentation}.
+             *
+             * @return {Highcharts.MapLonLatObject|undefined}
+             * An object with `lat` and `lon` properties.
+             */
+            function chartTransformToLatLon(point, transform) {
+                const proj4 = this.options.chart.proj4 || win.proj4;
+                if (!proj4) {
+                    error(21, false, this);
+                    return;
+                }
+                if (point.y === null) {
+                    return;
+                }
+                const { jsonmarginX = 0, jsonmarginY = 0, jsonres = 1, scale = 1, xoffset = 0, xpan = 0, yoffset = 0, ypan = 0 } = transform;
+                const normalized = {
+                    x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
+                    y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
+                }, cosAngle = transform.cosAngle ||
+                    (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
+                    (transform.rotation && Math.sin(transform.rotation)), 
+                // Note: Inverted sinAngle to reverse rotation direction
+                projected = proj4(transform.crs, 'WGS84', transform.rotation ? {
+                    x: normalized.x * cosAngle + normalized.y * -sinAngle,
+                    y: normalized.x * sinAngle + normalized.y * cosAngle
+                } : normalized);
+                return { lat: projected.y, lon: projected.x };
+            }
+            /** @private */
+            function compose(ChartClass) {
+                if (pushUnique(composedMembers, ChartClass)) {
+                    const proto = ChartClass.prototype;
+                    proto.fromLatLonToPoint = chartFromLatLonToPoint;
+                    proto.fromPointToLatLon = chartFromPointToLatLon;
+                    proto.transformFromLatLon = chartTransformFromLatLon;
+                    proto.transformToLatLon = chartTransformToLatLon;
+                    wrap(proto, 'addCredits', wrapChartAddCredit);
+                }
+            }
+            GeoJSONComposition.compose = compose;
+            /**
+             * Highcharts Maps only. Restructure a GeoJSON or TopoJSON object in
+             * preparation to be read directly by the
+             * {@link https://api.highcharts.com/highmaps/plotOptions.series.mapData|series.mapData}
+             * option. The object will be broken down to fit a specific Highcharts type,
+             * either `map`, `mapline` or `mappoint`. Meta data in GeoJSON's properties
+             * object will be copied directly over to {@link Point.properties} in
+             * Highcharts Maps.
+             *
+             * @requires modules/map
+             *
+             * @sample maps/demo/geojson/ Simple areas
+             * @sample maps/demo/mapline-mappoint/ Multiple types
+             * @sample maps/series/mapdata-multiple/ Multiple map sources
+             *
+             * @function Highcharts.geojson
+             *
+             * @param {Highcharts.GeoJSON|Highcharts.TopoJSON} json
+             *        The GeoJSON or TopoJSON structure to parse, represented as a
+             *        JavaScript object.
+             *
+             * @param {string} [hType=map]
+             *        The Highcharts Maps series type to prepare for. Setting "map" will
+             *        return GeoJSON polygons and multipolygons. Setting "mapline" will
+             *        return GeoJSON linestrings and multilinestrings. Setting
+             *        "mappoint" will return GeoJSON points and multipoints.
+             *
+             *
+             * @return {Array<*>} An object ready for the `mapData` option.
+             */
+            function geojson(json, hType = 'map', series) {
+                var _a,
+                    _b;
+                const mapData = [];
+                const geojson = json.type === 'Topology' ? topo2geo(json) : json, features = geojson.features;
+                for (let i = 0, iEnd = features.length; i < iEnd; ++i) {
+                    const feature = features[i], geometry = feature.geometry || {}, type = geometry.type, coordinates = geometry.coordinates, properties = feature.properties;
+                    let pointOptions;
+                    if ((hType === 'map' || hType === 'mapbubble') &&
+                        (type === 'Polygon' || type === 'MultiPolygon')) {
+                        if (coordinates.length) {
+                            pointOptions = { geometry: { coordinates, type } };
+                        }
+                    }
+                    else if (hType === 'mapline' &&
+                        (type === 'LineString' ||
+                            type === 'MultiLineString')) {
+                        if (coordinates.length) {
+                            pointOptions = { geometry: { coordinates, type } };
+                        }
+                    }
+                    else if (hType === 'mappoint' && type === 'Point') {
+                        if (coordinates.length) {
+                            pointOptions = { geometry: { coordinates, type } };
+                        }
+                    }
+                    if (pointOptions) {
+                        const name = properties && (properties.name || properties.NAME), lon = properties && properties.lon, lat = properties && properties.lat;
+                        mapData.push(extend(pointOptions, {
+                            lat: typeof lat === 'number' ? lat : void 0,
+                            lon: typeof lon === 'number' ? lon : void 0,
+                            name: typeof name === 'string' ? name : void 0,
+                            /**
+                             * In Highcharts Maps, when data is loaded from GeoJSON, the
+                             * GeoJSON item's properies are copied over here.
+                             *
+                             * @requires modules/map
+                             * @name Highcharts.Point#properties
+                             * @type {*}
+                             */
+                            properties
+                        }));
+                    }
+                }
+                // Create a credits text that includes map source, to be picked up in
+                // Chart.addCredits
+                if (series && geojson.copyrightShort) {
+                    series.chart.mapCredits = format((_a = series.chart.options.credits) === null || _a === void 0 ? void 0 : _a.mapText, { geojson: geojson });
+                    series.chart.mapCreditsFull = format((_b = series.chart.options.credits) === null || _b === void 0 ? void 0 : _b.mapTextFull, { geojson: geojson });
+                }
+                return mapData;
+            }
+            GeoJSONComposition.geojson = geojson;
+            /**
+             * Convert a TopoJSON topology to GeoJSON. By default the first object is
+             * handled.
+             * Based on https://github.com/topojson/topojson-specification
+             */
+            function topo2geo(topology, objectName) {
+                // Decode first object/feature as default
+                if (!objectName) {
+                    objectName = Object.keys(topology.objects)[0];
+                }
+                const obj = topology.objects[objectName];
+                // Already decoded => return cache
+                if (obj['hc-decoded-geojson']) {
+                    return obj['hc-decoded-geojson'];
+                }
+                // Do the initial transform
+                let arcsArray = topology.arcs;
+                if (topology.transform) {
+                    const arcs = topology.arcs, { scale, translate } = topology.transform;
+                    let positionArray, x, y;
+                    arcsArray = [];
+                    for (let i = 0, iEnd = arcs.length; i < iEnd; ++i) {
+                        const positions = arcs[i];
+                        arcsArray.push(positionArray = []);
+                        x = 0;
+                        y = 0;
+                        for (let j = 0, jEnd = positions.length; j < jEnd; ++j) {
+                            positionArray.push([
+                                (x += positions[j][0]) * scale[0] + translate[0],
+                                (y += positions[j][1]) * scale[1] + translate[1]
+                            ]);
+                        }
+                    }
+                }
+                // Recurse down any depth of multi-dimentional arrays of arcs and insert
+                // the coordinates
+                const arcsToCoordinates = (arcs) => {
+                    if (typeof arcs[0] === 'number') {
+                        return arcs.reduce((coordinates, arcNo, i) => {
+                            let arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
+                            // The first point of an arc is always identical to the last
+                            // point of the previes arc, so slice it off to save further
+                            // processing.
+                            if (arcNo < 0) {
+                                arc = arc.slice(0, i === 0 ? arc.length : arc.length - 1);
+                                arc.reverse();
+                            }
+                            else if (i) {
+                                arc = arc.slice(1);
+                            }
+                            return coordinates.concat(arc);
+                        }, []);
+                    }
+                    return arcs.map(arcsToCoordinates);
+                };
+                const geometries = obj.geometries, features = [];
+                for (let i = 0, iEnd = geometries.length; i < iEnd; ++i) {
+                    features.push({
+                        type: 'Feature',
+                        properties: geometries[i].properties,
+                        geometry: {
+                            type: geometries[i].type,
+                            coordinates: geometries[i].coordinates ||
+                                arcsToCoordinates(geometries[i].arcs)
+                        }
+                    });
+                }
+                const geojson = {
+                    type: 'FeatureCollection',
+                    copyright: topology.copyright,
+                    copyrightShort: topology.copyrightShort,
+                    copyrightUrl: topology.copyrightUrl,
+                    features,
+                    'hc-recommended-mapview': obj['hc-recommended-mapview'],
+                    bbox: topology.bbox,
+                    title: topology.title
+                };
+                obj['hc-decoded-geojson'] = geojson;
+                return geojson;
+            }
+            GeoJSONComposition.topo2geo = topo2geo;
+            /**
+             * Override addCredits to include map source by default.
+             * @private
+             */
+            function wrapChartAddCredit(proceed, credits) {
+                credits = merge(true, this.options.credits, credits);
+                // Disable credits link if map credits enabled. This to allow for
+                // in-text anchors.
+                if (this.mapCredits) {
+                    credits.href = void 0;
+                }
+                proceed.call(this, credits);
+                // Add full map credits to hover
+                if (this.credits && this.mapCreditsFull) {
+                    this.credits.attr({
+                        title: this.mapCreditsFull
+                    });
+                }
+            }
+        })(GeoJSONComposition || (GeoJSONComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
         /**
          * Represents the loose structure of a geographic JSON file.
          *
@@ -48908,310 +49437,8 @@
          * @typedef {Object} Highcharts.TopoJSON
          */
         ''; // detach doclets above
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * Highcharts Maps only. Get point from latitude and longitude using specified
-         * transform definition.
-         *
-         * @requires modules/map
-         *
-         * @sample maps/series/latlon-transform/
-         *         Use specific transformation for lat/lon
-         *
-         * @function Highcharts.Chart#transformFromLatLon
-         *
-         * @param {Highcharts.MapLonLatObject} latLon
-         *        A latitude/longitude object.
-         *
-         * @param {*} transform
-         *        The transform definition to use as explained in the
-         *        {@link https://www.highcharts.com/docs/maps/latlon|documentation}.
-         *
-         * @return {ProjectedXY}
-         *         An object with `x` and `y` properties.
-         */
-        Chart.prototype.transformFromLatLon = function (latLon, transform) {
-            /**
-             * Allows to manually load the proj4 library from Highcharts options
-             * instead of the `window`.
-             * In case of loading the library from a `script` tag,
-             * this option is not needed, it will be loaded from there by default.
-             *
-             * @type      {Function}
-             * @product   highmaps
-             * @apioption chart.proj4
-             */
-            const proj4 = this.options.chart.proj4 || win.proj4;
-            if (!proj4) {
-                error(21, false, this);
-                return;
-            }
-            const { jsonmarginX = 0, jsonmarginY = 0, jsonres = 1, scale = 1, xoffset = 0, xpan = 0, yoffset = 0, ypan = 0 } = transform;
-            const projected = proj4(transform.crs, [latLon.lon, latLon.lat]), cosAngle = transform.cosAngle ||
-                (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
-                (transform.rotation && Math.sin(transform.rotation)), rotated = transform.rotation ? [
-                projected[0] * cosAngle + projected[1] * sinAngle,
-                -projected[0] * sinAngle + projected[1] * cosAngle
-            ] : projected;
-            return {
-                x: ((rotated[0] - xoffset) * scale + xpan) * jsonres + jsonmarginX,
-                y: -(((yoffset - rotated[1]) * scale + ypan) * jsonres - jsonmarginY)
-            };
-        };
-        /**
-         * Highcharts Maps only. Get latLon from point using specified transform
-         * definition. The method returns an object with the numeric properties `lat`
-         * and `lon`.
-         *
-         * @requires modules/map
-         *
-         * @sample maps/series/latlon-transform/ Use specific transformation for lat/lon
-         *
-         * @function Highcharts.Chart#transformToLatLon
-         *
-         * @param {Highcharts.Point|Highcharts.ProjectedXY} point A `Point` instance, or
-         *        any object containing the properties `x` and `y` with numeric values.
-         *
-         * @param {*} transform The transform definition to use as explained in the
-         *        {@link https://www.highcharts.com/docs/maps/latlon|documentation}.
-         *
-         * @return {Highcharts.MapLonLatObject|undefined} An object with `lat` and `lon`
-         *         properties.
-         */
-        Chart.prototype.transformToLatLon = function (point, transform) {
-            const proj4 = this.options.chart.proj4 || win.proj4;
-            if (!proj4) {
-                error(21, false, this);
-                return;
-            }
-            if (point.y === null) {
-                return;
-            }
-            const { jsonmarginX = 0, jsonmarginY = 0, jsonres = 1, scale = 1, xoffset = 0, xpan = 0, yoffset = 0, ypan = 0 } = transform;
-            const normalized = {
-                x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
-                y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
-            }, cosAngle = transform.cosAngle ||
-                (transform.rotation && Math.cos(transform.rotation)), sinAngle = transform.sinAngle ||
-                (transform.rotation && Math.sin(transform.rotation)), 
-            // Note: Inverted sinAngle to reverse rotation direction
-            projected = proj4(transform.crs, 'WGS84', transform.rotation ? {
-                x: normalized.x * cosAngle + normalized.y * -sinAngle,
-                y: normalized.x * sinAngle + normalized.y * cosAngle
-            } : normalized);
-            return { lat: projected.y, lon: projected.x };
-        };
-        /**
-         * Deprecated. Use `MapView.projectedUnitsToLonLat` instead.
-         *
-         * @deprecated
-         *
-         * @requires modules/map
-         *
-         * @function Highcharts.Chart#fromPointToLatLon
-         *
-         * @param {Highcharts.Point|Highcharts.ProjectedXY} point A `Point`
-         *        instance or anything containing `x` and `y` properties with numeric
-         *        values.
-         *
-         * @return {Highcharts.MapLonLatObject|undefined} An object with `lat` and `lon`
-         *         properties.
-         */
-        Chart.prototype.fromPointToLatLon = function (point) {
-            return this.mapView && this.mapView.projectedUnitsToLonLat(point);
-        };
-        /**
-         * Deprecated. Use `MapView.lonLatToProjectedUnits` instead.
-         *
-         * @deprecated
-         *
-         * @requires modules/map
-         *
-         * @function Highcharts.Chart#fromLatLonToPoint
-         *
-         * @param {Highcharts.MapLonLatObject} lonLat Coordinates.
-         *
-         * @return {Highcharts.ProjectedXY}
-         *      X and Y coordinates in terms of projected values
-         */
-        Chart.prototype.fromLatLonToPoint = function (lonLat) {
-            return this.mapView && this.mapView.lonLatToProjectedUnits(lonLat);
-        };
-        /*
-         * Convert a TopoJSON topology to GeoJSON. By default the first object is
-         * handled.
-         * Based on https://github.com/topojson/topojson-specification
-        */
-        function topo2geo(topology, objectName) {
-            // Decode first object/feature as default
-            if (!objectName) {
-                objectName = Object.keys(topology.objects)[0];
-            }
-            const object = topology.objects[objectName];
-            // Already decoded => return cache
-            if (object['hc-decoded-geojson']) {
-                return object['hc-decoded-geojson'];
-            }
-            // Do the initial transform
-            let arcsArray = topology.arcs;
-            if (topology.transform) {
-                const { scale, translate } = topology.transform;
-                arcsArray = topology.arcs.map((arc) => {
-                    let x = 0, y = 0;
-                    return arc.map((position) => {
-                        position = position.slice();
-                        position[0] = (x += position[0]) * scale[0] + translate[0];
-                        position[1] = (y += position[1]) * scale[1] + translate[1];
-                        return position;
-                    });
-                });
-            }
-            // Recurse down any depth of multi-dimentional arrays of arcs and insert
-            // the coordinates
-            const arcsToCoordinates = (arcs) => {
-                if (typeof arcs[0] === 'number') {
-                    return arcs.reduce((coordinates, arcNo, i) => {
-                        let arc = arcNo < 0 ? arcsArray[~arcNo] : arcsArray[arcNo];
-                        // The first point of an arc is always identical to the last
-                        // point of the previes arc, so slice it off to save further
-                        // processing.
-                        if (arcNo < 0) {
-                            arc = arc.slice(0, i === 0 ? arc.length : arc.length - 1);
-                            arc.reverse();
-                        }
-                        else if (i) {
-                            arc = arc.slice(1);
-                        }
-                        return coordinates.concat(arc);
-                    }, []);
-                }
-                return arcs.map(arcsToCoordinates);
-            };
-            const features = object.geometries
-                .map((geometry) => ({
-                type: 'Feature',
-                properties: geometry.properties,
-                geometry: {
-                    type: geometry.type,
-                    coordinates: geometry.coordinates ||
-                        arcsToCoordinates(geometry.arcs)
-                }
-            }));
-            const geojson = {
-                type: 'FeatureCollection',
-                copyright: topology.copyright,
-                copyrightShort: topology.copyrightShort,
-                copyrightUrl: topology.copyrightUrl,
-                features,
-                'hc-recommended-mapview': object['hc-recommended-mapview'],
-                bbox: topology.bbox,
-                title: topology.title
-            };
-            object['hc-decoded-geojson'] = geojson;
-            return geojson;
-        }
-        /**
-         * Highcharts Maps only. Restructure a GeoJSON or TopoJSON object in preparation
-         * to be read directly by the
-         * {@link https://api.highcharts.com/highmaps/plotOptions.series.mapData|series.mapData}
-         * option. The object will be broken down to fit a specific Highcharts type,
-         * either `map`, `mapline` or `mappoint`. Meta data in GeoJSON's properties
-         * object will be copied directly over to {@link Point.properties} in Highcharts
-         * Maps.
-         *
-         * @requires modules/map
-         *
-         * @sample maps/demo/geojson/ Simple areas
-         * @sample maps/demo/mapline-mappoint/ Multiple types
-         * @sample maps/series/mapdata-multiple/ Multiple map sources
-         *
-         * @function Highcharts.geojson
-         *
-         * @param {Highcharts.GeoJSON|Highcharts.TopoJSON} json The GeoJSON or TopoJSON
-         *        structure to parse, represented as a JavaScript object.
-         *
-         * @param {string} [hType=map] The Highcharts Maps series type to prepare for.
-         *        Setting "map" will return GeoJSON polygons and multipolygons. Setting
-         *        "mapline" will return GeoJSON linestrings and multilinestrings.
-         *        Setting "mappoint" will return GeoJSON points and multipoints.
-         *
-         *
-         * @return {Array<*>} An object ready for the `mapData` option.
-         */
-        function geojson(json, hType = 'map', series) {
-            const mapData = [];
-            const geojson = json.type === 'Topology' ? topo2geo(json) : json;
-            geojson.features.forEach(function (feature) {
-                const geometry = feature.geometry || {}, type = geometry.type, coordinates = geometry.coordinates, properties = feature.properties;
-                let pointOptions;
-                if ((hType === 'map' || hType === 'mapbubble') &&
-                    (type === 'Polygon' || type === 'MultiPolygon')) {
-                    if (coordinates.length) {
-                        pointOptions = { geometry: { coordinates, type } };
-                    }
-                }
-                else if (hType === 'mapline' &&
-                    (type === 'LineString' ||
-                        type === 'MultiLineString')) {
-                    if (coordinates.length) {
-                        pointOptions = { geometry: { coordinates, type } };
-                    }
-                }
-                else if (hType === 'mappoint' && type === 'Point') {
-                    if (coordinates.length) {
-                        pointOptions = { geometry: { coordinates, type } };
-                    }
-                }
-                if (pointOptions) {
-                    const name = properties && (properties.name || properties.NAME), lon = properties && properties.lon, lat = properties && properties.lat;
-                    mapData.push(extend(pointOptions, {
-                        lat: typeof lat === 'number' ? lat : void 0,
-                        lon: typeof lon === 'number' ? lon : void 0,
-                        name: typeof name === 'string' ? name : void 0,
-                        /**
-                         * In Highcharts Maps, when data is loaded from GeoJSON, the
-                         * GeoJSON item's properies are copied over here.
-                         *
-                         * @requires modules/map
-                         * @name Highcharts.Point#properties
-                         * @type {*}
-                         */
-                        properties
-                    }));
-                }
-            });
-            // Create a credits text that includes map source, to be picked up in
-            // Chart.addCredits
-            if (series && geojson.copyrightShort) {
-                series.chart.mapCredits = format(series.chart.options.credits.mapText, { geojson: geojson });
-                series.chart.mapCreditsFull = format(series.chart.options.credits.mapTextFull, { geojson: geojson });
-            }
-            return mapData;
-        }
-        // Override addCredits to include map source by default
-        wrap(Chart.prototype, 'addCredits', function (proceed, credits) {
-            credits = merge(true, this.options.credits, credits);
-            // Disable credits link if map credits enabled. This to allow for in-text
-            // anchors.
-            if (this.mapCredits) {
-                credits.href = null;
-            }
-            proceed.call(this, credits);
-            // Add full map credits to hover
-            if (this.credits && this.mapCreditsFull) {
-                this.credits.attr({
-                    title: this.mapCreditsFull
-                });
-            }
-        });
-        H.geojson = geojson;
-        H.topo2geo = topo2geo;
-        const GeoJSONModule = {
-            geojson,
-            topo2geo
-        };
 
-        return GeoJSONModule;
+        return GeoJSONComposition;
     });
     _registerModule(_modules, 'Core/Geometry/PolygonClip.js', [], function () {
         /* *
@@ -49300,9 +49527,24 @@
         /* *
          * Lambert Conformal Conic projection
          * */
+        /* *
+         *
+         *  Constants
+         *
+         * */
         const sign = Math.sign ||
             ((n) => (n === 0 ? 0 : n > 0 ? 1 : -1)), scale = 63.78137, deg2rad = Math.PI / 180, halfPI = Math.PI / 2, eps10 = 1e-6, tany = (y) => Math.tan((halfPI + y) / 2);
+        /* *
+         *
+         *  Class
+         *
+         * */
         class LambertConformalConic {
+            /* *
+             *
+             *  Constructor
+             *
+             * */
             constructor(options) {
                 var _a;
                 const parallels = (options.parallels || [])
@@ -49320,8 +49562,13 @@
                 this.n = n;
                 this.c = cosLat1 * Math.pow(tany(lat1), n) / n;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             forward(lonLat) {
-                const lon = lonLat[0] * deg2rad, { c, n, projectedBounds } = this;
+                const { c, n, projectedBounds } = this, lon = lonLat[0] * deg2rad;
                 let lat = lonLat[1] * deg2rad;
                 if (c > 0) {
                     if (lat < -halfPI + eps10) {
@@ -49343,7 +49590,7 @@
                 return xy;
             }
             inverse(xy) {
-                const x = xy[0] / scale, y = xy[1] / scale, { c, n } = this, cy = c - y, rho = sign(n) * Math.sqrt(x * x + cy * cy);
+                const { c, n } = this, x = xy[0] / scale, y = xy[1] / scale, cy = c - y, rho = sign(n) * Math.sqrt(x * x + cy * cy);
                 let l = Math.atan2(x, Math.abs(cy)) * sign(cy);
                 if (cy * n < 0) {
                     l -= Math.PI * sign(x) * sign(cy);
@@ -49354,6 +49601,11 @@
                 ];
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return LambertConformalConic;
     });
@@ -49367,9 +49619,24 @@
          * inspired by the widely used Robinson projection.
          *
          * */
+        /* *
+         *
+         *  Constants
+         *
+         * */
         const A1 = 1.340264, A2 = -0.081106, A3 = 0.000893, A4 = 0.003796, M = Math.sqrt(3) / 2.0, scale = 74.03120656864502;
+        /* *
+         *
+         *  Class
+         *
+         * */
         class EqualEarth {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 this.bounds = {
                     x1: -200.37508342789243,
                     x2: 200.37508342789243,
@@ -49377,19 +49644,23 @@
                     y2: 97.52595454902263
                 };
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             forward(lonLat) {
                 const d = Math.PI / 180, paramLat = Math.asin(M * Math.sin(lonLat[1] * d)), paramLatSq = paramLat * paramLat, paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
-                const x = lonLat[0] * d * Math.cos(paramLat) * scale / (M *
-                    (A1 +
+                const x = lonLat[0] * d * Math.cos(paramLat) * scale /
+                    (M * (A1 +
                         3 * A2 * paramLatSq +
-                        paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)));
-                const y = paramLat * scale * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq));
+                        paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq))), y = paramLat * scale * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq));
                 return [x, y];
             }
             inverse(xy) {
-                const x = xy[0] / scale, y = xy[1] / scale, d = 180 / Math.PI, epsilon = 1e-9, iterations = 12;
-                let paramLat = y, paramLatSq, paramLatPow6, fy, fpy, dlat, i;
-                for (i = 0; i < iterations; ++i) {
+                const x = xy[0] / scale, y = xy[1] / scale, d = 180 / Math.PI, epsilon = 1e-9;
+                let paramLat = y, paramLatSq, paramLatPow6, fy, fpy, dlat;
+                for (let i = 0; i < 12; ++i) {
                     paramLatSq = paramLat * paramLat;
                     paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
                     fy = paramLat * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq)) - y;
@@ -49401,8 +49672,8 @@
                 }
                 paramLatSq = paramLat * paramLat;
                 paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
-                const lon = d * M * x * (A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat);
-                const lat = d * Math.asin(Math.sin(paramLat) / M);
+                const lon = d * M * x * (A1 + 3 * A2 * paramLatSq + paramLatPow6 *
+                    (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat), lat = d * Math.asin(Math.sin(paramLat) / M);
                 // If lons are beyond the border of a map -> resolve via break
                 if (Math.abs(lon) > 180) {
                     return [NaN, NaN];
@@ -49410,6 +49681,11 @@
                 return [lon, lat];
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return EqualEarth;
     });
@@ -49417,9 +49693,24 @@
         /* *
          * Miller projection
          * */
+        /* *
+         *
+         *  Constants
+         *
+         * */
         const quarterPI = Math.PI / 4, deg2rad = Math.PI / 180, scale = 63.78137;
+        /* *
+         *
+         *  Class
+         *
+         * */
         class Miller {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 this.bounds = {
                     x1: -200.37508342789243,
                     x2: 200.37508342789243,
@@ -49427,6 +49718,11 @@
                     y2: 146.91480769173063
                 };
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             forward(lonLat) {
                 return [
                     lonLat[0] * deg2rad * scale,
@@ -49440,6 +49736,11 @@
                 ];
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Miller;
     });
@@ -49447,9 +49748,24 @@
         /* *
          * Orthographic projection
          * */
+        /* *
+         *
+         *  Constants
+         *
+         * */
         const deg2rad = Math.PI / 180, scale = 63.78460826781007;
+        /* *
+         *
+         *  Class
+         *
+         * */
         class Orthographic {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 this.antimeridianCutting = false;
                 this.bounds = {
                     x1: -scale,
@@ -49458,10 +49774,13 @@
                     y2: scale
                 };
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             forward(lonLat) {
-                const lonDeg = lonLat[0], latDeg = lonLat[1];
-                const lat = latDeg * deg2rad;
-                const xy = [
+                const lonDeg = lonLat[0], latDeg = lonLat[1], lat = latDeg * deg2rad, xy = [
                     Math.cos(lat) * Math.sin(lonDeg * deg2rad) * scale,
                     Math.sin(lat) * scale
                 ];
@@ -49478,6 +49797,11 @@
                 ];
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Orthographic;
     });
@@ -49485,25 +49809,43 @@
         /* *
          * Web Mercator projection, used for most online map tile services
          * */
-        const maxLatitude = 85.0511287798, // The latitude that defines a square
-        r = 63.78137, deg2rad = Math.PI / 180;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const r = 63.78137, deg2rad = Math.PI / 180;
+        /* *
+         *
+         *  Class
+         *
+         * */
         class WebMercator {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
                 this.bounds = {
                     x1: -200.37508342789243,
                     x2: 200.37508342789243,
                     y1: -200.3750834278071,
                     y2: 200.3750834278071
                 };
-                this.maxLatitude = maxLatitude;
+                this.maxLatitude = 85.0511287798; // The latitude that defines a square
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             forward(lonLat) {
-                const sinLat = Math.sin(lonLat[1] * deg2rad);
-                const xy = [
+                const sinLat = Math.sin(lonLat[1] * deg2rad), xy = [
                     r * lonLat[0] * deg2rad,
                     r * Math.log((1 + sinLat) / (1 - sinLat)) / 2
                 ];
-                if (Math.abs(lonLat[1]) > maxLatitude) {
+                if (Math.abs(lonLat[1]) > this.maxLatitude) {
                     xy.outside = true;
                 }
                 return xy;
@@ -49515,6 +49857,11 @@
                 ];
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return WebMercator;
     });
@@ -49524,17 +49871,32 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const registry = {
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const projectionRegistry = {
             EqualEarth,
             LambertConformalConic,
             Miller,
             Orthographic,
             WebMercator
         };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return registry;
+        return projectionRegistry;
     });
-    _registerModule(_modules, 'Maps/Projection.js', [_modules['Core/Geometry/PolygonClip.js'], _modules['Maps/Projections/ProjectionRegistry.js'], _modules['Core/Utilities.js']], function (PC, registry, U) {
+    _registerModule(_modules, 'Maps/Projection.js', [_modules['Core/Geometry/PolygonClip.js'], _modules['Maps/Projections/ProjectionRegistry.js'], _modules['Core/Utilities.js']], function (PC, ProjectionRegistry, U) {
         /* *
          *
          *  (c) 2021 Torstein Honsi
@@ -49546,13 +49908,26 @@
          * */
         const { clipLineString, clipPolygon } = PC;
         const { clamp, erase } = U;
-        const deg2rad = Math.PI * 2 / 360;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const deg2rad = Math.PI * 2 / 360, 
         // Safe padding on either side of the antimeridian to avoid points being
         // projected to the wrong side of the plane
-        const floatCorrection = 0.000001;
-        // Keep longitude within -180 and 180. This is faster than using the modulo
-        // operator, and preserves the distinction between -180 and 180.
-        const wrapLon = (lon) => {
+        floatCorrection = 0.000001;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Keep longitude within -180 and 180. This is faster than using the modulo
+         * operator, and preserves the distinction between -180 and 180.
+         * @private
+         */
+        function wrapLon(lon) {
             // Replacing the if's with while would increase the range, but make it prone
             // to crashes on bad data
             if (lon < -180) {
@@ -49562,27 +49937,34 @@
                 lon -= 360;
             }
             return lon;
-        };
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         class Projection {
-            // Add a projection definition to the registry, accessible by its `name`.
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /**
+             * Add a projection definition to the registry, accessible by its `name`.
+             * @private
+             */
             static add(name, definition) {
                 Projection.registry[name] = definition;
             }
-            // Calculate the great circle between two given coordinates
+            /**
+             * Calculate the great circle between two given coordinates.
+             * @private
+             */
             static greatCircle(point1, point2, inclusive) {
-                const { atan2, cos, sin, sqrt } = Math;
-                const lat1 = point1[1] * deg2rad;
-                const lon1 = point1[0] * deg2rad;
-                const lat2 = point2[1] * deg2rad;
-                const lon2 = point2[0] * deg2rad;
-                const deltaLat = lat2 - lat1;
-                const deltaLng = lon2 - lon1;
-                const calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
-                    cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2);
-                const calcB = 2 * atan2(sqrt(calcA), sqrt(1 - calcA));
-                const distance = calcB * 6371e3; // in meters
-                const jumps = Math.round(distance / 500000); // 500 km each jump
-                const lineString = [];
+                const { atan2, cos, sin, sqrt } = Math, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, deltaLat = lat2 - lat1, deltaLng = lon2 - lon1, calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
+                    cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2), calcB = 2 * atan2(sqrt(calcA), sqrt(1 - calcA)), distance = calcB * 6371e3, // In meters
+                jumps = Math.round(distance / 500000), // 500 km each jump
+                lineString = [];
                 if (inclusive) {
                     lineString.push(point1);
                 }
@@ -49590,13 +49972,7 @@
                     const step = 1 / jumps;
                     for (let fraction = step; fraction < 0.999; // Account for float errors
                      fraction += step) {
-                        const A = sin((1 - fraction) * calcB) / sin(calcB);
-                        const B = sin(fraction * calcB) / sin(calcB);
-                        const x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2);
-                        const y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2);
-                        const z = A * sin(lat1) + B * sin(lat2);
-                        const lat3 = atan2(z, sqrt(x * x + y * y));
-                        const lon3 = atan2(y, x);
+                        const A = sin((1 - fraction) * calcB) / sin(calcB), B = sin(fraction * calcB) / sin(calcB), x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2), y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2), z = A * sin(lat1) + B * sin(lat2), lat3 = atan2(z, sqrt(x * x + y * y)), lon3 = atan2(y, x);
                         lineString.push([lon3 / deg2rad, lat3 / deg2rad]);
                     }
                 }
@@ -49623,6 +49999,11 @@
                 const { name, rotation } = options || {};
                 return [name, rotation && rotation.join(',')].join(';');
             }
+            /* *
+             *
+             *  Constructor
+             *
+             * */
             constructor(options = {}) {
                 // Whether the chart has points, lines or polygons given as coordinates
                 // with positive up, as opposed to paths in the SVG plane with positive
@@ -49661,6 +50042,11 @@
                     def && def.bounds :
                     projectedBounds;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             lineIntersectsBounds(line) {
                 const { x1, x2, y1, y2 } = this.bounds || {};
                 const getIntersect = (line, dim, val) => {
@@ -49692,8 +50078,10 @@
                 }
                 return ret;
             }
-            /*
-             * Take the rotation options and return the appropriate projection functions
+            /**
+             * Take the rotation options and returns the appropriate projection
+             * functions.
+             * @private
              */
             getRotator(rotation) {
                 const deltaLambda = rotation[0] * deg2rad, deltaPhi = (rotation[1] || 0) * deg2rad, deltaGamma = (rotation[2] || 0) * deg2rad;
@@ -49725,25 +50113,31 @@
                     }
                 };
             }
-            // Project a lonlat coordinate position to xy. Dynamically overridden when
-            // projection is set.
+            /**
+             * Project a lonlat coordinate position to xy. Dynamically overridden when
+             * projection is set.
+             * @private
+             */
             forward(lonLat) {
                 return lonLat;
             }
-            // Unproject an xy chart coordinate position to lonlat. Dynamically
-            // overridden when projection is set.
+            /**
+             * Unproject an xy chart coordinate position to lonlat. Dynamically
+             * overridden when projection is set.
+             * @private
+             */
             inverse(xy) {
                 return xy;
             }
             cutOnAntimeridian(poly, isPolygon) {
-                const antimeridian = 180;
-                const intersections = [];
+                const antimeridian = 180, intersections = [];
                 const polygons = [poly];
-                poly.forEach((lonLat, i) => {
+                for (let i = 0, iEnd = poly.length; i < iEnd; ++i) {
+                    const lonLat = poly[i];
                     let previousLonLat = poly[i - 1];
                     if (!i) {
                         if (!isPolygon) {
-                            return;
+                            continue;
                         }
                         // Else, wrap to beginning
                         previousLonLat = poly[poly.length - 1];
@@ -49768,7 +50162,7 @@
                             lonLat
                         });
                     }
-                });
+                }
                 let polarIntersection;
                 if (intersections.length) {
                     if (isPolygon) {
@@ -49847,7 +50241,10 @@
                 }
                 return polygons;
             }
-            // Take a GeoJSON geometry and return a translated SVGPath
+            /**
+             * Take a GeoJSON geometry and return a translated SVGPath.
+             * @private
+             */
             path(geometry) {
                 const { bounds, def, rotator } = this;
                 const antimeridian = 180;
@@ -50041,11 +50438,21 @@
                 return path;
             }
         }
-        Projection.registry = registry;
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        Projection.registry = ProjectionRegistry;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Projection;
     });
-    _registerModule(_modules, 'Maps/MapView.js', [_modules['Maps/MapViewOptionsDefault.js'], _modules['Maps/MapViewInsetsOptionsDefault.js'], _modules['Extensions/GeoJSON.js'], _modules['Core/Chart/MapChart.js'], _modules['Maps/MapUtilities.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (defaultOptions, defaultInsetsOptions, GeoJSONModule, MapChart, MU, Projection, U) {
+    _registerModule(_modules, 'Maps/MapView.js', [_modules['Maps/MapViewOptionsDefault.js'], _modules['Maps/MapViewInsetsOptionsDefault.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Core/Chart/MapChart.js'], _modules['Maps/MapUtilities.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (defaultOptions, defaultInsetsOptions, GeoJSONComposition, MapChart, MU, Projection, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -50055,7 +50462,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { topo2geo } = GeoJSONModule;
+        const { topo2geo } = GeoJSONComposition;
         const { maps } = MapChart;
         const { boundsFromPath, pointInPolygon } = MU;
         const { addEvent, clamp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, relativeLength } = U;
@@ -56113,17 +56520,22 @@
 
         return HeatmapSeries;
     });
-    _registerModule(_modules, 'masters/modules/map.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Color/ColorAxis.js'], _modules['Series/MapBubble/MapBubbleSeries.js'], _modules['Core/Chart/MapChart.js'], _modules['Maps/MapView.js'], _modules['Maps/Projection.js']], function (Highcharts, ColorAxis, MapBubbleSeries, MapChart, MapView, Projection) {
+    _registerModule(_modules, 'masters/modules/map.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Color/ColorAxis.js'], _modules['Maps/MapNavigation.js'], _modules['Series/MapBubble/MapBubbleSeries.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Core/Chart/MapChart.js'], _modules['Maps/MapView.js'], _modules['Maps/Projection.js']], function (Highcharts, ColorAxis, MapNavigation, MapBubbleSeries, GeoJSONComposition, MapChart, MapView, Projection) {
 
         const G = Highcharts;
         G.ColorAxis = ColorAxis;
         G.MapChart = MapChart;
         G.mapChart = G.Map = MapChart.mapChart;
+        G.MapNavigation = MapNavigation;
         G.MapView = MapView;
         G.maps = MapChart.maps;
         G.Projection = Projection;
+        G.geojson = GeoJSONComposition.geojson;
+        G.topo2geo = GeoJSONComposition.topo2geo;
         ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
+        GeoJSONComposition.compose(G.Chart);
         MapBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
+        MapNavigation.compose(MapChart, G.Pointer, G.SVGRenderer);
 
     });
     _registerModule(_modules, 'masters/highmaps.src.js', [_modules['masters/highcharts.src.js']], function (Highcharts) {

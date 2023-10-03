@@ -8,10 +8,10 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import TilesProvidersRegistry from '../../Maps/TilesProviders/TilesProvidersRegistry.js';
 import Chart from '../../Core/Chart/Chart.js';
-const { seriesTypes: { map: MapSeries } } = SeriesRegistry;
+import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+const { map: MapSeries } = SeriesRegistry.seriesTypes;
+import TilesProvidersRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, error, merge, pick } = U;
 /**

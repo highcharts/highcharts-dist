@@ -2,8 +2,22 @@
  * LimaLabs provider, used for tile map services
  * */
 'use strict';
+/* *
+ *
+ *  Class
+ *
+ * */
 class LimaLabs {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.defaultCredits = ('Map data &copy;2023' +
+            ' <a href="https://maps.lima-labs.com/">LimaLabs</a>');
+        this.initialProjectionName = 'WebMercator';
+        this.requiresApiKey = true;
         this.themes = {
             Standard: {
                 url: 'https://cdn.lima-labs.com/{zoom}/{x}/{y}.png?api={apikey}',
@@ -11,9 +25,11 @@ class LimaLabs {
                 maxZoom: 20
             }
         };
-        this.initialProjectionName = 'WebMercator';
-        this.defaultCredits = 'Map data \u00a92023 <a href="https://maps.lima-labs.com/">LimaLabs</a>';
-        this.requiresApiKey = true;
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default LimaLabs;

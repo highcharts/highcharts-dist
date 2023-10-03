@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-09-22)
+ * @license Highcharts JS v11.1.0 (2023-10-03)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -9188,10 +9188,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent, objectEach = U.objectEach;
-        /**
-         * @private
-         */
+        var addEvent = U.addEvent, objectEach = U.objectEach, pushUnique = U.pushUnique;
+        /* *
+         *
+         *  Namespace
+         *
+         * */
         var WaterfallAxis;
         (function (WaterfallAxis) {
             /* *
@@ -9201,22 +9203,87 @@
              * */
             /* *
              *
-             *  Classes
+             *  Constants
+             *
+             * */
+            var composedMembers = [];
+            /* *
+             *
+             *  Functions
              *
              * */
             /**
              * @private
              */
+            function compose(AxisClass, ChartClass) {
+                if (pushUnique(composedMembers, AxisClass)) {
+                    addEvent(AxisClass, 'init', onAxisInit);
+                    addEvent(AxisClass, 'afterBuildStacks', onAxisAfterBuildStacks);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
+                }
+                if (pushUnique(composedMembers, ChartClass)) {
+                    addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
+                }
+            }
+            WaterfallAxis.compose = compose;
+            /**
+             * @private
+             */
+            function onAxisAfterBuildStacks() {
+                var axis = this, stacks = axis.waterfall.stacks;
+                if (stacks) {
+                    stacks.changed = false;
+                    delete stacks.alreadyChanged;
+                }
+            }
+            /**
+             * @private
+             */
+            function onAxisAfterRender() {
+                var axis = this, stackLabelOptions = axis.options.stackLabels;
+                if (stackLabelOptions && stackLabelOptions.enabled &&
+                    axis.waterfall.stacks) {
+                    axis.waterfall.renderStackTotals();
+                }
+            }
+            /**
+             * @private
+             */
+            function onAxisInit() {
+                var axis = this;
+                if (!axis.waterfall) {
+                    axis.waterfall = new Composition(axis);
+                }
+            }
+            /**
+             * @private
+             */
+            function onChartBeforeRedraw() {
+                var axes = this.axes, series = this.series;
+                for (var _i = 0, series_1 = series; _i < series_1.length; _i++) {
+                    var seri = series_1[_i];
+                    if (seri.options.stacking) {
+                        for (var _a = 0, axes_1 = axes; _a < axes_1.length; _a++) {
+                            var axis = axes_1[_a];
+                            if (!axis.isXAxis) {
+                                axis.waterfall.stacks.changed = true;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            /* *
+             *
+             *  Classes
+             *
+             * */
             var Composition = /** @class */ (function () {
-                /* eslint-disable no-invalid-this, valid-jsdoc */
                 /* *
                  *
                  *  Constructors
                  *
                  * */
-                /**
-                 * @private
-                 */
                 function Composition(axis) {
                     this.axis = axis;
                     this.stacks = {
@@ -9258,69 +9325,6 @@
                 return Composition;
             }());
             WaterfallAxis.Composition = Composition;
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable no-invalid-this, valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(AxisClass, ChartClass) {
-                addEvent(AxisClass, 'init', onInit);
-                addEvent(AxisClass, 'afterBuildStacks', onAfterBuildStacks);
-                addEvent(AxisClass, 'afterRender', onAfterRender);
-                addEvent(ChartClass, 'beforeRedraw', onBeforeRedraw);
-            }
-            WaterfallAxis.compose = compose;
-            /**
-             * @private
-             */
-            function onAfterBuildStacks() {
-                var axis = this;
-                var stacks = axis.waterfall.stacks;
-                if (stacks) {
-                    stacks.changed = false;
-                    delete stacks.alreadyChanged;
-                }
-            }
-            /**
-             * @private
-             */
-            function onAfterRender() {
-                var axis = this;
-                var stackLabelOptions = axis.options.stackLabels;
-                if (stackLabelOptions && stackLabelOptions.enabled &&
-                    axis.waterfall.stacks) {
-                    axis.waterfall.renderStackTotals();
-                }
-            }
-            /**
-             * @private
-             */
-            function onBeforeRedraw() {
-                var axes = this.axes, series = this.series, i = series.length;
-                while (i--) {
-                    if (series[i].options.stacking) {
-                        axes.forEach(function (axis) {
-                            if (!axis.isXAxis) {
-                                axis.waterfall.stacks.changed = true;
-                            }
-                        });
-                        i = 0;
-                    }
-                }
-            }
-            /**
-             * @private
-             */
-            function onInit() {
-                var axis = this;
-                if (!axis.waterfall) {
-                    axis.waterfall = new Composition(axis);
-                }
-            }
         })(WaterfallAxis || (WaterfallAxis = {}));
         /* *
          *
@@ -10788,7 +10792,7 @@
              * Modify axis instance with radial logic before common axis init.
              */
             function onAxisInit(e) {
-                var chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, chartOptions = chart.options, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
+                var chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
                 var isCircular;
                 // Prevent changes for colorAxis
                 if (coll === 'colorAxis') {

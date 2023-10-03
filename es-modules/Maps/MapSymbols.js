@@ -8,14 +8,25 @@
  *
  * */
 'use strict';
-import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
-const { prototype: { symbols } } = SVGRenderer;
+import U from '../Core/Utilities.js';
+const { pushUnique } = U;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const composedMembers = [];
+/* *
+ *
+ *  Variables
+ *
+ * */
+let symbols;
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable require-jsdoc, valid-jsdoc */
 function bottomButton(x, y, w, h, options) {
     if (options) {
         const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
@@ -24,6 +35,13 @@ function bottomButton(x, y, w, h, options) {
     }
     return symbols.roundedRect(x, y, w, h, options);
 }
+function compose(SVGRendererClass) {
+    if (pushUnique(composedMembers, SVGRendererClass)) {
+        symbols = SVGRendererClass.prototype.symbols;
+        symbols.bottombutton = bottomButton;
+        symbols.topbutton = topButton;
+    }
+}
 function topButton(x, y, w, h, options) {
     if (options) {
         const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
@@ -31,11 +49,12 @@ function topButton(x, y, w, h, options) {
     }
     return symbols.roundedRect(x, y, w, h, options);
 }
-symbols.bottombutton = bottomButton;
-symbols.topbutton = topButton;
 /* *
  *
  *  Default Export
  *
  * */
-export default symbols;
+const MapSymbols = {
+    compose
+};
+export default MapSymbols;

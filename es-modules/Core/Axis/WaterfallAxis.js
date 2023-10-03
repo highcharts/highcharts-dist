@@ -10,10 +10,12 @@
 'use strict';
 import StackItem from './Stacking/StackItem.js';
 import U from '../Utilities.js';
-const { addEvent, objectEach } = U;
-/**
- * @private
- */
+const { addEvent, objectEach, pushUnique } = U;
+/* *
+ *
+ *  Namespace
+ *
+ * */
 var WaterfallAxis;
 (function (WaterfallAxis) {
     /* *
@@ -23,22 +25,85 @@ var WaterfallAxis;
      * */
     /* *
      *
-     *  Classes
+     *  Constants
+     *
+     * */
+    const composedMembers = [];
+    /* *
+     *
+     *  Functions
      *
      * */
     /**
      * @private
      */
+    function compose(AxisClass, ChartClass) {
+        if (pushUnique(composedMembers, AxisClass)) {
+            addEvent(AxisClass, 'init', onAxisInit);
+            addEvent(AxisClass, 'afterBuildStacks', onAxisAfterBuildStacks);
+            addEvent(AxisClass, 'afterRender', onAxisAfterRender);
+        }
+        if (pushUnique(composedMembers, ChartClass)) {
+            addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
+        }
+    }
+    WaterfallAxis.compose = compose;
+    /**
+     * @private
+     */
+    function onAxisAfterBuildStacks() {
+        const axis = this, stacks = axis.waterfall.stacks;
+        if (stacks) {
+            stacks.changed = false;
+            delete stacks.alreadyChanged;
+        }
+    }
+    /**
+     * @private
+     */
+    function onAxisAfterRender() {
+        const axis = this, stackLabelOptions = axis.options.stackLabels;
+        if (stackLabelOptions && stackLabelOptions.enabled &&
+            axis.waterfall.stacks) {
+            axis.waterfall.renderStackTotals();
+        }
+    }
+    /**
+     * @private
+     */
+    function onAxisInit() {
+        const axis = this;
+        if (!axis.waterfall) {
+            axis.waterfall = new Composition(axis);
+        }
+    }
+    /**
+     * @private
+     */
+    function onChartBeforeRedraw() {
+        const axes = this.axes, series = this.series;
+        for (const seri of series) {
+            if (seri.options.stacking) {
+                for (const axis of axes) {
+                    if (!axis.isXAxis) {
+                        axis.waterfall.stacks.changed = true;
+                    }
+                }
+                break;
+            }
+        }
+    }
+    /* *
+     *
+     *  Classes
+     *
+     * */
     class Composition {
-        /* eslint-disable no-invalid-this, valid-jsdoc */
         /* *
          *
          *  Constructors
          *
          * */
-        /**
-         * @private
-         */
         constructor(axis) {
             this.axis = axis;
             this.stacks = {
@@ -62,8 +127,8 @@ var WaterfallAxis;
             this.dummyStackItem = dummyStackItem;
             // Render each waterfall stack total
             if (stackTotalGroup) {
-                objectEach(waterfallStacks, function (type) {
-                    objectEach(type, function (stackItem, key) {
+                objectEach(waterfallStacks, (type) => {
+                    objectEach(type, (stackItem, key) => {
                         dummyStackItem.total = stackItem.stackTotal;
                         dummyStackItem.x = +key;
                         if (stackItem.label) {
@@ -79,69 +144,6 @@ var WaterfallAxis;
         }
     }
     WaterfallAxis.Composition = Composition;
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /* eslint-disable no-invalid-this, valid-jsdoc */
-    /**
-     * @private
-     */
-    function compose(AxisClass, ChartClass) {
-        addEvent(AxisClass, 'init', onInit);
-        addEvent(AxisClass, 'afterBuildStacks', onAfterBuildStacks);
-        addEvent(AxisClass, 'afterRender', onAfterRender);
-        addEvent(ChartClass, 'beforeRedraw', onBeforeRedraw);
-    }
-    WaterfallAxis.compose = compose;
-    /**
-     * @private
-     */
-    function onAfterBuildStacks() {
-        const axis = this;
-        const stacks = axis.waterfall.stacks;
-        if (stacks) {
-            stacks.changed = false;
-            delete stacks.alreadyChanged;
-        }
-    }
-    /**
-     * @private
-     */
-    function onAfterRender() {
-        const axis = this;
-        const stackLabelOptions = axis.options.stackLabels;
-        if (stackLabelOptions && stackLabelOptions.enabled &&
-            axis.waterfall.stacks) {
-            axis.waterfall.renderStackTotals();
-        }
-    }
-    /**
-     * @private
-     */
-    function onBeforeRedraw() {
-        let axes = this.axes, series = this.series, i = series.length;
-        while (i--) {
-            if (series[i].options.stacking) {
-                axes.forEach(function (axis) {
-                    if (!axis.isXAxis) {
-                        axis.waterfall.stacks.changed = true;
-                    }
-                });
-                i = 0;
-            }
-        }
-    }
-    /**
-     * @private
-     */
-    function onInit() {
-        const axis = this;
-        if (!axis.waterfall) {
-            axis.waterfall = new Composition(axis);
-        }
-    }
 })(WaterfallAxis || (WaterfallAxis = {}));
 /* *
  *

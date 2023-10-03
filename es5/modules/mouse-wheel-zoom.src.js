@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-09-22)
+ * @license Highcharts JS v11.1.0 (2023-10-03)
  *
  * Mousewheel zoom module
  *
@@ -215,15 +215,17 @@
             var _this = this;
             var chart = this, wheelZoomOptions = optionsToObject(chart.options.chart.zooming.mouseWheel);
             if (wheelZoomOptions.enabled) {
+                var haltScroll_1 = false;
                 addEvent(this.container, 'wheel', function (e) {
                     e = _this.pointer.normalize(e);
+                    haltScroll_1 = chart.pointer.inClass(e.target, 'highcharts-no-mousewheel');
                     // Firefox uses e.detail, WebKit and IE uses deltaX, deltaY, deltaZ.
-                    if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
+                    if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) && !haltScroll_1) {
                         var wheelSensitivity = pick(wheelZoomOptions.sensitivity, 1.1), delta = e.detail || ((e.deltaY || 0) / 120);
                         zoomBy(chart, Math.pow(wheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, wheelZoomOptions);
                     }
                     // prevent page scroll
-                    if (e.preventDefault) {
+                    if (e.preventDefault && !haltScroll_1) {
                         e.preventDefault();
                     }
                 });

@@ -10,16 +10,29 @@
 'use strict';
 import PC from '../Core/Geometry/PolygonClip.js';
 const { clipLineString, clipPolygon } = PC;
-import registry from './Projections/ProjectionRegistry.js';
+import ProjectionRegistry from './Projections/ProjectionRegistry.js';
 import U from '../Core/Utilities.js';
 const { clamp, erase } = U;
-const deg2rad = Math.PI * 2 / 360;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const deg2rad = Math.PI * 2 / 360, 
 // Safe padding on either side of the antimeridian to avoid points being
 // projected to the wrong side of the plane
-const floatCorrection = 0.000001;
-// Keep longitude within -180 and 180. This is faster than using the modulo
-// operator, and preserves the distinction between -180 and 180.
-const wrapLon = (lon) => {
+floatCorrection = 0.000001;
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Keep longitude within -180 and 180. This is faster than using the modulo
+ * operator, and preserves the distinction between -180 and 180.
+ * @private
+ */
+function wrapLon(lon) {
     // Replacing the if's with while would increase the range, but make it prone
     // to crashes on bad data
     if (lon < -180) {
@@ -29,27 +42,34 @@ const wrapLon = (lon) => {
         lon -= 360;
     }
     return lon;
-};
+}
+/* *
+ *
+ *  Class
+ *
+ * */
 class Projection {
-    // Add a projection definition to the registry, accessible by its `name`.
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
+    /**
+     * Add a projection definition to the registry, accessible by its `name`.
+     * @private
+     */
     static add(name, definition) {
         Projection.registry[name] = definition;
     }
-    // Calculate the great circle between two given coordinates
+    /**
+     * Calculate the great circle between two given coordinates.
+     * @private
+     */
     static greatCircle(point1, point2, inclusive) {
-        const { atan2, cos, sin, sqrt } = Math;
-        const lat1 = point1[1] * deg2rad;
-        const lon1 = point1[0] * deg2rad;
-        const lat2 = point2[1] * deg2rad;
-        const lon2 = point2[0] * deg2rad;
-        const deltaLat = lat2 - lat1;
-        const deltaLng = lon2 - lon1;
-        const calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
-            cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2);
-        const calcB = 2 * atan2(sqrt(calcA), sqrt(1 - calcA));
-        const distance = calcB * 6371e3; // in meters
-        const jumps = Math.round(distance / 500000); // 500 km each jump
-        const lineString = [];
+        const { atan2, cos, sin, sqrt } = Math, lat1 = point1[1] * deg2rad, lon1 = point1[0] * deg2rad, lat2 = point2[1] * deg2rad, lon2 = point2[0] * deg2rad, deltaLat = lat2 - lat1, deltaLng = lon2 - lon1, calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
+            cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2), calcB = 2 * atan2(sqrt(calcA), sqrt(1 - calcA)), distance = calcB * 6371e3, // In meters
+        jumps = Math.round(distance / 500000), // 500 km each jump
+        lineString = [];
         if (inclusive) {
             lineString.push(point1);
         }
@@ -57,13 +77,7 @@ class Projection {
             const step = 1 / jumps;
             for (let fraction = step; fraction < 0.999; // Account for float errors
              fraction += step) {
-                const A = sin((1 - fraction) * calcB) / sin(calcB);
-                const B = sin(fraction * calcB) / sin(calcB);
-                const x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2);
-                const y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2);
-                const z = A * sin(lat1) + B * sin(lat2);
-                const lat3 = atan2(z, sqrt(x * x + y * y));
-                const lon3 = atan2(y, x);
+                const A = sin((1 - fraction) * calcB) / sin(calcB), B = sin(fraction * calcB) / sin(calcB), x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2), y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2), z = A * sin(lat1) + B * sin(lat2), lat3 = atan2(z, sqrt(x * x + y * y)), lon3 = atan2(y, x);
                 lineString.push([lon3 / deg2rad, lat3 / deg2rad]);
             }
         }
@@ -90,6 +104,11 @@ class Projection {
         const { name, rotation } = options || {};
         return [name, rotation && rotation.join(',')].join(';');
     }
+    /* *
+     *
+     *  Constructor
+     *
+     * */
     constructor(options = {}) {
         // Whether the chart has points, lines or polygons given as coordinates
         // with positive up, as opposed to paths in the SVG plane with positive
@@ -128,6 +147,11 @@ class Projection {
             def && def.bounds :
             projectedBounds;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     lineIntersectsBounds(line) {
         const { x1, x2, y1, y2 } = this.bounds || {};
         const getIntersect = (line, dim, val) => {
@@ -159,8 +183,10 @@ class Projection {
         }
         return ret;
     }
-    /*
-     * Take the rotation options and return the appropriate projection functions
+    /**
+     * Take the rotation options and returns the appropriate projection
+     * functions.
+     * @private
      */
     getRotator(rotation) {
         const deltaLambda = rotation[0] * deg2rad, deltaPhi = (rotation[1] || 0) * deg2rad, deltaGamma = (rotation[2] || 0) * deg2rad;
@@ -192,25 +218,31 @@ class Projection {
             }
         };
     }
-    // Project a lonlat coordinate position to xy. Dynamically overridden when
-    // projection is set.
+    /**
+     * Project a lonlat coordinate position to xy. Dynamically overridden when
+     * projection is set.
+     * @private
+     */
     forward(lonLat) {
         return lonLat;
     }
-    // Unproject an xy chart coordinate position to lonlat. Dynamically
-    // overridden when projection is set.
+    /**
+     * Unproject an xy chart coordinate position to lonlat. Dynamically
+     * overridden when projection is set.
+     * @private
+     */
     inverse(xy) {
         return xy;
     }
     cutOnAntimeridian(poly, isPolygon) {
-        const antimeridian = 180;
-        const intersections = [];
+        const antimeridian = 180, intersections = [];
         const polygons = [poly];
-        poly.forEach((lonLat, i) => {
+        for (let i = 0, iEnd = poly.length; i < iEnd; ++i) {
+            const lonLat = poly[i];
             let previousLonLat = poly[i - 1];
             if (!i) {
                 if (!isPolygon) {
-                    return;
+                    continue;
                 }
                 // Else, wrap to beginning
                 previousLonLat = poly[poly.length - 1];
@@ -235,7 +267,7 @@ class Projection {
                     lonLat
                 });
             }
-        });
+        }
         let polarIntersection;
         if (intersections.length) {
             if (isPolygon) {
@@ -314,7 +346,10 @@ class Projection {
         }
         return polygons;
     }
-    // Take a GeoJSON geometry and return a translated SVGPath
+    /**
+     * Take a GeoJSON geometry and return a translated SVGPath.
+     * @private
+     */
     path(geometry) {
         const { bounds, def, rotator } = this;
         const antimeridian = 180;
@@ -508,5 +543,15 @@ class Projection {
         return path;
     }
 }
-Projection.registry = registry;
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+Projection.registry = ProjectionRegistry;
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Projection;

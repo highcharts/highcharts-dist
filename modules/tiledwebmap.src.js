@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-09-22)
+ * @license Highcharts JS v11.1.0 (2023-10-03)
  *
  * (c) 2009-2022
  *
@@ -37,8 +37,21 @@
         /* *
          * OpenStreetMap provider, used for tile map services
          * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         class OpenStreetMap {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.defaultCredits = ('Map data &copy2023' +
+                    ' <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>');
+                this.initialProjectionName = 'WebMercator';
                 this.subdomains = ['a', 'b', 'c'];
                 this.themes = {
                     Standard: {
@@ -61,11 +74,13 @@
                         (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)`
                     }
                 };
-                this.initialProjectionName = 'WebMercator';
-                this.defaultCredits = `Map data \u00a92023 <a href="https://www.openstreetmap.org/copyright">
-                    OpenStreetMap</a>`;
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return OpenStreetMap;
     });
@@ -73,8 +88,23 @@
         /* *
          * Stamen provider, used for tile map services
          * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         class Stamen {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.defaultCredits = ('&copy; Map tiles by <a href="https://stamen.com">Stamen Design</a>,' +
+                    ' under <a href="https://creativecommons.org/licenses/by/3.0">CC BY' +
+                    ' 3.0</a>. Data by <a href="https://openstreetmap.org">OpenStreetMap' +
+                    '</a>, under <a href="https://www.openstreetmap.org/copyright">ODbL</a>');
+                this.initialProjectionName = 'WebMercator';
                 this.subdomains = ['a', 'b', 'c', 'd'];
                 this.themes = {
                     Toner: {
@@ -106,19 +136,20 @@
                         url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png',
                         minZoom: 1,
                         maxZoom: 16,
-                        credits: `\u00a9 Map tiles by <a href="https://stamen.com">Stamen Design</a>,
-                    under <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.
-                    Data by <a href="https://openstreetmap.org">OpenStreetMap</a>, under
-                    <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>`
+                        credits: ('&copy Map tiles by <a href="https://stamen.com">Stamen' +
+                            ' Design</a>, under <a href="https://creativecommons.org/' +
+                            'licenses/by/3.0">CC BY 3.0</a>. Data by <a href="https://' +
+                            'openstreetmap.org">OpenStreetMap</a>, under <a href=' +
+                            '"https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>')
                     }
                 };
-                this.initialProjectionName = 'WebMercator';
-                this.defaultCredits = `\u00a9 Map tiles by <a href="https://stamen.com">Stamen Design</a>,
-                under <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.
-                Data by <a href="https://openstreetmap.org">OpenStreetMap</a>, under
-                <a href="https://www.openstreetmap.org/copyright">ODbL</a>`;
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Stamen;
     });
@@ -126,8 +157,22 @@
         /* *
          * LimaLabs provider, used for tile map services
          * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         class LimaLabs {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.defaultCredits = ('Map data &copy;2023' +
+                    ' <a href="https://maps.lima-labs.com/">LimaLabs</a>');
+                this.initialProjectionName = 'WebMercator';
+                this.requiresApiKey = true;
                 this.themes = {
                     Standard: {
                         url: 'https://cdn.lima-labs.com/{zoom}/{x}/{y}.png?api={apikey}',
@@ -135,11 +180,13 @@
                         maxZoom: 20
                     }
                 };
-                this.initialProjectionName = 'WebMercator';
-                this.defaultCredits = 'Map data \u00a92023 <a href="https://maps.lima-labs.com/">LimaLabs</a>';
-                this.requiresApiKey = true;
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return LimaLabs;
     });
@@ -147,8 +194,23 @@
         /* *
          * Thunderforest provider, used for tile map services
          * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         class Thunderforest {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.defaultCredits = ('Maps &copy <a href="https://www.thunderforest.com">Thunderforest</a>' +
+                    ', Data &copy; <a href="https://www.openstreetmap.org/copyright">' +
+                    'OpenStreetMap contributors</a>');
+                this.initialProjectionName = 'WebMercator';
+                this.requiresApiKey = true;
                 this.subdomains = ['a', 'b', 'c'];
                 this.themes = {
                     OpenCycleMap: {
@@ -197,12 +259,13 @@
                         maxZoom: 22
                     }
                 };
-                this.initialProjectionName = 'WebMercator';
-                this.defaultCredits = `Maps \u00a9 <a href="https://www.thunderforest.com">Thunderforest</a>,
-                Data \u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>`;
-                this.requiresApiKey = true;
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Thunderforest;
     });
@@ -210,8 +273,22 @@
         /* *
          * Esri provider, used for tile map services
          * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         class Esri {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.defaultCredits = ('Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, ' +
+                    ' Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong),' +
+                    ' Esri (Thailand), TomTom, 2012');
+                this.initialProjectionName = 'WebMercator';
                 this.themes = {
                     WorldStreetMap: {
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
@@ -228,25 +305,25 @@
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
                         minZoom: 0,
                         maxZoom: 20,
-                        credits: `Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, 
-                        Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, 
-                        Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), 
-                        and the GIS User Community`
+                        credits: ('Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom,' +
+                            ' Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL,' +
+                            ' Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong),' +
+                            ' and the GIS User Community')
                     },
                     WorldImagery: {
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                         minZoom: 0,
                         maxZoom: 20,
-                        credits: `Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, 
-                        USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, 
-                        and the GIS User Community`
+                        credits: ('Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS,' +
+                            ' AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP,' +
+                            ' and the GIS User Community')
                     },
                     WorldTerrain: {
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
                         minZoom: 0,
                         maxZoom: 13,
-                        credits: `Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, 
-                        DeLorme, and NPS`
+                        credits: ('Tiles &copy; Esri &mdash; Source: USGS, Esri, TANA, DeLorme,' +
+                            ' and NPS')
                     },
                     WorldShadedRelief: {
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
@@ -258,16 +335,15 @@
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
                         minZoom: 0,
                         maxZoom: 8,
-                        credits: `Tiles &copy; Esri &mdash; Source: US National Park 
-                        Service`
+                        credits: 'Tiles &copy; Esri &mdash; Source: US National Park Service'
                     },
                     NatGeoWorldMap: {
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
                         minZoom: 0,
                         maxZoom: 16,
-                        credits: `Tiles &copy; Esri &mdash; National Geographic, Esri,
-                        DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO,
-                         NOAA, iPC`
+                        credits: ('Tiles &copy; Esri &mdash; National Geographic, Esri,' +
+                            ' DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN,' +
+                            ' GEBCO, NOAA, iPC')
                     },
                     WorldGrayCanvas: {
                         url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
@@ -276,12 +352,13 @@
                         credits: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
                     }
                 };
-                this.initialProjectionName = 'WebMercator';
-                this.defaultCredits = `Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ,
-                USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong),
-                Esri (Thailand), TomTom, 2012`;
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Esri;
     });
@@ -289,8 +366,21 @@
         /* *
          * USGS provider, used for tile map services
          * */
+        /* *
+         *
+         *  Class
+         *
+         * */
         class USGS {
             constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.defaultCredits = ('Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological' +
+                    'Survey</a>');
+                this.initialProjectionName = 'WebMercator';
                 this.themes = {
                     USTopo: {
                         url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
@@ -308,32 +398,49 @@
                         maxZoom: 20
                     }
                 };
-                this.initialProjectionName = 'WebMercator';
-                this.defaultCredits = `Tiles courtesy of the <a href="https://usgs.gov/">U.S.
-                Geological Survey</a>`;
             }
         }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return USGS;
     });
-    _registerModule(_modules, 'Maps/TilesProviders/TilesProvidersRegistry.js', [_modules['Maps/TilesProviders/OpenStreetMap.js'], _modules['Maps/TilesProviders/Stamen.js'], _modules['Maps/TilesProviders/LimaLabs.js'], _modules['Maps/TilesProviders/Thunderforest.js'], _modules['Maps/TilesProviders/Esri.js'], _modules['Maps/TilesProviders/USGS.js']], function (OpenStreetMap, Stamen, LimaLabs, Thunderforest, Esri, USGS) {
+    _registerModule(_modules, 'Maps/TilesProviders/TilesProviderRegistry.js', [_modules['Maps/TilesProviders/OpenStreetMap.js'], _modules['Maps/TilesProviders/Stamen.js'], _modules['Maps/TilesProviders/LimaLabs.js'], _modules['Maps/TilesProviders/Thunderforest.js'], _modules['Maps/TilesProviders/Esri.js'], _modules['Maps/TilesProviders/USGS.js']], function (OpenStreetMap, Stamen, LimaLabs, Thunderforest, Esri, USGS) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const registry = {
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const tilesProviderRegistry = {
+            Esri,
+            LimaLabs,
             OpenStreetMap,
             Stamen,
-            LimaLabs,
             Thunderforest,
-            Esri,
             USGS
         };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return registry;
+        return tilesProviderRegistry;
     });
-    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProvidersRegistry.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TilesProvidersRegistry, Chart, U) {
+    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Core/Utilities.js']], function (Chart, SeriesRegistry, TilesProvidersRegistry, U) {
         /* *
          *
          *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
@@ -343,7 +450,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { map: MapSeries } } = SeriesRegistry;
+        const { map: MapSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, defined, error, merge, pick } = U;
         /**
          * The series type
@@ -945,10 +1052,10 @@
 
         return TiledWebMapSeries;
     });
-    _registerModule(_modules, 'masters/modules/tiledwebmap.src.js', [_modules['Core/Globals.js'], _modules['Maps/TilesProviders/TilesProvidersRegistry.js']], function (Highcharts, TilesProvidersRegistry) {
+    _registerModule(_modules, 'masters/modules/tiledwebmap.src.js', [_modules['Core/Globals.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js']], function (Highcharts, TilesProviderRegistry) {
 
         const G = Highcharts;
-        G.TilesProvidersRegistry = TilesProvidersRegistry;
+        G.TilesProviderRegistry = TilesProviderRegistry;
 
     });
 }));

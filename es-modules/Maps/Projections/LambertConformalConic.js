@@ -2,9 +2,24 @@
  * Lambert Conformal Conic projection
  * */
 'use strict';
+/* *
+ *
+ *  Constants
+ *
+ * */
 const sign = Math.sign ||
     ((n) => (n === 0 ? 0 : n > 0 ? 1 : -1)), scale = 63.78137, deg2rad = Math.PI / 180, halfPI = Math.PI / 2, eps10 = 1e-6, tany = (y) => Math.tan((halfPI + y) / 2);
+/* *
+ *
+ *  Class
+ *
+ * */
 class LambertConformalConic {
+    /* *
+     *
+     *  Constructor
+     *
+     * */
     constructor(options) {
         var _a;
         const parallels = (options.parallels || [])
@@ -22,8 +37,13 @@ class LambertConformalConic {
         this.n = n;
         this.c = cosLat1 * Math.pow(tany(lat1), n) / n;
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     forward(lonLat) {
-        const lon = lonLat[0] * deg2rad, { c, n, projectedBounds } = this;
+        const { c, n, projectedBounds } = this, lon = lonLat[0] * deg2rad;
         let lat = lonLat[1] * deg2rad;
         if (c > 0) {
             if (lat < -halfPI + eps10) {
@@ -45,7 +65,7 @@ class LambertConformalConic {
         return xy;
     }
     inverse(xy) {
-        const x = xy[0] / scale, y = xy[1] / scale, { c, n } = this, cy = c - y, rho = sign(n) * Math.sqrt(x * x + cy * cy);
+        const { c, n } = this, x = xy[0] / scale, y = xy[1] / scale, cy = c - y, rho = sign(n) * Math.sqrt(x * x + cy * cy);
         let l = Math.atan2(x, Math.abs(cy)) * sign(cy);
         if (cy * n < 0) {
             l -= Math.PI * sign(x) * sign(cy);
@@ -56,4 +76,9 @@ class LambertConformalConic {
         ];
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default LambertConformalConic;

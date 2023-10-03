@@ -20,10 +20,6 @@ declare module "../highcharts" {
      */
     function hasWebGLSupport(): boolean;
     /**
-     * Initialize the canvas boost.
-     */
-    function initCanvasBoost(): void;
-    /**
      * Override a bunch of methods the same way. If the number of points is
      * below the threshold, run the original method. If not, check for a canvas
      * version or do nothing.

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-09-22)
+ * @license Highcharts JS v11.1.0 (2023-10-03)
  *
  * Annotations module
  *
@@ -5386,7 +5386,7 @@
             var lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
             // set small size
             if (popupDiv.className.indexOf(toolbarClass) === -1) {
-                popupDiv.className += ' ' + toolbarClass;
+                popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
             }
             // set position
             if (chart) {

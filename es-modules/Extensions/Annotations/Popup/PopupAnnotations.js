@@ -66,7 +66,7 @@ function addToolbar(chart, options, callback) {
     const lang = this.lang, popupDiv = this.container, showForm = this.showForm, toolbarClass = 'highcharts-annotation-toolbar';
     // set small size
     if (popupDiv.className.indexOf(toolbarClass) === -1) {
-        popupDiv.className += ' ' + toolbarClass;
+        popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
     }
     // set position
     if (chart) {

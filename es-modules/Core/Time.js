@@ -417,7 +417,7 @@ class Time {
             // Lower case AM or PM
             P: hours < 12 ? 'am' : 'pm',
             // Two digits seconds, 00 through  59
-            S: pad(date.getSeconds()),
+            S: pad(this.get('Seconds', date)),
             // Milliseconds (naming from Ruby)
             L: pad(Math.floor(timestamp % 1000), 3)
         }, H.dateFormats);

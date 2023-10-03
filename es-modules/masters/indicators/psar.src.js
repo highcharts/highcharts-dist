@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-09-22)
+ * @license Highstock JS v11.1.0 (2023-10-03)
  * @module highcharts/indicators/psar
  * @requires highcharts
  * @requires highcharts/modules/stock

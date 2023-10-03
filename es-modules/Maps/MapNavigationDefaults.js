@@ -8,14 +8,15 @@
  *
  * */
 'use strict';
-import D from '../Core/Defaults.js';
-import U from '../Core/Utilities.js';
-const { extend } = U;
 /* *
  *
  *  Constants
  *
  * */
+const lang = {
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out'
+};
 /**
  * The `mapNavigation` option handles buttons for navigation in addition to
  * `mousewheel` and `doubleclick` handlers for map zooming.
@@ -23,7 +24,7 @@ const { extend } = U;
  * @product      highmaps
  * @optionparent mapNavigation
  */
-const MapNavigationDefaults = {
+const mapNavigation = {
     /**
      * General options for the map navigation buttons. Individual options
      * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
@@ -252,19 +253,11 @@ const MapNavigationDefaults = {
 };
 /* *
  *
- *  Composition
- *
- * */
-// Add language
-extend(D.defaultOptions.lang, {
-    zoomIn: 'Zoom in',
-    zoomOut: 'Zoom out'
-});
-// Set the default map navigation options
-D.defaultOptions.mapNavigation = MapNavigationDefaults;
-/* *
- *
  *  Default Export
  *
  * */
-export default MapNavigationDefaults;
+const mapNavigationDefaults = {
+    lang,
+    mapNavigation
+};
+export default mapNavigationDefaults;

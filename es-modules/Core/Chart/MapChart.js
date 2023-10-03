@@ -13,8 +13,13 @@ import D from '../Defaults.js';
 const { getOptions } = D;
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import U from '../Utilities.js';
-const { merge, pick } = U;
+const { isNumber, merge, pick } = U;
 import '../../Maps/MapSymbols.js';
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
  *
@@ -25,6 +30,11 @@ import '../../Maps/MapSymbols.js';
  * @extends Highcharts.Chart
  */
 class MapChart extends Chart {
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * Initializes the chart. The constructor's arguments are passed on
      * directly.
@@ -65,9 +75,62 @@ class MapChart extends Chart {
         );
         super.init(options, callback);
     }
+    /**
+     * Highcharts Maps only. Zoom in or out of the map. See also
+     * {@link Point#zoomTo}. See {@link Chart#fromLatLonToPoint} for how to get
+     * the `centerX` and `centerY` parameters for a geographic location.
+     *
+     * Deprecated as of v9.3 in favor of [MapView.zoomBy](https://api.highcharts.com/class-reference/Highcharts.MapView#zoomBy).
+     *
+     * @deprecated
+     * @function Highcharts.Chart#mapZoom
+     *
+     * @param {number} [howMuch]
+     *        How much to zoom the map. Values less than 1 zooms in. 0.5 zooms
+     *        in to half the current view. 2 zooms to twice the current view. If
+     *        omitted, the zoom is reset.
+     *
+     * @param {number} [xProjected]
+     *        The projected x position to keep stationary when zooming, if
+     *        available space.
+     *
+     * @param {number} [yProjected]
+     *        The projected y position to keep stationary when zooming, if
+     *        available space.
+     *
+     * @param {number} [chartX]
+     *        Keep this chart position stationary if possible. This is used for
+     *        example in `mousewheel` events, where the area under the mouse
+     *        should be fixed as we zoom in.
+     *
+     * @param {number} [chartY]
+     *        Keep this chart position stationary if possible.
+     */
+    mapZoom(howMuch, xProjected, yProjected, chartX, chartY) {
+        if (this.mapView) {
+            if (isNumber(howMuch)) {
+                // Compliance, mapView.zoomBy uses different values
+                howMuch = Math.log(howMuch) / Math.log(0.5);
+            }
+            this.mapView.zoomBy(howMuch, isNumber(xProjected) && isNumber(yProjected) ?
+                this.mapView.projection.inverse([xProjected, yProjected]) :
+                void 0, isNumber(chartX) && isNumber(chartY) ?
+                [chartX, chartY] :
+                void 0);
+        }
+    }
 }
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Class Namespace
+ *
+ * */
 (function (MapChart) {
+    /* *
+     *
+     *  Constants
+     *
+     * */
     /**
      * Contains all loaded map data for Highmaps.
      *
@@ -77,6 +140,11 @@ class MapChart extends Chart {
      * @type {Record<string,*>}
      */
     MapChart.maps = {};
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * The factory function for creating new map charts. Creates a new {@link
      * Highcharts.MapChart|MapChart} object with different default options than
@@ -114,7 +182,8 @@ class MapChart extends Chart {
      *
      * @function Highcharts.splitPath
      *
-     * @param {string|Array<string|number>} path
+     * @param {string|Array<(string|number)>} path
+     *        Path to split.
      *
      * @return {Highcharts.SVGPathArray}
      * Splitted SVG path
