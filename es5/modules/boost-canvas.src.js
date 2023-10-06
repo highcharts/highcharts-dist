@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-03)
+ * @license Highcharts JS v11.1.0 (2023-10-06)
  *
  * Boost module
  *
@@ -2280,7 +2280,7 @@
         var getBoostClipRect = BoostChart.getBoostClipRect, isChartSeriesBoosting = BoostChart.isChartSeriesBoosting;
         var getOptions = D.getOptions;
         var doc = H.doc, noop = H.noop, win = H.win;
-        var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, wrap = U.wrap;
+        var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, wrap = U.wrap, defined = U.defined;
         /* *
          *
          *  Constants
@@ -2899,7 +2899,7 @@
             function processPoint(d, i) {
                 var chartDestroyed = typeof chart.index === 'undefined';
                 var x, y, clientX, plotY, percentage, low = false, isYInside = true;
-                if (typeof d === 'undefined') {
+                if (!defined(d)) {
                     return true;
                 }
                 if (!chartDestroyed) {

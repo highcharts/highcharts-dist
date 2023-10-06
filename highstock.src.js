@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-03)
+ * @license Highstock JS v11.1.0 (2023-10-06)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -31743,6 +31743,20 @@
                 );
             }
             /**
+             * Determine whether the marker in a series has changed.
+             *
+             * @private
+             * @function Highcharts.Series#hasMarkerChanged
+             */
+            hasMarkerChanged(options, oldOptions) {
+                const series = this, marker = options.marker, oldMarker = oldOptions.marker || {};
+                return marker && ((oldMarker.enabled && !marker.enabled) ||
+                    oldMarker.symbol !== marker.symbol || // #10870, #15946
+                    oldMarker.height !== marker.height || // #16274
+                    oldMarker.width !== marker.width // #16274
+                );
+            }
+            /**
              * Return an auto incremented x value based on the pointStart and
              * pointInterval options. This is only used if an x value is not given
              * for the point that calls autoIncrement.
@@ -34271,15 +34285,9 @@
                         kinds.dataLabel = 1;
                     }
                     else {
-                        const { marker } = seriesOptions, oldMarker = oldOptions.marker || {};
                         // If the  marker got disabled or changed its symbol, width or
                         // height - destroy
-                        if (marker &&
-                            ((oldMarker.enabled && !marker.enabled) ||
-                                oldMarker.symbol !== marker.symbol || // #10870, #15946
-                                oldMarker.height !== marker.height || // #16274
-                                oldMarker.width !== marker.width // #16274
-                            )) {
+                        if (this.hasMarkerChanged(seriesOptions, oldOptions)) {
                             kinds.graphic = 1;
                         }
                         if (!((_b = series.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(series))) {
@@ -52271,7 +52279,7 @@
              * }]
              * ```
              *
-             * @sample {highstock} stock/rangeselector/datagrouping/
+             * @sample {highstock} stock/demo/rangeselector-datagrouping/
              *         Data grouping by buttons
              *
              * @type      {Array<*>}
@@ -52346,7 +52354,7 @@
              *
              * @see [series.dataGrouping](#plotOptions.series.dataGrouping)
              *
-             * @sample {highstock} stock/rangeselector/datagrouping/
+             * @sample {highstock} stock/demo/rangeselector-datagrouping/
              *         Data grouping by range selector buttons
              *
              * @type      {*}

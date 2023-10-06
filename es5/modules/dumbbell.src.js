@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-03)
+ * @license Highcharts JS v11.1.0 (2023-10-06)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -59,7 +59,7 @@
             };
         })();
         var _a = SeriesRegistry.seriesTypes.area.prototype, AreaPoint = _a.pointClass, areaProto = _a.pointClass.prototype;
-        var defined = U.defined, isNumber = U.isNumber;
+        var defined = U.defined, isNumber = U.isNumber, merge = U.merge;
         /* *
          *
          *  Class
@@ -100,7 +100,7 @@
              * @private
              */
             AreaRangePoint.prototype.setState = function () {
-                var prevState = this.state, series = this.series, isPolar = series.chart.polar;
+                var prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -109,10 +109,8 @@
                     // Boost doesn't calculate plotLow
                     this.plotLow = this.plotY = series.yAxis.toPixels(this.low, true);
                 }
-                if (series.stateMarkerGraphic) {
-                    series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
-                    series.stateMarkerGraphic = series.upperStateMarkerGraphic;
-                }
+                series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
+                series.stateMarkerGraphic = series.upperStateMarkerGraphic;
                 // Change state also for the top marker
                 this.graphic = this.graphics && this.graphics[1];
                 this.plotY = this.plotHigh;
@@ -128,14 +126,16 @@
                 if (isPolar && isNumber(this.plotLowX)) {
                     this.plotX = this.plotLowX;
                 }
-                if (series.stateMarkerGraphic) {
-                    series.upperStateMarkerGraphic = series.stateMarkerGraphic;
-                    series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
-                    // Lower marker is stored at stateMarkerGraphic
-                    // to avoid reference duplication (#7021)
-                    series.lowerStateMarkerGraphic = void 0;
-                }
+                series.upperStateMarkerGraphic = series.stateMarkerGraphic;
+                series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
+                // Lower marker is stored at stateMarkerGraphic
+                // to avoid reference duplication (#7021)
+                series.lowerStateMarkerGraphic = void 0;
+                var originalSettings = series.modifyMarkerSettings();
+                // Bottom state
                 areaProto.setState.apply(this, arguments);
+                // Restore previous state
+                series.restoreMarkerSettings(originalSettings);
             };
             AreaRangePoint.prototype.haloPath = function () {
                 var isPolar = this.series.chart.polar;
@@ -231,7 +231,7 @@
              */
             DumbbellPoint.prototype.setState = function () {
                 var _a;
-                var point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
+                var point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker === null || seriesLowMarker === void 0 ? void 0 : seriesLowMarker.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
                 this.pointSetState.apply(this, arguments);
                 if (!point.state) {
                     verb = 'animate';
@@ -493,7 +493,7 @@
              */
             DumbbellSeries.prototype.drawPoints = function () {
                 var _a;
-                var series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
+                var series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, seriesLowMarker = series.options.lowMarker, i = 0, lowerGraphicColor, point, zoneColor;
                 this.seriesDrawPoints.apply(series, arguments);
                 // Draw connectors and color upper markers
                 while (i < pointLength) {
@@ -507,7 +507,7 @@
                     ((_a = point.connector) === null || _a === void 0 ? void 0 : _a.element).point = point;
                     if (lowerGraphic) {
                         zoneColor = point.zone && point.zone.color;
-                        lowerGraphicColor = pick(point.options.lowColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
+                        lowerGraphicColor = pick(point.options.lowColor, seriesLowMarker === null || seriesLowMarker === void 0 ? void 0 : seriesLowMarker.fillColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
                         if (!chart.styledMode) {
                             lowerGraphic.attr({
                                 fill: lowerGraphicColor
@@ -607,7 +607,9 @@
                 crisp: false,
                 pointPadding: 0.1,
                 /**
-                 * Color of the start markers in a dumbbell graph.
+                 * Color of the start markers in a dumbbell graph. This option takes
+                 * priority over the series color. To avoid this, set `lowColor` to
+                 * `undefined`.
                  *
                  * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 8.0.0
@@ -622,6 +624,10 @@
                  * @product   highcharts highstock
                  * @since 8.0.0
                  * @apioption plotOptions.dumbbell.connectorColor
+                 */
+                /**
+                 *
+                 * @apioption plotOptions.series.lowMarker
                  */
                 states: {
                     hover: {
@@ -730,6 +736,28 @@
          * @apioption series.dumbbell.data
          */
         /**
+         * Options for the lower markers of the dumbbell-like series. When `lowMarker`
+         * is not defined, options inherit form the marker.
+         *
+         * @see [marker](#series.arearange.marker)
+         *
+         * @declare   Highcharts.PointMarkerOptionsObject
+         * @extends   plotOptions.series.marker
+         * @default   undefined
+         * @product   highcharts highstock
+         * @apioption plotOptions.dumbbell.lowMarker
+         */
+        /**
+         *
+         * @sample {highcharts} highcharts/demo/dumbbell-markers
+         *         Dumbbell chart with lowMarker option
+         *
+         * @declare   Highcharts.PointMarkerOptionsObject
+         * @extends   plotOptions.series.marker.symbol
+         * @product   highcharts highstock
+         * @apioption plotOptions.dumbbell.lowMarker.symbol
+         */
+        /**
          * Color of the line that connects the dumbbell point's values.
          * By default it is the series' color.
          *
@@ -748,7 +776,9 @@
          * @apioption   series.dumbbell.data.connectorWidth
          */
         /**
-         * Color of the start markers in a dumbbell graph.
+         * Color of the start markers in a dumbbell graph. This option takes
+         * priority over the series color. To avoid this, set `lowColor` to
+         * `undefined`.
          *
          * @type        {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @since       8.0.0

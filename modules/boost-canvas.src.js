@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-03)
+ * @license Highcharts JS v11.1.0 (2023-10-06)
  *
  * Boost module
  *
@@ -2259,7 +2259,7 @@
         const { getBoostClipRect, isChartSeriesBoosting } = BoostChart;
         const { getOptions } = D;
         const { doc, noop, win } = H;
-        const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap } = U;
+        const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap, defined } = U;
         /* *
          *
          *  Constants
@@ -2875,7 +2875,7 @@
             function processPoint(d, i) {
                 const chartDestroyed = typeof chart.index === 'undefined';
                 let x, y, clientX, plotY, percentage, low = false, isYInside = true;
-                if (typeof d === 'undefined') {
+                if (!defined(d)) {
                     return true;
                 }
                 if (!chartDestroyed) {

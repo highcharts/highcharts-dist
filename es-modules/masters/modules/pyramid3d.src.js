@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-03)
+ * @license Highcharts JS v11.1.0 (2023-10-06)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d

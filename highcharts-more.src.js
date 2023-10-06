@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-03)
+ * @license Highcharts JS v11.1.0 (2023-10-06)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -479,7 +479,7 @@
          *
          * */
         const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
-        const { defined, isNumber } = U;
+        const { defined, isNumber, merge } = U;
         /* *
          *
          *  Class
@@ -518,7 +518,7 @@
              * @private
              */
             setState() {
-                const prevState = this.state, series = this.series, isPolar = series.chart.polar;
+                const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -527,10 +527,8 @@
                     // Boost doesn't calculate plotLow
                     this.plotLow = this.plotY = series.yAxis.toPixels(this.low, true);
                 }
-                if (series.stateMarkerGraphic) {
-                    series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
-                    series.stateMarkerGraphic = series.upperStateMarkerGraphic;
-                }
+                series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
+                series.stateMarkerGraphic = series.upperStateMarkerGraphic;
                 // Change state also for the top marker
                 this.graphic = this.graphics && this.graphics[1];
                 this.plotY = this.plotHigh;
@@ -546,14 +544,16 @@
                 if (isPolar && isNumber(this.plotLowX)) {
                     this.plotX = this.plotLowX;
                 }
-                if (series.stateMarkerGraphic) {
-                    series.upperStateMarkerGraphic = series.stateMarkerGraphic;
-                    series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
-                    // Lower marker is stored at stateMarkerGraphic
-                    // to avoid reference duplication (#7021)
-                    series.lowerStateMarkerGraphic = void 0;
-                }
+                series.upperStateMarkerGraphic = series.stateMarkerGraphic;
+                series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
+                // Lower marker is stored at stateMarkerGraphic
+                // to avoid reference duplication (#7021)
+                series.lowerStateMarkerGraphic = void 0;
+                const originalSettings = series.modifyMarkerSettings();
+                // Bottom state
                 areaProto.setState.apply(this, arguments);
+                // Restore previous state
+                series.restoreMarkerSettings(originalSettings);
             }
             haloPath() {
                 const isPolar = this.series.chart.polar;
@@ -1018,11 +1018,33 @@
             alignDataLabel() {
                 columnProto.alignDataLabel.apply(this, arguments);
             }
+            modifyMarkerSettings() {
+                const series = this, originalMarkerSettings = {
+                    marker: series.options.marker,
+                    symbol: series.symbol
+                };
+                if (series.options.lowMarker) {
+                    const { options: { marker, lowMarker } } = series;
+                    series.options.marker = merge(marker, lowMarker);
+                    if (lowMarker.symbol) {
+                        series.symbol = lowMarker.symbol;
+                    }
+                }
+                return originalMarkerSettings;
+            }
+            restoreMarkerSettings(originalSettings) {
+                const series = this;
+                series.options.marker = originalSettings.marker;
+                series.symbol = originalSettings.symbol;
+            }
             drawPoints() {
                 const series = this, pointLength = series.points.length;
                 let i, point;
+                const originalSettings = series.modifyMarkerSettings();
                 // Draw bottom points
                 areaProto.drawPoints.apply(series, arguments);
+                // Restore previous state
+                series.restoreMarkerSettings(originalSettings);
                 // Prepare drawing top points
                 i = 0;
                 while (i < pointLength) {
@@ -1087,6 +1109,14 @@
                     }
                     i++;
                 }
+            }
+            hasMarkerChanged(options, oldOptions) {
+                const series = this, lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
+                return (lowMarker && (lowMarker.enabled === false ||
+                    oldMarker.symbol !== lowMarker.symbol || // #10870, #15946
+                    oldMarker.height !== lowMarker.height || // #16274
+                    oldMarker.width !== lowMarker.width // #16274
+                )) || super.hasMarkerChanged(options, oldOptions);
             }
         }
         AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
@@ -1243,6 +1273,28 @@
          * @default   {highcharts} 0.75
          * @default   {highstock} 0.75
          * @apioption series.arearange.fillOpacity
+         */
+        /**
+         * Options for the lower markers of the arearange-like series. When `lowMarker`
+         * is not defined, options inherit form the marker.
+         *
+         * @see [marker](#series.arearange.marker)
+         *
+         * @declare   Highcharts.PointMarkerOptionsObject
+         * @extends   plotOptions.series.marker
+         * @default   undefined
+         * @product   highcharts highstock
+         * @apioption plotOptions.arearange.lowMarker
+         */
+        /**
+         *
+         * @sample {highcharts} highcharts/series-arearange/lowmarker/
+         *         Area range chart with `lowMarker` option
+         *
+         * @declare   Highcharts.PointMarkerOptionsObject
+         * @extends   plotOptions.series.marker.symbol
+         * @product   highcharts highstock
+         * @apioption plotOptions.arearange.lowMarker.symbol
          */
         /**
          * The high or maximum value for each data point.

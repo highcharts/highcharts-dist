@@ -19,7 +19,7 @@ const { getOptions } = D;
 import H from '../../Core/Globals.js';
 const { doc, noop, win } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap } = U;
+const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap, defined } = U;
 import WGLRenderer from './WGLRenderer.js';
 /* *
  *
@@ -636,7 +636,7 @@ function seriesRenderCanvas() {
     function processPoint(d, i) {
         const chartDestroyed = typeof chart.index === 'undefined';
         let x, y, clientX, plotY, percentage, low = false, isYInside = true;
-        if (typeof d === 'undefined') {
+        if (!defined(d)) {
             return true;
         }
         if (!chartDestroyed) {

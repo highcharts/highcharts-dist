@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-10-03)
+ * @license Highcharts Gantt JS v11.1.0 (2023-10-06)
  *
  * Gantt series
  *
@@ -5728,7 +5728,7 @@
              * }]
              * ```
              *
-             * @sample {highstock} stock/rangeselector/datagrouping/
+             * @sample {highstock} stock/demo/rangeselector-datagrouping/
              *         Data grouping by buttons
              *
              * @type      {Array<*>}
@@ -5803,7 +5803,7 @@
              *
              * @see [series.dataGrouping](#plotOptions.series.dataGrouping)
              *
-             * @sample {highstock} stock/rangeselector/datagrouping/
+             * @sample {highstock} stock/demo/rangeselector-datagrouping/
              *         Data grouping by range selector buttons
              *
              * @type      {*}

@@ -202,7 +202,7 @@ class DumbbellSeries extends AreaRangeSeries {
      */
     drawPoints() {
         var _a;
-        let series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;
+        let series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, seriesLowMarker = series.options.lowMarker, i = 0, lowerGraphicColor, point, zoneColor;
         this.seriesDrawPoints.apply(series, arguments);
         // Draw connectors and color upper markers
         while (i < pointLength) {
@@ -216,7 +216,7 @@ class DumbbellSeries extends AreaRangeSeries {
             ((_a = point.connector) === null || _a === void 0 ? void 0 : _a.element).point = point;
             if (lowerGraphic) {
                 zoneColor = point.zone && point.zone.color;
-                lowerGraphicColor = pick(point.options.lowColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
+                lowerGraphicColor = pick(point.options.lowColor, seriesLowMarker === null || seriesLowMarker === void 0 ? void 0 : seriesLowMarker.fillColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
                 if (!chart.styledMode) {
                     lowerGraphic.attr({
                         fill: lowerGraphicColor
@@ -317,7 +317,9 @@ DumbbellSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions, {
     crisp: false,
     pointPadding: 0.1,
     /**
-     * Color of the start markers in a dumbbell graph.
+     * Color of the start markers in a dumbbell graph. This option takes
+     * priority over the series color. To avoid this, set `lowColor` to
+     * `undefined`.
      *
      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @since 8.0.0
@@ -332,6 +334,10 @@ DumbbellSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions, {
      * @product   highcharts highstock
      * @since 8.0.0
      * @apioption plotOptions.dumbbell.connectorColor
+     */
+    /**
+     *
+     * @apioption plotOptions.series.lowMarker
      */
     states: {
         hover: {
@@ -439,6 +445,28 @@ export default DumbbellSeries;
  * @apioption series.dumbbell.data
  */
 /**
+ * Options for the lower markers of the dumbbell-like series. When `lowMarker`
+ * is not defined, options inherit form the marker.
+ *
+ * @see [marker](#series.arearange.marker)
+ *
+ * @declare   Highcharts.PointMarkerOptionsObject
+ * @extends   plotOptions.series.marker
+ * @default   undefined
+ * @product   highcharts highstock
+ * @apioption plotOptions.dumbbell.lowMarker
+ */
+/**
+ *
+ * @sample {highcharts} highcharts/demo/dumbbell-markers
+ *         Dumbbell chart with lowMarker option
+ *
+ * @declare   Highcharts.PointMarkerOptionsObject
+ * @extends   plotOptions.series.marker.symbol
+ * @product   highcharts highstock
+ * @apioption plotOptions.dumbbell.lowMarker.symbol
+ */
+/**
  * Color of the line that connects the dumbbell point's values.
  * By default it is the series' color.
  *
@@ -457,7 +485,9 @@ export default DumbbellSeries;
  * @apioption   series.dumbbell.data.connectorWidth
  */
 /**
- * Color of the start markers in a dumbbell graph.
+ * Color of the start markers in a dumbbell graph. This option takes
+ * priority over the series color. To avoid this, set `lowColor` to
+ * `undefined`.
  *
  * @type        {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
  * @since       8.0.0
