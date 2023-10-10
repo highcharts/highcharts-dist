@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-10-06)
+ * @license Highmaps JS v11.1.0 (2023-10-10)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -4260,11 +4260,70 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isInside = function (clipEdge1, clipEdge2, p) {
-            return (clipEdge2[0] - clipEdge1[0]) * (p[1] - clipEdge1[1]) >
-                (clipEdge2[1] - clipEdge1[1]) * (p[0] - clipEdge1[0]);
-        };
-        var intersection = function (clipEdge1, clipEdge2, prevPoint, currentPoint) {
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Simple line string clipping. Clip to bounds and insert intersection points.
+         * @private
+         */
+        function clipLineString(line, boundsPolygon) {
+            var ret = [], l = clipPolygon(line, boundsPolygon, false);
+            for (var i = 1; i < l.length; i++) {
+                // Insert gap where two intersections follow each other
+                if (l[i].isIntersection && l[i - 1].isIntersection) {
+                    ret.push(l.splice(0, i));
+                    i = 0;
+                }
+                // Push the rest
+                if (i === l.length - 1) {
+                    ret.push(l);
+                }
+            }
+            return ret;
+        }
+        /**
+         * Clip a polygon to another polygon using the Sutherland/Hodgman algorithm.
+         * @private
+         */
+        function clipPolygon(subjectPolygon, boundsPolygon, closed) {
+            if (closed === void 0) { closed = true; }
+            var clipEdge1 = boundsPolygon[boundsPolygon.length - 1], clipEdge2, prevPoint, currentPoint, outputList = subjectPolygon;
+            for (var j = 0; j < boundsPolygon.length; j++) {
+                var inputList = outputList;
+                clipEdge2 = boundsPolygon[j];
+                outputList = [];
+                prevPoint = closed ?
+                    // Polygon, wrap around
+                    inputList[inputList.length - 1] :
+                    // Open line string, don't wrap
+                    inputList[0];
+                for (var i = 0; i < inputList.length; i++) {
+                    currentPoint = inputList[i];
+                    if (isInside(clipEdge1, clipEdge2, currentPoint)) {
+                        if (!isInside(clipEdge1, clipEdge2, prevPoint)) {
+                            outputList.push(intersection(clipEdge1, clipEdge2, prevPoint, currentPoint));
+                        }
+                        outputList.push(currentPoint);
+                    }
+                    else if (isInside(clipEdge1, clipEdge2, prevPoint)) {
+                        outputList.push(intersection(clipEdge1, clipEdge2, prevPoint, currentPoint));
+                    }
+                    prevPoint = currentPoint;
+                }
+                clipEdge1 = clipEdge2;
+            }
+            return outputList;
+        }
+        /** @private */
+        function isInside(clipEdge1, clipEdge2, p) {
+            return ((clipEdge2[0] - clipEdge1[0]) * (p[1] - clipEdge1[1]) >
+                (clipEdge2[1] - clipEdge1[1]) * (p[0] - clipEdge1[0]));
+        }
+        /** @private */
+        function intersection(clipEdge1, clipEdge2, prevPoint, currentPoint) {
             var dc = [
                 clipEdge1[0] - clipEdge2[0],
                 clipEdge1[1] - clipEdge2[1]
@@ -4277,62 +4336,16 @@
             ];
             intersection.isIntersection = true;
             return intersection;
-        };
-        var PolygonClip;
-        (function (PolygonClip) {
-            // Simple line string clipping. Clip to bounds and insert intersection
-            // points.
-            PolygonClip.clipLineString = function (line, boundsPolygon) {
-                var ret = [], l = PolygonClip.clipPolygon(line, boundsPolygon, false);
-                for (var i = 1; i < l.length; i++) {
-                    // Insert gap where two intersections follow each other
-                    if (l[i].isIntersection && l[i - 1].isIntersection) {
-                        ret.push(l.splice(0, i));
-                        i = 0;
-                    }
-                    // Push the rest
-                    if (i === l.length - 1) {
-                        ret.push(l);
-                    }
-                }
-                return ret;
-            };
-            // Clip a polygon to another polygon using the Sutherland/Hodgman algorithm.
-            PolygonClip.clipPolygon = function (subjectPolygon, boundsPolygon, closed) {
-                if (closed === void 0) { closed = true; }
-                var clipEdge1 = boundsPolygon[boundsPolygon.length - 1], clipEdge2, prevPoint, currentPoint, outputList = subjectPolygon;
-                for (var j = 0; j < boundsPolygon.length; j++) {
-                    var inputList = outputList;
-                    clipEdge2 = boundsPolygon[j];
-                    outputList = [];
-                    prevPoint = closed ?
-                        // Polygon, wrap around
-                        inputList[inputList.length - 1] :
-                        // Open line string, don't wrap
-                        inputList[0];
-                    for (var i = 0; i < inputList.length; i++) {
-                        currentPoint = inputList[i];
-                        if (isInside(clipEdge1, clipEdge2, currentPoint)) {
-                            if (!isInside(clipEdge1, clipEdge2, prevPoint)) {
-                                outputList.push(intersection(clipEdge1, clipEdge2, prevPoint, currentPoint));
-                            }
-                            outputList.push(currentPoint);
-                        }
-                        else if (isInside(clipEdge1, clipEdge2, prevPoint)) {
-                            outputList.push(intersection(clipEdge1, clipEdge2, prevPoint, currentPoint));
-                        }
-                        prevPoint = currentPoint;
-                    }
-                    clipEdge1 = clipEdge2;
-                }
-                return outputList;
-            };
-        })(PolygonClip || (PolygonClip = {}));
+        }
         /* *
          *
          *  Default Export
          *
          * */
+        var PolygonClip = {
+            clipLineString: clipLineString,
+            clipPolygon: clipPolygon
+        };
 
         return PolygonClip;
     });
@@ -8924,8 +8937,7 @@
             var pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
             // Handle padding on the second pass, or on redraw
             this.series.forEach(function (series) {
-                if (series.bubblePadding &&
-                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+                if (series.bubblePadding && series.reserveSpace()) {
                     // Correction for #1673
                     _this.allowZoomOutside = true;
                     hasActiveSeries = true;
@@ -9044,7 +9056,6 @@
              * @private
              */
             BubbleSeries.prototype.getRadii = function () {
-                var _this = this;
                 var zData = this.zData, yData = this.yData, radii = [];
                 var len, i, value, zExtremes = this.chart.bubbleZExtremes;
                 var _a = this.getPxExtremes(), minPxSize = _a.minPxSize, maxPxSize = _a.maxPxSize;
@@ -9056,8 +9067,7 @@
                     var zMax_1 = -Number.MAX_VALUE;
                     var valid_1;
                     this.chart.series.forEach(function (otherSeries) {
-                        if (otherSeries.bubblePadding && (otherSeries.visible ||
-                            !_this.chart.options.chart.ignoreHiddenSeries)) {
+                        if (otherSeries.bubblePadding && otherSeries.reserveSpace()) {
                             var zExtremes_1 = (otherSeries.onPoint || otherSeries).getZExtremes();
                             if (zExtremes_1) {
                                 // Changed '||' to 'pick' because min or max can be 0.

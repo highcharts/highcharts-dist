@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  *
  * Accessibility module
  *
@@ -3216,6 +3216,12 @@
                     this.modules.length &&
                     this.modules[this.currentModuleIx]);
                 let preventDefault;
+                const target = e.target;
+                if (target &&
+                    target.nodeName === 'INPUT' &&
+                    !target.classList.contains('highcharts-a11y-proxy-element')) {
+                    return;
+                }
                 // Used for resetting nav state when clicking outside chart
                 this.keyboardReset = false;
                 // Used for sending focus out of the chart by the modules.

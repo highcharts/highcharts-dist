@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  *
  * (c) 2009-2023 Torstein Honsi
  *
@@ -18778,8 +18778,7 @@
                     axis.softThreshold = !axis.isXAxis;
                     // Loop through this axis' series
                     axis.series.forEach(function (series) {
-                        if (series.visible ||
-                            !chart.options.chart.ignoreHiddenSeries) {
+                        if (series.reserveSpace()) {
                             var seriesOptions = series.options;
                             var xData = void 0, threshold = seriesOptions.threshold, seriesDataMin = void 0, seriesDataMax = void 0;
                             axis.hasVisibleSeries = true;
@@ -19005,10 +19004,10 @@
                         y1 = y2 = between(y1, axisTop, axisTop + axis.height);
                     }
                     e.path = skip && !force ?
-                        null :
+                        void 0 :
                         chart.renderer.crispLine([['M', x1, y1], ['L', x2, y2]], lineWidth || 1);
                 });
-                return evt.path;
+                return (evt.path || null);
             };
             /**
              * Internal function to get the tick positions of a linear axis to round
@@ -19215,14 +19214,13 @@
                     var singleXs_1 = [];
                     this.series.forEach(function (series) {
                         var _a;
-                        var seriesClosest = series.closestPointRange, visible = series.visible ||
-                            !series.chart.options.chart.ignoreHiddenSeries;
+                        var seriesClosest = series.closestPointRange;
                         if (((_a = series.xData) === null || _a === void 0 ? void 0 : _a.length) === 1) {
                             singleXs_1.push(series.xData[0]);
                         }
                         else if (!series.noSharedTooltip &&
                             defined(seriesClosest) &&
-                            visible) {
+                            series.reserveSpace()) {
                             closestDistance = defined(closestDistance) ?
                                 Math.min(closestDistance, seriesClosest) :
                                 seriesClosest;
@@ -20060,7 +20058,7 @@
              * @emits Highcharts.Axis#event:afterSetScale
              */
             Axis.prototype.setScale = function () {
-                var axis = this;
+                var axis = this, coll = axis.coll, stacking = axis.stacking;
                 var isDirtyData = false, isXAxisDirty = false;
                 axis.series.forEach(function (series) {
                     isDirtyData = isDirtyData || series.isDirtyData || series.isDirty;
@@ -20070,10 +20068,10 @@
                         (series.xAxis && series.xAxis.isDirty) ||
                         false);
                 });
-                // set the new axisLength
+                // Set the new axisLength
                 axis.setAxisSize();
                 var isDirtyAxisLength = axis.len !== (axis.old && axis.old.len);
-                // do we really need to go through all this?
+                // Do we really need to go through all this?
                 if (isDirtyAxisLength ||
                     isDirtyData ||
                     isXAxisDirty ||
@@ -20082,9 +20080,8 @@
                     axis.userMin !== (axis.old && axis.old.userMin) ||
                     axis.userMax !== (axis.old && axis.old.userMax) ||
                     axis.alignToOthers()) {
-                    if (axis.stacking) {
-                        axis.stacking.resetStacks();
-                        axis.stacking.buildStacks();
+                    if (stacking && coll === 'yAxis') {
+                        stacking.buildStacks();
                     }
                     axis.forceRedraw = false;
                     // #18066 delete minRange property to ensure that it will be
@@ -20092,10 +20089,13 @@
                     if (!axis.userMinRange) {
                         axis.minRange = void 0;
                     }
-                    // get data extremes if needed
+                    // Get data extremes if needed
                     axis.getSeriesExtremes();
-                    // get fixed positions based on tickInterval
+                    // Get fixed positions based on tickInterval
                     axis.setTickInterval();
+                    if (stacking && coll === 'xAxis') {
+                        stacking.buildStacks();
+                    }
                     // Mark as dirty if it is not already set to dirty and extremes have
                     // changed. #595.
                     if (!axis.isDirty) {
@@ -20105,8 +20105,8 @@
                                 axis.max !== (axis.old && axis.old.max);
                     }
                 }
-                else if (axis.stacking) {
-                    axis.stacking.cleanStacks();
+                else if (stacking) {
+                    stacking.cleanStacks();
                 }
                 // Recalculate panning state object, when the data
                 // has changed. It is required when vertical panning is enabled.
@@ -31688,7 +31688,7 @@
                  * @type {Highcharts.SeriesOptionsType}
                  */
                 series.options = series.setOptions(userOptions);
-                var options = series.options;
+                var options = series.options, visible = options.visible !== false;
                 series.linkedSeries = [];
                 // bind the axes
                 series.bindAxes();
@@ -31710,7 +31710,7 @@
                      * @name Highcharts.Series#visible
                      * @type {boolean}
                      */
-                    visible: options.visible !== false,
+                    visible: visible,
                     /**
                      * Read only. The series' selected state as set by {@link
                      * Highcharts.Series#select}.
@@ -33785,6 +33785,15 @@
                 }
             };
             /**
+             * Whether to reserve space for the series, either because it is visible or
+             * because the `chart.ignoreHiddenSeries` option is false.
+             *
+             * @private
+             */
+            Series.prototype.reserveSpace = function () {
+                return this.visible || !this.chart.options.chart.ignoreHiddenSeries;
+            };
+            /**
              * Find the nearest point from a pointer event. This applies to series that
              * use k-d-trees to get the nearest point. Native pointer events must be
              * normalized using `Pointer.normalize`, that adds `chartX` and `chartY`
@@ -34654,15 +34663,16 @@
              * @emits Highcharts.Series#event:show
              */
             Series.prototype.setVisible = function (vis, redraw) {
+                var _a;
                 var series = this, chart = series.chart, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
-                // if called without an argument, toggle visibility
+                // If called without an argument, toggle visibility
                 series.visible =
                     vis =
                         series.options.visible =
                             series.userOptions.visible =
                                 typeof vis === 'undefined' ? !oldVisibility : vis; // #5618
                 var showOrHide = vis ? 'show' : 'hide';
-                // show or hide elements
+                // Show or hide elements
                 [
                     'group',
                     'dataLabelsGroup',
@@ -34670,21 +34680,20 @@
                     'tracker',
                     'tt'
                 ].forEach(function (key) {
-                    if (series[key]) {
-                        series[key][showOrHide]();
-                    }
+                    var _a;
+                    (_a = series[key]) === null || _a === void 0 ? void 0 : _a[showOrHide]();
                 });
-                // hide tooltip (#1361)
+                // Hide tooltip (#1361)
                 if (chart.hoverSeries === series ||
-                    (chart.hoverPoint && chart.hoverPoint.series) === series) {
+                    ((_a = chart.hoverPoint) === null || _a === void 0 ? void 0 : _a.series) === series) {
                     series.onMouseOut();
                 }
                 if (series.legendItem) {
                     chart.legend.colorizeItem(series, vis);
                 }
-                // rescale or adapt to resized chart
+                // Rescale or adapt to resized chart
                 series.isDirty = true;
-                // in a stack, all other series are affected
+                // In a stack, all other series are affected
                 if (series.options.stacking) {
                     chart.series.forEach(function (otherSeries) {
                         if (otherSeries.options.stacking && otherSeries.visible) {
@@ -34692,7 +34701,7 @@
                         }
                     });
                 }
-                // show or hide linked series
+                // Show or hide linked series
                 series.linkedSeries.forEach(function (otherSeries) {
                     otherSeries.setVisible(vis, false);
                 });
@@ -38795,17 +38804,15 @@
          */
         function chartGetStacks() {
             var chart = this, inverted = chart.inverted;
-            // reset stacks for each yAxis
-            chart.yAxis.forEach(function (axis) {
+            // Reset stacks for each axis
+            chart.axes.forEach(function (axis) {
                 if (axis.stacking && axis.stacking.stacks && axis.hasVisibleSeries) {
                     axis.stacking.oldStacks = axis.stacking.stacks;
                 }
             });
             chart.series.forEach(function (series) {
                 var xAxisOptions = series.xAxis && series.xAxis.options || {};
-                if (series.options.stacking &&
-                    (series.visible === true ||
-                        chart.options.chart.ignoreHiddenSeries === false)) {
+                if (series.options.stacking && series.reserveSpace()) {
                     series.stackKey = [
                         series.type,
                         pick(series.options.stack, ''),
@@ -38819,26 +38826,23 @@
          * @private
          */
         function onAxisDestroy() {
+            var _a;
             var stacking = this.stacking;
-            if (!stacking) {
-                return;
-            }
-            var stacks = stacking.stacks;
-            // Destroy each stack total
-            objectEach(stacks, function (stack, stackKey) {
-                destroyObjectProperties(stack);
-                stacks[stackKey] = null;
-            });
-            if (stacking &&
-                stacking.stackTotalGroup) {
-                stacking.stackTotalGroup.destroy();
+            if (stacking) {
+                var stacks_1 = stacking.stacks;
+                // Destroy each stack total
+                objectEach(stacks_1, function (stack, stackKey) {
+                    destroyObjectProperties(stack);
+                    delete stacks_1[stackKey];
+                });
+                (_a = stacking.stackTotalGroup) === null || _a === void 0 ? void 0 : _a.destroy();
             }
         }
         /**
          * @private
          */
         function onAxisInit() {
-            if (this.coll === 'yAxis' && !this.stacking) {
+            if (!this.stacking) {
                 this.stacking = new AxisAdditions(this);
             }
         }
@@ -38864,10 +38868,9 @@
                 };
             }
             else {
-                (stackIndicator).index++;
+                stackIndicator.index++;
             }
-            stackIndicator.key =
-                [index, x, stackIndicator.index].join(',');
+            stackIndicator.key = [index, x, stackIndicator.index].join(',');
             return stackIndicator;
         }
         /**
@@ -38877,19 +38880,19 @@
          * @function Highcharts.Series#modifyStacks
          */
         function seriesModifyStacks() {
-            var series = this, yAxis = series.yAxis, stackKey = series.stackKey, stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
+            var series = this, yAxis = series.yAxis, stackKey = series.stackKey || '', stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
             var stackIndicator;
             if (stacker) { // Modifier function exists (Series.percentStacker etc.)
                 [stackKey, '-' + stackKey].forEach(function (key) {
-                    var i = processedXData.length, x, stack, pointExtremes;
+                    var _a;
+                    var i = processedXData.length, x, stackItem, pointExtremes;
                     while (i--) {
                         x = processedXData[i];
                         stackIndicator = series.getStackIndicator(stackIndicator, x, series.index, key);
-                        stack = stacks[key] && stacks[key][x];
-                        pointExtremes =
-                            stack && stack.points[stackIndicator.key];
+                        stackItem = (_a = stacks[key]) === null || _a === void 0 ? void 0 : _a[x];
+                        pointExtremes = stackItem === null || stackItem === void 0 ? void 0 : stackItem.points[stackIndicator.key || ''];
                         if (pointExtremes) {
-                            stacker.call(series, pointExtremes, stack, i);
+                            stacker.call(series, pointExtremes, stackItem, i);
                         }
                     }
                 });
@@ -38915,11 +38918,10 @@
          * to handle grouping of points within the same category.
          *
          * @private
-         * @function Highcharts.Series#setStackedPoints
+         * @function Highcharts.Series#setGroupedPoints
          * @return {void}
          */
-        function seriesSetGroupedPoints() {
-            var stacking = this.yAxis.stacking;
+        function seriesSetGroupedPoints(axis) {
             if (this.options.centerInCategory &&
                 (this.is('column') || this.is('columnrange')) &&
                 // With stacking enabled, we already have stacks that we can compute
@@ -38927,17 +38929,12 @@
                 !this.options.stacking &&
                 // With only one series, we don't need to consider centerInCategory
                 this.chart.series.length > 1) {
-                seriesProto.setStackedPoints.call(this, 'group');
+                seriesProto.setStackedPoints.call(this, axis, 'group');
                 // After updating, if we now have proper stacks, we must delete the group
-                // pseudo stacks (#14986)
+                // pseudo stacks (#14980)
             }
-            else if (stacking) {
-                objectEach(stacking.stacks, function (type, key) {
-                    if (key.slice(-5) === 'group') {
-                        objectEach(type, function (stack) { return stack.destroy(); });
-                        delete stacking.stacks[key];
-                    }
-                });
+            else {
+                axis.stacking.resetStacks();
             }
         }
         /**
@@ -38946,23 +38943,26 @@
          * @private
          * @function Highcharts.Series#setStackedPoints
          */
-        function seriesSetStackedPoints(stackingParam) {
-            var chart = this.chart, stacking = stackingParam || this.options.stacking;
-            if (!stacking || (this.visible !== true &&
-                chart.options.chart.ignoreHiddenSeries !== false)) {
+        function seriesSetStackedPoints(axis, stackingParam) {
+            var _a, _b;
+            var type = stackingParam || this.options.stacking;
+            if (!type ||
+                !this.reserveSpace() ||
+                // Group stacks (centerInCategory) belong on the x-axis, other stacks on
+                // the y-axis.
+                ({ group: 'xAxis' }[type] || 'yAxis') !== axis.coll) {
                 return;
             }
-            var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? "".concat(series.type, ",").concat(stacking) : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = stacking === 'group' ?
-                chart.yAxis[0] :
-                series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
+            var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold || 0, stackThreshold = seriesOptions.startFromThreshold ? threshold : 0, stackOption = seriesOptions.stack, stackKey = stackingParam ?
+                "".concat(series.type, ",").concat(type) : (series.stackKey || ''), negKey = '-' + stackKey, negStacks = series.negStacks, stacking = axis.stacking, stacks = stacking.stacks, oldStacks = stacking.oldStacks;
             var stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;
-            yAxis.stacking.stacksTouched += 1;
-            // loop over the non-null y values and read them into a local array
+            stacking.stacksTouched += 1;
+            // Loop over the non-null y values and read them into a local array
             for (i = 0; i < yDataLength; i++) {
                 x = xData[i];
                 y = yData[i];
                 stackIndicator = series.getStackIndicator(stackIndicator, x, series.index);
-                pointKey = stackIndicator.key;
+                pointKey = stackIndicator.key || '';
                 // Read stacked values into a stack based on the x value,
                 // the sign of y and the stack key. Stacking is also handled for null
                 // values (#739)
@@ -38974,89 +38974,88 @@
                 }
                 // Initialize StackItem for this x
                 if (!stacks[key][x]) {
-                    if (oldStacks[key] &&
-                        oldStacks[key][x]) {
+                    if ((_a = oldStacks[key]) === null || _a === void 0 ? void 0 : _a[x]) {
                         stacks[key][x] = oldStacks[key][x];
                         stacks[key][x].total = null;
                     }
                     else {
-                        stacks[key][x] = new StackItem(yAxis, yAxis.options.stackLabels, !!isNegative, x, stackOption);
+                        stacks[key][x] = new StackItem(axis, axis.options.stackLabels, !!isNegative, x, stackOption);
                     }
                 }
                 // If the StackItem doesn't exist, create it first
                 stack = stacks[key][x];
                 if (y !== null) {
-                    stack.points[pointKey] = stack.points[series.index] =
-                        [pick(stack.cumulative, stackThreshold)];
+                    stack.points[pointKey] = stack.points[series.index] = [
+                        pick(stack.cumulative, stackThreshold)
+                    ];
                     // Record the base of the stack
                     if (!defined(stack.cumulative)) {
                         stack.base = pointKey;
                     }
-                    stack.touched = yAxis.stacking.stacksTouched;
+                    stack.touched = stacking.stacksTouched;
                     // In area charts, if there are multiple points on the same X value,
                     // let the area fill the full span of those points
                     if (stackIndicator.index > 0 && series.singleStacks === false) {
-                        stack.points[pointKey][0] =
-                            stack.points[series.index + ',' + x + ',0'][0];
+                        stack.points[pointKey][0] = stack.points[series.index + ',' + x + ',0'][0];
                     }
                     // When updating to null, reset the point stack (#7493)
                 }
                 else {
-                    stack.points[pointKey] = stack.points[series.index] =
-                        null;
+                    delete stack.points[pointKey];
+                    delete stack.points[series.index];
                 }
                 // Add value to the stack total
-                if (stacking === 'percent') {
+                var total = stack.total || 0;
+                if (type === 'percent') {
                     // Percent stacked column, totals are the same for the positive and
                     // negative stacks
                     other = isNegative ? stackKey : negKey;
-                    if (negStacks && stacks[other] && stacks[other][x]) {
+                    if (negStacks && ((_b = stacks[other]) === null || _b === void 0 ? void 0 : _b[x])) {
                         other = stacks[other][x];
-                        stack.total = other.total =
-                            Math.max(other.total, stack.total) +
-                                Math.abs(y) ||
-                                0;
+                        total = other.total =
+                            Math.max(other.total || 0, total) +
+                                Math.abs(y) || 0;
                         // Percent stacked areas
                     }
                     else {
-                        stack.total =
-                            correctFloat(stack.total + (Math.abs(y) || 0));
+                        total = correctFloat(total + (Math.abs(y) || 0));
                     }
                 }
-                else if (stacking === 'group') {
+                else if (type === 'group') {
                     if (isArray(y)) {
                         y = y[0];
                     }
                     // In this stack, the total is the number of valid points
                     if (y !== null) {
-                        stack.total = (stack.total || 0) + 1;
+                        total++;
                     }
                 }
                 else {
-                    stack.total = correctFloat(stack.total + (y || 0));
+                    total = correctFloat(total + (y || 0));
                 }
-                if (stacking === 'group') {
+                if (type === 'group') {
                     // This point's index within the stack, pushed to stack.points[1]
-                    stack.cumulative = (stack.total || 1) - 1;
+                    stack.cumulative = (total || 1) - 1;
                 }
                 else {
                     stack.cumulative = correctFloat(pick(stack.cumulative, stackThreshold) +
                         (y || 0));
                 }
+                stack.total = total;
                 if (y !== null) {
                     stack.points[pointKey].push(stack.cumulative);
                     stackedYData[i] = stack.cumulative;
                     stack.hasValidPoints = true;
                 }
             }
-            if (stacking === 'percent') {
-                yAxis.stacking.usePercentage = true;
+            if (type === 'percent') {
+                stacking.usePercentage = true;
             }
-            if (stacking !== 'group') {
+            if (type !== 'group') {
                 this.stackedYData = stackedYData; // To be used in getExtremes
             }
             // Reset old stacks
-            yAxis.stacking.oldStacks = {};
+            stacking.oldStacks = {};
         }
         /* *
          *
@@ -39090,22 +39089,23 @@
              * @private
              */
             AxisAdditions.prototype.buildStacks = function () {
-                var stacking = this;
-                var axis = stacking.axis;
-                var axisSeries = axis.series;
-                var reversedStacks = axis.options.reversedStacks;
-                var len = axisSeries.length;
+                var stacking = this, axis = stacking.axis, axisSeries = axis.series, isXAxis = axis.coll === 'xAxis', reversedStacks = axis.options.reversedStacks, len = axisSeries.length;
                 var actualSeries, i;
+                this.resetStacks();
                 stacking.usePercentage = false;
                 i = len;
                 while (i--) {
                     actualSeries = axisSeries[reversedStacks ? i : len - i - 1];
-                    actualSeries.setStackedPoints();
-                    actualSeries.setGroupedPoints();
+                    if (isXAxis) {
+                        actualSeries.setGroupedPoints(axis);
+                    }
+                    actualSeries.setStackedPoints(axis);
                 }
                 // Loop up again to compute percent and stream stack
-                for (i = 0; i < len; i++) {
-                    axisSeries[i].modifyStacks();
+                if (!isXAxis) {
+                    for (i = 0; i < len; i++) {
+                        axisSeries[i].modifyStacks();
+                    }
                 }
                 fireEvent(axis, 'afterBuildStacks');
             };
@@ -39113,17 +39113,15 @@
              * @private
              */
             AxisAdditions.prototype.cleanStacks = function () {
-                var stacking = this;
-                var stacks;
-                if (stacking.oldStacks) {
-                    stacks = stacking.stacks = stacking.oldStacks;
-                }
-                // reset stacks
-                objectEach(stacks, function (type) {
-                    objectEach(type, function (stack) {
-                        stack.cumulative = stack.total;
+                if (this.oldStacks) {
+                    this.stacks = this.oldStacks;
+                    // Reset stacks
+                    objectEach(this.stacks, function (type) {
+                        objectEach(type, function (stack) {
+                            stack.cumulative = stack.total;
+                        });
                     });
-                });
+                }
             };
             /**
              * Set all the stacks to initial states and destroy unused ones.
@@ -39151,8 +39149,8 @@
              * @private
              */
             AxisAdditions.prototype.renderStackTotals = function () {
-                var stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels &&
-                    axis.options.stackLabels.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
+                var _a;
+                var stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = (_a = axis.options.stackLabels) === null || _a === void 0 ? void 0 : _a.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
                     renderer
                         .g('stack-labels')
                         .attr({
@@ -39160,7 +39158,7 @@
                         opacity: 0
                     })
                         .add());
-                // plotLeft/Top will change when y axis gets wider so we need to
+                // The plotLeft/Top will change when y axis gets wider so we need to
                 // translate the stackTotalGroup at every render call. See bug #506
                 // and #516
                 stackTotalGroup.translate(chart.plotLeft, chart.plotTop);
@@ -41527,8 +41525,7 @@
                         var otherYAxis = otherSeries.yAxis, otherOptions = otherSeries.options;
                         var columnIndex;
                         if (otherSeries.type === series.type &&
-                            (otherSeries.visible ||
-                                !series.chart.options.chart.ignoreHiddenSeries) &&
+                            otherSeries.reserveSpace() &&
                             yAxis.len === otherYAxis.len &&
                             yAxis.pos === otherYAxis.pos) { // #642, #2086
                             if (otherOptions.stacking &&
@@ -41625,35 +41622,24 @@
              */
             ColumnSeries.prototype.adjustForMissingColumns = function (x, pointWidth, point, metrics) {
                 var _this = this;
-                var stacking = this.options.stacking;
+                var _a;
                 if (!point.isNull && metrics.columnCount > 1) {
-                    var reversedStacks_1 = this.yAxis.options.reversedStacks;
-                    var indexInCategory_1 = 0, totalInCategory_1 = reversedStacks_1 ? 0 : -metrics.columnCount;
+                    var visibleSeries_1 = this.xAxis.series
+                        .filter(function (s) { return s.visible; })
+                        .map(function (s) { return s.index; });
+                    var indexInCategory_1 = 0, totalInCategory_1 = 0;
                     // Loop over all the stacks on the Y axis. When stacking is enabled,
                     // these are real point stacks. When stacking is not enabled, but
                     // `centerInCategory` is true, there is one stack handling the
                     // grouping of points in each category. This is done in the
                     // `setGroupedPoints` function.
-                    objectEach(this.yAxis.stacking && this.yAxis.stacking.stacks, function (stack) {
+                    objectEach((_a = this.xAxis.stacking) === null || _a === void 0 ? void 0 : _a.stacks, function (stack) {
                         if (typeof point.x === 'number') {
                             var stackItem_1 = stack[point.x.toString()];
                             if (stackItem_1) {
                                 var pointValues = stackItem_1.points[_this.index];
-                                // If true `stacking` is enabled, count the total
-                                // number of non-null stacks in the category, and
-                                // note which index this point is within those
-                                // stacks.
-                                if (stacking) {
-                                    if (pointValues) {
-                                        indexInCategory_1 = totalInCategory_1;
-                                    }
-                                    if (stackItem_1.hasValidPoints) {
-                                        reversedStacks_1 ? // #16169
-                                            totalInCategory_1++ : totalInCategory_1--;
-                                    }
-                                    // If `stacking` is not enabled, look for the index
-                                }
-                                else if (isArray(pointValues)) {
+                                // Look for the index
+                                if (isArray(pointValues)) {
                                     // If there are multiple points with the same X
                                     // then gather all series in category, and
                                     // assign index
@@ -41667,6 +41653,9 @@
                                             stackItem_1.points[pointKey].length > 1;
                                     })
                                         .map(parseFloat)
+                                        .filter(function (index) {
+                                        return visibleSeries_1.indexOf(index) !== -1;
+                                    })
                                         .sort(function (a, b) { return b - a; });
                                     indexInCategory_1 = seriesIndexes.indexOf(_this.index);
                                     totalInCategory_1 = seriesIndexes.length;
@@ -41751,7 +41740,7 @@
                         barX -= Math.round((pointWidth - seriesPointWidth) / 2);
                     }
                     // Adjust for null or missing points
-                    if (options.centerInCategory) {
+                    if (options.centerInCategory && !options.stacking) {
                         barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
                     }
                     // Cache for access in polar
@@ -45208,7 +45197,7 @@
 
         return ColumnDataLabel;
     });
-    _registerModule(_modules, 'Extensions/OverlappingDataLabels.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Chart, U) {
+    _registerModule(_modules, 'Extensions/OverlappingDataLabels.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  Highcharts module to hide overlapping data labels.
@@ -45221,87 +45210,41 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
-        /**
-         * Internal type
-         * @private
-         */
-        /* eslint-disable no-invalid-this */
-        // Collect potensial overlapping data labels. Stack labels probably don't need
-        // to be considered because they are usually accompanied by data labels that lie
-        // inside the columns.
-        addEvent(Chart, 'render', function collectAndHide() {
-            var chart = this, labels = [];
-            // Consider external label collectors
-            (this.labelCollectors || []).forEach(function (collector) {
-                labels = labels.concat(collector());
-            });
-            (this.yAxis || []).forEach(function (yAxis) {
-                if (yAxis.stacking &&
-                    yAxis.options.stackLabels &&
-                    !yAxis.options.stackLabels.allowOverlap) {
-                    objectEach(yAxis.stacking.stacks, function (stack) {
-                        objectEach(stack, function (stackItem) {
-                            if (stackItem.label) {
-                                labels.push(stackItem.label);
-                            }
-                        });
-                    });
-                }
-            });
-            (this.series || []).forEach(function (series) {
-                var _a;
-                if (series.visible && ((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) { // #3866
-                    var push = function (points) {
-                        return points.forEach(function (point) {
-                            if (point.visible) {
-                                (point.dataLabels || []).forEach(function (label) {
-                                    var _a;
-                                    var options = label.options || {};
-                                    label.labelrank = pick(options.labelrank, point.labelrank, (_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.height); // #4118
-                                    // Allow overlap if the option is explicitly true
-                                    if (options.allowOverlap) { // #13449
-                                        label.oldOpacity = label.opacity;
-                                        label.newOpacity = 1;
-                                        hideOrShow(label, chart);
-                                        // Do not allow overlap
-                                    }
-                                    else {
-                                        labels.push(label);
-                                    }
-                                });
-                            }
-                        });
-                    };
-                    push(series.nodes || []);
-                    push(series.points);
-                }
-            });
-            this.hideOverlappingLabels(labels);
-        });
+        var addEvent = U.addEvent, fireEvent = U.fireEvent, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick, pushUnique = U.pushUnique;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Hide overlapping labels. Labels are moved and faded in and out on zoom to
          * provide a smooth visual imression.
          *
+         * @requires modules/overlapping-datalabels
+         *
          * @private
          * @function Highcharts.Chart#hideOverlappingLabels
          * @param {Array<Highcharts.SVGElement>} labels
-         * Rendered data labels
-         * @requires modules/overlapping-datalabels
+         *        Rendered data labels
          */
-        Chart.prototype.hideOverlappingLabels = function (labels) {
-            var chart = this, len = labels.length, ren = chart.renderer, label, i, j, label1, label2, box1, box2, isLabelAffected = false, isIntersectRect = function (box1, box2) {
-                return !(box2.x >= box1.x + box1.width ||
-                    box2.x + box2.width <= box1.x ||
-                    box2.y >= box1.y + box1.height ||
-                    box2.y + box2.height <= box1.y);
-            }, 
+        function chartHideOverlappingLabels(labels) {
+            var chart = this, len = labels.length, ren = chart.renderer, isIntersectRect = function (box1, box2) { return !(box2.x >= box1.x + box1.width ||
+                box2.x + box2.width <= box1.x ||
+                box2.y >= box1.y + box1.height ||
+                box2.y + box2.height <= box1.y); }, 
             // Get the box with its position inside the chart, as opposed to getBBox
             // that only reports the position relative to the parent.
             getAbsoluteBox = function (label) {
+                var padding = label.box ? 0 : (label.padding || 0);
                 var pos, parent, bBox, 
                 // Substract the padding if no background or border (#4333)
-                padding = label.box ? 0 : (label.padding || 0), lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
+                lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
                 if (label &&
                     (!label.alignAttr || label.placed)) {
                     pos = label.alignAttr || {
@@ -45341,7 +45284,8 @@
                     };
                 }
             };
-            for (i = 0; i < len; i++) {
+            var label, label1, label2, box1, box2, isLabelAffected = false;
+            for (var i = 0; i < len; i++) {
                 label = labels[i];
                 if (label) {
                     // Mark with initial opacity
@@ -45352,14 +45296,12 @@
             }
             // Prevent a situation in a gradually rising slope, that each label will
             // hide the previous one because the previous one always has lower rank.
-            labels.sort(function (a, b) {
-                return (b.labelrank || 0) - (a.labelrank || 0);
-            });
+            labels.sort(function (a, b) { return (b.labelrank || 0) - (a.labelrank || 0); });
             // Detect overlapping labels
-            for (i = 0; i < len; i++) {
+            for (var i = 0; i < len; ++i) {
                 label1 = labels[i];
                 box1 = label1 && label1.absoluteBox;
-                for (j = i + 1; j < len; ++j) {
+                for (var j = i + 1; j < len; ++j) {
                     label2 = labels[j];
                     box2 = label2 && label2.absoluteBox;
                     if (box1 &&
@@ -45378,15 +45320,24 @@
                 }
             }
             // Hide or show
-            labels.forEach(function (label) {
-                if (hideOrShow(label, chart)) {
+            for (var _i = 0, labels_1 = labels; _i < labels_1.length; _i++) {
+                var label_1 = labels_1[_i];
+                if (hideOrShow(label_1, chart)) {
                     isLabelAffected = true;
                 }
-            });
+            }
             if (isLabelAffected) {
                 fireEvent(chart, 'afterHideAllOverlappingLabels');
             }
-        };
+        }
+        /** @private */
+        function compose(ChartClass) {
+            if (pushUnique(composedMembers, ChartClass)) {
+                var chartProto = ChartClass.prototype;
+                chartProto.hideOverlappingLabels = chartHideOverlappingLabels;
+                addEvent(ChartClass, 'render', onChartRender);
+            }
+        }
         /**
          * Hide or show labels based on opacity.
          *
@@ -45431,7 +45382,79 @@
             }
             return isLabelAffected;
         }
+        /**
+         * Collect potensial overlapping data labels. Stack labels probably don't need
+         * to be considered because they are usually accompanied by data labels that lie
+         * inside the columns.
+         * @private
+         */
+        function onChartRender() {
+            var _a;
+            var chart = this;
+            var labels = [];
+            // Consider external label collectors
+            for (var _i = 0, _b = (chart.labelCollectors || []); _i < _b.length; _i++) {
+                var collector = _b[_i];
+                labels = labels.concat(collector());
+            }
+            for (var _c = 0, _d = (chart.yAxis || []); _c < _d.length; _c++) {
+                var yAxis = _d[_c];
+                if (yAxis.stacking &&
+                    yAxis.options.stackLabels &&
+                    !yAxis.options.stackLabels.allowOverlap) {
+                    objectEach(yAxis.stacking.stacks, function (stack) {
+                        objectEach(stack, function (stackItem) {
+                            if (stackItem.label) {
+                                labels.push(stackItem.label);
+                            }
+                        });
+                    });
+                }
+            }
+            for (var _e = 0, _f = (chart.series || []); _e < _f.length; _e++) {
+                var series = _f[_e];
+                if (series.visible && ((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) { // #3866
+                    var push = function (points) {
+                        var _loop_1 = function (point) {
+                            if (point.visible) {
+                                (point.dataLabels || []).forEach(function (label) {
+                                    var _a;
+                                    var options = label.options || {};
+                                    label.labelrank = pick(options.labelrank, point.labelrank, (_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.height); // #4118
+                                    // Allow overlap if the option is explicitly true
+                                    if (options.allowOverlap) { // #13449
+                                        label.oldOpacity = label.opacity;
+                                        label.newOpacity = 1;
+                                        hideOrShow(label, chart);
+                                        // Do not allow overlap
+                                    }
+                                    else {
+                                        labels.push(label);
+                                    }
+                                });
+                            }
+                        };
+                        for (var _i = 0, points_1 = points; _i < points_1.length; _i++) {
+                            var point = points_1[_i];
+                            _loop_1(point);
+                        }
+                    };
+                    push(series.nodes || []);
+                    push(series.points);
+                }
+            }
+            this.hideOverlappingLabels(labels);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var OverlappingDataLabels = {
+            compose: compose
+        };
 
+        return OverlappingDataLabels;
     });
     _registerModule(_modules, 'Extensions/BorderRadius.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (D, G, U) {
         /* *
@@ -46077,7 +46100,7 @@
 
         return Responsive;
     });
-    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Defaults.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Templating.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Renderer/HTML/HTMLElement.js'], _modules['Core/Renderer/HTML/HTMLRenderer.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Axis/LogarithmicAxis.js'], _modules['Core/Axis/PlotLineOrBand/PlotLineOrBand.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Tooltip.js'], _modules['Core/Series/Point.js'], _modules['Core/Pointer.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Axis/Stacking/StackingAxis.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Series/Column/ColumnDataLabel.js'], _modules['Series/Pie/PieSeries.js'], _modules['Series/Pie/PieDataLabel.js'], _modules['Core/Series/DataLabel.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Responsive.js'], _modules['Core/Color/Color.js'], _modules['Core/Time.js']], function (Highcharts, Utilities, Defaults, Fx, Animation, AST, Templating, RendererUtilities, SVGElement, SVGRenderer, HTMLElement, HTMLRenderer, Axis, DateTimeAxis, LogarithmicAxis, PlotLineOrBand, Tick, Tooltip, Point, Pointer, Legend, Chart, StackingAxis, StackItem, Series, SeriesRegistry, ColumnSeries, ColumnDataLabel, PieSeries, PieDataLabel, DataLabel, BorderRadius, Responsive, Color, Time) {
+    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Defaults.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Templating.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Renderer/HTML/HTMLElement.js'], _modules['Core/Renderer/HTML/HTMLRenderer.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Axis/LogarithmicAxis.js'], _modules['Core/Axis/PlotLineOrBand/PlotLineOrBand.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Tooltip.js'], _modules['Core/Series/Point.js'], _modules['Core/Pointer.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Axis/Stacking/StackingAxis.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Series/Column/ColumnDataLabel.js'], _modules['Series/Pie/PieSeries.js'], _modules['Series/Pie/PieDataLabel.js'], _modules['Core/Series/DataLabel.js'], _modules['Extensions/OverlappingDataLabels.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Responsive.js'], _modules['Core/Color/Color.js'], _modules['Core/Time.js']], function (Highcharts, Utilities, Defaults, Fx, Animation, AST, Templating, RendererUtilities, SVGElement, SVGRenderer, HTMLElement, HTMLRenderer, Axis, DateTimeAxis, LogarithmicAxis, PlotLineOrBand, Tick, Tooltip, Point, Pointer, Legend, Chart, StackingAxis, StackItem, Series, SeriesRegistry, ColumnSeries, ColumnDataLabel, PieSeries, PieDataLabel, DataLabel, OverlappingDataLabels, BorderRadius, Responsive, Color, Time) {
 
         var G = Highcharts;
         // Animation
@@ -46175,6 +46198,7 @@
         DataLabel.compose(Series);
         DateTimeAxis.compose(Axis);
         LogarithmicAxis.compose(Axis);
+        OverlappingDataLabels.compose(Chart);
         PieDataLabel.compose(PieSeries);
         PlotLineOrBand.compose(Axis);
         Responsive.compose(Chart);

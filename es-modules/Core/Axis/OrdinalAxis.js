@@ -590,7 +590,8 @@ var OrdinalAxis;
          * @private
          */
         beforeSetTickPositions() {
-            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.isXAxis && !!axis.options.breaks, isOrdinal = axis.options.ordinal, ignoreHiddenSeries = axis.chart.options.chart.ignoreHiddenSeries;
+            var _a;
+            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = (_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks, isOrdinal = axis.options.ordinal;
             let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
             // Apply the ordinal logic
             if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
@@ -611,10 +612,9 @@ var OrdinalAxis;
                     if (series.boosted) {
                         isBoosted = series.boosted;
                     }
-                    if ((!ignoreHiddenSeries || series.visible !== false) &&
+                    if (series.reserveSpace() &&
                         (series
-                            .takeOrdinalPosition !== false ||
-                            hasBreaks)) {
+                            .takeOrdinalPosition !== false || hasBreaks)) {
                         // concatenate the processed X data into the existing
                         // positions, or the empty array
                         ordinalPositions = ordinalPositions.concat(series.processedXData);
@@ -716,9 +716,13 @@ var OrdinalAxis;
                     Math.max(min, ordinalPositions[0]), true);
                     maxIndex = Math.max(axis.ordinal2lin(Math.min(max, ordinalPositions[ordinalPositions.length - 1]), true), 1); // #3339
                     // Set the slope and offset of the values compared to the
-                    // indices in the ordinal positions
-                    ordinal.slope = slope = (max - min) / (maxIndex - minIndex);
-                    ordinal.offset = min - (minIndex * slope);
+                    // indices in the ordinal positions. Do not calculate slope
+                    // and offset for brokenAxis, as it messes up column metrics
+                    if (!hasBreaks) {
+                        ordinal.slope = slope =
+                            (max - min) / (maxIndex - minIndex);
+                        ordinal.offset = min - (minIndex * slope);
+                    }
                 }
                 else {
                     ordinal.overscrollPointsRange = pick(axis.closestPointRange, ordinal.overscrollPointsRange);
@@ -819,7 +823,9 @@ var OrdinalAxis;
                         groupPixelWidth: series.groupPixelWidth,
                         destroyGroupedData: H.noop,
                         getProcessedData: Series.prototype.getProcessedData,
-                        applyGrouping: Series.prototype.applyGrouping
+                        applyGrouping: Series.prototype.applyGrouping,
+                        reserveSpace: Series.prototype.reserveSpace,
+                        visible: series.visible
                     };
                     fakeSeries.xData = fakeSeries.xData.concat(ordinal.getOverscrollPositions());
                     fakeSeries.options = {

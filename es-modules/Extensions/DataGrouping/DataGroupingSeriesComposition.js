@@ -118,7 +118,7 @@ function anchorPoints(series, groupedXData, xMax) {
  */
 function applyGrouping(hasExtremesChanged) {
     const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
-        pick(dataGroupingOptions.enabled, chart.options.isStock), visible = (series.visible || !chart.options.chart.ignoreHiddenSeries), lastDataGrouping = this.currentDataGrouping;
+        pick(dataGroupingOptions.enabled, chart.options.isStock), reserveSpace = series.reserveSpace(), lastDataGrouping = this.currentDataGrouping;
     let currentDataGrouping, croppedData, revertRequireSorting = false;
     // Data needs to be sorted for dataGrouping
     if (groupingEnabled && !series.requireSorting) {
@@ -191,7 +191,7 @@ function applyGrouping(hasExtremesChanged) {
             series.groupMap = groupedData.groupMap;
             series.currentDataGrouping = currentDataGrouping;
             anchorPoints(series, groupedXData, xMax);
-            if (visible) {
+            if (reserveSpace) {
                 adjustExtremes(xAxis, groupedXData);
             }
             // We calculated all group positions but we should render

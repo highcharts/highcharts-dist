@@ -146,7 +146,7 @@ class Series {
          * @type {Highcharts.SeriesOptionsType}
          */
         series.options = series.setOptions(userOptions);
-        const options = series.options;
+        const options = series.options, visible = options.visible !== false;
         series.linkedSeries = [];
         // bind the axes
         series.bindAxes();
@@ -168,7 +168,7 @@ class Series {
              * @name Highcharts.Series#visible
              * @type {boolean}
              */
-            visible: options.visible !== false,
+            visible,
             /**
              * Read only. The series' selected state as set by {@link
              * Highcharts.Series#select}.
@@ -2240,6 +2240,15 @@ class Series {
         }
     }
     /**
+     * Whether to reserve space for the series, either because it is visible or
+     * because the `chart.ignoreHiddenSeries` option is false.
+     *
+     * @private
+     */
+    reserveSpace() {
+        return this.visible || !this.chart.options.chart.ignoreHiddenSeries;
+    }
+    /**
      * Find the nearest point from a pointer event. This applies to series that
      * use k-d-trees to get the nearest point. Native pointer events must be
      * normalized using `Pointer.normalize`, that adds `chartX` and `chartY`
@@ -3108,46 +3117,46 @@ class Series {
      * @emits Highcharts.Series#event:show
      */
     setVisible(vis, redraw) {
+        var _a;
         const series = this, chart = series.chart, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
-        // if called without an argument, toggle visibility
+        // If called without an argument, toggle visibility
         series.visible =
             vis =
                 series.options.visible =
                     series.userOptions.visible =
                         typeof vis === 'undefined' ? !oldVisibility : vis; // #5618
         const showOrHide = vis ? 'show' : 'hide';
-        // show or hide elements
+        // Show or hide elements
         [
             'group',
             'dataLabelsGroup',
             'markerGroup',
             'tracker',
             'tt'
-        ].forEach(function (key) {
-            if (series[key]) {
-                series[key][showOrHide]();
-            }
+        ].forEach((key) => {
+            var _a;
+            (_a = series[key]) === null || _a === void 0 ? void 0 : _a[showOrHide]();
         });
-        // hide tooltip (#1361)
+        // Hide tooltip (#1361)
         if (chart.hoverSeries === series ||
-            (chart.hoverPoint && chart.hoverPoint.series) === series) {
+            ((_a = chart.hoverPoint) === null || _a === void 0 ? void 0 : _a.series) === series) {
             series.onMouseOut();
         }
         if (series.legendItem) {
             chart.legend.colorizeItem(series, vis);
         }
-        // rescale or adapt to resized chart
+        // Rescale or adapt to resized chart
         series.isDirty = true;
-        // in a stack, all other series are affected
+        // In a stack, all other series are affected
         if (series.options.stacking) {
-            chart.series.forEach(function (otherSeries) {
+            chart.series.forEach((otherSeries) => {
                 if (otherSeries.options.stacking && otherSeries.visible) {
                     otherSeries.isDirty = true;
                 }
             });
         }
-        // show or hide linked series
-        series.linkedSeries.forEach(function (otherSeries) {
+        // Show or hide linked series
+        series.linkedSeries.forEach((otherSeries) => {
             otherSeries.setVisible(vis, false);
         });
         if (ignoreHiddenSeries) {

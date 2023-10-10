@@ -9,10 +9,19 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-/* eslint no-console: 0 */
 'use strict';
+/* *
+ *
+ *  Imports
+ *
+ * */
 import U from '../Core/Utilities.js';
 const { extend, isNumber, pick } = U;
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Creates an object map from parent id to childrens index.
  *
@@ -26,47 +35,51 @@ const { extend, isNumber, pick } = U;
  *        List of all point ids.
  *
  * @return {Highcharts.Dictionary<Array<*>>}
- *         Map from parent id to children index in data
+ * Map from parent id to children index in data
  */
-const getListOfParents = function (data, ids) {
-    const listOfParents = data.reduce(function (prev, curr) {
+function getListOfParents(data) {
+    const listOfParents = data.reduce((prev, curr) => {
         const parent = pick(curr.parent, '');
         if (typeof prev[parent] === 'undefined') {
             prev[parent] = [];
         }
         prev[parent].push(curr);
         return prev;
-    }, {}), parents = Object.keys(listOfParents);
+    }, {});
+    // parents = Object.keys(listOfParents);
     // If parent does not exist, hoist parent to root of tree.
-    parents.forEach(function (parent, list) {
-        const children = listOfParents[parent];
-        if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-            children.forEach(function (child) {
-                list[''].push(child);
-            });
-            delete list[parent];
-        }
-    });
+    // parents.forEach((parent, list): void => {
+    //     const children = listOfParents[parent];
+    //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+    //         for (const child of children) {
+    //             (list as any)[''].push(child);
+    //         }
+    //         delete (list as any)[parent];
+    //     }
+    // });
     return listOfParents;
-};
-const getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-    let descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
-        data: data,
+}
+/** @private */
+function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+    const after = options && options.after, before = options && options.before, node = {
+        data,
         depth: level - 1,
-        id: id,
-        level: level,
-        parent: parent
-    }, start, end, children;
+        id,
+        level,
+        parent: (parent || '')
+    };
+    let descendants = 0, height = 0, start, end;
     // Allow custom logic before the children has been created.
     if (typeof before === 'function') {
         before(node, options);
     }
     // Call getNode recursively on the children. Calulate the height of the
     // node, and the number of descendants.
-    children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-        const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+    const children = ((mapOfIdToChildren[id] || [])).map((child) => {
+        const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
             childStart :
-            child.end);
+            child.end ||
+                NaN);
         // Start should be the lowest child.start.
         start = ((!isNumber(start) || childStart < start) ?
             childStart :
@@ -95,15 +108,18 @@ const getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
         after(node, options);
     }
     return node;
-};
-const getTree = function (data, options) {
-    const ids = data.map(function (d) {
-        return d.id;
-    }), mapOfIdToChildren = getListOfParents(data, ids);
+}
+/** @private */
+function getTree(data, options) {
+    const mapOfIdToChildren = getListOfParents(data);
     return getNode('', null, 1, null, mapOfIdToChildren, options);
-};
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
 const Tree = {
-    getListOfParents,
     getNode,
     getTree
 };

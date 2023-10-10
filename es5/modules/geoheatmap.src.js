@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  *
  * (c) 2009-2022
  *
@@ -332,7 +332,7 @@
              * @private
              */
             GeoHeatmapSeries.prototype.drawPoints = function () {
-                var series = this, chart = series.chart, mapView = chart.mapView, seriesOptions = series.options, interpolation = seriesOptions.interpolation;
+                var series = this, chart = series.chart, mapView = chart.mapView, seriesOptions = series.options;
                 if (series.getInterpolation().enabled && mapView && series.bounds) {
                     var ctx = series.context || getContext(series), canvas = series.canvas, colorAxis = series.colorAxis, image_1 = series.image, chart_1 = series.chart, points = series.points, _a = [
                         pick(seriesOptions.colsize, 1),
@@ -537,8 +537,8 @@
              * represented as colors.
              *
              * @sample maps/demo/geoheatmap-europe/
-             *         GeoHeatmap Chart on the Orthographic Projection
-             * @sample maps/demo/geoheatmap-equalearth/
+             *         GeoHeatmap Chart with interpolation on Europe map
+             * @sample maps/series-geoheatmap/geoheatmap-equalearth/
              *         GeoHeatmap Chart on the Equal Earth Projection
              *
              * @extends      plotOptions.map
@@ -715,8 +715,8 @@
          *  ```
          *
          * @sample maps/demo/geoheatmap-europe/
-         *         GeoHeatmap Chart on the Orthographic Projection
-         * @sample maps/demo/geoheatmap-equalearth/
+         *         GeoHeatmap Chart with interpolation on Europe map
+         * @sample maps/series-geoheatmap/geoheatmap-equalearth/
          *         GeoHeatmap Chart on the Equal Earth Projection
          *
          * @type      {Array<Array<number>|*>}

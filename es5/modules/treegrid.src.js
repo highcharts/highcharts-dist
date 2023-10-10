@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-10-06)
+ * @license Highcharts Gantt JS v11.1.0 (2023-10-10)
  *
  * Tree Grid
  *
@@ -109,8 +109,9 @@
              * @private
              */
             function onAxisAfterSetOptions() {
+                var _a;
                 var axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -483,7 +484,9 @@
                 Additions.prototype.setBreaks = function (breaks, redraw) {
                     var brokenAxis = this;
                     var axis = brokenAxis.axis;
-                    var hasBreaks = (isArray(breaks) && !!breaks.length);
+                    var hasBreaks = isArray(breaks) &&
+                        !!breaks.length &&
+                        !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
@@ -1693,8 +1696,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint no-console: 0 */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an object map from parent id to childrens index.
          *
@@ -1708,9 +1720,9 @@
          *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
+         * Map from parent id to children index in data
          */
-        var getListOfParents = function (data, ids) {
+        function getListOfParents(data) {
             var listOfParents = data.reduce(function (prev, curr) {
                 var parent = pick(curr.parent, '');
                 if (typeof prev[parent] === 'undefined') {
@@ -1718,37 +1730,41 @@
                 }
                 prev[parent].push(curr);
                 return prev;
-            }, {}), parents = Object.keys(listOfParents);
+            }, {});
+            // parents = Object.keys(listOfParents);
             // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                var children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
+            // parents.forEach((parent, list): void => {
+            //     const children = listOfParents[parent];
+            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+            //         for (const child of children) {
+            //             (list as any)[''].push(child);
+            //         }
+            //         delete (list as any)[parent];
+            //     }
+            // });
             return listOfParents;
-        };
-        var getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-            var descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
+        }
+        /** @private */
+        function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+            var after = options && options.after, before = options && options.before, node = {
                 data: data,
                 depth: level - 1,
                 id: id,
                 level: level,
-                parent: parent
-            }, start, end, children;
+                parent: (parent || '')
+            };
+            var descendants = 0, height = 0, start, end;
             // Allow custom logic before the children has been created.
             if (typeof before === 'function') {
                 before(node, options);
             }
             // Call getNode recursively on the children. Calulate the height of the
             // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                var node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+            var children = ((mapOfIdToChildren[id] || [])).map(function (child) {
+                var node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
                     childStart :
-                    child.end);
+                    child.end ||
+                        NaN);
                 // Start should be the lowest child.start.
                 start = ((!isNumber(start) || childStart < start) ?
                     childStart :
@@ -1777,15 +1793,18 @@
                 after(node, options);
             }
             return node;
-        };
-        var getTree = function (data, options) {
-            var ids = data.map(function (d) {
-                return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
+        }
+        /** @private */
+        function getTree(data, options) {
+            var mapOfIdToChildren = getListOfParents(data);
             return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         var Tree = {
-            getListOfParents: getListOfParents,
             getNode: getNode,
             getTree: getTree
         };

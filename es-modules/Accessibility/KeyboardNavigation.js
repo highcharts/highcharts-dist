@@ -229,6 +229,12 @@ class KeyboardNavigation {
             this.modules.length &&
             this.modules[this.currentModuleIx]);
         let preventDefault;
+        const target = e.target;
+        if (target &&
+            target.nodeName === 'INPUT' &&
+            !target.classList.contains('highcharts-a11y-proxy-element')) {
+            return;
+        }
         // Used for resetting nav state when clicking outside chart
         this.keyboardReset = false;
         // Used for sending focus out of the chart by the modules.

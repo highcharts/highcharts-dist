@@ -1,5 +1,5 @@
 /*
- Highstock JS v11.1.0 (2023-10-06)
+ Highstock JS v11.1.0 (2023-10-10)
 
  All technical indicators for Highcharts Stock
 

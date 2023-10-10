@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-10-06)
+ * @license Highcharts Gantt JS v11.1.0 (2023-10-10)
  *
  * Gantt series
  *
@@ -8908,8 +8908,9 @@
              * @private
              */
             function onAxisAfterSetOptions() {
+                var _a;
                 const axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -9282,7 +9283,9 @@
                 setBreaks(breaks, redraw) {
                     const brokenAxis = this;
                     const axis = brokenAxis.axis;
-                    const hasBreaks = (isArray(breaks) && !!breaks.length);
+                    const hasBreaks = isArray(breaks) &&
+                        !!breaks.length &&
+                        !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
@@ -10490,8 +10493,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint no-console: 0 */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         const { extend, isNumber, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an object map from parent id to childrens index.
          *
@@ -10505,47 +10517,51 @@
          *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
+         * Map from parent id to children index in data
          */
-        const getListOfParents = function (data, ids) {
-            const listOfParents = data.reduce(function (prev, curr) {
+        function getListOfParents(data) {
+            const listOfParents = data.reduce((prev, curr) => {
                 const parent = pick(curr.parent, '');
                 if (typeof prev[parent] === 'undefined') {
                     prev[parent] = [];
                 }
                 prev[parent].push(curr);
                 return prev;
-            }, {}), parents = Object.keys(listOfParents);
+            }, {});
+            // parents = Object.keys(listOfParents);
             // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                const children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
+            // parents.forEach((parent, list): void => {
+            //     const children = listOfParents[parent];
+            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+            //         for (const child of children) {
+            //             (list as any)[''].push(child);
+            //         }
+            //         delete (list as any)[parent];
+            //     }
+            // });
             return listOfParents;
-        };
-        const getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-            let descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
-                data: data,
+        }
+        /** @private */
+        function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+            const after = options && options.after, before = options && options.before, node = {
+                data,
                 depth: level - 1,
-                id: id,
-                level: level,
-                parent: parent
-            }, start, end, children;
+                id,
+                level,
+                parent: (parent || '')
+            };
+            let descendants = 0, height = 0, start, end;
             // Allow custom logic before the children has been created.
             if (typeof before === 'function') {
                 before(node, options);
             }
             // Call getNode recursively on the children. Calulate the height of the
             // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+            const children = ((mapOfIdToChildren[id] || [])).map((child) => {
+                const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
                     childStart :
-                    child.end);
+                    child.end ||
+                        NaN);
                 // Start should be the lowest child.start.
                 start = ((!isNumber(start) || childStart < start) ?
                     childStart :
@@ -10574,15 +10590,18 @@
                 after(node, options);
             }
             return node;
-        };
-        const getTree = function (data, options) {
-            const ids = data.map(function (d) {
-                return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
+        }
+        /** @private */
+        function getTree(data, options) {
+            const mapOfIdToChildren = getListOfParents(data);
             return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         const Tree = {
-            getListOfParents,
             getNode,
             getTree
         };
@@ -11817,7 +11836,7 @@
 
         return TreeGridAxisAdditions;
     });
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Axis, Chart, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
@@ -11827,25 +11846,31 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, defined, isNumber, pick } = U;
-        /* eslint-disable no-invalid-this */
-        /**
-         * For vertical axes only. Setting the static scale ensures that each tick unit
-         * is translated into a fixed pixel height. For example, setting the static
-         * scale to 24 results in each Y axis category taking up 24 pixels, and the
-         * height of the chart adjusts. Adding or removing items will make the chart
-         * resize.
+        const { addEvent, defined, isNumber, pick, pushUnique } = U;
+        /* *
          *
-         * @sample gantt/xrange-series/demo/
-         *         X-range series with static scale
+         *  Constants
          *
-         * @type      {number}
-         * @default   50
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption yAxis.staticScale
-         */
-        addEvent(Axis, 'afterSetOptions', function () {
+         * */
+        const composedMembers = [];
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        /** @private */
+        function compose(AxisClass, ChartClass) {
+            if (pushUnique(composedMembers, AxisClass)) {
+                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+            }
+            if (pushUnique(composedMembers, ChartClass)) {
+                const chartProto = ChartClass.prototype;
+                chartProto.adjustHeight = chartAdjustHeight;
+                addEvent(ChartClass, 'render', chartProto.adjustHeight);
+            }
+        }
+        /** @private */
+        function onAxisAfterSetOptions() {
             const chartOptions = this.chart.options.chart;
             if (!this.horiz &&
                 isNumber(this.options.staticScale) &&
@@ -11854,17 +11879,19 @@
                         chartOptions.scrollablePlotArea.minHeight))) {
                 this.staticScale = this.options.staticScale;
             }
-        });
-        Chart.prototype.adjustHeight = function () {
-            if (this.redrawTrigger !== 'adjustHeight') {
-                (this.axes || []).forEach(function (axis) {
-                    let chart = axis.chart, animate = !!chart.initiatedScale &&
-                        chart.options.animation, staticScale = axis.options.staticScale, height, diff;
+        }
+        /** @private */
+        function chartAdjustHeight() {
+            const chart = this;
+            if (chart.redrawTrigger !== 'adjustHeight') {
+                for (const axis of (chart.axes || [])) {
+                    const chart = axis.chart, animate = !!chart.initiatedScale &&
+                        chart.options.animation, staticScale = axis.options.staticScale;
                     if (axis.staticScale && defined(axis.min)) {
-                        height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
+                        let height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
                         // Minimum height is 1 x staticScale.
                         height = Math.max(height, staticScale);
-                        diff = height - chart.plotHeight;
+                        let diff = height - chart.plotHeight;
                         if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
                             chart.plotHeight = height;
                             chart.redrawTrigger = 'adjustHeight';
@@ -11884,13 +11911,43 @@
                             }
                         });
                     }
-                });
+                }
                 this.initiatedScale = true;
             }
             this.redrawTrigger = null;
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const StaticScale = {
+            compose
         };
-        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * For vertical axes only. Setting the static scale ensures that each tick unit
+         * is translated into a fixed pixel height. For example, setting the static
+         * scale to 24 results in each Y axis category taking up 24 pixels, and the
+         * height of the chart adjusts. Adding or removing items will make the chart
+         * resize.
+         *
+         * @sample gantt/xrange-series/demo/
+         *         X-range series with static scale
+         *
+         * @type      {number}
+         * @default   50
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption yAxis.staticScale
+         */
+        ''; // keeps doclets above in JS file
 
+        return StaticScale;
     });
     _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Series/Gantt/GanttPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/TreeGrid/TreeGridAxis.js']], function (Axis, Chart, GanttPoint, SeriesRegistry, Tick, U, TreeGridAxis) {
         /* *
@@ -12250,6 +12307,11 @@
          * @extends Highcharts.Chart
          */
         class GanttChart extends Chart {
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Initializes the chart. The constructor's arguments are passed on
              * directly.
@@ -12277,7 +12339,7 @@
                         type: 'gantt'
                     },
                     title: {
-                        text: null
+                        text: ''
                     },
                     legend: {
                         enabled: false
@@ -12301,7 +12363,7 @@
                 // second axis by default.
                 options.xAxis = (!isArray(userOptions.xAxis) ?
                     [userOptions.xAxis || {}, {}] :
-                    userOptions.xAxis).map(function (xAxisOptions, i) {
+                    userOptions.xAxis).map((xAxisOptions, i) => {
                     if (i === 1) { // Second xAxis
                         defaultLinkedTo = 0;
                     }
@@ -12317,26 +12379,33 @@
                     });
                 });
                 // apply Y axis options to both single and multi y axes
-                options.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
-                    return merge(defaultOptions.yAxis, // #3802
-                    {
-                        grid: {
-                            enabled: true
-                        },
-                        staticScale: 50,
-                        reversed: true,
-                        // Set default type treegrid, but only if 'categories' is
-                        // undefined
-                        type: yAxisOptions.categories ?
-                            yAxisOptions.type : 'treegrid'
-                    }, yAxisOptions // user options
-                    );
-                });
+                options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(defaultOptions.yAxis, // #3802
+                {
+                    grid: {
+                        enabled: true
+                    },
+                    staticScale: 50,
+                    reversed: true,
+                    // Set default type treegrid, but only if 'categories' is
+                    // undefined
+                    type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
+                }, yAxisOptions // user options
+                ));
                 super.init(options, callback);
             }
         }
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
         (function (GanttChart) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable jsdoc/check-param-names */
             /**
              * The factory function for creating new gantt charts. Creates a new {@link
              * Highcharts.GanttChart|GanttChart} object with different default options
@@ -12374,7 +12443,13 @@
                 return new GanttChart(a, b, c);
             }
             GanttChart.ganttChart = ganttChart;
+            /* eslint-enable jsdoc/check-param-names */
         })(GanttChart || (GanttChart = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return GanttChart;
     });

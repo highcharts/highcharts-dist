@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-10-06)
+ * @license Highcharts Gantt JS v11.1.0 (2023-10-10)
  *
  * Gantt series
  *
@@ -8987,8 +8987,9 @@
              * @private
              */
             function onAxisAfterSetOptions() {
+                var _a;
                 var axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -9361,7 +9362,9 @@
                 Additions.prototype.setBreaks = function (breaks, redraw) {
                     var brokenAxis = this;
                     var axis = brokenAxis.axis;
-                    var hasBreaks = (isArray(breaks) && !!breaks.length);
+                    var hasBreaks = isArray(breaks) &&
+                        !!breaks.length &&
+                        !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
@@ -10571,8 +10574,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint no-console: 0 */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an object map from parent id to childrens index.
          *
@@ -10586,9 +10598,9 @@
          *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
+         * Map from parent id to children index in data
          */
-        var getListOfParents = function (data, ids) {
+        function getListOfParents(data) {
             var listOfParents = data.reduce(function (prev, curr) {
                 var parent = pick(curr.parent, '');
                 if (typeof prev[parent] === 'undefined') {
@@ -10596,37 +10608,41 @@
                 }
                 prev[parent].push(curr);
                 return prev;
-            }, {}), parents = Object.keys(listOfParents);
+            }, {});
+            // parents = Object.keys(listOfParents);
             // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                var children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
+            // parents.forEach((parent, list): void => {
+            //     const children = listOfParents[parent];
+            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+            //         for (const child of children) {
+            //             (list as any)[''].push(child);
+            //         }
+            //         delete (list as any)[parent];
+            //     }
+            // });
             return listOfParents;
-        };
-        var getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-            var descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
+        }
+        /** @private */
+        function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+            var after = options && options.after, before = options && options.before, node = {
                 data: data,
                 depth: level - 1,
                 id: id,
                 level: level,
-                parent: parent
-            }, start, end, children;
+                parent: (parent || '')
+            };
+            var descendants = 0, height = 0, start, end;
             // Allow custom logic before the children has been created.
             if (typeof before === 'function') {
                 before(node, options);
             }
             // Call getNode recursively on the children. Calulate the height of the
             // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                var node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+            var children = ((mapOfIdToChildren[id] || [])).map(function (child) {
+                var node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
                     childStart :
-                    child.end);
+                    child.end ||
+                        NaN);
                 // Start should be the lowest child.start.
                 start = ((!isNumber(start) || childStart < start) ?
                     childStart :
@@ -10655,15 +10671,18 @@
                 after(node, options);
             }
             return node;
-        };
-        var getTree = function (data, options) {
-            var ids = data.map(function (d) {
-                return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
+        }
+        /** @private */
+        function getTree(data, options) {
+            var mapOfIdToChildren = getListOfParents(data);
             return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         var Tree = {
-            getListOfParents: getListOfParents,
             getNode: getNode,
             getTree: getTree
         };
@@ -11900,7 +11919,7 @@
 
         return TreeGridAxisAdditions;
     });
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Axis, Chart, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
@@ -11910,8 +11929,93 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent, defined = U.defined, isNumber = U.isNumber, pick = U.pick;
-        /* eslint-disable no-invalid-this */
+        var addEvent = U.addEvent, defined = U.defined, isNumber = U.isNumber, pick = U.pick, pushUnique = U.pushUnique;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedMembers = [];
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        /** @private */
+        function compose(AxisClass, ChartClass) {
+            if (pushUnique(composedMembers, AxisClass)) {
+                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+            }
+            if (pushUnique(composedMembers, ChartClass)) {
+                var chartProto = ChartClass.prototype;
+                chartProto.adjustHeight = chartAdjustHeight;
+                addEvent(ChartClass, 'render', chartProto.adjustHeight);
+            }
+        }
+        /** @private */
+        function onAxisAfterSetOptions() {
+            var chartOptions = this.chart.options.chart;
+            if (!this.horiz &&
+                isNumber(this.options.staticScale) &&
+                (!chartOptions.height ||
+                    (chartOptions.scrollablePlotArea &&
+                        chartOptions.scrollablePlotArea.minHeight))) {
+                this.staticScale = this.options.staticScale;
+            }
+        }
+        /** @private */
+        function chartAdjustHeight() {
+            var chart = this;
+            if (chart.redrawTrigger !== 'adjustHeight') {
+                var _loop_1 = function (axis) {
+                    var chart_1 = axis.chart, animate = !!chart_1.initiatedScale &&
+                        chart_1.options.animation, staticScale = axis.options.staticScale;
+                    if (axis.staticScale && defined(axis.min)) {
+                        var height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
+                        // Minimum height is 1 x staticScale.
+                        height = Math.max(height, staticScale);
+                        var diff = height - chart_1.plotHeight;
+                        if (!chart_1.scrollablePixelsY && Math.abs(diff) >= 1) {
+                            chart_1.plotHeight = height;
+                            chart_1.redrawTrigger = 'adjustHeight';
+                            chart_1.setSize(void 0, chart_1.chartHeight + diff, animate);
+                        }
+                        // Make sure clip rects have the right height before initial
+                        // animation.
+                        axis.series.forEach(function (series) {
+                            var clipRect = series.sharedClipKey &&
+                                chart_1.sharedClips[series.sharedClipKey];
+                            if (clipRect) {
+                                clipRect.attr(chart_1.inverted ? {
+                                    width: chart_1.plotHeight
+                                } : {
+                                    height: chart_1.plotHeight
+                                });
+                            }
+                        });
+                    }
+                };
+                for (var _i = 0, _a = (chart.axes || []); _i < _a.length; _i++) {
+                    var axis = _a[_i];
+                    _loop_1(axis);
+                }
+                this.initiatedScale = true;
+            }
+            this.redrawTrigger = null;
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var StaticScale = {
+            compose: compose
+        };
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * For vertical axes only. Setting the static scale ensures that each tick unit
          * is translated into a fixed pixel height. For example, setting the static
@@ -11928,52 +12032,9 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        addEvent(Axis, 'afterSetOptions', function () {
-            var chartOptions = this.chart.options.chart;
-            if (!this.horiz &&
-                isNumber(this.options.staticScale) &&
-                (!chartOptions.height ||
-                    (chartOptions.scrollablePlotArea &&
-                        chartOptions.scrollablePlotArea.minHeight))) {
-                this.staticScale = this.options.staticScale;
-            }
-        });
-        Chart.prototype.adjustHeight = function () {
-            if (this.redrawTrigger !== 'adjustHeight') {
-                (this.axes || []).forEach(function (axis) {
-                    var chart = axis.chart, animate = !!chart.initiatedScale &&
-                        chart.options.animation, staticScale = axis.options.staticScale, height, diff;
-                    if (axis.staticScale && defined(axis.min)) {
-                        height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
-                        // Minimum height is 1 x staticScale.
-                        height = Math.max(height, staticScale);
-                        diff = height - chart.plotHeight;
-                        if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
-                            chart.plotHeight = height;
-                            chart.redrawTrigger = 'adjustHeight';
-                            chart.setSize(void 0, chart.chartHeight + diff, animate);
-                        }
-                        // Make sure clip rects have the right height before initial
-                        // animation.
-                        axis.series.forEach(function (series) {
-                            var clipRect = series.sharedClipKey &&
-                                chart.sharedClips[series.sharedClipKey];
-                            if (clipRect) {
-                                clipRect.attr(chart.inverted ? {
-                                    width: chart.plotHeight
-                                } : {
-                                    height: chart.plotHeight
-                                });
-                            }
-                        });
-                    }
-                });
-                this.initiatedScale = true;
-            }
-            this.redrawTrigger = null;
-        };
-        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
+        ''; // keeps doclets above in JS file
 
+        return StaticScale;
     });
     _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Series/Gantt/GanttPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/TreeGrid/TreeGridAxis.js']], function (Axis, Chart, GanttPoint, SeriesRegistry, Tick, U, TreeGridAxis) {
         /* *
@@ -12370,6 +12431,11 @@
             function GanttChart() {
                 return _super !== null && _super.apply(this, arguments) || this;
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Initializes the chart. The constructor's arguments are passed on
              * directly.
@@ -12397,7 +12463,7 @@
                         type: 'gantt'
                     },
                     title: {
-                        text: null
+                        text: ''
                     },
                     legend: {
                         enabled: false
@@ -12437,27 +12503,34 @@
                     });
                 });
                 // apply Y axis options to both single and multi y axes
-                options.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
-                    return merge(defaultOptions.yAxis, // #3802
-                    {
-                        grid: {
-                            enabled: true
-                        },
-                        staticScale: 50,
-                        reversed: true,
-                        // Set default type treegrid, but only if 'categories' is
-                        // undefined
-                        type: yAxisOptions.categories ?
-                            yAxisOptions.type : 'treegrid'
-                    }, yAxisOptions // user options
-                    );
-                });
+                options.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) { return merge(defaultOptions.yAxis, // #3802
+                {
+                    grid: {
+                        enabled: true
+                    },
+                    staticScale: 50,
+                    reversed: true,
+                    // Set default type treegrid, but only if 'categories' is
+                    // undefined
+                    type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
+                }, yAxisOptions // user options
+                ); });
                 _super.prototype.init.call(this, options, callback);
             };
             return GanttChart;
         }(Chart));
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
         (function (GanttChart) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable jsdoc/check-param-names */
             /**
              * The factory function for creating new gantt charts. Creates a new {@link
              * Highcharts.GanttChart|GanttChart} object with different default options
@@ -12495,7 +12568,13 @@
                 return new GanttChart(a, b, c);
             }
             GanttChart.ganttChart = ganttChart;
+            /* eslint-enable jsdoc/check-param-names */
         })(GanttChart || (GanttChart = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return GanttChart;
     });

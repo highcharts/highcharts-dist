@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  *
  * Mousewheel zoom module
  *
@@ -111,7 +111,8 @@
          * @private
          */
         var zoomBy = function (chart, howMuch, centerXArg, centerYArg, mouseX, mouseY, options) {
-            var xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], yOptions = yAxis.options, type = pick(options.type, chart.options.chart.zooming.type, 'x'), zoomX = /x/.test(type), zoomY = /y/.test(type);
+            var xAxis = chart.xAxis[0], yAxis = chart.yAxis[0], yOptions = yAxis.options, type = pick(options.type, chart.zooming.type, ''), zoomX = /x/.test(type), zoomY = /y/.test(type);
+            var hasZoomed = false;
             if (defined(xAxis.max) && defined(xAxis.min) &&
                 defined(yAxis.max) && defined(yAxis.min) &&
                 defined(xAxis.dataMax) && defined(xAxis.dataMin) &&
@@ -191,9 +192,11 @@
                 if (defined(howMuch) && !zoomOut) {
                     if (zoomX) {
                         xAxis.setExtremes(newExt.x, newExt.x + newExt.width, false);
+                        hasZoomed = true;
                     }
                     if (zoomY) {
                         yAxis.setExtremes(newExt.y, newExt.y + newExt.height, false);
+                        hasZoomed = true;
                     }
                     // Reset zoom
                 }
@@ -205,28 +208,30 @@
                         yAxis.setExtremes(void 0, void 0, false);
                     }
                 }
-                chart.redraw(false);
+                if (hasZoomed) {
+                    chart.redraw(false);
+                }
             }
+            return hasZoomed;
         };
         /**
          * @private
          */
         function onAfterGetContainer() {
             var _this = this;
-            var chart = this, wheelZoomOptions = optionsToObject(chart.options.chart.zooming.mouseWheel);
+            var chart = this, wheelZoomOptions = optionsToObject(chart.zooming.mouseWheel);
             if (wheelZoomOptions.enabled) {
-                var haltScroll_1 = false;
                 addEvent(this.container, 'wheel', function (e) {
                     e = _this.pointer.normalize(e);
-                    haltScroll_1 = chart.pointer.inClass(e.target, 'highcharts-no-mousewheel');
+                    var allowZoom = !chart.pointer.inClass(e.target, 'highcharts-no-mousewheel');
                     // Firefox uses e.detail, WebKit and IE uses deltaX, deltaY, deltaZ.
-                    if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) && !haltScroll_1) {
-                        var wheelSensitivity = pick(wheelZoomOptions.sensitivity, 1.1), delta = e.detail || ((e.deltaY || 0) / 120);
-                        zoomBy(chart, Math.pow(wheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, wheelZoomOptions);
-                    }
-                    // prevent page scroll
-                    if (e.preventDefault && !haltScroll_1) {
-                        e.preventDefault();
+                    if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) && allowZoom) {
+                        var wheelSensitivity = wheelZoomOptions.sensitivity || 1.1, delta = e.detail || ((e.deltaY || 0) / 120);
+                        var hasZoomed = zoomBy(chart, Math.pow(wheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, wheelZoomOptions);
+                        // Prevent page scroll
+                        if (hasZoomed && e.preventDefault) {
+                            e.preventDefault();
+                        }
                     }
                 });
             }
@@ -254,10 +259,11 @@
          *
          * */
         /**
-         * The mouse wheel zoom is a feature included in Highcharts Stock, but is
-         * also available for Highcharts Core as a module. Zooming with the mouse wheel
-         * is enabled by default. It can be disabled by setting this option to
-         * `false`.
+         * The mouse wheel zoom is a feature included in Highcharts Stock, but is also
+         * available for Highcharts Core as a module. Zooming with the mouse wheel is
+         * enabled by default in Highcharts Stock. In Highcharts Core it is enabled if
+         * [chart.zooming.type](chart.zooming.type) is set. It can be disabled by
+         * setting this option to `false`.
          *
          * @type      {boolean|object}
          * @since 11.1.0
@@ -294,9 +300,10 @@
          * @apioption chart.zooming.mouseWheel.sensitivity
          */
         /**
-         * Decides in what dimensions the user can zoom scrolling the wheel.
-         * Can be one of `x`, `y` or `xy`. If not specified here, it will inherit the
-         * type from [chart.zooming.type](chart.zooming.type).
+         * Decides in what dimensions the user can zoom scrolling the wheel. Can be one
+         * of `x`, `y` or `xy`. In Highcharts Core, if not specified here, it will
+         * inherit the type from [chart.zooming.type](chart.zooming.type). In Highcharts
+         * Stock, it defaults to `x`.
          *
          * Note that particularly with mouse wheel in the y direction, the zoom is
          * affected by the default [yAxis.startOnTick](#yAxis.startOnTick) and
@@ -305,7 +312,8 @@
          * this, consider setting `startOnTick` and `endOnTick` to `false`.
          *
          * @type      {string}
-         * @default   x
+         * @default   {highcharts} undefined
+         * @default   {highstock} x
          * @validvalue ["x", "y", "xy"]
          * @since 11.1.0
          * @requires  modules/mouse-wheel-zoom

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -33,8 +33,10 @@
             }
         }
     }
-    _registerModule(_modules, 'masters/modules/overlapping-datalabels.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/overlapping-datalabels.src.js', [_modules['Core/Globals.js'], _modules['Extensions/OverlappingDataLabels.js']], function (Highcharts, OverlappingDataLabels) {
 
+        const G = Highcharts;
+        OverlappingDataLabels.compose(G.Chart);
 
     });
 }));

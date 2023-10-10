@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -3253,8 +3253,7 @@
             let pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
             // Handle padding on the second pass, or on redraw
             this.series.forEach((series) => {
-                if (series.bubblePadding &&
-                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+                if (series.bubblePadding && series.reserveSpace()) {
                     // Correction for #1673
                     this.allowZoomOutside = true;
                     hasActiveSeries = true;
@@ -3382,8 +3381,7 @@
                     let zMax = -Number.MAX_VALUE;
                     let valid;
                     this.chart.series.forEach((otherSeries) => {
-                        if (otherSeries.bubblePadding && (otherSeries.visible ||
-                            !this.chart.options.chart.ignoreHiddenSeries)) {
+                        if (otherSeries.bubblePadding && otherSeries.reserveSpace()) {
                             const zExtremes = (otherSeries.onPoint || otherSeries).getZExtremes();
                             if (zExtremes) {
                                 // Changed '||' to 'pick' because min or max can be 0.
@@ -7903,8 +7901,7 @@
                 let yData;
                 for (const series of chart.series) {
                     if (series.is('packedbubble') && // #13574
-                        series.visible ||
-                        !chart.options.chart.ignoreHiddenSeries) {
+                        series.reserveSpace()) {
                         yData = series.yData || [];
                         // add data to array only if series is visible
                         for (let j = 0; j < yData.length; j++) {
@@ -9309,8 +9306,9 @@
                 }
             }
             // Waterfall has stacking along the x-values too.
-            setStackedPoints() {
-                let series = this, options = series.options, waterfallStacks = series.yAxis.waterfall.stacks, seriesThreshold = options.threshold || 0, stackThreshold = seriesThreshold, interSum = stackThreshold, stackKey = series.stackKey, xData = series.xData, xLength = xData.length, actualStackX, totalYVal, actualSum, prevSum, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
+            setStackedPoints(axis) {
+                var _a;
+                let series = this, options = series.options, waterfallStacks = (_a = axis.waterfall) === null || _a === void 0 ? void 0 : _a.stacks, seriesThreshold = options.threshold || 0, stackThreshold = seriesThreshold, interSum = stackThreshold, stackKey = series.stackKey, xData = series.xData, xLength = xData.length, actualStackX, totalYVal = 0, actualSum = 0, prevSum = 0, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
                 // Function responsible for calculating correct values for stackState
                 // array of each stack item. The arguments are: firstS - the value for
                 // the first state, nextS - the difference between the previous and the
@@ -9332,85 +9330,86 @@
                         actualStackX.stackState.push(actualStackX.stackState[statesLen - 1] + nextS);
                     }
                 }
-                series.yAxis.stacking.usePercentage = false;
-                totalYVal = actualSum = prevSum = stackThreshold;
-                // code responsible for creating stacks for waterfall series
-                if (series.visible ||
-                    !series.chart.options.chart.ignoreHiddenSeries) {
-                    changed = waterfallStacks.changed;
-                    alreadyChanged = waterfallStacks.alreadyChanged;
-                    // In case of a redraw, stack for each x value must be emptied (only
-                    // for the first series in a specific stack) and recalculated once
-                    // more
-                    if (alreadyChanged &&
-                        alreadyChanged.indexOf(stackKey) < 0) {
-                        changed = true;
-                    }
-                    if (!waterfallStacks[stackKey]) {
-                        waterfallStacks[stackKey] = {};
-                    }
-                    const actualStack = waterfallStacks[stackKey];
-                    if (actualStack) {
-                        for (let i = 0; i < xLength; i++) {
-                            x = xData[i];
-                            if (!actualStack[x] || changed) {
-                                actualStack[x] = {
-                                    negTotal: 0,
-                                    posTotal: 0,
-                                    stackTotal: 0,
-                                    threshold: 0,
-                                    stateIndex: 0,
-                                    stackState: [],
-                                    label: ((changed &&
-                                        actualStack[x]) ?
-                                        actualStack[x].label :
-                                        void 0)
-                                };
-                            }
-                            actualStackX = actualStack[x];
-                            yVal = series.yData[i];
-                            if (yVal >= 0) {
-                                actualStackX.posTotal += yVal;
-                            }
-                            else {
-                                actualStackX.negTotal += yVal;
-                            }
-                            // points do not exist yet, so raw data is used
-                            xPoint = options.data[i];
-                            posTotal = actualStackX.absolutePos = actualStackX.posTotal;
-                            negTotal = actualStackX.absoluteNeg = actualStackX.negTotal;
-                            actualStackX.stackTotal = posTotal + negTotal;
-                            statesLen = actualStackX.stackState.length;
-                            if (xPoint && xPoint.isIntermediateSum) {
-                                calculateStackState(prevSum, actualSum, 0, prevSum);
-                                prevSum = actualSum;
-                                actualSum = seriesThreshold;
-                                // swapping values
-                                stackThreshold ^= interSum;
-                                interSum ^= stackThreshold;
-                                stackThreshold ^= interSum;
-                            }
-                            else if (xPoint && xPoint.isSum) {
-                                calculateStackState(seriesThreshold, totalYVal, statesLen, 0);
-                                stackThreshold = seriesThreshold;
-                            }
-                            else {
-                                calculateStackState(stackThreshold, yVal, 0, totalYVal);
-                                if (xPoint) {
-                                    totalYVal += yVal;
-                                    actualSum += yVal;
-                                }
-                            }
-                            actualStackX.stateIndex++;
-                            actualStackX.threshold = stackThreshold;
-                            stackThreshold += actualStackX.stackTotal;
+                if (axis.stacking && waterfallStacks) {
+                    // Code responsible for creating stacks for waterfall series
+                    if (series.reserveSpace()) {
+                        changed = waterfallStacks.changed;
+                        alreadyChanged = waterfallStacks.alreadyChanged;
+                        // In case of a redraw, stack for each x value must be emptied
+                        // (only for the first series in a specific stack) and
+                        // recalculated once more
+                        if (alreadyChanged &&
+                            alreadyChanged.indexOf(stackKey) < 0) {
+                            changed = true;
                         }
+                        if (!waterfallStacks[stackKey]) {
+                            waterfallStacks[stackKey] = {};
+                        }
+                        const actualStack = waterfallStacks[stackKey];
+                        if (actualStack) {
+                            for (let i = 0; i < xLength; i++) {
+                                x = xData[i];
+                                if (!actualStack[x] || changed) {
+                                    actualStack[x] = {
+                                        negTotal: 0,
+                                        posTotal: 0,
+                                        stackTotal: 0,
+                                        threshold: 0,
+                                        stateIndex: 0,
+                                        stackState: [],
+                                        label: ((changed &&
+                                            actualStack[x]) ?
+                                            actualStack[x].label :
+                                            void 0)
+                                    };
+                                }
+                                actualStackX = actualStack[x];
+                                yVal = series.yData[i];
+                                if (yVal >= 0) {
+                                    actualStackX.posTotal += yVal;
+                                }
+                                else {
+                                    actualStackX.negTotal += yVal;
+                                }
+                                // Points do not exist yet, so raw data is used
+                                xPoint = options.data[i];
+                                posTotal = actualStackX.absolutePos =
+                                    actualStackX.posTotal;
+                                negTotal = actualStackX.absoluteNeg =
+                                    actualStackX.negTotal;
+                                actualStackX.stackTotal = posTotal + negTotal;
+                                statesLen = actualStackX.stackState.length;
+                                if (xPoint && xPoint.isIntermediateSum) {
+                                    calculateStackState(prevSum, actualSum, 0, prevSum);
+                                    prevSum = actualSum;
+                                    actualSum = seriesThreshold;
+                                    // Swapping values
+                                    stackThreshold ^= interSum;
+                                    interSum ^= stackThreshold;
+                                    stackThreshold ^= interSum;
+                                }
+                                else if (xPoint && xPoint.isSum) {
+                                    calculateStackState(seriesThreshold, totalYVal, statesLen, 0);
+                                    stackThreshold = seriesThreshold;
+                                }
+                                else {
+                                    calculateStackState(stackThreshold, yVal, 0, totalYVal);
+                                    if (xPoint) {
+                                        totalYVal += yVal;
+                                        actualSum += yVal;
+                                    }
+                                }
+                                actualStackX.stateIndex++;
+                                actualStackX.threshold = stackThreshold;
+                                stackThreshold += actualStackX.stackTotal;
+                            }
+                        }
+                        waterfallStacks.changed = false;
+                        if (!waterfallStacks.alreadyChanged) {
+                            waterfallStacks.alreadyChanged = [];
+                        }
+                        waterfallStacks.alreadyChanged.push(stackKey);
                     }
-                    waterfallStacks.changed = false;
-                    if (!waterfallStacks.alreadyChanged) {
-                        waterfallStacks.alreadyChanged = [];
-                    }
-                    waterfallStacks.alreadyChanged.push(stackKey);
                 }
             }
             // Extremes for a non-stacked series are recorded in processData.

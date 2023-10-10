@@ -74,8 +74,9 @@ var BrokenAxis;
      * @private
      */
     function onAxisAfterSetOptions() {
+        var _a;
         const axis = this;
-        if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+        if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
             axis.options.ordinal = false;
         }
     }
@@ -448,7 +449,9 @@ var BrokenAxis;
         setBreaks(breaks, redraw) {
             const brokenAxis = this;
             const axis = brokenAxis.axis;
-            const hasBreaks = (isArray(breaks) && !!breaks.length);
+            const hasBreaks = isArray(breaks) &&
+                !!breaks.length &&
+                !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
             axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
             brokenAxis.hasBreaks = hasBreaks;
             if (breaks !== axis.options.breaks) {

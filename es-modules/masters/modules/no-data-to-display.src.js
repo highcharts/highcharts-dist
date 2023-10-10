@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-06)
+ * @license Highcharts JS v11.1.0 (2023-10-10)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *
@@ -11,4 +11,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/NoDataToDisplay.js';
+import Highcharts from '../../Core/Globals.js';
+import NoDataToDisplay from '../../Extensions/NoDataToDisplay/NoDataToDisplay.js';
+const G = Highcharts;
+NoDataToDisplay.compose(G.Chart, G.defaultOptions);

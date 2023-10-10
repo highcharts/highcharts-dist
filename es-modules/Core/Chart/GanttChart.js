@@ -15,7 +15,6 @@ import D from '../Defaults.js';
 const { getOptions } = D;
 import U from '../Utilities.js';
 const { isArray, merge, splat } = U;
-import '../../Series/Gantt/GanttSeries.js';
 /* *
  *
  *  Class
@@ -31,6 +30,11 @@ import '../../Series/Gantt/GanttSeries.js';
  * @extends Highcharts.Chart
  */
 class GanttChart extends Chart {
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * Initializes the chart. The constructor's arguments are passed on
      * directly.
@@ -58,7 +62,7 @@ class GanttChart extends Chart {
                 type: 'gantt'
             },
             title: {
-                text: null
+                text: ''
             },
             legend: {
                 enabled: false
@@ -82,7 +86,7 @@ class GanttChart extends Chart {
         // second axis by default.
         options.xAxis = (!isArray(userOptions.xAxis) ?
             [userOptions.xAxis || {}, {}] :
-            userOptions.xAxis).map(function (xAxisOptions, i) {
+            userOptions.xAxis).map((xAxisOptions, i) => {
             if (i === 1) { // Second xAxis
                 defaultLinkedTo = 0;
             }
@@ -98,26 +102,33 @@ class GanttChart extends Chart {
             });
         });
         // apply Y axis options to both single and multi y axes
-        options.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
-            return merge(defaultOptions.yAxis, // #3802
-            {
-                grid: {
-                    enabled: true
-                },
-                staticScale: 50,
-                reversed: true,
-                // Set default type treegrid, but only if 'categories' is
-                // undefined
-                type: yAxisOptions.categories ?
-                    yAxisOptions.type : 'treegrid'
-            }, yAxisOptions // user options
-            );
-        });
+        options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(defaultOptions.yAxis, // #3802
+        {
+            grid: {
+                enabled: true
+            },
+            staticScale: 50,
+            reversed: true,
+            // Set default type treegrid, but only if 'categories' is
+            // undefined
+            type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
+        }, yAxisOptions // user options
+        ));
         super.init(options, callback);
     }
 }
-/* eslint-disable valid-jsdoc */
+/* *
+ *
+ *  Class Namespace
+ *
+ * */
 (function (GanttChart) {
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /* eslint-disable jsdoc/check-param-names */
     /**
      * The factory function for creating new gantt charts. Creates a new {@link
      * Highcharts.GanttChart|GanttChart} object with different default options
@@ -155,5 +166,11 @@ class GanttChart extends Chart {
         return new GanttChart(a, b, c);
     }
     GanttChart.ganttChart = ganttChart;
+    /* eslint-enable jsdoc/check-param-names */
 })(GanttChart || (GanttChart = {}));
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default GanttChart;

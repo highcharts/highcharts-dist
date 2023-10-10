@@ -94,8 +94,7 @@ class ZAxis extends Axis {
         }
         // loop through this axis' series
         this.series.forEach((series) => {
-            if (series.visible ||
-                !chart.options.chart.ignoreHiddenSeries) {
+            if (series.reserveSpace()) {
                 let threshold = series.options.threshold;
                 this.hasVisibleSeries = true;
                 // Validate threshold in logarithmic axes
