@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-10)
+ * @license Highstock JS v11.1.0 (2023-10-11)
  * @module highcharts/indicators/dmi
  * @requires highcharts
  * @requires highcharts/modules/stock
