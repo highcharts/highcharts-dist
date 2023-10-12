@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-11)
+ * @license Highstock JS v11.1.0 (2023-10-12)
  *
  * Slow Stochastic series type for Highcharts Stock
  *
