@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-12)
+ * @license Highcharts JS v11.1.0 (2023-10-13)
  *
  * (c) 2009-2022
  *

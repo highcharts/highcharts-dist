@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-12)
+ * @license Highcharts JS v11.1.0 (2023-10-13)
  *
  * Boost module
  *
@@ -156,7 +156,9 @@
                 x: chart.plotLeft,
                 y: chart.plotTop,
                 width: chart.plotWidth,
-                height: chart.plotHeight
+                height: chart.navigator ? // #17820
+                    chart.navigator.top + chart.navigator.height - chart.plotTop :
+                    chart.plotHeight
             };
             // Clipping of individal series (#11906, #19039).
             if (target.getClipBox) {
@@ -181,9 +183,6 @@
                     clipBox.height = (verticalAxes[0].pos -
                         chart.plotTop +
                         verticalAxes[0].len);
-                }
-                else {
-                    clipBox.height = chart.plotHeight;
                 }
             }
             return clipBox;

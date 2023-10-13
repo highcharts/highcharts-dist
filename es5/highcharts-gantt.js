@@ -1,5 +1,5 @@
 /*
- Highcharts Gantt JS v11.1.0 (2023-10-12)
+ Highcharts Gantt JS v11.1.0 (2023-10-13)
 
  (c) 2017-2021 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
 

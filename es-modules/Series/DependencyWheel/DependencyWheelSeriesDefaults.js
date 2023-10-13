@@ -12,7 +12,7 @@
 'use strict';
 /* *
  *
- *  Constants
+ *  API Options
  *
  * */
 /**
@@ -114,17 +114,6 @@ const DependencyWheelSeriesDefaults = {
         }
     }
 };
-/* *
- *
- *  Default Export
- *
- * */
-export default DependencyWheelSeriesDefaults;
-/* *
- *
- *  API Options
- *
- * */
 /**
  * A `dependencywheel` series. If the [type](#series.dependencywheel.type)
  * option is not specified, it is inherited from [chart.type](#chart.type).
@@ -180,4 +169,10 @@ export default DependencyWheelSeriesDefaults;
  *
  * @apioption series.dependencywheel.nodes.dataLabels
  */
-''; // adds doclets above to the transpiled file
+''; // keeps doclets above separate
+/* *
+ *
+ *  Default Export
+ *
+ * */
+export default DependencyWheelSeriesDefaults;

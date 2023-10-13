@@ -20,16 +20,19 @@ declare module "../highcharts" {
     interface Series {
         /**
          * Get non-presentational attributes for a point. Used internally for
-         * both styled mode and classic. Set correct position in link with
-         * connector line.
+         * both styled mode and classic. Can be overridden for different series
+         * types.
          *
-         * @param this
-         *        The series of points.
+         * @param point
+         *        The Point to inspect.
+         *
+         * @param state
+         *        The state, can be either `hover`, `select` or undefined.
          *
          * @return A hash containing those attributes that are not settable from
          *         CSS.
          */
-        markerAttribs(this: Series): SVGAttributes;
+        markerAttribs(point: Point, state?: string): SVGAttributes;
     }
 }
 export default factory;

@@ -17,11 +17,11 @@
  *   Highcharts symbols.
  */
 'use strict';
-import ColumnSeries from '../Column/ColumnSeries.js';
+import DotPlotSeriesDefaults from './DotPlotSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { extend, merge, pick } = U;
-import '../Column/ColumnSeries.js';
 /* *
  *
  *  Class
@@ -38,13 +38,13 @@ class DotPlotSeries extends ColumnSeries {
     constructor() {
         /* *
          *
-         * Static Properties
+         *  Static Properties
          *
          * */
         super(...arguments);
         /* *
          *
-         * Properties
+         *  Properties
          *
          * */
         this.data = void 0;
@@ -53,17 +53,18 @@ class DotPlotSeries extends ColumnSeries {
     }
     /* *
      *
-     * Functions
+     *  Functions
      *
      * */
     drawPoints() {
-        const series = this, renderer = series.chart.renderer, seriesMarkerOptions = this.options.marker, itemPaddingTranslated = this.yAxis.transA *
-            series.options.itemPadding, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1;
-        this.points.forEach(function (point) {
-            let yPos, attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size, yTop, isSquare = symbol !== 'rect', x, y;
+        const series = this, options = series.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, itemPaddingTranslated = series.yAxis.transA *
+            options.itemPadding, borderWidth = series.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1;
+        for (const point of series.points) {
+            const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+                seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), isSquare = symbol !== 'rect';
+            let yPos, attr, graphics, size, yTop, x, y;
             point.graphics = graphics = point.graphics || [];
-            pointAttr = point.pointAttr ?
+            const pointAttr = point.pointAttr ?
                 (point.pointAttr[point.selected ? 'selected' : ''] ||
                     series.pointAttr['']) :
                 series.pointAttribs(point, point.selected && 'select');
@@ -109,38 +110,30 @@ class DotPlotSeries extends ColumnSeries {
                     graphics[i] = graphic;
                 }
             }
-            graphics.forEach((graphic, i) => {
-                if (!graphic) {
-                    return;
+            let i = -1;
+            for (const graphic of graphics) {
+                ++i;
+                if (graphic) {
+                    if (!graphic.isActive) {
+                        graphic.destroy();
+                        graphics.splice(i, 1);
+                    }
+                    else {
+                        graphic.isActive = false;
+                    }
                 }
-                if (!graphic.isActive) {
-                    graphic.destroy();
-                    graphics.splice(i, 1);
-                }
-                else {
-                    graphic.isActive = false;
-                }
-            });
-        });
-    }
-}
-DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-    itemPadding: 0.2,
-    marker: {
-        symbol: 'circle',
-        states: {
-            hover: {},
-            select: {}
+            }
         }
     }
-});
+}
+DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, DotPlotSeriesDefaults);
 extend(DotPlotSeries.prototype, {
     markerAttribs: void 0
 });
 SeriesRegistry.registerSeriesType('dotplot', DotPlotSeries);
 /* *
  *
- * Default Export
+ *  Default Export
  *
  * */
 export default DotPlotSeries;

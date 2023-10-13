@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-12)
+ * @license Highcharts JS v11.1.0 (2023-10-13)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -403,7 +403,7 @@
 
         return HistogramSeries;
     });
-    _registerModule(_modules, 'Series/Bellcurve/BellcurveSeries.js', [_modules['Series/DerivedComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DerivedComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Bellcurve/BellcurveSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -415,101 +415,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { areaspline: AreaSplineSeries } } = SeriesRegistry;
-        const { correctFloat, extend, isNumber, merge } = U;
-        /**
-         * Bell curve class
+        /* *
          *
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes.bellcurve
+         *  API Optiions
          *
-         * @augments Highcharts.Series
-         */
-        class BellcurveSeries extends AreaSplineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* eslint-enable valid-jsdoc */
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            static mean(data) {
-                const length = data.length, sum = data.reduce(function (sum, value) {
-                    return (sum += value);
-                }, 0);
-                return length > 0 && sum / length;
-            }
-            /**
-             * @private
-             */
-            static standardDeviation(data, average) {
-                let len = data.length, sum;
-                average = isNumber(average) ?
-                    average : BellcurveSeries.mean(data);
-                sum = data.reduce(function (sum, value) {
-                    const diff = value - average;
-                    return (sum += diff * diff);
-                }, 0);
-                return len > 1 && Math.sqrt(sum / (len - 1));
-            }
-            /**
-             * @private
-             */
-            static normalDensity(x, mean, standardDeviation) {
-                const translation = x - mean;
-                return Math.exp(-(translation * translation) /
-                    (2 * standardDeviation * standardDeviation)) / (standardDeviation * Math.sqrt(2 * Math.PI));
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            derivedData(mean, standardDeviation) {
-                let intervals = this.options.intervals, pointsInInterval = this.options.pointsInInterval, x = mean - intervals * standardDeviation, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [], i;
-                for (i = 0; i < stop; i++) {
-                    data.push([x, BellcurveSeries.normalDensity(x, mean, standardDeviation)]);
-                    x += increment;
-                }
-                return data;
-            }
-            setDerivedData() {
-                if (this.baseSeries.yData.length > 1) {
-                    this.setMean();
-                    this.setStandardDeviation();
-                    this.setData(this.derivedData(this.mean, this.standardDeviation), false);
-                }
-                return (void 0);
-            }
-            setMean() {
-                this.mean = correctFloat(BellcurveSeries.mean(this.baseSeries.yData));
-            }
-            setStandardDeviation() {
-                this.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(this.baseSeries.yData, this.mean));
-            }
-        }
+         * */
         /**
          * A bell curve is an areaspline series which represents the probability
          * density function of the normal distribution. It calculates mean and
@@ -527,7 +437,7 @@
          * @requires     modules/bellcurve
          * @optionparent plotOptions.bellcurve
          */
-        BellcurveSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, {
+        const BellcurveSeriesDefaults = {
             /**
              * @see [fillColor](#plotOptions.bellcurve.fillColor)
              * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
@@ -567,19 +477,7 @@
             marker: {
                 enabled: false
             }
-        });
-        DerivedComposition.compose(BellcurveSeries);
-        SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
+        };
         /**
          * A `bellcurve` series. If the [type](#series.bellcurve.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -623,7 +521,131 @@
          * @default   {highstock} 0.75
          * @apioption series.bellcurve.fillOpacity
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return BellcurveSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Bellcurve/BellcurveSeries.js', [_modules['Series/Bellcurve/BellcurveSeriesDefaults.js'], _modules['Series/DerivedComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BellcurveSeriesDefaults, DerivedComposition, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Highsoft AS
+         *
+         *  Author: Sebastian Domas
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { areaspline: AreaSplineSeries } = SeriesRegistry.seriesTypes;
+        const { correctFloat, isNumber, merge } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * Bell curve class
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.bellcurve
+         *
+         * @augments Highcharts.Series
+         */
+        class BellcurveSeries extends AreaSplineSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+            }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /** @private */
+            static mean(data) {
+                const length = data.length, sum = data.reduce(function (sum, value) {
+                    return (sum += value);
+                }, 0);
+                return length > 0 && sum / length;
+            }
+            /** @private */
+            static standardDeviation(data, average) {
+                const len = data.length;
+                average = isNumber(average) ?
+                    average : BellcurveSeries.mean(data);
+                const sum = data.reduce((sum, value) => {
+                    const diff = value - average;
+                    return (sum += diff * diff);
+                }, 0);
+                return len > 1 && Math.sqrt(sum / (len - 1));
+            }
+            /** @private */
+            static normalDensity(x, mean, standardDeviation) {
+                const translation = x - mean;
+                return Math.exp(-(translation * translation) /
+                    (2 * standardDeviation * standardDeviation)) / (standardDeviation * Math.sqrt(2 * Math.PI));
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            derivedData(mean, standardDeviation) {
+                const options = this.options, intervals = options.intervals, pointsInInterval = options.pointsInInterval, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [];
+                let x = mean - intervals * standardDeviation;
+                for (let i = 0; i < stop; i++) {
+                    data.push([x, BellcurveSeries.normalDensity(x, mean, standardDeviation)]);
+                    x += increment;
+                }
+                return data;
+            }
+            setDerivedData() {
+                var _a,
+                    _b;
+                const series = this;
+                if (((_b = (_a = series.baseSeries) === null || _a === void 0 ? void 0 : _a.yData) === null || _b === void 0 ? void 0 : _b.length) || 0 > 1) {
+                    series.setMean();
+                    series.setStandardDeviation();
+                    series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false);
+                }
+                return (void 0);
+            }
+            setMean() {
+                const series = this;
+                series.mean = correctFloat(BellcurveSeries.mean(series.baseSeries.yData));
+            }
+            setStandardDeviation() {
+                const series = this;
+                series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(series.baseSeries.yData, series.mean));
+            }
+        }
+        BellcurveSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, BellcurveSeriesDefaults);
+        DerivedComposition.compose(BellcurveSeries);
+        SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return BellcurveSeries;
     });

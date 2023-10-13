@@ -43,8 +43,9 @@ class DumbbellPoint extends AreaRangePoint {
      */
     setState() {
         var _a;
-        let point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker === null || seriesLowMarker === void 0 ? void 0 : seriesLowMarker.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color), verb = 'attr', upperGraphicColor, origProps;
-        this.pointSetState.apply(this, arguments);
+        const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker === null || seriesLowMarker === void 0 ? void 0 : seriesLowMarker.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
+        let verb = 'attr', upperGraphicColor, origProps;
+        this.pointSetState.apply(point, arguments);
         if (!point.state) {
             verb = 'animate';
             const [lowerGraphic, upperGraphic] = point.graphics || [];
@@ -70,10 +71,11 @@ class DumbbellPoint extends AreaRangePoint {
         (_a = point.connector) === null || _a === void 0 ? void 0 : _a[verb](series.getConnectorAttribs(point));
     }
     destroy() {
+        const point = this;
         // #15560
-        if (!this.graphic) {
-            this.graphic = this.connector;
-            this.connector = void 0;
+        if (!point.graphic) {
+            point.graphic = point.connector;
+            point.connector = void 0;
         }
         return super.destroy();
     }

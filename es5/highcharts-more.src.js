@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-12)
+ * @license Highcharts JS v11.1.0 (2023-10-13)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1551,7 +1551,7 @@
 
         return AreaSplineRangeSeries;
     });
-    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1561,509 +1561,267 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var noop = H.noop;
-        var extend = U.extend, merge = U.merge, pick = U.pick;
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
-         * The boxplot series type.
+         * A box plot is a convenient way of depicting groups of data through their
+         * five-number summaries: the smallest observation (sample minimum), lower
+         * quartile (Q1), median (Q2), upper quartile (Q3), and largest observation
+         * (sample maximum).
          *
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes#boxplot
+         * @sample highcharts/demo/box-plot/
+         *         Box plot
          *
-         * @augments Highcharts.Series
+         * @extends      plotOptions.column
+         * @excluding    borderColor, borderRadius, borderWidth, groupZPadding,
+         *               states, boostThreshold, boostBlending
+         * @product      highcharts
+         * @requires     highcharts-more
+         * @optionparent plotOptions.boxplot
          */
-        /* *
-         *
-         *  Class
-         *
-         * */
-        var BoxPlotSeries = /** @class */ (function (_super) {
-            __extends(BoxPlotSeries, _super);
-            function BoxPlotSeries() {
-                /* *
-                 *
-                 * Static Properties
-                 *
-                 * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            // Get presentational attributes
-            BoxPlotSeries.prototype.pointAttribs = function () {
-                // No attributes should be set on point.graphic which is the group
-                return {};
-            };
-            // Translate data points from raw values x and y to plotX and plotY
-            BoxPlotSeries.prototype.translate = function () {
-                var series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
-                _super.prototype.translate.apply(series);
-                // do the translation on each point dimension
-                series.points.forEach(function (point) {
-                    pointArrayMap.forEach(function (key) {
-                        if (point[key] !== null) {
-                            point[key + 'Plot'] = yAxis.translate(point[key], 0, 1, 0, 1);
-                        }
-                    });
-                    point.plotHigh = point.highPlot; // For data label validation
-                });
-            };
-            // eslint-disable-next-line valid-jsdoc
+        var BoxPlotSeriesDefaults = {
             /**
-             * Draw the data points
-             * @private
+             * @type {number|null}
              */
-            BoxPlotSeries.prototype.drawPoints = function () {
-                var series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, crispCorr, crispX = 0, boxPath, width, left, right, halfWidth, 
-                // error bar inherits this series type but doesn't do quartiles
-                doQuartiles = series.doQuartiles !== false, pointWiskerLength, whiskerLength = series.options.whiskerLength;
-                points.forEach(function (point) {
-                    var graphic = point.graphic, verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
-                    if (typeof point.plotY !== 'undefined') {
-                        // crisp vector coordinates
-                        width = Math.round(shapeArgs.width);
-                        left = Math.floor(shapeArgs.x);
-                        right = left + width;
-                        halfWidth = Math.round(width / 2);
-                        q1Plot = Math.floor(doQuartiles ? point.q1Plot : point.lowPlot);
-                        q3Plot = Math.floor(doQuartiles ? point.q3Plot : point.lowPlot);
-                        highPlot = Math.floor(point.highPlot);
-                        lowPlot = Math.floor(point.lowPlot);
-                        if (!graphic) {
-                            point.graphic = graphic = renderer.g('point')
-                                .add(series.group);
-                            point.stem = renderer.path()
-                                .addClass('highcharts-boxplot-stem')
-                                .add(graphic);
-                            if (whiskerLength) {
-                                point.whiskers = renderer.path()
-                                    .addClass('highcharts-boxplot-whisker')
-                                    .add(graphic);
-                            }
-                            if (doQuartiles) {
-                                point.box = renderer.path(boxPath)
-                                    .addClass('highcharts-boxplot-box')
-                                    .add(graphic);
-                            }
-                            point.medianShape = renderer.path(medianPath)
-                                .addClass('highcharts-boxplot-median')
-                                .add(graphic);
-                        }
-                        if (!chart.styledMode) {
-                            // Stem attributes
-                            stemAttr.stroke =
-                                point.stemColor || options.stemColor || color;
-                            stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
-                            stemAttr.dashstyle = (point.stemDashStyle ||
-                                options.stemDashStyle ||
-                                options.dashStyle);
-                            point.stem.attr(stemAttr);
-                            // Whiskers attributes
-                            if (whiskerLength) {
-                                whiskersAttr.stroke = (point.whiskerColor ||
-                                    options.whiskerColor ||
-                                    color);
-                                whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
-                                whiskersAttr.dashstyle = (point.whiskerDashStyle ||
-                                    options.whiskerDashStyle ||
-                                    options.dashStyle);
-                                point.whiskers.attr(whiskersAttr);
-                            }
-                            if (doQuartiles) {
-                                boxAttr.fill = (point.fillColor ||
-                                    options.fillColor ||
-                                    color);
-                                boxAttr.stroke = options.lineColor || color;
-                                boxAttr['stroke-width'] = options.lineWidth || 0;
-                                boxAttr.dashstyle = (point.boxDashStyle ||
-                                    options.boxDashStyle ||
-                                    options.dashStyle);
-                                point.box.attr(boxAttr);
-                            }
-                            // Median attributes
-                            medianAttr.stroke = (point.medianColor ||
-                                options.medianColor ||
-                                color);
-                            medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
-                            medianAttr.dashstyle = (point.medianDashStyle ||
-                                options.medianDashStyle ||
-                                options.dashStyle);
-                            point.medianShape.attr(medianAttr);
-                        }
-                        var d = void 0;
-                        // The stem
-                        crispCorr = (point.stem.strokeWidth() % 2) / 2;
-                        crispX = left + halfWidth + crispCorr;
-                        d = [
-                            // stem up
-                            ['M', crispX, q3Plot],
-                            ['L', crispX, highPlot],
-                            // stem down
-                            ['M', crispX, q1Plot],
-                            ['L', crispX, lowPlot]
-                        ];
-                        point.stem[verb]({ d: d });
-                        // The box
-                        if (doQuartiles) {
-                            crispCorr = (point.box.strokeWidth() % 2) / 2;
-                            q1Plot = Math.floor(q1Plot) + crispCorr;
-                            q3Plot = Math.floor(q3Plot) + crispCorr;
-                            left += crispCorr;
-                            right += crispCorr;
-                            d = [
-                                ['M', left, q3Plot],
-                                ['L', left, q1Plot],
-                                ['L', right, q1Plot],
-                                ['L', right, q3Plot],
-                                ['L', left, q3Plot],
-                                ['Z']
-                            ];
-                            point.box[verb]({ d: d });
-                        }
-                        // The whiskers
-                        if (whiskerLength) {
-                            crispCorr = (point.whiskers.strokeWidth() % 2) / 2;
-                            highPlot = highPlot + crispCorr;
-                            lowPlot = lowPlot + crispCorr;
-                            pointWiskerLength = (/%$/).test(whiskerLength) ?
-                                halfWidth * parseFloat(whiskerLength) / 100 :
-                                whiskerLength / 2;
-                            d = [
-                                // High whisker
-                                ['M', crispX - pointWiskerLength, highPlot],
-                                ['L', crispX + pointWiskerLength, highPlot],
-                                // Low whisker
-                                ['M', crispX - pointWiskerLength, lowPlot],
-                                ['L', crispX + pointWiskerLength, lowPlot]
-                            ];
-                            point.whiskers[verb]({ d: d });
-                        }
-                        // The median
-                        medianPlot = Math.round(point.medianPlot);
-                        crispCorr = (point.medianShape.strokeWidth() % 2) / 2;
-                        medianPlot = medianPlot + crispCorr;
-                        d = [
-                            ['M', left, medianPlot],
-                            ['L', right, medianPlot]
-                        ];
-                        point.medianShape[verb]({ d: d });
-                    }
-                });
-            };
-            // return a plain array for speedy calculation
-            BoxPlotSeries.prototype.toYData = function (point) {
-                return [point.low, point.q1, point.median, point.q3, point.high];
-            };
+            threshold: null,
+            tooltip: {
+                pointFormat: '<span style="color:{point.color}">\u25CF</span> <b>' +
+                    '{series.name}</b><br/>' +
+                    'Maximum: {point.high}<br/>' +
+                    'Upper quartile: {point.q3}<br/>' +
+                    'Median: {point.median}<br/>' +
+                    'Lower quartile: {point.q1}<br/>' +
+                    'Minimum: {point.low}<br/>'
+            },
             /**
-             * A box plot is a convenient way of depicting groups of data through their
-             * five-number summaries: the smallest observation (sample minimum), lower
-             * quartile (Q1), median (Q2), upper quartile (Q3), and largest observation
-             * (sample maximum).
+             * The length of the whiskers, the horizontal lines marking low and
+             * high values. It can be a numerical pixel value, or a percentage
+             * value of the box width. Set `0` to disable whiskers.
              *
-             * @sample highcharts/demo/box-plot/
-             *         Box plot
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         True by default
              *
-             * @extends      plotOptions.column
-             * @excluding    borderColor, borderRadius, borderWidth, groupZPadding,
-             *               states, boostThreshold, boostBlending
-             * @product      highcharts
-             * @requires     highcharts-more
-             * @optionparent plotOptions.boxplot
+             * @type    {number|string}
+             * @since   3.0
+             * @product highcharts
              */
-            BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-                /**
-                 * @type {number|null}
-                 */
-                threshold: null,
-                tooltip: {
-                    pointFormat: '<span style="color:{point.color}">\u25CF</span> <b>' +
-                        '{series.name}</b><br/>' +
-                        'Maximum: {point.high}<br/>' +
-                        'Upper quartile: {point.q3}<br/>' +
-                        'Median: {point.median}<br/>' +
-                        'Lower quartile: {point.q1}<br/>' +
-                        'Minimum: {point.low}<br/>'
-                },
-                /**
-                 * The length of the whiskers, the horizontal lines marking low and
-                 * high values. It can be a numerical pixel value, or a percentage
-                 * value of the box width. Set `0` to disable whiskers.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         True by default
-                 *
-                 * @type    {number|string}
-                 * @since   3.0
-                 * @product highcharts
-                 */
-                whiskerLength: '50%',
-                /**
-                 * The fill color of the box.
-                 *
-                 * In styled mode, the fill color can be set with the
-                 * `.highcharts-boxplot-box` class.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @default #ffffff
-                 * @since   3.0
-                 * @product highcharts
-                 */
-                fillColor: "#ffffff" /* Palette.backgroundColor */,
-                /**
-                 * The width of the line surrounding the box. If any of
-                 * [stemWidth](#plotOptions.boxplot.stemWidth),
-                 * [medianWidth](#plotOptions.boxplot.medianWidth)
-                 * or [whiskerWidth](#plotOptions.boxplot.whiskerWidth) are `null`,
-                 * the lineWidth also applies to these lines.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
-                 *         Error bar styling
-                 *
-                 * @since   3.0
-                 * @product highcharts
-                 */
-                lineWidth: 1,
-                /**
-                 * The color of the median line. If `undefined`, the general series
-                 * color applies.
-                 *
-                 * In styled mode, the median stroke width can be set with the
-                 * `.highcharts-boxplot-median` class.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
-                 *         Error bar styling
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
-                 * @since     3.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.medianColor
-                 */
-                /**
-                 * The pixel width of the median line. If `null`, the
-                 * [lineWidth](#plotOptions.boxplot.lineWidth) is used.
-                 *
-                 * In styled mode, the median stroke width can be set with the
-                 * `.highcharts-boxplot-median` class.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 *
-                 * @type    {number|null}
-                 * @since   3.0
-                 * @product highcharts
-                 */
-                medianWidth: 2,
-                /*
-                // States are not working and are removed from docs.
-                // Refer to: #2340
-                states: {
-                    hover: {
-                        brightness: -0.3
-                    }
-                },
-                */
-                /**
-                 * The color of the stem, the vertical line extending from the box to
-                 * the whiskers. If `undefined`, the series color is used.
-                 *
-                 * In styled mode, the stem stroke can be set with the
-                 * `.highcharts-boxplot-stem` class.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
-                 *         Error bar styling
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since     3.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.stemColor
-                 */
-                /**
-                 * The dash style of the box.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 *
-                 * @type      {Highcharts.DashStyleValue}
-                 * @default   Solid
-                 * @since 8.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.boxDashStyle
-                 */
-                /**
-                 * The dash style of the median.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 *
-                 * @type      {Highcharts.DashStyleValue}
-                 * @default   Solid
-                 * @since 8.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.medianDashStyle
-                 */
-                /**
-                 * The dash style of the stem, the vertical line extending from the
-                 * box to the whiskers.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
-                 *         Error bar styling
-                 *
-                 * @type      {Highcharts.DashStyleValue}
-                 * @default   Solid
-                 * @since     3.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.stemDashStyle
-                 */
-                /**
-                 * The dash style of the whiskers.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 *
-                 * @type      {Highcharts.DashStyleValue}
-                 * @default   Solid
-                 * @since 8.1.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.whiskerDashStyle
-                 */
-                /**
-                 * The width of the stem, the vertical line extending from the box to
-                 * the whiskers. If `undefined`, the width is inherited from the
-                 * [lineWidth](#plotOptions.boxplot.lineWidth) option.
-                 *
-                 * In styled mode, the stem stroke width can be set with the
-                 * `.highcharts-boxplot-stem` class.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
-                 *         Error bar styling
-                 *
-                 * @type      {number}
-                 * @since     3.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.stemWidth
-                 */
-                /**
-                 * @default   high
-                 * @apioption plotOptions.boxplot.colorKey
-                 */
-                /**
-                 * The color of the whiskers, the horizontal lines marking low and high
-                 * values. When `undefined`, the general series color is used.
-                 *
-                 * In styled mode, the whisker stroke can be set with the
-                 * `.highcharts-boxplot-whisker` class .
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since     3.0
-                 * @product   highcharts
-                 * @apioption plotOptions.boxplot.whiskerColor
-                 */
-                /**
-                 * The line width of the whiskers, the horizontal lines marking low and
-                 * high values. When `undefined`, the general
-                 * [lineWidth](#plotOptions.boxplot.lineWidth) applies.
-                 *
-                 * In styled mode, the whisker stroke width can be set with the
-                 * `.highcharts-boxplot-whisker` class.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
-                 *         Box plot styling
-                 * @sample {highcharts} highcharts/css/boxplot/
-                 *         Box plot in styled mode
-                 *
-                 * @since   3.0
-                 * @product highcharts
-                 */
-                whiskerWidth: 2
-            });
-            return BoxPlotSeries;
-        }(ColumnSeries));
-        extend(BoxPlotSeries.prototype, {
-            // array point configs are mapped to this
-            pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
-            // defines the top of the tracker
-            pointValKey: 'high',
-            // Disable data labels for box plot
-            drawDataLabels: noop,
-            setStackedPoints: noop // #3890
-        });
-        /* *
-         *
-         * Registry
-         *
-         * */
-        SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
-        /* *
-         *
-         * Default Export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+            whiskerLength: '50%',
+            /**
+             * The fill color of the box.
+             *
+             * In styled mode, the fill color can be set with the
+             * `.highcharts-boxplot-box` class.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             *
+             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @default #ffffff
+             * @since   3.0
+             * @product highcharts
+             */
+            fillColor: "#ffffff" /* Palette.backgroundColor */,
+            /**
+             * The width of the line surrounding the box. If any of
+             * [stemWidth](#plotOptions.boxplot.stemWidth),
+             * [medianWidth](#plotOptions.boxplot.medianWidth)
+             * or [whiskerWidth](#plotOptions.boxplot.whiskerWidth) are `null`,
+             * the lineWidth also applies to these lines.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
+             *         Error bar styling
+             *
+             * @since   3.0
+             * @product highcharts
+             */
+            lineWidth: 1,
+            /**
+             * The color of the median line. If `undefined`, the general series
+             * color applies.
+             *
+             * In styled mode, the median stroke width can be set with the
+             * `.highcharts-boxplot-median` class.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
+             *         Error bar styling
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
+             * @since     3.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.medianColor
+             */
+            /**
+             * The pixel width of the median line. If `null`, the
+             * [lineWidth](#plotOptions.boxplot.lineWidth) is used.
+             *
+             * In styled mode, the median stroke width can be set with the
+             * `.highcharts-boxplot-median` class.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             *
+             * @type    {number|null}
+             * @since   3.0
+             * @product highcharts
+             */
+            medianWidth: 2,
+            /*
+            // States are not working and are removed from docs.
+            // Refer to: #2340
+            states: {
+                hover: {
+                    brightness: -0.3
+                }
+            },
+            */
+            /**
+             * The color of the stem, the vertical line extending from the box to
+             * the whiskers. If `undefined`, the series color is used.
+             *
+             * In styled mode, the stem stroke can be set with the
+             * `.highcharts-boxplot-stem` class.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
+             *         Error bar styling
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since     3.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.stemColor
+             */
+            /**
+             * The dash style of the box.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             *
+             * @type      {Highcharts.DashStyleValue}
+             * @default   Solid
+             * @since 8.1.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.boxDashStyle
+             */
+            /**
+             * The dash style of the median.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             *
+             * @type      {Highcharts.DashStyleValue}
+             * @default   Solid
+             * @since 8.1.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.medianDashStyle
+             */
+            /**
+             * The dash style of the stem, the vertical line extending from the
+             * box to the whiskers.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
+             *         Error bar styling
+             *
+             * @type      {Highcharts.DashStyleValue}
+             * @default   Solid
+             * @since     3.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.stemDashStyle
+             */
+            /**
+             * The dash style of the whiskers.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             *
+             * @type      {Highcharts.DashStyleValue}
+             * @default   Solid
+             * @since 8.1.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.whiskerDashStyle
+             */
+            /**
+             * The width of the stem, the vertical line extending from the box to
+             * the whiskers. If `undefined`, the width is inherited from the
+             * [lineWidth](#plotOptions.boxplot.lineWidth) option.
+             *
+             * In styled mode, the stem stroke width can be set with the
+             * `.highcharts-boxplot-stem` class.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
+             *         Error bar styling
+             *
+             * @type      {number}
+             * @since     3.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.stemWidth
+             */
+            /**
+             * @default   high
+             * @apioption plotOptions.boxplot.colorKey
+             */
+            /**
+             * The color of the whiskers, the horizontal lines marking low and high
+             * values. When `undefined`, the general series color is used.
+             *
+             * In styled mode, the whisker stroke can be set with the
+             * `.highcharts-boxplot-whisker` class .
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since     3.0
+             * @product   highcharts
+             * @apioption plotOptions.boxplot.whiskerColor
+             */
+            /**
+             * The line width of the whiskers, the horizontal lines marking low and
+             * high values. When `undefined`, the general
+             * [lineWidth](#plotOptions.boxplot.lineWidth) applies.
+             *
+             * In styled mode, the whisker stroke width can be set with the
+             * `.highcharts-boxplot-whisker` class.
+             *
+             * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
+             *         Box plot styling
+             * @sample {highcharts} highcharts/css/boxplot/
+             *         Box plot in styled mode
+             *
+             * @since   3.0
+             * @product highcharts
+             */
+            whiskerWidth: 2
+        };
         /**
          * A `boxplot` series. If the [type](#series.boxplot.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -2231,7 +1989,265 @@
          * @product   highcharts
          * @apioption series.boxplot.data.whiskerDashStyle
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return BoxPlotSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeries.js', [_modules['Series/BoxPlot/BoxPlotSeriesDefaults.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BoxPlotSeriesDefaults, ColumnSeries, H, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var noop = H.noop;
+        var extend = U.extend, merge = U.merge, pick = U.pick;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The boxplot series type.
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes#boxplot
+         *
+         * @augments Highcharts.Series
+         */
+        var BoxPlotSeries = /** @class */ (function (_super) {
+            __extends(BoxPlotSeries, _super);
+            function BoxPlotSeries() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            // Get presentational attributes
+            BoxPlotSeries.prototype.pointAttribs = function () {
+                // No attributes should be set on point.graphic which is the group
+                return {};
+            };
+            // Translate data points from raw values x and y to plotX and plotY
+            BoxPlotSeries.prototype.translate = function () {
+                var series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
+                _super.prototype.translate.apply(series);
+                // do the translation on each point dimension
+                series.points.forEach(function (point) {
+                    pointArrayMap.forEach(function (key) {
+                        if (point[key] !== null) {
+                            point[key + 'Plot'] = yAxis.translate(point[key], 0, 1, 0, 1);
+                        }
+                    });
+                    point.plotHigh = point.highPlot; // For data label validation
+                });
+            };
+            /**
+             * Draw the data points
+             * @private
+             */
+            BoxPlotSeries.prototype.drawPoints = function () {
+                var series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
+                // error bar inherits this series type but doesn't do quartiles
+                doQuartiles = series.doQuartiles !== false, whiskerLength = series.options.whiskerLength;
+                var q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, crispCorr, crispX = 0, boxPath, graphic, width, left, right, halfWidth, pointWiskerLength;
+                for (var _i = 0, points_1 = points; _i < points_1.length; _i++) {
+                    var point = points_1[_i];
+                    graphic = point.graphic;
+                    var verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
+                    if (typeof point.plotY !== 'undefined') {
+                        // crisp vector coordinates
+                        width = Math.round(shapeArgs.width);
+                        left = Math.floor(shapeArgs.x);
+                        right = left + width;
+                        halfWidth = Math.round(width / 2);
+                        q1Plot = Math.floor(doQuartiles ? point.q1Plot : point.lowPlot);
+                        q3Plot = Math.floor(doQuartiles ? point.q3Plot : point.lowPlot);
+                        highPlot = Math.floor(point.highPlot);
+                        lowPlot = Math.floor(point.lowPlot);
+                        if (!graphic) {
+                            point.graphic = graphic = renderer.g('point')
+                                .add(series.group);
+                            point.stem = renderer.path()
+                                .addClass('highcharts-boxplot-stem')
+                                .add(graphic);
+                            if (whiskerLength) {
+                                point.whiskers = renderer.path()
+                                    .addClass('highcharts-boxplot-whisker')
+                                    .add(graphic);
+                            }
+                            if (doQuartiles) {
+                                point.box = renderer.path(boxPath)
+                                    .addClass('highcharts-boxplot-box')
+                                    .add(graphic);
+                            }
+                            point.medianShape = renderer.path(medianPath)
+                                .addClass('highcharts-boxplot-median')
+                                .add(graphic);
+                        }
+                        if (!chart.styledMode) {
+                            // Stem attributes
+                            stemAttr.stroke =
+                                point.stemColor || options.stemColor || color;
+                            stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
+                            stemAttr.dashstyle = (point.stemDashStyle ||
+                                options.stemDashStyle ||
+                                options.dashStyle);
+                            point.stem.attr(stemAttr);
+                            // Whiskers attributes
+                            if (whiskerLength) {
+                                whiskersAttr.stroke = (point.whiskerColor ||
+                                    options.whiskerColor ||
+                                    color);
+                                whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
+                                whiskersAttr.dashstyle = (point.whiskerDashStyle ||
+                                    options.whiskerDashStyle ||
+                                    options.dashStyle);
+                                point.whiskers.attr(whiskersAttr);
+                            }
+                            if (doQuartiles) {
+                                boxAttr.fill = (point.fillColor ||
+                                    options.fillColor ||
+                                    color);
+                                boxAttr.stroke = options.lineColor || color;
+                                boxAttr['stroke-width'] = options.lineWidth || 0;
+                                boxAttr.dashstyle = (point.boxDashStyle ||
+                                    options.boxDashStyle ||
+                                    options.dashStyle);
+                                point.box.attr(boxAttr);
+                            }
+                            // Median attributes
+                            medianAttr.stroke = (point.medianColor ||
+                                options.medianColor ||
+                                color);
+                            medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
+                            medianAttr.dashstyle = (point.medianDashStyle ||
+                                options.medianDashStyle ||
+                                options.dashStyle);
+                            point.medianShape.attr(medianAttr);
+                        }
+                        var d = void 0;
+                        // The stem
+                        crispCorr = (point.stem.strokeWidth() % 2) / 2;
+                        crispX = left + halfWidth + crispCorr;
+                        d = [
+                            // stem up
+                            ['M', crispX, q3Plot],
+                            ['L', crispX, highPlot],
+                            // stem down
+                            ['M', crispX, q1Plot],
+                            ['L', crispX, lowPlot]
+                        ];
+                        point.stem[verb]({ d: d });
+                        // The box
+                        if (doQuartiles) {
+                            crispCorr = (point.box.strokeWidth() % 2) / 2;
+                            q1Plot = Math.floor(q1Plot) + crispCorr;
+                            q3Plot = Math.floor(q3Plot) + crispCorr;
+                            left += crispCorr;
+                            right += crispCorr;
+                            d = [
+                                ['M', left, q3Plot],
+                                ['L', left, q1Plot],
+                                ['L', right, q1Plot],
+                                ['L', right, q3Plot],
+                                ['L', left, q3Plot],
+                                ['Z']
+                            ];
+                            point.box[verb]({ d: d });
+                        }
+                        // The whiskers
+                        if (whiskerLength) {
+                            crispCorr = (point.whiskers.strokeWidth() % 2) / 2;
+                            highPlot = highPlot + crispCorr;
+                            lowPlot = lowPlot + crispCorr;
+                            pointWiskerLength = (/%$/).test(whiskerLength) ?
+                                halfWidth * parseFloat(whiskerLength) / 100 :
+                                whiskerLength / 2;
+                            d = [
+                                // High whisker
+                                ['M', crispX - pointWiskerLength, highPlot],
+                                ['L', crispX + pointWiskerLength, highPlot],
+                                // Low whisker
+                                ['M', crispX - pointWiskerLength, lowPlot],
+                                ['L', crispX + pointWiskerLength, lowPlot]
+                            ];
+                            point.whiskers[verb]({ d: d });
+                        }
+                        // The median
+                        medianPlot = Math.round(point.medianPlot);
+                        crispCorr = (point.medianShape.strokeWidth() % 2) / 2;
+                        medianPlot = medianPlot + crispCorr;
+                        d = [
+                            ['M', left, medianPlot],
+                            ['L', right, medianPlot]
+                        ];
+                        point.medianShape[verb]({ d: d });
+                    }
+                }
+            };
+            // return a plain array for speedy calculation
+            BoxPlotSeries.prototype.toYData = function (point) {
+                return [point.low, point.q1, point.median, point.q3, point.high];
+            };
+            BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BoxPlotSeriesDefaults);
+            return BoxPlotSeries;
+        }(ColumnSeries));
+        extend(BoxPlotSeries.prototype, {
+            // array point configs are mapped to this
+            pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
+            // defines the top of the tracker
+            pointValKey: 'high',
+            // Disable data labels for box plot
+            drawDataLabels: noop,
+            setStackedPoints: noop // #3890
+        });
+        SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return BoxPlotSeries;
     });
@@ -4399,7 +4415,7 @@
 
         return ColumnRangeSeries;
     });
-    _registerModule(_modules, 'Series/ColumnPyramid/ColumnPyramidSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ColumnPyramid/ColumnPyramidSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Sebastian Bochan
@@ -4409,224 +4425,33 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var colProto = ColumnSeries.prototype;
-        var clamp = U.clamp, extend = U.extend, merge = U.merge, pick = U.pick;
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
-         * The ColumnPyramidSeries class
+         * Column pyramid series display one pyramid per value along an X axis.
+         * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
+         * `true`.
          *
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes.columnpyramid
+         * @sample {highcharts|highstock} highcharts/demo/column-pyramid/
+         *         Column pyramid
+         * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-stacked/
+         *         Column pyramid stacked
+         * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-inverted/
+         *         Column pyramid inverted
          *
-         * @augments Highcharts.Series
+         * @extends      plotOptions.column
+         * @since        7.0.0
+         * @product      highcharts highstock
+         * @excluding    boostThreshold, borderRadius, crisp, depth, edgeColor,
+         *               edgeWidth, groupZPadding, negativeColor, softThreshold,
+         *               threshold, zoneAxis, zones, boostBlending
+         * @requires     highcharts-more
+         * @optionparent plotOptions.columnpyramid
          */
-        var ColumnPyramidSeries = /** @class */ (function (_super) {
-            __extends(ColumnPyramidSeries, _super);
-            function ColumnPyramidSeries() {
-                /* *
-                 *
-                 * Static properties
-                 *
-                 * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            /* eslint-disable-next-line valid-jsdoc */
-            /**
-             * Overrides the column translate method
-             * @private
-             */
-            ColumnPyramidSeries.prototype.translate = function () {
-                var series = this, chart = series.chart, options = series.options, dense = series.dense =
-                    series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
-                ), yAxis = series.yAxis, threshold = options.threshold, translatedThreshold = series.translatedThreshold =
-                    yAxis.getThreshold(threshold), minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, 
-                // postprocessed for border width
-                seriesBarW = series.barW =
-                    Math.max(pointWidth, 1 + 2 * borderWidth), pointXOffset = series.pointXOffset = metrics.offset;
-                if (chart.inverted) {
-                    translatedThreshold -= 0.5; // #3355
-                }
-                // When the pointPadding is 0,
-                // we want the pyramids to be packed tightly,
-                // so we allow individual pyramids to have individual sizes.
-                // When pointPadding is greater,
-                // we strive for equal-width columns (#2694).
-                if (options.pointPadding) {
-                    seriesBarW = Math.ceil(seriesBarW);
-                }
-                colProto.translate.apply(series);
-                // Record the new values
-                series.points.forEach(function (point) {
-                    var yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
-                    // Don't draw too far outside plot area
-                    // (#1303, #2241, #4264)
-                    barX = point.plotX + pointXOffset, barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
-                    // Adjust for null or missing points
-                    if (options.centerInCategory) {
-                        barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
-                    }
-                    point.barX = barX;
-                    point.pointWidth = pointWidth;
-                    // Fix the tooltip on center of grouped pyramids
-                    // (#1216, #424, #3648)
-                    point.tooltipPos = chart.inverted ?
-                        [
-                            yAxis.len + yAxis.pos - chart.plotLeft - plotY,
-                            series.xAxis.len - barX - barW,
-                            barH
-                        ] :
-                        [
-                            barX + barW,
-                            plotY + yAxis.pos - chart.plotTop,
-                            barH
-                        ];
-                    stackTotal =
-                        threshold + (point.total || point.y);
-                    // overwrite stacktotal (always 100 / -100)
-                    if (options.stacking === 'percent') {
-                        stackTotal =
-                            threshold + (point.y < 0) ?
-                                -100 :
-                                100;
-                    }
-                    // get the highest point (if stack, extract from total)
-                    topPointY = yAxis.toPixels((stackTotal), true);
-                    // calculate height of stack (in pixels)
-                    stackHeight =
-                        chart.plotHeight - topPointY -
-                            (chart.plotHeight - translatedThreshold);
-                    // topXwidth and bottomXwidth = width of lines from the center
-                    // calculated from tanges proportion.
-                    // Cannot be a NaN #12514
-                    topXwidth = stackHeight ?
-                        (barW * (barY - topPointY)) / stackHeight : 0;
-                    // like topXwidth, but with height of point
-                    bottomXwidth = stackHeight ?
-                        (barW * (barY + barH - topPointY)) / stackHeight :
-                        0;
-                    /*
-                            /\
-                           /  \
-                    x1,y1,------ x2,y1
-                        /      \
-                       ----------
-                    x4,y2        x3,y2
-                    */
-                    x1 = barX - topXwidth + barW;
-                    x2 = barX + topXwidth + barW;
-                    x3 = barX + bottomXwidth + barW;
-                    x4 = barX - bottomXwidth + barW;
-                    y1 = barY - minPointLength;
-                    y2 = barY + barH;
-                    if (point.y < 0) {
-                        y1 = barY;
-                        y2 = barY + barH + minPointLength;
-                    }
-                    // inverted chart
-                    if (chart.inverted) {
-                        invBarPos = yAxis.width - barY;
-                        stackHeight =
-                            topPointY - (yAxis.width - translatedThreshold);
-                        // proportion tanges
-                        topXwidth = (barW *
-                            (topPointY - invBarPos)) / stackHeight;
-                        bottomXwidth = (barW *
-                            (topPointY - (invBarPos - barH))) / stackHeight;
-                        x1 = barX + barW + topXwidth; // top bottom
-                        x2 = x1 - 2 * topXwidth; // top top
-                        x3 = barX - bottomXwidth + barW; // bottom top
-                        x4 = barX + bottomXwidth + barW; // bottom bottom
-                        y1 = barY;
-                        y2 = barY + barH - minPointLength;
-                        if (point.y < 0) {
-                            y2 = barY + barH + minPointLength;
-                        }
-                    }
-                    // Register shape type and arguments to be used in drawPoints
-                    point.shapeType = 'path';
-                    point.shapeArgs = {
-                        // args for datalabels positioning
-                        x: x1,
-                        y: y1,
-                        width: x2 - x1,
-                        height: barH,
-                        // path of pyramid
-                        d: [
-                            ['M', x1, y1],
-                            ['L', x2, y1],
-                            ['L', x3, y2],
-                            ['L', x4, y2],
-                            ['Z']
-                        ]
-                    };
-                });
-            };
-            /**
-             * Column pyramid series display one pyramid per value along an X axis.
-             * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
-             * `true`.
-             *
-             * @sample {highcharts|highstock} highcharts/demo/column-pyramid/
-             *         Column pyramid
-             * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-stacked/
-             *         Column pyramid stacked
-             * @sample {highcharts|highstock} highcharts/plotoptions/columnpyramid-inverted/
-             *         Column pyramid inverted
-             *
-             * @extends      plotOptions.column
-             * @since        7.0.0
-             * @product      highcharts highstock
-             * @excluding    boostThreshold, borderRadius, crisp, depth, edgeColor,
-             *               edgeWidth, groupZPadding, negativeColor, softThreshold,
-             *               threshold, zoneAxis, zones, boostBlending
-             * @requires     highcharts-more
-             * @optionparent plotOptions.columnpyramid
-             */
-            ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-            // Nothing here
-            });
-            return ColumnPyramidSeries;
-        }(ColumnSeries));
-        SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
-        /* *
-         *
-         * Default export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+        var ColumnPyramidSeriesDefaults = {};
         /**
          * A `columnpyramid` series. If the [type](#series.columnpyramid.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -4708,7 +4533,221 @@
          * @product   highcharts highstock
          * @apioption series.columnpyramid.data
          */
-        ''; // adds doclets above to transpiled file;
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ColumnPyramidSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/ColumnPyramid/ColumnPyramidSeries.js', [_modules['Series/ColumnPyramid/ColumnPyramidSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnPyramidSeriesDefaults, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var clamp = U.clamp, merge = U.merge, pick = U.pick;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The ColumnPyramidSeries class
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.columnpyramid
+         *
+         * @augments Highcharts.Series
+         */
+        var ColumnPyramidSeries = /** @class */ (function (_super) {
+            __extends(ColumnPyramidSeries, _super);
+            function ColumnPyramidSeries() {
+                /* *
+                 *
+                 *  Static properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Overrides the column translate method
+             * @private
+             */
+            ColumnPyramidSeries.prototype.translate = function () {
+                var series = this, chart = series.chart, options = series.options, dense = series.dense =
+                    series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
+                ), yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, pointXOffset = series.pointXOffset = metrics.offset;
+                var translatedThreshold = series.translatedThreshold =
+                    yAxis.getThreshold(threshold), 
+                // postprocessed for border width
+                seriesBarW = series.barW =
+                    Math.max(pointWidth, 1 + 2 * borderWidth);
+                if (chart.inverted) {
+                    translatedThreshold -= 0.5; // #3355
+                }
+                // When the pointPadding is 0,
+                // we want the pyramids to be packed tightly,
+                // so we allow individual pyramids to have individual sizes.
+                // When pointPadding is greater,
+                // we strive for equal-width columns (#2694).
+                if (options.pointPadding) {
+                    seriesBarW = Math.ceil(seriesBarW);
+                }
+                _super.prototype.translate.call(this);
+                // Record the new values
+                for (var _i = 0, _a = series.points; _i < _a.length; _i++) {
+                    var point = _a[_i];
+                    var yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
+                    // Don't draw too far outside plot area
+                    // (#1303, #2241, #4264)
+                    barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY;
+                    var barX = point.plotX + pointXOffset, stackTotal = void 0, stackHeight = void 0, topPointY = void 0, topXwidth = void 0, bottomXwidth = void 0, invBarPos = void 0, x1 = void 0, x2 = void 0, x3 = void 0, x4 = void 0, y1 = void 0, y2 = void 0;
+                    // Adjust for null or missing points
+                    if (options.centerInCategory) {
+                        barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
+                    }
+                    point.barX = barX;
+                    point.pointWidth = pointWidth;
+                    // Fix the tooltip on center of grouped pyramids
+                    // (#1216, #424, #3648)
+                    point.tooltipPos = chart.inverted ?
+                        [
+                            yAxis.len + yAxis.pos - chart.plotLeft - plotY,
+                            series.xAxis.len - barX - barW,
+                            barH
+                        ] :
+                        [
+                            barX + barW,
+                            plotY + yAxis.pos - chart.plotTop,
+                            barH
+                        ];
+                    stackTotal =
+                        threshold + (point.total || point.y);
+                    // overwrite stacktotal (always 100 / -100)
+                    if (options.stacking === 'percent') {
+                        stackTotal =
+                            threshold + (point.y < 0) ?
+                                -100 :
+                                100;
+                    }
+                    // get the highest point (if stack, extract from total)
+                    topPointY = yAxis.toPixels((stackTotal), true);
+                    // calculate height of stack (in pixels)
+                    stackHeight =
+                        chart.plotHeight - topPointY -
+                            (chart.plotHeight - translatedThreshold);
+                    // topXwidth and bottomXwidth = width of lines from the center
+                    // calculated from tanges proportion.
+                    // Cannot be a NaN #12514
+                    topXwidth = stackHeight ?
+                        (barW * (barY - topPointY)) / stackHeight : 0;
+                    // like topXwidth, but with height of point
+                    bottomXwidth = stackHeight ?
+                        (barW * (barY + barH - topPointY)) / stackHeight :
+                        0;
+                    /*
+                            /\
+                           /  \
+                    x1,y1,------ x2,y1
+                        /       \
+                       -----------
+                    x4,y2        x3,y2
+                    */
+                    x1 = barX - topXwidth + barW;
+                    x2 = barX + topXwidth + barW;
+                    x3 = barX + bottomXwidth + barW;
+                    x4 = barX - bottomXwidth + barW;
+                    y1 = barY - minPointLength;
+                    y2 = barY + barH;
+                    if (point.y < 0) {
+                        y1 = barY;
+                        y2 = barY + barH + minPointLength;
+                    }
+                    // inverted chart
+                    if (chart.inverted) {
+                        invBarPos = yAxis.width - barY;
+                        stackHeight =
+                            topPointY - (yAxis.width - translatedThreshold);
+                        // proportion tanges
+                        topXwidth = (barW *
+                            (topPointY - invBarPos)) / stackHeight;
+                        bottomXwidth = (barW *
+                            (topPointY - (invBarPos - barH))) / stackHeight;
+                        x1 = barX + barW + topXwidth; // top bottom
+                        x2 = x1 - 2 * topXwidth; // top top
+                        x3 = barX - bottomXwidth + barW; // bottom top
+                        x4 = barX + bottomXwidth + barW; // bottom bottom
+                        y1 = barY;
+                        y2 = barY + barH - minPointLength;
+                        if (point.y < 0) {
+                            y2 = barY + barH + minPointLength;
+                        }
+                    }
+                    // Register shape type and arguments to be used in drawPoints
+                    point.shapeType = 'path';
+                    point.shapeArgs = {
+                        x: x1,
+                        y: y1,
+                        width: x2 - x1,
+                        height: barH,
+                        // path of pyramid
+                        d: [
+                            ['M', x1, y1],
+                            ['L', x2, y1],
+                            ['L', x3, y2],
+                            ['L', x4, y2],
+                            ['Z']
+                        ]
+                    };
+                }
+            };
+            ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, ColumnPyramidSeriesDefaults);
+            return ColumnPyramidSeries;
+        }(ColumnSeries));
+        SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return ColumnPyramidSeries;
     });
@@ -4901,7 +4940,6 @@
          * @name Highcharts.seriesTypes.errorbar
          *
          * @augments Highcharts.Series
-         *
          */
         var ErrorBarSeries = /** @class */ (function (_super) {
             __extends(ErrorBarSeries, _super);
@@ -4928,20 +4966,22 @@
              *
              * */
             ErrorBarSeries.prototype.getColumnMetrics = function () {
+                var series = this;
                 // Get the width and X offset, either on top of the linked series
                 // column or standalone
-                return ((this.linkedParent && this.linkedParent.columnMetrics) ||
-                    ColumnSeries.prototype.getColumnMetrics.call(this));
+                return ((series.linkedParent && series.linkedParent.columnMetrics) ||
+                    ColumnSeries.prototype.getColumnMetrics.call(series));
             };
             ErrorBarSeries.prototype.drawDataLabels = function () {
-                var valKey = this.pointValKey;
+                var series = this, valKey = series.pointValKey;
                 if (AreaRangeSeries) {
-                    AreaRangeSeries.prototype.drawDataLabels.call(this);
+                    AreaRangeSeries.prototype.drawDataLabels.call(series);
                     // Arearange drawDataLabels does not reset point.y to high,
                     // but to low after drawing (#4133)
-                    this.data.forEach(function (point) {
+                    for (var _i = 0, _a = series.data; _i < _a.length; _i++) {
+                        var point = _a[_i];
                         point.y = point[valKey];
-                    });
+                    }
                 }
             };
             ErrorBarSeries.prototype.toYData = function (point) {
@@ -4952,9 +4992,10 @@
             return ErrorBarSeries;
         }(BoxPlotSeries));
         addEvent(ErrorBarSeries, 'afterTranslate', function () {
-            this.points.forEach(function (point) {
+            for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
+                var point = _a[_i];
                 point.plotLow = point.plotY;
-            });
+            }
         }, { order: 0 });
         extend(ErrorBarSeries.prototype, {
             // pointClass: ErrorBarPoint, // just a declaration
