@@ -549,7 +549,7 @@ var DataLabel;
      * @private
      */
     function setDataLabelStartPos(point, dataLabel, isNew, isInside, alignOptions) {
-        const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = inverted ? dataLabel.height / 2 : dataLabel.width / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
+        const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = ((inverted ? dataLabel.height : dataLabel.width) || 0) / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
         dataLabel.startXPos = inverted ?
             alignOptions.x :
             (reversed ?

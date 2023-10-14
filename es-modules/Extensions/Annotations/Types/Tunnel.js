@@ -159,9 +159,9 @@ Tunnel.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions,
             positioner: function (target) {
                 const startXY = MockPoint.pointToPixels(target.points[2]), endXY = MockPoint.pointToPixels(target.points[3]), x = (startXY.x + endXY.x) / 2;
                 return {
-                    x: x - this.graphic.width / 2,
+                    x: x - (this.graphic.width || 0) / 2,
                     y: getSecondCoordinate(startXY, endXY, x) -
-                        this.graphic.height / 2
+                        (this.graphic.height || 0) / 2
                 };
             },
             events: {

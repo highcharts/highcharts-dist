@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * Exporting module
  *
@@ -1721,11 +1721,11 @@
                 }
                 else if (menuItems) {
                     callback = function (e) {
-                        // consistent with onclick call (#3495)
+                        // Consistent with onclick call (#3495)
                         if (e) {
                             e.stopPropagation();
                         }
-                        chart.contextMenu(button.menuClassName, menuItems, button.translateX, button.translateY, button.width, button.height, button);
+                        chart.contextMenu(button.menuClassName, menuItems, button.translateX || 0, button.translateY || 0, button.width || 0, button.height || 0, button);
                         button.setState(2);
                     };
                 }
@@ -1779,7 +1779,7 @@
                     width: button.width,
                     x: pick(btnOptions.x, chart.buttonOffset) // #1654
                 }), true, 'spacingBox');
-                chart.buttonOffset += ((button.width + btnOptions.buttonSpacing) *
+                chart.buttonOffset += (((button.width || 0) + btnOptions.buttonSpacing) *
                     (btnOptions.align === 'right' ? -1 : 1));
                 chart.exportSVGElements.push(button, symbol);
             }

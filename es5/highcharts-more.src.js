@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -3019,7 +3019,7 @@
                     legend.allItems.forEach(function (item) {
                         legendItem = item.legendItem || {};
                         if (legendItem.group) {
-                            legendItem.group.translateY = null;
+                            legendItem.group.translateY = void 0;
                         }
                     });
                 }

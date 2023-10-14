@@ -135,7 +135,7 @@ class TreegraphSeries extends TreemapSeries {
                     point.linkToParent = link;
                 }
                 else {
-                    point.linkToParent.update({ collapsed: pointOptions.collapsed }, false);
+                    point.update({ collapsed: pointOptions.collapsed }, false);
                 }
                 point.linkToParent.index = links.push(point.linkToParent) - 1;
             }

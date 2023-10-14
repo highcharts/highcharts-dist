@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * Accessibility module
  *
@@ -10239,22 +10239,19 @@
              * @param {string} name
              */
             RangeSelector.prototype.showInput = function (name) {
-                var dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
-                var input = name === 'min' ? this.minInput : this.maxInput;
+                var dateBox = name === 'min' ? this.minDateBox : this.maxDateBox, input = name === 'min' ? this.minInput : this.maxInput;
                 if (input && dateBox && this.inputGroup) {
-                    var isTextInput = input.type === 'text';
-                    var _a = this.inputGroup, translateX = _a.translateX, translateY = _a.translateY;
-                    var inputBoxWidth = this.options.inputBoxWidth;
+                    var isTextInput = input.type === 'text', _a = this.inputGroup, _b = _a.translateX, translateX = _b === void 0 ? 0 : _b, _c = _a.translateY, translateY = _c === void 0 ? 0 : _c, _d = dateBox.x, x = _d === void 0 ? 0 : _d, _e = dateBox.width, width = _e === void 0 ? 0 : _e, _f = dateBox.height, height = _f === void 0 ? 0 : _f, inputBoxWidth = this.options.inputBoxWidth;
                     css(input, {
                         width: isTextInput ?
-                            ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') :
+                            ((width + (inputBoxWidth ? -2 : 20)) + 'px') :
                             'auto',
-                        height: (dateBox.height - 2) + 'px',
+                        height: (height - 2) + 'px',
                         border: '2px solid silver'
                     });
                     if (isTextInput && inputBoxWidth) {
                         css(input, {
-                            left: (translateX + dateBox.x) + 'px',
+                            left: (translateX + x) + 'px',
                             top: translateY + 'px'
                         });
                         // Inputs of types date, time or datetime-local should be centered
@@ -10262,10 +10259,10 @@
                     }
                     else {
                         css(input, {
-                            left: Math.min(Math.round(dateBox.x +
+                            left: Math.min(Math.round(x +
                                 translateX -
-                                (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                                (input.offsetWidth - width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
+                            top: (translateY - (input.offsetHeight - height) / 2) + 'px'
                         });
                     }
                 }
@@ -10725,7 +10722,7 @@
                                 width_1 += zoomText.getBBox().width + 5;
                             }
                             buttons.forEach(function (button, i) {
-                                width_1 += button.width;
+                                width_1 += button.width || 0;
                                 if (i !== buttons.length - 1) {
                                     width_1 += options.buttonSpacing;
                                 }
@@ -10874,8 +10871,8 @@
                 for (var i = 0, iEnd = this.buttonOptions.length; i < iEnd; ++i) {
                     if (buttons[i].visibility !== 'hidden') {
                         buttons[i][verb]({ x: buttonLeft });
-                        // increase button position for the next button
-                        buttonLeft += buttons[i].width + options.buttonSpacing;
+                        // Increase the button position for the next button
+                        buttonLeft += (buttons[i].width || 0) + options.buttonSpacing;
                     }
                     else {
                         buttons[i][verb]({ x: plotLeft });
@@ -11074,8 +11071,7 @@
             RangeSelector.prototype.showDropdown = function () {
                 var _a = this, buttonGroup = _a.buttonGroup, buttons = _a.buttons, chart = _a.chart, dropdown = _a.dropdown;
                 if (buttonGroup && dropdown) {
-                    var translateX = buttonGroup.translateX, translateY = buttonGroup.translateY;
-                    var bBox = buttons[this.currentButtonIndex()].getBBox();
+                    var _b = buttonGroup.translateX, translateX = _b === void 0 ? 0 : _b, _c = buttonGroup.translateY, translateY = _c === void 0 ? 0 : _c, bBox = buttons[this.currentButtonIndex()].getBBox();
                     css(dropdown, {
                         left: (chart.plotLeft + translateX) + 'px',
                         top: (translateY + 0.5) + 'px',

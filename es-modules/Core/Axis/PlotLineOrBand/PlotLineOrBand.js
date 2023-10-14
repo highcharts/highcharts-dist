@@ -43,6 +43,13 @@ class PlotLineOrBand {
      *
      * */
     constructor(axis, options) {
+        /**
+         * The id of the plot line or plot band.
+         *
+         * @name Highcharts.PlotLineOrBand#id
+         * @type {string}
+         */
+        this.id = void 0;
         this.axis = axis;
         if (options) {
             this.options = options;
@@ -63,7 +70,21 @@ class PlotLineOrBand {
      */
     render() {
         fireEvent(this, 'render');
-        const plotLine = this, axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
+        const plotLine = this, 
+        /**
+         * Related axis.
+         *
+         * @name Highcharts.PlotLineOrBand#axis
+         * @type {Highcharts.Axis}
+         */
+        axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, 
+        /**
+         * Options of the plot line or band.
+         *
+         * @name Highcharts.PlotLineOrBand#options
+         * @type {AxisPlotBandsOptions|AxisPlotLinesOptions}
+         */
+        options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
         let optionsLabel = options.label, label = plotLine.label, to = options.to, from = options.from, value = options.value, svgElem = plotLine.svgElem, path = [], group;
         const isBand = defined(from) && defined(to), isLine = defined(value), isNew = !svgElem, attribs = {
             'class': 'highcharts-plot-' + (isBand ? 'band ' : 'line ') +

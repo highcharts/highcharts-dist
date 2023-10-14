@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-10-13)
+ * @license Highmaps JS v11.1.0 (2023-10-14)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -2130,7 +2130,7 @@
                         navButtons.push(button);
                         extend(buttonOptions, {
                             width: button.width,
-                            height: 2 * button.height
+                            height: 2 * (button.height || 0)
                         });
                         if (!chart.hasLoaded) {
                             // Align it after the plotBox is known (#12776)
@@ -8366,7 +8366,7 @@
                     legend.allItems.forEach((item) => {
                         legendItem = item.legendItem || {};
                         if (legendItem.group) {
-                            legendItem.group.translateY = null;
+                            legendItem.group.translateY = void 0;
                         }
                     });
                 }

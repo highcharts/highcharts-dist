@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  * Treegraph chart series type
  *
  *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
@@ -560,7 +560,7 @@
 
         return TreegraphPoint;
     });
-    _registerModule(_modules, 'Series/Treegraph/TreegraphLink.js', [_modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Core/Series/SeriesRegistry.js']], function (Point, U, SeriesRegistry) {
+    _registerModule(_modules, 'Series/Treegraph/TreegraphLink.js', [_modules['Core/Utilities.js'], _modules['Core/Series/SeriesRegistry.js']], function (U, SeriesRegistry) {
         /* *
          *
          *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
@@ -627,19 +627,6 @@
                     this.id = link.toNode.id + '-' + link.fromNode.id;
                 }
                 return link;
-            };
-            LinkPoint.prototype.update = function (options, redraw, animation, runEvent) {
-                var oldOptions = {
-                    id: this.id,
-                    formatPrefix: this.formatPrefix
-                };
-                Point.prototype.update.call(this, options, this.isLink ? false : redraw, // Hold the redraw for nodes
-                animation, runEvent);
-                this.visible = this.toNode.visible;
-                extend(this, oldOptions);
-                if (pick(redraw, true)) {
-                    this.series.chart.redraw(animation);
-                }
             };
             return LinkPoint;
         }(ColumnPoint));
@@ -1384,7 +1371,7 @@
                             point.linkToParent = link;
                         }
                         else {
-                            point.linkToParent.update({ collapsed: pointOptions.collapsed }, false);
+                            point.update({ collapsed: pointOptions.collapsed }, false);
                         }
                         point.linkToParent.index = links.push(point.linkToParent) - 1;
                     }

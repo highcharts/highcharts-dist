@@ -8,7 +8,6 @@
  *
  * */
 'use strict';
-import Point from '../../Core/Series/Point.js';
 import U from '../../Core/Utilities.js';
 const { pick, extend } = U;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -51,19 +50,6 @@ class LinkPoint extends ColumnPoint {
             this.id = link.toNode.id + '-' + link.fromNode.id;
         }
         return link;
-    }
-    update(options, redraw, animation, runEvent) {
-        const oldOptions = {
-            id: this.id,
-            formatPrefix: this.formatPrefix
-        };
-        Point.prototype.update.call(this, options, this.isLink ? false : redraw, // Hold the redraw for nodes
-        animation, runEvent);
-        this.visible = this.toNode.visible;
-        extend(this, oldOptions);
-        if (pick(redraw, true)) {
-            this.series.chart.redraw(animation);
-        }
     }
 }
 /* *

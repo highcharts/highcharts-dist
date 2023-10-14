@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -412,7 +412,7 @@
             const labelSeries = chart.labelSeries || [], boxesToAvoid = chart.boxesToAvoid;
             // Avoid data labels
             chart.series.forEach((s) => (s.points || []).forEach((p) => (p.dataLabels || []).forEach((label) => {
-                const { width, height } = label.getBBox(), left = label.translateX + (s.xAxis ? s.xAxis.pos : s.chart.plotLeft), top = label.translateY + (s.yAxis ? s.yAxis.pos : s.chart.plotTop);
+                const { width, height } = label.getBBox(), left = (label.translateX || 0) + (s.xAxis ? s.xAxis.pos : s.chart.plotLeft), top = (label.translateY || 0) + (s.yAxis ? s.yAxis.pos : s.chart.plotTop);
                 boxesToAvoid.push({
                     left,
                     top,

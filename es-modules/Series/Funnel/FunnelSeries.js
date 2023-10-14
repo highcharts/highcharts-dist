@@ -61,7 +61,7 @@ class FunnelSeries extends PieSeries {
         }
         else if (verticalAlign === 'top') {
             y = dlBox.y - dlBox.height + dataLabelHeight +
-                options.padding;
+                (options.padding || 0);
         }
         if (verticalAlign === 'top' && !reversed ||
             verticalAlign === 'bottom' && reversed ||

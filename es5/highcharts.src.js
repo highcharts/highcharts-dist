@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * (c) 2009-2023 Torstein Honsi
  *
@@ -11254,8 +11254,8 @@
                 var padding = this.padding;
                 var paddingLeft = pick(this.paddingLeft, padding);
                 return {
-                    width: this.width,
-                    height: this.height,
+                    width: this.width || 0,
+                    height: this.height || 0,
                     x: this.bBox.x - paddingLeft,
                     y: this.bBox.y - padding
                 };
@@ -13279,36 +13279,34 @@
                      * to center within the label.
                      */
                     ['width', 'height'].forEach(function (key) {
-                        img_1[key + 'Setter'] = function (value, key) {
+                        img_1["".concat(key, "Setter")] = function (value, key) {
                             this[key] = value;
-                            var _a = this, alignByTranslate = _a.alignByTranslate, element = _a.element, width = _a.width, height = _a.height, imgwidth = _a.imgwidth, imgheight = _a.imgheight;
-                            var imgSize = this['img' + key];
-                            if (defined(imgSize)) {
-                                var scale = 1;
-                                // Scale and center the image within its container.
-                                // The name `backgroundSize` is taken from the CSS spec,
-                                // but the value `within` is made up. Other possible
-                                // values in the spec, `cover` and `contain`, can be
-                                // implemented if needed.
-                                if (options &&
-                                    options.backgroundSize === 'within' &&
-                                    width &&
-                                    height) {
-                                    scale = Math.min(width / imgwidth, height / imgheight);
-                                    imgSize = Math.round(imgSize * scale);
-                                    // Update both width and height to keep the ratio
-                                    // correct (#17315)
-                                    attr(element, {
-                                        width: Math.round(imgwidth * scale),
-                                        height: Math.round(imgheight * scale)
-                                    });
-                                }
-                                else if (element) {
-                                    element.setAttribute(key, imgSize);
-                                }
-                                if (!alignByTranslate) {
-                                    this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
-                                }
+                            var _a = this, alignByTranslate = _a.alignByTranslate, element = _a.element, width = _a.width, height = _a.height, imgwidth = _a.imgwidth, imgheight = _a.imgheight, imgSize = key === 'width' ? imgwidth : imgheight;
+                            var scale = 1;
+                            // Scale and center the image within its container. The name
+                            // `backgroundSize` is taken from the CSS spec, but the
+                            // value `within` is made up. Other possible values in the
+                            // spec, `cover` and `contain`, can be implemented if
+                            // needed.
+                            if (options &&
+                                options.backgroundSize === 'within' &&
+                                width &&
+                                height &&
+                                imgwidth &&
+                                imgheight) {
+                                scale = Math.min(width / imgwidth, height / imgheight);
+                                // Update both width and height to keep the ratio
+                                // correct (#17315)
+                                attr(element, {
+                                    width: Math.round(imgwidth * scale),
+                                    height: Math.round(imgheight * scale)
+                                });
+                            }
+                            else if (element && imgSize) {
+                                element.setAttribute(key, imgSize);
+                            }
+                            if (!alignByTranslate && imgwidth && imgheight) {
+                                this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
                             }
                         };
                     });
@@ -22408,6 +22406,13 @@
              *
              * */
             function PlotLineOrBand(axis, options) {
+                /**
+                 * The id of the plot line or plot band.
+                 *
+                 * @name Highcharts.PlotLineOrBand#id
+                 * @type {string}
+                 */
+                this.id = void 0;
                 this.axis = axis;
                 if (options) {
                     this.options = options;
@@ -22436,7 +22441,21 @@
              */
             PlotLineOrBand.prototype.render = function () {
                 fireEvent(this, 'render');
-                var plotLine = this, axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
+                var plotLine = this, 
+                /**
+                 * Related axis.
+                 *
+                 * @name Highcharts.PlotLineOrBand#axis
+                 * @type {Highcharts.Axis}
+                 */
+                axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, 
+                /**
+                 * Options of the plot line or band.
+                 *
+                 * @name Highcharts.PlotLineOrBand#options
+                 * @type {AxisPlotBandsOptions|AxisPlotLinesOptions}
+                 */
+                options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
                 var optionsLabel = options.label, label = plotLine.label, to = options.to, from = options.from, value = options.value, svgElem = plotLine.svgElem, path = [], group;
                 var isBand = defined(from) && defined(to), isLine = defined(value), isNew = !svgElem, attribs = {
                     'class': 'highcharts-plot-' + (isBand ? 'band ' : 'line ') +
@@ -24394,8 +24413,8 @@
                 // Combine anchor and tooltip
                 var anchorPos = this.getAnchor(points);
                 var labelBBox = label.getBBox();
-                anchorPos[0] += chart.plotLeft - label.translateX;
-                anchorPos[1] += chart.plotTop - label.translateY;
+                anchorPos[0] += chart.plotLeft - (label.translateX || 0);
+                anchorPos[1] += chart.plotTop - (label.translateY || 0);
                 // When the mouse pointer is between the anchor point and the label,
                 // the label should stick.
                 box.x = Math.min(0, anchorPos[0]);
@@ -24489,9 +24508,9 @@
              * @param {Highcharts.Point} point
              */
             Tooltip.prototype.updatePosition = function (point) {
-                var _a = this, chart = _a.chart, container = _a.container, distance = _a.distance, options = _a.options, pointer = chart.pointer, label = this.getLabel(), 
+                var _a = this, chart = _a.chart, container = _a.container, distance = _a.distance, options = _a.options, renderer = _a.renderer, _b = this.getLabel(), _c = _b.height, height = _c === void 0 ? 0 : _c, _d = _b.width, width = _d === void 0 ? 0 : _d, pointer = chart.pointer, 
                 // Needed for outside: true (#11688)
-                _b = pointer.getChartPosition(), left = _b.left, top = _b.top, scaleX = _b.scaleX, scaleY = _b.scaleY, pos = (options.positioner || this.getPosition).call(this, label.width, label.height, point), renderer = this.renderer;
+                _e = pointer.getChartPosition(), left = _e.left, top = _e.top, scaleX = _e.scaleX, scaleY = _e.scaleY, pos = (options.positioner || this.getPosition).call(this, width, height, point);
                 var anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
                 // Set the renderer size dynamically to prevent document size to change.
                 // Renderer only exists when tooltip is outside.
@@ -24504,7 +24523,7 @@
                     // Pad it by the border width and distance. Add 2 to make room for
                     // the default shadow (#19314).
                     pad = (options.borderWidth || 0) + 2 * distance + 2;
-                    renderer.setSize(label.width + pad, label.height + pad, false);
+                    renderer.setSize(width + pad, height + pad, false);
                     // Anchor and tooltip container need scaling if chart container has
                     // scale transform/css zoom. #11329.
                     if (scaleX !== 1 || scaleY !== 1) {
@@ -38667,7 +38686,7 @@
                         visible =
                             isNumber(label.x) &&
                                 isNumber(label.y) &&
-                                chart.isInsidePlot(label.x - padding + label.width, label.y) &&
+                                chart.isInsidePlot(label.x - padding + (label.width || 0), label.y) &&
                                 chart.isInsidePlot(label.x + padding, label.y);
                     }
                     label[visible ? 'show' : 'hide']();
@@ -42578,7 +42597,7 @@
              * @private
              */
             function setDataLabelStartPos(point, dataLabel, isNew, isInside, alignOptions) {
-                var chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = inverted ? dataLabel.height / 2 : dataLabel.width / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
+                var chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = ((inverted ? dataLabel.height : dataLabel.width) || 0) / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
                 dataLabel.startXPos = inverted ?
                     alignOptions.x :
                     (reversed ?
@@ -45272,7 +45291,7 @@
                     }
                     else if (isNumber(label.x) &&
                         Math.round(label.x) !== label.translateX) {
-                        xOffset = label.x - label.translateX;
+                        xOffset = label.x - (label.translateX || 0);
                     }
                     return {
                         x: pos.x + (parent.translateX || 0) + padding -
@@ -45280,7 +45299,7 @@
                         y: pos.y + (parent.translateY || 0) + padding -
                             lineHeightCorrection,
                         width: label.width - 2 * padding,
-                        height: label.height - 2 * padding
+                        height: (label.height || 0) - 2 * padding
                     };
                 }
             };

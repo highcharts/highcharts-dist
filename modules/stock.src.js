@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-13)
+ * @license Highstock JS v11.1.0 (2023-10-14)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -7642,22 +7642,19 @@
              * @param {string} name
              */
             showInput(name) {
-                const dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
-                const input = name === 'min' ? this.minInput : this.maxInput;
+                const dateBox = name === 'min' ? this.minDateBox : this.maxDateBox, input = name === 'min' ? this.minInput : this.maxInput;
                 if (input && dateBox && this.inputGroup) {
-                    const isTextInput = input.type === 'text';
-                    const { translateX, translateY } = this.inputGroup;
-                    const { inputBoxWidth } = this.options;
+                    const isTextInput = input.type === 'text', { translateX = 0, translateY = 0 } = this.inputGroup, { x = 0, width = 0, height = 0 } = dateBox, { inputBoxWidth } = this.options;
                     css(input, {
                         width: isTextInput ?
-                            ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') :
+                            ((width + (inputBoxWidth ? -2 : 20)) + 'px') :
                             'auto',
-                        height: (dateBox.height - 2) + 'px',
+                        height: (height - 2) + 'px',
                         border: '2px solid silver'
                     });
                     if (isTextInput && inputBoxWidth) {
                         css(input, {
-                            left: (translateX + dateBox.x) + 'px',
+                            left: (translateX + x) + 'px',
                             top: translateY + 'px'
                         });
                         // Inputs of types date, time or datetime-local should be centered
@@ -7665,10 +7662,10 @@
                     }
                     else {
                         css(input, {
-                            left: Math.min(Math.round(dateBox.x +
+                            left: Math.min(Math.round(x +
                                 translateX -
-                                (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                                (input.offsetWidth - width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
+                            top: (translateY - (input.offsetHeight - height) / 2) + 'px'
                         });
                     }
                 }
@@ -8123,7 +8120,7 @@
                                 width += zoomText.getBBox().width + 5;
                             }
                             buttons.forEach((button, i) => {
-                                width += button.width;
+                                width += button.width || 0;
                                 if (i !== buttons.length - 1) {
                                     width += options.buttonSpacing;
                                 }
@@ -8272,8 +8269,8 @@
                 for (let i = 0, iEnd = this.buttonOptions.length; i < iEnd; ++i) {
                     if (buttons[i].visibility !== 'hidden') {
                         buttons[i][verb]({ x: buttonLeft });
-                        // increase button position for the next button
-                        buttonLeft += buttons[i].width + options.buttonSpacing;
+                        // Increase the button position for the next button
+                        buttonLeft += (buttons[i].width || 0) + options.buttonSpacing;
                     }
                     else {
                         buttons[i][verb]({ x: plotLeft });
@@ -8471,8 +8468,7 @@
             showDropdown() {
                 const { buttonGroup, buttons, chart, dropdown } = this;
                 if (buttonGroup && dropdown) {
-                    const { translateX, translateY } = buttonGroup;
-                    const bBox = buttons[this.currentButtonIndex()].getBBox();
+                    const { translateX = 0, translateY = 0 } = buttonGroup, bBox = buttons[this.currentButtonIndex()].getBBox();
                     css(dropdown, {
                         left: (chart.plotLeft + translateX) + 'px',
                         top: (translateY + 0.5) + 'px',
@@ -11663,13 +11659,13 @@
                             if (!boxesMap[point.plotX]) {
                                 boxesMap[point.plotX] = {
                                     align: centered ? 0.5 : 0,
-                                    size: graphic.width,
+                                    size: graphic.width || 0,
                                     target: plotX,
                                     anchorX: plotX
                                 };
                             }
                             else {
-                                boxesMap[point.plotX].size = Math.max(boxesMap[point.plotX].size, graphic.width);
+                                boxesMap[point.plotX].size = Math.max(boxesMap[point.plotX].size, graphic.width || 0);
                             }
                         }
                         // Set the tooltip anchor position
@@ -12177,7 +12173,7 @@
                     visibility: isInside ? 'inherit' : 'hidden'
                 });
                 const crossBox = crossLabel.getBBox();
-                // now it is placed we can correct its position
+                // Now it is placed we can correct its position
                 if (isNumber(crossLabel.x) && !horiz && !opposite) {
                     posx = crossLabel.x - (crossBox.width / 2);
                 }
@@ -12191,7 +12187,7 @@
                         posy = crossLabel.y - (crossBox.height / 2);
                     }
                 }
-                // check the edges
+                // Check the edges
                 if (horiz) {
                     limit = {
                         left: left - crossBox.x,
@@ -12206,15 +12202,16 @@
                             chart.chartWidth
                     };
                 }
-                // left edge
-                if (crossLabel.translateX < limit.left) {
-                    offset = limit.left - crossLabel.translateX;
+                const translateX = crossLabel.translateX || 0;
+                // Left edge
+                if (translateX < limit.left) {
+                    offset = limit.left - translateX;
                 }
-                // right edge
-                if (crossLabel.translateX + crossBox.width >= limit.right) {
-                    offset = -(crossLabel.translateX + crossBox.width - limit.right);
+                // Right edge
+                if (translateX + crossBox.width >= limit.right) {
+                    offset = -(translateX + crossBox.width - limit.right);
                 }
-                // show the crosslabel
+                // Show the crosslabel
                 crossLabel.attr({
                     x: posx + offset,
                     y: posy,

@@ -74,7 +74,7 @@ function chartHideOverlappingLabels(labels) {
             }
             else if (isNumber(label.x) &&
                 Math.round(label.x) !== label.translateX) {
-                xOffset = label.x - label.translateX;
+                xOffset = label.x - (label.translateX || 0);
             }
             return {
                 x: pos.x + (parent.translateX || 0) + padding -
@@ -82,7 +82,7 @@ function chartHideOverlappingLabels(labels) {
                 y: pos.y + (parent.translateY || 0) + padding -
                     lineHeightCorrection,
                 width: label.width - 2 * padding,
-                height: label.height - 2 * padding
+                height: (label.height || 0) - 2 * padding
             };
         }
     };

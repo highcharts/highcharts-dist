@@ -196,7 +196,7 @@ class MapNavigation {
                 navButtons.push(button);
                 extend(buttonOptions, {
                     width: button.width,
-                    height: 2 * button.height
+                    height: 2 * (button.height || 0)
                 });
                 if (!chart.hasLoaded) {
                     // Align it after the plotBox is known (#12776)

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * Annotations module
  *
@@ -7092,8 +7092,8 @@
                         const xy = MockPoint
                             .pointToPixels(target.points[0]);
                         return {
-                            x: xy.x - this.graphic.width / 2,
-                            y: xy.y - this.graphic.height / 2
+                            x: xy.x - (this.graphic.width || 0) / 2,
+                            y: xy.y - (this.graphic.height || 0) / 2
                         };
                     },
                     // TRANSLATE POINT/ANCHOR
@@ -7117,9 +7117,9 @@
                         }
                         return {
                             x: target.graphic.alignAttr.x -
-                                this.graphic.width / 2,
+                                (this.graphic.width || 0) / 2,
                             y: target.graphic.alignAttr.y -
-                                this.graphic.height / 2
+                                (this.graphic.height || 0) / 2
                         };
                     },
                     // TRANSLATE POSITION WITHOUT CHANGING THE
@@ -7167,9 +7167,9 @@
                         const xy = MockPoint.pointToPixels(target.points[0]), r = target.options.r;
                         return {
                             x: xy.x + r * Math.cos(Math.PI / 4) -
-                                this.graphic.width / 2,
+                                (this.graphic.width || 0) / 2,
                             y: xy.y + r * Math.sin(Math.PI / 4) -
-                                this.graphic.height / 2
+                                (this.graphic.height || 0) / 2
                         };
                     },
                     events: {
@@ -7192,8 +7192,8 @@
                     positioner: function (target) {
                         const position = target.getAbsolutePosition(target.points[0]);
                         return {
-                            x: position.x - this.graphic.width / 2,
-                            y: position.y - this.graphic.height / 2
+                            x: position.x - (this.graphic.width || 0) / 2,
+                            y: position.y - (this.graphic.height || 0) / 2
                         };
                     },
                     events: {
@@ -7207,8 +7207,8 @@
                     positioner: function (target) {
                         const position = target.getAbsolutePosition(target.points[1]);
                         return {
-                            x: position.x - this.graphic.width / 2,
-                            y: position.y - this.graphic.height / 2
+                            x: position.x - (this.graphic.width || 0) / 2,
+                            y: position.y - (this.graphic.height || 0) / 2
                         };
                     },
                     events: {
@@ -7222,9 +7222,9 @@
                     positioner: function (target) {
                         const position = target.getAbsolutePosition(target.points[0]), position2 = target.getAbsolutePosition(target.points[1]), attrs = target.getAttrs(position, position2);
                         return {
-                            x: attrs.cx - this.graphic.width / 2 +
+                            x: attrs.cx - (this.graphic.width || 0) / 2 +
                                 attrs.ry * Math.sin((attrs.angle * Math.PI) / 180),
-                            y: attrs.cy - this.graphic.height / 2 -
+                            y: attrs.cy - (this.graphic.height || 0) / 2 -
                                 attrs.ry * Math.cos((attrs.angle * Math.PI) / 180)
                         };
                     },
@@ -7373,8 +7373,8 @@
                 positioner: function (target) {
                     const graphic = this.graphic, xy = MockPoint.pointToPixels(target.points[this.index]);
                     return {
-                        x: xy.x - graphic.width / 2,
-                        y: xy.y - graphic.height / 2
+                        x: xy.x - (graphic.width || 0) / 2,
+                        y: xy.y - (graphic.height || 0) / 2
                     };
                 },
                 events: {
@@ -7635,9 +7635,9 @@
                     positioner: function (target) {
                         const startXY = MockPoint.pointToPixels(target.points[2]), endXY = MockPoint.pointToPixels(target.points[3]), x = (startXY.x + endXY.x) / 2;
                         return {
-                            x: x - this.graphic.width / 2,
+                            x: x - (this.graphic.width || 0) / 2,
                             y: getSecondCoordinate(startXY, endXY, x) -
-                                this.graphic.height / 2
+                                (this.graphic.height || 0) / 2
                         };
                     },
                     events: {
@@ -7962,8 +7962,8 @@
                         positioner: function (target) {
                             const point = target.points[0], position = target.anchor(point).absolutePosition;
                             return {
-                                x: position.x - this.graphic.width / 2,
-                                y: target.y - this.graphic.height
+                                x: position.x - (this.graphic.width || 0) / 2,
+                                y: target.y - (this.graphic.height || 0)
                             };
                         },
                         events: {
@@ -7977,8 +7977,8 @@
                         positioner: function (target) {
                             const point = target.points[1], position = target.anchor(point).absolutePosition;
                             return {
-                                x: position.x - this.graphic.width / 2,
-                                y: target.y - this.graphic.height
+                                x: position.x - (this.graphic.width || 0) / 2,
+                                y: target.y - (this.graphic.height || 0)
                             };
                         },
                         events: {
@@ -8367,8 +8367,8 @@
                             [x, y] = [y, x];
                         }
                         return {
-                            x: plotLeft + x - graphic.width / 2,
-                            y: plotTop + y - graphic.height / 2
+                            x: plotLeft + x - (graphic.width || 0) / 2,
+                            y: plotTop + y - (graphic.height || 0) / 2
                         };
                     },
                     events: {

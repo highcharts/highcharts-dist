@@ -169,7 +169,7 @@ class StackItem {
                 visible =
                     isNumber(label.x) &&
                         isNumber(label.y) &&
-                        chart.isInsidePlot(label.x - padding + label.width, label.y) &&
+                        chart.isInsidePlot(label.x - padding + (label.width || 0), label.y) &&
                         chart.isInsidePlot(label.x + padding, label.y);
             }
             label[visible ? 'show' : 'hide']();

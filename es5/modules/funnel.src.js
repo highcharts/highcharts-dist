@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-13)
+ * @license Highcharts JS v11.1.0 (2023-10-14)
  *
  * Highcharts funnel module
  *
@@ -110,7 +110,7 @@
                 }
                 else if (verticalAlign === 'top') {
                     y = dlBox.y - dlBox.height + dataLabelHeight +
-                        options.padding;
+                        (options.padding || 0);
                 }
                 if (verticalAlign === 'top' && !reversed ||
                     verticalAlign === 'bottom' && reversed ||

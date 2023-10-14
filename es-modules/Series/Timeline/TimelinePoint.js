@@ -42,8 +42,8 @@ class TimelinePoint extends Series.prototype.pointClass {
     /* eslint-disable valid-jsdoc */
     alignConnector() {
         let point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
-            x: bBox.x + dataLabel.translateX,
-            y: bBox.y + dataLabel.translateY
+            x: bBox.x + (dataLabel.translateX || 0),
+            y: bBox.y + (dataLabel.translateY || 0)
         }, isVisible;
         // Include a half of connector width in order to run animation,
         // when connectors are aligned to the plot area edge.
@@ -85,36 +85,40 @@ class TimelinePoint extends Series.prototype.pointClass {
     }
     getConnectorPath() {
         var _a;
-        let point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
-            x1: point.plotX,
-            y1: point.plotY,
-            x2: point.plotX,
-            y2: isNumber(targetDLPos.y) ? targetDLPos.y : dl.y
-        }, negativeDistance = ((dl.alignAttr || dl)[direction[0]] <
-            point.series.yAxis.len / 2), path;
-        // Recalculate coords when the chart is inverted.
-        if (inverted) {
-            coords = {
-                x1: point.plotY,
-                y1: xAxisLen - point.plotX,
-                x2: targetDLPos.x || dl.x,
-                y2: xAxisLen - point.plotX
+        const { plotX = 0, plotY = 0, series, dataLabel } = this, chart = series.chart, xAxisLen = series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2';
+        if (dataLabel) {
+            const targetDLPos = dataLabel.targetPosition, negativeDistance = ((dataLabel.alignAttr || dataLabel)[direction[0]] <
+                series.yAxis.len / 2);
+            let coords = {
+                x1: plotX,
+                y1: plotY,
+                x2: plotX,
+                y2: isNumber(targetDLPos.y) ? targetDLPos.y : dataLabel.y
             };
+            // Recalculate coords when the chart is inverted.
+            if (inverted) {
+                coords = {
+                    x1: plotY,
+                    y1: xAxisLen - plotX,
+                    x2: targetDLPos.x || dataLabel.x,
+                    y2: xAxisLen - plotX
+                };
+            }
+            // Subtract data label width or height from expected coordinate so
+            // that the connector would start from the appropriate edge.
+            if (negativeDistance) {
+                coords[direction] += dataLabel[inverted ? 'width' : 'height'] || 0;
+            }
+            // Change coordinates so that they will be relative to data label.
+            objectEach(coords, (_coord, i) => {
+                coords[i] -= (dataLabel.alignAttr || dataLabel)[i[0]];
+            });
+            return chart.renderer.crispLine([
+                ['M', coords.x1, coords.y1],
+                ['L', coords.x2, coords.y2]
+            ], ((_a = dataLabel.options) === null || _a === void 0 ? void 0 : _a.connectorWidth) || 0);
         }
-        // Subtract data label width or height from expected coordinate so
-        // that the connector would start from the appropriate edge.
-        if (negativeDistance) {
-            coords[direction] += dl[inverted ? 'width' : 'height'];
-        }
-        // Change coordinates so that they will be relative to data label.
-        objectEach(coords, function (_coord, i) {
-            coords[i] -= (dl.alignAttr || dl)[i[0]];
-        });
-        path = chart.renderer.crispLine([
-            ['M', coords.x1, coords.y1],
-            ['L', coords.x2, coords.y2]
-        ], ((_a = dl.options) === null || _a === void 0 ? void 0 : _a.connectorWidth) || 0);
-        return path;
+        return [];
     }
     init() {
         const point = super.init.apply(this, arguments);
