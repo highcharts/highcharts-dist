@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-14)
+ * @license Highcharts JS v11.1.0 (2023-10-15)
  *
  * Force directed graph module
  *

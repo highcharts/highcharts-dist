@@ -1,5 +1,5 @@
 /*
- Highcharts JS v11.1.0 (2023-10-14)
+ Highcharts JS v11.1.0 (2023-10-15)
 
  Module for adding patterns and images as point fills.
 
