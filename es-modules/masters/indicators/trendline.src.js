@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-15)
+ * @license Highstock JS v11.1.0 (2023-10-16)
  * @module highcharts/indicators/trendline
  * @requires highcharts
  * @requires highcharts/modules/stock

@@ -1,5 +1,5 @@
 /*
- Highstock JS v11.1.0 (2023-10-15)
+ Highstock JS v11.1.0 (2023-10-16)
 
  (c) 2010-2021 Highsoft AS
  Author: Sebastian Domas

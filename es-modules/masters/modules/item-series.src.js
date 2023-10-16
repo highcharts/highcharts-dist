@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-15)
+ * @license Highcharts JS v11.1.0 (2023-10-16)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
