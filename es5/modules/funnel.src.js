@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-16)
+ * @license Highcharts JS v11.1.0 (2023-10-17)
  *
  * Highcharts funnel module
  *
@@ -35,7 +35,211 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/Funnel/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, H, BorderRadius, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Funnel/FunnelSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  Highcharts funnel module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * Funnel charts are a type of chart often used to visualize stages in a
+         * sales project, where the top are the initial stages with the most
+         * clients. It requires that the modules/funnel.js file is loaded.
+         *
+         * @sample highcharts/demo/funnel/
+         *         Funnel demo
+         *
+         * @extends      plotOptions.pie
+         * @excluding    innerSize,size,dataSorting
+         * @product      highcharts
+         * @requires     modules/funnel
+         * @optionparent plotOptions.funnel
+         */
+        var FunnelSeriesDefaults = {
+            /**
+             * Initial animation is by default disabled for the funnel chart.
+             */
+            animation: false,
+            /**
+             * The corner radius of the border surrounding all points or series. A
+             * number signifies pixels. A percentage string, like for example `50%`,
+             * signifies a size relative to the series width.
+             *
+             * @sample highcharts/plotoptions/funnel-border-radius
+             *         Funnel and pyramid with rounded border
+             */
+            borderRadius: 0,
+            /**
+             * The center of the series. By default, it is centered in the middle
+             * of the plot area, so it fills the plot area height.
+             *
+             * @type    {Array<number|string>}
+             * @default ["50%", "50%"]
+             * @since   3.0
+             */
+            center: ['50%', '50%'],
+            /**
+             * The width of the funnel compared to the width of the plot area,
+             * or the pixel width if it is a number.
+             *
+             * @type  {number|string}
+             * @since 3.0
+             */
+            width: '90%',
+            /**
+             * The width of the neck, the lower part of the funnel. A number defines
+             * pixel width, a percentage string defines a percentage of the plot
+             * area width.
+             *
+             * @sample {highcharts} highcharts/demo/funnel/
+             *         Funnel demo
+             *
+             * @type  {number|string}
+             * @since 3.0
+             */
+            neckWidth: '30%',
+            /**
+             * The height of the funnel or pyramid. If it is a number it defines
+             * the pixel height, if it is a percentage string it is the percentage
+             * of the plot area height.
+             *
+             * @sample {highcharts} highcharts/demo/funnel/
+             *         Funnel demo
+             *
+             * @type  {number|string}
+             * @since 3.0
+             */
+            height: '100%',
+            /**
+             * The height of the neck, the lower part of the funnel. A number
+             * defines pixel width, a percentage string defines a percentage of the
+             * plot area height.
+             *
+             * @type {number|string}
+             */
+            neckHeight: '25%',
+            /**
+             * A reversed funnel has the widest area down. A reversed funnel with
+             * no neck width and neck height is a pyramid.
+             *
+             * @since 3.0.10
+             */
+            reversed: false,
+            /**
+             * To avoid adapting the data label size in Pie.drawDataLabels.
+             * @ignore-option
+             */
+            size: true,
+            dataLabels: {
+                connectorWidth: 1,
+                verticalAlign: 'middle'
+            },
+            /**
+             * Options for the series states.
+             */
+            states: {
+                /**
+                 * @excluding halo, marker, lineWidth, lineWidthPlus
+                 * @apioption plotOptions.funnel.states.hover
+                 */
+                /**
+                 * Options for a selected funnel item.
+                 *
+                 * @excluding halo, marker, lineWidth, lineWidthPlus
+                 */
+                select: {
+                    /**
+                     * A specific color for the selected point.
+                     *
+                     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     */
+                    color: "#cccccc" /* Palette.neutralColor20 */,
+                    /**
+                     * A specific border color for the selected point.
+                     *
+                     * @type {Highcharts.ColorString}
+                     */
+                    borderColor: "#000000" /* Palette.neutralColor100 */
+                }
+            }
+        };
+        /**
+         * A `funnel` series. If the [type](#series.funnel.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.funnel
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+         *            boostBlending, boostThreshold
+         * @product   highcharts
+         * @requires  modules/funnel
+         * @apioption series.funnel
+         */
+        /**
+         * An array of data points for the series. For the `funnel` series type,
+         * points can be given in the following ways:
+         *
+         * 1.  An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. Example:
+         *
+         *  ```js
+         *  data: [0, 5, 3, 5]
+         *  ```
+         *
+         * 2.  An array of objects with named values. The following snippet shows only a
+         * few settings, see the complete options set below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.funnel.turboThreshold),
+         * this option is not available.
+         *
+         *  ```js
+         *     data: [{
+         *         y: 3,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         y: 1,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         *
+         * @sample {highcharts} highcharts/chart/reflow-true/
+         *         Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
+         *
+         * @type      {Array<number|null|*>}
+         * @extends   series.pie.data
+         * @excluding sliced
+         * @product   highcharts
+         * @apioption series.funnel.data
+         */
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return FunnelSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Funnel/FunnelSeries.js', [_modules['Series/Funnel/FunnelSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (FunnelSeriesDefaults, H, BorderRadius, SeriesRegistry, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -63,8 +267,40 @@
             };
         })();
         var noop = H.noop;
-        var Series = SeriesRegistry.series, PieSeries = SeriesRegistry.seriesTypes.pie;
-        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength, splat = U.splat;
+        var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, PieSeries = _a.pie;
+        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, merge = U.merge, pick = U.pick, pushUnique = U.pushUnique, relativeLength = U.relativeLength, splat = U.splat;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var baseAlignDataLabel = SeriesRegistry.series.prototype.alignDataLabel;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get positions - either an integer or a percentage string must be
+         * given.
+         * @private
+         * @param {number|string|undefined} length
+         *        Length
+         * @param {number} relativeTo
+         *        Relative factor
+         * @return {number}
+         *         Relative position
+         */
+        function getLength(length, relativeTo) {
+            return (/%$/).test(length) ?
+                relativeTo * parseInt(length, 10) / 100 :
+                parseInt(length, 10);
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * @private
          * @class
@@ -102,7 +338,8 @@
                     point.plotY), widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
                     dataLabel.height), offset = verticalAlign === 'middle' ?
                     (dlBox.topWidth - dlBox.bottomWidth) / 4 :
-                    (widthAtLabel - dlBox.bottomWidth) / 2, y = dlBox.y, x = dlBox.x;
+                    (widthAtLabel - dlBox.bottomWidth) / 2;
+                var y = dlBox.y, x = dlBox.x;
                 // #16176: Only SVGLabel has height set
                 var dataLabelHeight = pick(dataLabel.height, dataLabel.getBBox().height);
                 if (verticalAlign === 'middle') {
@@ -131,7 +368,7 @@
                 options.verticalAlign = 'bottom';
                 // Call the parent method
                 if (!inside || point.visible) {
-                    Series.prototype.alignDataLabel.call(this, point, dataLabel, options, alignTo, isNew);
+                    baseAlignDataLabel.call(series, point, dataLabel, options, alignTo, isNew);
                 }
                 if (inside) {
                     if (!point.visible && point.dataLabel) {
@@ -151,7 +388,9 @@
              * @private
              */
             FunnelSeries.prototype.drawDataLabels = function () {
-                SeriesRegistry.seriesTypes[splat(this.options.dataLabels)[0].inside ? 'column' : 'pie'].prototype.drawDataLabels.call(this);
+                (splat(this.options.dataLabels)[0].inside ?
+                    ColumnSeries :
+                    PieSeries).prototype.drawDataLabels.call(this);
             };
             /** @private */
             FunnelSeries.prototype.getDataLabelPosition = function (point, distance) {
@@ -188,9 +427,9 @@
              * @private
              */
             FunnelSeries.prototype.translate = function () {
-                var sum = 0, series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, cumulative = 0, // start at top
-                center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), tempWidth, height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, path, fraction, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, alpha, // the angle between top and left point's edges
-                maxT, roundingFactors = function (angle) {
+                var series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
+                    1 :
+                    0), roundingFactors = function (angle) {
                     var tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
                     var r = borderRadius, t = r / tan, k = Math.tan((Math.PI - angle) / 3.2104);
                     if (t > maxT) {
@@ -203,25 +442,10 @@
                         dy: [t * sinA, (t - k) * sinA, t - k, t]
                             .map(function (i) { return (reversed ? -i : i); })
                     };
-                }, half = (options.dataLabels.position === 'left' ?
-                    1 :
-                    0), x1, y1, x2, x3, y3, x4, y5;
-                /**
-                 * Get positions - either an integer or a percentage string must be
-                 * given.
-                 * @private
-                 * @param {number|string|undefined} length
-                 *        Length
-                 * @param {number} relativeTo
-                 *        Relative factor
-                 * @return {number}
-                 *         Relative position
-                 */
-                function getLength(length, relativeTo) {
-                    return (/%$/).test(length) ?
-                        relativeTo * parseInt(length, 10) / 100 :
-                        parseInt(length, 10);
-                }
+                };
+                var sum = 0, cumulative = 0, // start at top
+                tempWidth, path, fraction, alpha, // the angle between top and left point's edges
+                maxT, x1, y1, x2, x3, y3, x4, y5;
                 series.getWidthAt = function (y) {
                     var top = (centerY - height / 2);
                     return (y > neckY || height === neckHeight) ?
@@ -258,13 +482,15 @@
 
                 */
                 // get the total sum
-                data.forEach(function (point) {
+                for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+                    var point = data_1[_i];
                     if (point.y && point.isValid() &&
                         (!ignoreHiddenPoint || point.visible !== false)) {
                         sum += point.y;
                     }
-                });
-                data.forEach(function (point) {
+                }
+                for (var _a = 0, data_2 = data; _a < data_2.length; _a++) {
+                    var point = data_2[_a];
                     // set start and end positions
                     y5 = null;
                     fraction = sum ? point.y / sum : 0;
@@ -434,7 +660,7 @@
                         (!ignoreHiddenPoint || point.visible !== false)) {
                         cumulative += fraction;
                     }
-                });
+                }
                 fireEvent(series, 'afterTranslate');
             };
             /**
@@ -442,132 +668,9 @@
              * @private
              */
             FunnelSeries.prototype.sortByAngle = function (points) {
-                points.sort(function (a, b) {
-                    return a.plotY - b.plotY;
-                });
+                points.sort(function (a, b) { return (a.plotY - b.plotY); });
             };
-            /**
-             * Funnel charts are a type of chart often used to visualize stages in a
-             * sales project, where the top are the initial stages with the most
-             * clients. It requires that the modules/funnel.js file is loaded.
-             *
-             * @sample highcharts/demo/funnel/
-             *         Funnel demo
-             *
-             * @extends      plotOptions.pie
-             * @excluding    innerSize,size,dataSorting
-             * @product      highcharts
-             * @requires     modules/funnel
-             * @optionparent plotOptions.funnel
-             */
-            FunnelSeries.defaultOptions = merge(PieSeries.defaultOptions, {
-                /**
-                 * Initial animation is by default disabled for the funnel chart.
-                 */
-                animation: false,
-                /**
-                 * The corner radius of the border surrounding all points or series. A
-                 * number signifies pixels. A percentage string, like for example `50%`,
-                 * signifies a size relative to the series width.
-                 *
-                 * @sample highcharts/plotoptions/funnel-border-radius
-                 *         Funnel and pyramid with rounded border
-                 */
-                borderRadius: 0,
-                /**
-                 * The center of the series. By default, it is centered in the middle
-                 * of the plot area, so it fills the plot area height.
-                 *
-                 * @type    {Array<number|string>}
-                 * @default ["50%", "50%"]
-                 * @since   3.0
-                 */
-                center: ['50%', '50%'],
-                /**
-                 * The width of the funnel compared to the width of the plot area,
-                 * or the pixel width if it is a number.
-                 *
-                 * @type  {number|string}
-                 * @since 3.0
-                 */
-                width: '90%',
-                /**
-                 * The width of the neck, the lower part of the funnel. A number defines
-                 * pixel width, a percentage string defines a percentage of the plot
-                 * area width.
-                 *
-                 * @sample {highcharts} highcharts/demo/funnel/
-                 *         Funnel demo
-                 *
-                 * @type  {number|string}
-                 * @since 3.0
-                 */
-                neckWidth: '30%',
-                /**
-                 * The height of the funnel or pyramid. If it is a number it defines
-                 * the pixel height, if it is a percentage string it is the percentage
-                 * of the plot area height.
-                 *
-                 * @sample {highcharts} highcharts/demo/funnel/
-                 *         Funnel demo
-                 *
-                 * @type  {number|string}
-                 * @since 3.0
-                 */
-                height: '100%',
-                /**
-                 * The height of the neck, the lower part of the funnel. A number
-                 * defines pixel width, a percentage string defines a percentage of the
-                 * plot area height.
-                 *
-                 * @type {number|string}
-                 */
-                neckHeight: '25%',
-                /**
-                 * A reversed funnel has the widest area down. A reversed funnel with
-                 * no neck width and neck height is a pyramid.
-                 *
-                 * @since 3.0.10
-                 */
-                reversed: false,
-                /**
-                 * To avoid adapting the data label size in Pie.drawDataLabels.
-                 * @ignore-option
-                 */
-                size: true,
-                dataLabels: {
-                    connectorWidth: 1,
-                    verticalAlign: 'middle'
-                },
-                /**
-                 * Options for the series states.
-                 */
-                states: {
-                    /**
-                     * @excluding halo, marker, lineWidth, lineWidthPlus
-                     * @apioption plotOptions.funnel.states.hover
-                     */
-                    /**
-                     * Options for a selected funnel item.
-                     *
-                     * @excluding halo, marker, lineWidth, lineWidthPlus
-                     */
-                    select: {
-                        /**
-                         * A specific color for the selected point.
-                         *
-                         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                         */
-                        color: "#cccccc" /* Palette.neutralColor20 */,
-                        /**
-                         * A specific border color for the selected point.
-                         *
-                         * @type {Highcharts.ColorString}
-                         */
-                        borderColor: "#000000" /* Palette.neutralColor100 */
-                    }
-                }
-            });
+            FunnelSeries.defaultOptions = merge(PieSeries.defaultOptions, FunnelSeriesDefaults);
             return FunnelSeries;
         }(PieSeries));
         extend(FunnelSeries.prototype, {
@@ -575,28 +678,64 @@
         });
         /* *
          *
-         *  Hack
+         *  Class Namespace
          *
          * */
-        /* eslint-disable no-invalid-this */
-        addEvent(Chart, 'afterHideAllOverlappingLabels', function () {
-            this.series.forEach(function (series) {
-                var dataLabelsOptions = series.options && series.options.dataLabels;
-                if (isArray(dataLabelsOptions)) {
-                    dataLabelsOptions = dataLabelsOptions[0];
+        (function (FunnelSeries) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedMembers = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /** @private */
+            function compose(ChartClass) {
+                if (pushUnique(composedMembers, ChartClass)) {
+                    addEvent(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
                 }
-                if (series.is('pie') &&
-                    series.placeDataLabels &&
-                    dataLabelsOptions &&
-                    !dataLabelsOptions.inside) {
-                    series.placeDataLabels();
+            }
+            FunnelSeries.compose = compose;
+            /** @private */
+            function onChartAfterHideAllOverlappingLabels() {
+                for (var _i = 0, _a = this.series; _i < _a.length; _i++) {
+                    var series = _a[_i];
+                    var dataLabelsOptions = series.options && series.options.dataLabels;
+                    if (isArray(dataLabelsOptions)) {
+                        dataLabelsOptions = dataLabelsOptions[0];
+                    }
+                    if (series.is('pie') &&
+                        series.placeDataLabels &&
+                        dataLabelsOptions &&
+                        !dataLabelsOptions.inside) {
+                        series.placeDataLabels();
+                    }
                 }
-            });
-        });
+            }
+        })(FunnelSeries || (FunnelSeries = {}));
         SeriesRegistry.registerSeriesType('funnel', FunnelSeries);
         /* *
          *
          *  Default Export
+         *
+         * */
+
+        return FunnelSeries;
+    });
+    _registerModule(_modules, 'Series/Pyramid/PyramidSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  Highcharts funnel module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
         /* *
@@ -604,53 +743,69 @@
          *  API Options
          *
          * */
+        var PyramidSeriesDefaults = {
+            /**
+             * The pyramid neck width is zero by default, as opposed to the funnel,
+             * which shares the same layout logic.
+             *
+             * @since 3.0.10
+             */
+            neckWidth: '0%',
+            /**
+             * The pyramid neck width is zero by default, as opposed to the funnel,
+             * which shares the same layout logic.
+             *
+             * @since 3.0.10
+             */
+            neckHeight: '0%',
+            /**
+             * The pyramid is reversed by default, as opposed to the funnel, which
+             * shares the layout engine, and is not reversed.
+             *
+             * @since 3.0.10
+             */
+            reversed: true
+        };
         /**
-         * A `funnel` series. If the [type](#series.funnel.type) option is
+         * A `pyramid` series. If the [type](#series.pyramid.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
          *
-         * @extends   series,plotOptions.funnel
+         * @extends   series,plotOptions.pyramid
          * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
-         *            boostBlending, boostThreshold
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/funnel
-         * @apioption series.funnel
+         * @apioption series.pyramid
          */
         /**
-         * An array of data points for the series. For the `funnel` series type,
-         * points can be given in the following ways:
+         * An array of data points for the series. For the `pyramid` series
+         * type, points can be given in the following ways:
          *
-         * 1.  An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. Example:
+         * 1. An array of numerical values. In this case, the numerical values will be
+         *    interpreted as `y` options. Example:
+         *    ```js
+         *    data: [0, 5, 3, 5]
+         *    ```
          *
-         *  ```js
-         *  data: [0, 5, 3, 5]
-         *  ```
-         *
-         * 2.  An array of objects with named values. The following snippet shows only a
-         * few settings, see the complete options set below. If the total number of data
-         * points exceeds the series' [turboThreshold](#series.funnel.turboThreshold),
-         * this option is not available.
-         *
-         *  ```js
-         *     data: [{
-         *         y: 3,
-         *         name: "Point2",
-         *         color: "#00FF00"
-         *     }, {
-         *         y: 1,
-         *         name: "Point1",
-         *         color: "#FF00FF"
-         *     }]
-         *  ```
+         * 2. An array of objects with named values. The following snippet shows only a
+         *    few settings, see the complete options set below. If the total number of
+         *    data points exceeds the series'
+         *    [turboThreshold](#series.pyramid.turboThreshold), this option is not
+         *    available.
+         *    ```js
+         *    data: [{
+         *        y: 9,
+         *        name: "Point2",
+         *        color: "#00FF00"
+         *    }, {
+         *        y: 6,
+         *        name: "Point1",
+         *        color: "#FF00FF"
+         *    }]
+         *    ```
          *
          * @sample {highcharts} highcharts/chart/reflow-true/
          *         Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/
-         *         Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
-         *         Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/
-         *         Arrays of point.name and y
          * @sample {highcharts} highcharts/series/data-array-of-objects/
          *         Config objects
          *
@@ -658,13 +813,18 @@
          * @extends   series.pie.data
          * @excluding sliced
          * @product   highcharts
-         * @apioption series.funnel.data
+         * @apioption series.pyramid.data
          */
-        ''; // keeps doclets above in transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return FunnelSeries;
+        return PyramidSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Pyramid/PyramidSeries.js', [_modules['Series/Funnel/FunnelSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (FunnelSeries, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Pyramid/PyramidSeries.js', [_modules['Series/Funnel/FunnelSeries.js'], _modules['Series/Pyramid/PyramidSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (FunnelSeries, PyramidSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -737,29 +897,7 @@
              * @requires     modules/funnel
              * @optionparent plotOptions.pyramid
              */
-            PyramidSeries.defaultOptions = merge(FunnelSeries.defaultOptions, {
-                /**
-                 * The pyramid neck width is zero by default, as opposed to the funnel,
-                 * which shares the same layout logic.
-                 *
-                 * @since 3.0.10
-                 */
-                neckWidth: '0%',
-                /**
-                 * The pyramid neck width is zero by default, as opposed to the funnel,
-                 * which shares the same layout logic.
-                 *
-                 * @since 3.0.10
-                 */
-                neckHeight: '0%',
-                /**
-                 * The pyramid is reversed by default, as opposed to the funnel, which
-                 * shares the layout engine, and is not reversed.
-                 *
-                 * @since 3.0.10
-                 */
-                reversed: true
-            });
+            PyramidSeries.defaultOptions = merge(FunnelSeries.defaultOptions, PyramidSeriesDefaults);
             return PyramidSeries;
         }(FunnelSeries));
         SeriesRegistry.registerSeriesType('pyramid', PyramidSeries);
@@ -768,66 +906,13 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
-        /**
-         * A `pyramid` series. If the [type](#series.pyramid.type) option is
-         * not specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @extends   series,plotOptions.pyramid
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
-         *            boostThreshold, boostBlending
-         * @product   highcharts
-         * @requires  modules/funnel
-         * @apioption series.pyramid
-         */
-        /**
-         * An array of data points for the series. For the `pyramid` series
-         * type, points can be given in the following ways:
-         *
-         * 1. An array of numerical values. In this case, the numerical values will be
-         *    interpreted as `y` options. Example:
-         *    ```js
-         *    data: [0, 5, 3, 5]
-         *    ```
-         *
-         * 2. An array of objects with named values. The following snippet shows only a
-         *    few settings, see the complete options set below. If the total number of
-         *    data points exceeds the series'
-         *    [turboThreshold](#series.pyramid.turboThreshold), this option is not
-         *    available.
-         *    ```js
-         *    data: [{
-         *        y: 9,
-         *        name: "Point2",
-         *        color: "#00FF00"
-         *    }, {
-         *        y: 6,
-         *        name: "Point1",
-         *        color: "#FF00FF"
-         *    }]
-         *    ```
-         *
-         * @sample {highcharts} highcharts/chart/reflow-true/
-         *         Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-objects/
-         *         Config objects
-         *
-         * @type      {Array<number|null|*>}
-         * @extends   series.pie.data
-         * @excluding sliced
-         * @product   highcharts
-         * @apioption series.pyramid.data
-         */
-        ''; // adds doclets above into transpiled file
 
         return PyramidSeries;
     });
-    _registerModule(_modules, 'masters/modules/funnel.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/funnel.src.js', [_modules['Core/Globals.js'], _modules['Series/Funnel/FunnelSeries.js']], function (Highcharts, FunnelSeries) {
 
+        var G = Highcharts;
+        FunnelSeries.compose(G.Chart);
 
     });
 }));

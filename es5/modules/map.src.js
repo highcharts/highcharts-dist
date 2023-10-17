@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-10-16)
+ * @license Highmaps JS v11.1.0 (2023-10-17)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -10047,17 +10047,13 @@
                 _this.x = void 0;
                 _this.y = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
+            /** @private */
             HeatmapPoint.prototype.applyOptions = function (options, x) {
                 // #17970, if point is null remove its color, because it may be updated
                 if (this.isNull || this.value === null) {
@@ -10068,6 +10064,7 @@
                     'null' : 'point';
                 return this;
             };
+            /** @private */
             HeatmapPoint.prototype.getCellAttributes = function () {
                 var point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
                 pointPadding = pick(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
@@ -10081,7 +10078,8 @@
                 var dimensions = [['width', 'x'], ['height', 'y']];
                 // Handle marker's fixed width, and height values including border
                 // and pointPadding while calculating cell attributes.
-                dimensions.forEach(function (dimension) {
+                for (var _i = 0, dimensions_1 = dimensions; _i < dimensions_1.length; _i++) {
+                    var dimension = dimensions_1[_i];
                     var prop = dimension[0], direction = dimension[1];
                     var start = direction + '1', end = direction + '2';
                     var side = Math.abs(cellAttr[start] - cellAttr[end]), borderWidth = markerOptions &&
@@ -10101,7 +10099,7 @@
                         cellAttr[start] += pointPadding;
                         cellAttr[end] -= pointPadding;
                     }
-                });
+                }
                 return cellAttr;
             };
             /**
@@ -10145,79 +10143,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  (c) 2010-2023 Hubert Kozik
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var doc = H.doc;
-        var defined = U.defined, pick = U.pick;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Find color of point based on color axis.
-         *
-         * @function Highcharts.colorFromPoint
-         *
-         * @param {number | null} value
-         *        Value to find corresponding color on the color axis.
-         *
-         * @param {Highcharts.Point} point
-         *        Point to find it's color from color axis.
-         *
-         * @return {number[]}
-         *        Color in RGBa array.
-         */
-        function colorFromPoint(value, point) {
-            var colorAxis = point.series.colorAxis;
-            if (colorAxis) {
-                var rgba = (colorAxis.toColor(value || 0, point)
-                    .split(')')[0]
-                    .split('(')[1]
-                    .split(',')
-                    .map(function (s) { return pick(parseFloat(s), parseInt(s, 10)); }));
-                rgba[3] = pick(rgba[3], 1.0) * 255;
-                if (!defined(value) || !point.visible) {
-                    rgba[3] = 0;
-                }
-                return rgba;
-            }
-            return [0, 0, 0, 0];
-        }
-        /**
-         * Method responsible for creating a canvas for interpolation image.
-         * @private
-         */
-        function getContext(series) {
-            var canvas = series.canvas, context = series.context;
-            if (canvas && context) {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            else {
-                series.canvas = doc.createElement('canvas');
-                series.context = series.canvas.getContext('2d', {
-                    willReadFrequently: true
-                }) || void 0;
-                return series.context;
-            }
-            return context;
-        }
-        var InterpolationUtilities = {
-            colorFromPoint: colorFromPoint,
-            getContext: getContext
-        };
-
-        return InterpolationUtilities;
-    });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Series/InterpolationUtilities.js']], function (Color, ColorMapComposition, H, HeatmapPoint, SeriesRegistry, SVGRenderer, U, IU) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -10227,518 +10153,170 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var __assign = (this && this.__assign) || function () {
-            __assign = Object.assign || function(t) {
-                for (var s, i = 1, n = arguments.length; i < n; i++) {
-                    s = arguments[i];
-                    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                        t[p] = s[p];
-                }
-                return t;
-            };
-            return __assign.apply(this, arguments);
-        };
-        var doc = H.doc;
-        var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, ScatterSeries = _a.scatter;
-        var symbols = SVGRenderer.prototype.symbols;
-        var addEvent = U.addEvent, clamp = U.clamp, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, defined = U.defined;
-        var colorFromPoint = IU.colorFromPoint, getContext = IU.getContext;
+        var isNumber = U.isNumber;
         /* *
          *
-         *  Class
+         *  API Options
          *
          * */
         /**
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes.heatmap
+         * A heatmap is a graphical representation of data where the individual
+         * values contained in a matrix are represented as colors.
          *
-         * @augments Highcharts.Series
+         * @productdesc {highcharts}
+         * Requires `modules/heatmap`.
+         *
+         * @sample highcharts/demo/heatmap/
+         *         Simple heatmap
+         * @sample highcharts/demo/heatmap-canvas/
+         *         Heavy heatmap
+         *
+         * @extends      plotOptions.scatter
+         * @excluding    animationLimit, connectEnds, connectNulls, cropThreshold,
+         *               dashStyle, findNearestPointBy, getExtremesFromAll, jitter,
+         *               linecap, lineWidth, pointInterval, pointIntervalUnit,
+         *               pointRange, pointStart, shadow, softThreshold, stacking,
+         *               step, threshold, cluster, dragDrop
+         * @product      highcharts highmaps
+         * @optionparent plotOptions.heatmap
          */
-        var HeatmapSeries = /** @class */ (function (_super) {
-            __extends(HeatmapSeries, _super);
-            function HeatmapSeries() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                _this.canvas = void 0;
-                _this.colorAxis = void 0;
-                _this.context = void 0;
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                _this.valueMax = NaN;
-                _this.valueMin = NaN;
-                _this.isDirtyCanvas = true;
-                return _this;
-                /* eslint-enable valid-jsdoc */
-            }
-            /* *
+        var HeatmapSeriesDefaults = {
+            /**
+             * Animation is disabled by default on the heatmap series.
+             */
+            animation: false,
+            /**
+             * The border radius for each heatmap item. The border's color and
+             * width can be set in marker options.
              *
-             *  Functions
+             * @see [lineColor](#plotOptions.heatmap.marker.lineColor)
+             * @see [lineWidth](#plotOptions.heatmap.marker.lineWidth)
+             */
+            borderRadius: 0,
+            /**
+             * The border width for each heatmap item.
+             */
+            borderWidth: 0,
+            /**
+             * Padding between the points in the heatmap.
              *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
+             * @type      {number}
+             * @default   0
+             * @since     6.0
+             * @apioption plotOptions.heatmap.pointPadding
              */
-            HeatmapSeries.prototype.drawPoints = function () {
-                var series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
-                if (interpolation) {
-                    var image = series.image, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, _a = xAxis.reversed, xRev = _a === void 0 ? false : _a, width = xAxis.len, _b = yAxis.reversed, yRev = _b === void 0 ? false : _b, height = yAxis.len, dimensions = { width: width, height: height };
-                    if (!image || series.isDirtyData || series.isDirtyCanvas) {
-                        var ctx = getContext(series), canvas = series.canvas, _c = series.options, _d = _c.colsize, colsize = _d === void 0 ? 1 : _d, _e = _c.rowsize, rowsize = _e === void 0 ? 1 : _e, points = series.points, length_1 = series.points.length, pointsLen = length_1 - 1, colorAxis = (chart.colorAxis && chart.colorAxis[0]);
-                        if (canvas && ctx && colorAxis) {
-                            var _f = xAxis.getExtremes(), xMin_1 = _f.min, xMax = _f.max, _g = yAxis.getExtremes(), yMin_1 = _g.min, yMax = _g.max, xDelta = xMax - xMin_1, yDelta = yMax - yMin_1, imgMultiple = 8.0, lastX = Math.round(imgMultiple * ((xDelta / colsize) / imgMultiple)), lastY = Math.round(imgMultiple * ((yDelta / rowsize) / imgMultiple)), _h = [
-                                [lastX, lastX / xDelta, xRev, 'ceil'],
-                                [lastY, lastY / yDelta, !yRev, 'floor']
-                            ].map(function (_a) {
-                                var last = _a[0], scale = _a[1], rev = _a[2], rounding = _a[3];
-                                return (rev ?
-                                    function (v) { return (Math[rounding](last -
-                                        (scale * (v)))); } :
-                                    function (v) { return (Math[rounding](scale * v)); });
-                            }), transformX_1 = _h[0], transformY_1 = _h[1], canvasWidth_1 = canvas.width = lastX + 1, canvasHeight = canvas.height = lastY + 1, canvasArea = canvasWidth_1 * canvasHeight, pixelToPointScale = pointsLen / canvasArea, pixelData = new Uint8ClampedArray(canvasArea * 4), pointInPixels = function (x, y) { return (Math.ceil((canvasWidth_1 * transformY_1(y - yMin_1)) +
-                                transformX_1(x - xMin_1)) * 4); };
-                            series.buildKDTree();
-                            for (var i = 0; i < canvasArea; i++) {
-                                var point = points[Math.ceil(pixelToPointScale * i)], x = point.x, y = point.y;
-                                pixelData.set(colorFromPoint(point.value, point), pointInPixels(x, y));
-                            }
-                            ctx.putImageData(new ImageData(pixelData, canvasWidth_1), 0, 0);
-                            if (image) {
-                                image.attr(__assign(__assign({}, dimensions), { href: canvas.toDataURL('image/png', 1) }));
-                            }
-                            else {
-                                series.directTouch = false;
-                                series.image = chart.renderer.image(canvas.toDataURL('image/png', 1))
-                                    .attr(dimensions)
-                                    .add(series.group);
-                            }
-                        }
-                        series.isDirtyCanvas = false;
-                    }
-                    else if (image.width !== width || image.height !== height) {
-                        image.attr(dimensions);
-                    }
-                }
-                else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
-                    Series.prototype.drawPoints.call(series);
-                    series.points.forEach(function (point) {
-                        if (point.graphic) {
-                            // In styled mode, use CSS, otherwise the fill used in
-                            // the style sheet will take precedence over
-                            // the fill attribute.
-                            point.graphic[series.chart.styledMode ? 'css' : 'animate'](series.colorAttribs(point));
-                            if (point.value === null) { // #15708
-                                point.graphic.addClass('highcharts-null-point');
-                            }
-                        }
-                    });
-                }
-            };
             /**
-             * @private
+             * @default   value
+             * @apioption plotOptions.heatmap.colorKey
              */
-            HeatmapSeries.prototype.getExtremes = function () {
-                // Get the extremes from the value data
-                var _a = Series.prototype.getExtremes
-                    .call(this, this.valueData), dataMin = _a.dataMin, dataMax = _a.dataMax;
-                if (isNumber(dataMin)) {
-                    this.valueMin = dataMin;
-                }
-                if (isNumber(dataMax)) {
-                    this.valueMax = dataMax;
-                }
-                // Get the extremes from the y data
-                return Series.prototype.getExtremes.call(this);
-            };
             /**
-             * Override to also allow null points, used when building the k-d-tree for
-             * tooltips in boost mode.
-             * @private
-             */
-            HeatmapSeries.prototype.getValidPoints = function (points, insideOnly) {
-                return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
-            };
-            /**
-             * Define hasData function for non-cartesian series. Returns true if the
-             * series has points at all.
-             * @private
-             */
-            HeatmapSeries.prototype.hasData = function () {
-                return !!this.processedXData.length; // != 0
-            };
-            /**
-             * Override the init method to add point ranges on both axes.
-             * @private
-             */
-            HeatmapSeries.prototype.init = function () {
-                _super.prototype.init.apply(this, arguments);
-                var options = this.options;
-                // #3758, prevent resetting in setData
-                options.pointRange = pick(options.pointRange, options.colsize || 1);
-                // general point range
-                this.yAxis.axisPointRange = options.rowsize || 1;
-                // Bind new symbol names
-                symbols.ellipse = symbols.circle;
-                // @todo
-                //
-                // Setting the border radius here is a workaround. It should be set in
-                // the shapeArgs or returned from `markerAttribs`. However,
-                // Series.drawPoints does not pick up markerAttribs to be passed over to
-                // `renderer.symbol`. Also, image symbols are not positioned by their
-                // top left corner like other symbols are. This should be refactored,
-                // then we could save ourselves some tests for .hasImage etc. And the
-                // evaluation of borderRadius would be moved to `markerAttribs`.
-                if (options.marker && isNumber(options.borderRadius)) {
-                    options.marker.r = options.borderRadius;
-                }
-            };
-            /**
-             * @private
-             */
-            HeatmapSeries.prototype.markerAttribs = function (point, state) {
-                var shapeArgs = point.shapeArgs || {};
-                if (point.hasImage) {
-                    return {
-                        x: point.plotX,
-                        y: point.plotY
-                    };
-                }
-                // Setting width and height attributes on image does not affect on its
-                // dimensions.
-                if (state && state !== 'normal') {
-                    var pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states &&
-                        seriesMarkerOptions.states[state]) || {}, pointStateOptions = (pointMarkerOptions.states &&
-                        pointMarkerOptions.states[state]) || {};
-                    // Set new width and height basing on state options.
-                    var width = (pointStateOptions.width ||
-                        seriesStateOptions.width ||
-                        shapeArgs.width ||
-                        0) + (pointStateOptions.widthPlus ||
-                        seriesStateOptions.widthPlus ||
-                        0);
-                    var height = (pointStateOptions.height ||
-                        seriesStateOptions.height ||
-                        shapeArgs.height ||
-                        0) + (pointStateOptions.heightPlus ||
-                        seriesStateOptions.heightPlus ||
-                        0);
-                    // Align marker by the new size.
-                    var x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2, y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
-                    return { x: x, y: y, width: width, height: height };
-                }
-                return shapeArgs;
-            };
-            /**
-             * @private
-             */
-            HeatmapSeries.prototype.pointAttribs = function (point, state) {
-                var series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
-                // Get old properties in order to keep backward compatibility
-                borderColor = (point && point.options.borderColor) ||
-                    seriesOptions.borderColor ||
-                    heatmapPlotOptions.borderColor ||
-                    seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
-                    seriesOptions.borderWidth ||
-                    heatmapPlotOptions.borderWidth ||
-                    seriesPlotOptions.borderWidth ||
-                    attr['stroke-width'];
-                // Apply lineColor, or set it to default series color.
-                attr.stroke = ((point && point.marker && point.marker.lineColor) ||
-                    (seriesOptions.marker && seriesOptions.marker.lineColor) ||
-                    borderColor ||
-                    this.color);
-                // Apply old borderWidth property if exists.
-                attr['stroke-width'] = borderWidth;
-                if (state && state !== 'normal') {
-                    var stateOptions = merge((seriesOptions.states &&
-                        seriesOptions.states[state]), (seriesOptions.marker &&
-                        seriesOptions.marker.states &&
-                        seriesOptions.marker.states[state]), (point &&
-                        point.options.states &&
-                        point.options.states[state] || {}));
-                    attr.fill =
-                        stateOptions.color ||
-                            Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
-                    attr.stroke = (stateOptions.lineColor || attr.stroke); // #17896
-                }
-                return attr;
-            };
-            /**
-             * @private
-             */
-            HeatmapSeries.prototype.translate = function () {
-                var series = this, options = series.options, borderRadius = options.borderRadius, marker = options.marker, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
-                series.generatePoints();
-                series.points.forEach(function (point) {
-                    var cellAttr = point.getCellAttributes();
-                    var x = Math.min(cellAttr.x1, cellAttr.x2), y = Math.min(cellAttr.y1, cellAttr.y2), width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0), height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
-                    point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
-                    // If marker shape is regular (square), find the shorter cell's
-                    // side.
-                    if (hasRegularShape) {
-                        var sizeDiff = Math.abs(width - height);
-                        x = Math.min(cellAttr.x1, cellAttr.x2) +
-                            (width < height ? 0 : sizeDiff / 2);
-                        y = Math.min(cellAttr.y1, cellAttr.y2) +
-                            (width < height ? sizeDiff / 2 : 0);
-                        width = height = Math.min(width, height);
-                    }
-                    if (point.hasImage) {
-                        point.marker = { width: width, height: height };
-                    }
-                    point.plotX = point.clientX = (cellAttr.x1 + cellAttr.x2) / 2;
-                    point.plotY = (cellAttr.y1 + cellAttr.y2) / 2;
-                    point.shapeType = 'path';
-                    point.shapeArgs = merge(true, { x: x, y: y, width: width, height: height }, {
-                        d: symbols[shape](x, y, width, height, { r: isNumber(borderRadius) ? borderRadius : 0 })
-                    });
-                });
-                fireEvent(series, 'afterTranslate');
-            };
-            /**
-             * A heatmap is a graphical representation of data where the individual
-             * values contained in a matrix are represented as colors.
+             * The main color of the series. In heat maps this color is rarely used,
+             * as we mostly use the color to denote the value of each point. Unless
+             * options are set in the [colorAxis](#colorAxis), the default value
+             * is pulled from the [options.colors](#colors) array.
              *
-             * @productdesc {highcharts}
-             * Requires `modules/heatmap`.
-             *
-             * @sample highcharts/demo/heatmap/
-             *         Simple heatmap
-             * @sample highcharts/demo/heatmap-canvas/
-             *         Heavy heatmap
-             *
-             * @extends      plotOptions.scatter
-             * @excluding    animationLimit, connectEnds, connectNulls, cropThreshold,
-             *               dashStyle, findNearestPointBy, getExtremesFromAll, jitter,
-             *               linecap, lineWidth, pointInterval, pointIntervalUnit,
-             *               pointRange, pointStart, shadow, softThreshold, stacking,
-             *               step, threshold, cluster, dragDrop
-             * @product      highcharts highmaps
-             * @optionparent plotOptions.heatmap
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since     4.0
+             * @product   highcharts
+             * @apioption plotOptions.heatmap.color
              */
-            HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-                /**
-                 * Animation is disabled by default on the heatmap series.
-                 */
-                animation: false,
-                /**
-                 * The border radius for each heatmap item. The border's color and
-                 * width can be set in marker options.
-                 *
-                 * @see [lineColor](#plotOptions.heatmap.marker.lineColor)
-                 * @see [lineWidth](#plotOptions.heatmap.marker.lineWidth)
-                 */
-                borderRadius: 0,
-                /**
-                 * The border width for each heatmap item.
-                 */
-                borderWidth: 0,
-                /**
-                 * Padding between the points in the heatmap.
-                 *
-                 * @type      {number}
-                 * @default   0
-                 * @since     6.0
-                 * @apioption plotOptions.heatmap.pointPadding
-                 */
-                /**
-                 * @default   value
-                 * @apioption plotOptions.heatmap.colorKey
-                 */
-                /**
-                 * The main color of the series. In heat maps this color is rarely used,
-                 * as we mostly use the color to denote the value of each point. Unless
-                 * options are set in the [colorAxis](#colorAxis), the default value
-                 * is pulled from the [options.colors](#colors) array.
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since     4.0
-                 * @product   highcharts
-                 * @apioption plotOptions.heatmap.color
-                 */
-                /**
-                 * The column size - how many X axis units each column in the heatmap
-                 * should span.
-                 *
-                 * @sample {highcharts} maps/demo/heatmap/
-                 *         One day
-                 * @sample {highmaps} maps/demo/heatmap/
-                 *         One day
-                 *
-                 * @type      {number}
-                 * @default   1
-                 * @since     4.0
-                 * @product   highcharts highmaps
-                 * @apioption plotOptions.heatmap.colsize
-                 */
-                /**
-                 * The row size - how many Y axis units each heatmap row should span.
-                 *
-                 * @sample {highcharts} maps/demo/heatmap/
-                 *         1 by default
-                 * @sample {highmaps} maps/demo/heatmap/
-                 *         1 by default
-                 *
-                 * @type      {number}
-                 * @default   1
-                 * @since     4.0
-                 * @product   highcharts highmaps
-                 * @apioption plotOptions.heatmap.rowsize
-                 */
-                /**
-                 * Make the heatmap render its data points as an interpolated image.
-                 *
-                 * @sample highcharts/demo/heatmap-interpolation
-                 *   Interpolated heatmap image displaying user activity on a website
-                 * @sample highcharts/series-heatmap/interpolation
-                 *   Interpolated heatmap toggle
-                 *
-                 */
-                interpolation: false,
-                /**
-                 * The color applied to null points. In styled mode, a general CSS class
-                 * is applied instead.
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
-                dataLabels: {
-                    formatter: function () {
-                        var numberFormatter = this.series.chart.numberFormatter;
-                        var value = this.point.value;
-                        return isNumber(value) ? numberFormatter(value, -1) : '';
-                    },
-                    inside: true,
-                    verticalAlign: 'middle',
-                    crop: false,
-                    /**
-                     * @ignore-option
-                     */
-                    overflow: 'allow',
-                    padding: 0 // #3837
+            /**
+             * The column size - how many X axis units each column in the heatmap
+             * should span.
+             *
+             * @sample {highcharts} maps/demo/heatmap/
+             *         One day
+             * @sample {highmaps} maps/demo/heatmap/
+             *         One day
+             *
+             * @type      {number}
+             * @default   1
+             * @since     4.0
+             * @product   highcharts highmaps
+             * @apioption plotOptions.heatmap.colsize
+             */
+            /**
+             * The row size - how many Y axis units each heatmap row should span.
+             *
+             * @sample {highcharts} maps/demo/heatmap/
+             *         1 by default
+             * @sample {highmaps} maps/demo/heatmap/
+             *         1 by default
+             *
+             * @type      {number}
+             * @default   1
+             * @since     4.0
+             * @product   highcharts highmaps
+             * @apioption plotOptions.heatmap.rowsize
+             */
+            /**
+             * Make the heatmap render its data points as an interpolated image.
+             *
+             * @sample highcharts/demo/heatmap-interpolation
+             *   Interpolated heatmap image displaying user activity on a website
+             * @sample highcharts/series-heatmap/interpolation
+             *   Interpolated heatmap toggle
+             *
+             */
+            interpolation: false,
+            /**
+             * The color applied to null points. In styled mode, a general CSS class
+             * is applied instead.
+             *
+             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             */
+            nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
+            dataLabels: {
+                formatter: function () {
+                    var numberFormatter = this.series.chart.numberFormatter;
+                    var value = this.point.value;
+                    return isNumber(value) ? numberFormatter(value, -1) : '';
                 },
+                inside: true,
+                verticalAlign: 'middle',
+                crop: false,
                 /**
-                 * @excluding radius, enabledThreshold
-                 * @since     8.1
+                 * @ignore-option
                  */
-                marker: {
+                overflow: 'allow',
+                padding: 0 // #3837
+            },
+            /**
+             * @excluding radius, enabledThreshold
+             * @since     8.1
+             */
+            marker: {
+                /**
+                 * A predefined shape or symbol for the marker. When undefined, the
+                 * symbol is pulled from options.symbols. Other possible values are
+                 * `'circle'`, `'square'`,`'diamond'`, `'triangle'`,
+                 * `'triangle-down'`, `'rect'`, and `'ellipse'`.
+                 *
+                 * Additionally, the URL to a graphic can be given on this form:
+                 * `'url(graphic.png)'`. Note that for the image to be applied to
+                 * exported charts, its URL needs to be accessible by the export
+                 * server.
+                 *
+                 * Custom callbacks for symbol path generation can also be added to
+                 * `Highcharts.SVGRenderer.prototype.symbols`. The callback is then
+                 * used by its method name, as shown in the demo.
+                 *
+                 * @sample {highcharts} highcharts/plotoptions/series-marker-symbol/
+                 *         Predefined, graphic and custom markers
+                 * @sample {highstock} highcharts/plotoptions/series-marker-symbol/
+                 *         Predefined, graphic and custom markers
+                 */
+                symbol: 'rect',
+                /** @ignore-option */
+                radius: 0,
+                lineColor: void 0,
+                states: {
                     /**
-                     * A predefined shape or symbol for the marker. When undefined, the
-                     * symbol is pulled from options.symbols. Other possible values are
-                     * `'circle'`, `'square'`,`'diamond'`, `'triangle'`,
-                     * `'triangle-down'`, `'rect'`, and `'ellipse'`.
-                     *
-                     * Additionally, the URL to a graphic can be given on this form:
-                     * `'url(graphic.png)'`. Note that for the image to be applied to
-                     * exported charts, its URL needs to be accessible by the export
-                     * server.
-                     *
-                     * Custom callbacks for symbol path generation can also be added to
-                     * `Highcharts.SVGRenderer.prototype.symbols`. The callback is then
-                     * used by its method name, as shown in the demo.
-                     *
-                     * @sample {highcharts} highcharts/plotoptions/series-marker-symbol/
-                     *         Predefined, graphic and custom markers
-                     * @sample {highstock} highcharts/plotoptions/series-marker-symbol/
-                     *         Predefined, graphic and custom markers
+                     * @excluding radius, radiusPlus
                      */
-                    symbol: 'rect',
-                    /** @ignore-option */
-                    radius: 0,
-                    lineColor: void 0,
-                    states: {
+                    hover: {
                         /**
-                         * @excluding radius, radiusPlus
-                         */
-                        hover: {
-                            /**
-                             * Set the marker's fixed width on hover state.
-                             *
-                             * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-                             *         70px fixed marker's width and height on hover
-                             *
-                             * @type      {number|undefined}
-                             * @default   undefined
-                             * @product   highcharts highmaps
-                             * @apioption plotOptions.heatmap.marker.states.hover.width
-                             */
-                            /**
-                             * Set the marker's fixed height on hover state.
-                             *
-                             * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-                             *         70px fixed marker's width and height on hover
-                             *
-                             * @type      {number|undefined}
-                             * @default   undefined
-                             * @product   highcharts highmaps
-                             * @apioption plotOptions.heatmap.marker.states.hover.height
-                             */
-                            /**
-                             * The number of pixels to increase the width of the
-                             * selected point.
-                             *
-                             * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                             *         20px greater width and height on hover
-                             *
-                             * @type      {number|undefined}
-                             * @default   undefined
-                             * @product   highcharts highmaps
-                             * @apioption plotOptions.heatmap.marker.states.hover.widthPlus
-                             */
-                            /**
-                             * The number of pixels to increase the height of the
-                             * selected point.
-                             *
-                             * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                            *          20px greater width and height on hover
-                             *
-                             * @type      {number|undefined}
-                             * @default   undefined
-                             * @product   highcharts highmaps
-                             * @apioption plotOptions.heatmap.marker.states.hover.heightPlus
-                             */
-                            /**
-                             * The additional line width for a hovered point.
-                             *
-                             * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
-                             *         5 pixels wider lineWidth on hover
-                             * @sample {highmaps} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
-                             *         5 pixels wider lineWidth on hover
-                             */
-                            lineWidthPlus: 0
-                        },
-                        /**
-                         * @excluding radius
-                         */
-                        select: {
-                        /**
-                         * Set the marker's fixed width on select state.
+                         * Set the marker's fixed width on hover state.
                          *
                          * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
                          *         70px fixed marker's width and height on hover
@@ -10746,10 +10324,10 @@
                          * @type      {number|undefined}
                          * @default   undefined
                          * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.select.width
+                         * @apioption plotOptions.heatmap.marker.states.hover.width
                          */
                         /**
-                         * Set the marker's fixed height on select state.
+                         * Set the marker's fixed height on hover state.
                          *
                          * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
                          *         70px fixed marker's width and height on hover
@@ -10757,7 +10335,7 @@
                          * @type      {number|undefined}
                          * @default   undefined
                          * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.select.height
+                         * @apioption plotOptions.heatmap.marker.states.hover.height
                          */
                         /**
                          * The number of pixels to increase the width of the
@@ -10769,110 +10347,106 @@
                          * @type      {number|undefined}
                          * @default   undefined
                          * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.select.widthPlus
+                         * @apioption plotOptions.heatmap.marker.states.hover.widthPlus
                          */
                         /**
                          * The number of pixels to increase the height of the
                          * selected point.
                          *
                          * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                         *         20px greater width and height on hover
-                         *
-                         * @type      {number|undefined}
-                         * @default   undefined
-                         * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.select.heightPlus
-                         */
-                        }
-                    }
-                },
-                clip: true,
-                /** @ignore-option */
-                pointRange: null,
-                tooltip: {
-                    pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
-                },
-                states: {
-                    hover: {
-                        /** @ignore-option */
-                        halo: false,
+                        *          20px greater width and height on hover
+                            *
+                            * @type      {number|undefined}
+                            * @default   undefined
+                            * @product   highcharts highmaps
+                            * @apioption plotOptions.heatmap.marker.states.hover.heightPlus
+                            */
                         /**
-                         * How much to brighten the point on interaction. Requires the
-                         * main color to be defined in hex or rgb(a) format.
+                         * The additional line width for a hovered point.
                          *
-                         * In styled mode, the hover brightening is by default replaced
-                         * with a fill-opacity set in the `.highcharts-point:hover`
-                         * rule.
+                         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
+                         *         5 pixels wider lineWidth on hover
+                         * @sample {highmaps} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
+                         *         5 pixels wider lineWidth on hover
                          */
-                        brightness: 0.2
+                        lineWidthPlus: 0
+                    },
+                    /**
+                     * @excluding radius
+                     */
+                    select: {
+                    /**
+                     * Set the marker's fixed width on select state.
+                     *
+                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
+                     *         70px fixed marker's width and height on hover
+                     *
+                     * @type      {number|undefined}
+                     * @default   undefined
+                     * @product   highcharts highmaps
+                     * @apioption plotOptions.heatmap.marker.states.select.width
+                     */
+                    /**
+                     * Set the marker's fixed height on select state.
+                     *
+                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
+                     *         70px fixed marker's width and height on hover
+                     *
+                     * @type      {number|undefined}
+                     * @default   undefined
+                     * @product   highcharts highmaps
+                     * @apioption plotOptions.heatmap.marker.states.select.height
+                     */
+                    /**
+                     * The number of pixels to increase the width of the
+                     * selected point.
+                     *
+                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
+                     *         20px greater width and height on hover
+                     *
+                     * @type      {number|undefined}
+                     * @default   undefined
+                     * @product   highcharts highmaps
+                     * @apioption plotOptions.heatmap.marker.states.select.widthPlus
+                     */
+                    /**
+                     * The number of pixels to increase the height of the
+                     * selected point.
+                     *
+                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
+                     *         20px greater width and height on hover
+                     *
+                     * @type      {number|undefined}
+                     * @default   undefined
+                     * @product   highcharts highmaps
+                     * @apioption plotOptions.heatmap.marker.states.select.heightPlus
+                     */
                     }
-                },
-                legendSymbol: 'rectangle'
-            });
-            return HeatmapSeries;
-        }(ScatterSeries));
-        addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
-            this.isDirtyCanvas = true;
-            this.drawPoints();
-        });
-        extend(HeatmapSeries.prototype, {
-            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
-            colorKey: ColorMapComposition.seriesMembers.colorKey,
-            directTouch: true,
-            getExtremesFromAll: true,
-            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
-            pointArrayMap: ['y', 'value'],
-            pointClass: HeatmapPoint,
-            specialGroup: 'group',
-            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
-            /**
-             * @private
-             */
-            alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-            getSymbol: Series.prototype.getSymbol
-        });
-        ColorMapComposition.compose(HeatmapSeries);
-        SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * Heatmap series only. Padding between the points in the heatmap.
-         * @name Highcharts.Point#pointPadding
-         * @type {number|undefined}
-         */
-        /**
-         * Heatmap series only. The value of the point, resulting in a color
-         * controled by options as set in the colorAxis configuration.
-         * @name Highcharts.Point#value
-         * @type {number|null|undefined}
-         */
-        /* *
-         * @interface Highcharts.PointOptionsObject in parts/Point.ts
-         */ /**
-        * Heatmap series only. Point padding for a single point.
-        * @name Highcharts.PointOptionsObject#pointPadding
-        * @type {number|undefined}
-        */ /**
-        * Heatmap series only. The value of the point, resulting in a color controled
-        * by options as set in the colorAxis configuration.
-        * @name Highcharts.PointOptionsObject#value
-        * @type {number|null|undefined}
-        */
-        ''; // detach doclets above
-        /* *
-         *
-         *  API Options
-         *
-         * */
+                }
+            },
+            clip: true,
+            /** @ignore-option */
+            pointRange: null,
+            tooltip: {
+                pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
+            },
+            states: {
+                hover: {
+                    /** @ignore-option */
+                    halo: false,
+                    /**
+                     * How much to brighten the point on interaction. Requires the
+                     * main color to be defined in hex or rgb(a) format.
+                     *
+                     * In styled mode, the hover brightening is by default replaced
+                     * with a fill-opacity set in the `.highcharts-point:hover`
+                     * rule.
+                     */
+                    brightness: 0.2
+                }
+            },
+            legendSymbol: 'rectangle'
+        };
         /**
          * A `heatmap` series. If the [type](#series.heatmap.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -11200,7 +10774,450 @@
          * @product   highcharts highstock
          * @apioption series.heatmap.data.marker.states.select.heightPlus
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return HeatmapSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2010-2023 Hubert Kozik
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var doc = H.doc;
+        var defined = U.defined, pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Find color of point based on color axis.
+         *
+         * @function Highcharts.colorFromPoint
+         *
+         * @param {number | null} value
+         *        Value to find corresponding color on the color axis.
+         *
+         * @param {Highcharts.Point} point
+         *        Point to find it's color from color axis.
+         *
+         * @return {number[]}
+         *        Color in RGBa array.
+         */
+        function colorFromPoint(value, point) {
+            var colorAxis = point.series.colorAxis;
+            if (colorAxis) {
+                var rgba = (colorAxis.toColor(value || 0, point)
+                    .split(')')[0]
+                    .split('(')[1]
+                    .split(',')
+                    .map(function (s) { return pick(parseFloat(s), parseInt(s, 10)); }));
+                rgba[3] = pick(rgba[3], 1.0) * 255;
+                if (!defined(value) || !point.visible) {
+                    rgba[3] = 0;
+                }
+                return rgba;
+            }
+            return [0, 0, 0, 0];
+        }
+        /**
+         * Method responsible for creating a canvas for interpolation image.
+         * @private
+         */
+        function getContext(series) {
+            var canvas = series.canvas, context = series.context;
+            if (canvas && context) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            else {
+                series.canvas = doc.createElement('canvas');
+                series.context = series.canvas.getContext('2d', {
+                    willReadFrequently: true
+                }) || void 0;
+                return series.context;
+            }
+            return context;
+        }
+        var InterpolationUtilities = {
+            colorFromPoint: colorFromPoint,
+            getContext: getContext
+        };
+
+        return InterpolationUtilities;
+    });
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Series/Heatmap/HeatmapSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Series/InterpolationUtilities.js']], function (Color, ColorMapComposition, HeatmapPoint, HeatmapSeriesDefaults, SeriesRegistry, SVGRenderer, U, IU) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var __assign = (this && this.__assign) || function () {
+            __assign = Object.assign || function(t) {
+                for (var s, i = 1, n = arguments.length; i < n; i++) {
+                    s = arguments[i];
+                    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                        t[p] = s[p];
+                }
+                return t;
+            };
+            return __assign.apply(this, arguments);
+        };
+        var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, ScatterSeries = _a.scatter;
+        var symbols = SVGRenderer.prototype.symbols;
+        var addEvent = U.addEvent, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
+        var colorFromPoint = IU.colorFromPoint, getContext = IU.getContext;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.heatmap
+         *
+         * @augments Highcharts.Series
+         */
+        var HeatmapSeries = /** @class */ (function (_super) {
+            __extends(HeatmapSeries, _super);
+            function HeatmapSeries() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.canvas = void 0;
+                _this.colorAxis = void 0;
+                _this.context = void 0;
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                _this.valueMax = NaN;
+                _this.valueMin = NaN;
+                _this.isDirtyCanvas = true;
+                return _this;
+                /* eslint-enable valid-jsdoc */
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            HeatmapSeries.prototype.drawPoints = function () {
+                var series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
+                if (interpolation) {
+                    var image = series.image, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, _a = xAxis.reversed, xRev = _a === void 0 ? false : _a, width = xAxis.len, _b = yAxis.reversed, yRev = _b === void 0 ? false : _b, height = yAxis.len, dimensions = { width: width, height: height };
+                    if (!image || series.isDirtyData || series.isDirtyCanvas) {
+                        var ctx = getContext(series), canvas = series.canvas, _c = series.options, _d = _c.colsize, colsize = _d === void 0 ? 1 : _d, _e = _c.rowsize, rowsize = _e === void 0 ? 1 : _e, points = series.points, length_1 = series.points.length, pointsLen = length_1 - 1, colorAxis = (chart.colorAxis && chart.colorAxis[0]);
+                        if (canvas && ctx && colorAxis) {
+                            var _f = xAxis.getExtremes(), xMin_1 = _f.min, xMax = _f.max, _g = yAxis.getExtremes(), yMin_1 = _g.min, yMax = _g.max, xDelta = xMax - xMin_1, yDelta = yMax - yMin_1, imgMultiple = 8.0, lastX = Math.round(imgMultiple * ((xDelta / colsize) / imgMultiple)), lastY = Math.round(imgMultiple * ((yDelta / rowsize) / imgMultiple)), _h = [
+                                [lastX, lastX / xDelta, xRev, 'ceil'],
+                                [lastY, lastY / yDelta, !yRev, 'floor']
+                            ].map(function (_a) {
+                                var last = _a[0], scale = _a[1], rev = _a[2], rounding = _a[3];
+                                return (rev ?
+                                    function (v) { return (Math[rounding](last -
+                                        (scale * (v)))); } :
+                                    function (v) { return (Math[rounding](scale * v)); });
+                            }), transformX_1 = _h[0], transformY_1 = _h[1], canvasWidth_1 = canvas.width = lastX + 1, canvasHeight = canvas.height = lastY + 1, canvasArea = canvasWidth_1 * canvasHeight, pixelToPointScale = pointsLen / canvasArea, pixelData = new Uint8ClampedArray(canvasArea * 4), pointInPixels = function (x, y) { return (Math.ceil((canvasWidth_1 * transformY_1(y - yMin_1)) +
+                                transformX_1(x - xMin_1)) * 4); };
+                            series.buildKDTree();
+                            for (var i = 0; i < canvasArea; i++) {
+                                var point = points[Math.ceil(pixelToPointScale * i)], x = point.x, y = point.y;
+                                pixelData.set(colorFromPoint(point.value, point), pointInPixels(x, y));
+                            }
+                            ctx.putImageData(new ImageData(pixelData, canvasWidth_1), 0, 0);
+                            if (image) {
+                                image.attr(__assign(__assign({}, dimensions), { href: canvas.toDataURL('image/png', 1) }));
+                            }
+                            else {
+                                series.directTouch = false;
+                                series.image = chart.renderer.image(canvas.toDataURL('image/png', 1))
+                                    .attr(dimensions)
+                                    .add(series.group);
+                            }
+                        }
+                        series.isDirtyCanvas = false;
+                    }
+                    else if (image.width !== width || image.height !== height) {
+                        image.attr(dimensions);
+                    }
+                }
+                else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
+                    Series.prototype.drawPoints.call(series);
+                    series.points.forEach(function (point) {
+                        if (point.graphic) {
+                            // In styled mode, use CSS, otherwise the fill used in
+                            // the style sheet will take precedence over
+                            // the fill attribute.
+                            point.graphic[series.chart.styledMode ? 'css' : 'animate'](series.colorAttribs(point));
+                            if (point.value === null) { // #15708
+                                point.graphic.addClass('highcharts-null-point');
+                            }
+                        }
+                    });
+                }
+            };
+            /**
+             * @private
+             */
+            HeatmapSeries.prototype.getExtremes = function () {
+                // Get the extremes from the value data
+                var _a = Series.prototype.getExtremes
+                    .call(this, this.valueData), dataMin = _a.dataMin, dataMax = _a.dataMax;
+                if (isNumber(dataMin)) {
+                    this.valueMin = dataMin;
+                }
+                if (isNumber(dataMax)) {
+                    this.valueMax = dataMax;
+                }
+                // Get the extremes from the y data
+                return Series.prototype.getExtremes.call(this);
+            };
+            /**
+             * Override to also allow null points, used when building the k-d-tree for
+             * tooltips in boost mode.
+             * @private
+             */
+            HeatmapSeries.prototype.getValidPoints = function (points, insideOnly) {
+                return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
+            };
+            /**
+             * Define hasData function for non-cartesian series. Returns true if the
+             * series has points at all.
+             * @private
+             */
+            HeatmapSeries.prototype.hasData = function () {
+                return !!this.processedXData.length; // != 0
+            };
+            /**
+             * Override the init method to add point ranges on both axes.
+             * @private
+             */
+            HeatmapSeries.prototype.init = function () {
+                _super.prototype.init.apply(this, arguments);
+                var options = this.options;
+                // #3758, prevent resetting in setData
+                options.pointRange = pick(options.pointRange, options.colsize || 1);
+                // general point range
+                this.yAxis.axisPointRange = options.rowsize || 1;
+                // Bind new symbol names
+                symbols.ellipse = symbols.circle;
+                // @todo
+                //
+                // Setting the border radius here is a workaround. It should be set in
+                // the shapeArgs or returned from `markerAttribs`. However,
+                // Series.drawPoints does not pick up markerAttribs to be passed over to
+                // `renderer.symbol`. Also, image symbols are not positioned by their
+                // top left corner like other symbols are. This should be refactored,
+                // then we could save ourselves some tests for .hasImage etc. And the
+                // evaluation of borderRadius would be moved to `markerAttribs`.
+                if (options.marker && isNumber(options.borderRadius)) {
+                    options.marker.r = options.borderRadius;
+                }
+            };
+            /**
+             * @private
+             */
+            HeatmapSeries.prototype.markerAttribs = function (point, state) {
+                var shapeArgs = point.shapeArgs || {};
+                if (point.hasImage) {
+                    return {
+                        x: point.plotX,
+                        y: point.plotY
+                    };
+                }
+                // Setting width and height attributes on image does not affect on its
+                // dimensions.
+                if (state && state !== 'normal') {
+                    var pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states &&
+                        seriesMarkerOptions.states[state]) || {}, pointStateOptions = (pointMarkerOptions.states &&
+                        pointMarkerOptions.states[state]) || {};
+                    // Set new width and height basing on state options.
+                    var width = (pointStateOptions.width ||
+                        seriesStateOptions.width ||
+                        shapeArgs.width ||
+                        0) + (pointStateOptions.widthPlus ||
+                        seriesStateOptions.widthPlus ||
+                        0);
+                    var height = (pointStateOptions.height ||
+                        seriesStateOptions.height ||
+                        shapeArgs.height ||
+                        0) + (pointStateOptions.heightPlus ||
+                        seriesStateOptions.heightPlus ||
+                        0);
+                    // Align marker by the new size.
+                    var x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2, y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
+                    return { x: x, y: y, width: width, height: height };
+                }
+                return shapeArgs;
+            };
+            /**
+             * @private
+             */
+            HeatmapSeries.prototype.pointAttribs = function (point, state) {
+                var series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+                // Get old properties in order to keep backward compatibility
+                borderColor = (point && point.options.borderColor) ||
+                    seriesOptions.borderColor ||
+                    heatmapPlotOptions.borderColor ||
+                    seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
+                    seriesOptions.borderWidth ||
+                    heatmapPlotOptions.borderWidth ||
+                    seriesPlotOptions.borderWidth ||
+                    attr['stroke-width'];
+                // Apply lineColor, or set it to default series color.
+                attr.stroke = ((point && point.marker && point.marker.lineColor) ||
+                    (seriesOptions.marker && seriesOptions.marker.lineColor) ||
+                    borderColor ||
+                    this.color);
+                // Apply old borderWidth property if exists.
+                attr['stroke-width'] = borderWidth;
+                if (state && state !== 'normal') {
+                    var stateOptions = merge((seriesOptions.states &&
+                        seriesOptions.states[state]), (seriesOptions.marker &&
+                        seriesOptions.marker.states &&
+                        seriesOptions.marker.states[state]), (point &&
+                        point.options.states &&
+                        point.options.states[state] || {}));
+                    attr.fill =
+                        stateOptions.color ||
+                            Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
+                    attr.stroke = (stateOptions.lineColor || attr.stroke); // #17896
+                }
+                return attr;
+            };
+            /**
+             * @private
+             */
+            HeatmapSeries.prototype.translate = function () {
+                var series = this, options = series.options, borderRadius = options.borderRadius, marker = options.marker, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                series.generatePoints();
+                for (var _i = 0, _a = series.points; _i < _a.length; _i++) {
+                    var point = _a[_i];
+                    var cellAttr = point.getCellAttributes();
+                    var x = Math.min(cellAttr.x1, cellAttr.x2), y = Math.min(cellAttr.y1, cellAttr.y2), width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0), height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
+                    point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
+                    // If marker shape is regular (square), find the shorter cell's
+                    // side.
+                    if (hasRegularShape) {
+                        var sizeDiff = Math.abs(width - height);
+                        x = Math.min(cellAttr.x1, cellAttr.x2) +
+                            (width < height ? 0 : sizeDiff / 2);
+                        y = Math.min(cellAttr.y1, cellAttr.y2) +
+                            (width < height ? sizeDiff / 2 : 0);
+                        width = height = Math.min(width, height);
+                    }
+                    if (point.hasImage) {
+                        point.marker = { width: width, height: height };
+                    }
+                    point.plotX = point.clientX = (cellAttr.x1 + cellAttr.x2) / 2;
+                    point.plotY = (cellAttr.y1 + cellAttr.y2) / 2;
+                    point.shapeType = 'path';
+                    point.shapeArgs = merge(true, { x: x, y: y, width: width, height: height }, {
+                        d: symbols[shape](x, y, width, height, { r: isNumber(borderRadius) ? borderRadius : 0 })
+                    });
+                }
+                fireEvent(series, 'afterTranslate');
+            };
+            HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, HeatmapSeriesDefaults);
+            return HeatmapSeries;
+        }(ScatterSeries));
+        addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
+            this.isDirtyCanvas = true;
+            this.drawPoints();
+        });
+        extend(HeatmapSeries.prototype, {
+            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+            colorKey: ColorMapComposition.seriesMembers.colorKey,
+            directTouch: true,
+            getExtremesFromAll: true,
+            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+            pointArrayMap: ['y', 'value'],
+            pointClass: HeatmapPoint,
+            specialGroup: 'group',
+            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
+            /**
+             * @private
+             */
+            alignDataLabel: ColumnSeries.prototype.alignDataLabel,
+            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
+            getSymbol: Series.prototype.getSymbol
+        });
+        ColorMapComposition.compose(HeatmapSeries);
+        SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * Heatmap series only. Padding between the points in the heatmap.
+         * @name Highcharts.Point#pointPadding
+         * @type {number|undefined}
+         */
+        /**
+         * Heatmap series only. The value of the point, resulting in a color
+         * controled by options as set in the colorAxis configuration.
+         * @name Highcharts.Point#value
+         * @type {number|null|undefined}
+         */
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
+         */ /**
+        * Heatmap series only. Point padding for a single point.
+        * @name Highcharts.PointOptionsObject#pointPadding
+        * @type {number|undefined}
+        */ /**
+        * Heatmap series only. The value of the point, resulting in a color controled
+        * by options as set in the colorAxis configuration.
+        * @name Highcharts.PointOptionsObject#value
+        * @type {number|null|undefined}
+        */
+        ''; // detach doclets above
 
         return HeatmapSeries;
     });

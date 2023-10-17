@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-16)
+ * @license Highcharts JS v11.1.0 (2023-10-17)
  *
  * Timeline series
  *
@@ -304,9 +304,11 @@
                 connectorWidth: 1,
                 /**
                  * A pixel value defining the distance between the data label and
-                 * the point. Negative numbers puts the label on top of the point.
+                 * the point. Negative numbers puts the label on top of the point in a
+                 * non-inverted chart. Defaults to 100 for horizontal and 20 for
+                 * vertical timeline (`chart.inverted: true`).
                  */
-                distance: 100,
+                distance: void 0,
                 // eslint-disable-next-line valid-jsdoc
                 /**
                  * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
@@ -505,9 +507,8 @@
              * */
             /* eslint-disable valid-jsdoc */
             alignDataLabel(point, dataLabel, _options, _alignTo) {
-                let series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter(function (point) {
-                    return point;
-                }), visiblePointsCount = series.visiblePointsCount, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
+                var _a;
+                const series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter((point) => !!point), visiblePointsCount = series.visiblePointsCount || 0, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
                 // Define multiplier which is used to calculate data label
                 // width. If data labels are alternate, they have two times more
                 // space to adapt (excepting first and last ones, which has only
@@ -515,14 +516,15 @@
                 // by side.
                 multiplier = dataLabelsOptions.alternate ?
                     (isFirstOrLast ? 1.5 : 2) :
-                    1, distance, availableSpace = Math.floor(series.xAxis.len / visiblePointsCount), pad = dataLabel.padding, targetDLWidth, styles;
+                    1, availableSpace = Math.floor(series.xAxis.len / visiblePointsCount), pad = dataLabel.padding;
+                let distance, targetDLWidth, styles;
                 // Adjust data label width to the currently available space.
                 if (point.visible) {
                     distance = Math.abs(userDLOptions.x || point.options.dataLabels.x);
                     if (isInverted) {
-                        targetDLWidth = ((distance - pad) * 2 - (point.itemHeight / 2));
+                        targetDLWidth = ((distance - pad) * 2 - ((point.itemHeight || 0) / 2));
                         styles = {
-                            width: targetDLWidth + 'px',
+                            width: pick((_a = dataLabelsOptions.style) === null || _a === void 0 ? void 0 : _a.width, `${series.yAxis.len * 0.4}px`),
                             // Apply ellipsis when data label height is exceeded.
                             textOverflow: (dataLabel.width || 0) / targetDLWidth *
                                 (dataLabel.height || 0) / 2 > availableSpace *
@@ -555,15 +557,19 @@
                 });
             }
             distributeDL() {
-                const series = this, dataLabelsOptions = series.options.dataLabels;
+                const series = this, dataLabelsOptions = series.options.dataLabels, inverted = series.chart.inverted;
                 let visibilityIndex = 1;
                 if (dataLabelsOptions) {
-                    const distance = dataLabelsOptions.distance || 0;
+                    const distance = pick(dataLabelsOptions.distance, inverted ? 20 : 100);
                     series.points.forEach((point) => {
-                        point.options.dataLabels = merge({
-                            [series.chart.inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
+                        const defaults = {
+                            [inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
                                 -distance : distance
-                        }, point.userDLOptions);
+                        };
+                        if (inverted) {
+                            defaults.align = (dataLabelsOptions.alternate && visibilityIndex % 2) ? 'right' : 'left';
+                        }
+                        point.options.dataLabels = merge(defaults, point.userDLOptions);
                         visibilityIndex++;
                     });
                 }
