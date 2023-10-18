@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-10-17)
+ * @license Highcharts Gantt JS v11.1.0 (2023-10-18)
  *
  * CurrentDateIndicator
  *
