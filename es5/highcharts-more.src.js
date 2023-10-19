@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -9073,7 +9073,7 @@
 
         return PackedBubbleSeries;
     });
-    _registerModule(_modules, 'Series/Polygon/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Polygon/PolygonSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9083,117 +9083,46 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-            var extendStatics = function (d, b) {
-                extendStatics = Object.setPrototypeOf ||
-                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                if (typeof b !== "function" && b !== null)
-                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var noop = H.noop;
-        var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, AreaSeries = _a.area, LineSeries = _a.line, ScatterSeries = _a.scatter;
-        var extend = U.extend, merge = U.merge;
         /* *
          *
-         * Class
+         *  API Options
          *
          * */
-        var PolygonSeries = /** @class */ (function (_super) {
-            __extends(PolygonSeries, _super);
-            function PolygonSeries() {
-                /* *
-                 *
-                 * Static properties
-                 *
-                 * */
-                var _this = _super !== null && _super.apply(this, arguments) || this;
-                _this.data = void 0;
-                _this.options = void 0;
-                _this.points = void 0;
-                return _this;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            PolygonSeries.prototype.getGraphPath = function () {
-                var graphPath = LineSeries.prototype.getGraphPath.call(this), i = graphPath.length + 1;
-                // Close all segments
-                while (i--) {
-                    if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
-                        graphPath.splice(i, 0, ['Z']);
+        /**
+         * A polygon series can be used to draw any freeform shape in the cartesian
+         * coordinate system. A fill is applied with the `color` option, and
+         * stroke is applied through `lineWidth` and `lineColor` options.
+         *
+         * @sample {highcharts} highcharts/demo/polygon/
+         *         Polygon
+         * @sample {highstock} highcharts/demo/polygon/
+         *         Polygon
+         *
+         * @extends      plotOptions.scatter
+         * @since        4.1.0
+         * @excluding    jitter, softThreshold, threshold, cluster, boostThreshold,
+         *               boostBlending
+         * @product      highcharts highstock
+         * @requires     highcharts-more
+         * @optionparent plotOptions.polygon
+         */
+        var PolygonSeriesDefaults = {
+            marker: {
+                enabled: false,
+                states: {
+                    hover: {
+                        enabled: false
                     }
                 }
-                this.areaPath = graphPath;
-                return graphPath;
-            };
-            PolygonSeries.prototype.drawGraph = function () {
-                // Hack into the fill logic in area.drawGraph
-                this.options.fillColor = this.color;
-                AreaSeries.prototype.drawGraph.call(this);
-            };
-            /**
-             * A polygon series can be used to draw any freeform shape in the cartesian
-             * coordinate system. A fill is applied with the `color` option, and
-             * stroke is applied through `lineWidth` and `lineColor` options.
-             *
-             * @sample {highcharts} highcharts/demo/polygon/
-             *         Polygon
-             * @sample {highstock} highcharts/demo/polygon/
-             *         Polygon
-             *
-             * @extends      plotOptions.scatter
-             * @since        4.1.0
-             * @excluding    jitter, softThreshold, threshold, cluster, boostThreshold,
-             *               boostBlending
-             * @product      highcharts highstock
-             * @requires     highcharts-more
-             * @optionparent plotOptions.polygon
-             */
-            PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-                marker: {
-                    enabled: false,
-                    states: {
-                        hover: {
-                            enabled: false
-                        }
-                    }
-                },
-                stickyTracking: false,
-                tooltip: {
-                    followPointer: true,
-                    pointFormat: ''
-                },
-                trackByArea: true,
-                legendSymbol: 'rectangle'
-            });
-            return PolygonSeries;
-        }(ScatterSeries));
-        extend(PolygonSeries.prototype, {
-            type: 'polygon',
-            drawTracker: Series.prototype.drawTracker,
-            setStackedPoints: noop // No stacking points on polygons (#5310)
-        });
-        SeriesRegistry.registerSeriesType('polygon', PolygonSeries);
-        /* *
-         *
-         * Export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+            },
+            stickyTracking: false,
+            tooltip: {
+                followPointer: true,
+                pointFormat: ''
+            },
+            trackByArea: true,
+            legendSymbol: 'rectangle'
+        };
         /**
          * A `polygon` series. If the [type](#series.polygon.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -9263,7 +9192,98 @@
          * @product   highcharts highstock
          * @apioption series.polygon.data
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return PolygonSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Polygon/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Series/Polygon/PolygonSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, PolygonSeriesDefaults, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var noop = H.noop;
+        var _a = SeriesRegistry.seriesTypes, AreaSeries = _a.area, LineSeries = _a.line, ScatterSeries = _a.scatter;
+        var extend = U.extend, merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        var PolygonSeries = /** @class */ (function (_super) {
+            __extends(PolygonSeries, _super);
+            function PolygonSeries() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            PolygonSeries.prototype.getGraphPath = function () {
+                var graphPath = LineSeries.prototype.getGraphPath.call(this);
+                var i = graphPath.length + 1;
+                // Close all segments
+                while (i--) {
+                    if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
+                        graphPath.splice(i, 0, ['Z']);
+                    }
+                }
+                this.areaPath = graphPath;
+                return graphPath;
+            };
+            PolygonSeries.prototype.drawGraph = function () {
+                // Hack into the fill logic in area.drawGraph
+                this.options.fillColor = this.color;
+                AreaSeries.prototype.drawGraph.call(this);
+            };
+            PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PolygonSeriesDefaults);
+            return PolygonSeries;
+        }(ScatterSeries));
+        extend(PolygonSeries.prototype, {
+            type: 'polygon',
+            drawTracker: LineSeries.prototype.drawTracker,
+            setStackedPoints: noop // No stacking points on polygons (#5310)
+        });
+        SeriesRegistry.registerSeriesType('polygon', PolygonSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return PolygonSeries;
     });

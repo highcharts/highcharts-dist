@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-10-18)
+ * @license Highmaps JS v11.1.0 (2023-10-19)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -11,4 +11,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/Tilemap/TilemapSeries.js';
+import Highcharts from '../../Core/Globals.js';
+import TilemapSeries from '../../Series/Tilemap/TilemapSeries.js';
+const G = Highcharts;
+TilemapSeries.compose(G.Axis);

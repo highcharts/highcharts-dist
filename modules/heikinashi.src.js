@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-18)
+ * @license Highstock JS v11.1.0 (2023-10-19)
  *
  * HeikinAshi series type for Highcharts Stock
  *

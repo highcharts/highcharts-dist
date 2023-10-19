@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -63,11 +63,14 @@
         })();
         var SankeyPointClass = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
         var defined = U.defined, find = U.find, pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Get columns offset including all sibiling and cousins etc.
-         *
          * @private
-         * @param node Point
          */
         function getOffset(node) {
             var offset = node.linksFrom.length;
@@ -112,7 +115,7 @@
              *
              * */
             OrganizationPoint.prototype.init = function () {
-                SankeyPointClass.prototype.init.apply(this, arguments);
+                _super.prototype.init.apply(this, arguments);
                 if (!this.isNode) {
                     this.dataLabelOnNull = true;
                     this.formatPrefix = 'link';
@@ -142,11 +145,11 @@
                     // And parent uses hanging layout
                     fromNode &&
                     fromNode.options.layout === 'hanging') {
+                    var i_1 = -1, link = void 0;
                     // Default all children of the hanging node
                     // to have hanging layout
                     node.options.layout = pick(node.options.layout, 'hanging');
                     node.hangsFrom = fromNode;
-                    var i_1 = -1;
                     find(fromNode.linksFrom, function (link, index) {
                         var found = link.toNode === node;
                         if (found) {
@@ -156,8 +159,8 @@
                     });
                     // For all siblings' children (recursively)
                     // increase the column offset to prevent overlapping
-                    for (var j = 0; j < fromNode.linksFrom.length; j++) {
-                        var link = fromNode.linksFrom[j];
+                    for (var j = 0; j < fromNode.linksFrom.length; ++j) {
+                        link = fromNode.linksFrom[j];
                         if (link.toNode.id === node.id) {
                             // Break
                             j = fromNode.linksFrom.length;
@@ -820,11 +823,6 @@
                 var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
-                 *  Static Functions
-                 *
-                 * */
-                /* *
-                 *
                  *  Properties
                  *
                  * */
@@ -832,20 +830,19 @@
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             OrganizationSeries.prototype.alignDataLabel = function (point, dataLabel, options) {
                 // Align the data label to the point graphic
                 var shapeArgs = point.shapeArgs;
                 if (options.useHTML && shapeArgs) {
-                    var width_1 = shapeArgs.width || 0, height_1 = shapeArgs.height || 0, padjust = (this.options.borderWidth +
+                    var padjust = (this.options.borderWidth +
                         2 * this.options.dataLabels.padding);
+                    var width_1 = shapeArgs.width || 0, height_1 = shapeArgs.height || 0;
                     if (this.chart.inverted) {
                         width_1 = height_1;
                         height_1 = shapeArgs.width || 0;
@@ -901,12 +898,13 @@
                 return attribs;
             };
             OrganizationSeries.prototype.translateLink = function (point) {
-                var fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(this.options.linkLineWidth, this.options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, this.options.link.type);
+                var chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
                 if (fromNode.shapeArgs && toNode.shapeArgs) {
+                    var hangingIndent = options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
                     var x1 = Math.floor((fromNode.shapeArgs.x || 0) +
                         (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
                         (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                        (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle = void 0, hangingIndent = this.options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = this.chart.inverted;
+                        (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle = void 0;
                     if (inverted) {
                         x1 -= (fromNode.shapeArgs.width || 0);
                         x2 += (toNode.shapeArgs.width || 0);
@@ -929,7 +927,7 @@
                         }
                     }
                     if (toNode.hangsFrom === fromNode) {
-                        if (this.chart.inverted) {
+                        if (chart.inverted) {
                             y1 = Math.floor((fromNode.shapeArgs.y || 0) +
                                 (fromNode.shapeArgs.height || 0) -
                                 hangingIndent / 2) + crisp;
@@ -970,7 +968,7 @@
                                 ['L', xMiddle, y1],
                                 ['L', xMiddle, y2],
                                 ['L', x2, y2]
-                            ], pick(this.options.linkRadius, this.options.link.radius))
+                            ], pick(options.linkRadius, options.link.radius))
                         };
                     }
                     point.dlBox = {
@@ -982,8 +980,9 @@
                 }
             };
             OrganizationSeries.prototype.translateNode = function (node, column) {
-                SankeySeries.prototype.translateNode.call(this, node, column);
-                var parentNode = node.hangsFrom, indent = this.options.hangingIndent || 0, sign = this.chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = this.options.hangingIndentTranslation, minLength = this.options.minNodeLength || 10;
+                _super.prototype.translateNode.call(this, node, column);
+                var chart = this.chart, options = this.options, indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
+                var parentNode = node.hangsFrom;
                 if (parentNode) {
                     if (indentLogic === 'cumulative') {
                         // Move to the right:
@@ -1006,12 +1005,12 @@
                         // indentLogic === "inherit"
                         // Do nothing (v9.3.2 and prev versions):
                         shapeArgs.height -= indent;
-                        if (!this.chart.inverted) {
+                        if (!chart.inverted) {
                             shapeArgs.y += indent;
                         }
                     }
                 }
-                node.nodeHeight = this.chart.inverted ?
+                node.nodeHeight = chart.inverted ?
                     shapeArgs.width :
                     shapeArgs.height;
             };

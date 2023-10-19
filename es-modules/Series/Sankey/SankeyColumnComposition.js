@@ -1,10 +1,32 @@
+/* *
+ *
+ *  Sankey diagram module
+ *
+ *  (c) 2010-2021 Torstein Honsi
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ * */
+'use strict';
 import U from '../../Core/Utilities.js';
-const { defined, relativeLength } = U;
+const { defined, pushUnique, relativeLength } = U;
+/* *
+ *
+ *  Composition
+ *
+ * */
 var SankeyColumnComposition;
 (function (SankeyColumnComposition) {
     /* *
      *
      *  Declarations
+     *
+     * */
+    /* *
+     *
+     *  Functions
      *
      * */
     /**
@@ -31,10 +53,20 @@ var SankeyColumnComposition;
      *
      * */
     class SankeyColumnAdditions {
+        /* *
+         *
+         *  Constructor
+         *
+         * */
         constructor(points, series) {
             this.points = points;
             this.series = series;
         }
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Calculate translation factor used in column and nodes distribution
          * @private
@@ -72,9 +104,9 @@ var SankeyColumnComposition;
             }
             // Re-insert original nodes
             column.length = 0;
-            nodes.forEach((node) => {
+            for (const node of nodes) {
                 column.push(node);
-            });
+            }
             return factor;
         }
         /**
@@ -88,9 +120,7 @@ var SankeyColumnComposition;
          * The top position of the column
          */
         top(factor) {
-            const series = this.series;
-            const nodePadding = series.nodePadding;
-            const height = this.points.reduce(function (height, node) {
+            const series = this.series, nodePadding = series.nodePadding, height = this.points.reduce((height, node) => {
                 if (height > 0) {
                     height += nodePadding;
                 }
@@ -116,15 +146,13 @@ var SankeyColumnComposition;
          * The left position of the column
          */
         left(factor) {
-            const series = this.series, chart = series.chart, equalNodes = series.options.equalNodes;
-            const maxNodesLength = chart.inverted ?
-                chart.plotHeight : chart.plotWidth, nodePadding = series.nodePadding;
-            const width = this.points.reduce(function (width, node) {
+            const series = this.series, chart = series.chart, equalNodes = series.options.equalNodes, maxNodesLength = (chart.inverted ? chart.plotHeight : chart.plotWidth), nodePadding = series.nodePadding, width = this.points.reduce((width, node) => {
                 if (width > 0) {
                     width += nodePadding;
                 }
                 const nodeWidth = equalNodes ?
-                    maxNodesLength / node.series.nodes.length - nodePadding :
+                    maxNodesLength / node.series.nodes.length -
+                        nodePadding :
                     Math.max(node.getSum() * factor, series.options.minLinkWidth || 0);
                 width += nodeWidth;
                 return width;
@@ -143,9 +171,7 @@ var SankeyColumnComposition;
          * Sum of all nodes inside column
          */
         sum() {
-            return this.points.reduce(function (sum, node) {
-                return sum + node.getSum();
-            }, 0);
+            return this.points.reduce((sum, node) => (sum + node.getSum()), 0);
         }
         /**
          * Get the offset in pixels of a node inside the column
@@ -195,4 +221,9 @@ var SankeyColumnComposition;
     }
     SankeyColumnComposition.SankeyColumnAdditions = SankeyColumnAdditions;
 })(SankeyColumnComposition || (SankeyColumnComposition = {}));
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default SankeyColumnComposition;

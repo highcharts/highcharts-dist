@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  *
  * (c) 2009-2022
  *
@@ -443,7 +443,153 @@
 
         return tilesProviderRegistry;
     });
-    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Core/Utilities.js']], function (Chart, SeriesRegistry, TilesProvidersRegistry, U) {
+    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A tiledwebmap series allows user to display dynamically joined individual
+         * images (tiles) and join them together to create a map.
+         *
+         * @sample maps/series-tiledwebmap/simple-demo-norway
+         *         Simple demo of data for Norway on TiledWebMap
+         * @sample maps/series-tiledwebmap/only-twm
+         *         OpenStreetMap demo
+         *
+         * @extends      plotOptions.map
+         * @excluding    affectsMapView, allAreas, allowPointSelect, animation,
+         * animationLimit, boostBlending, boostThreshold, borderColor, borderWidth,
+         * clip, color, colorAxis, colorByPoint, colorIndex, colorKey, colors,
+         * cursor, dashStyle, dataLabels, dataParser, dataURL, dragDrop,
+         * enableMouseTracking, findNearestPointBy, joinBy, keys, marker,
+         * negativeColor, nullColor, nullInteraction, onPoint, point,
+         * pointDescriptionFormatter, selected, shadow, showCheckbox,
+         * sonification, stickyTracking, tooltip, type
+         * @product      highmaps
+         * @optionparent plotOptions.tiledwebmap
+         */
+        var TiledWebMapSeriesDefaults = {
+            states: {
+                inactive: {
+                    enabled: false
+                }
+            }
+        };
+        /* *
+         *
+         *  API options
+         *
+         * */
+        /**
+         * A `tiledwebmap` series. The [type](#series.tiledwebmap.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @sample maps/series-tiledwebmap/simple-demo-norway
+         *         Simple demo of data for Norway on TiledWebMap
+         * @sample maps/series-tiledwebmap/only-twm
+         *         OpenStreetMap demo
+         *
+         * @extends   series,plotOptions.tiledwebmap
+         * @excluding affectsMapView, allAreas, allowPointSelect, animation,
+         * animationLimit, boostBlending, boostThreshold, borderColor, borderWidth,
+         * clip, color, colorAxis, colorByPoint, colorIndex, colorKey, colors, cursor,
+         * dashStyle, dataLabels, dataParser, dataURL, dragDrop, enableMouseTracking,
+         * findNearestPointBy, joinBy, keys, marker, negativeColor, nullColor,
+         * nullInteraction, onPoint, point, pointDescriptionFormatter, selected, shadow,
+         * showCheckbox, stickyTracking, tooltip, type
+         * @product   highmaps
+         * @apioption series.tiledwebmap
+         */
+        /**
+         * Provider options for the series.
+         *
+         * @sample maps/series-tiledwebmap/human-anatomy
+         *         Human Anatomy Explorer - Custom TiledWebMap Provider
+         *
+         * @since 11.1.0
+         * @product   highmaps
+         * @apioption plotOptions.tiledwebmap.provider
+         */
+        /**
+         * Provider type to pull data (tiles) from.
+         *
+         * @sample maps/series-tiledwebmap/basic-configuration
+         *         Basic configuration for TiledWebMap
+         *
+         * @type      {string}
+         * @since 11.1.0
+         * @product   highmaps
+         * @apioption plotOptions.tiledwebmap.provider.type
+         */
+        /**
+         * Set a tiles theme. Check the [providers documentation](https://www.highcharts.com/docs/maps/tiledwebmap)
+         * for official list of available themes.
+         *
+         * @sample maps/series-tiledwebmap/europe-timezones
+         *         Imagery basemap for Europe
+         * @sample maps/series-tiledwebmap/hiking-trail
+         *         Topo basemap and MapLine
+         *
+         * @type      {string}
+         * @since 11.1.0
+         * @product   highmaps
+         * @apioption plotOptions.tiledwebmap.provider.theme
+         */
+        /**
+         * Subdomain required by each provider. Check the [providers documentation](https://www.highcharts.com/docs/maps/tiledwebmap)
+         * for available subdomains.
+         *
+         * @sample maps/series-tiledwebmap/basic-configuration
+         *         Basic configuration for TiledWebMap
+         *
+         * @type      {string}
+         * @since 11.1.0
+         * @product   highmaps
+         * @apioption plotOptions.tiledwebmap.provider.subdomain
+         */
+        /**
+         * API key for providers that require using one.
+         *
+         * @type      {string}
+         * @since 11.1.0
+         * @product   highmaps
+         * @apioption plotOptions.tiledwebmap.provider.apiKey
+         */
+        /**
+         * Custom URL for providers not specified in [providers type](#series.
+         * tiledwebmap.provider.type). Available variables to use in URL are: `{x}`,
+         * `{y}`, `{z}` or `{zoom}`. Remember to always specify a projection, when
+         * using a custom URL.
+         *
+         * @sample maps/series-tiledwebmap/custom-url
+         *         Custom URL with projection in TiledWebMap configuration
+         *
+         * @type      {string}
+         * @since 11.1.0
+         * @product   highmaps
+         * @apioption plotOptions.tiledwebmap.provider.url
+         */
+        ''; // keeps doclets above detached
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return TiledWebMapSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Series/TiledWebMap/TiledWebMapSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TilesProvidersRegistry, TiledWebMapSeriesDefaults, U) {
         /* *
          *
          *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
@@ -469,7 +615,59 @@
             };
         })();
         var MapSeries = SeriesRegistry.seriesTypes.map;
-        var addEvent = U.addEvent, defined = U.defined, error = U.error, merge = U.merge, pick = U.pick;
+        var addEvent = U.addEvent, defined = U.defined, error = U.error, merge = U.merge, pick = U.pick, pushUnique = U.pushUnique;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /** @private */
+        function onChartBeforeMapViewInit(e) {
+            var twm = (this.options.series || []).filter(function (s) { return s.type === 'tiledwebmap'; })[0], geoBounds = e.geoBounds;
+            if (twm && twm.provider && twm.provider.type && !twm.provider.url) {
+                var ProviderDefinition = TilesProvidersRegistry[twm.provider.type];
+                if (!defined(ProviderDefinition)) {
+                    error('Highcharts warning: Tiles Provider not defined in the ' +
+                        'Provider Registry.', false);
+                }
+                else {
+                    var def = new ProviderDefinition(), providerProjectionName = def.initialProjectionName;
+                    if (this.options.mapView) {
+                        if (geoBounds) {
+                            var x1 = geoBounds.x1, y1 = geoBounds.y1, x2 = geoBounds.x2, y2 = geoBounds.y2;
+                            this.options.mapView.recommendedMapView = {
+                                projection: {
+                                    name: providerProjectionName,
+                                    parallels: [y1, y2],
+                                    rotation: [-(x1 + x2) / 2]
+                                }
+                            };
+                        }
+                        else {
+                            this.options.mapView.recommendedMapView = {
+                                projection: {
+                                    name: providerProjectionName
+                                },
+                                minZoom: 0
+                            };
+                        }
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The series type
          *
@@ -484,13 +682,13 @@
             function TiledWebMapSeries() {
                 /* *
                  *
-                 * Static properties
+                 *  Static Properties
                  *
                  * */
                 var _this = _super !== null && _super.apply(this, arguments) || this;
                 /* *
                  *
-                 * Properties
+                 *  Properties
                  *
                  * */
                 _this.options = void 0;
@@ -498,11 +696,21 @@
                 _this.isAnimating = false;
                 return _this;
             }
-            /**
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            TiledWebMapSeries.compose = function (ChartClass) {
+                if (pushUnique(composedMembers, ChartClass)) {
+                    addEvent(ChartClass, 'beforeMapViewInit', onChartBeforeMapViewInit);
+                }
+            };
+            /* *
              *
              *  Functions
              *
-             */
+             * */
             /**
              * Convert map coordinates in longitude/latitude to tile
              *
@@ -539,21 +747,14 @@
                 return { lon: lon, lat: lat };
             };
             TiledWebMapSeries.prototype.drawPoints = function () {
-                var _this = this;
                 var _a;
                 var chart = this.chart, mapView = chart.mapView;
                 if (!mapView) {
                     return;
                 }
-                if (!this.tiles) {
-                    this.tiles = {};
-                }
-                if (!this.transformGroups) {
-                    this.transformGroups = [];
-                }
-                var _b = this, tiles = _b.tiles, transformGroups = _b.transformGroups, series = this, options = this.options, provider = options.provider, zoom = mapView.zoom, lambda = pick((mapView.projection.options.rotation &&
+                var tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, zoom = mapView.zoom, lambda = pick((mapView.projection.options.rotation &&
                     mapView.projection.options.rotation[0]), 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = function (duration) {
-                    Object.keys(tiles).forEach(function (zoomKey) {
+                    var _loop_2 = function (zoomKey) {
                         if ((parseFloat(zoomKey) === (mapView.zoom < 0 ? 0 :
                             Math.floor(mapView.zoom))) ||
                             (series.minZoom &&
@@ -564,7 +765,8 @@
                                 (mapView.zoom < 0 ? 0 :
                                     Math.floor(mapView.zoom)) > series.maxZoom &&
                                 parseFloat(zoomKey) === series.maxZoom)) {
-                            Object.keys(tiles[zoomKey].tiles)
+                            Object
+                                .keys(tiles[zoomKey].tiles)
                                 .forEach(function (key, i) {
                                 tiles[zoomKey].tiles[key].animate({
                                     opacity: 1
@@ -579,7 +781,8 @@
                             });
                         }
                         else {
-                            Object.keys(tiles[zoomKey].tiles)
+                            Object
+                                .keys(tiles[zoomKey].tiles)
                                 .forEach(function (key, i) {
                                 tiles[zoomKey].tiles[key].animate({
                                     opacity: 0
@@ -597,7 +800,11 @@
                                 });
                             });
                         }
-                    });
+                    };
+                    for (var _i = 0, _a = Object.keys(tiles); _i < _a.length; _i++) {
+                        var zoomKey = _a[_i];
+                        _loop_2(zoomKey);
+                    }
                 };
                 var zoomFloor = zoom < 0 ? 0 : Math.floor(zoom), maxTile = Math.pow(2, zoomFloor), scale = ((tileSize / worldSize) * Math.pow(2, zoom)) /
                     ((tileSize / worldSize) * Math.pow(2, zoomFloor)), scaledTileSize = scale * 256;
@@ -800,19 +1007,19 @@
                             }
                         }
                     }
-                    Object.keys(tiles).forEach(function (zoomKey) {
-                        Object.keys(tiles[zoomKey].tiles).forEach(function (key) {
+                    var _loop_1 = function (zoomKey) {
+                        var _loop_3 = function (key) {
                             if (mapView.projection && mapView.projection.def) {
                                 // calculate group translations based on first loaded
                                 // tile
                                 var scale_1 = ((tileSize / worldSize) *
                                     Math.pow(2, zoom)) / ((tileSize / worldSize) *
-                                    Math.pow(2, parseFloat(zoomKey))), scaledTileSize_1 = scale_1 * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], _a = tiles[zoomKey].tiles[key], posX_1 = _a.posX, posY_1 = _a.posY;
+                                    Math.pow(2, parseFloat(zoomKey))), scaledTileSize_1 = scale_1 * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], _e = tiles[zoomKey].tiles[key], posX_1 = _e.posX, posY_1 = _e.posY;
                                 if (defined(posX_1) &&
                                     defined(posY_1) &&
                                     defined(firstTile.posX) &&
                                     defined(firstTile.posY)) {
-                                    var firstTileLonLat = _this.tileToLonLat(firstTile.posX, firstTile.posY, parseFloat(zoomKey)), units = mapView.projection.def.forward([
+                                    var firstTileLonLat = this_1.tileToLonLat(firstTile.posX, firstTile.posY, parseFloat(zoomKey)), units = mapView.projection.def.forward([
                                         firstTileLonLat.lon + lambda,
                                         firstTileLonLat.lat
                                     ]), firstTilePx = mapView.projectedUnitsToPixels({
@@ -875,8 +1082,17 @@
                                     }
                                 }
                             }
-                        });
-                    });
+                        };
+                        for (var _c = 0, _d = Object.keys(tiles[zoomKey].tiles); _c < _d.length; _c++) {
+                            var key = _d[_c];
+                            _loop_3(key);
+                        }
+                    };
+                    var this_1 = this;
+                    for (var _i = 0, _b = Object.keys(tiles); _i < _b.length; _i++) {
+                        var zoomKey = _b[_i];
+                        _loop_1(zoomKey);
+                    }
                 }
                 else {
                     error('Highcharts warning: Tiles Provider not defined in the ' +
@@ -909,179 +1125,23 @@
                 }
                 _super.prototype.update.apply(series, arguments);
             };
-            /**
-             * A tiledwebmap series allows user to display dynamically joined individual
-             * images (tiles) and join them together to create a map.
-             *
-             * @sample maps/series-tiledwebmap/simple-demo-norway
-             *         Simple demo of data for Norway on TiledWebMap
-             * @sample maps/series-tiledwebmap/only-twm
-             *         OpenStreetMap demo
-             *
-             * @extends      plotOptions.map
-             * @excluding    affectsMapView, allAreas, allowPointSelect, animation,
-             * animationLimit, boostBlending, boostThreshold, borderColor, borderWidth,
-             * clip, color, colorAxis, colorByPoint, colorIndex, colorKey, colors,
-             * cursor, dashStyle, dataLabels, dataParser, dataURL, dragDrop,
-             * enableMouseTracking, findNearestPointBy, joinBy, keys, marker,
-             * negativeColor, nullColor, nullInteraction, onPoint, point,
-             * pointDescriptionFormatter, selected, shadow, showCheckbox,
-             * sonification, stickyTracking, tooltip, type
-             * @product      highmaps
-             * @optionparent plotOptions.tiledwebmap
-             */
-            TiledWebMapSeries.defaultOptions = merge(MapSeries.defaultOptions, {
-                states: {
-                    inactive: {
-                        enabled: false
-                    }
-                }
-            });
+            TiledWebMapSeries.defaultOptions = merge(MapSeries.defaultOptions, TiledWebMapSeriesDefaults);
             return TiledWebMapSeries;
         }(MapSeries));
-        addEvent(Chart, 'beforeMapViewInit', function (e) {
-            var twm = (this.options.series || []).filter(function (s) { return s.type === 'tiledwebmap'; })[0], geoBounds = e.geoBounds;
-            if (twm && twm.provider && twm.provider.type && !twm.provider.url) {
-                var ProviderDefinition = TilesProvidersRegistry[twm.provider.type];
-                if (!defined(ProviderDefinition)) {
-                    error('Highcharts warning: Tiles Provider not defined in the ' +
-                        'Provider Registry.', false);
-                }
-                else {
-                    var def = new ProviderDefinition(), providerProjectionName = def.initialProjectionName;
-                    if (this.options.mapView) {
-                        if (geoBounds) {
-                            var x1 = geoBounds.x1, y1 = geoBounds.y1, x2 = geoBounds.x2, y2 = geoBounds.y2;
-                            this.options.mapView.recommendedMapView = {
-                                projection: {
-                                    name: providerProjectionName,
-                                    parallels: [y1, y2],
-                                    rotation: [-(x1 + x2) / 2]
-                                }
-                            };
-                        }
-                        else {
-                            this.options.mapView.recommendedMapView = {
-                                projection: {
-                                    name: providerProjectionName
-                                },
-                                minZoom: 0
-                            };
-                        }
-                    }
-                    return false;
-                }
-            }
-            return true;
-        });
         SeriesRegistry.registerSeriesType('tiledwebmap', TiledWebMapSeries);
         /* *
          *
-         *  Default export
+         *  Default Export
          *
          * */
-        /* *
-         *
-         *  API options
-         *
-         * */
-        /**
-         * A `tiledwebmap` series. The [type](#series.tiledwebmap.type) option is
-         * not specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @sample maps/series-tiledwebmap/simple-demo-norway
-         *         Simple demo of data for Norway on TiledWebMap
-         * @sample maps/series-tiledwebmap/only-twm
-         *         OpenStreetMap demo
-         *
-         * @extends   series,plotOptions.tiledwebmap
-         * @excluding affectsMapView, allAreas, allowPointSelect, animation,
-         * animationLimit, boostBlending, boostThreshold, borderColor, borderWidth,
-         * clip, color, colorAxis, colorByPoint, colorIndex, colorKey, colors, cursor,
-         * dashStyle, dataLabels, dataParser, dataURL, dragDrop, enableMouseTracking,
-         * findNearestPointBy, joinBy, keys, marker, negativeColor, nullColor,
-         * nullInteraction, onPoint, point, pointDescriptionFormatter, selected, shadow,
-         * showCheckbox, stickyTracking, tooltip, type
-         * @product   highmaps
-         * @apioption series.tiledwebmap
-         */
-        /**
-         * Provider options for the series.
-         *
-         * @sample maps/series-tiledwebmap/human-anatomy
-         *         Human Anatomy Explorer - Custom TiledWebMap Provider
-         *
-         * @since 11.1.0
-         * @product   highmaps
-         * @apioption plotOptions.tiledwebmap.provider
-         */
-        /**
-         * Provider type to pull data (tiles) from.
-         *
-         * @sample maps/series-tiledwebmap/basic-configuration
-         *         Basic configuration for TiledWebMap
-         *
-         * @type      {string}
-         * @since 11.1.0
-         * @product   highmaps
-         * @apioption plotOptions.tiledwebmap.provider.type
-         */
-        /**
-         * Set a tiles theme. Check the [providers documentation](https://www.highcharts.com/docs/maps/tiledwebmap)
-         * for official list of available themes.
-         *
-         * @sample maps/series-tiledwebmap/europe-timezones
-         *         Imagery basemap for Europe
-         * @sample maps/series-tiledwebmap/hiking-trail
-         *         Topo basemap and MapLine
-         *
-         * @type      {string}
-         * @since 11.1.0
-         * @product   highmaps
-         * @apioption plotOptions.tiledwebmap.provider.theme
-         */
-        /**
-         * Subdomain required by each provider. Check the [providers documentation](https://www.highcharts.com/docs/maps/tiledwebmap)
-         * for available subdomains.
-         *
-         * @sample maps/series-tiledwebmap/basic-configuration
-         *         Basic configuration for TiledWebMap
-         *
-         * @type      {string}
-         * @since 11.1.0
-         * @product   highmaps
-         * @apioption plotOptions.tiledwebmap.provider.subdomain
-         */
-        /**
-         * API key for providers that require using one.
-         *
-         * @type      {string}
-         * @since 11.1.0
-         * @product   highmaps
-         * @apioption plotOptions.tiledwebmap.provider.apiKey
-         */
-        /**
-         * Custom URL for providers not specified in [providers type](#series.
-         * tiledwebmap.provider.type). Available variables to use in URL are: `{x}`,
-         * `{y}`, `{z}` or `{zoom}`. Remember to always specify a projection, when
-         * using a custom URL.
-         *
-         * @sample maps/series-tiledwebmap/custom-url
-         *         Custom URL with projection in TiledWebMap configuration
-         *
-         * @type      {string}
-         * @since 11.1.0
-         * @product   highmaps
-         * @apioption plotOptions.tiledwebmap.provider.url
-         */
-        ''; // adds doclets above to transpiled file
 
         return TiledWebMapSeries;
     });
-    _registerModule(_modules, 'masters/modules/tiledwebmap.src.js', [_modules['Core/Globals.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js']], function (Highcharts, TilesProviderRegistry) {
+    _registerModule(_modules, 'masters/modules/tiledwebmap.src.js', [_modules['Core/Globals.js'], _modules['Series/TiledWebMap/TiledWebMapSeries.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js']], function (Highcharts, TiledWebMapSeries, TilesProviderRegistry) {
 
         var G = Highcharts;
         G.TilesProviderRegistry = TilesProviderRegistry;
+        TiledWebMapSeries.compose(G.Chart);
 
     });
 }));

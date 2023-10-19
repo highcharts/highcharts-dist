@@ -33,14 +33,12 @@ class TilemapPoint extends HeatmapPoint {
         this.radius = void 0;
         this.series = void 0;
         this.tileEdges = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      * @function Highcharts.Point#haloPath

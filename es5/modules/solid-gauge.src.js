@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  *
  * Solid angular gauge module
  *
@@ -408,7 +408,7 @@
          * @product   highcharts
          * @apioption series.solidgauge.data.radius
          */
-        ''; // keeps doclets above in transpiled file
+        ''; // keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -444,7 +444,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes, GaugeSeries = _a.gauge, pieProto = _a.pie.prototype;
+        var _a = SeriesRegistry.seriesTypes, GaugeSeries = _a.gauge, PieSeries = _a.pie;
         var clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick, pInt = U.pInt;
         /* *
          *
@@ -465,7 +465,7 @@
             function SolidGaugeSeries() {
                 /* *
                  *
-                 *  Static properties
+                 *  Static Properties
                  *
                  * */
                 var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -593,7 +593,7 @@
             SolidGaugeSeries.prototype.animate = function (init) {
                 if (!init) {
                     this.startAngleRad = this.thresholdAngleRad;
-                    pieProto.animate.call(this, init);
+                    PieSeries.prototype.animate.call(this, init);
                 }
             };
             SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);

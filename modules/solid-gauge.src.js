@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  *
  * Solid angular gauge module
  *
@@ -408,7 +408,7 @@
          * @product   highcharts
          * @apioption series.solidgauge.data.radius
          */
-        ''; // keeps doclets above in transpiled file
+        ''; // keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -429,7 +429,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { gauge: GaugeSeries, pie: { prototype: pieProto } } } = SeriesRegistry;
+        const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
         const { clamp, extend, isNumber, merge, pick, pInt } = U;
         /* *
          *
@@ -449,7 +449,7 @@
             constructor() {
                 /* *
                  *
-                 *  Static properties
+                 *  Static Properties
                  *
                  * */
                 super(...arguments);
@@ -575,7 +575,7 @@
             animate(init) {
                 if (!init) {
                     this.startAngleRad = this.thresholdAngleRad;
-                    pieProto.animate.call(this, init);
+                    PieSeries.prototype.animate.call(this, init);
                 }
             }
         }

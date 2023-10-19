@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -8747,7 +8747,7 @@
 
         return PackedBubbleSeries;
     });
-    _registerModule(_modules, 'Series/Polygon/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Polygon/PolygonSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -8757,48 +8757,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
-        const { series: Series, seriesTypes: { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } } = SeriesRegistry;
-        const { extend, merge } = U;
         /* *
          *
-         * Class
+         *  API Options
          *
          * */
-        class PolygonSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 * Static properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            getGraphPath() {
-                let graphPath = LineSeries.prototype.getGraphPath.call(this), i = graphPath.length + 1;
-                // Close all segments
-                while (i--) {
-                    if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
-                        graphPath.splice(i, 0, ['Z']);
-                    }
-                }
-                this.areaPath = graphPath;
-                return graphPath;
-            }
-            drawGraph() {
-                // Hack into the fill logic in area.drawGraph
-                this.options.fillColor = this.color;
-                AreaSeries.prototype.drawGraph.call(this);
-            }
-        }
         /**
          * A polygon series can be used to draw any freeform shape in the cartesian
          * coordinate system. A fill is applied with the `color` option, and
@@ -8817,7 +8780,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.polygon
          */
-        PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
+        const PolygonSeriesDefaults = {
             marker: {
                 enabled: false,
                 states: {
@@ -8833,23 +8796,7 @@
             },
             trackByArea: true,
             legendSymbol: 'rectangle'
-        });
-        extend(PolygonSeries.prototype, {
-            type: 'polygon',
-            drawTracker: Series.prototype.drawTracker,
-            setStackedPoints: noop // No stacking points on polygons (#5310)
-        });
-        SeriesRegistry.registerSeriesType('polygon', PolygonSeries);
-        /* *
-         *
-         * Export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+        };
         /**
          * A `polygon` series. If the [type](#series.polygon.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -8919,7 +8866,80 @@
          * @product   highcharts highstock
          * @apioption series.polygon.data
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return PolygonSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Polygon/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Series/Polygon/PolygonSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, PolygonSeriesDefaults, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { noop } = H;
+        const { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
+        const { extend, merge } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        class PolygonSeries extends ScatterSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            getGraphPath() {
+                const graphPath = LineSeries.prototype.getGraphPath.call(this);
+                let i = graphPath.length + 1;
+                // Close all segments
+                while (i--) {
+                    if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
+                        graphPath.splice(i, 0, ['Z']);
+                    }
+                }
+                this.areaPath = graphPath;
+                return graphPath;
+            }
+            drawGraph() {
+                // Hack into the fill logic in area.drawGraph
+                this.options.fillColor = this.color;
+                AreaSeries.prototype.drawGraph.call(this);
+            }
+        }
+        PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PolygonSeriesDefaults);
+        extend(PolygonSeries.prototype, {
+            type: 'polygon',
+            drawTracker: LineSeries.prototype.drawTracker,
+            setStackedPoints: noop // No stacking points on polygons (#5310)
+        });
+        SeriesRegistry.registerSeriesType('polygon', PolygonSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return PolygonSeries;
     });

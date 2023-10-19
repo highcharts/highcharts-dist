@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-18)
+ * @license Highcharts JS v11.1.0 (2023-10-19)
  *
  * Sankey diagram module
  *
@@ -322,7 +322,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+        const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
         const { defined } = U;
         /* *
          *
@@ -350,14 +350,12 @@
                 this.options = void 0;
                 this.series = void 0;
                 this.toNode = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
@@ -509,7 +507,6 @@
                  * @type {string}
                  */
                 nodeFormat: void 0,
-                // eslint-disable-next-line valid-jsdoc
                 /**
                  * Callback to format data labels for _nodes_ in the sankey diagram.
                  * The `nodeFormat` option takes precedence over the
@@ -522,7 +519,6 @@
                     return this.point.name;
                 },
                 format: void 0,
-                // eslint-disable-next-line valid-jsdoc
                 /**
                  * @type {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
                  */
@@ -983,12 +979,33 @@
         return SankeySeriesDefaults;
     });
     _registerModule(_modules, 'Series/Sankey/SankeyColumnComposition.js', [_modules['Core/Utilities.js']], function (U) {
-        const { defined, relativeLength } = U;
+        /* *
+         *
+         *  Sankey diagram module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { defined, pushUnique, relativeLength } = U;
+        /* *
+         *
+         *  Composition
+         *
+         * */
         var SankeyColumnComposition;
         (function (SankeyColumnComposition) {
             /* *
              *
              *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Functions
              *
              * */
             /**
@@ -1015,10 +1032,20 @@
              *
              * */
             class SankeyColumnAdditions {
+                /* *
+                 *
+                 *  Constructor
+                 *
+                 * */
                 constructor(points, series) {
                     this.points = points;
                     this.series = series;
                 }
+                /* *
+                 *
+                 *  Functions
+                 *
+                 * */
                 /**
                  * Calculate translation factor used in column and nodes distribution
                  * @private
@@ -1056,9 +1083,9 @@
                     }
                     // Re-insert original nodes
                     column.length = 0;
-                    nodes.forEach((node) => {
+                    for (const node of nodes) {
                         column.push(node);
-                    });
+                    }
                     return factor;
                 }
                 /**
@@ -1072,9 +1099,7 @@
                  * The top position of the column
                  */
                 top(factor) {
-                    const series = this.series;
-                    const nodePadding = series.nodePadding;
-                    const height = this.points.reduce(function (height, node) {
+                    const series = this.series, nodePadding = series.nodePadding, height = this.points.reduce((height, node) => {
                         if (height > 0) {
                             height += nodePadding;
                         }
@@ -1100,15 +1125,13 @@
                  * The left position of the column
                  */
                 left(factor) {
-                    const series = this.series, chart = series.chart, equalNodes = series.options.equalNodes;
-                    const maxNodesLength = chart.inverted ?
-                        chart.plotHeight : chart.plotWidth, nodePadding = series.nodePadding;
-                    const width = this.points.reduce(function (width, node) {
+                    const series = this.series, chart = series.chart, equalNodes = series.options.equalNodes, maxNodesLength = (chart.inverted ? chart.plotHeight : chart.plotWidth), nodePadding = series.nodePadding, width = this.points.reduce((width, node) => {
                         if (width > 0) {
                             width += nodePadding;
                         }
                         const nodeWidth = equalNodes ?
-                            maxNodesLength / node.series.nodes.length - nodePadding :
+                            maxNodesLength / node.series.nodes.length -
+                                nodePadding :
                             Math.max(node.getSum() * factor, series.options.minLinkWidth || 0);
                         width += nodeWidth;
                         return width;
@@ -1127,9 +1150,7 @@
                  * Sum of all nodes inside column
                  */
                 sum() {
-                    return this.points.reduce(function (sum, node) {
-                        return sum + node.getSum();
-                    }, 0);
+                    return this.points.reduce((sum, node) => (sum + node.getSum()), 0);
                 }
                 /**
                  * Get the offset in pixels of a node inside the column
@@ -1179,6 +1200,11 @@
             }
             SankeyColumnComposition.SankeyColumnAdditions = SankeyColumnAdditions;
         })(SankeyColumnComposition || (SankeyColumnComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return SankeyColumnComposition;
     });
@@ -1385,7 +1411,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+        const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
         const { parse: color } = Color;
         const { getLevelOptions } = TU;
         const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
@@ -1424,14 +1450,12 @@
                 this.options = void 0;
                 this.points = void 0;
                 this.translationFactor = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Static Functions
              *
              * */
-            // eslint-disable-next-line valid-jsdoc
             /**
              * @private
              */
@@ -1450,7 +1474,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Create node columns by analyzing the nodes and the relations between
              * incoming and outgoing links.
@@ -1458,14 +1481,14 @@
              */
             createNodeColumns() {
                 const columns = [];
-                this.nodes.forEach(function (node) {
+                for (const node of this.nodes) {
                     node.setNodeColumn();
                     if (!columns[node.column]) {
                         columns[node.column] =
                             SankeyColumnComposition.compose([], this);
                     }
                     columns[node.column].push(node);
-                }, this);
+                }
                 // Fill in empty columns (#8865)
                 for (let i = 0; i < columns.length; i++) {
                     if (typeof columns[i] === 'undefined') {
@@ -1484,11 +1507,11 @@
                 // Prevents circular recursion:
                 if (typeof node.level === 'undefined') {
                     node.level = level;
-                    node.linksFrom.forEach(function (link) {
+                    for (const link of node.linksFrom) {
                         if (link.toNode) {
                             series.order(link.toNode, level + 1);
                         }
-                    });
+                    }
                 }
             }
             /**
@@ -1498,21 +1521,16 @@
              */
             generatePoints() {
                 NodesComposition.generatePoints.apply(this, arguments);
-                const series = this;
                 if (this.orderNodes) {
-                    this.nodes
+                    for (const node of this.nodes) {
                         // Identify the root node(s)
-                        .filter(function (node) {
-                        return node.linksTo.length === 0;
-                    })
-                        // Start by the root node(s) and recursively set the level
-                        // on all following nodes.
-                        .forEach(function (node) {
-                        series.order(node, 0);
-                    });
-                    stableSort(this.nodes, function (a, b) {
-                        return a.level - b.level;
-                    });
+                        if (node.linksTo.length === 0) {
+                            // Start by the root node(s) and recursively set the level
+                            // on all following nodes.
+                            this.order(node, 0);
+                        }
+                    }
+                    stableSort(this.nodes, (a, b) => (a.level - b.level));
                 }
             }
             /**
@@ -1556,7 +1574,7 @@
                     'borderWidth',
                     'linkOpacity',
                     'opacity'
-                ].reduce(function (obj, key) {
+                ].reduce((obj, key) => {
                     obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
                     return obj;
                 }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
@@ -1628,23 +1646,23 @@
                     }
                 });
                 // First translate all nodes so we can use them when drawing links
-                nodeColumns.forEach(function (column) {
-                    column.forEach(function (node) {
+                for (const column of nodeColumns) {
+                    for (const node of column) {
                         series.translateNode(node, column);
-                    });
-                }, this);
+                    }
+                }
                 // Then translate links
-                this.nodes.forEach(function (node) {
+                for (const node of this.nodes) {
                     // Translate the links from this node
-                    node.linksFrom.forEach(function (linkPoint) {
+                    for (const linkPoint of node.linksFrom) {
                         // If weight is 0 - don't render the link path #12453,
                         // render null points (for organization chart)
                         if ((linkPoint.weight || linkPoint.isNull) && linkPoint.to) {
                             series.translateLink(linkPoint);
                             linkPoint.allowShadow = false;
                         }
-                    });
-                });
+                    }
+                }
             }
             /**
              * Run translation operations for one link.
@@ -1845,7 +1863,7 @@
         SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
         NodesComposition.compose(SankeyPoint, SankeySeries);
         extend(SankeySeries.prototype, {
-            animate: Series.prototype.animate,
+            animate: LineSeries.prototype.animate,
             // Create a single node that holds information on incoming and outgoing
             // links.
             createNode: NodesComposition.createNode,
