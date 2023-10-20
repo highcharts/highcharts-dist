@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Highcharts funnel module
  *
@@ -437,11 +437,9 @@
                             (1 - (y - top) / (height - neckHeight));
                 };
                 series.getX = function (y, half, point) {
-                    var _a,
-                        _b;
                     return centerX + (half ? -1 : 1) *
                         ((series.getWidthAt(reversed ? 2 * centerY - y : y) / 2) +
-                            (((_b = (_a = point.dataLabel) === null || _a === void 0 ? void 0 : _a.dataLabelPosition) === null || _b === void 0 ? void 0 : _b.distance) || 0));
+                            (point.dataLabel?.dataLabelPosition?.distance || 0));
                 };
                 // Expose
                 series.center = [centerX, centerY, height];

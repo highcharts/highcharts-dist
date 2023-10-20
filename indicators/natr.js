@@ -1,23 +1,9 @@
-/*
- Highstock JS v11.1.0 (2023-10-19)
-
- Indicator series type for Highcharts Stock
-
- (c) 2010-2021 Pawe? Dalek
-
- License: www.highcharts.com/license
-*/
-'use strict';var b=b||{};b.scope={};b.arrayIteratorImpl=function(a){var d=0;return function(){return d<a.length?{done:!1,value:a[d++]}:{done:!0}}};b.arrayIterator=function(a){return{next:b.arrayIteratorImpl(a)}};b.ASSUME_ES5=!1;b.ASSUME_NO_NATIVE_MAP=!1;b.ASSUME_NO_NATIVE_SET=!1;b.SIMPLE_FROUND_POLYFILL=!1;b.ISOLATE_POLYFILLS=!1;
-b.defineProperty=b.ASSUME_ES5||"function"==typeof Object.defineProperties?Object.defineProperty:function(a,d,e){if(a==Array.prototype||a==Object.prototype)return a;a[d]=e.value;return a};b.getGlobal=function(a){a=["object"==typeof globalThis&&globalThis,a,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<a.length;++d){var e=a[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");};b.global=b.getGlobal(this);
-b.SYMBOL_PREFIX="jscomp_symbol_";b.initSymbol=function(){b.initSymbol=function(){};b.global.Symbol||(b.global.Symbol=b.Symbol)};b.SymbolClass=function(a,d){this.$jscomp$symbol$id_=a;b.defineProperty(this,"description",{configurable:!0,writable:!0,value:d})};b.SymbolClass.prototype.toString=function(){return this.$jscomp$symbol$id_};
-b.Symbol=function(){function a(e){if(this instanceof a)throw new TypeError("Symbol is not a constructor");return new b.SymbolClass(b.SYMBOL_PREFIX+(e||"")+"_"+d++,e)}var d=0;return a}();
-b.initSymbolIterator=function(){b.initSymbol();var a=b.global.Symbol.iterator;a||(a=b.global.Symbol.iterator=b.global.Symbol("Symbol.iterator"));"function"!=typeof Array.prototype[a]&&b.defineProperty(Array.prototype,a,{configurable:!0,writable:!0,value:function(){return b.iteratorPrototype(b.arrayIteratorImpl(this))}});b.initSymbolIterator=function(){}};
-b.initSymbolAsyncIterator=function(){b.initSymbol();var a=b.global.Symbol.asyncIterator;a||(a=b.global.Symbol.asyncIterator=b.global.Symbol("Symbol.asyncIterator"));b.initSymbolAsyncIterator=function(){}};b.iteratorPrototype=function(a){b.initSymbolIterator();a={next:a};a[b.global.Symbol.iterator]=function(){return this};return a};
-b.iteratorFromArray=function(a,d){b.initSymbolIterator();a instanceof String&&(a+="");var e=0,c={next:function(){if(e<a.length){var f=e++;return{value:d(f,a[f]),done:!1}}c.next=function(){return{done:!0,value:void 0}};return c.next()}};c[Symbol.iterator]=function(){return c};return c};b.polyfills={};b.propertyToPolyfillSymbol={};b.POLYFILL_PREFIX="$jscp$";b.IS_SYMBOL_NATIVE="function"===typeof Symbol&&"symbol"===typeof Symbol("x");
-b.polyfill=function(a,d,e,c){d&&(b.ISOLATE_POLYFILLS?b.polyfillIsolated(a,d,e,c):b.polyfillUnisolated(a,d,e,c))};b.polyfillUnisolated=function(a,d){var e=b.global;a=a.split(".");for(var c=0;c<a.length-1;c++){var f=a[c];f in e||(e[f]={});e=e[f]}a=a[a.length-1];c=e[a];d=d(c);d!=c&&null!=d&&b.defineProperty(e,a,{configurable:!0,writable:!0,value:d})};
-b.polyfillIsolated=function(a,d,e){var c=a.split(".");a=1===c.length;var f=c[0];f=!a&&f in b.polyfills?b.polyfills:b.global;for(var g=0;g<c.length-1;g++){var k=c[g];k in f||(f[k]={});f=f[k]}c=c[c.length-1];e=b.IS_SYMBOL_NATIVE&&"es6"===e?f[c]:null;d=d(e);null!=d&&(a?b.defineProperty(b.polyfills,c,{configurable:!0,writable:!0,value:d}):d!==e&&(b.propertyToPolyfillSymbol[c]=b.IS_SYMBOL_NATIVE?b.global.Symbol(c):b.POLYFILL_PREFIX+c,c=b.propertyToPolyfillSymbol[c],b.defineProperty(f,c,{configurable:!0,
-writable:!0,value:d})))};b.polyfill("Array.prototype.values",function(a){return a?a:function(){return b.iteratorFromArray(this,function(a,e){return e})}},"es8","es3");
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/natr",["highcharts","highcharts/modules/stock"],function(d){a(d);a.Highcharts=d;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function d(a,c,d,g){a.hasOwnProperty(c)||(a[c]=g.apply(null,d),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:c,module:a[c]}})))}
-a=a?a._modules:{};d(a,"Stock/Indicators/NATR/NATRIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,c){const {atr:d}=a.seriesTypes;({merge:c}=c);class e extends d{constructor(){super(...arguments);this.options=this.points=this.data=void 0}getValues(a,d){const c=super.getValues.apply(this,arguments),e=c.values.length,f=a.yData;let h=0,g=d.period-1;if(c){for(;h<e;h++)c.yData[h]=c.values[h][1]/f[g][3]*100,c.values[h][1]=c.yData[h],g++;return c}}}e.defaultOptions=c(d.defaultOptions,
-{tooltip:{valueSuffix:"%"}});a.registerSeriesType("natr",e);"";return e});d(a,"masters/indicators/natr.src.js",[],function(){})});
-//# sourceMappingURL=natr.js.map
+/**
+ * Highstock JS v11.1.0 (2023-10-20)
+ *
+ * Indicator series type for Highcharts Stock
+ *
+ * (c) 2010-2021 Paweł Dalek
+ *
+ * License: www.highcharts.com/license
+ */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/indicators/natr",["highcharts","highcharts/modules/stock"],function(e){return t(e),t.Highcharts=e,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var e=t?t._modules:{};function s(t,e,s,i){t.hasOwnProperty(e)||(t[e]=i.apply(null,s),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:t[e]}})))}s(e,"Stock/Indicators/NATR/NATRIndicator.js",[e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(t,e){let{atr:s}=t.seriesTypes,{merge:i}=e;class o extends s{constructor(){super(...arguments),this.data=void 0,this.points=void 0,this.options=void 0}getValues(t,e){let s=super.getValues.apply(this,arguments),i=s.values.length,o=t.yData,n=0,r=e.period-1;if(s){for(;n<i;n++)s.yData[n]=s.values[n][1]/o[r][3]*100,s.values[n][1]=s.yData[n],r++;return s}}}return o.defaultOptions=i(s.defaultOptions,{tooltip:{valueSuffix:"%"}}),t.registerSeriesType("natr",o),o}),s(e,"masters/indicators/natr.src.js",[],function(){})});//# sourceMappingURL=natr.js.map

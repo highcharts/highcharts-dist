@@ -190,7 +190,6 @@ function hideOrShow(label, chart) {
  * @private
  */
 function onChartRender() {
-    var _a;
     const chart = this;
     let labels = [];
     // Consider external label collectors
@@ -211,14 +210,13 @@ function onChartRender() {
         }
     }
     for (const series of (chart.series || [])) {
-        if (series.visible && ((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) { // #3866
+        if (series.visible && series.hasDataLabels?.()) { // #3866
             const push = (points) => {
                 for (const point of points) {
                     if (point.visible) {
                         (point.dataLabels || []).forEach((label) => {
-                            var _a;
                             const options = label.options || {};
-                            label.labelrank = pick(options.labelrank, point.labelrank, (_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.height); // #4118
+                            label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs?.height); // #4118
                             // Allow overlap if the option is explicitly true
                             if (options.allowOverlap) { // #13449
                                 label.oldOpacity = label.opacity;

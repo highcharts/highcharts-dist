@@ -165,7 +165,10 @@ function getPropMetrics(chart) {
             }
         }
     });
-    return Object.assign({ seriesTimeProps }, getChartExtremesForProps(chart, Object.keys(props), Object.keys(perSeriesProps)));
+    return {
+        seriesTimeProps,
+        ...getChartExtremesForProps(chart, Object.keys(props), Object.keys(perSeriesProps))
+    };
 }
 /**
  * Map a relative value onto a virtual axis.

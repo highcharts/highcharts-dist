@@ -252,7 +252,6 @@ function chartGetDataRows(multiLevelHeaders) {
             // Export directly from options.data because we need the uncropped
             // data (#7913), and we need to support Boost (#7026).
             series.options.data.forEach(function eachData(options, pIdx) {
-                var _a;
                 const mockPoint = { series: mockSeries };
                 let key, prop, val;
                 // In parallel coordinates chart, each data point is connected
@@ -262,7 +261,7 @@ function chartGetDataRows(multiLevelHeaders) {
                 }
                 series.pointClass.prototype.applyOptions.apply(mockPoint, [options]);
                 const name = series.data[pIdx] && series.data[pIdx].name;
-                key = ((_a = mockPoint.x) !== null && _a !== void 0 ? _a : '') + ',' + name;
+                key = (mockPoint.x ?? '') + ',' + name;
                 if (defined(rows[key]) &&
                     rows[key].seriesIndices.includes(seriesIndex)) {
                     // find keys, which belong to actual series

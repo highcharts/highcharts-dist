@@ -30,7 +30,10 @@ function draw(point, params) {
         (point.series &&
             point.series.options.animation);
     let graphic = point.graphic;
-    params.attribs = Object.assign(Object.assign({}, params.attribs), { 'class': point.getClassName() }) || {};
+    params.attribs = {
+        ...params.attribs,
+        'class': point.getClassName()
+    } || {};
     if ((point.shouldDraw())) {
         if (!graphic) {
             if (params.shapeType === 'text') {

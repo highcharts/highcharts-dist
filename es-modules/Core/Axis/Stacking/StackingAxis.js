@@ -51,7 +51,6 @@ function chartGetStacks() {
  * @private
  */
 function onAxisDestroy() {
-    var _a;
     const stacking = this.stacking;
     if (stacking) {
         const stacks = stacking.stacks;
@@ -60,7 +59,7 @@ function onAxisDestroy() {
             destroyObjectProperties(stack);
             delete stacks[stackKey];
         });
-        (_a = stacking.stackTotalGroup) === null || _a === void 0 ? void 0 : _a.destroy();
+        stacking.stackTotalGroup?.destroy();
     }
 }
 /**
@@ -109,13 +108,12 @@ function seriesModifyStacks() {
     let stackIndicator;
     if (stacker) { // Modifier function exists (Series.percentStacker etc.)
         [stackKey, '-' + stackKey].forEach((key) => {
-            var _a;
             let i = processedXData.length, x, stackItem, pointExtremes;
             while (i--) {
                 x = processedXData[i];
                 stackIndicator = series.getStackIndicator(stackIndicator, x, series.index, key);
-                stackItem = (_a = stacks[key]) === null || _a === void 0 ? void 0 : _a[x];
-                pointExtremes = stackItem === null || stackItem === void 0 ? void 0 : stackItem.points[stackIndicator.key || ''];
+                stackItem = stacks[key]?.[x];
+                pointExtremes = stackItem?.points[stackIndicator.key || ''];
                 if (pointExtremes) {
                     stacker.call(series, pointExtremes, stackItem, i);
                 }
@@ -169,7 +167,6 @@ function seriesSetGroupedPoints(axis) {
  * @function Highcharts.Series#setStackedPoints
  */
 function seriesSetStackedPoints(axis, stackingParam) {
-    var _a, _b;
     const type = stackingParam || this.options.stacking;
     if (!type ||
         !this.reserveSpace() ||
@@ -199,7 +196,7 @@ function seriesSetStackedPoints(axis, stackingParam) {
         }
         // Initialize StackItem for this x
         if (!stacks[key][x]) {
-            if ((_a = oldStacks[key]) === null || _a === void 0 ? void 0 : _a[x]) {
+            if (oldStacks[key]?.[x]) {
                 stacks[key][x] = oldStacks[key][x];
                 stacks[key][x].total = null;
             }
@@ -235,7 +232,7 @@ function seriesSetStackedPoints(axis, stackingParam) {
             // Percent stacked column, totals are the same for the positive and
             // negative stacks
             other = isNegative ? stackKey : negKey;
-            if (negStacks && ((_b = stacks[other]) === null || _b === void 0 ? void 0 : _b[x])) {
+            if (negStacks && stacks[other]?.[x]) {
                 other = stacks[other][x];
                 total = other.total =
                     Math.max(other.total || 0, total) +
@@ -373,8 +370,7 @@ class AxisAdditions {
      * @private
      */
     renderStackTotals() {
-        var _a;
-        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = (_a = axis.options.stackLabels) === null || _a === void 0 ? void 0 : _a.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
+        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels?.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
             renderer
                 .g('stack-labels')
                 .attr({

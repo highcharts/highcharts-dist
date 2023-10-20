@@ -33,8 +33,7 @@ var ColumnDataLabel;
     const dataLabelPositioners = {
         // Based on the value computed in Highcharts' distribute algorithm.
         radialDistributionY: function (point, dataLabel) {
-            var _a;
-            return (((_a = dataLabel.dataLabelPosition) === null || _a === void 0 ? void 0 : _a.top) || 0) +
+            return (dataLabel.dataLabelPosition?.top || 0) +
                 point.distributeBox.pos;
         },
         // Get the x - use the natural x position for labels near the top and
@@ -43,15 +42,14 @@ var ColumnDataLabel;
         // distribute algorithm.
         radialDistributionX: function (series, point, y, naturalY, dataLabel) {
             const pos = dataLabel.dataLabelPosition;
-            return series.getX(y < ((pos === null || pos === void 0 ? void 0 : pos.top) || 0) + 2 || y > ((pos === null || pos === void 0 ? void 0 : pos.bottom) || 0) - 2 ?
+            return series.getX(y < (pos?.top || 0) + 2 || y > (pos?.bottom || 0) - 2 ?
                 naturalY :
                 y, point.half, point, dataLabel);
         },
         // The dataLabels.distance determines the x position of the label
         justify: function (point, dataLabel, radius, seriesCenter) {
-            var _a;
             return seriesCenter[0] + (point.half ? -1 : 1) *
-                (radius + (((_a = dataLabel.dataLabelPosition) === null || _a === void 0 ? void 0 : _a.distance) || 0));
+                (radius + (dataLabel.dataLabelPosition?.distance || 0));
         },
         // Left edges of the left-half labels touch the left edge of the plot
         // area. Right edges of the right-half labels touch the right edge of
@@ -134,7 +132,6 @@ var ColumnDataLabel;
      * @private
      */
     function drawDataLabels() {
-        var _a;
         const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
             [],
             [] // Left
@@ -142,7 +139,7 @@ var ColumnDataLabel;
         dataLabelPositioners = series.dataLabelPositioners;
         let connector, dataLabelWidth, labelHeight, maxLabelDistance = 0;
         // Get out if not enabled
-        if (!series.visible || !((_a = series.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(series))) {
+        if (!series.visible || !series.hasDataLabels?.()) {
             return;
         }
         // Reset all labels that have been shortened
@@ -164,14 +161,13 @@ var ColumnDataLabel;
         Series.prototype.drawDataLabels.apply(series);
         points.forEach((point) => {
             (point.dataLabels || []).forEach((dataLabel, i) => {
-                var _a;
-                const r = seriesCenter[2] / 2, dataLabelOptions = dataLabel.options, distance = relativeLength((dataLabelOptions === null || dataLabelOptions === void 0 ? void 0 : dataLabelOptions.distance) || 0, r);
+                const r = seriesCenter[2] / 2, dataLabelOptions = dataLabel.options, distance = relativeLength(dataLabelOptions?.distance || 0, r);
                 // Arrange points for collision detection
                 if (i === 0) {
                     halves[point.half].push(point);
                 }
                 // Avoid long labels squeezing the pie size too far down
-                if (!defined((_a = dataLabelOptions === null || dataLabelOptions === void 0 ? void 0 : dataLabelOptions.style) === null || _a === void 0 ? void 0 : _a.width)) {
+                if (!defined(dataLabelOptions?.style?.width)) {
                     if (dataLabel.getBBox().width > maxWidth) {
                         dataLabel.css({
                             // Use a fraction of the maxWidth to avoid wrapping
@@ -204,7 +200,6 @@ var ColumnDataLabel;
                 points.forEach((point) => {
                     // Check if specific points' label is outside the pie
                     (point.dataLabels || []).forEach((dataLabel, i) => {
-                        var _a;
                         const labelPosition = dataLabel.dataLabelPosition;
                         if (labelPosition &&
                             labelPosition.distance > 0) {
@@ -215,7 +210,8 @@ var ColumnDataLabel;
                             labelPosition.bottom = Math.min(centerY + radius + labelPosition.distance, chart.plotHeight);
                             size = dataLabel.getBBox().height || 21;
                             point.distributeBox = {
-                                target: ((((_a = dataLabel.dataLabelPosition) === null || _a === void 0 ? void 0 : _a.natural.y) || 0) -
+                                target: ((dataLabel.dataLabelPosition
+                                    ?.natural.y || 0) -
                                     labelPosition.top +
                                     size / 2),
                                 size,
@@ -231,7 +227,7 @@ var ColumnDataLabel;
             // Now the used slots are sorted, fill them up sequentially
             points.forEach((point) => {
                 (point.dataLabels || []).forEach((dataLabel) => {
-                    const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = (labelPosition === null || labelPosition === void 0 ? void 0 : labelPosition.natural.y) || 0, connectorPadding = dataLabelOptions
+                    const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = labelPosition?.natural.y || 0, connectorPadding = dataLabelOptions
                         .connectorPadding || 0;
                     let x = 0, y = naturalY, visibility = 'inherit';
                     if (labelPosition) {
@@ -328,7 +324,6 @@ var ColumnDataLabel;
             this.placeDataLabels();
             this.points.forEach((point) => {
                 (point.dataLabels || []).forEach((dataLabel) => {
-                    var _a;
                     // #8864: every connector can have individual options
                     const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
                     // Draw the connector
@@ -360,7 +355,7 @@ var ColumnDataLabel;
                                 d: point.getConnectorPath(dataLabel)
                             });
                             connector.attr({
-                                visibility: (_a = labelPosition.attribs) === null || _a === void 0 ? void 0 : _a.visibility
+                                visibility: labelPosition.attribs?.visibility
                             });
                         }
                         else if (connector) {
@@ -379,7 +374,6 @@ var ColumnDataLabel;
     function placeDataLabels() {
         this.points.forEach((point) => {
             (point.dataLabels || []).forEach((dataLabel) => {
-                var _a;
                 const labelPosition = dataLabel.dataLabelPosition;
                 if (labelPosition) {
                     // Shorten data labels with ellipsis if they still overflow
@@ -388,7 +382,7 @@ var ColumnDataLabel;
                         dataLabel.css({
                             width: (Math.max(dataLabel.getBBox().width -
                                 labelPosition.sideOverflow, 0)) + 'px',
-                            textOverflow: ((((_a = dataLabel.options) === null || _a === void 0 ? void 0 : _a.style) || {})
+                            textOverflow: ((dataLabel.options?.style || {})
                                 .textOverflow ||
                                 'ellipsis')
                         });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -877,8 +877,6 @@
              * @private
              */
             drawDataLabels() {
-                var _a,
-                    _b;
                 const data = this.points, length = data.length, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, inverted = this.chart.inverted;
                 let i, point, up, upperDataLabelOptions, lowerDataLabelOptions;
                 if (dataLabelOptions) {
@@ -909,7 +907,7 @@
                         lowerDataLabelOptions.y = dataLabelOptions.yLow;
                     }
                     // Draw upper labels
-                    if (upperDataLabelOptions.enabled || ((_a = this.hasDataLabels) === null || _a === void 0 ? void 0 : _a.call(this))) {
+                    if (upperDataLabelOptions.enabled || this.hasDataLabels?.()) {
                         // Set preliminary values for plotY and dataLabel
                         // and draw the upper labels
                         i = length;
@@ -965,7 +963,7 @@
                         }
                     }
                     // Draw lower labels
-                    if (lowerDataLabelOptions.enabled || ((_b = this.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(this))) {
+                    if (lowerDataLabelOptions.enabled || this.hasDataLabels?.()) {
                         i = length;
                         while (i--) {
                             point = data[i];
@@ -7814,14 +7812,13 @@
          * @private
          */
         function initDataLabelsDefer() {
-            var _a;
             const dlOptions = this.options.dataLabels;
             // drawDataLabels() fires for the first time after
             // dataLabels.animation.defer time unless
             // the dataLabels.animation = false or dataLabels.defer = false
             // or if the simulation is disabled
-            if (!(dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.defer) ||
-                !((_a = this.options.layoutAlgorithm) === null || _a === void 0 ? void 0 : _a.enableSimulation)) {
+            if (!dlOptions?.defer ||
+                !this.options.layoutAlgorithm?.enableSimulation) {
                 this.deferDataLabels = false;
             }
             else {
@@ -7842,7 +7839,7 @@
                 const dataLabelsGroup = this.initDataLabelsGroup();
                 // Apply the dataLabels.style not only to the
                 // individual dataLabels but also to the entire group
-                if (!series.chart.styledMode && (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.style)) {
+                if (!series.chart.styledMode && dlOptions?.style) {
                     dataLabelsGroup.css(dlOptions.style);
                 }
                 // Initialize the opacity of the group to 0 (start of animation)
@@ -8180,7 +8177,6 @@
              * @private
              */
             drawGraph() {
-                var _a;
                 // if the series is not using layout, don't add parent nodes
                 if (!this.layout || !this.layout.options.splitSeries) {
                     return;
@@ -8196,7 +8192,7 @@
                 // Create the group for parent Nodes if doesn't exist
                 // If exists it will only be adjusted to the updated plot size (#12063)
                 this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-                (_a = this.group) === null || _a === void 0 ? void 0 : _a.attr({
+                this.group?.attr({
                     zIndex: 2
                 });
                 this.calculateParentRadius();
@@ -9364,8 +9360,7 @@
             }
             // Waterfall has stacking along the x-values too.
             setStackedPoints(axis) {
-                var _a;
-                let series = this, options = series.options, waterfallStacks = (_a = axis.waterfall) === null || _a === void 0 ? void 0 : _a.stacks, seriesThreshold = options.threshold || 0, stackThreshold = seriesThreshold, interSum = stackThreshold, stackKey = series.stackKey, xData = series.xData, xLength = xData.length, actualStackX, totalYVal = 0, actualSum = 0, prevSum = 0, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
+                let series = this, options = series.options, waterfallStacks = axis.waterfall?.stacks, seriesThreshold = options.threshold || 0, stackThreshold = seriesThreshold, interSum = stackThreshold, stackKey = series.stackKey, xData = series.xData, xLength = xData.length, actualStackX, totalYVal = 0, actualSum = 0, prevSum = 0, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
                 // Function responsible for calculating correct values for stackState
                 // array of each stack item. The arguments are: firstS - the value for
                 // the first state, nextS - the difference between the previous and the

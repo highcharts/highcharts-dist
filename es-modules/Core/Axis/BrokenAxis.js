@@ -74,9 +74,8 @@ var BrokenAxis;
      * @private
      */
     function onAxisAfterSetOptions() {
-        var _a;
         const axis = this;
-        if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
+        if (axis.brokenAxis?.hasBreaks) {
             axis.options.ordinal = false;
         }
     }

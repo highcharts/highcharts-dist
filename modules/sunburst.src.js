@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -1296,7 +1296,10 @@
                 (point.series &&
                     point.series.options.animation);
             let graphic = point.graphic;
-            params.attribs = Object.assign(Object.assign({}, params.attribs), { 'class': point.getClassName() }) || {};
+            params.attribs = {
+                ...params.attribs,
+                'class': point.getClassName()
+            } || {};
             if ((point.shouldDraw())) {
                 if (!graphic) {
                     if (params.shapeType === 'text') {
@@ -3260,8 +3263,7 @@
              *
              * */
             getDataLabelPath(label) {
-                var _a;
-                const renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, r = shapeArgs.r + pInt(((_a = label.options) === null || _a === void 0 ? void 0 : _a.distance) || 0);
+                const renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, r = shapeArgs.r + pInt(label.options?.distance || 0);
                 let start = shapeArgs.start, end = shapeArgs.end;
                 const angle = start + (end - start) / 2; // arc middle value
                 let upperHalf = angle < 0 &&

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Client side exporting module
  *
@@ -143,7 +143,7 @@
                         throw new Error('Failed to open window');
                     }
                 }
-                catch (_a) {
+                catch {
                     // If window.open failed, try location.href
                     win.location.href = dataURL;
                 }

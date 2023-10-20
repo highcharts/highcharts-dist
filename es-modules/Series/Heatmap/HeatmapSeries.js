@@ -86,7 +86,10 @@ class HeatmapSeries extends ScatterSeries {
                     }
                     ctx.putImageData(new ImageData(pixelData, canvasWidth), 0, 0);
                     if (image) {
-                        image.attr(Object.assign(Object.assign({}, dimensions), { href: canvas.toDataURL('image/png', 1) }));
+                        image.attr({
+                            ...dimensions,
+                            href: canvas.toDataURL('image/png', 1)
+                        });
                     }
                     else {
                         series.directTouch = false;

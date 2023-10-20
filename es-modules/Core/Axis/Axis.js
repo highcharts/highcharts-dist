@@ -807,10 +807,10 @@ class Axis {
                 // Find the closest distance between raw data points, as opposed
                 // to closestPointRange that applies to processed points
                 // (cropped and grouped)
-                closestDataRange = getClosestDistance(axis.series.map((s) => { var _a; 
+                closestDataRange = getClosestDistance(axis.series.map((s) => 
                 // If xIncrement, we only need to measure the two first
                 // points to get the distance. Saves processing time.
-                return (s.xIncrement ? (_a = s.xData) === null || _a === void 0 ? void 0 : _a.slice(0, 2) : s.xData) || []; })) || 0;
+                (s.xIncrement ? s.xData?.slice(0, 2) : s.xData) || [])) || 0;
                 axis.minRange = Math.min(closestDataRange * 5, axis.dataMax - axis.dataMin);
             }
         }
@@ -870,9 +870,8 @@ class Axis {
         else {
             const singleXs = [];
             this.series.forEach(function (series) {
-                var _a;
                 const seriesClosest = series.closestPointRange;
-                if (((_a = series.xData) === null || _a === void 0 ? void 0 : _a.length) === 1) {
+                if (series.xData?.length === 1) {
                     singleXs.push(series.xData[0]);
                 }
                 else if (!series.noSharedTooltip &&

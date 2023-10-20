@@ -380,7 +380,7 @@ function processFunction(formulaFunction, table, reference // @todo
         try {
             return processor(formulaFunction.args, table);
         }
-        catch (_a) {
+        catch {
             return NaN;
         }
     }

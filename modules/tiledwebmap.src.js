@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * (c) 2009-2022
  *
@@ -727,7 +727,6 @@
                 return { lon, lat };
             }
             drawPoints() {
-                var _a;
                 const chart = this.chart, mapView = chart.mapView;
                 if (!mapView) {
                     return;
@@ -846,7 +845,7 @@
                         else {
                             chart.addCredits({
                                 text: creditsText,
-                                style: pick((_a = chart.options.credits) === null || _a === void 0 ? void 0 : _a.style, {})
+                                style: pick(chart.options.credits?.style, {})
                             });
                         }
                         if (mapView.projection.options.name !== providerProjection) {

@@ -338,14 +338,17 @@ DataCursor.version = '1.0.0';
      * @private
      */
     function toRange(cursor, defaultRange) {
-        var _a, _b, _c, _d;
         if (cursor.type === 'range') {
             return cursor;
         }
         const range = {
             type: 'range',
-            firstRow: ((_b = (_a = cursor.row) !== null && _a !== void 0 ? _a : (defaultRange && defaultRange.firstRow)) !== null && _b !== void 0 ? _b : 0),
-            lastRow: ((_d = (_c = cursor.row) !== null && _c !== void 0 ? _c : (defaultRange && defaultRange.lastRow)) !== null && _d !== void 0 ? _d : Number.MAX_VALUE),
+            firstRow: (cursor.row ??
+                (defaultRange && defaultRange.firstRow) ??
+                0),
+            lastRow: (cursor.row ??
+                (defaultRange && defaultRange.lastRow) ??
+                Number.MAX_VALUE),
             state: cursor.state
         };
         if (typeof cursor.column !== 'undefined') {

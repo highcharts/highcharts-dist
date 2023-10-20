@@ -60,7 +60,6 @@ class TimelineSeries extends LineSeries {
      * */
     /* eslint-disable valid-jsdoc */
     alignDataLabel(point, dataLabel, _options, _alignTo) {
-        var _a;
         const series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter((point) => !!point), visiblePointsCount = series.visiblePointsCount || 0, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
         // Define multiplier which is used to calculate data label
         // width. If data labels are alternate, they have two times more
@@ -77,7 +76,7 @@ class TimelineSeries extends LineSeries {
             if (isInverted) {
                 targetDLWidth = ((distance - pad) * 2 - ((point.itemHeight || 0) / 2));
                 styles = {
-                    width: pick((_a = dataLabelsOptions.style) === null || _a === void 0 ? void 0 : _a.width, `${series.yAxis.len * 0.4}px`),
+                    width: pick(dataLabelsOptions.style?.width, `${series.yAxis.len * 0.4}px`),
                     // Apply ellipsis when data label height is exceeded.
                     textOverflow: (dataLabel.width || 0) / targetDLWidth *
                         (dataLabel.height || 0) / 2 > availableSpace *

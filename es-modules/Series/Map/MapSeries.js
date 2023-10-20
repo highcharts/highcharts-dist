@@ -373,7 +373,6 @@ class MapSeries extends ScatterSeries {
      * @private
      */
     pointAttribs(point, state) {
-        var _a;
         const { mapView, styledMode } = point.series.chart;
         const attr = styledMode ?
             this.colorAttribs(point) :
@@ -389,7 +388,7 @@ class MapSeries extends ScatterSeries {
             if (defined(stateStrokeWidth)) {
                 pointStrokeWidth = stateStrokeWidth;
             }
-            attr.stroke = (_a = stateOptions.borderColor) !== null && _a !== void 0 ? _a : point.color;
+            attr.stroke = stateOptions.borderColor ?? point.color;
         }
         if (pointStrokeWidth && mapView) {
             pointStrokeWidth /= mapView.getScale();

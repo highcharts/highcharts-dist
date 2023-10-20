@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Highcharts Drilldown module
  *
@@ -1475,7 +1475,6 @@
             if (!init) {
                 // First hide all items before animating in again
                 series.points.forEach((point) => {
-                    var _a;
                     const dataLabel = point.dataLabel;
                     if (point.graphic) { // #3407
                         point.graphic.hide();
@@ -1486,7 +1485,7 @@
                         dataLabel.hidden = dataLabel.attr('visibility') === 'hidden';
                         if (!dataLabel.hidden) {
                             dataLabel.hide();
-                            (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.hide();
+                            dataLabel.connector?.hide();
                         }
                     }
                 });
@@ -1502,7 +1501,6 @@
                             pointsWithNodes = pointsWithNodes.concat(series.nodes);
                         }
                         pointsWithNodes.forEach((point, i) => {
-                            var _a;
                             // Fade in other points
                             const verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                             if (point.graphic && // #3407
@@ -1512,7 +1510,7 @@
                             }
                             if (dataLabel && !dataLabel.hidden) { // #6127
                                 dataLabel.fadeIn(); // #7384
-                                (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.fadeIn();
+                                dataLabel.connector?.fadeIn();
                             }
                         });
                     }
@@ -1978,11 +1976,10 @@
                     // stop hovering while drilling down
                     point.series.isDrilling = true;
                     chart.series.forEach((series) => {
-                        var _a;
                         // stop duplicating and overriding animations
                         series.options.inactiveOtherPoints = true;
                         // hide and disable dataLabels
-                        (_a = series.dataLabelsGroup) === null || _a === void 0 ? void 0 : _a.destroy();
+                        series.dataLabelsGroup?.destroy();
                         delete series.dataLabelsGroup;
                     });
                     // #18925 map zooming is not working with geoJSON maps

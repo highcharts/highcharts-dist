@@ -46,7 +46,7 @@ var DataLabel;
      * @private
      */
     function hasDataLabels() {
-        return splat(this.options.dataLabels || {}).some((o) => o === null || o === void 0 ? void 0 : o.enabled);
+        return splat(this.options.dataLabels || {}).some((o) => o?.enabled);
     }
     /**
      * Align each individual data label.
@@ -269,33 +269,30 @@ var DataLabel;
      * @private
      */
     function drawDataLabels(points = this.points) {
-        var _a, _b, _c;
         const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
             (isString(backgroundColor) && backgroundColor) ||
             "#000000" /* Palette.neutralColor100 */);
         let seriesDlOptions = seriesOptions.dataLabels, pointOptions, dataLabelsGroup;
         // Merge in plotOptions.dataLabels for series
-        seriesDlOptions = mergeArrays(mergeArrays((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.dataLabels, (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[series.type]) === null || _b === void 0 ? void 0 : _b.dataLabels), seriesDlOptions);
+        seriesDlOptions = mergeArrays(mergeArrays(plotOptions?.series?.dataLabels, plotOptions?.[series.type]?.dataLabels), seriesDlOptions);
         // Resolve the animation
         const { animation, defer } = splat(seriesDlOptions)[0], animationConfig = defer ?
             getDeferredAnimation(chart, animation, series) :
             { defer: 0, duration: 0 };
         fireEvent(this, 'drawDataLabels');
-        if ((_c = series.hasDataLabels) === null || _c === void 0 ? void 0 : _c.call(series)) {
+        if (series.hasDataLabels?.()) {
             dataLabelsGroup = this.initDataLabels(animationConfig);
             // Make the labels for each point
             points.forEach((point) => {
-                var _a, _b;
                 const dataLabels = point.dataLabels || [];
                 // Merge in series options for the point.
                 // @note dataLabelAttribs (like pointAttribs) would eradicate
                 // the need for dlOptions, and simplify the section below.
                 pointOptions = splat(mergeArrays(seriesDlOptions, 
                 // The dlOptions prop is used in treemaps
-                point.dlOptions || ((_a = point.options) === null || _a === void 0 ? void 0 : _a.dataLabels)));
+                point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
-                    var _a;
                     // Options for one datalabel
                     const labelEnabled = (labelOptions.enabled &&
                         point.visible &&
@@ -409,7 +406,7 @@ var DataLabel;
                             }
                             const textPathOptions = labelOptions[point.formatPrefix + 'TextPath'] || labelOptions.textPath;
                             if (textPathOptions && !labelOptions.useHTML) {
-                                dataLabel.setTextPath(((_a = point.getDataLabelPath) === null || _a === void 0 ? void 0 : _a.call(point, dataLabel)) ||
+                                dataLabel.setTextPath(point.getDataLabelPath?.(dataLabel) ||
                                     point.graphic, textPathOptions);
                                 if (point.dataLabelPath &&
                                     !textPathOptions.enabled) {
@@ -437,7 +434,7 @@ var DataLabel;
                     // The item can be undefined if a disabled data label is
                     // succeeded by an enabled one (#19457)
                     if (!dataLabels[j] || !dataLabels[j].isActive) {
-                        (_b = dataLabels[j]) === null || _b === void 0 ? void 0 : _b.destroy();
+                        dataLabels[j]?.destroy();
                         dataLabels.splice(j, 1);
                     }
                     else {

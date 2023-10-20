@@ -35,7 +35,10 @@ class MathModifier extends DataModifier {
      * */
     constructor(options) {
         super();
-        this.options = Object.assign(Object.assign({}, MathModifier.defaultOptions), options);
+        this.options = {
+            ...MathModifier.defaultOptions,
+            ...options
+        };
     }
     /* *
      *
@@ -95,7 +98,7 @@ class MathModifier extends DataModifier {
                     column[i] =
                         FormulaProcessor.processFormula(cacheFormula, table);
                 }
-                catch (_a) {
+                catch {
                     column[i] = NaN;
                 }
             }
@@ -131,7 +134,7 @@ class MathModifier extends DataModifier {
             try {
                 column[i] = FormulaProcessor.processFormula(formula, modified);
             }
-            catch (_a) {
+            catch {
                 column[i] = NaN;
             }
             finally {

@@ -156,8 +156,7 @@ var ColorAxisComposition;
      * @private
      */
     function onLegendAfterUpdate(e) {
-        var _a;
-        (_a = this.chart.colorAxis) === null || _a === void 0 ? void 0 : _a.forEach((colorAxis) => {
+        this.chart.colorAxis?.forEach((colorAxis) => {
             colorAxis.update({}, e.redraw);
         });
     }

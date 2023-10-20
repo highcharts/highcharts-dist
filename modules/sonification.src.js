@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Sonification module
  *
@@ -1497,7 +1497,10 @@
              * @private
              */
             createEqChain(outputNode) {
-                this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, Object.assign({ type: 'peaking' }, eqDef)));
+                this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, {
+                    type: 'peaking',
+                    ...eqDef
+                }));
                 // Connect nodes
                 this.eqNodes.reduceRight((chain, node) => {
                     node.connect(chain);
@@ -3463,7 +3466,7 @@
                         throw new Error('Failed to open window');
                     }
                 }
-                catch (_a) {
+                catch {
                     // If window.open failed, try location.href
                     win.location.href = dataURL;
                 }
@@ -4117,7 +4120,10 @@
                     }
                 }
             });
-            return Object.assign({ seriesTimeProps }, getChartExtremesForProps(chart, Object.keys(props), Object.keys(perSeriesProps)));
+            return {
+                seriesTimeProps,
+                ...getChartExtremesForProps(chart, Object.keys(props), Object.keys(perSeriesProps))
+            };
         }
         /**
          * Map a relative value onto a virtual axis.

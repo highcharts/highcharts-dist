@@ -805,7 +805,6 @@ class SVGElement {
      * @function Highcharts.SVGElement#destroy
      */
     destroy() {
-        var _a;
         const wrapper = this, element = wrapper.element || {}, renderer = wrapper.renderer, ownerSVGElement = element.ownerSVGElement;
         let parentToClean = (element.nodeName === 'SPAN' &&
             wrapper.parentGroup ||
@@ -826,7 +825,7 @@ class SVGElement {
             });
             wrapper.clipPath = clipPath.destroy();
         }
-        wrapper.connector = (_a = wrapper.connector) === null || _a === void 0 ? void 0 : _a.destroy();
+        wrapper.connector = wrapper.connector?.destroy();
         // Destroy stops in case this is a gradient object @todo old code?
         if (wrapper.stops) {
             for (i = 0; i < wrapper.stops.length; i++) {
@@ -1380,8 +1379,7 @@ class SVGElement {
      * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
      */
     shadow(shadowOptions) {
-        var _a;
-        const { renderer } = this, options = merge(((_a = this.parentGroup) === null || _a === void 0 ? void 0 : _a.rotation) === 90 ? {
+        const { renderer } = this, options = merge(this.parentGroup?.rotation === 90 ? {
             offsetX: -1,
             offsetY: -1
         } : {}, isObject(shadowOptions) ? shadowOptions : {}), id = renderer.shadowDefinition(options);

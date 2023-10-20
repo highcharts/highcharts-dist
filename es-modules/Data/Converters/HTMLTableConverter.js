@@ -349,7 +349,11 @@ class HTMLTableConverter extends DataConverter {
 /**
  * Default options
  */
-HTMLTableConverter.defaultOptions = Object.assign(Object.assign({}, DataConverter.defaultOptions), { useRowspanHeaders: true, useMultiLevelHeaders: true });
+HTMLTableConverter.defaultOptions = {
+    ...DataConverter.defaultOptions,
+    useRowspanHeaders: true,
+    useMultiLevelHeaders: true
+};
 /* *
  *
  *  Default Export

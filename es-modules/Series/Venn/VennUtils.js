@@ -58,7 +58,10 @@ function addOverlapToSets(relations) {
             mapOfIdToProps[set] = {
                 totalOverlap: (mapOfIdToProps[set].totalOverlap || 0) +
                     relation.value,
-                overlapping: Object.assign(Object.assign({}, (mapOfIdToProps[set].overlapping || {})), { [arr[1 - i]]: relation.value })
+                overlapping: {
+                    ...(mapOfIdToProps[set].overlapping || {}),
+                    [arr[1 - i]]: relation.value
+                }
             };
         });
     });

@@ -84,7 +84,6 @@ class TimelinePoint extends Series.prototype.pointClass {
         }
     }
     getConnectorPath() {
-        var _a;
         const { plotX = 0, plotY = 0, series, dataLabel } = this, chart = series.chart, xAxisLen = series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2';
         if (dataLabel) {
             const targetDLPos = dataLabel.targetPosition, negativeDistance = ((dataLabel.alignAttr || dataLabel)[direction[0]] <
@@ -116,7 +115,7 @@ class TimelinePoint extends Series.prototype.pointClass {
             return chart.renderer.crispLine([
                 ['M', coords.x1, coords.y1],
                 ['L', coords.x2, coords.y2]
-            ], ((_a = dataLabel.options) === null || _a === void 0 ? void 0 : _a.connectorWidth) || 0);
+            ], dataLabel.options?.connectorWidth || 0);
         }
         return [];
     }

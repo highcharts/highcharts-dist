@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-19)
+ * @license Highstock JS v11.1.0 (2023-10-20)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -109,9 +109,8 @@
              * @private
              */
             function onAxisAfterSetOptions() {
-                var _a;
                 const axis = this;
-                if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
+                if (axis.brokenAxis?.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -3717,7 +3716,6 @@
          * @private
          */
         function onChartAfterSetChartSize() {
-            var _a;
             const legend = this.legend, navigator = this.navigator;
             let legendOptions, xAxis, yAxis;
             if (navigator) {
@@ -3739,7 +3737,7 @@
                         this.chartHeight -
                             navigator.height -
                             scrollbarHeight -
-                            (((_a = this.scrollbar) === null || _a === void 0 ? void 0 : _a.options.margin) || 0) -
+                            (this.scrollbar?.options.margin || 0) -
                             this.spacing[2] -
                             (this.rangeSelector && this.extraBottomMargin ?
                                 this.rangeSelector.getHeight() :
@@ -9261,8 +9259,7 @@
                  * @private
                  */
                 beforeSetTickPositions() {
-                    var _a;
-                    const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = (_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks, isOrdinal = axis.options.ordinal;
+                    const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal;
                     let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
                     // Apply the ordinal logic
                     if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
@@ -9608,9 +9605,8 @@
                     let firstPointX;
                     // When more series assign to axis, find the smallest one, #15987.
                     axis.series.forEach((series) => {
-                        var _a;
-                        const firstPoint = (_a = series.points) === null || _a === void 0 ? void 0 : _a[0];
-                        if (defined(firstPoint === null || firstPoint === void 0 ? void 0 : firstPoint.plotX) &&
+                        const firstPoint = series.points?.[0];
+                        if (defined(firstPoint?.plotX) &&
                             (firstPoint.plotX < firstPointX ||
                                 !defined(firstPointX)) &&
                             hasPointsInside(series)) {
@@ -9618,7 +9614,7 @@
                         }
                     });
                     // If undefined, give a default value
-                    firstPointX !== null && firstPointX !== void 0 ? firstPointX : (firstPointX = axis.minPixelPadding);
+                    firstPointX ?? (firstPointX = axis.minPixelPadding);
                     // Distance in pixels between two points on the ordinal axis in the
                     // current zoom.
                     const ordinalPointPixelInterval = axis.translationSlope * (ordinal.slope ||
@@ -11369,8 +11365,6 @@
              * @private
              */
             function translate() {
-                var _a,
-                    _b;
                 columnProto.translate.apply(this);
                 const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
                     chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
@@ -11410,8 +11404,8 @@
                                             ], p3 = [
                                                 rightPoint.plotX || 0,
                                                 rightPoint.plotY || 0
-                                            ], p1 = (((_a = leftPoint.controlPoints) === null || _a === void 0 ? void 0 : _a.high) ||
-                                                p0), p2 = (((_b = rightPoint.controlPoints) === null || _b === void 0 ? void 0 : _b.low) ||
+                                            ], p1 = (leftPoint.controlPoints?.high ||
+                                                p0), p2 = (rightPoint.controlPoints?.low ||
                                                 p3), pixelThreshold = 0.25, maxIterations = 100, calculateCoord = (t, key) => (
                                             // The parametric formula for the
                                             // cubic Bezier curve.

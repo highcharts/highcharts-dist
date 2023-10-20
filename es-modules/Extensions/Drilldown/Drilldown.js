@@ -161,11 +161,10 @@ class ChartAdditions {
             // stop hovering while drilling down
             point.series.isDrilling = true;
             chart.series.forEach((series) => {
-                var _a;
                 // stop duplicating and overriding animations
                 series.options.inactiveOtherPoints = true;
                 // hide and disable dataLabels
-                (_a = series.dataLabelsGroup) === null || _a === void 0 ? void 0 : _a.destroy();
+                series.dataLabelsGroup?.destroy();
                 delete series.dataLabelsGroup;
             });
             // #18925 map zooming is not working with geoJSON maps

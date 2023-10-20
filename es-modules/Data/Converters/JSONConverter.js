@@ -138,7 +138,11 @@ class JSONConverter extends DataConverter {
 /**
  * Default options
  */
-JSONConverter.defaultOptions = Object.assign(Object.assign({}, DataConverter.defaultOptions), { data: [], orientation: 'columns' });
+JSONConverter.defaultOptions = {
+    ...DataConverter.defaultOptions,
+    data: [],
+    orientation: 'columns'
+};
 /* *
  *
  *  Default Export

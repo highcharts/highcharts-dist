@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * (c) 2009-2022
  *
@@ -407,8 +407,7 @@
              * @private
              */
             getProjectedImageData(mapView, projectedWidth, projectedHeight, cartesianImageData, canvas, horizontalShift, verticalShift) {
-                var _a;
-                const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = pick((_a = mapView.projection.options.rotation) === null || _a === void 0 ? void 0 : _a[0], 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
+                const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = pick(mapView.projection.options.rotation?.[0], 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
                 let y = -1;
                 // For each pixel on the map plane, find the map
                 // coordinate and get the color value

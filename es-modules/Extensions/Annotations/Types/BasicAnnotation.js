@@ -119,8 +119,7 @@ BasicAnnotation.basicControlPoints = {
             },
             events: {
                 drag: function (e, target) {
-                    var _a, _b;
-                    const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = ((_a = annotation.clipXAxis) === null || _a === void 0 ? void 0 : _a.index) || 0, yAxisIndex = ((_b = annotation.clipYAxis) === null || _b === void 0 ? void 0 : _b.index) || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
+                    const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
                     // Top right point
                     points[1].x = x;
                     // Bottom right point (cursor position)

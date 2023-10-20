@@ -411,7 +411,6 @@ class Series {
      * @emits Highcharts.Series#event:afterSetOptions
      */
     setOptions(itemOptions) {
-        var _a, _b;
         const chart = this.chart, chartOptions = chart.options, plotOptions = chartOptions.plotOptions, userOptions = chart.userOptions || {}, seriesUserOptions = merge(itemOptions), styledMode = chart.styledMode, e = {
             plotOptions: plotOptions,
             userOptions: seriesUserOptions
@@ -438,10 +437,10 @@ class Series {
         // init userOptions with possible later updates: 4-6 like 1-3 and
         // (7)this series options
         this.tooltipOptions = merge(defaultOptions.tooltip, // 1
-        (_a = defaultOptions.plotOptions.series) === null || _a === void 0 ? void 0 : _a.tooltip, // 2
-        defaultPlotOptionsType === null || defaultPlotOptionsType === void 0 ? void 0 : defaultPlotOptionsType.tooltip, // 3
+        defaultOptions.plotOptions.series?.tooltip, // 2
+        defaultPlotOptionsType?.tooltip, // 3
         chart.userOptions.tooltip, // 4
-        (_b = userPlotOptions.series) === null || _b === void 0 ? void 0 : _b.tooltip, // 5
+        userPlotOptions.series?.tooltip, // 5
         userPlotOptionsType.tooltip, // 6
         seriesUserOptions.tooltip // 7
         );
@@ -503,7 +502,7 @@ class Series {
     getCyclic(prop, value, defaults) {
         const chart = this.chart, indexName = `${prop}Index`, counterName = `${prop}Counter`, len = (
         // Symbol count
-        (defaults === null || defaults === void 0 ? void 0 : defaults.length) ||
+        defaults?.length ||
             // Color count
             chart.options.chart.colorCount);
         let i, setting;
@@ -794,7 +793,6 @@ class Series {
      *        `false` to prevent.
      */
     setData(data, redraw = true, animation, updatePoints) {
-        var _a;
         const series = this, oldData = series.points, oldDataLength = (oldData && oldData.length) || 0, options = series.options, chart = series.chart, dataSorting = options.dataSorting, xAxis = series.xAxis, turboThreshold = options.turboThreshold, xData = this.xData, yData = this.yData, pointArrayMap = series.pointArrayMap, valueCount = pointArrayMap && pointArrayMap.length, keys = options.keys;
         let i, pt, updatedData, indexOfX = 0, indexOfY = 1, firstPoint = null, copiedData;
         if (!chart.options.chart.allowMutatingData) { // #4259
@@ -913,7 +911,7 @@ class Series {
             // destroy old points
             i = oldDataLength;
             while (i--) {
-                (_a = oldData[i]) === null || _a === void 0 ? void 0 : _a.destroy();
+                oldData[i]?.destroy();
             }
             // reset minRange (#878)
             if (xAxis) {
@@ -998,7 +996,7 @@ class Series {
         const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
             series.getExtremesFromAll ||
             options.getExtremesFromAll, // #4599
-        logarithmic = xAxis === null || xAxis === void 0 ? void 0 : xAxis.logarithmic, isCartesian = series.isCartesian;
+        logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
         let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
         // copied during slice operation:
         processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -1362,7 +1360,6 @@ class Series {
      * @emits Highcharts.Series#events:translate
      */
     translate() {
-        var _a;
         if (!this.processedXData) { // hidden series
             this.processData();
         }
@@ -1383,11 +1380,11 @@ class Series {
         for (i = 0; i < dataLength; i++) {
             const point = points[i], xValue = point.x;
             let stackItem, stackValues, yValue = point.y, lowValue = point.low;
-            const stacks = stacking && ((_a = yAxis.stacking) === null || _a === void 0 ? void 0 : _a.stacks[(series.negStacks &&
+            const stacks = stacking && yAxis.stacking?.stacks[(series.negStacks &&
                 yValue <
                     (stackThreshold ? 0 : threshold) ?
                 '-' :
-                '') + series.stackKey]);
+                '') + series.stackKey];
             plotX = xAxis.translate(// #3923
             xValue, false, false, false, true, pointPlacement);
             /**
@@ -2346,8 +2343,7 @@ class Series {
          * @private
          */
         function setDistance(p1, p2) {
-            var _a;
-            const p1kdX = p1[kdX], p2kdX = p2[kdX], x = (defined(p1kdX) && defined(p2kdX)) ? p1kdX - p2kdX : null, p1kdY = p1[kdY], p2kdY = p2[kdY], y = (defined(p1kdY) && defined(p2kdY)) ? p1kdY - p2kdY : 0, radius = useRadius ? (((_a = p2.marker) === null || _a === void 0 ? void 0 : _a.radius) || 0) : 0;
+            const p1kdX = p1[kdX], p2kdX = p2[kdX], x = (defined(p1kdX) && defined(p2kdX)) ? p1kdX - p2kdX : null, p1kdY = p1[kdY], p2kdY = p2[kdY], y = (defined(p1kdY) && defined(p2kdY)) ? p1kdY - p2kdY : 0, radius = useRadius ? (p2.marker?.radius || 0) : 0;
             p2.dist = Math.sqrt(((x && x * x) || 0) + y * y) - radius;
             p2.distX = defined(x) ? (Math.abs(x) - radius) : Number.MAX_VALUE;
         }
@@ -2355,13 +2351,12 @@ class Series {
          * @private
          */
         function _search(search, tree, depth, dimensions) {
-            var _a;
             const point = tree.point, axis = series.kdAxisArray[depth % dimensions];
             let nPoint1, nPoint2, ret = point;
             setDistance(search, point);
             // Pick side based on distance to splitting point
             const tdist = (search[axis] || 0) - (point[axis] || 0) +
-                (useRadius ? (((_a = point.marker) === null || _a === void 0 ? void 0 : _a.radius) || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
+                (useRadius ? (point.marker?.radius || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
             // End of tree
             if (tree[sideA]) {
                 nPoint1 = _search(search, tree[sideA], depth + 1, dimensions);
@@ -2733,7 +2728,6 @@ class Series {
      * @emits Highcharts.Series#event:afterUpdate
      */
     update(options, redraw) {
-        var _a, _b;
         options = diffObjects(options, this.userOptions);
         fireEvent(this, 'update', { options: options });
         const series = this, chart = series.chart, 
@@ -2815,7 +2809,7 @@ class Series {
                 series.index : oldOptions.index,
             pointStart: pick(
             // When updating from blank (#7933)
-            (_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.pointStart, oldOptions.pointStart, 
+            plotOptions?.series?.pointStart, oldOptions.pointStart, 
             // When updating after addPoint
             series.xData[0])
         }, (!keepPoints && { data: series.options.data }), options);
@@ -2885,7 +2879,7 @@ class Series {
                 if (this.hasMarkerChanged(seriesOptions, oldOptions)) {
                     kinds.graphic = 1;
                 }
-                if (!((_b = series.hasDataLabels) === null || _b === void 0 ? void 0 : _b.call(series))) {
+                if (!series.hasDataLabels?.()) {
                     kinds.dataLabel = 1;
                 }
             }
@@ -2929,8 +2923,7 @@ class Series {
      * @private
      */
     hasOptionChanged(optionName) {
-        var _a, _b;
-        const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = pick((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[this.type]) === null || _a === void 0 ? void 0 : _a[optionName], (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _b === void 0 ? void 0 : _b[optionName]);
+        const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = pick(plotOptions?.[this.type]?.[optionName], plotOptions?.series?.[optionName]);
         // Check if `plotOptions` are defined already, #19203
         if (oldOption && !defined(plotOptionsOption)) {
             return option !== oldOption;
@@ -3117,7 +3110,6 @@ class Series {
      * @emits Highcharts.Series#event:show
      */
     setVisible(vis, redraw) {
-        var _a;
         const series = this, chart = series.chart, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
         // If called without an argument, toggle visibility
         series.visible =
@@ -3134,12 +3126,11 @@ class Series {
             'tracker',
             'tt'
         ].forEach((key) => {
-            var _a;
-            (_a = series[key]) === null || _a === void 0 ? void 0 : _a[showOrHide]();
+            series[key]?.[showOrHide]();
         });
         // Hide tooltip (#1361)
         if (chart.hoverSeries === series ||
-            ((_a = chart.hoverPoint) === null || _a === void 0 ? void 0 : _a.series) === series) {
+            chart.hoverPoint?.series === series) {
             series.onMouseOut();
         }
         if (series.legendItem) {
@@ -3240,8 +3231,8 @@ class Series {
      * @private
      */
     drawLegendSymbol(legend, item) {
-        var _a;
-        (_a = LegendSymbol[this.options.legendSymbol || 'rectangle']) === null || _a === void 0 ? void 0 : _a.call(this, legend, item);
+        LegendSymbol[this.options.legendSymbol || 'rectangle']
+            ?.call(this, legend, item);
     }
 }
 Series.defaultOptions = SeriesDefaults;

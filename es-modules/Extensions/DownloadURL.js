@@ -107,7 +107,7 @@ function downloadURL(dataURL, filename) {
                 throw new Error('Failed to open window');
             }
         }
-        catch (_a) {
+        catch {
             // If window.open failed, try location.href
             win.location.href = dataURL;
         }

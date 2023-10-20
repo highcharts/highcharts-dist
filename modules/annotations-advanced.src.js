@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Annotations module
  *
@@ -1127,7 +1127,6 @@
              * @private
              */
             onMouseDown(e) {
-                var _a;
                 if (e.preventDefault) {
                     e.preventDefault();
                 }
@@ -1138,7 +1137,7 @@
                 const emitter = this, pointer = emitter.chart.pointer, 
                 // Using experimental property on event object to check if event was
                 // created by touch on screen on hybrid device (#18122)
-                firesTouchEvents = ((_a = e === null || e === void 0 ? void 0 : e.sourceCapabilities) === null || _a === void 0 ? void 0 : _a.firesTouchEvents) || false;
+                firesTouchEvents = (e?.sourceCapabilities?.firesTouchEvents) || false;
                 e = pointer.normalize(e);
                 let prevChartX = e.chartX, prevChartY = e.chartY;
                 emitter.cancelClick = false;
@@ -7145,9 +7144,7 @@
                     },
                     events: {
                         drag: function (e, target) {
-                            var _a,
-                                _b;
-                            const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = ((_a = annotation.clipXAxis) === null || _a === void 0 ? void 0 : _a.index) || 0, yAxisIndex = ((_b = annotation.clipYAxis) === null || _b === void 0 ? void 0 : _b.index) || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
+                            const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
                             // Top right point
                             points[1].x = x;
                             // Bottom right point (cursor position)

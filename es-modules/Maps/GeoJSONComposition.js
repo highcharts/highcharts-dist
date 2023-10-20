@@ -207,7 +207,6 @@ var GeoJSONComposition;
      * @return {Array<*>} An object ready for the `mapData` option.
      */
     function geojson(json, hType = 'map', series) {
-        var _a, _b;
         const mapData = [];
         const geojson = json.type === 'Topology' ? topo2geo(json) : json, features = geojson.features;
         for (let i = 0, iEnd = features.length; i < iEnd; ++i) {
@@ -252,8 +251,8 @@ var GeoJSONComposition;
         // Create a credits text that includes map source, to be picked up in
         // Chart.addCredits
         if (series && geojson.copyrightShort) {
-            series.chart.mapCredits = format((_a = series.chart.options.credits) === null || _a === void 0 ? void 0 : _a.mapText, { geojson: geojson });
-            series.chart.mapCreditsFull = format((_b = series.chart.options.credits) === null || _b === void 0 ? void 0 : _b.mapTextFull, { geojson: geojson });
+            series.chart.mapCredits = format(series.chart.options.credits?.mapText, { geojson: geojson });
+            series.chart.mapCreditsFull = format(series.chart.options.credits?.mapTextFull, { geojson: geojson });
         }
         return mapData;
     }

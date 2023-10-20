@@ -164,7 +164,7 @@ class PieSeries extends Series {
         // Variable pie has individual radius
         radius = this.radii ?
             this.radii[point.index] || 0 :
-            center[2] / 2, labelPosition = dataLabel.dataLabelPosition, distance = (labelPosition === null || labelPosition === void 0 ? void 0 : labelPosition.distance) || 0;
+            center[2] / 2, labelPosition = dataLabel.dataLabelPosition, distance = labelPosition?.distance || 0;
         const angle = Math.asin(clamp((y - center[1]) / (radius + distance), -1, 1));
         const x = center[0] +
             (left ? -1 : 1) *

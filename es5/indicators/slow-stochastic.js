@@ -1,15 +1,9 @@
-/*
- Highstock JS v11.1.0 (2023-10-19)
-
- Slow Stochastic series type for Highcharts Stock
-
- (c) 2010-2021 Pawel Fus
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(b){"object"===typeof module&&module.exports?(b["default"]=b,module.exports=b):"function"===typeof define&&define.amd?define("highcharts/indicators/indicators",["highcharts","highcharts/modules/stock"],function(d){b(d);b.Highcharts=d;return b}):b("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(b){function d(b,a,d,e){b.hasOwnProperty(a)||(b[a]=e.apply(null,d),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:a,
-module:b[a]}})))}b=b?b._modules:{};d(b,"Stock/Indicators/SlowStochastic/SlowStochasticIndicator.js",[b["Core/Series/SeriesRegistry.js"],b["Core/Utilities.js"]],function(b,a){var d=this&&this.__extends||function(){function b(a,c){b=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(b,c){b.__proto__=c}||function(b,c){for(var a in c)Object.prototype.hasOwnProperty.call(c,a)&&(b[a]=c[a])};return b(a,c)}return function(a,c){function g(){this.constructor=a}if("function"!==typeof c&&null!==
-c)throw new TypeError("Class extends value "+String(c)+" is not a constructor or null");b(a,c);a.prototype=null===c?Object.create(c):(g.prototype=c.prototype,new g)}}(),e=b.seriesTypes,k=e.sma,h=e.stochastic;e=a.extend;var l=a.merge;a=function(b){function a(){var c=null!==b&&b.apply(this,arguments)||this;c.data=void 0;c.options=void 0;c.points=void 0;return c}d(a,b);a.prototype.getValues=function(c,a){var d=a.periods;a=b.prototype.getValues.call(this,c,a);c={values:[],xData:[],yData:[]};if(a){c.xData=
-a.xData.slice(d[1]-1);a=a.yData.slice(d[1]-1);var e=k.prototype.getValues.call(this,{xData:c.xData,yData:a},{index:1,period:d[2]});if(e){for(var f=0,g=c.xData.length;f<g;f++)c.yData[f]=[a[f][1],e.yData[f-d[2]+1]||null],c.values[f]=[c.xData[f],a[f][1],e.yData[f-d[2]+1]||null];return c}}};a.defaultOptions=l(h.defaultOptions,{params:{periods:[14,3,3]}});return a}(h);e(a.prototype,{nameBase:"Slow Stochastic"});b.registerSeriesType("slowstochastic",a);"";return a});d(b,"masters/indicators/slow-stochastic.src.js",
-[],function(){})});
-//# sourceMappingURL=slow-stochastic.js.map
+/**
+ * Highstock JS v11.1.0 (2023-10-20)
+ *
+ * Slow Stochastic series type for Highcharts Stock
+ *
+ * (c) 2010-2021 Pawel Fus
+ *
+ * License: www.highcharts.com/license
+ */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/indicators/indicators",["highcharts","highcharts/modules/stock"],function(o){return t(o),t.Highcharts=o,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var o=t?t._modules:{};function e(t,o,e,a){t.hasOwnProperty(o)||(t[o]=a.apply(null,e),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:o,module:t[o]}})))}e(o,"Stock/Indicators/SlowStochastic/SlowStochasticIndicator.js",[o["Core/Series/SeriesRegistry.js"],o["Core/Utilities.js"]],function(t,o){var e,a=this&&this.__extends||(e=function(t,o){return(e=Object.setPrototypeOf||({__proto__:[]})instanceof Array&&function(t,o){t.__proto__=o}||function(t,o){for(var e in o)Object.prototype.hasOwnProperty.call(o,e)&&(t[e]=o[e])})(t,o)},function(t,o){if("function"!=typeof o&&null!==o)throw TypeError("Class extends value "+String(o)+" is not a constructor or null");function a(){this.constructor=t}e(t,o),t.prototype=null===o?Object.create(o):(a.prototype=o.prototype,new a)}),i=t.seriesTypes,n=i.sma,s=i.stochastic,r=o.extend,c=o.merge,u=function(t){function o(){var o=null!==t&&t.apply(this,arguments)||this;return o.data=void 0,o.options=void 0,o.points=void 0,o}return a(o,t),o.prototype.getValues=function(o,e){var a=e.periods,i=t.prototype.getValues.call(this,o,e),s={values:[],xData:[],yData:[]};if(i){s.xData=i.xData.slice(a[1]-1);var r=i.yData.slice(a[1]-1),c=n.prototype.getValues.call(this,{xData:s.xData,yData:r},{index:1,period:a[2]});if(c){for(var u=0,l=s.xData.length;u<l;u++)s.yData[u]=[r[u][1],c.yData[u-a[2]+1]||null],s.values[u]=[s.xData[u],r[u][1],c.yData[u-a[2]+1]||null];return s}}},o.defaultOptions=c(s.defaultOptions,{params:{periods:[14,3,3]}}),o}(s);return r(u.prototype,{nameBase:"Slow Stochastic"}),t.registerSeriesType("slowstochastic",u),u}),e(o,"masters/indicators/slow-stochastic.src.js",[],function(){})});//# sourceMappingURL=slow-stochastic.js.map

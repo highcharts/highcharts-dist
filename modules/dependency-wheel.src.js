@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Dependency wheel module
  *
@@ -82,7 +82,6 @@
              * @private
              */
             getDataLabelPath(label) {
-                var _a;
                 const point = this, renderer = point.series.chart.renderer, shapeArgs = point.shapeArgs, upperHalf = point.angle < 0 || point.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
                 // First time
                 if (!point.dataLabelPath) {
@@ -108,7 +107,7 @@
                     .attr({
                     x: shapeArgs.x,
                     y: shapeArgs.y,
-                    r: ((shapeArgs.r || 0) + pInt(((_a = label.options) === null || _a === void 0 ? void 0 : _a.distance) || 0)),
+                    r: ((shapeArgs.r || 0) + pInt(label.options?.distance || 0)),
                     start: (upperHalf ? start : end),
                     end: (upperHalf ? end : start),
                     clockwise: +upperHalf

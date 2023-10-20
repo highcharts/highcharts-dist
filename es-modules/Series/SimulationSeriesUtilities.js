@@ -15,14 +15,13 @@ const { animObject } = A;
  * @private
  */
 function initDataLabelsDefer() {
-    var _a;
     const dlOptions = this.options.dataLabels;
     // drawDataLabels() fires for the first time after
     // dataLabels.animation.defer time unless
     // the dataLabels.animation = false or dataLabels.defer = false
     // or if the simulation is disabled
-    if (!(dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.defer) ||
-        !((_a = this.options.layoutAlgorithm) === null || _a === void 0 ? void 0 : _a.enableSimulation)) {
+    if (!dlOptions?.defer ||
+        !this.options.layoutAlgorithm?.enableSimulation) {
         this.deferDataLabels = false;
     }
     else {
@@ -43,7 +42,7 @@ function initDataLabels() {
         const dataLabelsGroup = this.initDataLabelsGroup();
         // Apply the dataLabels.style not only to the
         // individual dataLabels but also to the entire group
-        if (!series.chart.styledMode && (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.style)) {
+        if (!series.chart.styledMode && dlOptions?.style) {
             dataLabelsGroup.css(dlOptions.style);
         }
         // Initialize the opacity of the group to 0 (start of animation)

@@ -21,9 +21,8 @@ class LambertConformalConic {
      *
      * */
     constructor(options) {
-        var _a;
         const parallels = (options.parallels || [])
-            .map((n) => n * deg2rad), lat1 = parallels[0] || 0, lat2 = (_a = parallels[1]) !== null && _a !== void 0 ? _a : lat1, cosLat1 = Math.cos(lat1);
+            .map((n) => n * deg2rad), lat1 = parallels[0] || 0, lat2 = parallels[1] ?? lat1, cosLat1 = Math.cos(lat1);
         if (typeof options.projectedBounds === 'object') {
             this.projectedBounds = options.projectedBounds;
         }

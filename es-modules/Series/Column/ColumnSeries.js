@@ -246,7 +246,6 @@ class ColumnSeries extends Series {
      * The adjusted x position, or the original if not adjusted
      */
     adjustForMissingColumns(x, pointWidth, point, metrics) {
-        var _a;
         if (!point.isNull && metrics.columnCount > 1) {
             const visibleSeries = this.xAxis.series
                 .filter((s) => s.visible)
@@ -257,7 +256,7 @@ class ColumnSeries extends Series {
             // `centerInCategory` is true, there is one stack handling the
             // grouping of points in each category. This is done in the
             // `setGroupedPoints` function.
-            objectEach((_a = this.xAxis.stacking) === null || _a === void 0 ? void 0 : _a.stacks, (stack) => {
+            objectEach(this.xAxis.stacking?.stacks, (stack) => {
                 if (typeof point.x === 'number') {
                     const stackItem = stack[point.x.toString()];
                     if (stackItem) {

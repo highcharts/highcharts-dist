@@ -644,8 +644,7 @@ class SeriesKeyboardNavigation {
      *         This highlighted point.
      */
     function pointHighlight(highlightVisually = true) {
-        var _a, _b;
-        const chart = this.series.chart, tooltipElement = (_b = (_a = chart.tooltip) === null || _a === void 0 ? void 0 : _a.label) === null || _b === void 0 ? void 0 : _b.element;
+        const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
         if (!this.isNull && highlightVisually) {
             this.onMouseOver(); // Show the hover marker and tooltip
         }
@@ -667,7 +666,7 @@ class SeriesKeyboardNavigation {
         }
         chart.highlightedPoint = this;
         // Get position of the tooltip.
-        const tooltipTop = tooltipElement === null || tooltipElement === void 0 ? void 0 : tooltipElement.getBoundingClientRect().top;
+        const tooltipTop = tooltipElement?.getBoundingClientRect().top;
         if (tooltipElement && tooltipTop && tooltipTop < 0) {
             // Calculate scroll position.
             const scrollTop = window.scrollY, newScrollTop = scrollTop + tooltipTop;

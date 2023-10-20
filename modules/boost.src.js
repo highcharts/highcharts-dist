@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Boost module
  *
@@ -3359,7 +3359,10 @@
                 }
             }
             if (ColorClass && U.pushUnique(composedClasses, ColorClass)) {
-                ColorClass.names = Object.assign(Object.assign({}, ColorClass.names), NamedColors.defaultHTMLColorMap);
+                ColorClass.names = {
+                    ...ColorClass.names,
+                    ...NamedColors.defaultHTMLColorMap
+                };
             }
             // WebGL support is alright, and we're good to go.
             BoostChart.compose(ChartClass, wglMode);

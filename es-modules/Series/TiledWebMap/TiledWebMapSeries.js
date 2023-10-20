@@ -143,7 +143,6 @@ class TiledWebMapSeries extends MapSeries {
         return { lon, lat };
     }
     drawPoints() {
-        var _a;
         const chart = this.chart, mapView = chart.mapView;
         if (!mapView) {
             return;
@@ -262,7 +261,7 @@ class TiledWebMapSeries extends MapSeries {
                 else {
                     chart.addCredits({
                         text: creditsText,
-                        style: pick((_a = chart.options.credits) === null || _a === void 0 ? void 0 : _a.style, {})
+                        style: pick(chart.options.credits?.style, {})
                     });
                 }
                 if (mapView.projection.options.name !== providerProjection) {

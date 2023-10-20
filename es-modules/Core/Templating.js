@@ -210,7 +210,7 @@ function format(str = '', ctx, chart) {
             matches.push(currentMatch);
         }
         // Evaluate sub-matches one by one to prevent orphaned block closers
-        if (subMatch && !(currentMatch === null || currentMatch === void 0 ? void 0 : currentMatch.isBlock)) {
+        if (subMatch && !currentMatch?.isBlock) {
             break;
         }
     }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * ColorAxis module
  *
@@ -191,8 +191,7 @@
              * @private
              */
             function onLegendAfterUpdate(e) {
-                var _a;
-                (_a = this.chart.colorAxis) === null || _a === void 0 ? void 0 : _a.forEach((colorAxis) => {
+                this.chart.colorAxis?.forEach((colorAxis) => {
                     colorAxis.update({}, e.redraw);
                 });
             }
@@ -1119,7 +1118,6 @@
              * @private
              */
             drawLegendSymbol(legend, item) {
-                var _a;
                 const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength), labelPadding = pick(
                 // @todo: This option is not documented, nor implemented when
                 // vertical
@@ -1127,7 +1125,7 @@
                 this.setLegendColor();
                 // Create the gradient
                 if (!legendItem.symbol) {
-                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: (_a = legendOptions.symbolRadius) !== null && _a !== void 0 ? _a : 3 }).attr({
+                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: legendOptions.symbolRadius ?? 3 }).attr({
                         zIndex: 1
                     }).add(legendItem.group);
                 }

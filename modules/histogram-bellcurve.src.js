@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -633,10 +633,8 @@
                 return data;
             }
             setDerivedData() {
-                var _a,
-                    _b;
                 const series = this;
-                if (((_b = (_a = series.baseSeries) === null || _a === void 0 ? void 0 : _a.yData) === null || _b === void 0 ? void 0 : _b.length) || 0 > 1) {
+                if (series.baseSeries?.yData?.length || 0 > 1) {
                     series.setMean();
                     series.setStandardDeviation();
                     series.setData(series.derivedData(series.mean || 0, series.standardDeviation || 0), false);

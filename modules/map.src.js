@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-10-19)
+ * @license Highmaps JS v11.1.0 (2023-10-20)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -191,8 +191,7 @@
              * @private
              */
             function onLegendAfterUpdate(e) {
-                var _a;
-                (_a = this.chart.colorAxis) === null || _a === void 0 ? void 0 : _a.forEach((colorAxis) => {
+                this.chart.colorAxis?.forEach((colorAxis) => {
                     colorAxis.update({}, e.redraw);
                 });
             }
@@ -1119,7 +1118,6 @@
              * @private
              */
             drawLegendSymbol(legend, item) {
-                var _a;
                 const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength), labelPadding = pick(
                 // @todo: This option is not documented, nor implemented when
                 // vertical
@@ -1127,7 +1125,7 @@
                 this.setLegendColor();
                 // Create the gradient
                 if (!legendItem.symbol) {
-                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: (_a = legendOptions.symbolRadius) !== null && _a !== void 0 ? _a : 3 }).attr({
+                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: legendOptions.symbolRadius ?? 3 }).attr({
                         zIndex: 1
                     }).add(legendItem.group);
                 }
@@ -1906,7 +1904,7 @@
          * */
         function bottomButton(x, y, w, h, options) {
             if (options) {
-                const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+                const r = options?.r || 0;
                 options.brBoxY = y - r;
                 options.brBoxHeight = h + r;
             }
@@ -1921,7 +1919,7 @@
         }
         function topButton(x, y, w, h, options) {
             if (options) {
-                const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+                const r = options?.r || 0;
                 options.brBoxHeight = h + r;
             }
             return symbols.roundedRect(x, y, w, h, options);
@@ -2076,7 +2074,6 @@
                             .add();
                     }
                     objectEach(navOptions.buttons, (buttonOptions, n) => {
-                        var _a;
                         buttonOptions = merge(navOptions.buttonOptions, buttonOptions);
                         // Presentational
                         if (!chart.styledMode && buttonOptions.theme) {
@@ -2118,7 +2115,7 @@
                                 .path(d)
                                 .addClass('highcharts-button-symbol')
                                 .attr(chart.styledMode ? {} : {
-                                stroke: (_a = buttonOptions.style) === null || _a === void 0 ? void 0 : _a.color,
+                                stroke: buttonOptions.style?.color,
                                 'stroke-width': 3,
                                 'stroke-linecap': 'round'
                             })
@@ -3876,8 +3873,6 @@
              * @return {Array<*>} An object ready for the `mapData` option.
              */
             function geojson(json, hType = 'map', series) {
-                var _a,
-                    _b;
                 const mapData = [];
                 const geojson = json.type === 'Topology' ? topo2geo(json) : json, features = geojson.features;
                 for (let i = 0, iEnd = features.length; i < iEnd; ++i) {
@@ -3922,8 +3917,8 @@
                 // Create a credits text that includes map source, to be picked up in
                 // Chart.addCredits
                 if (series && geojson.copyrightShort) {
-                    series.chart.mapCredits = format((_a = series.chart.options.credits) === null || _a === void 0 ? void 0 : _a.mapText, { geojson: geojson });
-                    series.chart.mapCreditsFull = format((_b = series.chart.options.credits) === null || _b === void 0 ? void 0 : _b.mapTextFull, { geojson: geojson });
+                    series.chart.mapCredits = format(series.chart.options.credits?.mapText, { geojson: geojson });
+                    series.chart.mapCreditsFull = format(series.chart.options.credits?.mapTextFull, { geojson: geojson });
                 }
                 return mapData;
             }
@@ -4305,9 +4300,8 @@
              *
              * */
             constructor(options) {
-                var _a;
                 const parallels = (options.parallels || [])
-                    .map((n) => n * deg2rad), lat1 = parallels[0] || 0, lat2 = (_a = parallels[1]) !== null && _a !== void 0 ? _a : lat1, cosLat1 = Math.cos(lat1);
+                    .map((n) => n * deg2rad), lat1 = parallels[0] || 0, lat2 = parallels[1] ?? lat1, cosLat1 = Math.cos(lat1);
                 if (typeof options.projectedBounds === 'object') {
                     this.projectedBounds = options.projectedBounds;
                 }
@@ -6616,7 +6610,6 @@
              * @private
              */
             pointAttribs(point, state) {
-                var _a;
                 const { mapView, styledMode } = point.series.chart;
                 const attr = styledMode ?
                     this.colorAttribs(point) :
@@ -6632,7 +6625,7 @@
                     if (defined(stateStrokeWidth)) {
                         pointStrokeWidth = stateStrokeWidth;
                     }
-                    attr.stroke = (_a = stateOptions.borderColor) !== null && _a !== void 0 ? _a : point.color;
+                    attr.stroke = stateOptions.borderColor ?? point.color;
                 }
                 if (pointStrokeWidth && mapView) {
                     pointStrokeWidth /= mapView.getScale();
@@ -10631,7 +10624,10 @@
                             }
                             ctx.putImageData(new ImageData(pixelData, canvasWidth), 0, 0);
                             if (image) {
-                                image.attr(Object.assign(Object.assign({}, dimensions), { href: canvas.toDataURL('image/png', 1) }));
+                                image.attr({
+                                    ...dimensions,
+                                    href: canvas.toDataURL('image/png', 1)
+                                });
                             }
                             else {
                                 series.directTouch = false;

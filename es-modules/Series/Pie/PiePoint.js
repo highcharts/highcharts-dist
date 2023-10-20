@@ -43,7 +43,11 @@ class PiePoint extends Point {
      */
     getConnectorPath(dataLabel) {
         const labelPosition = dataLabel.dataLabelPosition, options = (dataLabel.options || {}), connectorShape = options.connectorShape, shapeFunc = (this.connectorShapes[connectorShape] || connectorShape);
-        return labelPosition && shapeFunc.call(this, Object.assign(Object.assign({}, labelPosition.computed), { alignment: labelPosition.alignment }), labelPosition.connectorPosition, options) || [];
+        return labelPosition && shapeFunc.call(this, {
+            // Pass simplified label position object for user's convenience
+            ...labelPosition.computed,
+            alignment: labelPosition.alignment
+        }, labelPosition.connectorPosition, options) || [];
     }
     /**
      * @private

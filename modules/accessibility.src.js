@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Accessibility module
  *
@@ -710,10 +710,8 @@
          * @private
          */
         function getAxisDescription(axis) {
-            var _a,
-                _b;
-            return axis && (((_a = axis.options.accessibility) === null || _a === void 0 ? void 0 : _a.description) ||
-                ((_b = axis.axisTitle) === null || _b === void 0 ? void 0 : _b.textStr) ||
+            return axis && (axis.options.accessibility?.description ||
+                axis.axisTitle?.textStr ||
                 axis.options.id ||
                 axis.categories && 'categories' ||
                 axis.dateTime && 'Time' ||
@@ -4693,7 +4691,6 @@
          * @private
          */
         function onChartAfterSetChartSize() {
-            var _a;
             const legend = this.legend, navigator = this.navigator;
             let legendOptions, xAxis, yAxis;
             if (navigator) {
@@ -4715,7 +4712,7 @@
                         this.chartHeight -
                             navigator.height -
                             scrollbarHeight -
-                            (((_a = this.scrollbar) === null || _a === void 0 ? void 0 : _a.options.margin) || 0) -
+                            (this.scrollbar?.options.margin || 0) -
                             this.spacing[2] -
                             (this.rangeSelector && this.extraBottomMargin ?
                                 this.rangeSelector.getHeight() :
@@ -7393,13 +7390,10 @@
              * @private
              */
             onChartUpdate() {
-                var _a,
-                    _b,
-                    _c;
                 const chart = this.chart, options = chart.options;
-                if ((_a = options.navigator.accessibility) === null || _a === void 0 ? void 0 : _a.enabled) {
-                    const verbosity = options.accessibility.landmarkVerbosity, groupFormatStr = (_b = options.lang
-                        .accessibility) === null || _b === void 0 ? void 0 : _b.navigator.groupLabel;
+                if (options.navigator.accessibility?.enabled) {
+                    const verbosity = options.accessibility.landmarkVerbosity, groupFormatStr = options.lang
+                        .accessibility?.navigator.groupLabel;
                     // We just recreate the group for simplicity. Could consider
                     // updating the existing group if the verbosity has not changed.
                     this.proxyProvider.removeGroup('navigator');
@@ -7407,8 +7401,8 @@
                         role: verbosity === 'all' ? 'region' : 'group',
                         'aria-label': format(groupFormatStr, { chart }, chart)
                     });
-                    const handleFormatStr = (_c = options.lang
-                        .accessibility) === null || _c === void 0 ? void 0 : _c.navigator.handleLabel;
+                    const handleFormatStr = options.lang
+                        .accessibility?.navigator.handleLabel;
                     [0, 1].forEach((n) => {
                         const handle = this.getHandleByIx(n);
                         if (handle) {
@@ -7459,11 +7453,8 @@
                     init: () => {
                         chart.setFocusToElement(this.getHandleByIx(handleIx), proxyEl);
                     },
-                    validate: () => {
-                        var _a;
-                        return !!(this.getHandleByIx(handleIx) && proxyEl &&
-                            ((_a = chart.options.navigator.accessibility) === null || _a === void 0 ? void 0 : _a.enabled));
-                    }
+                    validate: () => !!(this.getHandleByIx(handleIx) && proxyEl &&
+                        chart.options.navigator.accessibility?.enabled)
                 });
             }
             /**
@@ -7518,7 +7509,6 @@
              */
             updateNavigator(beforeAnnounce) {
                 const performUpdate = (beforeAnnounce) => {
-                    var _a;
                     const chart = this.chart, navigator = chart.navigator;
                     if (navigator && this.minHandleProxy && this.maxHandleProxy) {
                         const chartPos = chart.pointer.getChartPosition(), minNewX = parseFloat(this.minHandleProxy.value) /
@@ -7533,8 +7523,7 @@
                             [1, 'mousemove', maxNewX],
                             [1, 'mouseup', maxNewX]
                         ].forEach(([handleIx, type, x]) => {
-                            var _a;
-                            const handle = (_a = this.getHandleByIx(handleIx)) === null || _a === void 0 ? void 0 : _a.element;
+                            const handle = this.getHandleByIx(handleIx)?.element;
                             if (handle) {
                                 fireEventOnWrappedOrUnwrappedElement(handle, getFakeMouseEvent(type, {
                                     x: chartPos.left + navigator.left + x,
@@ -7546,8 +7535,8 @@
                             beforeAnnounce();
                         }
                         // Announce the update
-                        const announceFormatStr = (_a = chart.options.lang
-                            .accessibility) === null || _a === void 0 ? void 0 : _a.navigator.changeAnnouncement, axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
+                        const announceFormatStr = chart.options.lang
+                            .accessibility?.navigator.changeAnnouncement, axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
                         this.announcer.announce(format(announceFormatStr, { axisRangeDescription, chart }, chart));
                     }
                 };
@@ -7846,15 +7835,12 @@
          * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
          */
         function setPointScreenReaderAttribs(point, pointElement) {
-            var _a,
-                _b,
-                _c;
-            const series = point.series, seriesPointA11yOptions = ((_a = series.options.accessibility) === null || _a === void 0 ? void 0 : _a.point) || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
+            const series = point.series, seriesPointA11yOptions = series.options.accessibility?.point || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
                 format(seriesPointA11yOptions.descriptionFormat, point, series.chart)) ||
-                ((_b = seriesPointA11yOptions.descriptionFormatter) === null || _b === void 0 ? void 0 : _b.call(seriesPointA11yOptions, point)) ||
+                seriesPointA11yOptions.descriptionFormatter?.(point) ||
                 (isString(a11yPointOptions.descriptionFormat) &&
                     format(a11yPointOptions.descriptionFormat, point, series.chart)) ||
-                ((_c = a11yPointOptions.descriptionFormatter) === null || _c === void 0 ? void 0 : _c.call(a11yPointOptions, point)) ||
+                a11yPointOptions.descriptionFormatter?.(point) ||
                 defaultPointDescriptionFormatter(point), series.chart.renderer.forExport);
             pointElement.setAttribute('role', 'img');
             pointElement.setAttribute('aria-label', label);
@@ -12485,9 +12471,7 @@
              *         This highlighted point.
              */
             function pointHighlight(highlightVisually = true) {
-                var _a,
-                    _b;
-                const chart = this.series.chart, tooltipElement = (_b = (_a = chart.tooltip) === null || _a === void 0 ? void 0 : _a.label) === null || _b === void 0 ? void 0 : _b.element;
+                const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
                 if (!this.isNull && highlightVisually) {
                     this.onMouseOver(); // Show the hover marker and tooltip
                 }
@@ -12509,7 +12493,7 @@
                 }
                 chart.highlightedPoint = this;
                 // Get position of the tooltip.
-                const tooltipTop = tooltipElement === null || tooltipElement === void 0 ? void 0 : tooltipElement.getBoundingClientRect().top;
+                const tooltipTop = tooltipElement?.getBoundingClientRect().top;
                 if (tooltipElement && tooltipTop && tooltipTop < 0) {
                     // Calculate scroll position.
                     const scrollTop = window.scrollY, newScrollTop = scrollTop + tooltipTop;

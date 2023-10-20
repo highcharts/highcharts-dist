@@ -282,13 +282,12 @@ function defaultPointDescriptionFormatter(point) {
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
  */
 function setPointScreenReaderAttribs(point, pointElement) {
-    var _a, _b, _c;
-    const series = point.series, seriesPointA11yOptions = ((_a = series.options.accessibility) === null || _a === void 0 ? void 0 : _a.point) || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
+    const series = point.series, seriesPointA11yOptions = series.options.accessibility?.point || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
         format(seriesPointA11yOptions.descriptionFormat, point, series.chart)) ||
-        ((_b = seriesPointA11yOptions.descriptionFormatter) === null || _b === void 0 ? void 0 : _b.call(seriesPointA11yOptions, point)) ||
+        seriesPointA11yOptions.descriptionFormatter?.(point) ||
         (isString(a11yPointOptions.descriptionFormat) &&
             format(a11yPointOptions.descriptionFormat, point, series.chart)) ||
-        ((_c = a11yPointOptions.descriptionFormatter) === null || _c === void 0 ? void 0 : _c.call(a11yPointOptions, point)) ||
+        a11yPointOptions.descriptionFormatter?.(point) ||
         defaultPointDescriptionFormatter(point), series.chart.renderer.forExport);
     pointElement.setAttribute('role', 'img');
     pointElement.setAttribute('aria-label', label);

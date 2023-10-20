@@ -67,7 +67,6 @@ var OnSeriesComposition;
      * @private
      */
     function translate() {
-        var _a, _b;
         columnProto.translate.apply(this);
         const series = this, options = series.options, chart = series.chart, points = series.points, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
             chart.get(optionsOnSeries)), step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis;
@@ -107,8 +106,8 @@ var OnSeriesComposition;
                                     ], p3 = [
                                         rightPoint.plotX || 0,
                                         rightPoint.plotY || 0
-                                    ], p1 = (((_a = leftPoint.controlPoints) === null || _a === void 0 ? void 0 : _a.high) ||
-                                        p0), p2 = (((_b = rightPoint.controlPoints) === null || _b === void 0 ? void 0 : _b.low) ||
+                                    ], p1 = (leftPoint.controlPoints?.high ||
+                                        p0), p2 = (rightPoint.controlPoints?.low ||
                                         p3), pixelThreshold = 0.25, maxIterations = 100, calculateCoord = (t, key) => (
                                     // The parametric formula for the
                                     // cubic Bezier curve.

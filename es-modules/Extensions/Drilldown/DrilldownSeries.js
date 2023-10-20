@@ -130,7 +130,6 @@ function columnAnimateDrillupTo(init) {
     if (!init) {
         // First hide all items before animating in again
         series.points.forEach((point) => {
-            var _a;
             const dataLabel = point.dataLabel;
             if (point.graphic) { // #3407
                 point.graphic.hide();
@@ -141,7 +140,7 @@ function columnAnimateDrillupTo(init) {
                 dataLabel.hidden = dataLabel.attr('visibility') === 'hidden';
                 if (!dataLabel.hidden) {
                     dataLabel.hide();
-                    (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.hide();
+                    dataLabel.connector?.hide();
                 }
             }
         });
@@ -157,7 +156,6 @@ function columnAnimateDrillupTo(init) {
                     pointsWithNodes = pointsWithNodes.concat(series.nodes);
                 }
                 pointsWithNodes.forEach((point, i) => {
-                    var _a;
                     // Fade in other points
                     const verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                     if (point.graphic && // #3407
@@ -167,7 +165,7 @@ function columnAnimateDrillupTo(init) {
                     }
                     if (dataLabel && !dataLabel.hidden) { // #6127
                         dataLabel.fadeIn(); // #7384
-                        (_a = dataLabel.connector) === null || _a === void 0 ? void 0 : _a.fadeIn();
+                        dataLabel.connector?.fadeIn();
                     }
                 });
             }

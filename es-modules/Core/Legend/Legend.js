@@ -206,8 +206,8 @@ class Legend {
                 (item.color || hiddenColor) :
                 hiddenColor, markerOptions = item.options && item.options.marker;
             let symbolAttr = { fill: symbolColor };
-            label === null || label === void 0 ? void 0 : label.css(merge(visible ? this.itemStyle : itemHiddenStyle));
-            line === null || line === void 0 ? void 0 : line.attr({ stroke: symbolColor });
+            label?.css(merge(visible ? this.itemStyle : itemHiddenStyle));
+            line?.attr({ stroke: symbolColor });
             if (symbol) {
                 // Apply marker options
                 if (markerOptions && symbol.isMarker) { // #585

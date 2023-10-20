@@ -430,7 +430,10 @@ class CSVConverter extends DataConverter {
 /**
  * Default options
  */
-CSVConverter.defaultOptions = Object.assign(Object.assign({}, DataConverter.defaultOptions), { lineDelimiter: '\n' });
+CSVConverter.defaultOptions = {
+    ...DataConverter.defaultOptions,
+    lineDelimiter: '\n'
+};
 /* *
  *
  *  Default Export

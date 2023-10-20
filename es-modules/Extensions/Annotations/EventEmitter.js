@@ -167,7 +167,6 @@ class EventEmitter {
      * @private
      */
     onMouseDown(e) {
-        var _a;
         if (e.preventDefault) {
             e.preventDefault();
         }
@@ -178,7 +177,7 @@ class EventEmitter {
         const emitter = this, pointer = emitter.chart.pointer, 
         // Using experimental property on event object to check if event was
         // created by touch on screen on hybrid device (#18122)
-        firesTouchEvents = ((_a = e === null || e === void 0 ? void 0 : e.sourceCapabilities) === null || _a === void 0 ? void 0 : _a.firesTouchEvents) || false;
+        firesTouchEvents = (e?.sourceCapabilities?.firesTouchEvents) || false;
         e = pointer.normalize(e);
         let prevChartX = e.chartX, prevChartY = e.chartY;
         emitter.cancelClick = false;

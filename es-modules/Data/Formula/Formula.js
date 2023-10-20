@@ -46,5 +46,9 @@ import './Functions/XOR.js';
  * Formula engine to make use of spreadsheet formula strings.
  * @internal
  */
-const Formula = Object.assign(Object.assign(Object.assign({}, FormulaParser), FormulaProcessor), FormulaType);
+const Formula = {
+    ...FormulaParser,
+    ...FormulaProcessor,
+    ...FormulaType
+};
 export default Formula;

@@ -172,7 +172,14 @@ class Chart {
      */
     setZoomOptions() {
         const chart = this, options = chart.options.chart, zooming = options.zooming;
-        chart.zooming = Object.assign(Object.assign({}, zooming), { type: pick(options.zoomType, zooming.type), key: pick(options.zoomKey, zooming.key), pinchType: pick(options.pinchType, zooming.pinchType), singleTouch: pick(options.zoomBySingleTouch, zooming.singleTouch, false), resetButton: merge(zooming.resetButton, options.resetZoomButton) });
+        chart.zooming = {
+            ...zooming,
+            type: pick(options.zoomType, zooming.type),
+            key: pick(options.zoomKey, zooming.key),
+            pinchType: pick(options.pinchType, zooming.pinchType),
+            singleTouch: pick(options.zoomBySingleTouch, zooming.singleTouch, false),
+            resetButton: merge(zooming.resetButton, options.resetZoomButton)
+        };
     }
     /**
      * Overridable function that initializes the chart. The constructor's
@@ -1239,8 +1246,7 @@ class Chart {
     setReflow() {
         const chart = this;
         const runReflow = (e) => {
-            var _a;
-            if (((_a = chart.options) === null || _a === void 0 ? void 0 : _a.chart.reflow) && chart.hasLoaded) {
+            if (chart.options?.chart.reflow && chart.hasLoaded) {
                 chart.reflow(e);
             }
         };

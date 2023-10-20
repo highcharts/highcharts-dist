@@ -66,11 +66,10 @@ class NavigatorComponent extends AccessibilityComponent {
      * @private
      */
     onChartUpdate() {
-        var _a, _b, _c;
         const chart = this.chart, options = chart.options;
-        if ((_a = options.navigator.accessibility) === null || _a === void 0 ? void 0 : _a.enabled) {
-            const verbosity = options.accessibility.landmarkVerbosity, groupFormatStr = (_b = options.lang
-                .accessibility) === null || _b === void 0 ? void 0 : _b.navigator.groupLabel;
+        if (options.navigator.accessibility?.enabled) {
+            const verbosity = options.accessibility.landmarkVerbosity, groupFormatStr = options.lang
+                .accessibility?.navigator.groupLabel;
             // We just recreate the group for simplicity. Could consider
             // updating the existing group if the verbosity has not changed.
             this.proxyProvider.removeGroup('navigator');
@@ -78,8 +77,8 @@ class NavigatorComponent extends AccessibilityComponent {
                 role: verbosity === 'all' ? 'region' : 'group',
                 'aria-label': format(groupFormatStr, { chart }, chart)
             });
-            const handleFormatStr = (_c = options.lang
-                .accessibility) === null || _c === void 0 ? void 0 : _c.navigator.handleLabel;
+            const handleFormatStr = options.lang
+                .accessibility?.navigator.handleLabel;
             [0, 1].forEach((n) => {
                 const handle = this.getHandleByIx(n);
                 if (handle) {
@@ -130,11 +129,8 @@ class NavigatorComponent extends AccessibilityComponent {
             init: () => {
                 chart.setFocusToElement(this.getHandleByIx(handleIx), proxyEl);
             },
-            validate: () => {
-                var _a;
-                return !!(this.getHandleByIx(handleIx) && proxyEl &&
-                    ((_a = chart.options.navigator.accessibility) === null || _a === void 0 ? void 0 : _a.enabled));
-            }
+            validate: () => !!(this.getHandleByIx(handleIx) && proxyEl &&
+                chart.options.navigator.accessibility?.enabled)
         });
     }
     /**
@@ -189,7 +185,6 @@ class NavigatorComponent extends AccessibilityComponent {
      */
     updateNavigator(beforeAnnounce) {
         const performUpdate = (beforeAnnounce) => {
-            var _a;
             const chart = this.chart, navigator = chart.navigator;
             if (navigator && this.minHandleProxy && this.maxHandleProxy) {
                 const chartPos = chart.pointer.getChartPosition(), minNewX = parseFloat(this.minHandleProxy.value) /
@@ -204,8 +199,7 @@ class NavigatorComponent extends AccessibilityComponent {
                     [1, 'mousemove', maxNewX],
                     [1, 'mouseup', maxNewX]
                 ].forEach(([handleIx, type, x]) => {
-                    var _a;
-                    const handle = (_a = this.getHandleByIx(handleIx)) === null || _a === void 0 ? void 0 : _a.element;
+                    const handle = this.getHandleByIx(handleIx)?.element;
                     if (handle) {
                         fireEventOnWrappedOrUnwrappedElement(handle, getFakeMouseEvent(type, {
                             x: chartPos.left + navigator.left + x,
@@ -217,8 +211,8 @@ class NavigatorComponent extends AccessibilityComponent {
                     beforeAnnounce();
                 }
                 // Announce the update
-                const announceFormatStr = (_a = chart.options.lang
-                    .accessibility) === null || _a === void 0 ? void 0 : _a.navigator.changeAnnouncement, axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
+                const announceFormatStr = chart.options.lang
+                    .accessibility?.navigator.changeAnnouncement, axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
                 this.announcer.announce(format(announceFormatStr, { axisRangeDescription, chart }, chart));
             }
         };

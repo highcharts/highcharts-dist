@@ -1023,7 +1023,7 @@ function getClosestDistance(arrays, onError) {
             for (i = loopLength; i > 0; i--) {
                 distance = xData[i] - xData[i - 1];
                 if (distance < 0 && !allowNegative) {
-                    onError === null || onError === void 0 ? void 0 : onError();
+                    onError?.();
                     // Only one call
                     onError = void 0;
                 }
@@ -1064,7 +1064,7 @@ function getNestedProperty(path, parent) {
             if (isObject(parent)) {
                 thisProp = parent['@this'];
             }
-            return thisProp !== null && thisProp !== void 0 ? thisProp : parent;
+            return thisProp ?? parent;
         }
         const child = parent[pathElement];
         // Filter on the child

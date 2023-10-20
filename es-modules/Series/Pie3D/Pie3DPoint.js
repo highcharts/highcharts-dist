@@ -44,8 +44,7 @@ class Pie3DPoint extends PiePoint {
      * @private
      */
     haloPath() {
-        var _a;
-        return ((_a = this.series) === null || _a === void 0 ? void 0 : _a.chart.is3d()) ?
+        return this.series?.chart.is3d() ?
             [] : superHaloPath.apply(this, arguments);
     }
 }

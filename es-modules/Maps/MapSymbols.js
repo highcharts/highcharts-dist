@@ -29,7 +29,7 @@ let symbols;
  * */
 function bottomButton(x, y, w, h, options) {
     if (options) {
-        const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+        const r = options?.r || 0;
         options.brBoxY = y - r;
         options.brBoxHeight = h + r;
     }
@@ -44,7 +44,7 @@ function compose(SVGRendererClass) {
 }
 function topButton(x, y, w, h, options) {
     if (options) {
-        const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+        const r = options?.r || 0;
         options.brBoxHeight = h + r;
     }
     return symbols.roundedRect(x, y, w, h, options);

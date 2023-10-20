@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * Force directed graph module
  *
@@ -2777,14 +2777,13 @@
          * @private
          */
         function initDataLabelsDefer() {
-            var _a;
             const dlOptions = this.options.dataLabels;
             // drawDataLabels() fires for the first time after
             // dataLabels.animation.defer time unless
             // the dataLabels.animation = false or dataLabels.defer = false
             // or if the simulation is disabled
-            if (!(dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.defer) ||
-                !((_a = this.options.layoutAlgorithm) === null || _a === void 0 ? void 0 : _a.enableSimulation)) {
+            if (!dlOptions?.defer ||
+                !this.options.layoutAlgorithm?.enableSimulation) {
                 this.deferDataLabels = false;
             }
             else {
@@ -2805,7 +2804,7 @@
                 const dataLabelsGroup = this.initDataLabelsGroup();
                 // Apply the dataLabels.style not only to the
                 // individual dataLabels but also to the entire group
-                if (!series.chart.styledMode && (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.style)) {
+                if (!series.chart.styledMode && dlOptions?.style) {
                     dataLabelsGroup.css(dlOptions.style);
                 }
                 // Initialize the opacity of the group to 0 (start of animation)
@@ -2945,19 +2944,19 @@
                 }
                 const dlOptions = this.options.dataLabels;
                 let textPath;
-                if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.textPath) {
+                if (dlOptions?.textPath) {
                     textPath = dlOptions.textPath;
                 }
                 // Render node labels:
                 Series.prototype.drawDataLabels.call(this, this.nodes);
                 // Render link labels:
-                if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.linkTextPath) {
+                if (dlOptions?.linkTextPath) {
                     // If linkTextPath is set, render link labels with linkTextPath
                     dlOptions.textPath = dlOptions.linkTextPath;
                 }
                 Series.prototype.drawDataLabels.call(this, this.data);
                 // Go back to textPath for nodes
-                if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.textPath) {
+                if (dlOptions?.textPath) {
                     dlOptions.textPath = textPath;
                 }
             }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-19)
+ * @license Highcharts JS v11.1.0 (2023-10-20)
  *
  * 3D features for Highcharts JS
  *
@@ -4535,8 +4535,7 @@
              * @private
              */
             haloPath() {
-                var _a;
-                return ((_a = this.series) === null || _a === void 0 ? void 0 : _a.chart.is3d()) ?
+                return this.series?.chart.is3d() ?
                     [] : superHaloPath.apply(this, arguments);
             }
         }
@@ -4637,12 +4636,12 @@
                 if (this.chart.is3d()) {
                     const options3d = this.chart.options.chart.options3d, shapeArgs = point.shapeArgs, r = shapeArgs.r, 
                     // #3240 issue with datalabels for 0 and null values
-                    a1 = ((shapeArgs.alpha || (options3d === null || options3d === void 0 ? void 0 : options3d.alpha)) *
-                        deg2rad), b1 = ((shapeArgs.beta || (options3d === null || options3d === void 0 ? void 0 : options3d.beta)) *
+                    a1 = ((shapeArgs.alpha || options3d?.alpha) *
+                        deg2rad), b1 = ((shapeArgs.beta || options3d?.beta) *
                         deg2rad), a2 = (shapeArgs.start + shapeArgs.end) / 2, connectorPosition = labelPosition.connectorPosition, yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
                     // Apply perspective on label positions
                     [
-                        labelPosition === null || labelPosition === void 0 ? void 0 : labelPosition.natural,
+                        labelPosition?.natural,
                         connectorPosition.breakAt,
                         connectorPosition.touchingSliceAt
                     ].forEach(function (coordinates) {

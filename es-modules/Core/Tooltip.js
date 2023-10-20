@@ -916,7 +916,6 @@ class Tooltip {
          * @return {Highcharts.SVGElement} Returns the updated partial tooltip
          */
         function updatePartialTooltip(partialTooltip, point, str) {
-            var _a;
             let tt = partialTooltip;
             const { isHeader, series } = point;
             if (!tt) {
@@ -926,7 +925,7 @@ class Tooltip {
                 };
                 if (!styledMode) {
                     attribs.fill = options.backgroundColor;
-                    attribs['stroke-width'] = (_a = options.borderWidth) !== null && _a !== void 0 ? _a : 1;
+                    attribs['stroke-width'] = options.borderWidth ?? 1;
                 }
                 tt = ren
                     .label('', 0, 0, (options[isHeader ? 'headerShape' : 'shape']), void 0, void 0, options.useHTML)

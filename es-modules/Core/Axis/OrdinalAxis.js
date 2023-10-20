@@ -590,8 +590,7 @@ var OrdinalAxis;
          * @private
          */
         beforeSetTickPositions() {
-            var _a;
-            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = (_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks, isOrdinal = axis.options.ordinal;
+            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal;
             let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
             // Apply the ordinal logic
             if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
@@ -937,9 +936,8 @@ var OrdinalAxis;
             let firstPointX;
             // When more series assign to axis, find the smallest one, #15987.
             axis.series.forEach((series) => {
-                var _a;
-                const firstPoint = (_a = series.points) === null || _a === void 0 ? void 0 : _a[0];
-                if (defined(firstPoint === null || firstPoint === void 0 ? void 0 : firstPoint.plotX) &&
+                const firstPoint = series.points?.[0];
+                if (defined(firstPoint?.plotX) &&
                     (firstPoint.plotX < firstPointX ||
                         !defined(firstPointX)) &&
                     hasPointsInside(series)) {
@@ -947,7 +945,7 @@ var OrdinalAxis;
                 }
             });
             // If undefined, give a default value
-            firstPointX !== null && firstPointX !== void 0 ? firstPointX : (firstPointX = axis.minPixelPadding);
+            firstPointX ?? (firstPointX = axis.minPixelPadding);
             // Distance in pixels between two points on the ordinal axis in the
             // current zoom.
             const ordinalPointPixelInterval = axis.translationSlope * (ordinal.slope ||

@@ -797,7 +797,7 @@ class Point {
                         point.graphic = graphic.destroy();
                     }
                 }
-                if ((options === null || options === void 0 ? void 0 : options.dataLabels) && point.dataLabel) {
+                if (options?.dataLabels && point.dataLabel) {
                     point.dataLabel = point.dataLabel.destroy(); // #2468
                 }
             }

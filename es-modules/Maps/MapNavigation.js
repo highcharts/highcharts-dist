@@ -142,7 +142,6 @@ class MapNavigation {
                     .add();
             }
             objectEach(navOptions.buttons, (buttonOptions, n) => {
-                var _a;
                 buttonOptions = merge(navOptions.buttonOptions, buttonOptions);
                 // Presentational
                 if (!chart.styledMode && buttonOptions.theme) {
@@ -184,7 +183,7 @@ class MapNavigation {
                         .path(d)
                         .addClass('highcharts-button-symbol')
                         .attr(chart.styledMode ? {} : {
-                        stroke: (_a = buttonOptions.style) === null || _a === void 0 ? void 0 : _a.color,
+                        stroke: buttonOptions.style?.color,
                         'stroke-width': 3,
                         'stroke-linecap': 'round'
                     })

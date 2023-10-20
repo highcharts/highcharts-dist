@@ -170,7 +170,7 @@ function rect(x, y, w, h, options) {
     ];
 }
 function roundedRect(x, y, w, h, options) {
-    const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+    const r = options?.r || 0;
     return [
         ['M', x + r, y],
         ['L', x + w - r, y],
