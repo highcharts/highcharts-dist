@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * X-range series
  *
@@ -259,7 +259,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { series: { prototype: { pointClass: { prototype: pointProto } } }, seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
+        const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.seriesTypes;
         const { extend } = U;
         /* *
          *
@@ -335,7 +335,7 @@
              * @private
              */
             init() {
-                pointProto.init.apply(this, arguments);
+                super.init.apply(this, arguments);
                 if (!this.y) {
                     this.y = 0;
                 }
@@ -345,7 +345,7 @@
              * @private
              */
             setState() {
-                pointProto.setState.apply(this, arguments);
+                super.setState.apply(this, arguments);
                 this.series.drawPoint(this, this.series.getAnimationVerb());
             }
             /**
@@ -354,7 +354,7 @@
              * @private
              */
             getLabelConfig() {
-                const cfg = pointProto.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
+                const cfg = super.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
                 cfg.x2 = this.x2;
                 cfg.yCategory = this.yCategory = yCats && yCats[this.y];
                 // Use 'category' as 'key' to ensure tooltip datetime formatting.
@@ -425,7 +425,7 @@
          * */
         const { noop } = H;
         const { parse: color } = Color;
-        const { series: { prototype: seriesProto }, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+        const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
         /* *
          *
@@ -500,7 +500,6 @@
                     return retVal;
                 }
                 //*/
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
@@ -549,7 +548,7 @@
              */
             cropData(xData, yData, min, max) {
                 // Replace xData with x2Data to find the appropriate cropStart
-                const crop = seriesProto.cropData.call(this, this.x2Data, yData, min, max);
+                const crop = super.cropData(this.x2Data, yData, min, max);
                 // Re-insert the cropped xData
                 crop.xData = xData.slice(crop.start, crop.end);
                 return crop;
@@ -727,7 +726,7 @@
              *        'animate' (animates changes) or 'attr' (sets options)
              */
             drawPoint(point, verb) {
-                const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
+                const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
                     {}), pointStateVerb = typeof pointState === 'undefined' ?
                     'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
                 let graphic = point.graphic, pfOptions = point.partialFill;
@@ -834,7 +833,7 @@
             parallelArrays: ['x', 'x2', 'y'],
             requireSorting: false,
             type: 'xrange',
-            animate: seriesProto.animate,
+            animate: SeriesRegistry.series.prototype.animate,
             autoIncrement: noop,
             buildKDTree: noop
         });

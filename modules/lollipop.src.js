@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -61,6 +61,7 @@
                 this.options = void 0;
                 this.series = void 0;
                 this.plotX = void 0;
+                this.pointWidth = void 0;
             }
         }
         extend(LollipopPoint.prototype, {
@@ -141,6 +142,27 @@
                     i++;
                 }
             }
+            /**
+             * Extend the series' translate method to use grouping option.
+             * @private
+             *
+             * @function Highcharts.Series#translate
+             *
+             * @param {Highcharts.Series} this The series of points.
+             *
+             */
+            translate() {
+                const series = this;
+                colProto.translate.apply(series, arguments);
+                // Correct x position
+                for (const point of series.points) {
+                    const { pointWidth, shapeArgs } = point;
+                    if (shapeArgs?.x) {
+                        shapeArgs.x += pointWidth / 2;
+                        point.plotX = shapeArgs.x || 0;
+                    }
+                }
+            }
         }
         /**
          * The lollipop series is a carteseian series with a line anchored from
@@ -167,6 +189,22 @@
             connectorWidth: 1,
             /** @ignore-option */
             groupPadding: 0.2,
+            /**
+             * Whether to group non-stacked lollipop points or to let them
+             * render independent of each other. Non-grouped lollipop points
+             * will be laid out individually and overlap each other.
+             *
+             * @sample highcharts/series-lollipop/enabled-grouping/
+             *         Multiple lollipop series with grouping
+             * @sample highcharts/series-lollipop/disabled-grouping/
+             *         Multiple lollipop series with disabled grouping
+             *
+             * @type      {boolean}
+             * @default   true
+             * @since     8.0.0
+             * @product   highcharts highstock
+             * @apioption plotOptions.lollipop.grouping
+             */
             /** @ignore-option */
             pointPadding: 0.1,
             /** @ignore-option */
@@ -195,8 +233,7 @@
             drawDataLabels: colProto.drawDataLabels,
             getColumnMetrics: colProto.getColumnMetrics,
             getConnectorAttribs: dumbbellProto.getConnectorAttribs,
-            pointClass: LollipopPoint,
-            translate: colProto.translate
+            pointClass: LollipopPoint
         });
         SeriesRegistry.registerSeriesType('lollipop', LollipopSeries);
         /* *

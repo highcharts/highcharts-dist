@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * Highcharts cylinder module
  *
@@ -79,7 +79,63 @@
 
         return CylinderPoint;
     });
-    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, U) {
+    _registerModule(_modules, 'Series/Cylinder/SVGElement3DCylinder.js', [_modules['Core/Color/Color.js'], _modules['Core/Renderer/SVG/SVGElement3D.js']], function (Color, SVGElement3D) {
+        /* *
+         *
+         *  Highcharts cylinder - a 3D series
+         *
+         *  (c) 2010-2021 Highsoft AS
+         *
+         *  Author: Kacper Madej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { parse: color } = Color;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        class SVGElement3DCylinder extends SVGElement3D {
+            constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                super(...arguments);
+                this.parts = ['top', 'bottom', 'front', 'back'];
+                this.pathType = 'cylinder';
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            fillSetter(fill) {
+                this.singleSetterForParts('fill', null, {
+                    front: fill,
+                    back: fill,
+                    top: color(fill).brighten(0.1).get(),
+                    bottom: color(fill).brighten(-0.1).get()
+                });
+                // fill for animation getter (#6776)
+                this.color = this.fill = fill;
+                return this;
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return SVGElement3DCylinder;
+    });
+    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Series/Cylinder/SVGElement3DCylinder.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, SVGElement3DCylinder, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
@@ -106,23 +162,7 @@
         // Check if a path is simplified. The simplified path contains only lineTo
         // segments, whereas non-simplified contain curves.
         const isSimplified = (path) => !path.some((seg) => seg[0] === 'C');
-        // cylinder extends cuboid
-        const cylinderMethods = merge(rendererProto.elements3d.cuboid, {
-            parts: ['top', 'bottom', 'front', 'back'],
-            pathType: 'cylinder',
-            fillSetter: function (fill) {
-                this.singleSetterForParts('fill', null, {
-                    front: fill,
-                    back: fill,
-                    top: color(fill).brighten(0.1).get(),
-                    bottom: color(fill).brighten(-0.1).get()
-                });
-                // fill for animation getter (#6776)
-                this.color = this.fill = fill;
-                return this;
-            }
-        });
-        rendererProto.elements3d.cylinder = cylinderMethods;
+        rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
         rendererProto.cylinder = function (shapeArgs) {
             return this.element3d('cylinder', shapeArgs);
         };

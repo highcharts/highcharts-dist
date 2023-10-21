@@ -15,7 +15,7 @@ const { noop } = H;
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: seriesProto }, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
 import XRangeSeriesDefaults from './XRangeSeriesDefaults.js';
@@ -93,7 +93,6 @@ class XRangeSeries extends ColumnSeries {
             return retVal;
         }
         //*/
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
@@ -142,7 +141,7 @@ class XRangeSeries extends ColumnSeries {
      */
     cropData(xData, yData, min, max) {
         // Replace xData with x2Data to find the appropriate cropStart
-        const crop = seriesProto.cropData.call(this, this.x2Data, yData, min, max);
+        const crop = super.cropData(this.x2Data, yData, min, max);
         // Re-insert the cropped xData
         crop.xData = xData.slice(crop.start, crop.end);
         return crop;
@@ -320,7 +319,7 @@ class XRangeSeries extends ColumnSeries {
      *        'animate' (animates changes) or 'attr' (sets options)
      */
     drawPoint(point, verb) {
-        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
+        const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
             {}), pointStateVerb = typeof pointState === 'undefined' ?
             'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
         let graphic = point.graphic, pfOptions = point.partialFill;
@@ -427,7 +426,7 @@ extend(XRangeSeries.prototype, {
     parallelArrays: ['x', 'x2', 'y'],
     requireSorting: false,
     type: 'xrange',
-    animate: seriesProto.animate,
+    animate: SeriesRegistry.series.prototype.animate,
     autoIncrement: noop,
     buildKDTree: noop
 });

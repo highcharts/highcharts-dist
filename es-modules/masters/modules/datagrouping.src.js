@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-20)
+ * @license Highstock JS v11.1.0 (2023-10-21)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *

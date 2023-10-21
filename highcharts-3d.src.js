@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * 3D features for Highcharts JS
  *
@@ -296,23 +296,41 @@
          *
          * */
         const { parse: color } = Color;
-        const { defined, merge, objectEach, pick } = U;
+        const { defined, pick } = U;
         /* *
          *
-         *  Constants
+         *  Class
          *
          * */
-        const SVGElement3D = {};
-        SVGElement3D.base = {
-            /* eslint-disable valid-jsdoc */
+        class SVGElement3D extends SVGElement {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.parts = ['front', 'top', 'side'];
+                this.pathType = 'cuboid';
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * The init is used by base - renderer.Element
              * @private
              */
-            initArgs: function (args) {
+            initArgs(args) {
                 const elem3d = this, renderer = elem3d.renderer, paths = renderer[elem3d.pathType + 'Path'](args), zIndexes = paths.zIndexes;
                 // build parts
-                elem3d.parts.forEach(function (part) {
+                for (const part of elem3d.parts) {
                     const attribs = {
                         'class': 'highcharts-3d-' + part,
                         zIndex: zIndexes[part] || 0
@@ -328,22 +346,19 @@
                     elem3d[part] = renderer.path(paths[part])
                         .attr(attribs)
                         .add(elem3d);
-                });
+                }
                 elem3d.attr({
                     'stroke-linejoin': 'round',
                     zIndex: zIndexes.group
                 });
-                // store original destroy
-                elem3d.originalDestroy = elem3d.destroy;
-                elem3d.destroy = elem3d.destroyParts;
                 // Store information if any side of element was rendered by force.
                 elem3d.forcedSides = paths.forcedSides;
-            },
+            }
             /**
              * Single property setter that applies options to each part
              * @private
              */
-            singleSetterForParts: function (prop, val, values, verb, duration, complete) {
+            singleSetterForParts(prop, val, values, verb, duration, complete) {
                 const elem3d = this, newAttr = {}, optionsToApply = [null, null, (verb || 'attr'), duration, complete], hasZIndexes = values && values.zIndexes;
                 if (!values) {
                     newAttr[prop] = val;
@@ -353,29 +368,29 @@
                     // It is needed to deal with the whole group zIndexing
                     // in case of graph rotation
                     if (hasZIndexes && hasZIndexes.group) {
-                        this.attr({
+                        elem3d.attr({
                             zIndex: hasZIndexes.group
                         });
                     }
-                    objectEach(values, function (partVal, part) {
+                    for (const part of Object.keys(values)) {
                         newAttr[part] = {};
-                        newAttr[part][prop] = partVal;
+                        newAttr[part][prop] = values[part];
                         // include zIndexes if provided
                         if (hasZIndexes) {
                             newAttr[part].zIndex = values.zIndexes[part] || 0;
                         }
-                    });
+                    }
                     optionsToApply[1] = newAttr;
                 }
-                return elem3d.processParts.apply(elem3d, optionsToApply);
-            },
+                return this.processParts.apply(elem3d, optionsToApply);
+            }
             /**
              * Calls function for each part. Used for attr, animate and destroy.
              * @private
              */
-            processParts: function (props, partsProps, verb, duration, complete) {
+            processParts(props, partsProps, verb, duration, complete) {
                 const elem3d = this;
-                elem3d.parts.forEach(function (part) {
+                for (const part of (elem3d.parts || [])) {
                     // if different props for different parts
                     if (partsProps) {
                         props = pick(partsProps[part], false);
@@ -384,23 +399,19 @@
                     if (props !== false) {
                         elem3d[part][verb](props, duration, complete);
                     }
-                });
+                }
                 return elem3d;
-            },
+            }
             /**
              * Destroy all parts
              * @private
              */
-            destroyParts: function () {
+            destroy() {
                 this.processParts(null, null, 'destroy');
-                return this.originalDestroy();
+                return super.destroy();
             }
-            /* eslint-enable valid-jsdoc */
-        };
-        SVGElement3D.cuboid = merge(SVGElement3D.base, {
-            parts: ['front', 'top', 'side'],
-            pathType: 'cuboid',
-            attr: function (args, val, complete, continueAnimation) {
+            // Following functions are SVGElement3DCuboid (= base)
+            attr(args, val, complete, continueAnimation) {
                 // Resolve setting attributes by string name
                 if (typeof args === 'string' && typeof val !== 'undefined') {
                     const key = args;
@@ -410,9 +421,9 @@
                 if (args.shapeArgs || defined(args.x)) {
                     return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
                 }
-                return SVGElement.prototype.attr.call(this, args, void 0, complete, continueAnimation);
-            },
-            animate: function (args, duration, complete) {
+                return super.attr(args, void 0, complete, continueAnimation);
+            }
+            animate(args, duration, complete) {
                 if (defined(args.x) && defined(args.y)) {
                     const paths = this.renderer[this.pathType + 'Path'](args), forcedSides = paths.forcedSides;
                     this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
@@ -423,16 +434,16 @@
                     if (forcedSides !== this.forcedSides) {
                         this.forcedSides = forcedSides;
                         if (!this.renderer.styledMode) {
-                            SVGElement3D.cuboid.fillSetter.call(this, this.fill);
+                            this.fillSetter(this.fill);
                         }
                     }
                 }
                 else {
-                    SVGElement.prototype.animate.call(this, args, duration, complete);
+                    super.animate(args, duration, complete);
                 }
                 return this;
-            },
-            fillSetter: function (fill) {
+            }
+            fillSetter(fill) {
                 const elem3d = this;
                 elem3d.forcedSides = elem3d.forcedSides || [];
                 elem3d.singleSetterForParts('fill', null, {
@@ -445,7 +456,11 @@
                 elem3d.color = elem3d.fill = fill;
                 return elem3d;
             }
-        });
+        }
+        SVGElement3D.types = {
+            base: SVGElement3D,
+            cuboid: SVGElement3D
+        };
         /* *
          *
          *  Default Export
@@ -470,19 +485,51 @@
         const { parse: color } = Color;
         const { charts, deg2rad } = H;
         const { perspective, shapeArea } = Math3D;
-        const { defined, extend, merge, pick } = U;
+        const { defined, extend, merge, pick, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
+        const composedMembers = [], cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
         /* *
          *
          *  Functions
          *
          * */
-        /* eslint-disable valid-jsdoc */
+        /**
+         * Method to construct a curved path. Can 'wrap' around more then 180
+         * degrees.
+         * @private
+         */
+        function curveTo(cx, cy, rx, ry, start, end, dx, dy) {
+            const arcAngle = end - start;
+            if ((end > start) && (end - start > Math.PI / 2 + 0.0001)) {
+                return [
+                    curveTo(cx, cy, rx, ry, start, start + (Math.PI / 2), dx, dy)[0],
+                    curveTo(cx, cy, rx, ry, start + (Math.PI / 2), end, dx, dy)[0]
+                ];
+            }
+            if ((end < start) && (start - end > Math.PI / 2 + 0.0001)) {
+                return [
+                    curveTo(cx, cy, rx, ry, start, start - (Math.PI / 2), dx, dy)[0],
+                    curveTo(cx, cy, rx, ry, start - (Math.PI / 2), end, dx, dy)[0]
+                ];
+            }
+            return [[
+                    'C',
+                    cx + (rx * Math.cos(start)) -
+                        ((rx * dFactor * arcAngle) * Math.sin(start)) + dx,
+                    cy + (ry * Math.sin(start)) +
+                        ((ry * dFactor * arcAngle) * Math.cos(start)) + dy,
+                    cx + (rx * Math.cos(end)) +
+                        ((rx * dFactor * arcAngle) * Math.sin(end)) + dx,
+                    cy + (ry * Math.sin(end)) -
+                        ((ry * dFactor * arcAngle) * Math.cos(end)) + dy,
+                    cx + (rx * Math.cos(end)) + dx,
+                    cy + (ry * Math.sin(end)) + dy
+                ]];
+        }
         /* *
          *
          *  Class
@@ -496,48 +543,21 @@
              * */
             /** @private */
             static compose(SVGRendererClass) {
-                const svgRendererProto = SVGRendererClass.prototype, svgRenderer3dProto = SVGRenderer3D.prototype;
-                svgRendererProto.elements3d = SVGElement3D;
-                svgRendererProto.arc3d = svgRenderer3dProto.arc3d;
-                svgRendererProto.arc3dPath = svgRenderer3dProto.arc3dPath;
-                svgRendererProto.cuboid = svgRenderer3dProto.cuboid;
-                svgRendererProto.cuboidPath = svgRenderer3dProto.cuboidPath;
-                svgRendererProto.element3d = svgRenderer3dProto.element3d;
-                svgRendererProto.face3d = svgRenderer3dProto.face3d;
-                svgRendererProto.polyhedron = svgRenderer3dProto.polyhedron;
-                svgRendererProto.toLinePath = svgRenderer3dProto.toLinePath;
-                svgRendererProto.toLineSegments = svgRenderer3dProto.toLineSegments;
-            }
-            /**
-             * Method to construct a curved path. Can 'wrap' around more then 180
-             * degrees.
-             * @private
-             */
-            static curveTo(cx, cy, rx, ry, start, end, dx, dy) {
-                let result = [], arcAngle = end - start;
-                if ((end > start) && (end - start > Math.PI / 2 + 0.0001)) {
-                    result = result.concat(this.curveTo(cx, cy, rx, ry, start, start + (Math.PI / 2), dx, dy));
-                    result = result.concat(this.curveTo(cx, cy, rx, ry, start + (Math.PI / 2), end, dx, dy));
-                    return result;
+                if (pushUnique(composedMembers, SVGRendererClass)) {
+                    const renderer3DProto = SVGRenderer3D.prototype;
+                    extend(SVGRendererClass.prototype, {
+                        Element3D: SVGElement3D,
+                        arc3d: renderer3DProto.arc3d,
+                        arc3dPath: renderer3DProto.arc3dPath,
+                        cuboid: renderer3DProto.cuboid,
+                        cuboidPath: renderer3DProto.cuboidPath,
+                        element3d: renderer3DProto.element3d,
+                        face3d: renderer3DProto.face3d,
+                        polyhedron: renderer3DProto.polyhedron,
+                        toLinePath: renderer3DProto.toLinePath,
+                        toLineSegments: renderer3DProto.toLineSegments
+                    });
                 }
-                if ((end < start) && (start - end > Math.PI / 2 + 0.0001)) {
-                    result = result.concat(this.curveTo(cx, cy, rx, ry, start, start - (Math.PI / 2), dx, dy));
-                    result = result.concat(this.curveTo(cx, cy, rx, ry, start - (Math.PI / 2), end, dx, dy));
-                    return result;
-                }
-                return [[
-                        'C',
-                        cx + (rx * Math.cos(start)) -
-                            ((rx * dFactor * arcAngle) * Math.sin(start)) + dx,
-                        cy + (ry * Math.sin(start)) +
-                            ((ry * dFactor * arcAngle) * Math.cos(start)) + dy,
-                        cx + (rx * Math.cos(end)) +
-                            ((rx * dFactor * arcAngle) * Math.sin(end)) + dx,
-                        cy + (ry * Math.sin(end)) -
-                            ((ry * dFactor * arcAngle) * Math.cos(end)) + dy,
-                        cx + (rx * Math.cos(end)) + dx,
-                        cy + (ry * Math.sin(end)) + dy
-                    ]];
             }
             /* *
              *
@@ -548,9 +568,9 @@
             toLinePath(points, closed) {
                 const result = [];
                 // Put "L x y" for each point
-                points.forEach(function (point) {
+                for (const point of points) {
                     result.push(['L', point.x, point.y]);
-                });
+                }
                 if (points.length) {
                     // Set the first element to M
                     result[0][0] = 'M';
@@ -563,11 +583,12 @@
             }
             /** @private */
             toLineSegments(points) {
-                let result = [], m = true;
-                points.forEach(function (point) {
+                const result = [];
+                let m = true;
+                for (const point of points) {
                     result.push(m ? ['M', point.x, point.y] : ['L', point.x, point.y]);
                     m = !m;
-                });
+                }
                 return result;
             }
             /**
@@ -635,7 +656,6 @@
                     });
                 }
                 result.faces = [];
-                /* eslint-disable no-invalid-this */
                 // destroy all children
                 result.destroy = function () {
                     for (let i = 0; i < result.faces.length; i++) {
@@ -676,7 +696,6 @@
                     }
                     return SVGElement.prototype.animate.apply(this, arguments);
                 };
-                /* eslint-enable no-invalid-this */
                 return result.attr(args);
             }
             /**
@@ -686,13 +705,12 @@
              */
             element3d(type, shapeArgs) {
                 // base
-                const ret = this.g();
-                // extend
-                extend(ret, this.elements3d[type]);
+                const elem3d = new SVGElement3D.types[type]();
                 // init
-                ret.initArgs(shapeArgs);
+                elem3d.init(this, 'g');
+                elem3d.initArgs(shapeArgs);
                 // return
-                return ret;
+                return elem3d;
             }
             /**
              * generelized, so now use simply
@@ -706,17 +724,18 @@
              * @private
              */
             cuboidPath(shapeArgs) {
-                let x = shapeArgs.x || 0, y = shapeArgs.y || 0, z = shapeArgs.z || 0, 
+                const x = shapeArgs.x || 0, y = shapeArgs.y || 0, z = shapeArgs.z || 0, 
                 // For side calculation (right/left)
                 // there is a need for height (and other shapeArgs arguments)
                 // to be at least 1px
-                h = shapeArgs.height || 0, w = shapeArgs.width || 0, d = shapeArgs.depth || 0, chart = charts[this.chartIndex], front, back, top, bottom, left, right, shape, path1, path2, path3, isFront, isTop, isRight, options3d = chart.options.chart.options3d, alpha = options3d.alpha, 
+                h = shapeArgs.height || 0, w = shapeArgs.width || 0, d = shapeArgs.depth || 0, chart = charts[this.chartIndex], options3d = chart.options.chart.options3d, alpha = options3d.alpha, 
                 // Priority for x axis is the biggest,
                 // because of x direction has biggest influence on zIndex
                 incrementX = 1000000, 
                 // y axis has the smallest priority in case of our charts
                 // (needs to be set because of stacking)
-                incrementY = 10, incrementZ = 100, zIndex = 0, 
+                incrementY = 10, incrementZ = 100, forcedSides = [];
+                let shape, zIndex = 0, 
                 // The 8 corners of the cube
                 pArr = [{
                         x: x,
@@ -750,14 +769,14 @@
                         x: x,
                         y: y,
                         z: z + d
-                    }], forcedSides = [], pickShape;
+                    }];
                 // apply perspective
                 pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
                 /**
                  * helper method to decide which side is visible
                  * @private
                  */
-                function mapSidePath(i) {
+                const mapSidePath = (i) => {
                     // Added support for 0 value in columns, where height is 0
                     // but the shape is rendered.
                     // Height is used from 1st to 6th element of pArr
@@ -765,21 +784,22 @@
                         return {
                             x: pArr[i].x,
                             // when height is 0 instead of cuboid we render plane
-                            // so it is needed to add fake 10 height to imitate cuboid
-                            // for side calculation
+                            // so it is needed to add fake 10 height to imitate
+                            // cuboid for side calculation
                             y: pArr[i].y + 10,
                             z: pArr[i].z
                         };
                     }
-                    // It is needed to calculate dummy sides (front/back) for breaking
-                    // points in case of x and depth values. If column has side,
-                    // it means that x values of front and back side are different.
+                    // It is needed to calculate dummy sides (front/back) for
+                    // breaking points in case of x and depth values. If column has
+                    // side, it means that x values of front and back side are
+                    // different.
                     if (pArr[0].x === pArr[7].x && i >= 4) { // [4, 5, 6, 7]
                         return {
                             x: pArr[i].x + 10,
                             // when height is 0 instead of cuboid we render plane
-                            // so it is needed to add fake 10 height to imitate cuboid
-                            // for side calculation
+                            // so it is needed to add fake 10 height to imitate
+                            // cuboid for side calculation
                             y: pArr[i].y,
                             z: pArr[i].z
                         };
@@ -789,39 +809,37 @@
                         return {
                             x: pArr[i].x,
                             // when height is 0 instead of cuboid we render plane
-                            // so it is needed to add fake 10 height to imitate cuboid
-                            // for side calculation
+                            // so it is needed to add fake 10 height to imitate
+                            // cuboid for side calculation
                             y: pArr[i].y,
                             z: pArr[i].z + 10
                         };
                     }
                     return pArr[i];
-                }
+                }, 
                 /**
                  * method creating the final side
                  * @private
                  */
-                function mapPath(i) {
-                    return pArr[i];
-                }
+                mapPath = (i) => (pArr[i]), 
                 /**
                  * First value - path with specific face
-                 * Second  value - added information about side for later calculations.
-                 * Possible second values are 0 for path1, 1 for path2 and -1 for no
-                 * path chosen.
-                 * Third value - string containing information about current side
-                 * of cuboid for forcing side rendering.
+                 * Second  value - added info about side for later calculations.
+                 *                 Possible second values are 0 for path1, 1 for
+                 *                 path2 and -1 for no path chosen.
+                 * Third value - string containing information about current side of
+                 *               cuboid for forcing side rendering.
                  * @private
                  */
-                pickShape = function (verticesIndex1, verticesIndex2, side) {
-                    let ret = [[], -1], 
-                    // An array of vertices for cuboid face
+                pickShape = (verticesIndex1, verticesIndex2, side) => {
+                    const // An array of vertices for cuboid face
                     face1 = verticesIndex1.map(mapPath), face2 = verticesIndex2.map(mapPath), 
-                    // dummy face is calculated the same way as standard face, but
-                    // if cuboid height is 0 additional height is added so it is
-                    // possible to use this vertices array for visible face
-                    // calculation
+                    // dummy face is calculated the same way as standard face,
+                    // but if cuboid height is 0 additional height is added so
+                    // it is possible to use this vertices array for visible
+                    // face calculation
                     dummyFace1 = verticesIndex1.map(mapSidePath), dummyFace2 = verticesIndex2.map(mapSidePath);
+                    let ret = [[], -1];
                     if (shapeArea(face1) < 0) {
                         ret = [face1, 0];
                     }
@@ -843,23 +861,17 @@
                     return ret;
                 };
                 // front or back
-                front = [3, 2, 1, 0];
-                back = [7, 6, 5, 4];
+                const front = [3, 2, 1, 0], back = [7, 6, 5, 4];
                 shape = pickShape(front, back, 'front');
-                path1 = shape[0];
-                isFront = shape[1];
+                const path1 = shape[0], isFront = shape[1];
                 // top or bottom
-                top = [1, 6, 7, 0];
-                bottom = [4, 5, 2, 3];
+                const top = [1, 6, 7, 0], bottom = [4, 5, 2, 3];
                 shape = pickShape(top, bottom, 'top');
-                path2 = shape[0];
-                isTop = shape[1];
+                const path2 = shape[0], isTop = shape[1];
                 // side
-                right = [1, 2, 5, 6];
-                left = [0, 7, 4, 3];
+                const right = [1, 2, 5, 6], left = [0, 7, 4, 3];
                 shape = pickShape(right, left, 'side');
-                path3 = shape[0];
-                isRight = shape[1];
+                const path3 = shape[0], isRight = shape[1];
                 /* New block used for calculating zIndex. It is basing on X, Y and Z
                 position of specific columns. All zIndexes (for X, Y and Z values) are
                 added to the final zIndex, where every value has different priority. The
@@ -908,7 +920,8 @@
                  * @private
                  */
                 function suckOutCustom(params) {
-                    let hasCA = false, ca = {}, key;
+                    const ca = {};
+                    let hasCA = false, key;
                     params = merge(params); // Don't mutate the original object
                     for (key in params) {
                         if (customAttribs.indexOf(key) !== -1) {
@@ -935,23 +948,23 @@
                     wrapper.top.add(wrapper);
                     // These faces are added outside the wrapper group because the
                     // z-index relates to neighbour elements as well
-                    ['out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                    for (const face of ['out', 'inn', 'side1', 'side2']) {
                         wrapper[face]
                             .attr({
                             'class': className + ' highcharts-3d-side'
                         })
                             .add(parent);
-                    });
+                    }
                 };
                 // Cascade to faces
-                ['addClass', 'removeClass'].forEach(function (fn) {
+                for (const fn of ['addClass', 'removeClass']) {
                     wrapper[fn] = function () {
                         const args = arguments;
-                        ['top', 'out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                        for (const face of ['top', 'out', 'inn', 'side1', 'side2']) {
                             wrapper[face][fn].apply(wrapper[face], args);
-                        });
+                        }
                     };
-                });
+                }
                 /**
                  * Compute the transformed paths and set them to the composite shapes
                  * @private
@@ -990,14 +1003,14 @@
                 };
                 // Apply the same value to all. These properties cascade down to the
                 // children when set to the composite arc3d.
-                ['opacity', 'translateX', 'translateY', 'visibility'].forEach(function (setter) {
+                for (const setter of ['opacity', 'translateX', 'translateY', 'visibility']) {
                     wrapper[setter + 'Setter'] = function (value, key) {
                         wrapper[key] = value;
-                        ['out', 'inn', 'side1', 'side2', 'top'].forEach(function (el) {
+                        for (const el of ['out', 'inn', 'side1', 'side2', 'top']) {
                             wrapper[el].attr(key, value);
-                        });
+                        }
                     };
-                });
+                }
                 // Override attr to remove shape attributes and use those to set child
                 // paths
                 wrapper.attr = function (params) {
@@ -1017,14 +1030,15 @@
                 // related to the shapes directly, and update the shapes from the
                 // animation step.
                 wrapper.animate = function (params, animation, complete) {
-                    let paramArr, from = this.attribs, to, anim, randomProp = ('data-' + Math.random().toString(26).substring(2, 9));
+                    const from = this.attribs, randomProp = ('data-' + Math.random().toString(26).substring(2, 9));
+                    let paramArr, to;
                     // Attribute-line properties connected to 3D. These shouldn't have
                     // been in the attribs collection in the first place.
                     delete params.center;
                     delete params.z;
                     delete params.alpha;
                     delete params.beta;
-                    anim = animObject(pick(animation, this.renderer.globalAnimation));
+                    const anim = animObject(pick(animation, this.renderer.globalAnimation));
                     if (anim.duration) {
                         paramArr = suckOutCustom(params);
                         // Params need to have a property in order for the step to run
@@ -1035,13 +1049,8 @@
                         if (paramArr) {
                             to = paramArr[0]; // custom attr
                             anim.step = function (a, fx) {
-                                /**
-                                 * @private
-                                 */
-                                function interpolate(key) {
-                                    return from[key] + (pick(to[key], from[key]) -
-                                        from[key]) * fx.pos;
-                                }
+                                const interpolate = (key) => (from[key] + (pick(to[key], from[key]) -
+                                    from[key]) * fx.pos);
                                 if (fx.prop === randomProp) {
                                     fx.elem.setPaths(merge(from, {
                                         x: interpolate('x'),
@@ -1115,11 +1124,11 @@
                 let top = [
                     ['M', cx + (rx * cs), cy + (ry * ss)]
                 ];
-                top = top.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, start, end, 0, 0));
+                top = top.concat(curveTo(cx, cy, rx, ry, start, end, 0, 0));
                 top.push([
                     'L', cx + (irx * ce), cy + (iry * se)
                 ]);
-                top = top.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, 0, 0));
+                top = top.concat(curveTo(cx, cy, irx, iry, end, start, 0, 0));
                 top.push(['Z']);
                 // OUTSIDE
                 const b = (beta > 0 ? Math.PI / 2 : 0), a = (alpha > 0 ? 0 : Math.PI / 2);
@@ -1150,7 +1159,7 @@
                 let out = [
                     ['M', cx + (rx * cos(start2)), cy + (ry * sin(start2))]
                 ];
-                out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, start2, end2, 0, 0));
+                out = out.concat(curveTo(cx, cy, rx, ry, start2, end2, 0, 0));
                 // When shape is wide, it can cross both, (c) and (d) edges, when using
                 // startAngle
                 if (end > midEnd && start < midEnd) {
@@ -1159,24 +1168,24 @@
                         'L', cx + (rx * cos(end2)) + dx, cy + (ry * sin(end2)) + dy
                     ]);
                     // Curve to the right edge of the slice (d)
-                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, midEnd, dx, dy));
+                    out = out.concat(curveTo(cx, cy, rx, ry, end2, midEnd, dx, dy));
                     // Go to the inner side
                     out.push([
                         'L', cx + (rx * cos(midEnd)), cy + (ry * sin(midEnd))
                     ]);
                     // Curve to the true end of the slice
-                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, midEnd, end, 0, 0));
+                    out = out.concat(curveTo(cx, cy, rx, ry, midEnd, end, 0, 0));
                     // Go to the outer side
                     out.push([
                         'L', cx + (rx * cos(end)) + dx, cy + (ry * sin(end)) + dy
                     ]);
                     // Go back to middle (d)
-                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end, midEnd, dx, dy));
+                    out = out.concat(curveTo(cx, cy, rx, ry, end, midEnd, dx, dy));
                     out.push([
                         'L', cx + (rx * cos(midEnd)), cy + (ry * sin(midEnd))
                     ]);
                     // Go back to the left edge
-                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, midEnd, end2, 0, 0));
+                    out = out.concat(curveTo(cx, cy, rx, ry, midEnd, end2, 0, 0));
                     // But shape can cross also only (c) edge:
                 }
                 else if (end > PI - a && start < PI - a) {
@@ -1187,32 +1196,32 @@
                         cy + (ry * Math.sin(end2)) + dy
                     ]);
                     // Curve to the true end of the slice
-                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, end, dx, dy));
+                    out = out.concat(curveTo(cx, cy, rx, ry, end2, end, dx, dy));
                     // Go to the inner side
                     out.push([
                         'L', cx + (rx * Math.cos(end)), cy + (ry * Math.sin(end))
                     ]);
                     // Go back to the artifical end2
-                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end, end2, 0, 0));
+                    out = out.concat(curveTo(cx, cy, rx, ry, end, end2, 0, 0));
                 }
                 out.push([
                     'L',
                     cx + (rx * Math.cos(end2)) + dx,
                     cy + (ry * Math.sin(end2)) + dy
                 ]);
-                out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, start2, dx, dy));
+                out = out.concat(curveTo(cx, cy, rx, ry, end2, start2, dx, dy));
                 out.push(['Z']);
                 // INSIDE
                 let inn = [
                     ['M', cx + (irx * cs), cy + (iry * ss)]
                 ];
-                inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, start, end, 0, 0));
+                inn = inn.concat(curveTo(cx, cy, irx, iry, start, end, 0, 0));
                 inn.push([
                     'L',
                     cx + (irx * Math.cos(end)) + dx,
                     cy + (iry * Math.sin(end)) + dy
                 ]);
-                inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, dx, dy));
+                inn = inn.concat(curveTo(cx, cy, irx, iry, end, start, dx, dy));
                 inn.push(['Z']);
                 // SIDES
                 const side1 = [
@@ -1231,7 +1240,8 @@
                 ];
                 // correction for changed position of vanishing point caused by alpha
                 // and beta rotations
-                let angleCorr = Math.atan2(dy, -dx), angleEnd = Math.abs(end + angleCorr), angleStart = Math.abs(start + angleCorr), angleMid = Math.abs((start + end) / 2 + angleCorr);
+                const angleCorr = Math.atan2(dy, -dx);
+                let angleEnd = Math.abs(end + angleCorr), angleStart = Math.abs(start + angleCorr), angleMid = Math.abs((start + end) / 2 + angleCorr);
                 /**
                  * set to 0-PI range
                  * @private

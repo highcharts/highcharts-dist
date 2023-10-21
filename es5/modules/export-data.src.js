@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * Exporting module
  *
@@ -1201,8 +1201,7 @@
          *         The blob object, or undefined if not supported.
          */
         function getBlobFromContent(content, type) {
-            var nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-                nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
+            var nav = win.navigator, domurl = win.URL || win.webkitURL || win;
             try {
                 // MS specific
                 if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
@@ -1210,12 +1209,8 @@
                     blob.append(content);
                     return blob.getBlob('image/svg+xml');
                 }
-                // Safari requires data URI since it doesn't allow navigation to blob
-                // URLs.
-                if (!webKit) {
-                    return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
-                    { type: type }));
-                }
+                return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+                { type: type }));
             }
             catch (e) {
                 // Ignore

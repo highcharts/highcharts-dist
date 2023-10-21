@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-10-20)
+ * @license Highcharts Gantt JS v11.1.0 (2023-10-21)
  *
  * (c) 2017-2021 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -5408,6 +5408,12 @@
                  * exported images. One way of working around that is to
                  * [increase the chart height in
                  * export](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/legend/navigation-enabled-false/).
+                 *
+                 * @sample highcharts/legend/scrollable-vertical/
+                 *         Legend with vertical scrollable extension
+                 * @sample highcharts/legend/scrollable-horizontal/
+                 *         Legend with horizontal scrollable extension
+                 *
                  */
                 navigation: {
                     /**
@@ -5749,6 +5755,11 @@
                  *
                  * Prior to 4.1.7, when using HTML, [legend.navigation](
                  * #legend.navigation) was disabled.
+                 *
+                 * @sample highcharts/legend/scrollable-vertical/
+                 *         Legend with vertical scrollable extension
+                 * @sample highcharts/legend/scrollable-horizontal/
+                 *         Legend with horizontal scrollable extension
                  *
                  * @type      {boolean}
                  * @default   false
@@ -54332,7 +54343,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var pointProto = SeriesRegistry.series.prototype.pointClass.prototype, ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
+        var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
         var extend = U.extend;
         /* *
          *
@@ -54410,7 +54421,7 @@
              * @private
              */
             XRangePoint.prototype.init = function () {
-                pointProto.init.apply(this, arguments);
+                _super.prototype.init.apply(this, arguments);
                 if (!this.y) {
                     this.y = 0;
                 }
@@ -54420,7 +54431,7 @@
              * @private
              */
             XRangePoint.prototype.setState = function () {
-                pointProto.setState.apply(this, arguments);
+                _super.prototype.setState.apply(this, arguments);
                 this.series.drawPoint(this, this.series.getAnimationVerb());
             };
             /**
@@ -54429,7 +54440,7 @@
              * @private
              */
             XRangePoint.prototype.getLabelConfig = function () {
-                var cfg = pointProto.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
+                var cfg = _super.prototype.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
                 cfg.x2 = this.x2;
                 cfg.yCategory = this.yCategory = yCats && yCats[this.y];
                 // Use 'category' as 'key' to ensure tooltip datetime formatting.
@@ -54516,7 +54527,7 @@
         })();
         var noop = H.noop;
         var color = Color.parse;
-        var seriesProto = SeriesRegistry.series.prototype, ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
         var addEvent = U.addEvent, clamp = U.clamp, defined = U.defined, extend = U.extend, find = U.find, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
         /* *
          *
@@ -54595,7 +54606,6 @@
                     return retVal;
                 }
                 //*/
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
@@ -54646,7 +54656,7 @@
              */
             XRangeSeries.prototype.cropData = function (xData, yData, min, max) {
                 // Replace xData with x2Data to find the appropriate cropStart
-                var crop = seriesProto.cropData.call(this, this.x2Data, yData, min, max);
+                var crop = _super.prototype.cropData.call(this, this.x2Data, yData, min, max);
                 // Re-insert the cropped xData
                 crop.xData = xData.slice(crop.start, crop.end);
                 return crop;
@@ -54825,7 +54835,7 @@
              *        'animate' (animates changes) or 'attr' (sets options)
              */
             XRangeSeries.prototype.drawPoint = function (point, verb) {
-                var seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
+                var seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
                     {}), pointStateVerb = typeof pointState === 'undefined' ?
                     'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
                 var graphic = point.graphic, pfOptions = point.partialFill;
@@ -54934,7 +54944,7 @@
             parallelArrays: ['x', 'x2', 'y'],
             requireSorting: false,
             type: 'xrange',
-            animate: seriesProto.animate,
+            animate: SeriesRegistry.series.prototype.animate,
             autoIncrement: noop,
             buildKDTree: noop
         });
@@ -55740,6 +55750,8 @@
             // help.
             axis.labelRotation = 0;
             options.labels.rotation = 0;
+            // Allow putting ticks closer than their data points.
+            options.minTickInterval = 1;
         }
         /**
          * Extends axis class with grid support.

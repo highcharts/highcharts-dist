@@ -79,6 +79,8 @@ function applyGridOptions(axis) {
     // help.
     axis.labelRotation = 0;
     options.labels.rotation = 0;
+    // Allow putting ticks closer than their data points.
+    options.minTickInterval = 1;
 }
 /**
  * Extends axis class with grid support.

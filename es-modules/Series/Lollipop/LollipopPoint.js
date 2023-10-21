@@ -28,6 +28,7 @@ class LollipopPoint extends Point {
         this.options = void 0;
         this.series = void 0;
         this.plotX = void 0;
+        this.pointWidth = void 0;
     }
 }
 extend(LollipopPoint.prototype, {

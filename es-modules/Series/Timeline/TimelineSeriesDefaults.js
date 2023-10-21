@@ -112,7 +112,7 @@ const TimelineSeriesDefaults = {
          * vertical timeline (`chart.inverted: true`).
          */
         distance: void 0,
-        // eslint-disable-next-line valid-jsdoc
+        // eslint-disable-next-line jsdoc/require-description
         /**
          * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
          * @default function () {

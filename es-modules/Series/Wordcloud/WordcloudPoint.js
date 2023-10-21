@@ -11,14 +11,19 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
+const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { extend } = U;
+/* *
+ *
+ *  Class
+ *
+ * */
 class WordcloudPoint extends ColumnPoint {
     constructor() {
         /* *
          *
-         * Properties
+         *  Properties
          *
          * */
         super(...arguments);
@@ -30,7 +35,7 @@ class WordcloudPoint extends ColumnPoint {
     }
     /* *
      *
-     * Functions
+     *  Functions
      *
      * */
     isValid() {

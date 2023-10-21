@@ -755,8 +755,7 @@ function compose(ChartClass) {
  *         The blob object, or undefined if not supported.
  */
 function getBlobFromContent(content, type) {
-    const nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-        nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
     try {
         // MS specific
         if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
@@ -764,12 +763,8 @@ function getBlobFromContent(content, type) {
             blob.append(content);
             return blob.getBlob('image/svg+xml');
         }
-        // Safari requires data URI since it doesn't allow navigation to blob
-        // URLs.
-        if (!webKit) {
-            return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
-            { type: type }));
-        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
     }
     catch (e) {
         // Ignore

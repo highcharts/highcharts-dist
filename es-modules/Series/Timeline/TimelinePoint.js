@@ -14,7 +14,7 @@
 'use strict';
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
+const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { defined, isNumber, merge, objectEach, pick } = U;
 /* *
@@ -22,7 +22,7 @@ const { defined, isNumber, merge, objectEach, pick } = U;
  *  Class
  *
  * */
-class TimelinePoint extends Series.prototype.pointClass {
+class TimelinePoint extends LinePoint {
     constructor() {
         /* *
          *
@@ -32,19 +32,17 @@ class TimelinePoint extends Series.prototype.pointClass {
         super(...arguments);
         this.options = void 0;
         this.series = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     alignConnector() {
-        let point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
+        const point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
             x: bBox.x + (dataLabel.translateX || 0),
             y: bBox.y + (dataLabel.translateY || 0)
-        }, isVisible;
+        };
         // Include a half of connector width in order to run animation,
         // when connectors are aligned to the plot area edge.
         if (chart.inverted) {
@@ -53,11 +51,11 @@ class TimelinePoint extends Series.prototype.pointClass {
         else {
             plotPos.x += connectorWidth / 2;
         }
-        isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
+        const isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
         connector[isVisible ? 'animate' : 'attr']({
             d: point.getConnectorPath()
         });
-        connector.addClass(`highcharts-color-${point.colorIndex}`);
+        connector.addClass('highcharts-color-' + point.colorIndex);
         if (!series.chart.styledMode) {
             connector.attr({
                 stroke: dlOptions.connectorColor || point.color,

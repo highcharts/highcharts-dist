@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * Timeline series
  *
@@ -50,14 +50,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { series: Series, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
+        const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
         const { defined, isNumber, merge, objectEach, pick } = U;
         /* *
          *
          *  Class
          *
          * */
-        class TimelinePoint extends Series.prototype.pointClass {
+        class TimelinePoint extends LinePoint {
             constructor() {
                 /* *
                  *
@@ -67,19 +67,17 @@
                 super(...arguments);
                 this.options = void 0;
                 this.series = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             alignConnector() {
-                let point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
+                const point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
                     x: bBox.x + (dataLabel.translateX || 0),
                     y: bBox.y + (dataLabel.translateY || 0)
-                }, isVisible;
+                };
                 // Include a half of connector width in order to run animation,
                 // when connectors are aligned to the plot area edge.
                 if (chart.inverted) {
@@ -88,11 +86,11 @@
                 else {
                     plotPos.x += connectorWidth / 2;
                 }
-                isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
+                const isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
                 connector[isVisible ? 'animate' : 'attr']({
                     d: point.getConnectorPath()
                 });
-                connector.addClass(`highcharts-color-${point.colorIndex}`);
+                connector.addClass('highcharts-color-' + point.colorIndex);
                 if (!series.chart.styledMode) {
                     connector.attr({
                         stroke: dlOptions.connectorColor || point.color,
@@ -308,7 +306,7 @@
                  * vertical timeline (`chart.inverted: true`).
                  */
                 distance: void 0,
-                // eslint-disable-next-line valid-jsdoc
+                // eslint-disable-next-line jsdoc/require-description
                 /**
                  * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
                  * @default function () {
@@ -449,7 +447,7 @@
 
         return TimelineSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Series/Timeline/TimelineSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, SVGElement, TimelinePoint, TimelineSeriesDefaults, U) {
+    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Series/Timeline/TimelineSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TimelinePoint, TimelineSeriesDefaults, U) {
         /* *
          *
          *  Timeline Series.
@@ -463,7 +461,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { column: ColumnSeries, line: LineSeries } } = SeriesRegistry;
+        const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, arrayMax, arrayMin, defined, extend, merge, pick } = U;
         /* *
          *
@@ -497,14 +495,12 @@
                 this.points = void 0;
                 this.userOptions = void 0;
                 this.visibilityMap = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             alignDataLabel(point, dataLabel, _options, _alignTo) {
                 const series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter((point) => !!point), visiblePointsCount = series.visiblePointsCount || 0, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
                 // Define multiplier which is used to calculate data label
@@ -546,20 +542,18 @@
             }
             bindAxes() {
                 const series = this;
-                super.bindAxes.call(series);
-                ['xAxis', 'yAxis'].forEach(function (axis) {
-                    // Initially set the linked xAxis type to category.
-                    if (axis === 'xAxis' && !series[axis].userOptions.type) {
-                        series[axis].categories = series[axis].hasNames = true;
-                    }
-                });
+                super.bindAxes();
+                // Initially set the linked xAxis type to category.
+                if (!series.xAxis.userOptions.type) {
+                    series.xAxis.categories = series.xAxis.hasNames = true;
+                }
             }
             distributeDL() {
                 const series = this, dataLabelsOptions = series.options.dataLabels, inverted = series.chart.inverted;
                 let visibilityIndex = 1;
                 if (dataLabelsOptions) {
                     const distance = pick(dataLabelsOptions.distance, inverted ? 20 : 100);
-                    series.points.forEach((point) => {
+                    for (const point of series.points) {
                         const defaults = {
                             [inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
                                 -distance : distance
@@ -569,32 +563,29 @@
                         }
                         point.options.dataLabels = merge(defaults, point.userDLOptions);
                         visibilityIndex++;
-                    });
+                    }
                 }
             }
             generatePoints() {
-                const series = this;
-                super.generatePoints.apply(series);
-                series.points.forEach(function (point, i) {
-                    point.applyOptions({
+                super.generatePoints();
+                const series = this, points = series.points;
+                for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
+                    points[i].applyOptions({
                         x: series.xData[i]
                     }, series.xData[i]);
-                });
+                }
             }
             getVisibilityMap() {
                 const series = this, map = (series.data.length ?
-                    series.data : series.userOptions.data).map(function (point) {
-                    return (point &&
-                        point.visible !== false &&
-                        !point.isNull) ? point : false;
-                });
+                    series.data :
+                    series.userOptions.data || []).map((point) => (point && point.visible !== false && !point.isNull ?
+                    point :
+                    false));
                 return map;
             }
             getXExtremes(xData) {
-                const series = this, filteredData = xData.filter(function (x, i) {
-                    return series.points[i].isValid() &&
-                        series.points[i].visible;
-                });
+                const series = this, filteredData = xData.filter((_x, i) => (series.points[i].isValid() &&
+                    series.points[i].visible));
                 return {
                     min: arrayMin(filteredData),
                     max: arrayMax(filteredData)
@@ -605,7 +596,7 @@
                 super.init.apply(series, arguments);
                 series.eventsToUnbind.push(addEvent(series, 'afterTranslate', function () {
                     let lastPlotX, closestPointRangePx = Number.MAX_VALUE;
-                    series.points.forEach(function (point) {
+                    for (const point of series.points) {
                         // Set the isInside parameter basing also on the real point
                         // visibility, in order to avoid showing hidden points
                         // in drawPoints method.
@@ -618,7 +609,7 @@
                             }
                             lastPlotX = point.plotX;
                         }
-                    });
+                    }
                     series.closestPointRangePx = closestPointRangePx;
                 }));
                 // Distribute data labels before rendering them. Distribution is
@@ -631,7 +622,7 @@
                 series.eventsToUnbind.push(addEvent(series, 'afterDrawDataLabels', function () {
                     let dataLabel; // @todo use this scope for series
                     // Draw or align connector for each point.
-                    series.points.forEach(function (point) {
+                    for (const point of series.points) {
                         dataLabel = point.dataLabel;
                         if (dataLabel) {
                             // Within this wrap method is necessary to save the
@@ -642,7 +633,8 @@
                                 if (this.targetPosition) {
                                     this.targetPosition = params;
                                 }
-                                return SVGElement.prototype.animate.apply(this, arguments);
+                                return this.renderer.Element.prototype
+                                    .animate.apply(this, arguments);
                             };
                             // Initialize the targetPosition field within data label
                             // object. It's necessary because there is need to know
@@ -652,26 +644,27 @@
                             if (!dataLabel.targetPosition) {
                                 dataLabel.targetPosition = {};
                             }
-                            return point.drawConnector();
+                            point.drawConnector();
                         }
-                    });
+                    }
                 }));
                 series.eventsToUnbind.push(addEvent(series.chart, 'afterHideOverlappingLabel', function () {
-                    series.points.forEach((p) => {
+                    for (const p of series.points) {
                         if (p.dataLabel &&
                             p.dataLabel.connector &&
                             p.dataLabel.oldOpacity !== p.dataLabel.newOpacity) {
                             p.alignConnector();
                         }
-                    });
+                    }
                 }));
             }
             markerAttribs(point, state) {
-                let series = this, seriesMarkerOptions = series.options.marker, seriesStateOptions, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), pointStateOptions, width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height), radius = 0, attribs;
+                const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height);
+                let seriesStateOptions, pointStateOptions, radius = 0;
                 // Call default markerAttribs method, when the xAxis type
                 // is set to datetime.
                 if (series.xAxis.dateTime) {
-                    return super.markerAttribs.call(this, point, state);
+                    return super.markerAttribs(point, state);
                 }
                 // Handle hover and select states
                 if (state) {
@@ -682,7 +675,7 @@
                     radius = pick(pointStateOptions.radius, seriesStateOptions.radius, radius + (seriesStateOptions.radiusPlus || 0));
                 }
                 point.hasImage = (symbol && symbol.indexOf('url') === 0);
-                attribs = {
+                const attribs = {
                     x: Math.floor(point.plotX) - (width / 2) - (radius / 2),
                     y: point.plotY - (height / 2) - (radius / 2),
                     width: width + radius,
@@ -697,14 +690,15 @@
                 } : attribs;
             }
             processData() {
-                let series = this, visiblePoints = 0, i;
+                const series = this;
+                let visiblePoints = 0, i;
                 series.visibilityMap = series.getVisibilityMap();
                 // Calculate currently visible points.
-                series.visibilityMap.forEach(function (point) {
+                for (const point of series.visibilityMap) {
                     if (point) {
                         visiblePoints++;
                     }
-                });
+                }
                 series.visiblePointsCount = visiblePoints;
                 for (i = 0; i < series.xData.length; i++) {
                     series.yData[i] = 1;

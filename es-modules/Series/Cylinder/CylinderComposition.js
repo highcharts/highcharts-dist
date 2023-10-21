@@ -19,6 +19,7 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import RendererRegistry from '../../Core/Renderer/RendererRegistry.js';
+import SVGElement3DCylinder from './SVGElement3DCylinder.js';
 import U from '../../Core/Utilities.js';
 const { merge, pick } = U;
 /* *
@@ -30,23 +31,7 @@ const rendererProto = RendererRegistry.getRendererType().prototype, cuboidPath =
 // Check if a path is simplified. The simplified path contains only lineTo
 // segments, whereas non-simplified contain curves.
 const isSimplified = (path) => !path.some((seg) => seg[0] === 'C');
-// cylinder extends cuboid
-const cylinderMethods = merge(rendererProto.elements3d.cuboid, {
-    parts: ['top', 'bottom', 'front', 'back'],
-    pathType: 'cylinder',
-    fillSetter: function (fill) {
-        this.singleSetterForParts('fill', null, {
-            front: fill,
-            back: fill,
-            top: color(fill).brighten(0.1).get(),
-            bottom: color(fill).brighten(-0.1).get()
-        });
-        // fill for animation getter (#6776)
-        this.color = this.fill = fill;
-        return this;
-    }
-});
-rendererProto.elements3d.cylinder = cylinderMethods;
+rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
 rendererProto.cylinder = function (shapeArgs) {
     return this.element3d('cylinder', shapeArgs);
 };

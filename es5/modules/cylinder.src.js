@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-20)
+ * @license Highcharts JS v11.1.0 (2023-10-21)
  *
  * Highcharts cylinder module
  *
@@ -97,7 +97,81 @@
 
         return CylinderPoint;
     });
-    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, U) {
+    _registerModule(_modules, 'Series/Cylinder/SVGElement3DCylinder.js', [_modules['Core/Color/Color.js'], _modules['Core/Renderer/SVG/SVGElement3D.js']], function (Color, SVGElement3D) {
+        /* *
+         *
+         *  Highcharts cylinder - a 3D series
+         *
+         *  (c) 2010-2021 Highsoft AS
+         *
+         *  Author: Kacper Madej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+            var extendStatics = function (d, b) {
+                extendStatics = Object.setPrototypeOf ||
+                    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                    function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                if (typeof b !== "function" && b !== null)
+                    throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var color = Color.parse;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        var SVGElement3DCylinder = /** @class */ (function (_super) {
+            __extends(SVGElement3DCylinder, _super);
+            function SVGElement3DCylinder() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this, arguments) || this;
+                _this.parts = ['top', 'bottom', 'front', 'back'];
+                _this.pathType = 'cylinder';
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            SVGElement3DCylinder.prototype.fillSetter = function (fill) {
+                this.singleSetterForParts('fill', null, {
+                    front: fill,
+                    back: fill,
+                    top: color(fill).brighten(0.1).get(),
+                    bottom: color(fill).brighten(-0.1).get()
+                });
+                // fill for animation getter (#6776)
+                this.color = this.fill = fill;
+                return this;
+            };
+            return SVGElement3DCylinder;
+        }(SVGElement3D));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return SVGElement3DCylinder;
+    });
+    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Series/Cylinder/SVGElement3DCylinder.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, SVGElement3DCylinder, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
@@ -126,23 +200,7 @@
         var isSimplified = function (path) {
             return !path.some(function (seg) { return seg[0] === 'C'; });
         };
-        // cylinder extends cuboid
-        var cylinderMethods = merge(rendererProto.elements3d.cuboid, {
-            parts: ['top', 'bottom', 'front', 'back'],
-            pathType: 'cylinder',
-            fillSetter: function (fill) {
-                this.singleSetterForParts('fill', null, {
-                    front: fill,
-                    back: fill,
-                    top: color(fill).brighten(0.1).get(),
-                    bottom: color(fill).brighten(-0.1).get()
-                });
-                // fill for animation getter (#6776)
-                this.color = this.fill = fill;
-                return this;
-            }
-        });
-        rendererProto.elements3d.cylinder = cylinderMethods;
+        rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
         rendererProto.cylinder = function (shapeArgs) {
             return this.element3d('cylinder', shapeArgs);
         };
