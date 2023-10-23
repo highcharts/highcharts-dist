@@ -1,5 +1,5 @@
 /**
- * Highstock JS v11.1.0 (2023-10-21)
+ * Highstock JS v11.1.0 (2023-10-23)
  *
  * Data grouping module
  *

@@ -38,9 +38,9 @@ var TreemapUtilities;
      * @todo find correct name for this function.
      * @todo Similar to reduce, this function is likely redundant
      */
-    function recursive(item, func, context = this) {
+    function recursive(item, func, context) {
         let next;
-        next = func.call(context, item);
+        next = func.call(context || this, item);
         if (next !== false) {
             recursive(next, func, context);
         }

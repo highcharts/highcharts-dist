@@ -268,7 +268,8 @@ var DataLabel;
      * Draw the data labels
      * @private
      */
-    function drawDataLabels(points = this.points) {
+    function drawDataLabels(points) {
+        points = points || this.points;
         const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
             (isString(backgroundColor) && backgroundColor) ||
             "#000000" /* Palette.neutralColor100 */);

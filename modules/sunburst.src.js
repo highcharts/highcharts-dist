@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-21)
+ * @license Highcharts JS v11.1.0 (2023-10-23)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -2032,9 +2032,9 @@
              * @todo find correct name for this function.
              * @todo Similar to reduce, this function is likely redundant
              */
-            function recursive(item, func, context = this) {
+            function recursive(item, func, context) {
                 let next;
-                next = func.call(context, item);
+                next = func.call(context || this, item);
                 if (next !== false) {
                     recursive(next, func, context);
                 }

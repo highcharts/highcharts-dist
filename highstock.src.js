@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-10-21)
+ * @license Highstock JS v11.1.0 (2023-10-23)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -22149,7 +22149,8 @@
              * @return {Highcharts.SVGPathArray}
              * The SVG path definition in array form.
              */
-            function getPlotBandPath(from, to, options = this.options) {
+            function getPlotBandPath(from, to, options) {
+                options = options || this.options;
                 const toPath = this.getPlotLinePath({
                     value: to,
                     force: true,
@@ -42057,7 +42058,8 @@
              * Draw the data labels
              * @private
              */
-            function drawDataLabels(points = this.points) {
+            function drawDataLabels(points) {
+                points = points || this.points;
                 const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
                     (isString(backgroundColor) && backgroundColor) ||
                     "#000000" /* Palette.neutralColor100 */);

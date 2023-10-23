@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-10-21)
+ * @license Highmaps JS v11.1.0 (2023-10-23)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *

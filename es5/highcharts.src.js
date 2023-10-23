@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-10-21)
+ * @license Highcharts JS v11.1.0 (2023-10-23)
  *
  * (c) 2009-2023 Torstein Honsi
  *
@@ -22259,7 +22259,7 @@
              * The SVG path definition in array form.
              */
             function getPlotBandPath(from, to, options) {
-                if (options === void 0) { options = this.options; }
+                options = options || this.options;
                 var toPath = this.getPlotLinePath({
                     value: to,
                     force: true,
@@ -42328,7 +42328,7 @@
              */
             function drawDataLabels(points) {
                 var _a, _b, _c;
-                if (points === void 0) { points = this.points; }
+                points = points || this.points;
                 var series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, _d = chart.options.chart, backgroundColor = _d.backgroundColor, plotBackgroundColor = _d.plotBackgroundColor, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
                     (isString(backgroundColor) && backgroundColor) ||
                     "#000000" /* Palette.neutralColor100 */);
