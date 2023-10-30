@@ -10,14 +10,12 @@
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
 import ItemPoint from './ItemPoint.js';
-import D from '../../Core/Defaults.js';
-const { defaultOptions } = D;
+import ItemSeriesDefaults from './ItemSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { pie: PieSeries } } = SeriesRegistry;
+const { pie: PieSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { defined, extend, fireEvent, isNumber, merge, objectEach, pick } = U;
+const { defined, extend, fireEvent, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -47,44 +45,45 @@ class ItemSeries extends PieSeries {
         this.data = void 0;
         this.options = void 0;
         this.points = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Fade in the whole chart.
      * @private
      */
     animate(init) {
-        if (init) {
-            this.group.attr({
-                opacity: 0
-            });
-        }
-        else {
-            this.group.animate({
-                opacity: 1
-            }, this.options.animation);
+        const group = this.group;
+        if (group) {
+            if (init) {
+                group.attr({
+                    opacity: 0
+                });
+            }
+            else {
+                group.animate({
+                    opacity: 1
+                }, this.options.animation);
+            }
         }
     }
     drawDataLabels() {
         if (this.center && this.slots) {
-            H.seriesTypes.pie.prototype.drawDataLabels.call(this);
-            // else, it's just a dot chart with no natural place to put the
-            // data labels
+            super.drawDataLabels();
+            // or it's just a dot chart with no natural place to put the data labels
         }
         else {
-            this.points.forEach(function (point) {
+            for (const point of this.points) {
                 point.destroyElements({ dataLabel: 1 });
-            });
+            }
         }
     }
     drawPoints() {
-        let series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, i = 0, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
+        const series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
+        let i = 0;
         /* @todo: remove if not needed
         this.slots.forEach(slot => {
             this.chart.renderer.circle(slot.x, slot.y, 6)
@@ -94,9 +93,10 @@ class ItemSeries extends PieSeries {
                 .add(this.group);
         });
         //*/
-        this.points.forEach(function (point) {
-            let attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                seriesMarkerOptions.symbol), r = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding, x, y, width, height;
+        for (const point of series.points) {
+            const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+                seriesMarkerOptions.symbol), r = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding;
+            let attr, graphics, pointAttr, x, y, width, height;
             point.graphics = graphics = point.graphics || [];
             if (!series.chart.styledMode) {
                 pointAttr = series.pointAttribs(point, point.selected && 'select');
@@ -106,7 +106,7 @@ class ItemSeries extends PieSeries {
                     point.graphic = renderer.g('point')
                         .add(series.group);
                 }
-                for (let val = 0; val < (point.y || 0); val++) {
+                for (let val = 0; val < (point.y || 0); ++val) {
                     // Semi-circle
                     if (series.center && series.slots) {
                         // Fill up the slots from left to right
@@ -157,7 +157,7 @@ class ItemSeries extends PieSeries {
                     }
                     graphic.isActive = true;
                     graphics[val] = graphic;
-                    i++;
+                    ++i;
                 }
             }
             for (let j = 0; j < graphics.length; j++) {
@@ -174,18 +174,19 @@ class ItemSeries extends PieSeries {
                     graphic.isActive = false;
                 }
             }
-        });
+        }
     }
     getRows() {
+        const chart = this.chart, total = this.total || 0;
         let rows = this.options.rows, cols, ratio;
         // Get the row count that gives the most square cells
         if (!rows) {
-            ratio = this.chart.plotWidth / this.chart.plotHeight;
-            rows = Math.sqrt(this.total);
+            ratio = chart.plotWidth / chart.plotHeight;
+            rows = Math.sqrt(total);
             if (ratio > 1) {
                 rows = Math.ceil(rows);
                 while (rows > 0) {
-                    cols = this.total / rows;
+                    cols = total / rows;
                     if (cols / rows > ratio) {
                         break;
                     }
@@ -194,8 +195,8 @@ class ItemSeries extends PieSeries {
             }
             else {
                 rows = Math.floor(rows);
-                while (rows < this.total) {
-                    cols = this.total / rows;
+                while (rows < total) {
+                    cols = total / rows;
                     if (cols / rows < ratio) {
                         break;
                     }
@@ -210,9 +211,10 @@ class ItemSeries extends PieSeries {
      * @private
      */
     getSlots() {
-        let center = this.center, diameter = center[2], innerSize = center[3], row, slots = this.slots, x, y, rowRadius, rowLength, colCount, increment, angle, col, itemSize = 0, rowCount, fullAngle = (this.endAngleRad - this.startAngleRad), itemCount = Number.MAX_VALUE, finalItemCount, rows, testRows, rowsOption = this.options.rows, 
+        const series = this, center = series.center, diameter = center[2], slots = series.slots = series.slots || [], fullAngle = (series.endAngleRad - series.startAngleRad), rowsOption = series.options.rows, isCircle = fullAngle % (2 * Math.PI) === 0, total = series.total || 0;
+        let innerSize = center[3], x, y, rowRadius, rowLength, colCount, increment, angle, col, itemSize = 0, rowCount, itemCount = Number.MAX_VALUE, finalItemCount, rows, testRows, 
         // How many rows (arcs) should be used
-        rowFraction = (diameter - innerSize) / diameter, isCircle = fullAngle % (2 * Math.PI) === 0, total = this.total || 0;
+        rowFraction = (diameter - innerSize) / diameter;
         // Increase the itemSize until we find the best fit
         while (itemCount > total + (rows && isCircle ? rows.length : 0)) {
             finalItemCount = itemCount;
@@ -242,7 +244,7 @@ class ItemSeries extends PieSeries {
             else {
                 rowCount = Math.floor(rowCount * rowFraction);
             }
-            for (row = rowCount; row > 0; row--) {
+            for (let row = rowCount; row > 0; row--) {
                 rowRadius = (innerSize + (row / rowCount) *
                     (diameter - innerSize - itemSize)) / 2;
                 rowLength = fullAngle * rowRadius;
@@ -262,57 +264,51 @@ class ItemSeries extends PieSeries {
         // the rows and remove the last slot until the count is correct.
         // For each iteration we sort the last slot by the angle, and
         // remove those with the highest angles.
-        let overshoot = finalItemCount - this.total -
+        let overshoot = finalItemCount - series.total -
             (isCircle ? rows.length : 0);
         /**
          * @private
          * @param {Highcharts.ItemRowContainerObject} item
          * Wrapped object with angle and row
-             */
-        function cutOffRow(item) {
+         */
+        const cutOffRow = (item) => {
             if (overshoot > 0) {
                 item.row.colCount--;
                 overshoot--;
             }
-        }
+        };
         while (overshoot > 0) {
             rows
                 // Return a simplified representation of the angle of
                 // the last slot within each row.
-                .map(function (row) {
-                return {
-                    angle: row.colCount / row.rowLength,
-                    row: row
-                };
-            })
+                .map((row) => ({
+                angle: row.colCount / row.rowLength,
+                row: row
+            }))
                 // Sort by the angles...
-                .sort(function (a, b) {
-                return b.angle - a.angle;
-            })
+                .sort((a, b) => (b.angle - a.angle))
                 // ...so that we can ignore the items with the lowest
                 // angles...
                 .slice(0, Math.min(overshoot, Math.ceil(rows.length / 2)))
                 // ...and remove the ones with the highest angles
                 .forEach(cutOffRow);
         }
-        rows.forEach(function (row) {
+        for (const row of rows) {
             const rowRadius = row.rowRadius, colCount = row.colCount;
             increment = colCount ? fullAngle / colCount : 0;
             for (col = 0; col <= colCount; col += 1) {
-                angle = this.startAngleRad + col * increment;
+                angle = series.startAngleRad + col * increment;
                 x = center[0] + Math.cos(angle) * rowRadius;
                 y = center[1] + Math.sin(angle) * rowRadius;
                 slots.push({ x: x, y: y, angle: angle });
             }
-        }, this);
+        }
         // Sort by angle
-        slots.sort(function (a, b) {
-            return a.angle - b.angle;
-        });
-        this.itemSize = itemSize;
+        slots.sort((a, b) => (a.angle - b.angle));
+        series.itemSize = itemSize;
         return slots;
     }
-    translate(_positions) {
+    translate(positions) {
         // Initialize chart without setting data, #13379.
         if (this.total === 0 && // check if that is a (semi-)circle
             isNumber(this.options.startAngle) &&
@@ -324,7 +320,7 @@ class ItemSeries extends PieSeries {
         }
         if (isNumber(this.options.startAngle) &&
             isNumber(this.options.endAngle)) {
-            H.seriesTypes.pie.prototype.translate.apply(this, arguments);
+            super.translate(positions);
             this.slots = this.getSlots();
         }
         else {
@@ -333,98 +329,11 @@ class ItemSeries extends PieSeries {
         }
     }
 }
-/**
- * An item chart is an infographic chart where a number of items are laid
- * out in either a rectangular or circular pattern. It can be used to
- * visualize counts within a group, or for the circular pattern, typically
- * a parliament.
- *
- * The circular layout has much in common with a pie chart. Many of the item
- * series options, like `center`, `size` and data label positioning, are
- * inherited from the pie series and don't apply for rectangular layouts.
- *
- * @sample       highcharts/demo/parliament-chart
- *               Parliament chart (circular item chart)
- * @sample       highcharts/series-item/rectangular
- *               Rectangular item chart
- * @sample       highcharts/series-item/symbols
- *               Infographic with symbols
- *
- * @extends      plotOptions.pie
- * @since        7.1.0
- * @product      highcharts
- * @excluding    borderColor, borderWidth, depth, linecap, shadow,
- *               slicedOffset
- * @requires     modules/item-series
- * @optionparent plotOptions.item
- */
-ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, {
-    /**
-     * In circular view, the end angle of the item layout, in degrees where
-     * 0 is up.
-     *
-     * @sample highcharts/demo/parliament-chart
-     *         Parliament chart
-     * @type {undefined|number}
-     */
-    endAngle: void 0,
-    /**
-     * In circular view, the size of the inner diameter of the circle. Can
-     * be a percentage or pixel value. Percentages are relative to the outer
-     * perimeter. Pixel values are given as integers.
-     *
-     * If the `rows` option is set, it overrides the `innerSize` setting.
-     *
-     * @sample highcharts/demo/parliament-chart
-     *         Parliament chart
-     * @type {string|number}
-     */
-    innerSize: '40%',
-    /**
-     * The padding between the items, given in relative size where the size
-     * of the item is 1.
-     * @type {number}
-     */
-    itemPadding: 0.1,
-    /**
-     * The layout of the items in rectangular view. Can be either
-     * `horizontal` or `vertical`.
-     * @sample highcharts/series-item/symbols
-     *         Horizontal layout
-     * @type {string}
-     */
-    layout: 'vertical',
-    /**
-     * @extends plotOptions.series.marker
-     */
-    marker: merge(defaultOptions.plotOptions.line.marker, {
-        radius: null
-    }),
-    /**
-     * The number of rows to display in the rectangular or circular view. If
-     * the `innerSize` is set, it will be overridden by the `rows` setting.
-     *
-     * @sample highcharts/series-item/rows-columns
-     *         Fixed row count
-     * @type {number}
-     */
-    rows: void 0,
-    crisp: false,
-    showInLegend: true,
-    /**
-     * In circular view, the start angle of the item layout, in degrees
-     * where 0 is up.
-     *
-     * @sample highcharts/demo/parliament-chart
-     *         Parliament chart
-     * @type {undefined|number}
-     */
-    startAngle: void 0
-});
+ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, ItemSeriesDefaults);
 extend(ItemSeries.prototype, {
-    markerAttribs: void 0
+    markerAttribs: void 0,
+    pointClass: ItemPoint
 });
-ItemSeries.prototype.pointClass = ItemPoint;
 SeriesRegistry.registerSeriesType('item', ItemSeries);
 /* *
  *
@@ -432,71 +341,3 @@ SeriesRegistry.registerSeriesType('item', ItemSeries);
  *
  * */
 export default ItemSeries;
-/* *
- *
- *  API Options
- *
- * */
-/**
- * An `item` series. If the [type](#series.item.type) option is not specified,
- * it is inherited from [chart.type](#chart.type).
- *
- * @extends   series,plotOptions.item
- * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
- *            boostThreshold, boostBlending
- * @product   highcharts
- * @requires  modules/item-series
- * @apioption series.item
- */
-/**
- * An array of data points for the series. For the `item` series type,
- * points can be given in the following ways:
- *
- * 1. An array of numerical values. In this case, the numerical values will be
- *    interpreted as `y` options. Example:
- *    ```js
- *    data: [0, 5, 3, 5]
- *    ```
- *
- * 2. An array of objects with named values. The following snippet shows only a
- *    few settings, see the complete options set below. If the total number of
- *    data points exceeds the series'
- *    [turboThreshold](#series.item.turboThreshold),
- *    this option is not available.
- *    ```js
- *    data: [{
- *        y: 1,
- *        name: "Point2",
- *        color: "#00FF00"
- *    }, {
- *        y: 7,
- *        name: "Point1",
- *        color: "#FF00FF"
- *    }]
- *    ```
- *
- * @sample {highcharts} highcharts/chart/reflow-true/
- *         Numerical values
- * @sample {highcharts} highcharts/series/data-array-of-arrays/
- *         Arrays of numeric x and y
- * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
- *         Arrays of datetime x and y
- * @sample {highcharts} highcharts/series/data-array-of-name-value/
- *         Arrays of point.name and y
- * @sample {highcharts} highcharts/series/data-array-of-objects/
- *         Config objects
- *
- * @type      {Array<number|Array<string,(number|null)>|null|*>}
- * @extends   series.pie.data
- * @exclude   sliced
- * @product   highcharts
- * @apioption series.item.data
- */
-/**
- * The sequential index of the data point in the legend.
- *
- * @type      {number}
- * @product   highcharts
- * @apioption series.pie.data.legendIndex
- */
-''; // adds the doclets above to the transpiled file

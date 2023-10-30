@@ -42,12 +42,30 @@ function compose(ChartClass, wglMode) {
  * @function Highcharts.Chart#getBoostClipRect
  */
 function getBoostClipRect(chart, target) {
-    const clipBox = {
+    let clipBox = {
         x: chart.plotLeft,
         y: chart.plotTop,
         width: chart.plotWidth,
-        height: chart.plotHeight
+        height: chart.navigator ? // #17820
+            chart.navigator.top + chart.navigator.height - chart.plotTop :
+            chart.plotHeight
     };
+    // Clipping of individal series (#11906, #19039).
+    if (target.getClipBox) {
+        const { xAxis, yAxis } = target;
+        clipBox = target.getClipBox();
+        if (chart.inverted) {
+            const lateral = clipBox.width;
+            clipBox.width = clipBox.height;
+            clipBox.height = lateral;
+            clipBox.x = yAxis.pos;
+            clipBox.y = xAxis.pos;
+        }
+        else {
+            clipBox.x = xAxis.pos;
+            clipBox.y = yAxis.pos;
+        }
+    }
     if (target === chart) {
         const verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
         if (verticalAxes.length <= 1) {
@@ -55,9 +73,6 @@ function getBoostClipRect(chart, target) {
             clipBox.height = (verticalAxes[0].pos -
                 chart.plotTop +
                 verticalAxes[0].len);
-        }
-        else {
-            clipBox.height = chart.plotHeight;
         }
     }
     return clipBox;
@@ -123,8 +138,12 @@ function isChartSeriesBoosting(chart) {
             ++needBoostCount;
         }
     }
-    boost.forceChartBoost = allowBoostForce && ((canBoostCount === allSeries.length &&
-        needBoostCount > 0) ||
+    boost.forceChartBoost = allowBoostForce && ((
+    // Even when the series that need a boost are less than or equal
+    // to 5, force a chart boost when all series are to be boosted.
+    // See #18815
+    canBoostCount === allSeries.length &&
+        needBoostCount === canBoostCount) ||
         needBoostCount > 5);
     return boost.forceChartBoost;
 }

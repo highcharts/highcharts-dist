@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -10,5 +10,8 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/Funnel/FunnelSeries.js';
+import Highcharts from '../../Core/Globals.js';
+import FunnelSeries from '../../Series/Funnel/FunnelSeries.js';
 import '../../Series/Pyramid/PyramidSeries.js';
+const G = Highcharts;
+FunnelSeries.compose(G.Chart);

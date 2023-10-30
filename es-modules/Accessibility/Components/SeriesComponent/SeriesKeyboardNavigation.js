@@ -21,7 +21,7 @@ const { defined, fireEvent } = U;
 import KeyboardNavigationHandler from '../../KeyboardNavigationHandler.js';
 import EventProvider from '../../Utils/EventProvider.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
-const { getPointFromXY, getSeriesFromName, scrollToPoint } = ChartUtilities;
+const { getPointFromXY, getSeriesFromName, scrollAxisToPoint } = ChartUtilities;
 /* *
  *
  *  Functions
@@ -66,7 +66,7 @@ function isSkipSeries(series) {
         // Skip all points in a series where pointNavigationEnabledThreshold is
         // reached
         (seriesNavOptions.pointNavigationEnabledThreshold &&
-            seriesNavOptions.pointNavigationEnabledThreshold <=
+            +seriesNavOptions.pointNavigationEnabledThreshold <=
                 series.points.length);
 }
 /**
@@ -213,7 +213,7 @@ class SeriesKeyboardNavigation {
             // proxy buttons.
             const focusedElClassName = (focusedElement && focusedElement.getAttribute('class'));
             const isProxyFocused = focusedElClassName &&
-                focusedElClassName.indexOf('highcharts-a11y-proxy-button') > -1;
+                focusedElClassName.indexOf('highcharts-a11y-proxy-element') > -1;
             if (chart.highlightedPoint === point &&
                 focusedElement !== pointEl &&
                 !isProxyFocused &&
@@ -644,7 +644,7 @@ class SeriesKeyboardNavigation {
      *         This highlighted point.
      */
     function pointHighlight(highlightVisually = true) {
-        const chart = this.series.chart;
+        const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
         if (!this.isNull && highlightVisually) {
             this.onMouseOver(); // Show the hover marker and tooltip
         }
@@ -655,7 +655,7 @@ class SeriesKeyboardNavigation {
             // Do not call blur on the element, as it messes up the focus of the
             // div element of the chart
         }
-        scrollToPoint(this);
+        scrollAxisToPoint(this);
         // We focus only after calling onMouseOver because the state change can
         // change z-index and mess up the element.
         if (this.graphic) {
@@ -665,6 +665,17 @@ class SeriesKeyboardNavigation {
             }
         }
         chart.highlightedPoint = this;
+        // Get position of the tooltip.
+        const tooltipTop = tooltipElement?.getBoundingClientRect().top;
+        if (tooltipElement && tooltipTop && tooltipTop < 0) {
+            // Calculate scroll position.
+            const scrollTop = window.scrollY, newScrollTop = scrollTop + tooltipTop;
+            // Scroll window to new position.
+            window.scrollTo({
+                behavior: 'smooth',
+                top: newScrollTop
+            });
+        }
         return this;
     }
     /**

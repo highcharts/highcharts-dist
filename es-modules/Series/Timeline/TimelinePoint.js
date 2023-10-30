@@ -14,7 +14,7 @@
 'use strict';
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
+const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { defined, isNumber, merge, objectEach, pick } = U;
 /* *
@@ -22,7 +22,7 @@ const { defined, isNumber, merge, objectEach, pick } = U;
  *  Class
  *
  * */
-class TimelinePoint extends Series.prototype.pointClass {
+class TimelinePoint extends LinePoint {
     constructor() {
         /* *
          *
@@ -32,86 +32,90 @@ class TimelinePoint extends Series.prototype.pointClass {
         super(...arguments);
         this.options = void 0;
         this.series = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     alignConnector() {
-        let point = this, series = point.series, connector = point.connector, dl = point.dataLabel, dlOptions = point.dataLabel.options = merge(series.options.dataLabels, point.options.dataLabels), chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
-            x: bBox.x + dl.translateX,
-            y: bBox.y + dl.translateY
-        }, isVisible;
+        const point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
+            x: bBox.x + (dataLabel.translateX || 0),
+            y: bBox.y + (dataLabel.translateY || 0)
+        };
         // Include a half of connector width in order to run animation,
         // when connectors are aligned to the plot area edge.
         if (chart.inverted) {
-            plotPos.y -= dl.options.connectorWidth / 2;
+            plotPos.y -= connectorWidth / 2;
         }
         else {
-            plotPos.x += dl.options.connectorWidth / 2;
+            plotPos.x += connectorWidth / 2;
         }
-        isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
+        const isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
         connector[isVisible ? 'animate' : 'attr']({
             d: point.getConnectorPath()
         });
-        connector.addClass(`highcharts-color-${point.colorIndex}`);
+        connector.addClass('highcharts-color-' + point.colorIndex);
         if (!series.chart.styledMode) {
             connector.attr({
                 stroke: dlOptions.connectorColor || point.color,
                 'stroke-width': dlOptions.connectorWidth,
-                opacity: dl[defined(dl.newOpacity) ? 'newOpacity' : 'opacity']
+                opacity: dataLabel[defined(dataLabel.newOpacity) ? 'newOpacity' : 'opacity']
             });
         }
     }
     drawConnector() {
-        const point = this, series = point.series;
-        if (!point.connector) {
-            point.connector = series.chart.renderer
-                .path(point.getConnectorPath())
-                .attr({
-                zIndex: -1
-            })
-                .add(point.dataLabel);
-        }
-        if (point.series.chart.isInsidePlot(// #10507
-        point.dataLabel.x, point.dataLabel.y)) {
-            point.alignConnector();
+        const point = this, { dataLabel, series } = point;
+        if (dataLabel) {
+            if (!dataLabel.connector) {
+                dataLabel.connector = series.chart.renderer
+                    .path(point.getConnectorPath())
+                    .attr({
+                    zIndex: -1
+                })
+                    .add(dataLabel);
+            }
+            if (point.series.chart.isInsidePlot(// #10507
+            dataLabel.x || 0, dataLabel.y || 0)) {
+                point.alignConnector();
+            }
         }
     }
     getConnectorPath() {
-        let point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
-            x1: point.plotX,
-            y1: point.plotY,
-            x2: point.plotX,
-            y2: isNumber(targetDLPos.y) ? targetDLPos.y : dl.y
-        }, negativeDistance = ((dl.alignAttr || dl)[direction[0]] <
-            point.series.yAxis.len / 2), path;
-        // Recalculate coords when the chart is inverted.
-        if (inverted) {
-            coords = {
-                x1: point.plotY,
-                y1: xAxisLen - point.plotX,
-                x2: targetDLPos.x || dl.x,
-                y2: xAxisLen - point.plotX
+        const { plotX = 0, plotY = 0, series, dataLabel } = this, chart = series.chart, xAxisLen = series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2';
+        if (dataLabel) {
+            const targetDLPos = dataLabel.targetPosition, negativeDistance = ((dataLabel.alignAttr || dataLabel)[direction[0]] <
+                series.yAxis.len / 2);
+            let coords = {
+                x1: plotX,
+                y1: plotY,
+                x2: plotX,
+                y2: isNumber(targetDLPos.y) ? targetDLPos.y : dataLabel.y
             };
+            // Recalculate coords when the chart is inverted.
+            if (inverted) {
+                coords = {
+                    x1: plotY,
+                    y1: xAxisLen - plotX,
+                    x2: targetDLPos.x || dataLabel.x,
+                    y2: xAxisLen - plotX
+                };
+            }
+            // Subtract data label width or height from expected coordinate so
+            // that the connector would start from the appropriate edge.
+            if (negativeDistance) {
+                coords[direction] += dataLabel[inverted ? 'width' : 'height'] || 0;
+            }
+            // Change coordinates so that they will be relative to data label.
+            objectEach(coords, (_coord, i) => {
+                coords[i] -= (dataLabel.alignAttr || dataLabel)[i[0]];
+            });
+            return chart.renderer.crispLine([
+                ['M', coords.x1, coords.y1],
+                ['L', coords.x2, coords.y2]
+            ], dataLabel.options?.connectorWidth || 0);
         }
-        // Subtract data label width or height from expected coordinate so
-        // that the connector would start from the appropriate edge.
-        if (negativeDistance) {
-            coords[direction] += dl[inverted ? 'width' : 'height'];
-        }
-        // Change coordinates so that they will be relative to data label.
-        objectEach(coords, function (_coord, i) {
-            coords[i] -= (dl.alignAttr || dl)[i[0]];
-        });
-        path = chart.renderer.crispLine([
-            ['M', coords.x1, coords.y1],
-            ['L', coords.x2, coords.y2]
-        ], dl.options.connectorWidth);
-        return path;
+        return [];
     }
     init() {
         const point = super.init.apply(this, arguments);

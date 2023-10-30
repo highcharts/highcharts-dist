@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -11,4 +11,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/Cylinder/CylinderSeries.js';
+import CylinderSeries from '../../Series/Cylinder/CylinderSeries.js';
+import RendererRegistry from '../../Core/Renderer/RendererRegistry.js';
+CylinderSeries.compose(RendererRegistry.getRendererType());

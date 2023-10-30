@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Highcharts variwide module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -94,10 +92,8 @@
             if (!this.horiz && this.variwide) {
                 this.chart.labelCollectors.push(function () {
                     return axis.tickPositions
-                        .filter(function (pos) {
-                        return axis.ticks[pos].label;
-                    })
-                        .map(function (pos, i) {
+                        .filter((pos) => !!axis.ticks[pos].label)
+                        .map((pos, i) => {
                         const label = axis.ticks[pos].label;
                         label.labelrank = axis.zData[i];
                         return label;
@@ -133,7 +129,7 @@
         /**
          * @private
          */
-        function wrapTickGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index) {
+        function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, _labelOptions, _tickmarkOffset, _index) {
             const args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
             // Replace the x with the original x
             if (this.axis.variwide &&
@@ -206,7 +202,7 @@
 
         return VariwidePoint;
     });
-    _registerModule(_modules, 'Series/Variwide/VariwideSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Series/Variwide/VariwideComposition.js'], _modules['Series/Variwide/VariwidePoint.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, VariwideComposition, VariwidePoint, U) {
+    _registerModule(_modules, 'Series/Variwide/VariwideSeriesDefaults.js', [], function () {
         /* *
          *
          *  Highcharts variwide module
@@ -218,7 +214,138 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A variwide chart (related to marimekko chart) is a column chart with a
+         * variable width expressing a third dimension.
+         *
+         * @sample {highcharts} highcharts/demo/variwide/
+         *         Variwide chart
+         * @sample {highcharts} highcharts/series-variwide/inverted/
+         *         Inverted variwide chart
+         * @sample {highcharts} highcharts/series-variwide/datetime/
+         *         Variwide columns on a datetime axis
+         *
+         * @extends      plotOptions.column
+         * @since        6.0.0
+         * @product      highcharts
+         * @excluding    boostThreshold, crisp, depth, edgeColor, edgeWidth,
+         *               groupZPadding, boostBlending
+         * @requires     modules/variwide
+         * @optionparent plotOptions.variwide
+         */
+        const VariwideSeriesDefaults = {
+            /**
+             * In a variwide chart, the point padding is 0 in order to express the
+             * horizontal stacking of items.
+             */
+            pointPadding: 0,
+            /**
+             * In a variwide chart, the group padding is 0 in order to express the
+             * horizontal stacking of items.
+             */
+            groupPadding: 0
+        };
+        /**
+         * A `variwide` series. If the [type](#series.variwide.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.variwide
+         * @excluding boostThreshold, boostBlending
+         * @product   highcharts
+         * @requires  modules/variwide
+         * @apioption series.variwide
+         */
+        /**
+         * An array of data points for the series. For the `variwide` series type,
+         * points can be given in the following ways:
+         *
+         * 1. An array of arrays with 3 or 2 values. In this case, the values correspond
+         *    to `x,y,z`. If the first value is a string, it is applied as the name of
+         *    the point, and the `x` value is inferred. The `x` value can also be
+         *    omitted, in which case the inner arrays should be of length 2. Then the
+         *    `x` value is automatically calculated, either starting at 0 and
+         *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+         *    series options.
+         *    ```js
+         *       data: [
+         *           [0, 1, 2],
+         *           [1, 5, 5],
+         *           [2, 0, 2]
+         *       ]
+         *    ```
+         *
+         * 2. An array of objects with named values. The following snippet shows only a
+         *    few settings, see the complete options set below. If the total number of
+         *    data points exceeds the series'
+         *    [turboThreshold](#series.variwide.turboThreshold), this option is not
+         *    available.
+         *    ```js
+         *       data: [{
+         *           x: 1,
+         *           y: 1,
+         *           z: 1,
+         *           name: "Point2",
+         *           color: "#00FF00"
+         *       }, {
+         *           x: 1,
+         *           y: 5,
+         *           z: 4,
+         *           name: "Point1",
+         *           color: "#FF00FF"
+         *       }]
+         *    ```
+         *
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
+         *
+         * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
+         * @extends   series.line.data
+         * @excluding marker
+         * @product   highcharts
+         * @apioption series.variwide.data
+         */
+        /**
+         * The relative width for each column. On a category axis, the widths are
+         * distributed so they sum up to the X axis length. On linear and datetime axes,
+         * the columns will be laid out from the X value and Z units along the axis.
+         *
+         * @type      {number}
+         * @product   highcharts
+         * @apioption series.variwide.data.z
+         */
+        ''; // adds doclets above to transpiled file
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return VariwideSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Variwide/VariwideSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Series/Variwide/VariwideComposition.js'], _modules['Series/Variwide/VariwidePoint.js'], _modules['Series/Variwide/VariwideSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, VariwideComposition, VariwidePoint, VariwideSeriesDefaults, U) {
+        /* *
+         *
+         *  Highcharts variwide module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, extend, merge, pick } = U;
         /* *
          *
@@ -338,43 +465,15 @@
             }
         }
         VariwideSeries.compose = VariwideComposition.compose;
-        /**
-         * A variwide chart (related to marimekko chart) is a column chart with a
-         * variable width expressing a third dimension.
-         *
-         * @sample {highcharts} highcharts/demo/variwide/
-         *         Variwide chart
-         * @sample {highcharts} highcharts/series-variwide/inverted/
-         *         Inverted variwide chart
-         * @sample {highcharts} highcharts/series-variwide/datetime/
-         *         Variwide columns on a datetime axis
-         *
-         * @extends      plotOptions.column
-         * @since        6.0.0
-         * @product      highcharts
-         * @excluding    boostThreshold, crisp, depth, edgeColor, edgeWidth,
-         *               groupZPadding, boostBlending
-         * @requires     modules/variwide
-         * @optionparent plotOptions.variwide
-         */
-        VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-            /**
-             * In a variwide chart, the point padding is 0 in order to express the
-             * horizontal stacking of items.
-             */
-            pointPadding: 0,
-            /**
-             * In a variwide chart, the group padding is 0 in order to express the
-             * horizontal stacking of items.
-             */
-            groupPadding: 0
-        });
+        VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);
         // Extend translation by distoring X position based on Z.
         addEvent(VariwideSeries, 'afterColumnTranslate', function () {
             // Temporarily disable crisping when computing original shapeArgs
             const xAxis = this.xAxis, inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;
+            let i = -1;
             // Distort the points to reflect z dimension
-            this.points.forEach((point, i) => {
+            for (const point of this.points) {
+                ++i;
                 const shapeArgs = point.shapeArgs || {}, { x = 0, width = 0 } = shapeArgs, { plotX = 0, tooltipPos, z = 0 } = point;
                 let left, right;
                 if (xAxis.variwide) {
@@ -404,7 +503,7 @@
                         tooltipPos[1] = xAxis.len - shapeArgs.x - shapeArgs.width / 2;
                     }
                 }
-            });
+            }
             if (this.options.stacking) {
                 this.correctStackLabels();
             }
@@ -421,86 +520,6 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
-        /**
-         * A `variwide` series. If the [type](#series.variwide.type) option is not
-         * specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @extends   series,plotOptions.variwide
-         * @excluding boostThreshold, boostBlending
-         * @product   highcharts
-         * @requires  modules/variwide
-         * @apioption series.variwide
-         */
-        /**
-         * An array of data points for the series. For the `variwide` series type,
-         * points can be given in the following ways:
-         *
-         * 1. An array of arrays with 3 or 2 values. In this case, the values correspond
-         *    to `x,y,z`. If the first value is a string, it is applied as the name of
-         *    the point, and the `x` value is inferred. The `x` value can also be
-         *    omitted, in which case the inner arrays should be of length 2. Then the
-         *    `x` value is automatically calculated, either starting at 0 and
-         *    incremented by 1, or from `pointStart` and `pointInterval` given in the
-         *    series options.
-         *    ```js
-         *       data: [
-         *           [0, 1, 2],
-         *           [1, 5, 5],
-         *           [2, 0, 2]
-         *       ]
-         *    ```
-         *
-         * 2. An array of objects with named values. The following snippet shows only a
-         *    few settings, see the complete options set below. If the total number of
-         *    data points exceeds the series'
-         *    [turboThreshold](#series.variwide.turboThreshold), this option is not
-         *    available.
-         *    ```js
-         *       data: [{
-         *           x: 1,
-         *           y: 1,
-         *           z: 1,
-         *           name: "Point2",
-         *           color: "#00FF00"
-         *       }, {
-         *           x: 1,
-         *           y: 5,
-         *           z: 4,
-         *           name: "Point1",
-         *           color: "#FF00FF"
-         *       }]
-         *    ```
-         *
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/
-         *         Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
-         *         Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/
-         *         Arrays of point.name and y
-         * @sample {highcharts} highcharts/series/data-array-of-objects/
-         *         Config objects
-         *
-         * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
-         * @extends   series.line.data
-         * @excluding marker
-         * @product   highcharts
-         * @apioption series.variwide.data
-         */
-        /**
-         * The relative width for each column. On a category axis, the widths are
-         * distributed so they sum up to the X axis length. On linear and datetime axes,
-         * the columns will be laid out from the X value and Z units along the axis.
-         *
-         * @type      {number}
-         * @product   highcharts
-         * @apioption series.variwide.data.z
-         */
-        ''; // adds doclets above to transpiled file
 
         return VariwideSeries;
     });

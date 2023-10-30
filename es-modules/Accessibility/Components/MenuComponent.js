@@ -103,7 +103,7 @@ class MenuComponent extends AccessibilityComponent {
      */
     setExportButtonExpandedState(stateStr) {
         if (this.exportButtonProxy) {
-            this.exportButtonProxy.buttonElement.setAttribute('aria-expanded', stateStr);
+            this.exportButtonProxy.innerElement.setAttribute('aria-expanded', stateStr);
         }
     }
     /**
@@ -118,7 +118,7 @@ class MenuComponent extends AccessibilityComponent {
             focusEl &&
             focusEl === chart.exportingGroup) {
             if (focusEl.focusBorder) {
-                chart.setFocusToElement(focusEl, this.exportButtonProxy.buttonElement);
+                chart.setFocusToElement(focusEl, this.exportButtonProxy.innerElement);
             }
             else if (a11y) {
                 a11y.keyboardNavigation.tabindexContainer.focus();
@@ -133,7 +133,7 @@ class MenuComponent extends AccessibilityComponent {
         const proxyProvider = this.proxyProvider;
         const buttonEl = getExportMenuButtonElement(chart);
         if (exportingShouldHaveA11y(chart) && buttonEl) {
-            this.exportButtonProxy = proxyProvider.addProxyElement('chartMenu', { click: buttonEl }, {
+            this.exportButtonProxy = proxyProvider.addProxyElement('chartMenu', { click: buttonEl }, 'button', {
                 'aria-label': chart.langFormat('accessibility.exporting.menuButtonLabel', {
                     chart: chart,
                     chartTitle: getChartTitle(chart)
@@ -149,7 +149,7 @@ class MenuComponent extends AccessibilityComponent {
     createProxyGroup() {
         const chart = this.chart;
         if (chart && this.proxyProvider) {
-            this.proxyProvider.addGroup('chartMenu', 'div');
+            this.proxyProvider.addGroup('chartMenu');
         }
     }
     /**
@@ -225,7 +225,7 @@ class MenuComponent extends AccessibilityComponent {
                 const proxy = component.exportButtonProxy;
                 const svgEl = component.chart.exportingGroup;
                 if (proxy && svgEl) {
-                    chart.setFocusToElement(svgEl, proxy.buttonElement);
+                    chart.setFocusToElement(svgEl, proxy.innerElement);
                 }
             },
             // Hide the menu

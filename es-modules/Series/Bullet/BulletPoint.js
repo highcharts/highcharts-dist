@@ -7,6 +7,7 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
+'use strict';
 import ColumnSeries from '../Column/ColumnSeries.js';
 /* *
  *
@@ -15,32 +16,36 @@ import ColumnSeries from '../Column/ColumnSeries.js';
  * */
 class BulletPoint extends ColumnSeries.prototype.pointClass {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
         super(...arguments);
         this.options = void 0;
         this.series = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Destroys target graphic.
      * @private
      */
     destroy() {
-        if (this.targetGraphic) {
-            this.targetGraphic = this.targetGraphic.destroy();
+        const series = this;
+        if (series.targetGraphic) {
+            series.targetGraphic = series.targetGraphic.destroy();
         }
-        super.destroy.apply(this, arguments);
+        super.destroy.apply(series, arguments);
         return;
     }
 }
 /* *
  *
- *  Export Default
+ *  Default Export
  *
  * */
 export default BulletPoint;

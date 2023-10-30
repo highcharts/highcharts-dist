@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
  *
  * Tree Grid
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -116,8 +114,9 @@
              * @private
              */
             function onAxisAfterSetOptions() {
+                var _a;
                 var axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -127,8 +126,7 @@
             function onAxisAfterSetTickPositions() {
                 var axis = this,
                     brokenAxis = axis.brokenAxis;
-                if (brokenAxis &&
-                    brokenAxis.hasBreaks) {
+                if (brokenAxis === null || brokenAxis === void 0 ? void 0 : brokenAxis.hasBreaks) {
                     var tickPositions = axis.tickPositions,
                         info = axis.tickPositions.info,
                         newPositions = [];
@@ -154,12 +152,14 @@
              * @private
              */
             function onSeriesAfterGeneratePoints() {
-                var _a = this,
-                    isDirty = _a.isDirty,
-                    connectNulls = _a.options.connectNulls,
-                    points = _a.points,
-                    xAxis = _a.xAxis,
-                    yAxis = _a.yAxis;
+                var _a,
+                    _b;
+                var _c = this,
+                    isDirty = _c.isDirty,
+                    connectNulls = _c.options.connectNulls,
+                    points = _c.points,
+                    xAxis = _c.xAxis,
+                    yAxis = _c.yAxis;
                 // Set, or reset visibility of the points. Axis.setBreaks marks
                 // the series as isDirty
                 if (isDirty) {
@@ -168,12 +168,9 @@
                         var point = points[i];
                         // Respect nulls inside the break (#4275)
                         var nullGap = point.y === null && connectNulls === false;
-                        var isPointInBreak = (!nullGap && ((xAxis &&
-                                xAxis.brokenAxis &&
-                                xAxis.brokenAxis.isInAnyBreak(point.x,
-                            true)) || (yAxis &&
-                                yAxis.brokenAxis &&
-                                yAxis.brokenAxis.isInAnyBreak(point.y,
+                        var isPointInBreak = (!nullGap && (((_a = xAxis === null || xAxis === void 0 ? void 0 : xAxis.brokenAxis) === null || _a === void 0 ? void 0 : _a.isInAnyBreak(point.x,
+                            true)) ||
+                                ((_b = yAxis === null || yAxis === void 0 ? void 0 : yAxis.brokenAxis) === null || _b === void 0 ? void 0 : _b.isInAnyBreak(point.y,
                             true))));
                         // Set point.visible if in any break.
                         // If not in break, reset visible to original value.
@@ -194,26 +191,42 @@
              * @private
              */
             function seriesDrawBreaks(axis, keys) {
+                var _a;
                 var series = this,
                     points = series.points;
                 var breaks,
                     threshold,
-                    eventName,
                     y;
-                if (axis && // #5950
-                    axis.brokenAxis &&
-                    axis.brokenAxis.hasBreaks) {
+                if ((_a = axis === null || axis === void 0 ? void 0 : axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     var brokenAxis_1 = axis.brokenAxis;
                     keys.forEach(function (key) {
-                        breaks = brokenAxis_1 && brokenAxis_1.breakArray || [];
+                        var _a,
+                            _b;
+                        breaks = (brokenAxis_1 === null || brokenAxis_1 === void 0 ? void 0 : brokenAxis_1.breakArray) || [];
                         threshold = axis.isXAxis ?
                             axis.min :
                             pick(series.options.threshold, axis.min);
+                        // Array of breaks that have been "zoomed-out" which means that
+                        // they were shown previously, but now after zoom, they are not
+                        // (#19885).
+                        var breaksOutOfRange = (_b = (_a = axis === null || axis === void 0 ? void 0 : axis.options) === null || _a === void 0 ? void 0 : _a.breaks) === null || _b === void 0 ? void 0 : _b.filter(function (brk) {
+                                var isOut = true;
+                            // Iterate to see if "brk" is in axis range
+                            for (var i = 0; i < breaks.length; i++) {
+                                var otherBreak = breaks[i];
+                                if (otherBreak.from === brk.from &&
+                                    otherBreak.to === brk.to) {
+                                    isOut = false;
+                                    break;
+                                }
+                            }
+                            return isOut;
+                        });
                         points.forEach(function (point) {
                             y = pick(point['stack' + key.toUpperCase()], point[key]);
                             breaks.forEach(function (brk) {
                                 if (isNumber(threshold) && isNumber(y)) {
-                                    eventName = false;
+                                    var eventName = '';
                                     if ((threshold < brk.from && y > brk.to) ||
                                         (threshold > brk.from && y < brk.from)) {
                                         eventName = 'pointBreak';
@@ -229,6 +242,9 @@
                                         fireEvent(axis, eventName, { point: point, brk: brk });
                                     }
                                 }
+                            });
+                            breaksOutOfRange === null || breaksOutOfRange === void 0 ? void 0 : breaksOutOfRange.forEach(function (brk) {
+                                fireEvent(axis, 'pointOutsideOfBreak', { point: point, brk: brk });
                             });
                         });
                     });
@@ -247,7 +263,7 @@
              */
             function seriesGappedPath() {
                 var currentDataGrouping = this.currentDataGrouping,
-                    groupingSize = currentDataGrouping && currentDataGrouping.gapSize,
+                    groupingSize = currentDataGrouping === null || currentDataGrouping === void 0 ? void 0 : currentDataGrouping.gapSize,
                     points = this.points.slice(),
                     yAxis = this.yAxis;
                 var gapSize = this.options.gapSize,
@@ -522,8 +538,10 @@
                 Additions.prototype.setBreaks = function (breaks, redraw) {
                     var brokenAxis = this;
                     var axis = brokenAxis.axis;
-                    var hasBreaks = (isArray(breaks) && !!breaks.length);
-                    axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
+                    var hasBreaks = isArray(breaks) &&
+                            !!breaks.length &&
+                            !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
+                        axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
                         axis.options.breaks = axis.userOptions.breaks = breaks;
@@ -770,6 +788,8 @@
             // help.
             axis.labelRotation = 0;
             options.labels.rotation = 0;
+            // Allow putting ticks closer than their data points.
+            options.minTickInterval = 1;
         }
         /**
          * Extends axis class with grid support.
@@ -1792,7 +1812,8 @@
          */
         /**
          * Set cell height for grid axis labels. By default this is calculated from font
-         * size. This option only applies to horizontal axes.
+         * size. This option only applies to horizontal axes. For vertical axes, check
+         * the [#yAxis.staticScale](yAxis.staticScale) option.
          *
          * @sample gantt/grid-axis/cellheight
          *         Gant chart with custom cell height
@@ -1815,10 +1836,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint no-console: 0 */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an object map from parent id to childrens index.
          *
@@ -1832,67 +1862,63 @@
          *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
+         * Map from parent id to children index in data
          */
-        var getListOfParents = function (data,
-            ids) {
-                var listOfParents = data.reduce(function (prev,
-            curr) {
+        function getListOfParents(data) {
+            var listOfParents = data.reduce(function (prev,
+                curr) {
                     var parent = pick(curr.parent, '');
                 if (typeof prev[parent] === 'undefined') {
                     prev[parent] = [];
                 }
                 prev[parent].push(curr);
                 return prev;
-            }, {}), parents = Object.keys(listOfParents);
+            }, {});
+            // parents = Object.keys(listOfParents);
             // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                var children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
+            // parents.forEach((parent, list): void => {
+            //     const children = listOfParents[parent];
+            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+            //         for (const child of children) {
+            //             (list as any)[''].push(child);
+            //         }
+            //         delete (list as any)[parent];
+            //     }
+            // });
             return listOfParents;
-        };
-        var getNode = function (id,
-            parent,
-            level,
-            data,
-            mapOfIdToChildren,
-            options) {
-                var descendants = 0,
-            height = 0,
-            after = options && options.after,
-            before = options && options.before,
-            node = {
+        }
+        /** @private */
+        function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+            var after = options && options.after,
+                before = options && options.before,
+                node = {
                     data: data,
                     depth: level - 1,
                     id: id,
                     level: level,
-                    parent: parent
-                },
-            start,
-            end,
-            children;
+                    parent: (parent || '')
+                };
+            var descendants = 0,
+                height = 0,
+                start,
+                end;
             // Allow custom logic before the children has been created.
             if (typeof before === 'function') {
                 before(node, options);
             }
             // Call getNode recursively on the children. Calulate the height of the
             // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                var node = getNode(child.id,
-                    id, (level + 1),
-                    child,
-                    mapOfIdToChildren,
-                    options),
-                    childStart = child.start,
-                    childEnd = (child.milestone === true ?
+            var children = ((mapOfIdToChildren[id] || [])).map(function (child) {
+                    var node = getNode(child.id,
+                id, (level + 1),
+                child,
+                mapOfIdToChildren,
+                options),
+                childStart = child.start || NaN,
+                childEnd = (child.milestone === true ?
                         childStart :
-                        child.end);
+                        child.end ||
+                            NaN);
                 // Start should be the lowest child.start.
                 start = ((!isNumber(start) || childStart < start) ?
                     childStart :
@@ -1921,16 +1947,18 @@
                 after(node, options);
             }
             return node;
-        };
-        var getTree = function (data,
-            options) {
-                var ids = data.map(function (d) {
-                    return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
+        }
+        /** @private */
+        function getTree(data, options) {
+            var mapOfIdToChildren = getListOfParents(data);
             return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         var Tree = {
-                getListOfParents: getListOfParents,
                 getNode: getNode,
                 getTree: getTree
             };

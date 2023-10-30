@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -38,3 +38,4 @@ OHLCSeries.compose(G.Series);
 OrdinalAxis.compose(G.Axis, G.Series, G.Chart);
 RangeSelector.compose(G.Axis, G.Chart);
 Scrollbar.compose(G.Axis);
+StockChart.compose(G.Axis, G.Series, G.SVGRenderer);

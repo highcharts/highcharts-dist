@@ -294,7 +294,9 @@ const navigation = {
                     langKey: 'label',
                     type: 'basicAnnotation',
                     labelOptions: {
-                        format: '{y:.2f}'
+                        format: '{y:.2f}',
+                        overflow: 'none',
+                        crop: true
                     },
                     labels: [{
                             point: {
@@ -302,9 +304,7 @@ const navigation = {
                                 yAxis: coordsY.axis.index,
                                 x: coordsX.value,
                                 y: coordsY.value
-                            },
-                            overflow: 'none',
-                            crop: true
+                            }
                         }]
                 }, navigation
                     .annotationsOptions, navigation
@@ -319,7 +319,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/11.1.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/11.2.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

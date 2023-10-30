@@ -66,8 +66,8 @@ BasicAnnotation.basicControlPoints = {
                 const xy = MockPoint
                     .pointToPixels(target.points[0]);
                 return {
-                    x: xy.x - this.graphic.width / 2,
-                    y: xy.y - this.graphic.height / 2
+                    x: xy.x - (this.graphic.width || 0) / 2,
+                    y: xy.y - (this.graphic.height || 0) / 2
                 };
             },
             // TRANSLATE POINT/ANCHOR
@@ -91,9 +91,9 @@ BasicAnnotation.basicControlPoints = {
                 }
                 return {
                     x: target.graphic.alignAttr.x -
-                        this.graphic.width / 2,
+                        (this.graphic.width || 0) / 2,
                     y: target.graphic.alignAttr.y -
-                        this.graphic.height / 2
+                        (this.graphic.height || 0) / 2
                 };
             },
             // TRANSLATE POSITION WITHOUT CHANGING THE
@@ -119,8 +119,7 @@ BasicAnnotation.basicControlPoints = {
             },
             events: {
                 drag: function (e, target) {
-                    var _a, _b;
-                    const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = ((_a = annotation.clipXAxis) === null || _a === void 0 ? void 0 : _a.index) || 0, yAxisIndex = ((_b = annotation.clipYAxis) === null || _b === void 0 ? void 0 : _b.index) || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
+                    const annotation = target.annotation, coords = this.chart.pointer.getCoordinates(e), points = target.options.points, shapes = annotation.userOptions.shapes, xAxisIndex = annotation.clipXAxis?.index || 0, yAxisIndex = annotation.clipYAxis?.index || 0, x = coords.xAxis[xAxisIndex].value, y = coords.yAxis[yAxisIndex].value;
                     // Top right point
                     points[1].x = x;
                     // Bottom right point (cursor position)
@@ -140,9 +139,9 @@ BasicAnnotation.basicControlPoints = {
                 const xy = MockPoint.pointToPixels(target.points[0]), r = target.options.r;
                 return {
                     x: xy.x + r * Math.cos(Math.PI / 4) -
-                        this.graphic.width / 2,
+                        (this.graphic.width || 0) / 2,
                     y: xy.y + r * Math.sin(Math.PI / 4) -
-                        this.graphic.height / 2
+                        (this.graphic.height || 0) / 2
                 };
             },
             events: {
@@ -165,8 +164,8 @@ BasicAnnotation.basicControlPoints = {
             positioner: function (target) {
                 const position = target.getAbsolutePosition(target.points[0]);
                 return {
-                    x: position.x - this.graphic.width / 2,
-                    y: position.y - this.graphic.height / 2
+                    x: position.x - (this.graphic.width || 0) / 2,
+                    y: position.y - (this.graphic.height || 0) / 2
                 };
             },
             events: {
@@ -180,8 +179,8 @@ BasicAnnotation.basicControlPoints = {
             positioner: function (target) {
                 const position = target.getAbsolutePosition(target.points[1]);
                 return {
-                    x: position.x - this.graphic.width / 2,
-                    y: position.y - this.graphic.height / 2
+                    x: position.x - (this.graphic.width || 0) / 2,
+                    y: position.y - (this.graphic.height || 0) / 2
                 };
             },
             events: {
@@ -195,9 +194,9 @@ BasicAnnotation.basicControlPoints = {
             positioner: function (target) {
                 const position = target.getAbsolutePosition(target.points[0]), position2 = target.getAbsolutePosition(target.points[1]), attrs = target.getAttrs(position, position2);
                 return {
-                    x: attrs.cx - this.graphic.width / 2 +
+                    x: attrs.cx - (this.graphic.width || 0) / 2 +
                         attrs.ry * Math.sin((attrs.angle * Math.PI) / 180),
-                    y: attrs.cy - this.graphic.height / 2 -
+                    y: attrs.cy - (this.graphic.height || 0) / 2 -
                         attrs.ry * Math.cos((attrs.angle * Math.PI) / 180)
                 };
             },

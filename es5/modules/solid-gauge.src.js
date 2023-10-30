@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Solid angular gauge module
  *
@@ -28,16 +28,14 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/SolidGaugeAxis.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisLike.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -48,130 +46,188 @@
          *
          * */
         var color = Color.parse;
-        var extend = U.extend,
-            merge = U.merge;
-        /**
-         * @private
-         */
-        var SolidGaugeAxis;
-        (function (SolidGaugeAxis) {
+        var merge = U.merge;
+        /* *
+         *
+         *  Namespace
+         *
+         * */
+        var ColorAxisLike;
+        (function (ColorAxisLike) {
             /* *
              *
-             *  Interfaces
+             *  Declarations
              *
              * */
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            /**
-             * These methods are defined in the ColorAxis object, and copied here.
-             * @private
-             *
-             * @todo
-             * If we implement an AMD system we should make ColorAxis a dependency.
-             */
-            var methods = {
-                    initDataClasses: function (userOptions) {
-                        var chart = this.chart,
-                dataClasses,
-                colorCounter = 0,
-                options = this.options;
-                    this.dataClasses = dataClasses = [];
-                    userOptions.dataClasses.forEach(function (dataClass, i) {
-                        var colors;
-                        dataClass = merge(dataClass);
-                        dataClasses.push(dataClass);
-                        if (!dataClass.color) {
-                            if (options.dataClassColor === 'category') {
-                                colors = chart.options.colors;
-                                dataClass.color = colors[colorCounter++];
-                                // loop back to zero
-                                if (colorCounter === colors.length) {
-                                    colorCounter = 0;
-                                }
-                            }
-                            else {
-                                dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), i / (userOptions.dataClasses.length - 1));
-                            }
-                        }
-                    });
-                },
-                initStops: function (userOptions) {
-                    this.stops = userOptions.stops || [
-                        [0, this.options.minColor],
-                        [1, this.options.maxColor]
-                    ];
-                    this.stops.forEach(function (stop) {
-                        stop.color = color(stop[1]);
-                    });
-                },
-                // Translate from a value to a color
-                toColor: function (value, point) {
-                    var pos,
-                        stops = this.stops,
-                        from,
-                        to,
-                        color,
-                        dataClasses = this.dataClasses,
-                        dataClass,
-                        i;
-                    if (dataClasses) {
-                        i = dataClasses.length;
-                        while (i--) {
-                            dataClass = dataClasses[i];
-                            from = dataClass.from;
-                            to = dataClass.to;
-                            if ((typeof from === 'undefined' || value >= from) &&
-                                (typeof to === 'undefined' || value <= to)) {
-                                color = dataClass.color;
-                                if (point) {
-                                    point.dataClass = i;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    else {
-                        if (this.logarithmic) {
-                            value = this.val2lin(value);
-                        }
-                        pos = 1 - ((this.max - value) / (this.max - this.min));
-                        i = stops.length;
-                        while (i--) {
-                            if (pos > stops[i][0]) {
-                                break;
-                            }
-                        }
-                        from = stops[i] || stops[i + 1];
-                        to = stops[i + 1] || from;
-                        // The position within the gradient
-                        pos = (1 - (to[0] - pos) / ((to[0] -
-                            from[0]) || 1));
-                        color = from.color.tweenTo(to.color, pos);
-                    }
-                    return color;
-                }
-            };
             /* *
              *
              *  Functions
              *
              * */
             /**
+             * Initialize defined data classes.
              * @private
              */
-            function init(axis) {
-                extend(axis, methods);
+            function initDataClasses(userOptions) {
+                var axis = this,
+                    chart = axis.chart,
+                    legendItem = axis.legendItem = axis.legendItem || {},
+                    options = axis.options,
+                    userDataClasses = userOptions.dataClasses || [];
+                var dataClass,
+                    dataClasses,
+                    colorCount = chart.options.chart.colorCount,
+                    colorCounter = 0,
+                    colors;
+                axis.dataClasses = dataClasses = [];
+                legendItem.labels = [];
+                for (var i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
+                    dataClass = userDataClasses[i];
+                    dataClass = merge(dataClass);
+                    dataClasses.push(dataClass);
+                    if (!chart.styledMode && dataClass.color) {
+                        continue;
+                    }
+                    if (options.dataClassColor === 'category') {
+                        if (!chart.styledMode) {
+                            colors = chart.options.colors || [];
+                            colorCount = colors.length;
+                            dataClass.color = colors[colorCounter];
+                        }
+                        dataClass.colorIndex = colorCounter;
+                        // Loop back to zero
+                        colorCounter++;
+                        if (colorCounter === colorCount) {
+                            colorCounter = 0;
+                        }
+                    }
+                    else {
+                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
+                        );
+                    }
+                }
             }
-            SolidGaugeAxis.init = init;
-        })(SolidGaugeAxis || (SolidGaugeAxis = {}));
+            ColorAxisLike.initDataClasses = initDataClasses;
+            /**
+             * Create initial color stops.
+             * @private
+             */
+            function initStops() {
+                var axis = this,
+                    options = axis.options,
+                    stops = axis.stops = options.stops || [
+                        [0,
+                    options.minColor || ''],
+                        [1,
+                    options.maxColor || '']
+                    ];
+                for (var i = 0, iEnd = stops.length; i < iEnd; ++i) {
+                    stops[i].color = color(stops[i][1]);
+                }
+            }
+            ColorAxisLike.initStops = initStops;
+            /**
+             * Normalize logarithmic values.
+             * @private
+             */
+            function normalizedValue(value) {
+                var axis = this,
+                    max = axis.max || 0,
+                    min = axis.min || 0;
+                if (axis.logarithmic) {
+                    value = axis.logarithmic.log2lin(value);
+                }
+                return 1 - ((max - value) /
+                    ((max - min) || 1));
+            }
+            ColorAxisLike.normalizedValue = normalizedValue;
+            /**
+             * Translate from a value to a color.
+             * @private
+             */
+            function toColor(value, point) {
+                var axis = this;
+                var dataClasses = axis.dataClasses;
+                var stops = axis.stops;
+                var pos,
+                    from,
+                    to,
+                    color,
+                    dataClass,
+                    i;
+                if (dataClasses) {
+                    i = dataClasses.length;
+                    while (i--) {
+                        dataClass = dataClasses[i];
+                        from = dataClass.from;
+                        to = dataClass.to;
+                        if ((typeof from === 'undefined' || value >= from) &&
+                            (typeof to === 'undefined' || value <= to)) {
+                            color = dataClass.color;
+                            if (point) {
+                                point.dataClass = i;
+                                point.colorIndex = dataClass.colorIndex;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    pos = axis.normalizedValue(value);
+                    i = stops.length;
+                    while (i--) {
+                        if (pos > stops[i][0]) {
+                            break;
+                        }
+                    }
+                    from = stops[i] || stops[i + 1];
+                    to = stops[i + 1] || from;
+                    // The position within the gradient
+                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
+                    color = from.color.tweenTo(to.color, pos);
+                }
+                return color;
+            }
+            ColorAxisLike.toColor = toColor;
+        })(ColorAxisLike || (ColorAxisLike = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ColorAxisLike;
+    });
+    _registerModule(_modules, 'Core/Axis/SolidGaugeAxis.js', [_modules['Core/Axis/Color/ColorAxisLike.js'], _modules['Core/Utilities.js']], function (ColorAxisLike, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var extend = U.extend;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function init(axis) {
+            extend(axis, ColorAxisLike);
+        }
         /* *
          *
          *  Default export
          *
          * */
+        var SolidGaugeAxis = {
+                init: init
+            };
 
         return SolidGaugeAxis;
     });
@@ -222,7 +278,7 @@
                 /**
                  * Whether the strokes of the solid gauge should be `round` or `square`.
                  *
-                 * @sample {highcharts} highcharts/demo/gauge-activity/
+                 * @sample {highcharts} highcharts/demo/gauge-multiple-kpi/
                  *         Rounded gauge
                  *
                  * @type       {string}
@@ -264,8 +320,8 @@
                  * `borderRadius` of 50% behaves like `rounded`, except the shape is not
                  * extended past its value.
                  *
-                 * @sample {highcharts} highcharts/demo/gauge-activity/
-                 *         Activity Gauge
+                 * @sample {highcharts} highcharts/demo/gauge-multiple-kpi/
+                 *         Gauge showing multiple KPIs
                  *
                  * @type      {boolean}
                  * @default   false
@@ -371,7 +427,7 @@
          * @product   highcharts
          * @apioption series.solidgauge.data.radius
          */
-        ''; // keeps doclets above in transpiled file
+        ''; // keeps doclets above separate
         /* *
          *
          *  Default Export
@@ -410,7 +466,7 @@
         })();
         var _a = SeriesRegistry.seriesTypes,
             GaugeSeries = _a.gauge,
-            pieProto = _a.pie.prototype;
+            PieSeries = _a.pie;
         var clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
@@ -436,7 +492,7 @@
             function SolidGaugeSeries() {
                 /* *
                  *
-                 *  Static properties
+                 *  Static Properties
                  *
                  * */
                 var _this = _super !== null && _super.apply(this,
@@ -469,7 +525,7 @@
                 if (!axis.dataClasses && axis.options.dataClasses) {
                     axis.initDataClasses(axis.options);
                 }
-                axis.initStops(axis.options);
+                axis.initStops();
                 // Generate points and inherit data label position
                 GaugeSeries.prototype.translate.call(this);
             };
@@ -582,7 +638,7 @@
             SolidGaugeSeries.prototype.animate = function (init) {
                 if (!init) {
                     this.startAngleRad = this.thresholdAngleRad;
-                    pieProto.animate.call(this, init);
+                    PieSeries.prototype.animate.call(this, init);
                 }
             };
             SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);

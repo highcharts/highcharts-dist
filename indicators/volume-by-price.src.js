@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.2.0 (2023-10-30)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -326,6 +324,25 @@
                         indicator.drawZones(chart, yAxis, indicator.zoneStarts, zoneLinesOptions.styles);
                     }
                 }
+            }
+            getExtremes() {
+                const prevCompare = this.options.compare, prevCumulative = this.options.cumulative;
+                let ret;
+                // Temporarily disable cumulative and compare while getting the extremes
+                if (this.options.compare) {
+                    this.options.compare = void 0;
+                    ret = super.getExtremes();
+                    this.options.compare = prevCompare;
+                }
+                else if (this.options.cumulative) {
+                    this.options.cumulative = false;
+                    ret = super.getExtremes();
+                    this.options.cumulative = prevCumulative;
+                }
+                else {
+                    ret = super.getExtremes();
+                }
+                return ret;
             }
             getValues(series, params) {
                 const indicator = this, xValues = series.processedXData, yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Sonification module
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -361,9 +359,12 @@
                     /**
                      * Type of track. Always `"instrument"` for instrument tracks, and
                      * `"speech"` for speech tracks.
-                     * @type {"instrument"|"speech"}
-                     * @default instrument
-                     * @apioption sonification.defaultInstrumentOptions.type
+                     *
+                     * @declare    Highcharts.SonifcationTypeValue
+                     * @type       {string}
+                     * @default    instrument
+                     * @validvalue ["instrument","speech"]
+                     * @apioption  sonification.defaultInstrumentOptions.type
                      */
                     /**
                      * Show play marker (tooltip and/or crosshair) for a track.
@@ -738,9 +739,12 @@
                     /**
                      * Type of track. Always `"instrument"` for instrument tracks, and
                      * `"speech"` for speech tracks.
-                     * @type {"instrument"|"speech"}
-                     * @default speech
-                     * @apioption sonification.defaultSpeechOptions.type
+                     *
+                     * @declare    Highcharts.SonifcationTypeValue
+                     * @type       {string}
+                     * @default    speech
+                     * @validvalue ["instrument","speech"]
+                     * @apioption  sonification.defaultSpeechOptions.type
                      */
                     /**
                      * Name of the voice synthesis to prefer for speech tracks.
@@ -1493,7 +1497,10 @@
              * @private
              */
             createEqChain(outputNode) {
-                this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, Object.assign({ type: 'peaking' }, eqDef)));
+                this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, {
+                    type: 'peaking',
+                    ...eqDef
+                }));
                 // Connect nodes
                 this.eqNodes.reduceRight((chain, node) => {
                     node.connect(chain);
@@ -3351,10 +3358,10 @@
 
         return toMIDI;
     });
-    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2015-2021 Oystein Moseng
+         *  (c) 2015-2023 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -3363,8 +3370,23 @@
          *  Mixin for downloading content in the browser
          *
          * */
-        const { isSafari } = Highcharts;
-        const win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        const { isSafari, win, win: { document: doc } } = H;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const domurl = win.URL || win.webkitURL || win;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -3374,7 +3396,7 @@
          * @return {string|undefined}
          *         Blob
          */
-        const dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
+        function dataURLtoBlob(dataURL) {
             const parts = dataURL
                 .replace(/filename=.*;/, '')
                 .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
@@ -3390,10 +3412,10 @@
                 for (let i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
-                const blob = new win.Blob([binary], { 'type': parts[1] });
-                return domurl.createObjectURL(blob);
+                return domurl
+                    .createObjectURL(new win.Blob([binary], { 'type': parts[1] }));
             }
-        };
+        }
         /**
          * Download a data URL in the browser. Can also take a blob as first param.
          *
@@ -3405,7 +3427,7 @@
          *        The name of the resulting file (w/extension)
          * @return {void}
          */
-        const downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
+        function downloadURL(dataURL, filename) {
             const nav = win.navigator, a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
@@ -3415,12 +3437,12 @@
                 nav.msSaveOrOpenBlob(dataURL, filename);
                 return;
             }
-            dataURL = `${dataURL}`;
-            // Some browsers have limitations for data URL lengths. Try to convert to
-            // Blob or fall back. Edge always needs that blob.
-            const isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+            dataURL = '' + dataURL;
+            const // Some browsers have limitations for data URL lengths. Try to convert
+            // to Blob or fall back. Edge always needs that blob.
+            isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 
             // Safari on iOS needs Blob in order to download PDF
-            const safariBlob = (isSafari &&
+            safariBlob = (isSafari &&
                 typeof dataURL === 'string' &&
                 dataURL.indexOf('data:application/pdf') === 0);
             if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
@@ -3440,17 +3462,21 @@
             else {
                 // No download attr, just opening data URI
                 try {
-                    const windowRef = win.open(dataURL, 'chart');
-                    if (typeof windowRef === 'undefined' || windowRef === null) {
+                    if (!win.open(dataURL, 'chart')) {
                         throw new Error('Failed to open window');
                     }
                 }
-                catch (e) {
-                    // window.open failed, trying location.href
+                catch {
+                    // If window.open failed, try location.href
                     win.location.href = dataURL;
                 }
             }
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         const DownloadURL = {
             dataURLtoBlob,
             downloadURL
@@ -4094,7 +4120,10 @@
                     }
                 }
             });
-            return Object.assign({ seriesTimeProps }, getChartExtremesForProps(chart, Object.keys(props), Object.keys(perSeriesProps)));
+            return {
+                seriesTimeProps,
+                ...getChartExtremesForProps(chart, Object.keys(props), Object.keys(perSeriesProps))
+            };
         }
         /**
          * Map a relative value onto a virtual axis.

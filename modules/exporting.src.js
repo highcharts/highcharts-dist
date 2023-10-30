@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Exporting module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -1649,6 +1647,7 @@
                 /^font$/,
                 /[lL]ogical(Width|Height)$/,
                 /^parentRule$/,
+                /^(cssRules|ownerRules)$/,
                 /perspective/,
                 /TapHighlightColor/,
                 /^transition/,
@@ -1722,11 +1721,11 @@
                 }
                 else if (menuItems) {
                     callback = function (e) {
-                        // consistent with onclick call (#3495)
+                        // Consistent with onclick call (#3495)
                         if (e) {
                             e.stopPropagation();
                         }
-                        chart.contextMenu(button.menuClassName, menuItems, button.translateX, button.translateY, button.width, button.height, button);
+                        chart.contextMenu(button.menuClassName, menuItems, button.translateX || 0, button.translateY || 0, button.width || 0, button.height || 0, button);
                         button.setState(2);
                     };
                 }
@@ -1780,7 +1779,7 @@
                     width: button.width,
                     x: pick(btnOptions.x, chart.buttonOffset) // #1654
                 }), true, 'spacingBox');
-                chart.buttonOffset += ((button.width + btnOptions.buttonSpacing) *
+                chart.buttonOffset += (((button.width || 0) + btnOptions.buttonSpacing) *
                     (btnOptions.align === 'right' ? -1 : 1));
                 chart.exportSVGElements.push(button, symbol);
             }
@@ -1974,11 +1973,13 @@
              * @requires modules/exporting
              */
             function contextMenu(className, items, x, y, width, height, button) {
-                const chart = this, navOptions = chart.options.navigation, chartWidth = chart.chartWidth, chartHeight = chart.chartHeight, cacheName = 'cache-' + className, menuPadding = Math.max(width, height); // for mouse leave detection
+                const chart = this, navOptions = chart.options.navigation, chartWidth = chart.chartWidth, chartHeight = chart.chartHeight, cacheName = 'cache-' + className, 
+                // For mouse leave detection
+                menuPadding = Math.max(width, height);
                 let innerMenu, menu = chart[cacheName];
-                // create the menu only the first time
+                // Create the menu only the first time
                 if (!menu) {
-                    // create a HTML element above the SVG
+                    // Create a HTML element above the SVG
                     chart.exportContextMenu = chart[cacheName] = menu =
                         createElement('div', {
                             className: className
@@ -1986,7 +1987,8 @@
                             position: 'absolute',
                             zIndex: 1000,
                             padding: menuPadding + 'px',
-                            pointerEvents: 'auto'
+                            pointerEvents: 'auto',
+                            ...chart.renderer.style
                         }, chart.fixedDiv || chart.container);
                     innerMenu = createElement('ul', { className: 'highcharts-menu' }, chart.styledMode ? {} : {
                         listStyle: 'none',

@@ -14,7 +14,6 @@ import BoostChart from './BoostChart.js';
 import BoostSeries from './BoostSeries.js';
 import H from '../../Core/Globals.js';
 const { win, doc } = H;
-import initCanvasBoost from '../../Extensions/BoostCanvas.js';
 import NamedColors from './NamedColors.js';
 import U from '../../Core/Utilities.js';
 const { error } = U;
@@ -41,16 +40,19 @@ const contexts = [
 function compose(ChartClass, SeriesClass, seriesTypes, ColorClass) {
     const wglMode = hasWebGLSupport();
     if (!wglMode) {
-        if (typeof initCanvasBoost !== 'undefined') {
+        if (typeof H.initCanvasBoost !== 'undefined') {
             // Fallback to canvas boost
-            initCanvasBoost();
+            H.initCanvasBoost();
         }
         else {
             error(26);
         }
     }
     if (ColorClass && U.pushUnique(composedClasses, ColorClass)) {
-        ColorClass.names = Object.assign(Object.assign({}, ColorClass.names), NamedColors.defaultHTMLColorMap);
+        ColorClass.names = {
+            ...ColorClass.names,
+            ...NamedColors.defaultHTMLColorMap
+        };
     }
     // WebGL support is alright, and we're good to go.
     BoostChart.compose(ChartClass, wglMode);

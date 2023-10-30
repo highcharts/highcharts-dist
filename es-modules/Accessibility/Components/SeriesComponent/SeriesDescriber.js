@@ -98,7 +98,7 @@ function hasMorePointsThanDescriptionThreshold(series) {
     const chartA11yOptions = series.chart.options.accessibility, threshold = (chartA11yOptions.series.pointDescriptionEnabledThreshold);
     return !!(threshold !== false &&
         series.points &&
-        series.points.length >= threshold);
+        series.points.length >= +threshold);
 }
 /**
  * @private
@@ -114,7 +114,7 @@ function shouldSetScreenReaderPropsOnPoints(series) {
 function shouldSetKeyboardNavPropsOnPoints(series) {
     const chartA11yOptions = series.chart.options.accessibility, seriesNavOptions = chartA11yOptions.keyboardNavigation.seriesNavigation;
     return !!(series.points && (series.points.length <
-        seriesNavOptions.pointNavigationEnabledThreshold ||
+        +seriesNavOptions.pointNavigationEnabledThreshold ||
         seriesNavOptions.pointNavigationEnabledThreshold === false));
 }
 /**
@@ -282,14 +282,13 @@ function defaultPointDescriptionFormatter(point) {
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
  */
 function setPointScreenReaderAttribs(point, pointElement) {
-    var _a, _b, _c;
-    const series = point.series, seriesPointA11yOptions = ((_a = series.options.accessibility) === null || _a === void 0 ? void 0 : _a.point) || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
+    const series = point.series, seriesPointA11yOptions = series.options.accessibility?.point || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = stripHTMLTags((isString(seriesPointA11yOptions.descriptionFormat) &&
         format(seriesPointA11yOptions.descriptionFormat, point, series.chart)) ||
-        ((_b = seriesPointA11yOptions.descriptionFormatter) === null || _b === void 0 ? void 0 : _b.call(seriesPointA11yOptions, point)) ||
+        seriesPointA11yOptions.descriptionFormatter?.(point) ||
         (isString(a11yPointOptions.descriptionFormat) &&
             format(a11yPointOptions.descriptionFormat, point, series.chart)) ||
-        ((_c = a11yPointOptions.descriptionFormatter) === null || _c === void 0 ? void 0 : _c.call(a11yPointOptions, point)) ||
-        defaultPointDescriptionFormatter(point));
+        a11yPointOptions.descriptionFormatter?.(point) ||
+        defaultPointDescriptionFormatter(point), series.chart.renderer.forExport);
     pointElement.setAttribute('role', 'img');
     pointElement.setAttribute('aria-label', label);
 }
@@ -376,7 +375,7 @@ function describeSeriesElement(series, seriesElement) {
     }
     seriesElement.setAttribute('aria-label', stripHTMLTags(a11yOptions.series.descriptionFormatter &&
         a11yOptions.series.descriptionFormatter(series) ||
-        defaultSeriesDescriptionFormatter(series)));
+        defaultSeriesDescriptionFormatter(series), series.chart.renderer.forExport));
 }
 /**
  * Put accessible info on series and points of a series.

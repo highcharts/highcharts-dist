@@ -19,7 +19,7 @@ const { getOptions } = D;
 import H from '../../Core/Globals.js';
 const { doc, noop, win } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap } = U;
+const { addEvent, error, extend, fireEvent, isArray, isNumber, pick, wrap, defined } = U;
 import WGLRenderer from './WGLRenderer.js';
 /* *
  *
@@ -252,7 +252,16 @@ function createAndAttachRenderer(chart, series) {
             }
         };
         boost.clipRect = chart.renderer.clipRect();
-        (boost.targetFo || boost.target).clip(boost.clipRect);
+        (boost.targetFo || boost.target)
+            .attr({
+            // Set the z index of the boost target to that of the last
+            // series using it. This logic is not perfect, as it will not
+            // handle interleaved series with boost enabled or disabled. But
+            // it will cover the most common use case of one or more
+            // successive boosted or non-boosted series (#9819).
+            zIndex: series.options.zIndex
+        })
+            .clip(boost.clipRect);
         if (target instanceof ChartClass) {
             target.boost.markerGroup = target.renderer
                 .g()
@@ -627,7 +636,7 @@ function seriesRenderCanvas() {
     function processPoint(d, i) {
         const chartDestroyed = typeof chart.index === 'undefined';
         let x, y, clientX, plotY, percentage, low = false, isYInside = true;
-        if (typeof d === 'undefined') {
+        if (!defined(d)) {
             return true;
         }
         if (!chartDestroyed) {
@@ -657,7 +666,7 @@ function seriesRenderCanvas() {
             if (!requireSorting) {
                 isYInside = (y || 0) >= yMin && y <= yMax;
             }
-            if (x >= xMin && x <= xMax && isYInside) {
+            if (y !== null && x >= xMin && x <= xMax && isYInside) {
                 clientX = xAxis.toPixels(x, true);
                 if (sampling) {
                     if (typeof minI === 'undefined' ||

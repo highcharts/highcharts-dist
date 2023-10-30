@@ -128,19 +128,19 @@ class NetworkgraphSeries extends Series {
         }
         const dlOptions = this.options.dataLabels;
         let textPath;
-        if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.textPath) {
+        if (dlOptions?.textPath) {
             textPath = dlOptions.textPath;
         }
         // Render node labels:
         Series.prototype.drawDataLabels.call(this, this.nodes);
         // Render link labels:
-        if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.linkTextPath) {
+        if (dlOptions?.linkTextPath) {
             // If linkTextPath is set, render link labels with linkTextPath
             dlOptions.textPath = dlOptions.linkTextPath;
         }
         Series.prototype.drawDataLabels.call(this, this.data);
         // Go back to textPath for nodes
-        if (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.textPath) {
+        if (dlOptions?.textPath) {
             dlOptions.textPath = textPath;
         }
     }

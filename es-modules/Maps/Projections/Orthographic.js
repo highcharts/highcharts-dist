@@ -2,9 +2,24 @@
  * Orthographic projection
  * */
 'use strict';
+/* *
+ *
+ *  Constants
+ *
+ * */
 const deg2rad = Math.PI / 180, scale = 63.78460826781007;
+/* *
+ *
+ *  Class
+ *
+ * */
 class Orthographic {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
         this.antimeridianCutting = false;
         this.bounds = {
             x1: -scale,
@@ -13,10 +28,13 @@ class Orthographic {
             y2: scale
         };
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     forward(lonLat) {
-        const lonDeg = lonLat[0], latDeg = lonLat[1];
-        const lat = latDeg * deg2rad;
-        const xy = [
+        const lonDeg = lonLat[0], latDeg = lonLat[1], lat = latDeg * deg2rad, xy = [
             Math.cos(lat) * Math.sin(lonDeg * deg2rad) * scale,
             Math.sin(lat) * scale
         ];
@@ -33,4 +51,9 @@ class Orthographic {
         ];
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Orthographic;

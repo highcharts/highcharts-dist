@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -27,12 +27,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -48,13 +46,16 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPointClass } } } } = SeriesRegistry;
+        const { sankey: { prototype: { pointClass: SankeyPointClass } } } = SeriesRegistry.seriesTypes;
         const { defined, find, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Get columns offset including all sibiling and cousins etc.
-         *
          * @private
-         * @param node Point
          */
         function getOffset(node) {
             let offset = node.linksFrom.length;
@@ -97,7 +98,7 @@
              *
              * */
             init() {
-                SankeyPointClass.prototype.init.apply(this, arguments);
+                super.init.apply(this, arguments);
                 if (!this.isNode) {
                     this.dataLabelOnNull = true;
                     this.formatPrefix = 'link';
@@ -127,12 +128,12 @@
                     // And parent uses hanging layout
                     fromNode &&
                     fromNode.options.layout === 'hanging') {
+                    let i = -1, link;
                     // Default all children of the hanging node
                     // to have hanging layout
                     node.options.layout = pick(node.options.layout, 'hanging');
                     node.hangsFrom = fromNode;
-                    let i = -1;
-                    find(fromNode.linksFrom, function (link, index) {
+                    find(fromNode.linksFrom, (link, index) => {
                         const found = link.toNode === node;
                         if (found) {
                             i = index;
@@ -141,8 +142,8 @@
                     });
                     // For all siblings' children (recursively)
                     // increase the column offset to prevent overlapping
-                    for (let j = 0; j < fromNode.linksFrom.length; j++) {
-                        let link = fromNode.linksFrom[j];
+                    for (let j = 0; j < fromNode.linksFrom.length; ++j) {
+                        link = fromNode.linksFrom[j];
                         if (link.toNode.id === node.id) {
                             // Break
                             j = fromNode.linksFrom.length;
@@ -764,7 +765,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { sankey: SankeySeries } } = SeriesRegistry;
+        const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
         const { css, extend, isNumber, merge, pick } = U;
         /* *
          *
@@ -788,31 +789,25 @@
                 super(...arguments);
                 /* *
                  *
-                 *  Static Functions
-                 *
-                 * */
-                /* *
-                 *
                  *  Properties
                  *
                  * */
                 this.data = void 0;
                 this.options = void 0;
                 this.points = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             alignDataLabel(point, dataLabel, options) {
                 // Align the data label to the point graphic
                 const shapeArgs = point.shapeArgs;
                 if (options.useHTML && shapeArgs) {
-                    let width = shapeArgs.width || 0, height = shapeArgs.height || 0, padjust = (this.options.borderWidth +
+                    const padjust = (this.options.borderWidth +
                         2 * this.options.dataLabels.padding);
+                    let width = shapeArgs.width || 0, height = shapeArgs.height || 0;
                     if (this.chart.inverted) {
                         width = height;
                         height = shapeArgs.width || 0;
@@ -868,12 +863,13 @@
                 return attribs;
             }
             translateLink(point) {
-                let fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(this.options.linkLineWidth, this.options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(this.options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, this.options.link.type);
+                const chart = this.chart, options = this.options, fromNode = point.fromNode, toNode = point.toNode, linkWidth = pick(options.linkLineWidth, options.link.lineWidth), crisp = (Math.round(linkWidth) % 2) / 2, factor = pick(options.link.offset, 0.5), type = pick(point.options.link && point.options.link.type, options.link.type);
                 if (fromNode.shapeArgs && toNode.shapeArgs) {
+                    const hangingIndent = options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = chart.inverted;
                     let x1 = Math.floor((fromNode.shapeArgs.x || 0) +
                         (fromNode.shapeArgs.width || 0)) + crisp, y1 = Math.floor((fromNode.shapeArgs.y || 0) +
                         (fromNode.shapeArgs.height || 0) / 2) + crisp, x2 = Math.floor(toNode.shapeArgs.x || 0) + crisp, y2 = Math.floor((toNode.shapeArgs.y || 0) +
-                        (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle, hangingIndent = this.options.hangingIndent, toOffset = toNode.options.offset, percentOffset = /%$/.test(toOffset) && parseInt(toOffset, 10), inverted = this.chart.inverted;
+                        (toNode.shapeArgs.height || 0) / 2) + crisp, xMiddle;
                     if (inverted) {
                         x1 -= (fromNode.shapeArgs.width || 0);
                         x2 += (toNode.shapeArgs.width || 0);
@@ -896,7 +892,7 @@
                         }
                     }
                     if (toNode.hangsFrom === fromNode) {
-                        if (this.chart.inverted) {
+                        if (chart.inverted) {
                             y1 = Math.floor((fromNode.shapeArgs.y || 0) +
                                 (fromNode.shapeArgs.height || 0) -
                                 hangingIndent / 2) + crisp;
@@ -937,7 +933,7 @@
                                 ['L', xMiddle, y1],
                                 ['L', xMiddle, y2],
                                 ['L', x2, y2]
-                            ], pick(this.options.linkRadius, this.options.link.radius))
+                            ], pick(options.linkRadius, options.link.radius))
                         };
                     }
                     point.dlBox = {
@@ -949,8 +945,9 @@
                 }
             }
             translateNode(node, column) {
-                SankeySeries.prototype.translateNode.call(this, node, column);
-                let parentNode = node.hangsFrom, indent = this.options.hangingIndent || 0, sign = this.chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = this.options.hangingIndentTranslation, minLength = this.options.minNodeLength || 10;
+                super.translateNode(node, column);
+                const chart = this.chart, options = this.options, indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
+                let parentNode = node.hangsFrom;
                 if (parentNode) {
                     if (indentLogic === 'cumulative') {
                         // Move to the right:
@@ -973,12 +970,12 @@
                         // indentLogic === "inherit"
                         // Do nothing (v9.3.2 and prev versions):
                         shapeArgs.height -= indent;
-                        if (!this.chart.inverted) {
+                        if (!chart.inverted) {
                             shapeArgs.y += indent;
                         }
                     }
                 }
-                node.nodeHeight = this.chart.inverted ?
+                node.nodeHeight = chart.inverted ?
                     shapeArgs.width :
                     shapeArgs.height;
             }

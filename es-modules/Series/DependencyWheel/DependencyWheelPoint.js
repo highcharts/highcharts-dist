@@ -11,9 +11,9 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
+const { sankey: { prototype: { pointClass: SankeyPoint } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { wrap } = U;
+const { pInt, wrap } = U;
 /* *
  *
  *  Class
@@ -36,37 +36,35 @@ class DependencyWheelPoint extends SankeyPoint {
         this.series = void 0;
         this.shapeArgs = void 0;
         this.toNode = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Return a text path that the data label uses.
      * @private
      */
     getDataLabelPath(label) {
-        const renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
+        const point = this, renderer = point.series.chart.renderer, shapeArgs = point.shapeArgs, upperHalf = point.angle < 0 || point.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
         // First time
-        if (!this.dataLabelPath) {
+        if (!point.dataLabelPath) {
             // Destroy the path with the label
-            wrap(label, 'destroy', (proceed) => {
-                if (this.dataLabelPath) {
-                    this.dataLabelPath = this.dataLabelPath.destroy();
+            wrap(label, 'destroy', function (proceed) {
+                if (point.dataLabelPath) {
+                    point.dataLabelPath = point.dataLabelPath.destroy();
                 }
-                return proceed.call(label);
+                return proceed.call(this);
             });
             // Subsequent times
         }
         else {
-            this.dataLabelPath = this.dataLabelPath.destroy();
-            delete this.dataLabelPath;
+            point.dataLabelPath = point.dataLabelPath.destroy();
+            delete point.dataLabelPath;
         }
         // All times
-        this.dataLabelPath = renderer
+        point.dataLabelPath = renderer
             .arc({
             open: true,
             longArc: Math.abs(Math.abs(start) - Math.abs(end)) < Math.PI ? 0 : 1
@@ -74,13 +72,13 @@ class DependencyWheelPoint extends SankeyPoint {
             .attr({
             x: shapeArgs.x,
             y: shapeArgs.y,
-            r: (shapeArgs.r + (label.options.distance || 0)),
+            r: ((shapeArgs.r || 0) + pInt(label.options?.distance || 0)),
             start: (upperHalf ? start : end),
             end: (upperHalf ? end : start),
             clockwise: +upperHalf
         })
             .add(renderer.defs);
-        return this.dataLabelPath;
+        return point.dataLabelPath;
     }
     isValid() {
         // No null points here

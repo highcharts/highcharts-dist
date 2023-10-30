@@ -1,14 +1,9 @@
-/*
- Highstock JS v11.1.0 (2023-06-05)
-
- Indicator series type for Highcharts Stock
-
- (c) 2010-2021 Sebastian Bochan
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/trendline",["highcharts","highcharts/modules/stock"],function(e){a(e);a.Highcharts=e;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function e(a,c,e,g){a.hasOwnProperty(c)||(a[c]=g.apply(null,e),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:c,
-module:a[c]}})))}a=a?a._modules:{};e(a,"Stock/Indicators/TrendLine/TrendLineIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,c){var e=this&&this.__extends||function(){var a=function(c,b){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,b){a.__proto__=b}||function(a,b){for(var d in b)Object.prototype.hasOwnProperty.call(b,d)&&(a[d]=b[d])};return a(c,b)};return function(c,b){function d(){this.constructor=c}if("function"!==typeof b&&null!==b)throw new TypeError("Class extends value "+
-String(b)+" is not a constructor or null");a(c,b);c.prototype=null===b?Object.create(b):(d.prototype=b.prototype,new d)}}(),g=a.seriesTypes.sma,l=c.extend,m=c.merge,q=c.isArray;c=function(a){function c(){var b=null!==a&&a.apply(this,arguments)||this;b.data=void 0;b.options=void 0;b.points=void 0;b.updateAllPoints=!0;return b}e(c,a);c.prototype.getValues=function(a,d){var c=a.xData,b=a.yData;a=[];var e=[],g=[],f=c.length,l=d.index,h=(f-1)*f/2,n=0,p=0,m=(f-1)*f*(2*f-1)/6;for(d=0;d<f;d++){var k=q(b[d])?
-b[d][l]:b[d];n+=k;p+=d*k}b=(f*p-h*n)/(f*m-h*h);isNaN(b)&&(b=0);h=(n-b*h)/f;for(d=0;d<f;d++)k=b*d+h,a[d]=[c[d],k],e[d]=c[d],g[d]=k;return{xData:e,yData:g,values:a}};c.defaultOptions=m(g.defaultOptions,{params:{period:void 0,index:3}});return c}(g);l(c.prototype,{nameBase:"Trendline",nameComponents:!1});a.registerSeriesType("trendline",c);"";return c});e(a,"masters/indicators/trendline.src.js",[],function(){})});
-//# sourceMappingURL=trendline.js.map
+/**
+ * Highstock JS v11.2.0 (2023-10-30)
+ *
+ * Indicator series type for Highcharts Stock
+ *
+ * (c) 2010-2021 Sebastian Bochan
+ *
+ * License: www.highcharts.com/license
+ */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/indicators/trendline",["highcharts","highcharts/modules/stock"],function(e){return t(e),t.Highcharts=e,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var e=t?t._modules:{};function n(t,e,n,o){t.hasOwnProperty(e)||(t[e]=o.apply(null,n),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:t[e]}})))}n(e,"Stock/Indicators/TrendLine/TrendLineIndicator.js",[e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(t,e){var n,o=this&&this.__extends||(n=function(t,e){return(n=Object.setPrototypeOf||({__proto__:[]})instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var n in e)Object.prototype.hasOwnProperty.call(e,n)&&(t[n]=e[n])})(t,e)},function(t,e){if("function"!=typeof e&&null!==e)throw TypeError("Class extends value "+String(e)+" is not a constructor or null");function o(){this.constructor=t}n(t,e),t.prototype=null===e?Object.create(e):(o.prototype=e.prototype,new o)}),r=t.seriesTypes.sma,i=e.extend,s=e.merge,a=e.isArray,u=function(t){function e(){var e=null!==t&&t.apply(this,arguments)||this;return e.data=void 0,e.options=void 0,e.points=void 0,e.updateAllPoints=!0,e}return o(e,t),e.prototype.getValues=function(t,e){var n,o,r,i=t.xData,s=t.yData,u=[],c=[],d=[],p=i.length,l=e.index,f=(p-1)*p/2,h=0,y=0;for(o=0;o<p;o++)h+=r=a(s[o])?s[o][l]:s[o],y+=o*r;isNaN(n=(p*y-f*h)/(p*((p-1)*p*(2*p-1)/6)-f*f))&&(n=0);var m=(h-n*f)/p;for(o=0;o<p;o++)r=n*o+m,u[o]=[i[o],r],c[o]=i[o],d[o]=r;return{xData:c,yData:d,values:u}},e.defaultOptions=s(r.defaultOptions,{params:{period:void 0,index:3}}),e}(r);return i(u.prototype,{nameBase:"Trendline",nameComponents:!1}),t.registerSeriesType("trendline",u),u}),n(e,"masters/indicators/trendline.src.js",[],function(){})});//# sourceMappingURL=trendline.js.map

@@ -11,7 +11,7 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { defined, isNumber } = U;
+const { defined, isNumber, merge } = U;
 /* *
  *
  *  Class
@@ -50,7 +50,7 @@ class AreaRangePoint extends AreaPoint {
      * @private
      */
     setState() {
-        const prevState = this.state, series = this.series, isPolar = series.chart.polar;
+        const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
         if (!defined(this.plotHigh)) {
             // Boost doesn't calculate plotHigh
             this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -59,10 +59,8 @@ class AreaRangePoint extends AreaPoint {
             // Boost doesn't calculate plotLow
             this.plotLow = this.plotY = series.yAxis.toPixels(this.low, true);
         }
-        if (series.stateMarkerGraphic) {
-            series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
-            series.stateMarkerGraphic = series.upperStateMarkerGraphic;
-        }
+        series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
+        series.stateMarkerGraphic = series.upperStateMarkerGraphic;
         // Change state also for the top marker
         this.graphic = this.graphics && this.graphics[1];
         this.plotY = this.plotHigh;
@@ -78,14 +76,16 @@ class AreaRangePoint extends AreaPoint {
         if (isPolar && isNumber(this.plotLowX)) {
             this.plotX = this.plotLowX;
         }
-        if (series.stateMarkerGraphic) {
-            series.upperStateMarkerGraphic = series.stateMarkerGraphic;
-            series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
-            // Lower marker is stored at stateMarkerGraphic
-            // to avoid reference duplication (#7021)
-            series.lowerStateMarkerGraphic = void 0;
-        }
+        series.upperStateMarkerGraphic = series.stateMarkerGraphic;
+        series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
+        // Lower marker is stored at stateMarkerGraphic
+        // to avoid reference duplication (#7021)
+        series.lowerStateMarkerGraphic = void 0;
+        const originalSettings = series.modifyMarkerSettings();
+        // Bottom state
         areaProto.setState.apply(this, arguments);
+        // Restore previous state
+        series.restoreMarkerSettings(originalSettings);
     }
     haloPath() {
         const isPolar = this.series.chart.polar;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Highcharts funnel module
  *
@@ -28,16 +28,14 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
-    _registerModule(_modules, 'Series/Funnel3D/Funnel3DComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer3D.js'], _modules['Core/Utilities.js']], function (Color, H, SVGRenderer3D, U) {
+    _registerModule(_modules, 'Series/Funnel3D/SVGElement3DFunnel.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, RendererRegistry, U) {
         /* *
          *
          *  Highcharts funnel3d series module
@@ -51,402 +49,645 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var color = Color.parse;
         var charts = H.charts;
-        var error = U.error,
-            extend = U.extend,
-            merge = U.merge;
+        var SVGElement3D = RendererRegistry.getRendererType().prototype.Element3D;
+        var merge = U.merge;
         /* *
          *
-         *  Composition
+         *  Class
          *
          * */
-        var Funnel3DComposition;
-        (function (Funnel3DComposition) {
+        var SVGElement3DFunnel = /** @class */ (function (_super) {
+                __extends(SVGElement3DFunnel, _super);
+            function SVGElement3DFunnel() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.mainParts = ['top', 'bottom'];
+                _this.parts = [
+                    'top', 'bottom',
+                    'frontUpper', 'backUpper',
+                    'frontLower', 'backLower',
+                    'rightUpper', 'rightLower'
+                ];
+                _this.sideGroups = [
+                    'upperGroup', 'lowerGroup'
+                ];
+                _this.sideParts = {
+                    upperGroup: ['frontUpper', 'backUpper', 'rightUpper'],
+                    lowerGroup: ['frontLower', 'backLower', 'rightLower']
+                };
+                _this.pathType = 'funnel3d';
+                return _this;
+            }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable require-jsdoc, valid-jsdoc */
-            function compose(SVGRendererClass) {
-                SVGRenderer3D.compose(SVGRendererClass);
-                wrapElement3D(SVGRendererClass.prototype.elements3d);
-                wrapRenderer3D(SVGRendererClass);
-            }
-            Funnel3DComposition.compose = compose;
-            function wrapElement3D(elements3d) {
-                elements3d.funnel3d = merge(elements3d.cuboid, {
-                    parts: [
-                        'top', 'bottom',
-                        'frontUpper', 'backUpper',
-                        'frontLower', 'backLower',
-                        'rightUpper', 'rightLower'
-                    ],
-                    mainParts: ['top', 'bottom'],
-                    sideGroups: [
-                        'upperGroup', 'lowerGroup'
-                    ],
-                    sideParts: {
-                        upperGroup: ['frontUpper', 'backUpper', 'rightUpper'],
-                        lowerGroup: ['frontLower', 'backLower', 'rightLower']
-                    },
-                    pathType: 'funnel3d',
-                    // override opacity and color setters to control opacity
-                    opacitySetter: function (opacity) {
-                        var funnel3d = this,
-                            parts = funnel3d.parts,
-                            chart = H.charts[funnel3d.renderer.chartIndex],
-                            filterId = 'group-opacity-' + opacity + '-' + chart.index;
-                        // use default for top and bottom
-                        funnel3d.parts = funnel3d.mainParts;
-                        funnel3d.singleSetterForParts('opacity', opacity);
-                        // restore
-                        funnel3d.parts = parts;
-                        if (!chart.renderer.filterId) {
-                            chart.renderer.definition({
-                                tagName: 'filter',
-                                attributes: {
-                                    id: filterId
-                                },
+            // override opacity and color setters to control opacity
+            SVGElement3DFunnel.prototype.opacitySetter = function (value, _key, _element) {
+                var funnel3d = this,
+                    opacity = parseFloat(value),
+                    parts = funnel3d.parts,
+                    chart = charts[funnel3d.renderer.chartIndex],
+                    filterId = 'group-opacity-' + opacity + '-' + chart.index;
+                // use default for top and bottom
+                funnel3d.parts = funnel3d.mainParts;
+                funnel3d.singleSetterForParts('opacity', opacity);
+                // restore
+                funnel3d.parts = parts;
+                if (!chart.renderer.filterId) {
+                    chart.renderer.definition({
+                        tagName: 'filter',
+                        attributes: {
+                            id: filterId
+                        },
+                        children: [{
+                                tagName: 'feComponentTransfer',
                                 children: [{
-                                        tagName: 'feComponentTransfer',
-                                        children: [{
-                                                tagName: 'feFuncA',
-                                                attributes: {
-                                                    type: 'table',
-                                                    tableValues: '0 ' + opacity
-                                                }
-                                            }]
-                                    }]
-                            });
-                            funnel3d.sideGroups.forEach(function (groupName) {
-                                funnel3d[groupName].attr({
-                                    filter: 'url(#' + filterId + ')'
-                                });
-                            });
-                            // styled mode
-                            if (funnel3d.renderer.styledMode) {
-                                chart.renderer.definition({
-                                    tagName: 'style',
-                                    textContent: '.highcharts-' + filterId +
-                                        ' {filter:url(#' + filterId + ')}'
-                                });
-                                funnel3d.sideGroups.forEach(function (group) {
-                                    group.addClass('highcharts-' + filterId);
-                                });
-                            }
-                        }
-                        return funnel3d;
-                    },
-                    fillSetter: function (fill) {
-                        // extract alpha channel to use the opacitySetter
-                        var funnel3d = this,
-                            fillColor = color(fill),
-                            alpha = fillColor.rgba[3],
-                            partsWithColor = {
-                                // standard color for top and bottom
-                                top: color(fill).brighten(0.1).get(),
-                                bottom: color(fill).brighten(-0.2).get()
-                            };
-                        if (alpha < 1) {
-                            fillColor.rgba[3] = 1;
-                            fillColor = fillColor.get('rgb');
-                            // set opacity through the opacitySetter
-                            funnel3d.attr({
-                                opacity: alpha
-                            });
-                        }
-                        else {
-                            // use default for full opacity
-                            fillColor = fill;
-                        }
-                        // add gradient for sides
-                        if (!fillColor.linearGradient &&
-                            !fillColor.radialGradient &&
-                            funnel3d.gradientForSides) {
-                            fillColor = {
-                                linearGradient: { x1: 0, x2: 1, y1: 1, y2: 1 },
-                                stops: [
-                                    [0, color(fill).brighten(-0.2).get()],
-                                    [0.5, fill],
-                                    [1, color(fill).brighten(-0.2).get()]
-                                ]
-                            };
-                        }
-                        // gradient support
-                        if (fillColor.linearGradient) {
-                            // color in steps, as each gradient will generate a key
-                            funnel3d.sideGroups.forEach(function (sideGroupName) {
-                                var box = funnel3d[sideGroupName].gradientBox,
-                                    gradient = fillColor.linearGradient,
-                                    alteredGradient = merge(fillColor, {
-                                        linearGradient: {
-                                            x1: box.x + gradient.x1 * box.width,
-                                            y1: box.y + gradient.y1 * box.height,
-                                            x2: box.x + gradient.x2 * box.width,
-                                            y2: box.y + gradient.y2 * box.height
+                                        tagName: 'feFuncA',
+                                        attributes: {
+                                            type: 'table',
+                                            tableValues: '0 ' + opacity
                                         }
-                                    });
-                                funnel3d.sideParts[sideGroupName].forEach(function (partName) {
-                                    partsWithColor[partName] = alteredGradient;
-                                });
-                            });
+                                    }]
+                            }]
+                    });
+                    for (var _i = 0, _a = funnel3d.sideGroups; _i < _a.length; _i++) {
+                        var groupName = _a[_i];
+                        funnel3d[groupName].attr({
+                            filter: 'url(#' + filterId + ')'
+                        });
+                    }
+                    // styled mode
+                    if (funnel3d.renderer.styledMode) {
+                        chart.renderer.definition({
+                            tagName: 'style',
+                            textContent: '.highcharts-' + filterId +
+                                ' {filter:url(#' + filterId + ')}'
+                        });
+                        for (var _b = 0, _c = funnel3d.sideGroups; _b < _c.length; _b++) {
+                            var groupName = _c[_b];
+                            funnel3d[groupName].addClass('highcharts-' + filterId);
                         }
-                        else {
-                            merge(true, partsWithColor, {
-                                frontUpper: fillColor,
-                                backUpper: fillColor,
-                                rightUpper: fillColor,
-                                frontLower: fillColor,
-                                backLower: fillColor,
-                                rightLower: fillColor
-                            });
-                            if (fillColor.radialGradient) {
-                                funnel3d.sideGroups.forEach(function (sideGroupName) {
-                                    var gradBox = funnel3d[sideGroupName].gradientBox, centerX = gradBox.x + gradBox.width / 2, centerY = gradBox.y + gradBox.height / 2, diameter = Math.min(gradBox.width, gradBox.height);
-                                    funnel3d.sideParts[sideGroupName].forEach(function (partName) {
-                                        funnel3d[partName].setRadialReference([
-                                            centerX, centerY, diameter
-                                        ]);
-                                    });
-                                });
-                            }
-                        }
-                        funnel3d.singleSetterForParts('fill', null, partsWithColor);
-                        // fill for animation getter (#6776)
-                        funnel3d.color = funnel3d.fill = fill;
-                        // change gradientUnits to userSpaceOnUse for linearGradient
-                        if (fillColor.linearGradient) {
-                            [funnel3d.frontLower, funnel3d.frontUpper]
-                                .forEach(function (part) {
-                                var elem = part.element,
-                                    grad = (elem &&
-                                        funnel3d.renderer.gradients[elem.gradient]);
-                                if (grad &&
-                                    grad.attr('gradientUnits') !== 'userSpaceOnUse') {
-                                    grad.attr({
-                                        gradientUnits: 'userSpaceOnUse'
-                                    });
+                    }
+                }
+                return funnel3d;
+            };
+            SVGElement3DFunnel.prototype.fillSetter = function (fill) {
+                var fillColor = color(fill);
+                // extract alpha channel to use the opacitySetter
+                var funnel3d = this,
+                    alpha = fillColor.rgba[3],
+                    partsWithColor = {
+                        // standard color for top and bottom
+                        top: color(fill).brighten(0.1).get(),
+                        bottom: color(fill).brighten(-0.2).get()
+                    };
+                if (alpha < 1) {
+                    fillColor.rgba[3] = 1;
+                    fillColor = fillColor.get('rgb');
+                    // set opacity through the opacitySetter
+                    funnel3d.attr({
+                        opacity: alpha
+                    });
+                }
+                else {
+                    // use default for full opacity
+                    fillColor = fill;
+                }
+                // add gradient for sides
+                if (!fillColor.linearGradient &&
+                    !fillColor.radialGradient &&
+                    funnel3d.gradientForSides) {
+                    fillColor = {
+                        linearGradient: { x1: 0, x2: 1, y1: 1, y2: 1 },
+                        stops: [
+                            [0, color(fill).brighten(-0.2).get()],
+                            [0.5, fill],
+                            [1, color(fill).brighten(-0.2).get()]
+                        ]
+                    };
+                }
+                // gradient support
+                if (fillColor.linearGradient) {
+                    // color in steps, as each gradient will generate a key
+                    for (var _i = 0, _a = funnel3d.sideGroups; _i < _a.length; _i++) {
+                        var sideGroupName = _a[_i];
+                        var box = funnel3d[sideGroupName].gradientBox,
+                            gradient = fillColor.linearGradient,
+                            alteredGradient = merge(fillColor, {
+                                linearGradient: {
+                                    x1: box.x + gradient.x1 * box.width,
+                                    y1: box.y + gradient.y1 * box.height,
+                                    x2: box.x + gradient.x2 * box.width,
+                                    y2: box.y + gradient.y2 * box.height
                                 }
                             });
+                        for (var _b = 0, _c = funnel3d.sideParts[sideGroupName]; _b < _c.length; _b++) {
+                            var partName = _c[_b];
+                            partsWithColor[partName] = alteredGradient;
                         }
-                        return funnel3d;
-                    },
-                    adjustForGradient: function () {
-                        var funnel3d = this,
-                            bbox;
-                        funnel3d.sideGroups.forEach(function (sideGroupName) {
-                            // use common extremes for groups for matching gradients
-                            var topLeftEdge = {
-                                    x: Number.MAX_VALUE,
-                                    y: Number.MAX_VALUE
-                                },
-                                bottomRightEdge = {
-                                    x: -Number.MAX_VALUE,
-                                    y: -Number.MAX_VALUE
-                                };
-                            // get extremes
-                            funnel3d.sideParts[sideGroupName].forEach(function (partName) {
-                                var part = funnel3d[partName];
-                                bbox = part.getBBox(true);
-                                topLeftEdge = {
-                                    x: Math.min(topLeftEdge.x, bbox.x),
-                                    y: Math.min(topLeftEdge.y, bbox.y)
-                                };
-                                bottomRightEdge = {
-                                    x: Math.max(bottomRightEdge.x, bbox.x + bbox.width),
-                                    y: Math.max(bottomRightEdge.y, bbox.y + bbox.height)
-                                };
-                            });
-                            // store for color fillSetter
-                            funnel3d[sideGroupName].gradientBox = {
-                                x: topLeftEdge.x,
-                                width: bottomRightEdge.x - topLeftEdge.x,
-                                y: topLeftEdge.y,
-                                height: bottomRightEdge.y - topLeftEdge.y
-                            };
-                        });
-                    },
-                    zIndexSetter: function () {
-                        // this.added won't work, because zIndex is set after the prop
-                        // is set, but before the graphic is really added
-                        if (this.finishedOnAdd) {
-                            this.adjustForGradient();
-                        }
-                        // run default
-                        return this.renderer.Element.prototype.zIndexSetter.apply(this, arguments);
-                    },
-                    onAdd: function () {
-                        this.adjustForGradient();
-                        this.finishedOnAdd = true;
                     }
-                });
-            }
-            function wrapRenderer3D(SVGRendererClass) {
-                var rendererProto = SVGRendererClass.prototype;
-                extend(rendererProto, {
-                    funnel3d: function (shapeArgs) {
-                        var renderer = this,
-                            funnel3d = renderer.element3d('funnel3d',
-                            shapeArgs),
-                            styledMode = renderer.styledMode, 
-                            // hide stroke for Firefox
-                            strokeAttrs = {
-                                'stroke-width': 1,
-                                stroke: 'none'
-                            };
-                        // create groups for sides for oppacity setter
-                        funnel3d.upperGroup = renderer.g('funnel3d-upper-group').attr({
-                            zIndex: funnel3d.frontUpper.zIndex
-                        }).add(funnel3d);
-                        [
-                            funnel3d.frontUpper,
-                            funnel3d.backUpper,
-                            funnel3d.rightUpper
-                        ].forEach(function (upperElem) {
-                            if (!styledMode) {
-                                upperElem.attr(strokeAttrs);
+                }
+                else {
+                    merge(true, partsWithColor, {
+                        frontUpper: fillColor,
+                        backUpper: fillColor,
+                        rightUpper: fillColor,
+                        frontLower: fillColor,
+                        backLower: fillColor,
+                        rightLower: fillColor
+                    });
+                    if (fillColor.radialGradient) {
+                        for (var _d = 0, _e = funnel3d.sideGroups; _d < _e.length; _d++) {
+                            var sideGroupName = _e[_d];
+                            var gradBox = funnel3d[sideGroupName].gradientBox, centerX = gradBox.x + gradBox.width / 2, centerY = gradBox.y + gradBox.height / 2, diameter = Math.min(gradBox.width, gradBox.height);
+                            for (var _f = 0, _g = funnel3d.sideParts[sideGroupName]; _f < _g.length; _f++) {
+                                var partName = _g[_f];
+                                funnel3d[partName].setRadialReference([
+                                    centerX, centerY, diameter
+                                ]);
                             }
-                            upperElem.add(funnel3d.upperGroup);
-                        });
-                        funnel3d.lowerGroup = renderer.g('funnel3d-lower-group').attr({
-                            zIndex: funnel3d.frontLower.zIndex
-                        }).add(funnel3d);
-                        [
-                            funnel3d.frontLower,
-                            funnel3d.backLower,
-                            funnel3d.rightLower
-                        ].forEach(function (lowerElem) {
-                            if (!styledMode) {
-                                lowerElem.attr(strokeAttrs);
-                            }
-                            lowerElem.add(funnel3d.lowerGroup);
-                        });
-                        funnel3d.gradientForSides = shapeArgs.gradientForSides;
-                        return funnel3d;
-                    },
-                    /**
-                     * Generates paths and zIndexes.
-                     * @private
-                     */
-                    funnel3dPath: function (shapeArgs // @todo: Type it. It's an extended SVGAttributes.
-                    ) {
-                        // Check getCylinderEnd for better error message if
-                        // the cylinder module is missing
-                        if (!this.getCylinderEnd) {
-                            error('A required Highcharts module is missing: cylinder.js', true, charts[this.chartIndex]);
                         }
-                        var renderer = this,
-                            chart = charts[renderer.chartIndex], 
-                            // adjust angles for visible edges
-                            // based on alpha, selected through visual tests
-                            alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -
-                                90), 
-                            // set zIndexes of parts based on cubiod logic, for
-                            // consistency
-                            cuboidData = rendererProto.cuboidPath.call(renderer,
-                            merge(shapeArgs, {
-                                depth: shapeArgs.width,
-                                width: (shapeArgs.width + shapeArgs.bottom.width) / 2
-                            })),
-                            isTopFirst = cuboidData.isTop,
-                            isFrontFirst = !cuboidData.isFront,
-                            hasMiddle = !!shapeArgs.middle, 
-                            //
-                            top = renderer.getCylinderEnd(chart,
-                            merge(shapeArgs, {
-                                x: shapeArgs.x - shapeArgs.width / 2,
-                                z: shapeArgs.z - shapeArgs.width / 2,
-                                alphaCorrection: alphaCorrection
-                            })),
-                            bottomWidth = shapeArgs.bottom.width,
-                            bottomArgs = merge(shapeArgs, {
-                                width: bottomWidth,
-                                x: shapeArgs.x - bottomWidth / 2,
-                                z: shapeArgs.z - bottomWidth / 2,
-                                alphaCorrection: alphaCorrection
-                            }),
-                            bottom = renderer.getCylinderEnd(chart,
-                            bottomArgs,
-                            true), 
-                            //
-                            middleWidth = bottomWidth,
-                            middleTopArgs = bottomArgs,
-                            middleTop = bottom,
-                            middleBottom = bottom,
-                            ret, 
-                            // masking for cylinders or a missing part of a side shape
-                            useAlphaCorrection;
-                        if (hasMiddle) {
-                            middleWidth = shapeArgs.middle.width;
-                            middleTopArgs = merge(shapeArgs, {
-                                y: (shapeArgs.y +
-                                    shapeArgs.middle.fraction * shapeArgs.height),
-                                width: middleWidth,
-                                x: shapeArgs.x - middleWidth / 2,
-                                z: shapeArgs.z - middleWidth / 2
+                    }
+                }
+                funnel3d.singleSetterForParts('fill', null, partsWithColor);
+                // fill for animation getter (#6776)
+                funnel3d.color = funnel3d.fill = fill;
+                // change gradientUnits to userSpaceOnUse for linearGradient
+                if (fillColor.linearGradient) {
+                    for (var _h = 0, _j = [funnel3d.frontLower, funnel3d.frontUpper]; _h < _j.length; _h++) {
+                        var part = _j[_h];
+                        var elem = part.element,
+                            grad = (elem &&
+                                funnel3d.renderer.gradients[elem.gradient]);
+                        if (grad &&
+                            grad.attr('gradientUnits') !== 'userSpaceOnUse') {
+                            grad.attr({
+                                gradientUnits: 'userSpaceOnUse'
                             });
-                            middleTop = renderer.getCylinderEnd(chart, middleTopArgs, false);
-                            middleBottom = renderer.getCylinderEnd(chart, middleTopArgs, false);
                         }
-                        ret = {
-                            top: top,
-                            bottom: bottom,
-                            frontUpper: renderer.getCylinderFront(top, middleTop),
-                            zIndexes: {
-                                group: cuboidData.zIndexes.group,
-                                top: isTopFirst !== 0 ? 0 : 3,
-                                bottom: isTopFirst !== 1 ? 0 : 3,
-                                frontUpper: isFrontFirst ? 2 : 1,
-                                backUpper: isFrontFirst ? 1 : 2,
-                                rightUpper: isFrontFirst ? 2 : 1
-                            }
+                    }
+                }
+                return funnel3d;
+            };
+            SVGElement3DFunnel.prototype.adjustForGradient = function () {
+                var funnel3d = this;
+                var bbox;
+                for (var _i = 0, _a = funnel3d.sideGroups; _i < _a.length; _i++) {
+                    var sideGroupName = _a[_i];
+                    // use common extremes for groups for matching gradients
+                    var topLeftEdge = {
+                            x: Number.MAX_VALUE,
+                            y: Number.MAX_VALUE
+                        },
+                        bottomRightEdge = {
+                            x: -Number.MAX_VALUE,
+                            y: -Number.MAX_VALUE
                         };
-                        ret.backUpper = renderer.getCylinderBack(top, middleTop);
-                        useAlphaCorrection = (Math.min(middleWidth, shapeArgs.width) /
-                            Math.max(middleWidth, shapeArgs.width)) !== 1;
-                        ret.rightUpper = renderer.getCylinderFront(renderer.getCylinderEnd(chart, merge(shapeArgs, {
-                            x: shapeArgs.x - shapeArgs.width / 2,
-                            z: shapeArgs.z - shapeArgs.width / 2,
-                            alphaCorrection: useAlphaCorrection ?
-                                -alphaCorrection : 0
-                        }), false), renderer.getCylinderEnd(chart, merge(middleTopArgs, {
-                            alphaCorrection: useAlphaCorrection ?
-                                -alphaCorrection : 0
-                        }), !hasMiddle));
-                        if (hasMiddle) {
-                            useAlphaCorrection = (Math.min(middleWidth, bottomWidth) /
-                                Math.max(middleWidth, bottomWidth)) !== 1;
-                            merge(true, ret, {
-                                frontLower: renderer.getCylinderFront(middleBottom, bottom),
-                                backLower: renderer.getCylinderBack(middleBottom, bottom),
-                                rightLower: renderer.getCylinderFront(renderer.getCylinderEnd(chart, merge(bottomArgs, {
-                                    alphaCorrection: useAlphaCorrection ?
-                                        -alphaCorrection : 0
-                                }), true), renderer.getCylinderEnd(chart, merge(middleTopArgs, {
-                                    alphaCorrection: useAlphaCorrection ?
-                                        -alphaCorrection : 0
-                                }), false)),
-                                zIndexes: {
-                                    frontLower: isFrontFirst ? 2 : 1,
-                                    backLower: isFrontFirst ? 1 : 2,
-                                    rightLower: isFrontFirst ? 1 : 2
-                                }
-                            });
-                        }
-                        return ret;
+                    // get extremes
+                    for (var _b = 0, _c = funnel3d.sideParts[sideGroupName]; _b < _c.length; _b++) {
+                        var partName = _c[_b];
+                        var part = funnel3d[partName];
+                        bbox = part.getBBox(true);
+                        topLeftEdge = {
+                            x: Math.min(topLeftEdge.x, bbox.x),
+                            y: Math.min(topLeftEdge.y, bbox.y)
+                        };
+                        bottomRightEdge = {
+                            x: Math.max(bottomRightEdge.x, bbox.x + bbox.width),
+                            y: Math.max(bottomRightEdge.y, bbox.y + bbox.height)
+                        };
                     }
-                });
-            }
-        })(Funnel3DComposition || (Funnel3DComposition = {}));
+                    // store for color fillSetter
+                    funnel3d[sideGroupName].gradientBox = {
+                        x: topLeftEdge.x,
+                        width: bottomRightEdge.x - topLeftEdge.x,
+                        y: topLeftEdge.y,
+                        height: bottomRightEdge.y - topLeftEdge.y
+                    };
+                }
+            };
+            SVGElement3DFunnel.prototype.zIndexSetter = function () {
+                // this.added won't work, because zIndex is set after the prop
+                // is set, but before the graphic is really added
+                if (this.finishedOnAdd) {
+                    this.adjustForGradient();
+                }
+                // run default
+                return this.renderer.Element.prototype.zIndexSetter.apply(this, arguments);
+            };
+            SVGElement3DFunnel.prototype.onAdd = function () {
+                this.adjustForGradient();
+                this.finishedOnAdd = true;
+            };
+            return SVGElement3DFunnel;
+        }(SVGElement3D));
         /* *
          *
          *  Default Export
          *
          * */
 
+        return SVGElement3DFunnel;
+    });
+    _registerModule(_modules, 'Series/Funnel3D/Funnel3DComposition.js', [_modules['Series/Funnel3D/SVGElement3DFunnel.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (SVGElement3DFunnel, H, U) {
+        /* *
+         *
+         *  Highcharts funnel3d series module
+         *
+         *  (c) 2010-2021 Highsoft AS
+         *
+         *  Author: Kacper Madej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var charts = H.charts;
+        var error = U.error,
+            extend = U.extend,
+            merge = U.merge,
+            pushUnique = U.pushUnique;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /** @private */
+        function compose(SVGRendererClass) {
+            if (pushUnique(composedMembers, SVGRendererClass)) {
+                var rendererProto = SVGRendererClass.prototype;
+                rendererProto.Element3D.types.funnel3d = SVGElement3DFunnel;
+                extend(rendererProto, {
+                    funnel3d: rendererFunnel3d,
+                    funnel3dPath: rendererFunnel3dPath
+                });
+            }
+        }
+        /** @private */
+        function rendererFunnel3d(shapeArgs) {
+            var renderer = this,
+                funnel3d = renderer.element3d('funnel3d',
+                shapeArgs),
+                styledMode = renderer.styledMode, 
+                // hide stroke for Firefox
+                strokeAttrs = {
+                    'stroke-width': 1,
+                    stroke: 'none'
+                };
+            // create groups for sides for oppacity setter
+            funnel3d.upperGroup = renderer.g('funnel3d-upper-group').attr({
+                zIndex: funnel3d.frontUpper.zIndex
+            }).add(funnel3d);
+            for (var _i = 0, _a = [funnel3d.frontUpper, funnel3d.backUpper, funnel3d.rightUpper]; _i < _a.length; _i++) {
+                var upperElem = _a[_i];
+                if (!styledMode) {
+                    upperElem.attr(strokeAttrs);
+                }
+                upperElem.add(funnel3d.upperGroup);
+            }
+            funnel3d.lowerGroup = renderer.g('funnel3d-lower-group').attr({
+                zIndex: funnel3d.frontLower.zIndex
+            }).add(funnel3d);
+            for (var _b = 0, _c = [funnel3d.frontLower, funnel3d.backLower, funnel3d.rightLower]; _b < _c.length; _b++) {
+                var lowerElem = _c[_b];
+                if (!styledMode) {
+                    lowerElem.attr(strokeAttrs);
+                }
+                lowerElem.add(funnel3d.lowerGroup);
+            }
+            funnel3d.gradientForSides = shapeArgs.gradientForSides;
+            return funnel3d;
+        }
+        /**
+         * Generates paths and zIndexes.
+         * @private
+         */
+        function rendererFunnel3dPath(shapeArgs) {
+            // Check getCylinderEnd for better error message if
+            // the cylinder module is missing
+            if (!this.getCylinderEnd) {
+                error('A required Highcharts module is missing: cylinder.js', true, charts[this.chartIndex]);
+            }
+            var renderer = this,
+                chart = charts[renderer.chartIndex], 
+                // adjust angles for visible edges
+                // based on alpha, selected through visual tests
+                alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -
+                    90), 
+                // set zIndexes of parts based on cubiod logic, for
+                // consistency
+                cuboidData = this.cuboidPath.call(renderer,
+                merge(shapeArgs, {
+                    depth: shapeArgs.width,
+                    width: (shapeArgs.width + shapeArgs.bottom.width) / 2
+                })),
+                isTopFirst = cuboidData.isTop,
+                isFrontFirst = !cuboidData.isFront,
+                hasMiddle = !!shapeArgs.middle, 
+                //
+                top = renderer.getCylinderEnd(chart,
+                merge(shapeArgs, {
+                    x: shapeArgs.x - shapeArgs.width / 2,
+                    z: shapeArgs.z - shapeArgs.width / 2,
+                    alphaCorrection: alphaCorrection
+                })),
+                bottomWidth = shapeArgs.bottom.width,
+                bottomArgs = merge(shapeArgs, {
+                    width: bottomWidth,
+                    x: shapeArgs.x - bottomWidth / 2,
+                    z: shapeArgs.z - bottomWidth / 2,
+                    alphaCorrection: alphaCorrection
+                }),
+                bottom = renderer.getCylinderEnd(chart,
+                bottomArgs,
+                true);
+            var middleWidth = bottomWidth,
+                middleTopArgs = bottomArgs,
+                middleTop = bottom,
+                middleBottom = bottom, 
+                // masking for cylinders or a missing part of a side shape
+                useAlphaCorrection;
+            if (hasMiddle) {
+                middleWidth = shapeArgs.middle.width;
+                middleTopArgs = merge(shapeArgs, {
+                    y: (shapeArgs.y +
+                        shapeArgs.middle.fraction * shapeArgs.height),
+                    width: middleWidth,
+                    x: shapeArgs.x - middleWidth / 2,
+                    z: shapeArgs.z - middleWidth / 2
+                });
+                middleTop = renderer.getCylinderEnd(chart, middleTopArgs, false);
+                middleBottom = renderer.getCylinderEnd(chart, middleTopArgs, false);
+            }
+            var ret = {
+                    top: top,
+                    bottom: bottom,
+                    frontUpper: renderer.getCylinderFront(top,
+                middleTop),
+                    zIndexes: {
+                        group: cuboidData.zIndexes.group,
+                        top: isTopFirst !== 0 ? 0 : 3,
+                        bottom: isTopFirst !== 1 ? 0 : 3,
+                        frontUpper: isFrontFirst ? 2 : 1,
+                        backUpper: isFrontFirst ? 1 : 2,
+                        rightUpper: isFrontFirst ? 2 : 1
+                    }
+                };
+            ret.backUpper = renderer.getCylinderBack(top, middleTop);
+            useAlphaCorrection = (Math.min(middleWidth, shapeArgs.width) /
+                Math.max(middleWidth, shapeArgs.width)) !== 1;
+            ret.rightUpper = renderer.getCylinderFront(renderer.getCylinderEnd(chart, merge(shapeArgs, {
+                x: shapeArgs.x - shapeArgs.width / 2,
+                z: shapeArgs.z - shapeArgs.width / 2,
+                alphaCorrection: useAlphaCorrection ?
+                    -alphaCorrection : 0
+            }), false), renderer.getCylinderEnd(chart, merge(middleTopArgs, {
+                alphaCorrection: useAlphaCorrection ?
+                    -alphaCorrection : 0
+            }), !hasMiddle));
+            if (hasMiddle) {
+                useAlphaCorrection = (Math.min(middleWidth, bottomWidth) /
+                    Math.max(middleWidth, bottomWidth)) !== 1;
+                merge(true, ret, {
+                    frontLower: renderer.getCylinderFront(middleBottom, bottom),
+                    backLower: renderer.getCylinderBack(middleBottom, bottom),
+                    rightLower: renderer.getCylinderFront(renderer.getCylinderEnd(chart, merge(bottomArgs, {
+                        alphaCorrection: useAlphaCorrection ?
+                            -alphaCorrection : 0
+                    }), true), renderer.getCylinderEnd(chart, merge(middleTopArgs, {
+                        alphaCorrection: useAlphaCorrection ?
+                            -alphaCorrection : 0
+                    }), false)),
+                    zIndexes: {
+                        frontLower: isFrontFirst ? 2 : 1,
+                        backLower: isFrontFirst ? 1 : 2,
+                        rightLower: isFrontFirst ? 1 : 2
+                    }
+                });
+            }
+            return ret;
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var Funnel3DComposition = {
+                compose: compose
+            };
+
         return Funnel3DComposition;
+    });
+    _registerModule(_modules, 'Series/Funnel3D/Funnel3DSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A funnel3d is a 3d version of funnel series type. Funnel charts are
+         * a type of chart often used to visualize stages in a sales project,
+         * where the top are the initial stages with the most clients.
+         *
+         * It requires that the `highcharts-3d.js`, `cylinder.js` and
+         * `funnel3d.js` module are loaded.
+         *
+         * @sample highcharts/demo/funnel3d/
+         *         Funnel3d
+         *
+         * @extends      plotOptions.column
+         * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
+         *               dataSorting, boostBlending
+         * @product      highcharts
+         * @since        7.1.0
+         * @requires     highcharts-3d
+         * @requires     modules/cylinder
+         * @requires     modules/funnel3d
+         * @optionparent plotOptions.funnel3d
+         */
+        var Funnel3DSeriesDefaults = {
+                /** @ignore-option */
+                center: ['50%', '50%'],
+                /**
+                 * The max width of the series compared to the width of the plot area,
+                 * or the pixel width if it is a number.
+                 *
+                 * @type    {number|string}
+                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
+                 * @product highcharts
+                 */
+                width: '90%',
+                /**
+                 * The width of the neck, the lower part of the funnel. A number defines
+                 * pixel width, a percentage string defines a percentage of the plot
+                 * area width.
+                 *
+                 * @type    {number|string}
+                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
+                 * @product highcharts
+                 */
+                neckWidth: '30%',
+                /**
+                 * The height of the series. If it is a number it defines
+                 * the pixel height, if it is a percentage string it is the percentage
+                 * of the plot area height.
+                 *
+                 * @type    {number|string}
+                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
+                 * @product highcharts
+                 */
+                height: '100%',
+                /**
+                 * The height of the neck, the lower part of the funnel. A number
+                 * defines pixel width, a percentage string defines a percentage
+                 * of the plot area height.
+                 *
+                 * @type    {number|string}
+                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
+                 * @product highcharts
+                 */
+                neckHeight: '25%',
+                /**
+                 * A reversed funnel has the widest area down. A reversed funnel with
+                 * no neck width and neck height is a pyramid.
+                 *
+                 * @product highcharts
+                 */
+                reversed: false,
+                /**
+                 * By deafult sides fill is set to a gradient through this option being
+                 * set to `true`. Set to `false` to get solid color for the sides.
+                 *
+                 * @product highcharts
+                 */
+                gradientForSides: true,
+                animation: false,
+                edgeWidth: 0,
+                colorByPoint: true,
+                showInLegend: false,
+                dataLabels: {
+                    align: 'right',
+                    crop: false,
+                    inside: false,
+                    overflow: 'allow'
+                }
+            };
+        /**
+         * A `funnel3d` series. If the [type](#series.funnel3d.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @sample {highcharts} highcharts/demo/funnel3d/
+         *         Funnel3d demo
+         *
+         * @since     7.1.0
+         * @extends   series,plotOptions.funnel3d
+         * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
+         * @product   highcharts
+         * @requires  highcharts-3d
+         * @requires  modules/cylinder
+         * @requires  modules/funnel3d
+         * @apioption series.funnel3d
+         */
+        /**
+         * An array of data points for the series. For the `funnel3d` series
+         * type, points can be given in the following ways:
+         *
+         * 1.  An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. The `x` values will be automatically
+         * calculated, either starting at 0 and incremented by 1, or from `pointStart`
+         * and `pointInterval` given in the series options. If the axis has
+         * categories, these will be used. Example:
+         *
+         *  ```js
+         *  data: [0, 5, 3, 5]
+         *  ```
+         *
+         * 2.  An array of objects with named values. The following snippet shows only a
+         * few settings, see the complete options set below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.funnel3d.turboThreshold),
+         * this option is not available.
+         *
+         *  ```js
+         *     data: [{
+         *         y: 2,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         y: 4,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         *
+         * @sample {highcharts} highcharts/chart/reflow-true/
+         *         Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
+         *
+         * @type      {Array<number|Array<number>|*>}
+         * @extends   series.column.data
+         * @product   highcharts
+         * @apioption series.funnel3d.data
+         */
+        /**
+         * By deafult sides fill is set to a gradient through this option being
+         * set to `true`. Set to `false` to get solid color for the sides.
+         *
+         * @type      {boolean}
+         * @product   highcharts
+         * @apioption series.funnel3d.data.gradientForSides
+         */
+        ''; // detachs doclets above
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return Funnel3DSeriesDefaults;
     });
     _registerModule(_modules, 'Series/Funnel3D/Funnel3DPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
@@ -514,7 +755,7 @@
 
         return Funnel3DPoint;
     });
-    _registerModule(_modules, 'Series/Funnel3D/Funnel3DSeries.js', [_modules['Series/Funnel3D/Funnel3DComposition.js'], _modules['Series/Funnel3D/Funnel3DPoint.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Funnel3DComposition, Funnel3DPoint, H, Math3D, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Funnel3D/Funnel3DSeries.js', [_modules['Series/Funnel3D/Funnel3DComposition.js'], _modules['Series/Funnel3D/Funnel3DSeriesDefaults.js'], _modules['Series/Funnel3D/Funnel3DPoint.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Funnel3DComposition, Funnel3DSeriesDefaults, Funnel3DPoint, H, Math3D, SeriesRegistry, U) {
         /* *
          *
          *  Highcharts funnel3d series module
@@ -587,14 +828,12 @@
                 _this.options = void 0;
                 _this.points = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
@@ -665,15 +904,13 @@
              */
             Funnel3DSeries.prototype.translate = function () {
                 Series.prototype.translate.apply(this, arguments);
-                var sum = 0,
-                    series = this,
+                var series = this,
                     chart = series.chart,
                     options = series.options,
                     reversed = options.reversed,
                     ignoreHiddenPoint = options.ignoreHiddenPoint,
                     plotWidth = chart.plotWidth,
                     plotHeight = chart.plotHeight,
-                    cumulative = 0, // start at top
                     center = options.center,
                     centerX = relativeLength(center[0],
                     plotWidth),
@@ -681,8 +918,6 @@
                     plotHeight),
                     width = relativeLength(options.width,
                     plotWidth),
-                    tempWidth,
-                    getWidthAt,
                     height = relativeLength(options.height,
                     plotHeight),
                     neckWidth = relativeLength(options.neckWidth,
@@ -690,7 +925,11 @@
                     neckHeight = relativeLength(options.neckHeight,
                     plotHeight),
                     neckY = (centerY - height / 2) + height - neckHeight,
-                    data = series.data,
+                    data = series.data;
+                var sum = 0,
+                    cumulative = 0, // start at top
+                    tempWidth,
+                    getWidthAt,
                     fraction,
                     tooltipPos, 
                     //
@@ -730,12 +969,14 @@
                     *        ___centerX,y5___
                     */
                 // get the total sum
-                data.forEach(function (point) {
+                for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+                    var point = data_1[_i];
                     if (!ignoreHiddenPoint || point.visible !== false) {
                         sum += point.y;
                     }
-                });
-                data.forEach(function (point) {
+                }
+                for (var _a = 0, data_2 = data; _a < data_2.length; _a++) {
+                    var point = data_2[_a];
                     // set start and end positions
                     y5 = null;
                     fraction = sum ? point.y / sum : 0;
@@ -817,97 +1058,10 @@
                     if (!ignoreHiddenPoint || point.visible !== false) {
                         cumulative += fraction;
                     }
-                });
+                }
             };
             Funnel3DSeries.compose = Funnel3DComposition.compose;
-            /**
-             * A funnel3d is a 3d version of funnel series type. Funnel charts are
-             * a type of chart often used to visualize stages in a sales project,
-             * where the top are the initial stages with the most clients.
-             *
-             * It requires that the `highcharts-3d.js`, `cylinder.js` and
-             * `funnel3d.js` module are loaded.
-             *
-             * @sample highcharts/demo/funnel3d/
-             *         Funnel3d
-             *
-             * @extends      plotOptions.column
-             * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
-             *               dataSorting, boostBlending
-             * @product      highcharts
-             * @since        7.1.0
-             * @requires     highcharts-3d
-             * @requires     modules/cylinder
-             * @requires     modules/funnel3d
-             * @optionparent plotOptions.funnel3d
-             */
-            Funnel3DSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-                /** @ignore-option */
-                center: ['50%', '50%'],
-                /**
-                 * The max width of the series compared to the width of the plot area,
-                 * or the pixel width if it is a number.
-                 *
-                 * @type    {number|string}
-                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-                 * @product highcharts
-                 */
-                width: '90%',
-                /**
-                 * The width of the neck, the lower part of the funnel. A number defines
-                 * pixel width, a percentage string defines a percentage of the plot
-                 * area width.
-                 *
-                 * @type    {number|string}
-                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-                 * @product highcharts
-                 */
-                neckWidth: '30%',
-                /**
-                 * The height of the series. If it is a number it defines
-                 * the pixel height, if it is a percentage string it is the percentage
-                 * of the plot area height.
-                 *
-                 * @type    {number|string}
-                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-                 * @product highcharts
-                 */
-                height: '100%',
-                /**
-                 * The height of the neck, the lower part of the funnel. A number
-                 * defines pixel width, a percentage string defines a percentage
-                 * of the plot area height.
-                 *
-                 * @type    {number|string}
-                 * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-                 * @product highcharts
-                 */
-                neckHeight: '25%',
-                /**
-                 * A reversed funnel has the widest area down. A reversed funnel with
-                 * no neck width and neck height is a pyramid.
-                 *
-                 * @product highcharts
-                 */
-                reversed: false,
-                /**
-                 * By deafult sides fill is set to a gradient through this option being
-                 * set to `true`. Set to `false` to get solid color for the sides.
-                 *
-                 * @product highcharts
-                 */
-                gradientForSides: true,
-                animation: false,
-                edgeWidth: 0,
-                colorByPoint: true,
-                showInLegend: false,
-                dataLabels: {
-                    align: 'right',
-                    crop: false,
-                    inside: false,
-                    overflow: 'allow'
-                }
-            });
+            Funnel3DSeries.defaultOptions = merge(ColumnSeries.defaultOptions, Funnel3DSeriesDefaults);
             return Funnel3DSeries;
         }(ColumnSeries));
         extend(Funnel3DSeries.prototype, {
@@ -920,83 +1074,6 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
-        /**
-         * A `funnel3d` series. If the [type](#series.funnel3d.type) option is
-         * not specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @sample {highcharts} highcharts/demo/funnel3d/
-         *         Funnel3d demo
-         *
-         * @since     7.1.0
-         * @extends   series,plotOptions.funnel3d
-         * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
-         * @product   highcharts
-         * @requires  highcharts-3d
-         * @requires  modules/cylinder
-         * @requires  modules/funnel3d
-         * @apioption series.funnel3d
-         */
-        /**
-         * An array of data points for the series. For the `funnel3d` series
-         * type, points can be given in the following ways:
-         *
-         * 1.  An array of numerical values. In this case, the numerical values
-         * will be interpreted as `y` options. The `x` values will be automatically
-         * calculated, either starting at 0 and incremented by 1, or from `pointStart`
-         * and `pointInterval` given in the series options. If the axis has
-         * categories, these will be used. Example:
-         *
-         *  ```js
-         *  data: [0, 5, 3, 5]
-         *  ```
-         *
-         * 2.  An array of objects with named values. The following snippet shows only a
-         * few settings, see the complete options set below. If the total number of data
-         * points exceeds the series' [turboThreshold](#series.funnel3d.turboThreshold),
-         * this option is not available.
-         *
-         *  ```js
-         *     data: [{
-         *         y: 2,
-         *         name: "Point2",
-         *         color: "#00FF00"
-         *     }, {
-         *         y: 4,
-         *         name: "Point1",
-         *         color: "#FF00FF"
-         *     }]
-         *  ```
-         *
-         * @sample {highcharts} highcharts/chart/reflow-true/
-         *         Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/
-         *         Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
-         *         Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/
-         *         Arrays of point.name and y
-         * @sample {highcharts} highcharts/series/data-array-of-objects/
-         *         Config objects
-         *
-         * @type      {Array<number|Array<number>|*>}
-         * @extends   series.column.data
-         * @product   highcharts
-         * @apioption series.funnel3d.data
-         */
-        /**
-         * By deafult sides fill is set to a gradient through this option being
-         * set to `true`. Set to `false` to get solid color for the sides.
-         *
-         * @type      {boolean}
-         * @product   highcharts
-         * @apioption series.funnel3d.data.gradientForSides
-         */
-        ''; // keeps doclets above in transpiled file
 
         return Funnel3DSeries;
     });

@@ -1,15 +1,9 @@
-/*
- Highcharts JS v11.1.0 (2023-06-05)
-
- Dot plot series type for Highcharts
-
- (c) 2010-2021 Torstein Honsi
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/modules/dotplot",["highcharts"],function(c){a(c);a.Highcharts=c;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function c(a,e,c,x){a.hasOwnProperty(e)||(a[e]=x.apply(null,c),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:a[e]}})))}a=a?a._modules:
-{};c(a,"Series/DotPlot/DotPlotSeries.js",[a["Series/Column/ColumnSeries.js"],a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,c,p){const {extend:e,merge:y,pick:r}=p;class f extends a{constructor(){super(...arguments);this.points=this.options=this.data=void 0}drawPoints(){const a=this,c=a.chart.renderer,f=this.options.marker,t=this.yAxis.transA*a.options.itemPadding,u=this.borderWidth%2?.5:1;this.points.forEach(function(b){let k,l;var g=b.marker||{};let v=g.symbol||f.symbol,p=
-r(g.radius,f.radius),m,n,w="rect"!==v;b.graphics=k=b.graphics||[];l=b.pointAttr?b.pointAttr[b.selected?"selected":""]||a.pointAttr[""]:a.pointAttribs(b,b.selected&&"select");delete l.r;a.chart.styledMode&&(delete l.stroke,delete l["stroke-width"]);if(null!==b.y){b.graphic||(b.graphic=c.g("point").add(a.group));n=r(b.stackY,b.y);m=Math.min(b.pointWidth,a.yAxis.transA-t);let q=Math.floor(n);for(g=n;g>n-b.y;g--,q--){var h=b.barX+(w?b.pointWidth/2-m/2:0);var d=a.yAxis.toPixels(g,!0)+t/2;a.options.crisp&&
-(h=Math.round(h)-u,d=Math.round(d)+u);h={x:h,y:d,width:Math.round(w?m:b.pointWidth),height:Math.round(m),r:p};(d=k[q])?d.animate(h):d=c.symbol(v).attr(e(h,l)).add(b.graphic);d.isActive=!0;k[q]=d}}k.forEach((a,b)=>{a&&(a.isActive?a.isActive=!1:(a.destroy(),k.splice(b,1)))})})}}f.defaultOptions=y(a.defaultOptions,{itemPadding:.2,marker:{symbol:"circle",states:{hover:{},select:{}}}});e(f.prototype,{markerAttribs:void 0});c.registerSeriesType("dotplot",f);return f});c(a,"masters/modules/dotplot.src.js",
-[],function(){})});
-//# sourceMappingURL=dotplot.js.map
+/**
+ * Highcharts JS v11.2.0 (2023-10-30)
+ *
+ * Dot plot series type for Highcharts
+ *
+ * (c) 2010-2021 Torstein Honsi
+ *
+ * License: www.highcharts.com/license
+ */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/modules/dotplot",["highcharts"],function(e){return t(e),t.Highcharts=e,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var e=t?t._modules:{};function i(t,e,i,s){t.hasOwnProperty(e)||(t[e]=s.apply(null,i),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:t[e]}})))}i(e,"Series/DotPlot/DotPlotSeriesDefaults.js",[],function(){return{itemPadding:.2,marker:{symbol:"circle",states:{hover:{},select:{}}}}}),i(e,"Series/DotPlot/DotPlotSeries.js",[e["Series/DotPlot/DotPlotSeriesDefaults.js"],e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(t,e,i){let{column:s}=e.seriesTypes,{extend:o,merge:r,pick:d}=i;class n extends s{constructor(){super(...arguments),this.data=void 0,this.options=void 0,this.points=void 0}drawPoints(){let t=this.options,e=this.chart.renderer,i=t.marker,s=this.yAxis.transA*t.itemPadding,r=this.borderWidth,n=r%2?.5:1;for(let t of this.points){let r,l,a,h,c,p,u;let f=t.marker||{},m=f.symbol||i.symbol,y=d(f.radius,i.radius),g="rect"!==m;t.graphics=a=t.graphics||[];let v=t.pointAttr?t.pointAttr[t.selected?"selected":""]||this.pointAttr[""]:this.pointAttribs(t,t.selected&&"select");if(delete v.r,this.chart.styledMode&&(delete v.stroke,delete v["stroke-width"]),null!==t.y){t.graphic||(t.graphic=e.g("point").add(this.group)),c=d(t.stackY,t.y),h=Math.min(t.pointWidth,this.yAxis.transA-s);let i=Math.floor(c);for(r=c;r>c-t.y;r--,i--){p=t.barX+(g?t.pointWidth/2-h/2:0),u=this.yAxis.toPixels(r,!0)+s/2,this.options.crisp&&(p=Math.round(p)-n,u=Math.round(u)+n),l={x:p,y:u,width:Math.round(g?h:t.pointWidth),height:Math.round(h),r:y};let d=a[i];d?d.animate(l):d=e.symbol(m).attr(o(l,v)).add(t.graphic),d.isActive=!0,a[i]=d}}let A=-1;for(let t of a)++A,t&&(t.isActive?t.isActive=!1:(t.destroy(),a.splice(A,1)))}}}return n.defaultOptions=r(s.defaultOptions,t),o(n.prototype,{markerAttribs:void 0}),e.registerSeriesType("dotplot",n),n}),i(e,"masters/modules/dotplot.src.js",[],function(){})});//# sourceMappingURL=dotplot.js.map

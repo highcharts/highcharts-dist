@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
  *
  * GridAxis
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -124,6 +122,8 @@
             // help.
             axis.labelRotation = 0;
             options.labels.rotation = 0;
+            // Allow putting ticks closer than their data points.
+            options.minTickInterval = 1;
         }
         /**
          * Extends axis class with grid support.
@@ -1146,7 +1146,8 @@
          */
         /**
          * Set cell height for grid axis labels. By default this is calculated from font
-         * size. This option only applies to horizontal axes.
+         * size. This option only applies to horizontal axes. For vertical axes, check
+         * the [#yAxis.staticScale](yAxis.staticScale) option.
          *
          * @sample gantt/grid-axis/cellheight
          *         Gant chart with custom cell height

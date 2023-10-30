@@ -2,8 +2,21 @@
  * USGS provider, used for tile map services
  * */
 'use strict';
+/* *
+ *
+ *  Class
+ *
+ * */
 class USGS {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.defaultCredits = ('Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological' +
+            'Survey</a>');
+        this.initialProjectionName = 'WebMercator';
         this.themes = {
             USTopo: {
                 url: 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}',
@@ -21,9 +34,11 @@ class USGS {
                 maxZoom: 20
             }
         };
-        this.initialProjectionName = 'WebMercator';
-        this.defaultCredits = `Tiles courtesy of the <a href="https://usgs.gov/">U.S.
-        Geological Survey</a>`;
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default USGS;

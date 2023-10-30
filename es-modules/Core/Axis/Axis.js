@@ -435,8 +435,7 @@ class Axis {
             axis.softThreshold = !axis.isXAxis;
             // Loop through this axis' series
             axis.series.forEach(function (series) {
-                if (series.visible ||
-                    !chart.options.chart.ignoreHiddenSeries) {
+                if (series.reserveSpace()) {
                     const seriesOptions = series.options;
                     let xData, threshold = seriesOptions.threshold, seriesDataMin, seriesDataMax;
                     axis.hasVisibleSeries = true;
@@ -662,10 +661,10 @@ class Axis {
                 y1 = y2 = between(y1, axisTop, axisTop + axis.height);
             }
             e.path = skip && !force ?
-                null :
+                void 0 :
                 chart.renderer.crispLine([['M', x1, y1], ['L', x2, y2]], lineWidth || 1);
         });
-        return evt.path;
+        return (evt.path || null);
     }
     /**
      * Internal function to get the tick positions of a linear axis to round
@@ -808,10 +807,10 @@ class Axis {
                 // Find the closest distance between raw data points, as opposed
                 // to closestPointRange that applies to processed points
                 // (cropped and grouped)
-                closestDataRange = getClosestDistance(axis.series.map((s) => { var _a; 
+                closestDataRange = getClosestDistance(axis.series.map((s) => 
                 // If xIncrement, we only need to measure the two first
                 // points to get the distance. Saves processing time.
-                return (s.xIncrement ? (_a = s.xData) === null || _a === void 0 ? void 0 : _a.slice(0, 2) : s.xData) || []; })) || 0;
+                (s.xIncrement ? s.xData?.slice(0, 2) : s.xData) || [])) || 0;
                 axis.minRange = Math.min(closestDataRange * 5, axis.dataMax - axis.dataMin);
             }
         }
@@ -871,15 +870,13 @@ class Axis {
         else {
             const singleXs = [];
             this.series.forEach(function (series) {
-                var _a;
-                const seriesClosest = series.closestPointRange, visible = series.visible ||
-                    !series.chart.options.chart.ignoreHiddenSeries;
-                if (((_a = series.xData) === null || _a === void 0 ? void 0 : _a.length) === 1) {
+                const seriesClosest = series.closestPointRange;
+                if (series.xData?.length === 1) {
                     singleXs.push(series.xData[0]);
                 }
                 else if (!series.noSharedTooltip &&
                     defined(seriesClosest) &&
-                    visible) {
+                    series.reserveSpace()) {
                     closestDistance = defined(closestDistance) ?
                         Math.min(closestDistance, seriesClosest) :
                         seriesClosest;
@@ -1715,9 +1712,9 @@ class Axis {
      * @emits Highcharts.Axis#event:afterSetScale
      */
     setScale() {
-        const axis = this;
+        const axis = this, { coll, stacking } = axis;
         let isDirtyData = false, isXAxisDirty = false;
-        axis.series.forEach(function (series) {
+        axis.series.forEach((series) => {
             isDirtyData = isDirtyData || series.isDirtyData || series.isDirty;
             // When x axis is dirty, we need new data extremes for y as
             // well:
@@ -1725,10 +1722,10 @@ class Axis {
                 (series.xAxis && series.xAxis.isDirty) ||
                 false);
         });
-        // set the new axisLength
+        // Set the new axisLength
         axis.setAxisSize();
         const isDirtyAxisLength = axis.len !== (axis.old && axis.old.len);
-        // do we really need to go through all this?
+        // Do we really need to go through all this?
         if (isDirtyAxisLength ||
             isDirtyData ||
             isXAxisDirty ||
@@ -1737,9 +1734,8 @@ class Axis {
             axis.userMin !== (axis.old && axis.old.userMin) ||
             axis.userMax !== (axis.old && axis.old.userMax) ||
             axis.alignToOthers()) {
-            if (axis.stacking) {
-                axis.stacking.resetStacks();
-                axis.stacking.buildStacks();
+            if (stacking && coll === 'yAxis') {
+                stacking.buildStacks();
             }
             axis.forceRedraw = false;
             // #18066 delete minRange property to ensure that it will be
@@ -1747,10 +1743,13 @@ class Axis {
             if (!axis.userMinRange) {
                 axis.minRange = void 0;
             }
-            // get data extremes if needed
+            // Get data extremes if needed
             axis.getSeriesExtremes();
-            // get fixed positions based on tickInterval
+            // Get fixed positions based on tickInterval
             axis.setTickInterval();
+            if (stacking && coll === 'xAxis') {
+                stacking.buildStacks();
+            }
             // Mark as dirty if it is not already set to dirty and extremes have
             // changed. #595.
             if (!axis.isDirty) {
@@ -1760,8 +1759,8 @@ class Axis {
                         axis.max !== (axis.old && axis.old.max);
             }
         }
-        else if (axis.stacking) {
-            axis.stacking.cleanStacks();
+        else if (stacking) {
+            stacking.cleanStacks();
         }
         // Recalculate panning state object, when the data
         // has changed. It is required when vertical panning is enabled.

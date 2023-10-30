@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
  *
  * (c) 2017-2021 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -64,7 +62,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.1.0', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '11.2.0', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -1182,7 +1180,7 @@
                     for (i = loopLength; i > 0; i--) {
                         distance = xData[i] - xData[i - 1];
                         if (distance < 0 && !allowNegative) {
-                            onError === null || onError === void 0 ? void 0 : onError();
+                            onError?.();
                             // Only one call
                             onError = void 0;
                         }
@@ -1223,7 +1221,7 @@
                     if (isObject(parent)) {
                         thisProp = parent['@this'];
                     }
-                    return thisProp !== null && thisProp !== void 0 ? thisProp : parent;
+                    return thisProp ?? parent;
                 }
                 const child = parent[pathElement];
                 // Filter on the child
@@ -2819,7 +2817,8 @@
             spacing: [10, 10, 15, 10],
             /**
              * The button that appears after a selection zoom, allowing the user
-             * to reset zoom.
+             * to reset zoom. This option is deprecated in favor of
+             * [zooming](#chart.zooming).
              *
              * @since      2.2
              * @deprecated 10.2.1
@@ -2835,7 +2834,6 @@
                  *         Relative to the chart
                  *
                  * @type      {Highcharts.ButtonRelativeToValue}
-                 * @default   plot
                  * @apioption chart.resetZoomButton.relativeTo
                  */
                 /**
@@ -2853,10 +2851,12 @@
                  * @type {Highcharts.SVGAttributes}
                  */
                 theme: {
-                    /**
-                     * @internal
-                     */
-                    zIndex: 6
+                /**
+                 * zIndex of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.theme.zIndex
+                 */
                 },
                 /**
                  * The position of the button.
@@ -2871,25 +2871,30 @@
                  * @type {Highcharts.AlignObject}
                  */
                 position: {
-                    /**
-                     * The horizontal alignment of the button.
-                     */
-                    align: 'right',
-                    /**
-                     * The horizontal offset of the button.
-                     */
-                    x: -10,
-                    /**
-                     * The vertical alignment of the button.
-                     *
-                     * @type      {Highcharts.VerticalAlignValue}
-                     * @default   top
-                     * @apioption chart.resetZoomButton.position.verticalAlign
-                     */
-                    /**
-                     * The vertical offset of the button.
-                     */
-                    y: 10
+                /**
+                 * The horizontal alignment of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.position.align
+                 */
+                /**
+                 * The horizontal offset of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.position.x
+                 */
+                /**
+                 * The vertical alignment of the button.
+                 *
+                 * @type      {Highcharts.VerticalAlignValue}
+                 * @apioption chart.resetZoomButton.position.verticalAlign
+                 */
+                /**
+                 * The vertical offset of the button.
+                 *
+                 * @type {number}
+                 * @apioption chart.resetZoomButton.position.y
+                 */
                 }
             },
             /**
@@ -3492,420 +3497,6 @@
 
         return ChartDefaults;
     });
-    _registerModule(_modules, 'Core/Color/Color.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { isNumber, merge, pInt } = U;
-        /* *
-         *
-         *  Class
-         *
-         * */
-        /* eslint-disable valid-jsdoc */
-        /**
-         * Handle color operations. Some object methods are chainable.
-         *
-         * @class
-         * @name Highcharts.Color
-         *
-         * @param {Highcharts.ColorType} input
-         * The input color in either rbga or hex format
-         */
-        class Color {
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            /**
-             * Creates a color instance out of a color string or object.
-             *
-             * @function Highcharts.Color.parse
-             *
-             * @param {Highcharts.ColorType} [input]
-             * The input color in either rbga or hex format.
-             *
-             * @return {Highcharts.Color}
-             * Color instance.
-             */
-            static parse(input) {
-                return input ? new Color(input) : Color.None;
-            }
-            /* *
-             *
-             *  Constructor
-             *
-             * */
-            constructor(input) {
-                this.rgba = [NaN, NaN, NaN, NaN];
-                this.input = input;
-                const GlobalColor = H.Color;
-                // Backwards compatibility, allow class overwrite
-                if (GlobalColor && GlobalColor !== Color) {
-                    return new GlobalColor(input);
-                }
-                this.init(input);
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Parse the input color to rgba array
-             *
-             * @private
-             * @function Highcharts.Color#init
-             *
-             * @param {Highcharts.ColorType} input
-             * The input color in either rbga or hex format
-             */
-            init(input) {
-                let result, rgba, i, parser;
-                // Gradients
-                if (typeof input === 'object' &&
-                    typeof input.stops !== 'undefined') {
-                    this.stops = input.stops.map((stop) => new Color(stop[1]));
-                    // Solid colors
-                }
-                else if (typeof input === 'string') {
-                    this.input = input = (Color.names[input.toLowerCase()] || input);
-                    // Bitmasking as input[0] is not working for legacy IE.
-                    if (input.charAt(0) === '#') {
-                        const len = input.length, col = parseInt(input.substr(1), 16);
-                        // Handle long-form, e.g. #AABBCC
-                        if (len === 7) {
-                            rgba = [
-                                (col & 0xFF0000) >> 16,
-                                (col & 0xFF00) >> 8,
-                                (col & 0xFF),
-                                1
-                            ];
-                            // Handle short-form, e.g. #ABC
-                            // In short form, the value is assumed to be the same
-                            // for both nibbles for each component. e.g. #ABC = #AABBCC
-                        }
-                        else if (len === 4) {
-                            rgba = [
-                                (((col & 0xF00) >> 4) |
-                                    (col & 0xF00) >> 8),
-                                (((col & 0xF0) >> 4) |
-                                    (col & 0xF0)),
-                                ((col & 0xF) << 4) | (col & 0xF),
-                                1
-                            ];
-                        }
-                    }
-                    // Otherwise, check regex parsers
-                    if (!rgba) {
-                        i = Color.parsers.length;
-                        while (i-- && !rgba) {
-                            parser = Color.parsers[i];
-                            result = parser.regex.exec(input);
-                            if (result) {
-                                rgba = parser.parse(result);
-                            }
-                        }
-                    }
-                }
-                if (rgba) {
-                    this.rgba = rgba;
-                }
-            }
-            /**
-             * Return the color or gradient stops in the specified format
-             *
-             * @function Highcharts.Color#get
-             *
-             * @param {string} [format]
-             * Possible values are 'a', 'rgb', 'rgba' (default).
-             *
-             * @return {Highcharts.ColorType}
-             * This color as a string or gradient stops.
-             */
-            get(format) {
-                const input = this.input, rgba = this.rgba;
-                if (typeof input === 'object' &&
-                    typeof this.stops !== 'undefined') {
-                    const ret = merge(input);
-                    ret.stops = [].slice.call(ret.stops);
-                    this.stops.forEach((stop, i) => {
-                        ret.stops[i] = [
-                            ret.stops[i][0],
-                            stop.get(format)
-                        ];
-                    });
-                    return ret;
-                }
-                // it's NaN if gradient colors on a column chart
-                if (rgba && isNumber(rgba[0])) {
-                    if (format === 'rgb' || (!format && rgba[3] === 1)) {
-                        return 'rgb(' + rgba[0] + ',' + rgba[1] + ',' + rgba[2] + ')';
-                    }
-                    if (format === 'a') {
-                        return `${rgba[3]}`;
-                    }
-                    return 'rgba(' + rgba.join(',') + ')';
-                }
-                return input;
-            }
-            /**
-             * Brighten the color instance.
-             *
-             * @function Highcharts.Color#brighten
-             *
-             * @param {number} alpha
-             * The alpha value.
-             *
-             * @return {Highcharts.Color}
-             * This color with modifications.
-             */
-            brighten(alpha) {
-                const rgba = this.rgba;
-                if (this.stops) {
-                    this.stops.forEach(function (stop) {
-                        stop.brighten(alpha);
-                    });
-                }
-                else if (isNumber(alpha) && alpha !== 0) {
-                    for (let i = 0; i < 3; i++) {
-                        rgba[i] += pInt(alpha * 255);
-                        if (rgba[i] < 0) {
-                            rgba[i] = 0;
-                        }
-                        if (rgba[i] > 255) {
-                            rgba[i] = 255;
-                        }
-                    }
-                }
-                return this;
-            }
-            /**
-             * Set the color's opacity to a given alpha value.
-             *
-             * @function Highcharts.Color#setOpacity
-             *
-             * @param {number} alpha
-             *        Opacity between 0 and 1.
-             *
-             * @return {Highcharts.Color}
-             *         Color with modifications.
-             */
-            setOpacity(alpha) {
-                this.rgba[3] = alpha;
-                return this;
-            }
-            /**
-             * Return an intermediate color between two colors.
-             *
-             * @function Highcharts.Color#tweenTo
-             *
-             * @param {Highcharts.Color} to
-             * The color object to tween to.
-             *
-             * @param {number} pos
-             * The intermediate position, where 0 is the from color (current color
-             * item), and 1 is the `to` color.
-             *
-             * @return {Highcharts.ColorType}
-             * The intermediate color in rgba notation, or unsupported type.
-             */
-            tweenTo(to, pos) {
-                const fromRgba = this.rgba, toRgba = to.rgba;
-                // Unsupported color, return to-color (#3920, #7034)
-                if (!isNumber(fromRgba[0]) || !isNumber(toRgba[0])) {
-                    return to.input || 'none';
-                }
-                // Check for has alpha, because rgba colors perform worse due to
-                // lack of support in WebKit.
-                const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1);
-                return (hasAlpha ? 'rgba(' : 'rgb(') +
-                    Math.round(toRgba[0] + (fromRgba[0] - toRgba[0]) * (1 - pos)) +
-                    ',' +
-                    Math.round(toRgba[1] + (fromRgba[1] - toRgba[1]) * (1 - pos)) +
-                    ',' +
-                    Math.round(toRgba[2] + (fromRgba[2] - toRgba[2]) * (1 - pos)) +
-                    (hasAlpha ?
-                        (',' +
-                            (toRgba[3] + (fromRgba[3] - toRgba[3]) * (1 - pos))) :
-                        '') +
-                    ')';
-            }
-        }
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        /**
-         * Collection of named colors. Can be extended from the outside by adding
-         * colors to Highcharts.Color.names.
-         * @private
-         */
-        Color.names = {
-            white: '#ffffff',
-            black: '#000000'
-        };
-        /**
-         * Collection of parsers. This can be extended from the outside by pushing
-         * parsers to `Color.parsers`.
-         */
-        Color.parsers = [{
-                // RGBA color
-                // eslint-disable-next-line max-len
-                regex: /rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,
-                parse: function (result) {
-                    return [
-                        pInt(result[1]),
-                        pInt(result[2]),
-                        pInt(result[3]),
-                        parseFloat(result[4], 10)
-                    ];
-                }
-            }, {
-                // RGB color
-                regex: /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,
-                parse: function (result) {
-                    return [pInt(result[1]), pInt(result[2]), pInt(result[3]), 1];
-                }
-            }];
-        // Must be last static member for init cycle
-        Color.None = new Color('');
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * A valid color to be parsed and handled by Highcharts. Highcharts internally
-         * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
-         * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
-         * browsers and displayed correctly, but Highcharts is not able to process them
-         * and apply concepts like opacity and brightening.
-         *
-         * @typedef {string} Highcharts.ColorString
-         */
-        /**
-         * A valid color type than can be parsed and handled by Highcharts. It can be a
-         * color string, a gradient object, or a pattern object.
-         *
-         * @typedef {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject} Highcharts.ColorType
-         */
-        /**
-         * Gradient options instead of a solid color.
-         *
-         * @example
-         * // Linear gradient used as a color option
-         * color: {
-         *     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-         *     stops: [
-         *         [0, '#003399'], // start
-         *         [0.5, '#ffffff'], // middle
-         *         [1, '#3366AA'] // end
-         *     ]
-         * }
-         *
-         * @interface Highcharts.GradientColorObject
-         */ /**
-        * Holds an object that defines the start position and the end position relative
-        * to the shape.
-        * @name Highcharts.GradientColorObject#linearGradient
-        * @type {Highcharts.LinearGradientColorObject|undefined}
-        */ /**
-        * Holds an object that defines the center position and the radius.
-        * @name Highcharts.GradientColorObject#radialGradient
-        * @type {Highcharts.RadialGradientColorObject|undefined}
-        */ /**
-        * The first item in each tuple is the position in the gradient, where 0 is the
-        * start of the gradient and 1 is the end of the gradient. Multiple stops can be
-        * applied. The second item is the color for each stop. This color can also be
-        * given in the rgba format.
-        * @name Highcharts.GradientColorObject#stops
-        * @type {Array<Highcharts.GradientColorStopObject>}
-        */
-        /**
-         * Color stop tuple.
-         *
-         * @see Highcharts.GradientColorObject
-         *
-         * @interface Highcharts.GradientColorStopObject
-         */ /**
-        * @name Highcharts.GradientColorStopObject#0
-        * @type {number}
-        */ /**
-        * @name Highcharts.GradientColorStopObject#1
-        * @type {Highcharts.ColorString}
-        */ /**
-        * @name Highcharts.GradientColorStopObject#color
-        * @type {Highcharts.Color|undefined}
-        */
-        /**
-         * Defines the start position and the end position for a gradient relative
-         * to the shape. Start position (x1, y1) and end position (x2, y2) are relative
-         * to the shape, where 0 means top/left and 1 is bottom/right.
-         *
-         * @interface Highcharts.LinearGradientColorObject
-         */ /**
-        * Start horizontal position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#x1
-        * @type {number}
-        */ /**
-        * End horizontal position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#x2
-        * @type {number}
-        */ /**
-        * Start vertical position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#y1
-        * @type {number}
-        */ /**
-        * End vertical position of the gradient. Float ranges 0-1.
-        * @name Highcharts.LinearGradientColorObject#y2
-        * @type {number}
-        */
-        /**
-         * Defines the center position and the radius for a gradient.
-         *
-         * @interface Highcharts.RadialGradientColorObject
-         */ /**
-        * Center horizontal position relative to the shape. Float ranges 0-1.
-        * @name Highcharts.RadialGradientColorObject#cx
-        * @type {number}
-        */ /**
-        * Center vertical position relative to the shape. Float ranges 0-1.
-        * @name Highcharts.RadialGradientColorObject#cy
-        * @type {number}
-        */ /**
-        * Radius relative to the shape. Float ranges 0-1.
-        * @name Highcharts.RadialGradientColorObject#r
-        * @type {number}
-        */
-        /**
-         * Creates a color instance out of a color string.
-         *
-         * @function Highcharts.color
-         *
-         * @param {Highcharts.ColorType} input
-         *        The input color in either rbga or hex format
-         *
-         * @return {Highcharts.Color}
-         *         Color instance
-         */
-        (''); // detach doclets above
-
-        return Color;
-    });
     _registerModule(_modules, 'Core/Color/Palettes.js', [], function () {
         /**
          * Series palettes for Highcharts. Series colors are defined in highcharts.css.
@@ -4348,7 +3939,7 @@
                     // Lower case AM or PM
                     P: hours < 12 ? 'am' : 'pm',
                     // Two digits seconds, 00 through  59
-                    S: pad(date.getSeconds()),
+                    S: pad(this.get('Seconds', date)),
                     // Milliseconds (naming from Ruby)
                     L: pad(Math.floor(timestamp % 1000), 3)
                 }, H.dateFormats);
@@ -4670,7 +4261,7 @@
 
         return Time;
     });
-    _registerModule(_modules, 'Core/Defaults.js', [_modules['Core/Chart/ChartDefaults.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palettes.js'], _modules['Core/Time.js'], _modules['Core/Utilities.js']], function (ChartDefaults, Color, H, Palettes, Time, U) {
+    _registerModule(_modules, 'Core/Defaults.js', [_modules['Core/Chart/ChartDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palettes.js'], _modules['Core/Time.js'], _modules['Core/Utilities.js']], function (ChartDefaults, H, Palettes, Time, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4680,7 +4271,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { parse: color } = Color;
         const { isTouchDevice, svg } = H;
         const { merge } = U;
         /* *
@@ -4726,7 +4316,7 @@
              *     "#2ee0ca",
              *     "#fa4b42",
              *     "#feb56a",
-             *     "#91e8e12
+             *     "#91e8e1"
              * ]
              */
             colors: Palettes.colors,
@@ -5814,6 +5404,12 @@
                  * exported images. One way of working around that is to
                  * [increase the chart height in
                  * export](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/legend/navigation-enabled-false/).
+                 *
+                 * @sample highcharts/legend/scrollable-vertical/
+                 *         Legend with vertical scrollable extension
+                 * @sample highcharts/legend/scrollable-horizontal/
+                 *         Legend with horizontal scrollable extension
+                 *
                  */
                 navigation: {
                     /**
@@ -6155,6 +5751,11 @@
                  *
                  * Prior to 4.1.7, when using HTML, [legend.navigation](
                  * #legend.navigation) was disabled.
+                 *
+                 * @sample highcharts/legend/scrollable-vertical/
+                 *         Legend with vertical scrollable extension
+                 * @sample highcharts/legend/scrollable-horizontal/
+                 *         Legend with horizontal scrollable extension
                  *
                  * @type      {boolean}
                  * @default   false
@@ -6840,7 +6441,7 @@
                  *         Different shapes for header and split boxes
                  *
                  * @type       {Highcharts.TooltipShapeValue}
-                 * @validvalue ["callout", "square"]
+                 * @validvalue ["callout", "rect"]
                  * @since      7.0
                  */
                 headerShape: 'callout',
@@ -7401,6 +7002,420 @@
 
         return DefaultOptions;
     });
+    _registerModule(_modules, 'Core/Color/Color.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { isNumber, merge, pInt } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
+        /**
+         * Handle color operations. Some object methods are chainable.
+         *
+         * @class
+         * @name Highcharts.Color
+         *
+         * @param {Highcharts.ColorType} input
+         * The input color in either rbga or hex format
+         */
+        class Color {
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /**
+             * Creates a color instance out of a color string or object.
+             *
+             * @function Highcharts.Color.parse
+             *
+             * @param {Highcharts.ColorType} [input]
+             * The input color in either rbga or hex format.
+             *
+             * @return {Highcharts.Color}
+             * Color instance.
+             */
+            static parse(input) {
+                return input ? new Color(input) : Color.None;
+            }
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(input) {
+                this.rgba = [NaN, NaN, NaN, NaN];
+                this.input = input;
+                const GlobalColor = H.Color;
+                // Backwards compatibility, allow class overwrite
+                if (GlobalColor && GlobalColor !== Color) {
+                    return new GlobalColor(input);
+                }
+                this.init(input);
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Parse the input color to rgba array
+             *
+             * @private
+             * @function Highcharts.Color#init
+             *
+             * @param {Highcharts.ColorType} input
+             * The input color in either rbga or hex format
+             */
+            init(input) {
+                let result, rgba, i, parser;
+                // Gradients
+                if (typeof input === 'object' &&
+                    typeof input.stops !== 'undefined') {
+                    this.stops = input.stops.map((stop) => new Color(stop[1]));
+                    // Solid colors
+                }
+                else if (typeof input === 'string') {
+                    this.input = input = (Color.names[input.toLowerCase()] || input);
+                    // Bitmasking as input[0] is not working for legacy IE.
+                    if (input.charAt(0) === '#') {
+                        const len = input.length, col = parseInt(input.substr(1), 16);
+                        // Handle long-form, e.g. #AABBCC
+                        if (len === 7) {
+                            rgba = [
+                                (col & 0xFF0000) >> 16,
+                                (col & 0xFF00) >> 8,
+                                (col & 0xFF),
+                                1
+                            ];
+                            // Handle short-form, e.g. #ABC
+                            // In short form, the value is assumed to be the same
+                            // for both nibbles for each component. e.g. #ABC = #AABBCC
+                        }
+                        else if (len === 4) {
+                            rgba = [
+                                (((col & 0xF00) >> 4) |
+                                    (col & 0xF00) >> 8),
+                                (((col & 0xF0) >> 4) |
+                                    (col & 0xF0)),
+                                ((col & 0xF) << 4) | (col & 0xF),
+                                1
+                            ];
+                        }
+                    }
+                    // Otherwise, check regex parsers
+                    if (!rgba) {
+                        i = Color.parsers.length;
+                        while (i-- && !rgba) {
+                            parser = Color.parsers[i];
+                            result = parser.regex.exec(input);
+                            if (result) {
+                                rgba = parser.parse(result);
+                            }
+                        }
+                    }
+                }
+                if (rgba) {
+                    this.rgba = rgba;
+                }
+            }
+            /**
+             * Return the color or gradient stops in the specified format
+             *
+             * @function Highcharts.Color#get
+             *
+             * @param {string} [format]
+             * Possible values are 'a', 'rgb', 'rgba' (default).
+             *
+             * @return {Highcharts.ColorType}
+             * This color as a string or gradient stops.
+             */
+            get(format) {
+                const input = this.input, rgba = this.rgba;
+                if (typeof input === 'object' &&
+                    typeof this.stops !== 'undefined') {
+                    const ret = merge(input);
+                    ret.stops = [].slice.call(ret.stops);
+                    this.stops.forEach((stop, i) => {
+                        ret.stops[i] = [
+                            ret.stops[i][0],
+                            stop.get(format)
+                        ];
+                    });
+                    return ret;
+                }
+                // it's NaN if gradient colors on a column chart
+                if (rgba && isNumber(rgba[0])) {
+                    if (format === 'rgb' || (!format && rgba[3] === 1)) {
+                        return 'rgb(' + rgba[0] + ',' + rgba[1] + ',' + rgba[2] + ')';
+                    }
+                    if (format === 'a') {
+                        return `${rgba[3]}`;
+                    }
+                    return 'rgba(' + rgba.join(',') + ')';
+                }
+                return input;
+            }
+            /**
+             * Brighten the color instance.
+             *
+             * @function Highcharts.Color#brighten
+             *
+             * @param {number} alpha
+             * The alpha value.
+             *
+             * @return {Highcharts.Color}
+             * This color with modifications.
+             */
+            brighten(alpha) {
+                const rgba = this.rgba;
+                if (this.stops) {
+                    this.stops.forEach(function (stop) {
+                        stop.brighten(alpha);
+                    });
+                }
+                else if (isNumber(alpha) && alpha !== 0) {
+                    for (let i = 0; i < 3; i++) {
+                        rgba[i] += pInt(alpha * 255);
+                        if (rgba[i] < 0) {
+                            rgba[i] = 0;
+                        }
+                        if (rgba[i] > 255) {
+                            rgba[i] = 255;
+                        }
+                    }
+                }
+                return this;
+            }
+            /**
+             * Set the color's opacity to a given alpha value.
+             *
+             * @function Highcharts.Color#setOpacity
+             *
+             * @param {number} alpha
+             *        Opacity between 0 and 1.
+             *
+             * @return {Highcharts.Color}
+             *         Color with modifications.
+             */
+            setOpacity(alpha) {
+                this.rgba[3] = alpha;
+                return this;
+            }
+            /**
+             * Return an intermediate color between two colors.
+             *
+             * @function Highcharts.Color#tweenTo
+             *
+             * @param {Highcharts.Color} to
+             * The color object to tween to.
+             *
+             * @param {number} pos
+             * The intermediate position, where 0 is the from color (current color
+             * item), and 1 is the `to` color.
+             *
+             * @return {Highcharts.ColorType}
+             * The intermediate color in rgba notation, or unsupported type.
+             */
+            tweenTo(to, pos) {
+                const fromRgba = this.rgba, toRgba = to.rgba;
+                // Unsupported color, return to-color (#3920, #7034)
+                if (!isNumber(fromRgba[0]) || !isNumber(toRgba[0])) {
+                    return to.input || 'none';
+                }
+                // Check for has alpha, because rgba colors perform worse due to
+                // lack of support in WebKit.
+                const hasAlpha = (toRgba[3] !== 1 || fromRgba[3] !== 1);
+                return (hasAlpha ? 'rgba(' : 'rgb(') +
+                    Math.round(toRgba[0] + (fromRgba[0] - toRgba[0]) * (1 - pos)) +
+                    ',' +
+                    Math.round(toRgba[1] + (fromRgba[1] - toRgba[1]) * (1 - pos)) +
+                    ',' +
+                    Math.round(toRgba[2] + (fromRgba[2] - toRgba[2]) * (1 - pos)) +
+                    (hasAlpha ?
+                        (',' +
+                            (toRgba[3] + (fromRgba[3] - toRgba[3]) * (1 - pos))) :
+                        '') +
+                    ')';
+            }
+        }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        /**
+         * Collection of named colors. Can be extended from the outside by adding
+         * colors to Highcharts.Color.names.
+         * @private
+         */
+        Color.names = {
+            white: '#ffffff',
+            black: '#000000'
+        };
+        /**
+         * Collection of parsers. This can be extended from the outside by pushing
+         * parsers to `Color.parsers`.
+         */
+        Color.parsers = [{
+                // RGBA color
+                // eslint-disable-next-line max-len
+                regex: /rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,
+                parse: function (result) {
+                    return [
+                        pInt(result[1]),
+                        pInt(result[2]),
+                        pInt(result[3]),
+                        parseFloat(result[4], 10)
+                    ];
+                }
+            }, {
+                // RGB color
+                regex: /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,
+                parse: function (result) {
+                    return [pInt(result[1]), pInt(result[2]), pInt(result[3]), 1];
+                }
+            }];
+        // Must be last static member for init cycle
+        Color.None = new Color('');
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * A valid color to be parsed and handled by Highcharts. Highcharts internally
+         * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
+         * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
+         * browsers and displayed correctly, but Highcharts is not able to process them
+         * and apply concepts like opacity and brightening.
+         *
+         * @typedef {string} Highcharts.ColorString
+         */
+        /**
+         * A valid color type than can be parsed and handled by Highcharts. It can be a
+         * color string, a gradient object, or a pattern object.
+         *
+         * @typedef {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject} Highcharts.ColorType
+         */
+        /**
+         * Gradient options instead of a solid color.
+         *
+         * @example
+         * // Linear gradient used as a color option
+         * color: {
+         *     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+         *     stops: [
+         *         [0, '#003399'], // start
+         *         [0.5, '#ffffff'], // middle
+         *         [1, '#3366AA'] // end
+         *     ]
+         * }
+         *
+         * @interface Highcharts.GradientColorObject
+         */ /**
+        * Holds an object that defines the start position and the end position relative
+        * to the shape.
+        * @name Highcharts.GradientColorObject#linearGradient
+        * @type {Highcharts.LinearGradientColorObject|undefined}
+        */ /**
+        * Holds an object that defines the center position and the radius.
+        * @name Highcharts.GradientColorObject#radialGradient
+        * @type {Highcharts.RadialGradientColorObject|undefined}
+        */ /**
+        * The first item in each tuple is the position in the gradient, where 0 is the
+        * start of the gradient and 1 is the end of the gradient. Multiple stops can be
+        * applied. The second item is the color for each stop. This color can also be
+        * given in the rgba format.
+        * @name Highcharts.GradientColorObject#stops
+        * @type {Array<Highcharts.GradientColorStopObject>}
+        */
+        /**
+         * Color stop tuple.
+         *
+         * @see Highcharts.GradientColorObject
+         *
+         * @interface Highcharts.GradientColorStopObject
+         */ /**
+        * @name Highcharts.GradientColorStopObject#0
+        * @type {number}
+        */ /**
+        * @name Highcharts.GradientColorStopObject#1
+        * @type {Highcharts.ColorString}
+        */ /**
+        * @name Highcharts.GradientColorStopObject#color
+        * @type {Highcharts.Color|undefined}
+        */
+        /**
+         * Defines the start position and the end position for a gradient relative
+         * to the shape. Start position (x1, y1) and end position (x2, y2) are relative
+         * to the shape, where 0 means top/left and 1 is bottom/right.
+         *
+         * @interface Highcharts.LinearGradientColorObject
+         */ /**
+        * Start horizontal position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#x1
+        * @type {number}
+        */ /**
+        * End horizontal position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#x2
+        * @type {number}
+        */ /**
+        * Start vertical position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#y1
+        * @type {number}
+        */ /**
+        * End vertical position of the gradient. Float ranges 0-1.
+        * @name Highcharts.LinearGradientColorObject#y2
+        * @type {number}
+        */
+        /**
+         * Defines the center position and the radius for a gradient.
+         *
+         * @interface Highcharts.RadialGradientColorObject
+         */ /**
+        * Center horizontal position relative to the shape. Float ranges 0-1.
+        * @name Highcharts.RadialGradientColorObject#cx
+        * @type {number}
+        */ /**
+        * Center vertical position relative to the shape. Float ranges 0-1.
+        * @name Highcharts.RadialGradientColorObject#cy
+        * @type {number}
+        */ /**
+        * Radius relative to the shape. Float ranges 0-1.
+        * @name Highcharts.RadialGradientColorObject#r
+        * @type {number}
+        */
+        /**
+         * Creates a color instance out of a color string.
+         *
+         * @function Highcharts.color
+         *
+         * @param {Highcharts.ColorType} input
+         *        The input color in either rbga or hex format
+         *
+         * @return {Highcharts.Color}
+         *         Color instance
+         */
+        (''); // detach doclets above
+
+        return Color;
+    });
     _registerModule(_modules, 'Core/Animation/Fx.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, H, U) {
         /* *
          *
@@ -7597,7 +7612,7 @@
             step(gotoEnd) {
                 const t = +new Date(), options = this.options, elem = this.elem, complete = options.complete, duration = options.duration, curAnim = options.curAnim;
                 let ret, done;
-                if ((elem.attr) && !elem.element) { // #2616, element is destroyed
+                if (!!elem.attr && !elem.element) { // #2616, element is destroyed
                     ret = false;
                 }
                 else if (gotoEnd || t >= duration + this.startTime) {
@@ -8326,6 +8341,7 @@
             'dy',
             'disabled',
             'fill',
+            'filterUnits',
             'flood-color',
             'flood-opacity',
             'height',
@@ -8752,7 +8768,7 @@
                     matches.push(currentMatch);
                 }
                 // Evaluate sub-matches one by one to prevent orphaned block closers
-                if (subMatch && !(currentMatch === null || currentMatch === void 0 ? void 0 : currentMatch.isBlock)) {
+                if (subMatch && !currentMatch?.isBlock) {
                     break;
                 }
             }
@@ -8924,7 +8940,7 @@
          *  Imports
          *
          * */
-        const { clamp, pick, stableSort } = U;
+        const { clamp, pick, pushUnique, stableSort } = U;
         /* *
          *
          *  Namespace
@@ -8953,25 +8969,42 @@
              */
             function distribute(boxes, len, maxDistance) {
                 // Original array will be altered with added .pos
-                const origBoxes = boxes, reducedLen = origBoxes.reducedLen || len, sortByRank = (a, b) => (b.rank || 0) - (a.rank || 0), sortByTarget = (a, b) => a.target - b.target;
-                let i, overlapping = true, restBoxes = [], // The outranked overshoot
-                box, target, total = 0;
+                const origBoxes = boxes, reducedLen = origBoxes.reducedLen || len, sortByRank = (a, b) => (b.rank || 0) - (a.rank || 0), sortByTarget = (a, b) => a.target - b.target, restBoxes = [], // The outranked overshoot
+                boxesLength = boxes.length, forDeletion = [], push = restBoxes.push;
+                let i, cursor, step, overlapping = true, box, target, total = 0, equalRank;
                 // If the total size exceeds the len, remove those boxes with the lowest
                 // rank
-                i = boxes.length;
+                i = boxesLength;
                 while (i--) {
                     total += boxes[i].size;
                 }
                 // Sort by rank, then slice away overshoot
                 if (total > reducedLen) {
                     stableSort(boxes, sortByRank);
-                    i = 0;
-                    total = 0;
-                    while (total <= reducedLen) {
-                        total += boxes[i].size;
-                        i++;
+                    equalRank = boxes[0].rank === boxes[boxes.length - 1].rank;
+                    step = equalRank ? boxesLength / 2 : -1;
+                    cursor = equalRank ? step : boxesLength - 1;
+                    // When the boxes have equal rank (pie data labels, flags - #10073),
+                    // decimate the boxes by starting in the middle and gradually remove
+                    // more items inside the array. When they are sorted by rank, just
+                    // remove the ones with the lowest rank from the end.
+                    while (step && total > reducedLen) {
+                        i = Math.floor(cursor);
+                        box = boxes[i];
+                        if (pushUnique(forDeletion, i)) {
+                            total -= box.size;
+                        }
+                        cursor += step;
+                        // Start over the decimation with smaller steps
+                        if (equalRank && cursor >= boxes.length) {
+                            step /= 2;
+                            cursor = step;
+                        }
                     }
-                    restBoxes = boxes.splice(i - 1, boxes.length);
+                    // Clean out the boxes marked for deletion
+                    forDeletion
+                        .sort((a, b) => b - a)
+                        .forEach((i) => push.apply(restBoxes, boxes.splice(i, 1)));
                 }
                 // Order by target
                 stableSort(boxes, sortByTarget);
@@ -9016,7 +9049,7 @@
                     }
                 }
                 // Add the rest (hidden boxes)
-                origBoxes.push.apply(origBoxes, restBoxes);
+                push.apply(origBoxes, restBoxes);
                 // Now the composite boxes are placed, we need to put the original boxes
                 // within them
                 i = 0;
@@ -9888,6 +9921,7 @@
                     });
                     wrapper.clipPath = clipPath.destroy();
                 }
+                wrapper.connector = wrapper.connector?.destroy();
                 // Destroy stops in case this is a gradient object @todo old code?
                 if (wrapper.stops) {
                     for (i = 0; i < wrapper.stops.length; i++) {
@@ -9958,27 +9992,6 @@
                 }
             }
             /**
-             * Fade out an element by animating its opacity down to 0, and hide it on
-             * complete. Used internally for the tooltip.
-             *
-             * @function Highcharts.SVGElement#fadeOut
-             *
-             * @param {number} [duration=150]
-             * The fade duration in milliseconds.
-             */
-            fadeOut(duration) {
-                const elemWrapper = this;
-                elemWrapper.animate({
-                    opacity: 0
-                }, {
-                    duration: pick(duration, 150),
-                    complete: function () {
-                        // #3088, assuming we're only using this for tooltips
-                        elemWrapper.hide();
-                    }
-                });
-            }
-            /**
              * @private
              * @function Highcharts.SVGElement#fillSetter
              * @param {Highcharts.ColorType} value
@@ -9992,6 +10005,17 @@
                 else if (value) {
                     this.complexColor(value, key, element);
                 }
+            }
+            /**
+             * @private
+             * @function Highcharts.SVGElement#hrefSetter
+             * @param {Highcharts.ColorType} value
+             * @param {string} key
+             * @param {Highcharts.SVGDOMElement} element
+             */
+            hrefSetter(value, key, element) {
+                // Namespace is needed for offline export, #19106
+                element.setAttributeNS('http://www.w3.org/1999/xlink', key, value);
             }
             /**
              * Get the bounding box (width, height, x and y) for the element. Generally
@@ -10451,8 +10475,7 @@
              * @return {Highcharts.SVGElement} Returns the SVGElement for chaining.
              */
             shadow(shadowOptions) {
-                var _a;
-                const { renderer } = this, options = merge(((_a = this.parentGroup) === null || _a === void 0 ? void 0 : _a.rotation) === 90 ? {
+                const { renderer } = this, options = merge(this.parentGroup?.rotation === 90 ? {
                     offsetX: -1,
                     offsetY: -1
                 } : {}, isObject(shadowOptions) ? shadowOptions : {}), id = renderer.shadowDefinition(options);
@@ -11222,8 +11245,8 @@
                 const padding = this.padding;
                 const paddingLeft = pick(this.paddingLeft, padding);
                 return {
-                    width: this.width,
-                    height: this.height,
+                    width: this.width || 0,
+                    height: this.height || 0,
                     x: this.bBox.x - paddingLeft,
                     y: this.bBox.y - padding
                 };
@@ -11525,8 +11548,12 @@
             if (!isNumber(anchorX)) {
                 return path;
             }
+            // Do not render a connector, if anchor starts inside the label
+            if (anchorX < w && anchorX > 0 && anchorY < h && anchorY > 0) {
+                return path;
+            }
             // Anchor on right side
-            if (x + anchorX >= w) {
+            if (x + anchorX > w - safeDistance) {
                 // Chevron
                 if (anchorY > y + safeDistance &&
                     anchorY < y + h - safeDistance) {
@@ -11534,11 +11561,17 @@
                     // Simple connector
                 }
                 else {
-                    path.splice(3, 1, ['L', x + w, h / 2], ['L', anchorX, anchorY], ['L', x + w, h / 2], ['L', x + w, y + h - r]);
+                    if (anchorX < w) { // Corner connector
+                        const isTopCorner = anchorY < y + safeDistance, cornerY = isTopCorner ? y : y + h, sliceStart = isTopCorner ? 2 : 5;
+                        path.splice(sliceStart, 0, ['L', anchorX, anchorY], ['L', x + w - r, cornerY]);
+                    }
+                    else { // Side connector
+                        path.splice(3, 1, ['L', x + w, h / 2], ['L', anchorX, anchorY], ['L', x + w, h / 2], ['L', x + w, y + h - r]);
+                    }
                 }
                 // Anchor on left side
             }
-            else if (x + anchorX <= 0) {
+            else if (x + anchorX < safeDistance) {
                 // Chevron
                 if (anchorY > y + safeDistance &&
                     anchorY < y + h - safeDistance) {
@@ -11546,21 +11579,23 @@
                     // Simple connector
                 }
                 else {
-                    path.splice(7, 1, ['L', x, h / 2], ['L', anchorX, anchorY], ['L', x, h / 2], ['L', x, y + r]);
+                    if (anchorX > 0) { // Corner connector
+                        const isTopCorner = anchorY < y + safeDistance, cornerY = isTopCorner ? y : y + h, sliceStart = isTopCorner ? 1 : 6;
+                        path.splice(sliceStart, 0, ['L', anchorX, anchorY], ['L', x + r, cornerY]);
+                    }
+                    else { // Side connector
+                        path.splice(7, 1, ['L', x, h / 2], ['L', anchorX, anchorY], ['L', x, h / 2], ['L', x, y + r]);
+                    }
                 }
             }
             else if ( // replace bottom
-            anchorY &&
-                anchorY > h &&
-                anchorX > x + safeDistance &&
-                anchorX < x + w - safeDistance) {
+            anchorY > h &&
+                anchorX < w - safeDistance) {
                 path.splice(5, 1, ['L', anchorX + halfDistance, y + h], ['L', anchorX, y + h + arrowLength], ['L', anchorX - halfDistance, y + h], ['L', x + r, y + h]);
             }
             else if ( // replace top
-            anchorY &&
-                anchorY < 0 &&
-                anchorX > x + safeDistance &&
-                anchorX < x + w - safeDistance) {
+            anchorY < 0 &&
+                anchorX > safeDistance) {
                 path.splice(1, 1, ['L', anchorX - halfDistance, y], ['L', anchorX, y - arrowLength], ['L', anchorX + halfDistance, y], ['L', w - r, y]);
             }
             return path;
@@ -11596,7 +11631,7 @@
             ];
         }
         function roundedRect(x, y, w, h, options) {
-            const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+            const r = options?.r || 0;
             return [
                 ['M', x + r, y],
                 ['L', x + w - r, y],
@@ -12261,7 +12296,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 const desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.1.0'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.2.0'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -12518,8 +12553,8 @@
                 const id = [
                     `highcharts-drop-shadow-${this.chartIndex}`,
                     ...Object.keys(shadowOptions)
-                        .map((key) => shadowOptions[key])
-                ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({
+                        .map((key) => `${key}-${shadowOptions[key]}`)
+                ].join('-').toLowerCase().replace(/[^a-z0-9\-]/g, ''), options = merge({
                     color: '#000000',
                     offsetX: 1,
                     offsetY: 1,
@@ -12530,7 +12565,8 @@
                     this.definition({
                         tagName: 'filter',
                         attributes: {
-                            id
+                            id,
+                            filterUnits: options.filterUnits
                         },
                         children: [{
                                 tagName: 'feDropShadow',
@@ -13213,37 +13249,35 @@
                      * and the label size into consideration, and translates the image
                      * to center within the label.
                      */
-                    ['width', 'height'].forEach(function (key) {
-                        img[key + 'Setter'] = function (value, key) {
+                    ['width', 'height'].forEach((key) => {
+                        img[`${key}Setter`] = function (value, key) {
                             this[key] = value;
-                            const { alignByTranslate, element, width, height, imgwidth, imgheight } = this;
-                            let imgSize = this['img' + key];
-                            if (defined(imgSize)) {
-                                let scale = 1;
-                                // Scale and center the image within its container.
-                                // The name `backgroundSize` is taken from the CSS spec,
-                                // but the value `within` is made up. Other possible
-                                // values in the spec, `cover` and `contain`, can be
-                                // implemented if needed.
-                                if (options &&
-                                    options.backgroundSize === 'within' &&
-                                    width &&
-                                    height) {
-                                    scale = Math.min(width / imgwidth, height / imgheight);
-                                    imgSize = Math.round(imgSize * scale);
-                                    // Update both width and height to keep the ratio
-                                    // correct (#17315)
-                                    attr(element, {
-                                        width: Math.round(imgwidth * scale),
-                                        height: Math.round(imgheight * scale)
-                                    });
-                                }
-                                else if (element) {
-                                    element.setAttribute(key, imgSize);
-                                }
-                                if (!alignByTranslate) {
-                                    this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
-                                }
+                            const { alignByTranslate, element, width, height, imgwidth, imgheight } = this, imgSize = key === 'width' ? imgwidth : imgheight;
+                            let scale = 1;
+                            // Scale and center the image within its container. The name
+                            // `backgroundSize` is taken from the CSS spec, but the
+                            // value `within` is made up. Other possible values in the
+                            // spec, `cover` and `contain`, can be implemented if
+                            // needed.
+                            if (options &&
+                                options.backgroundSize === 'within' &&
+                                width &&
+                                height &&
+                                imgwidth &&
+                                imgheight) {
+                                scale = Math.min(width / imgwidth, height / imgheight);
+                                // Update both width and height to keep the ratio
+                                // correct (#17315)
+                                attr(element, {
+                                    width: Math.round(imgwidth * scale),
+                                    height: Math.round(imgheight * scale)
+                                });
+                            }
+                            else if (element && imgSize) {
+                                element.setAttribute(key, imgSize);
+                            }
+                            if (!alignByTranslate && imgwidth && imgheight) {
+                                this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
                             }
                         };
                     });
@@ -14382,7 +14416,7 @@
                             // Ensure dynamically updating position when any parent
                             // is translated
                             parents.reverse().forEach(function (parentGroup) {
-                                const cls = attr(parentGroup.element, 'class');
+                                const cls = attr(parentGroup.element, 'class'), parentProtoCss = parentGroup.css;
                                 /**
                                  * Common translate setter for X and Y on the HTML
                                  * group. Reverted the fix for #6957 du to
@@ -14433,7 +14467,10 @@
                                     // updating the shadow div counterpart with the same
                                     // style.
                                     css: function (styles) {
-                                        wrapper.css.call(parentGroup, styles);
+                                        // Call the base css method. The `parentGroup`
+                                        // can be either an SVGElement or an SVGLabel,
+                                        // in which the css method is extended (#19200).
+                                        parentProtoCss.call(parentGroup, styles);
                                         [
                                             // #6794
                                             'cursor',
@@ -15022,7 +15059,10 @@
                  *
                  * @productdesc {highstock}
                  * In Highcharts Stock, `endOnTick` is always `false` when the navigator
-                 * is enabled, to prevent jumpy scrolling.
+                 * is enabled, to prevent jumpy scrolling. With disabled navigator
+                 * enabling `endOnTick` may lead to extending the xAxis to show the last
+                 * tick, therefore range selector buttons may not have an active state
+                 * if the axis gets extended.
                  *
                  * @sample {highcharts} highcharts/yaxis/endontick/
                  *         True by default
@@ -15095,6 +15135,14 @@
                  * @product   highcharts highstock gantt
                  * @context   Highcharts.Axis
                  * @apioption xAxis.events.pointInBreak
+                 */
+                /**
+                 * An event fired when a point is outside a break after zoom.
+                 *
+                 * @type      {Highcharts.AxisPointBreakEventCallbackFunction}
+                 * @product   highcharts highstock gantt
+                 * @context   Highcharts.Axis
+                 * @apioption xAxis.events.pointBreakOut
                  */
                 /**
                  * Fires when the minimum and maximum is set for the axis, either by
@@ -18664,8 +18712,7 @@
                     axis.softThreshold = !axis.isXAxis;
                     // Loop through this axis' series
                     axis.series.forEach(function (series) {
-                        if (series.visible ||
-                            !chart.options.chart.ignoreHiddenSeries) {
+                        if (series.reserveSpace()) {
                             const seriesOptions = series.options;
                             let xData, threshold = seriesOptions.threshold, seriesDataMin, seriesDataMax;
                             axis.hasVisibleSeries = true;
@@ -18891,10 +18938,10 @@
                         y1 = y2 = between(y1, axisTop, axisTop + axis.height);
                     }
                     e.path = skip && !force ?
-                        null :
+                        void 0 :
                         chart.renderer.crispLine([['M', x1, y1], ['L', x2, y2]], lineWidth || 1);
                 });
-                return evt.path;
+                return (evt.path || null);
             }
             /**
              * Internal function to get the tick positions of a linear axis to round
@@ -19037,10 +19084,10 @@
                         // Find the closest distance between raw data points, as opposed
                         // to closestPointRange that applies to processed points
                         // (cropped and grouped)
-                        closestDataRange = getClosestDistance(axis.series.map((s) => { var _a; 
+                        closestDataRange = getClosestDistance(axis.series.map((s) => 
                         // If xIncrement, we only need to measure the two first
                         // points to get the distance. Saves processing time.
-                        return (s.xIncrement ? (_a = s.xData) === null || _a === void 0 ? void 0 : _a.slice(0, 2) : s.xData) || []; })) || 0;
+                        (s.xIncrement ? s.xData?.slice(0, 2) : s.xData) || [])) || 0;
                         axis.minRange = Math.min(closestDataRange * 5, axis.dataMax - axis.dataMin);
                     }
                 }
@@ -19100,15 +19147,13 @@
                 else {
                     const singleXs = [];
                     this.series.forEach(function (series) {
-                        var _a;
-                        const seriesClosest = series.closestPointRange, visible = series.visible ||
-                            !series.chart.options.chart.ignoreHiddenSeries;
-                        if (((_a = series.xData) === null || _a === void 0 ? void 0 : _a.length) === 1) {
+                        const seriesClosest = series.closestPointRange;
+                        if (series.xData?.length === 1) {
                             singleXs.push(series.xData[0]);
                         }
                         else if (!series.noSharedTooltip &&
                             defined(seriesClosest) &&
-                            visible) {
+                            series.reserveSpace()) {
                             closestDistance = defined(closestDistance) ?
                                 Math.min(closestDistance, seriesClosest) :
                                 seriesClosest;
@@ -19944,9 +19989,9 @@
              * @emits Highcharts.Axis#event:afterSetScale
              */
             setScale() {
-                const axis = this;
+                const axis = this, { coll, stacking } = axis;
                 let isDirtyData = false, isXAxisDirty = false;
-                axis.series.forEach(function (series) {
+                axis.series.forEach((series) => {
                     isDirtyData = isDirtyData || series.isDirtyData || series.isDirty;
                     // When x axis is dirty, we need new data extremes for y as
                     // well:
@@ -19954,10 +19999,10 @@
                         (series.xAxis && series.xAxis.isDirty) ||
                         false);
                 });
-                // set the new axisLength
+                // Set the new axisLength
                 axis.setAxisSize();
                 const isDirtyAxisLength = axis.len !== (axis.old && axis.old.len);
-                // do we really need to go through all this?
+                // Do we really need to go through all this?
                 if (isDirtyAxisLength ||
                     isDirtyData ||
                     isXAxisDirty ||
@@ -19966,9 +20011,8 @@
                     axis.userMin !== (axis.old && axis.old.userMin) ||
                     axis.userMax !== (axis.old && axis.old.userMax) ||
                     axis.alignToOthers()) {
-                    if (axis.stacking) {
-                        axis.stacking.resetStacks();
-                        axis.stacking.buildStacks();
+                    if (stacking && coll === 'yAxis') {
+                        stacking.buildStacks();
                     }
                     axis.forceRedraw = false;
                     // #18066 delete minRange property to ensure that it will be
@@ -19976,10 +20020,13 @@
                     if (!axis.userMinRange) {
                         axis.minRange = void 0;
                     }
-                    // get data extremes if needed
+                    // Get data extremes if needed
                     axis.getSeriesExtremes();
-                    // get fixed positions based on tickInterval
+                    // Get fixed positions based on tickInterval
                     axis.setTickInterval();
+                    if (stacking && coll === 'xAxis') {
+                        stacking.buildStacks();
+                    }
                     // Mark as dirty if it is not already set to dirty and extremes have
                     // changed. #595.
                     if (!axis.isDirty) {
@@ -19989,8 +20036,8 @@
                                 axis.max !== (axis.old && axis.old.max);
                     }
                 }
-                else if (axis.stacking) {
-                    axis.stacking.cleanStacks();
+                else if (stacking) {
+                    stacking.cleanStacks();
                 }
                 // Recalculate panning state object, when the data
                 // has changed. It is required when vertical panning is enabled.
@@ -22127,7 +22174,8 @@
              * @return {Highcharts.SVGPathArray}
              * The SVG path definition in array form.
              */
-            function getPlotBandPath(from, to, options = this.options) {
+            function getPlotBandPath(from, to, options) {
+                options = options || this.options;
                 const toPath = this.getPlotLinePath({
                     value: to,
                     force: true,
@@ -22293,6 +22341,13 @@
              *
              * */
             constructor(axis, options) {
+                /**
+                 * The id of the plot line or plot band.
+                 *
+                 * @name Highcharts.PlotLineOrBand#id
+                 * @type {string}
+                 */
+                this.id = void 0;
                 this.axis = axis;
                 if (options) {
                     this.options = options;
@@ -22313,7 +22368,21 @@
              */
             render() {
                 fireEvent(this, 'render');
-                const plotLine = this, axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
+                const plotLine = this, 
+                /**
+                 * Related axis.
+                 *
+                 * @name Highcharts.PlotLineOrBand#axis
+                 * @type {Highcharts.Axis}
+                 */
+                axis = plotLine.axis, horiz = axis.horiz, log = axis.logarithmic, 
+                /**
+                 * Options of the plot line or band.
+                 *
+                 * @name Highcharts.PlotLineOrBand#options
+                 * @type {AxisPlotBandsOptions|AxisPlotLinesOptions}
+                 */
+                options = plotLine.options, color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, groupAttribs = {}, renderer = axis.chart.renderer;
                 let optionsLabel = options.label, label = plotLine.label, to = options.to, from = options.from, value = options.value, svgElem = plotLine.svgElem, path = [], group;
                 const isBand = defined(from) && defined(to), isLine = defined(value), isNew = !svgElem, attribs = {
                     'class': 'highcharts-plot-' + (isBand ? 'band ' : 'line ') +
@@ -22437,7 +22506,7 @@
             renderLabel(optionsLabel, path, isBand, zIndex) {
                 const plotLine = this, axis = plotLine.axis, renderer = axis.chart.renderer;
                 let label = plotLine.label;
-                // add the SVG element
+                // Add the SVG element
                 if (!label) {
                     /**
                      * SVG element of the label.
@@ -22453,16 +22522,16 @@
                         'class': 'highcharts-plot-' + (isBand ? 'band' : 'line') +
                             '-label ' + (optionsLabel.className || ''),
                         zIndex
-                    })
-                        .add();
+                    });
                     if (!axis.chart.styledMode) {
                         label.css(merge({
                             fontSize: '0.8em',
                             textOverflow: 'ellipsis'
                         }, optionsLabel.style));
                     }
+                    label.add();
                 }
-                // get the bounding box and align the label
+                // Get the bounding box and align the label
                 // #3000 changed to better handle choice between plotband or plotline
                 const xBounds = path.xBounds ||
                     [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])];
@@ -23178,7 +23247,6 @@
                  *
                  * */
                 this.allowShared = true;
-                this.container = void 0;
                 this.crosshairs = [];
                 this.distance = 0;
                 this.isHidden = true;
@@ -23366,9 +23434,8 @@
              * Tooltip label
              */
             getLabel() {
-                const tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared, pointerEvents = (options.style.pointerEvents ||
-                    (this.shouldStickOnContact() ? 'auto' : 'none'));
-                let container, renderer = this.chart.renderer;
+                const tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared;
+                let container = this.container, renderer = this.chart.renderer;
                 // If changing from a split tooltip to a non-split tooltip, we must
                 // destroy it in order to get the SVG right. #13868.
                 if (this.label) {
@@ -23390,13 +23457,15 @@
                          */
                         this.container = container = H.doc.createElement('div');
                         container.className = 'highcharts-tooltip-container';
+                        // We need to set pointerEvents = 'none' as otherwise it makes
+                        // the area under the tooltip non-hoverable even after the
+                        // tooltip disappears, #19035.
                         css(container, {
                             position: 'absolute',
                             top: '1px',
-                            pointerEvents,
+                            pointerEvents: 'none',
                             zIndex: Math.max(this.options.style.zIndex || 0, (chartStyle && chartStyle.zIndex || 0) + 3)
                         });
-                        H.doc.body.appendChild(container);
                         /**
                          * Reference to the tooltip's renderer, when
                          * [Highcharts.Tooltip#outside] is set to true, otherwise
@@ -23426,7 +23495,10 @@
                             })
                                 // #2301, #2657
                                 .css(options.style)
-                                .css({ pointerEvents });
+                                .css({
+                                pointerEvents: (options.style.pointerEvents ||
+                                    (this.shouldStickOnContact() ? 'auto' : 'none'))
+                            });
                         }
                     }
                     // Split tooltip use updateTooltipContainer to position the tooltip
@@ -23436,17 +23508,24 @@
                         const { xSetter, ySetter } = label;
                         label.xSetter = function (value) {
                             xSetter.call(label, tooltip.distance);
-                            container.style.left = value + 'px';
+                            if (container) {
+                                container.style.left = value + 'px';
+                            }
                         };
                         label.ySetter = function (value) {
                             ySetter.call(label, tooltip.distance);
-                            container.style.top = value + 'px';
+                            if (container) {
+                                container.style.top = value + 'px';
+                            }
                         };
                     }
                     this.label
                         .attr({ zIndex: 8 })
                         .shadow(options.shadow)
                         .add();
+                }
+                if (container && !container.parentElement) {
+                    H.doc.body.appendChild(container);
                 }
                 return this.label;
             }
@@ -23634,15 +23713,28 @@
              */
             hide(delay) {
                 const tooltip = this;
-                // disallow duplicate timers (#1728, #1766)
+                // Disallow duplicate timers (#1728, #1766)
                 U.clearTimeout(this.hideTimer);
                 delay = pick(delay, this.options.hideDelay);
                 if (!this.isHidden) {
                     this.hideTimer = syncTimeout(function () {
-                        // If there is a delay, do fadeOut with the default duration. If
+                        const label = tooltip.getLabel();
+                        // If there is a delay, fade out with the default duration. If
                         // the hideDelay is 0, we assume no animation is wanted, so we
                         // pass 0 duration. #12994.
-                        tooltip.getLabel().fadeOut(delay ? void 0 : delay);
+                        tooltip.getLabel().animate({
+                            opacity: 0
+                        }, {
+                            duration: delay ? 150 : delay,
+                            complete: () => {
+                                // #3088, assuming we're only using this for tooltips
+                                label.hide();
+                                // Clear the container for outside tooltip (#18490)
+                                if (tooltip.container) {
+                                    tooltip.container.remove();
+                                }
+                            }
+                        });
                         tooltip.isHidden = true;
                     }, delay);
                 }
@@ -23955,7 +24047,7 @@
                     let anchorY;
                     if (isHeader) {
                         // Set anchorX to plotX
-                        anchorX = plotLeft + plotX;
+                        anchorX = Math.max(plotLeft + plotX, plotLeft);
                         // Set anchorY to center of visible plot area.
                         anchorY = plotTop + plotHeight / 2;
                     }
@@ -24023,7 +24115,6 @@
                  * @return {Highcharts.SVGElement} Returns the updated partial tooltip
                  */
                 function updatePartialTooltip(partialTooltip, point, str) {
-                    var _a;
                     let tt = partialTooltip;
                     const { isHeader, series } = point;
                     if (!tt) {
@@ -24033,7 +24124,7 @@
                         };
                         if (!styledMode) {
                             attribs.fill = options.backgroundColor;
-                            attribs['stroke-width'] = (_a = options.borderWidth) !== null && _a !== void 0 ? _a : 1;
+                            attribs['stroke-width'] = options.borderWidth ?? 1;
                         }
                         tt = ren
                             .label('', 0, 0, (options[isHeader ? 'headerShape' : 'shape']), void 0, void 0, options.useHTML)
@@ -24245,8 +24336,8 @@
                 // Combine anchor and tooltip
                 const anchorPos = this.getAnchor(points);
                 const labelBBox = label.getBBox();
-                anchorPos[0] += chart.plotLeft - label.translateX;
-                anchorPos[1] += chart.plotTop - label.translateY;
+                anchorPos[0] += chart.plotLeft - (label.translateX || 0);
+                anchorPos[1] += chart.plotTop - (label.translateY || 0);
                 // When the mouse pointer is between the anchor point and the label,
                 // the label should stick.
                 box.x = Math.min(0, anchorPos[0]);
@@ -24340,23 +24431,26 @@
              * @param {Highcharts.Point} point
              */
             updatePosition(point) {
-                const { chart, distance, options } = this, pointer = chart.pointer, label = this.getLabel(), 
+                const { chart, container, distance, options, renderer } = this, { height = 0, width = 0 } = this.getLabel(), pointer = chart.pointer, 
                 // Needed for outside: true (#11688)
-                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, label.width, label.height, point);
+                { left, top, scaleX, scaleY } = pointer.getChartPosition(), pos = (options.positioner || this.getPosition).call(this, width, height, point);
                 let anchorX = (point.plotX || 0) + chart.plotLeft, anchorY = (point.plotY || 0) + chart.plotTop, pad;
-                // Set the renderer size dynamically to prevent document size to change
-                if (this.outside) {
+                // Set the renderer size dynamically to prevent document size to change.
+                // Renderer only exists when tooltip is outside.
+                if (renderer && container) {
                     // Corrects positions, occurs with tooltip positioner (#16944)
                     if (options.positioner) {
                         pos.x += left - distance;
                         pos.y += top - distance;
                     }
-                    pad = (options.borderWidth || 0) + 2 * distance;
-                    this.renderer.setSize(label.width + pad, label.height + pad, false);
+                    // Pad it by the border width and distance. Add 2 to make room for
+                    // the default shadow (#19314).
+                    pad = (options.borderWidth || 0) + 2 * distance + 2;
+                    renderer.setSize(width + pad, height + pad, false);
                     // Anchor and tooltip container need scaling if chart container has
                     // scale transform/css zoom. #11329.
                     if (scaleX !== 1 || scaleY !== 1) {
-                        css(this.container, {
+                        css(container, {
                             transform: `scale(${scaleX}, ${scaleY})`
                         });
                         anchorX *= scaleX;
@@ -24365,8 +24459,8 @@
                     anchorX += left - pos.x;
                     anchorY += top - pos.y;
                 }
-                // do the move
-                this.move(Math.round(pos.x), Math.round(pos.y || 0), // can be undefined (#3977)
+                // Do the move
+                this.move(Math.round(pos.x), Math.round(pos.y || 0), // Can be undefined (#3977)
                 anchorX, anchorY);
             }
         }
@@ -24495,7 +24589,7 @@
         * @type {number}
         */
         /**
-         * @typedef {"callout"|"circle"|"square"} Highcharts.TooltipShapeValue
+         * @typedef {"callout"|"circle"|"rect"} Highcharts.TooltipShapeValue
          */
         ''; // keeps doclets above in JS file
 
@@ -24707,8 +24801,6 @@
                 if (pointValKey) {
                     point.y = Point.prototype.getNestedProperty.call(point, pointValKey);
                 }
-                point.isNull = this.isValid && !this.isValid();
-                point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
                 // The point is initially selected by options (#5777)
                 if (point.selected) {
                     point.state = 'select';
@@ -24738,6 +24830,8 @@
                 else if (isNumber(options.x) && series.options.relativeXValue) {
                     point.x = series.autoIncrement(options.x);
                 }
+                point.isNull = this.isValid && !this.isValid();
+                point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
                 return point;
             }
             /**
@@ -24845,7 +24939,7 @@
                     defaultFunction = function (event) {
                         // Control key is for Windows, meta (= Cmd key) for Mac, Shift
                         // for Opera.
-                        if (point.select) { // #2911
+                        if (!point.destroyed && point.select) { // #2911, #19075
                             point.select(null, event.ctrlKey || event.metaKey || event.shiftKey);
                         }
                     };
@@ -24884,10 +24978,11 @@
                 let prop, i;
                 kinds = kinds || { graphic: 1, dataLabel: 1 };
                 if (kinds.graphic) {
-                    props.push('graphic');
+                    props.push('graphic', 'connector' // Used by dumbbell
+                    );
                 }
                 if (kinds.dataLabel) {
-                    props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper', 'connector');
+                    props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper');
                 }
                 i = props.length;
                 while (i--) {
@@ -24898,8 +24993,7 @@
                 }
                 [
                     'graphic',
-                    'dataLabel',
-                    'connector'
+                    'dataLabel'
                 ].forEach(function (prop) {
                     const plural = prop + 's';
                     if (kinds[prop] && point[plural]) {
@@ -25017,7 +25111,9 @@
              * @function Highcharts.Point#isValid
              */
             isValid() {
-                return this.x !== null && isNumber(this.y);
+                return ((isNumber(this.x) ||
+                    this.x instanceof Date) &&
+                    isNumber(this.y));
             }
             /**
              * Transform number or array configs into objects. Also called for object
@@ -25075,7 +25171,9 @@
                     // dataLabels that need to be considered in drawDataLabels. These
                     // can only occur in object configs.
                     if (options.dataLabels) {
-                        series._hasPointLabels = true;
+                        // Override the prototype function to always return true,
+                        // regardless of whether data labels are enabled series-wide
+                        series.hasDataLabels = () => true;
                     }
                     // Same approach as above for markers
                     if (options.marker) {
@@ -25086,8 +25184,22 @@
             }
             /**
              * Get the pixel position of the point relative to the plot area.
-             * @private
              * @function Highcharts.Point#pos
+             *
+             * @sample highcharts/point/position
+             *         Get point's position in pixels.
+             *
+             * @param {boolean} chartCoordinates
+             * If true, the returned position is relative to the full chart area.
+             * If false, it is relative to the plot area determined by the axes.
+             *
+             * @param {number|undefined} plotY
+             * A custom plot y position to be computed. Used internally for some
+             * series types that have multiple `y` positions, like area range (low
+             * and high values).
+             *
+             * @return {Array<number>|undefined}
+             * Coordinates of the point if the point exists.
              */
             pos(chartCoordinates, plotY = this.plotY) {
                 if (!this.destroyed) {
@@ -25277,11 +25389,8 @@
                                 point.graphic = graphic.destroy();
                             }
                         }
-                        if (options && options.dataLabels && point.dataLabel) {
+                        if (options?.dataLabels && point.dataLabel) {
                             point.dataLabel = point.dataLabel.destroy(); // #2468
-                        }
-                        if (point.connector) {
-                            point.connector = point.connector.destroy(); // #7243
                         }
                     }
                     // record changes in the parallel arrays
@@ -25526,11 +25635,11 @@
                                 if (label &&
                                     !label.hasClass('highcharts-data-label-hidden')) {
                                     label.animate({ opacity }, pointAttribsAnimation);
+                                    if (label.connector) {
+                                        label.connector.animate({ opacity }, pointAttribsAnimation);
+                                    }
                                 }
                             });
-                            if (point.connector) {
-                                point.connector.animate({ opacity }, pointAttribsAnimation);
-                            }
                         }
                         point.graphic.animate(pointAttribs, pointAttribsAnimation);
                     }
@@ -26182,7 +26291,7 @@
                 // (#877)
                 if (chart && isNumber(chart.index)) {
                     css(chart.container, { cursor: chart._cursor });
-                    chart.cancelClick = this.hasDragged > 10; // #370
+                    chart.cancelClick = +this.hasDragged > 10; // #370
                     chart.mouseIsDown = this.hasDragged = this.hasPinched = false;
                     this.pinchDown = [];
                 }
@@ -26628,6 +26737,7 @@
             onContainerMouseLeave(e) {
                 const chart = charts[pick(Pointer.hoverChartIndex, -1)];
                 e = this.normalize(e);
+                this.onContainerMouseMove(e);
                 // #4886, MS Touch end fires mouseleave but with no related target
                 if (chart &&
                     e.relatedTarget &&
@@ -26652,7 +26762,7 @@
              */
             onContainerMouseMove(e) {
                 const chart = this.chart, tooltip = chart.tooltip, pEvt = this.normalize(e);
-                this.setHoverChartIndex();
+                this.setHoverChartIndex(e);
                 if (chart.mouseIsDown === 'mousedown' || this.touchSelect(pEvt)) {
                     this.drag(pEvt);
                 }
@@ -26899,7 +27009,8 @@
                 const transformScale = inverted ? 1 / scale : scale;
                 selectionMarker[wh] = selectionWH;
                 selectionMarker[xy] = selectionXY;
-                transform[scaleKey] = scale;
+                // Invert scale if needed (#19217)
+                transform[scaleKey] = scale * (inverted && !horiz ? -1 : 1);
                 transform['translate' + XY] = (transformScale * plotLeftTop) +
                     (touch0Now - (transformScale * touch0Start));
             }
@@ -27119,13 +27230,15 @@
                 const chart = this.chart;
                 // Scale each series
                 chart.series.forEach(function (series) {
-                    const seriesAttribs = attribs || series.getPlotBox(); // #1701
+                    const seriesAttribs = attribs || series.getPlotBox('series'); // #1701 and #19217
                     if (series.group &&
                         ((series.xAxis && series.xAxis.zoomEnabled) ||
                             chart.mapView)) {
                         series.group.attr(seriesAttribs);
                         if (series.markerGroup) {
-                            series.markerGroup.attr(seriesAttribs);
+                            series.markerGroup.attr(
+                            // #20018
+                            attribs || series.getPlotBox('marker'));
                             series.markerGroup.clip(clip ? chart.clipRect : null);
                         }
                         if (series.dataLabelsGroup) {
@@ -27177,12 +27290,12 @@
              * @private
              * @function Highcharts.Pointer#setHoverChartIndex
              */
-            setHoverChartIndex() {
+            setHoverChartIndex(e) {
                 const chart = this.chart;
                 const hoverChart = H.charts[pick(Pointer.hoverChartIndex, -1)];
                 if (hoverChart &&
                     hoverChart !== chart) {
-                    hoverChart.pointer.onContainerMouseLeave({ relatedTarget: chart.container });
+                    hoverChart.pointer.onContainerMouseLeave(e || { relatedTarget: chart.container });
                 }
                 if (!hoverChart ||
                     !hoverChart.mouseIsDown) {
@@ -27554,19 +27667,19 @@
                 if (options.enabled) {
                     // Render it
                     this.render();
-                    // move checkboxes
+                    // Move checkboxes
                     addEvent(this.chart, 'endResize', function () {
                         this.legend.positionCheckboxes();
                     });
-                    // On Legend.init and Legend.update, make sure that proximate layout
-                    // events are either added or removed (#18362).
-                    addEvent(this.chart, 'render', () => {
-                        if (this.proximate) {
-                            this.proximatePositions();
-                            this.positionItems();
-                        }
-                    });
                 }
+                // On Legend.init and Legend.update, make sure that proximate layout
+                // events are either added or removed (#18362).
+                addEvent(this.chart, 'render', () => {
+                    if (this.options.enabled && this.proximate) {
+                        this.proximatePositions();
+                        this.positionItems();
+                    }
+                });
             }
             /**
              * @private
@@ -27624,7 +27737,7 @@
                 if (pick(redraw, true)) {
                     chart.redraw();
                 }
-                fireEvent(this, 'afterUpdate');
+                fireEvent(this, 'afterUpdate', { redraw });
             }
             /**
              * Set the colors for the legend item.
@@ -27649,8 +27762,8 @@
                         (item.color || hiddenColor) :
                         hiddenColor, markerOptions = item.options && item.options.marker;
                     let symbolAttr = { fill: symbolColor };
-                    label === null || label === void 0 ? void 0 : label.css(merge(visible ? this.itemStyle : itemHiddenStyle));
-                    line === null || line === void 0 ? void 0 : line.attr({ stroke: symbolColor });
+                    label?.css(merge(visible ? this.itemStyle : itemHiddenStyle));
+                    line?.attr({ stroke: symbolColor });
                     if (symbol) {
                         // Apply marker options
                         if (markerOptions && symbol.isMarker) { // #585
@@ -27850,9 +27963,9 @@
             renderItem(item) {
                 const legend = this, legendItem = item.legendItem = item.legendItem || {}, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
                     item.series :
-                    item, seriesOptions = series.options, showCheckbox = (legend.createCheckboxForItem) &&
+                    item, seriesOptions = series.options, showCheckbox = (!!legend.createCheckboxForItem &&
                     seriesOptions &&
-                    seriesOptions.showCheckbox, useHTML = options.useHTML, itemClassName = item.options.className;
+                    seriesOptions.showCheckbox), useHTML = options.useHTML, itemClassName = item.options.className;
                 let label = legendItem.label, 
                 // full width minus text width
                 itemExtraWidth = symbolWidth + symbolPadding +
@@ -28790,7 +28903,7 @@
              * The legend object.
              */
             function lineMarker(legend, item) {
-                const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
+                const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
                     Math.round(legend.fontMetrics.b * 0.3);
                 let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
                 // Draw the line
@@ -28827,7 +28940,7 @@
                     // Do not allow the marker to be larger than the symbolHeight
                     let radius = Math.min(pick(markerOptions.radius, generalRadius), generalRadius);
                     // Restrict symbol markers size
-                    if (this.symbol.indexOf('url') === 0) {
+                    if (symbol.indexOf('url') === 0) {
                         markerOptions = merge(markerOptions, {
                             width: symbolHeight,
                             height: symbolHeight
@@ -28835,7 +28948,7 @@
                         radius = 0;
                     }
                     legendItem.symbol = legendSymbol = renderer
-                        .symbol(this.symbol, (symbolWidth / 2) - radius, verticalCenter - radius, 2 * radius, 2 * radius, extend({ context: 'legend' }, markerOptions))
+                        .symbol(symbol, (symbolWidth / 2) - radius, verticalCenter - radius, 2 * radius, 2 * radius, extend({ context: 'legend' }, markerOptions))
                         .addClass('highcharts-point')
                         .add(legendItemGroup);
                     legendSymbol.isMarker = true;
@@ -28923,7 +29036,7 @@
              *
              * @product highcharts highstock
              */
-            lineWidth: 1,
+            lineWidth: 2,
             /**
              * For some series, there is a limit that shuts down animation
              * by default when the total number of points in the chart is too high.
@@ -29054,6 +29167,7 @@
              * chart's legend and tooltip.
              *
              * @sample {highcharts} highcharts/css/point-series-classname
+             *         Series and point class name
              *
              * @type      {string}
              * @since     5.0.0
@@ -29280,6 +29394,20 @@
              * @since     4.1.6
              * @product   highcharts highstock gantt
              * @apioption plotOptions.series.getExtremesFromAll
+             */
+            /**
+             * Highlight only the hovered point and fade the remaining points.
+             *
+             * Scatter-type series require enabling the 'inactive' marker state and
+             * adjusting opacity. Note that this approach could affect performance
+             * with large datasets.
+             *
+             * @sample {highcharts} highcharts/plotoptions/series-inactiveotherpoints-enabled/
+             *         Chart with inactiveOtherPoints option enabled.
+             *
+             * @type      {boolean}
+             * @default   false
+             * @apioption plotOptions.series.inactiveOtherPoints
              */
             /**
              * An array specifying which option maps to which key in the data point
@@ -31484,7 +31612,7 @@
                  * @type {Highcharts.SeriesOptionsType}
                  */
                 series.options = series.setOptions(userOptions);
-                const options = series.options;
+                const options = series.options, visible = options.visible !== false;
                 series.linkedSeries = [];
                 // bind the axes
                 series.bindAxes();
@@ -31506,7 +31634,7 @@
                      * @name Highcharts.Series#visible
                      * @type {boolean}
                      */
-                    visible: options.visible !== false,
+                    visible,
                     /**
                      * Read only. The series' selected state as set by {@link
                      * Highcharts.Series#select}.
@@ -31669,6 +31797,20 @@
                 );
             }
             /**
+             * Determine whether the marker in a series has changed.
+             *
+             * @private
+             * @function Highcharts.Series#hasMarkerChanged
+             */
+            hasMarkerChanged(options, oldOptions) {
+                const series = this, marker = options.marker, oldMarker = oldOptions.marker || {};
+                return marker && ((oldMarker.enabled && !marker.enabled) ||
+                    oldMarker.symbol !== marker.symbol || // #10870, #15946
+                    oldMarker.height !== marker.height || // #16274
+                    oldMarker.width !== marker.width // #16274
+                );
+            }
+            /**
              * Return an auto incremented x value based on the pointStart and
              * pointInterval options. This is only used if an x value is not given
              * for the point that calls autoIncrement.
@@ -31735,8 +31877,6 @@
              * @emits Highcharts.Series#event:afterSetOptions
              */
             setOptions(itemOptions) {
-                var _a,
-                    _b;
                 const chart = this.chart, chartOptions = chart.options, plotOptions = chartOptions.plotOptions, userOptions = chart.userOptions || {}, seriesUserOptions = merge(itemOptions), styledMode = chart.styledMode, e = {
                     plotOptions: plotOptions,
                     userOptions: seriesUserOptions
@@ -31763,10 +31903,10 @@
                 // init userOptions with possible later updates: 4-6 like 1-3 and
                 // (7)this series options
                 this.tooltipOptions = merge(defaultOptions.tooltip, // 1
-                (_a = defaultOptions.plotOptions.series) === null || _a === void 0 ? void 0 : _a.tooltip, // 2
-                defaultPlotOptionsType === null || defaultPlotOptionsType === void 0 ? void 0 : defaultPlotOptionsType.tooltip, // 3
+                defaultOptions.plotOptions.series?.tooltip, // 2
+                defaultPlotOptionsType?.tooltip, // 3
                 chart.userOptions.tooltip, // 4
-                (_b = userPlotOptions.series) === null || _b === void 0 ? void 0 : _b.tooltip, // 5
+                userPlotOptions.series?.tooltip, // 5
                 userPlotOptionsType.tooltip, // 6
                 seriesUserOptions.tooltip // 7
                 );
@@ -31828,7 +31968,7 @@
             getCyclic(prop, value, defaults) {
                 const chart = this.chart, indexName = `${prop}Index`, counterName = `${prop}Counter`, len = (
                 // Symbol count
-                (defaults === null || defaults === void 0 ? void 0 : defaults.length) ||
+                defaults?.length ||
                     // Color count
                     chart.options.chart.colorCount);
                 let i, setting;
@@ -32119,7 +32259,6 @@
              *        `false` to prevent.
              */
             setData(data, redraw = true, animation, updatePoints) {
-                var _a;
                 const series = this, oldData = series.points, oldDataLength = (oldData && oldData.length) || 0, options = series.options, chart = series.chart, dataSorting = options.dataSorting, xAxis = series.xAxis, turboThreshold = options.turboThreshold, xData = this.xData, yData = this.yData, pointArrayMap = series.pointArrayMap, valueCount = pointArrayMap && pointArrayMap.length, keys = options.keys;
                 let i, pt, updatedData, indexOfX = 0, indexOfY = 1, firstPoint = null, copiedData;
                 if (!chart.options.chart.allowMutatingData) { // #4259
@@ -32238,7 +32377,7 @@
                     // destroy old points
                     i = oldDataLength;
                     while (i--) {
-                        (_a = oldData[i]) === null || _a === void 0 ? void 0 : _a.destroy();
+                        oldData[i]?.destroy();
                     }
                     // reset minRange (#878)
                     if (xAxis) {
@@ -32323,7 +32462,7 @@
                 const series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
                     series.getExtremesFromAll ||
                     options.getExtremesFromAll, // #4599
-                logarithmic = xAxis === null || xAxis === void 0 ? void 0 : xAxis.logarithmic, isCartesian = series.isCartesian;
+                logarithmic = xAxis?.logarithmic, isCartesian = series.isCartesian;
                 let croppedData, cropped, cropStart = 0, xExtremes, min, max, 
                 // copied during slice operation:
                 processedXData = series.xData, processedYData = series.yData, updatingNames = false;
@@ -32417,30 +32556,28 @@
              * @private
              * @function Highcharts.Series#cropData
              */
-            cropData(xData, yData, min, max, cropShoulder) {
+            cropData(xData, yData, min, max) {
                 const dataLength = xData.length;
-                let i, j, cropStart = 0, cropEnd = dataLength;
-                // line-type series need one point outside
-                cropShoulder = pick(cropShoulder, this.cropShoulder);
-                // iterate up to find slice start
+                let i, j, start = 0, end = dataLength;
+                // Iterate up to find slice start
                 for (i = 0; i < dataLength; i++) {
                     if (xData[i] >= min) {
-                        cropStart = Math.max(0, i - cropShoulder);
+                        start = Math.max(0, i - 1);
                         break;
                     }
                 }
-                // proceed to find slice end
+                // Proceed to find slice end
                 for (j = i; j < dataLength; j++) {
                     if (xData[j] > max) {
-                        cropEnd = j + cropShoulder;
+                        end = j + 1;
                         break;
                     }
                 }
                 return {
-                    xData: xData.slice(cropStart, cropEnd),
-                    yData: yData.slice(cropStart, cropEnd),
-                    start: cropStart,
-                    end: cropEnd
+                    xData: xData.slice(start, end),
+                    yData: yData.slice(start, end),
+                    start,
+                    end
                 };
             }
             /**
@@ -32582,8 +32719,10 @@
                 const xAxis = this.xAxis, yAxis = this.yAxis, xData = this.processedXData || this.xData, activeYData = [], 
                 // Handle X outside the viewed area. This does not work with
                 // non-sorted data like scatter (#7639).
-                shoulder = this.requireSorting ? this.cropShoulder : 0, positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
+                shoulder = this.requireSorting && !this.is('column') ?
+                    1 : 0, 
                 // #2117, need to compensate for log X axis
+                positiveValuesOnly = yAxis ? yAxis.positiveValuesOnly : false;
                 let xExtremes, validValue, withinRange, x, y, i, j, xMin = 0, xMax = 0, activeCounter = 0;
                 yData = yData || this.stackedYData || this.processedYData || [];
                 const yDataLength = yData.length;
@@ -32597,8 +32736,9 @@
                     y = yData[i];
                     // For points within the visible range, including the first
                     // point outside the visible range (#7061), consider y extremes.
-                    validValue = ((isNumber(y) || isArray(y)) &&
-                        ((y.length || y > 0) || !positiveValuesOnly));
+                    validValue = ((isNumber(y) ||
+                        isArray(y)) && ((isNumber(y) ? y > 0 : y.length) ||
+                        !positiveValuesOnly));
                     withinRange = (forceExtremesFromAll ||
                         this.getExtremesFromAll ||
                         this.options.getExtremesFromAll ||
@@ -32686,7 +32826,6 @@
              * @emits Highcharts.Series#events:translate
              */
             translate() {
-                var _a;
                 if (!this.processedXData) { // hidden series
                     this.processData();
                 }
@@ -32707,11 +32846,11 @@
                 for (i = 0; i < dataLength; i++) {
                     const point = points[i], xValue = point.x;
                     let stackItem, stackValues, yValue = point.y, lowValue = point.low;
-                    const stacks = stacking && ((_a = yAxis.stacking) === null || _a === void 0 ? void 0 : _a.stacks[(series.negStacks &&
+                    const stacks = stacking && yAxis.stacking?.stacks[(series.negStacks &&
                         yValue <
                             (stackThreshold ? 0 : threshold) ?
                         '-' :
-                        '') + series.stackKey]);
+                        '') + series.stackKey];
                     plotX = xAxis.translate(// #3923
                     xValue, false, false, false, true, pointPlacement);
                     /**
@@ -32719,6 +32858,12 @@
                      * to the X axis position if the series has one, otherwise relative
                      * to the plot area. Depending on the series type this value might
                      * not be defined.
+                     *
+                     * In an inverted chart the x-axis is going from the bottom to the
+                     * top so the `plotX` value is the number of pixels from the bottom
+                     * of the axis.
+                     *
+                     * @see Highcharts.Point#pos
                      * @name Highcharts.Point#plotX
                      * @type {number|undefined}
                      */
@@ -32781,6 +32926,12 @@
                      * to the Y axis position if the series has one, otherwise relative
                      * to the plot area. Depending on the series type this value might
                      * not be defined.
+                     *
+                     * In an inverted chart the y-axis is going from right to left
+                     * so the `plotY` value is the number of pixels from the right
+                     * of the `yAxis`.
+                     *
+                     * @see Highcharts.Point#pos
                      * @name Highcharts.Point#plotY
                      * @type {number|undefined}
                      */
@@ -33552,6 +33703,15 @@
                 }
             }
             /**
+             * Whether to reserve space for the series, either because it is visible or
+             * because the `chart.ignoreHiddenSeries` option is false.
+             *
+             * @private
+             */
+            reserveSpace() {
+                return this.visible || !this.chart.options.chart.ignoreHiddenSeries;
+            }
+            /**
              * Find the nearest point from a pointer event. This applies to series that
              * use k-d-trees to get the nearest point. Native pointer events must be
              * normalized using `Pointer.normalize`, that adds `chartX` and `chartY`
@@ -33642,22 +33802,16 @@
              * @function Highcharts.Series#searchKDTree
              */
             searchKDTree(point, compareX, e) {
-                const series = this, kdX = this.kdAxisArray[0], kdY = this.kdAxisArray[1], kdComparer = compareX ? 'distX' : 'dist', kdDimensions = series.options.findNearestPointBy
-                    .indexOf('y') > -1 ? 2 : 1;
+                const series = this, [kdX, kdY] = this.kdAxisArray, kdComparer = compareX ? 'distX' : 'dist', kdDimensions = (series.options.findNearestPointBy || '')
+                    .indexOf('y') > -1 ? 2 : 1, useRadius = !!series.isBubble;
                 /**
                  * Set the one and two dimensional distance on the point object.
                  * @private
                  */
                 function setDistance(p1, p2) {
-                    const x = (defined(p1[kdX]) &&
-                        defined(p2[kdX])) ?
-                        Math.pow(p1[kdX] - p2[kdX], 2) :
-                        null, y = (defined(p1[kdY]) &&
-                        defined(p2[kdY])) ?
-                        Math.pow(p1[kdY] - p2[kdY], 2) :
-                        null, r = (x || 0) + (y || 0);
-                    p2.dist = defined(r) ? Math.sqrt(r) : Number.MAX_VALUE;
-                    p2.distX = defined(x) ? Math.sqrt(x) : Number.MAX_VALUE;
+                    const p1kdX = p1[kdX], p2kdX = p2[kdX], x = (defined(p1kdX) && defined(p2kdX)) ? p1kdX - p2kdX : null, p1kdY = p1[kdY], p2kdY = p2[kdY], y = (defined(p1kdY) && defined(p2kdY)) ? p1kdY - p2kdY : 0, radius = useRadius ? (p2.marker?.radius || 0) : 0;
+                    p2.dist = Math.sqrt(((x && x * x) || 0) + y * y) - radius;
+                    p2.distX = defined(x) ? (Math.abs(x) - radius) : Number.MAX_VALUE;
                 }
                 /**
                  * @private
@@ -33667,7 +33821,8 @@
                     let nPoint1, nPoint2, ret = point;
                     setDistance(search, point);
                     // Pick side based on distance to splitting point
-                    const tdist = search[axis] - point[axis], sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
+                    const tdist = (search[axis] || 0) - (point[axis] || 0) +
+                        (useRadius ? (point.marker?.radius || 0) : 0), sideA = tdist < 0 ? 'left' : 'right', sideB = tdist < 0 ? 'right' : 'left';
                     // End of tree
                     if (tree[sideA]) {
                         nPoint1 = _search(search, tree[sideA], depth + 1, dimensions);
@@ -33892,7 +34047,7 @@
                 }
                 // Shift the first point off the parallel arrays
                 if (shift) {
-                    if (data[0] && (data[0].remove)) {
+                    if (data[0] && !!data[0].remove) {
                         data[0].remove(false);
                     }
                     else {
@@ -34049,6 +34204,12 @@
                     'markerGroup',
                     'dataLabelsGroup',
                     'transformGroup'
+                ], optionsToCheck = [
+                    'dataGrouping',
+                    'pointStart',
+                    'pointInterval',
+                    'pointIntervalUnit',
+                    'keys'
                 ], 
                 // Animation must be enabled when calling update before the initial
                 // animation has first run. This happens when calling update
@@ -34077,15 +34238,13 @@
                     options.joinBy ||
                     options.mapData || // #11636
                     // Changes to data grouping requires new points in new group
-                    series.hasOptionChanged('dataGrouping') ||
-                    series.hasOptionChanged('pointStart') ||
-                    series.hasOptionChanged('pointInterval') ||
-                    series.hasOptionChanged('pointIntervalUnit') ||
-                    series.hasOptionChanged('keys'));
+                    optionsToCheck.some((option) => series.hasOptionChanged(option)));
                 newType = newType || initialType;
                 if (keepPoints) {
-                    preserve.push('data', 'isDirtyData', 'points', 'processedData', // #17057
-                    'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
+                    preserve.push('data', 'isDirtyData', 
+                    // GeoHeatMap interpolation
+                    'isDirtyCanvas', 'points', 'processedData', // #17057
+                    'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', 'hasDataLabels', 'clips', // #15420
                     // Networkgraph (#14397)
                     'nodes', 'layout', 
                     // Treemap
@@ -34115,11 +34274,9 @@
                     index: typeof oldOptions.index === 'undefined' ?
                         series.index : oldOptions.index,
                     pointStart: pick(
-                    // when updating from blank (#7933)
-                    (plotOptions &&
-                        plotOptions.series &&
-                        plotOptions.series.pointStart), oldOptions.pointStart, 
-                    // when updating after addPoint
+                    // When updating from blank (#7933)
+                    plotOptions?.series?.pointStart, oldOptions.pointStart, 
+                    // When updating after addPoint
                     series.xData[0])
                 }, (!keepPoints && { data: series.options.data }), options);
                 // Merge does not merge arrays, but replaces them. Since points were
@@ -34182,19 +34339,13 @@
                         kinds.graphic = 1;
                         kinds.dataLabel = 1;
                     }
-                    else if (!series._hasPointLabels) {
-                        const { marker, dataLabels } = seriesOptions, oldMarker = oldOptions.marker || {};
+                    else {
                         // If the  marker got disabled or changed its symbol, width or
                         // height - destroy
-                        if (marker && (marker.enabled === false ||
-                            oldMarker.symbol !== marker.symbol || // #10870, #15946
-                            oldMarker.height !== marker.height || // #16274
-                            oldMarker.width !== marker.width // #16274
-                        )) {
+                        if (this.hasMarkerChanged(seriesOptions, oldOptions)) {
                             kinds.graphic = 1;
                         }
-                        if (dataLabels &&
-                            dataLabels.enabled === false) {
+                        if (!series.hasDataLabels?.()) {
                             kinds.dataLabel = 1;
                         }
                     }
@@ -34238,16 +34389,12 @@
              * @private
              */
             hasOptionChanged(optionName) {
-                const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName];
-                if (oldOption) {
+                const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = pick(plotOptions?.[this.type]?.[optionName], plotOptions?.series?.[optionName]);
+                // Check if `plotOptions` are defined already, #19203
+                if (oldOption && !defined(plotOptionsOption)) {
                     return option !== oldOption;
                 }
-                return option !==
-                    pick(plotOptions &&
-                        plotOptions[this.type] &&
-                        plotOptions[this.type][optionName], plotOptions &&
-                        plotOptions.series &&
-                        plotOptions.series[optionName], option);
+                return option !== pick(plotOptionsOption, option);
             }
             /**
              * Runs on mouse over the series graphical items.
@@ -34430,45 +34577,43 @@
              */
             setVisible(vis, redraw) {
                 const series = this, chart = series.chart, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
-                // if called without an argument, toggle visibility
+                // If called without an argument, toggle visibility
                 series.visible =
                     vis =
                         series.options.visible =
                             series.userOptions.visible =
                                 typeof vis === 'undefined' ? !oldVisibility : vis; // #5618
                 const showOrHide = vis ? 'show' : 'hide';
-                // show or hide elements
+                // Show or hide elements
                 [
                     'group',
                     'dataLabelsGroup',
                     'markerGroup',
                     'tracker',
                     'tt'
-                ].forEach(function (key) {
-                    if (series[key]) {
-                        series[key][showOrHide]();
-                    }
+                ].forEach((key) => {
+                    series[key]?.[showOrHide]();
                 });
-                // hide tooltip (#1361)
+                // Hide tooltip (#1361)
                 if (chart.hoverSeries === series ||
-                    (chart.hoverPoint && chart.hoverPoint.series) === series) {
+                    chart.hoverPoint?.series === series) {
                     series.onMouseOut();
                 }
                 if (series.legendItem) {
                     chart.legend.colorizeItem(series, vis);
                 }
-                // rescale or adapt to resized chart
+                // Rescale or adapt to resized chart
                 series.isDirty = true;
-                // in a stack, all other series are affected
+                // In a stack, all other series are affected
                 if (series.options.stacking) {
-                    chart.series.forEach(function (otherSeries) {
+                    chart.series.forEach((otherSeries) => {
                         if (otherSeries.options.stacking && otherSeries.visible) {
                             otherSeries.isDirty = true;
                         }
                     });
                 }
-                // show or hide linked series
-                series.linkedSeries.forEach(function (otherSeries) {
+                // Show or hide linked series
+                series.linkedSeries.forEach((otherSeries) => {
                     otherSeries.setVisible(vis, false);
                 });
                 if (ignoreHiddenSeries) {
@@ -34552,8 +34697,8 @@
              * @private
              */
             drawLegendSymbol(legend, item) {
-                var _a;
-                (_a = LegendSymbol[this.options.legendSymbol || 'rectangle']) === null || _a === void 0 ? void 0 : _a.call(this, legend, item);
+                LegendSymbol[this.options.legendSymbol || 'rectangle']
+                    ?.call(this, legend, item);
             }
         }
         Series.defaultOptions = SeriesDefaults;
@@ -34586,15 +34731,14 @@
             axisTypes: ['xAxis', 'yAxis'],
             coll: 'series',
             colorCounter: 0,
-            cropShoulder: 1,
             directTouch: false,
             isCartesian: true,
             kdAxisArray: ['clientX', 'plotY'],
-            // each point's x and y values are stored in this.xData and this.yData:
+            // Each point's x and y values are stored in this.xData and this.yData:
             parallelArrays: ['x', 'y'],
             pointClass: Point,
             requireSorting: true,
-            // requires the data to be sorted:
+            // Requires the data to be sorted:
             sorted: true
         });
         /* *
@@ -35130,7 +35274,14 @@
              */
             setZoomOptions() {
                 const chart = this, options = chart.options.chart, zooming = options.zooming;
-                chart.zooming = Object.assign(Object.assign({}, zooming), { type: pick(options.zoomType, zooming.type), key: pick(options.zoomKey, zooming.key), pinchType: pick(options.pinchType, zooming.pinchType), singleTouch: pick(options.zoomBySingleTouch, zooming.singleTouch, false), resetButton: merge(zooming.resetButton, options.resetZoomButton) });
+                chart.zooming = {
+                    ...zooming,
+                    type: pick(options.zoomType, zooming.type),
+                    key: pick(options.zoomKey, zooming.key),
+                    pinchType: pick(options.pinchType, zooming.pinchType),
+                    singleTouch: pick(options.zoomBySingleTouch, zooming.singleTouch, false),
+                    resetButton: merge(zooming.resetButton, options.resetZoomButton)
+                };
             }
             /**
              * Overridable function that initializes the chart. The constructor's
@@ -35501,7 +35652,7 @@
                             redrawLegend = true;
                         }
                         else if (legendUserOptions &&
-                            (legendUserOptions.labelFormatter ||
+                            (!!legendUserOptions.labelFormatter ||
                                 legendUserOptions.labelFormat)) {
                             redrawLegend = true; // #2165
                         }
@@ -36162,13 +36313,12 @@
              *        internally as a response to window resize.
              */
             reflow(e) {
-                const chart = this, optionsChart = chart.options.chart, hasUserSize = (defined(optionsChart.width) &&
-                    defined(optionsChart.height)), oldBox = chart.containerBox, containerBox = chart.getContainerBox();
+                const chart = this, oldBox = chart.containerBox, containerBox = chart.getContainerBox();
                 delete chart.pointer.chartPosition;
                 // Width and height checks for display:none. Target is doc in Opera
                 // and win in Firefox, Chrome and IE9.
-                if (!hasUserSize &&
-                    !chart.isPrinting &&
+                if (!chart.isPrinting &&
+                    !chart.isResizing &&
                     oldBox &&
                     // When fired by resize observer inside hidden container
                     containerBox.width) {
@@ -36198,8 +36348,7 @@
             setReflow() {
                 const chart = this;
                 const runReflow = (e) => {
-                    var _a;
-                    if (((_a = chart.options) === null || _a === void 0 ? void 0 : _a.chart.reflow) && chart.hasLoaded) {
+                    if (chart.options?.chart.reflow && chart.hasLoaded) {
                         chart.reflow(e);
                     }
                 };
@@ -36284,10 +36433,11 @@
                 chart.oldChartHeight = null;
                 fireEvent(chart, 'resize');
                 // Fire endResize and set isResizing back. If animation is disabled,
-                // fire without delay
-                syncTimeout(function () {
+                // fire without delay, but in a new thread to avoid triggering the
+                // resize observer (#19027).
+                setTimeout(() => {
                     if (chart) {
-                        fireEvent(chart, 'endResize', null, function () {
+                        fireEvent(chart, 'endResize', void 0, () => {
                             chart.isResizing -= 1;
                         });
                     }
@@ -37487,14 +37637,20 @@
                     });
                     pointer.initiated = false; // #6804
                 }
-                else { // else, zoom in on all axes
+                else { // Else, zoom in on all axes
                     event.xAxis.concat(event.yAxis).forEach(function (axisData) {
-                        const axis = axisData.axis, isXAxis = axis.isXAxis;
-                        // don't zoom more than minRange
+                        const axis = axisData.axis, isXAxis = axis.isXAxis, { hasPinched, mouseDownX, mouseDownY } = pointer;
+                        // Don't zoom more than minRange
                         if (pointer[isXAxis ? 'zoomX' : 'zoomY'] &&
-                            (defined(pointer.mouseDownX) &&
-                                defined(pointer.mouseDownY) &&
-                                chart.isInsidePlot(pointer.mouseDownX - chart.plotLeft, pointer.mouseDownY - chart.plotTop, { axis })) || !defined(chart.inverted ? pointer.mouseDownX : pointer.mouseDownY)) {
+                            (defined(mouseDownX) &&
+                                defined(mouseDownY) &&
+                                chart.isInsidePlot(mouseDownX - chart.plotLeft, mouseDownY - chart.plotTop, {
+                                    axis,
+                                    // Ignore touch positions if pinched on mobile
+                                    // #18062
+                                    ignoreX: hasPinched,
+                                    ignoreY: hasPinched
+                                })) || !defined(chart.inverted ? mouseDownX : mouseDownY)) {
                             hasZoomed = axis.zoom(axisData.min, axisData.max);
                             if (axis.displayBtn) {
                                 displayButton = true;
@@ -38251,7 +38407,7 @@
          * */
         const { format } = T;
         const { series: Series } = SeriesRegistry;
-        const { destroyObjectProperties, fireEvent, isNumber, merge, pick } = U;
+        const { destroyObjectProperties, fireEvent, isNumber, pick } = U;
         /* *
          *
          *  Class
@@ -38305,6 +38461,11 @@
                     options.textAlign ||
                         (inverted ? (!isNegative ? 'left' : 'right') : 'center');
             }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * @private
              */
@@ -38407,7 +38568,7 @@
                         visible =
                             isNumber(label.x) &&
                                 isNumber(label.y) &&
-                                chart.isInsidePlot(label.x - padding + label.width, label.y) &&
+                                chart.isInsidePlot(label.x - padding + (label.width || 0), label.y) &&
                                 chart.isInsidePlot(label.x + padding, label.y);
                     }
                     label[visible ? 'show' : 'hide']();
@@ -38542,17 +38703,15 @@
          */
         function chartGetStacks() {
             const chart = this, inverted = chart.inverted;
-            // reset stacks for each yAxis
-            chart.yAxis.forEach((axis) => {
+            // Reset stacks for each axis
+            chart.axes.forEach((axis) => {
                 if (axis.stacking && axis.stacking.stacks && axis.hasVisibleSeries) {
                     axis.stacking.oldStacks = axis.stacking.stacks;
                 }
             });
             chart.series.forEach((series) => {
                 const xAxisOptions = series.xAxis && series.xAxis.options || {};
-                if (series.options.stacking &&
-                    (series.visible === true ||
-                        chart.options.chart.ignoreHiddenSeries === false)) {
+                if (series.options.stacking && series.reserveSpace()) {
                     series.stackKey = [
                         series.type,
                         pick(series.options.stack, ''),
@@ -38567,25 +38726,21 @@
          */
         function onAxisDestroy() {
             const stacking = this.stacking;
-            if (!stacking) {
-                return;
-            }
-            const stacks = stacking.stacks;
-            // Destroy each stack total
-            objectEach(stacks, function (stack, stackKey) {
-                destroyObjectProperties(stack);
-                stacks[stackKey] = null;
-            });
-            if (stacking &&
-                stacking.stackTotalGroup) {
-                stacking.stackTotalGroup.destroy();
+            if (stacking) {
+                const stacks = stacking.stacks;
+                // Destroy each stack total
+                objectEach(stacks, (stack, stackKey) => {
+                    destroyObjectProperties(stack);
+                    delete stacks[stackKey];
+                });
+                stacking.stackTotalGroup?.destroy();
             }
         }
         /**
          * @private
          */
         function onAxisInit() {
-            if (this.coll === 'yAxis' && !this.stacking) {
+            if (!this.stacking) {
                 this.stacking = new AxisAdditions(this);
             }
         }
@@ -38606,15 +38761,14 @@
                 stackIndicator = {
                     x: x,
                     index: 0,
-                    key: key,
+                    key,
                     stackKey: key
                 };
             }
             else {
-                (stackIndicator).index++;
+                stackIndicator.index++;
             }
-            stackIndicator.key =
-                [index, x, stackIndicator.index].join(',');
+            stackIndicator.key = [index, x, stackIndicator.index].join(',');
             return stackIndicator;
         }
         /**
@@ -38624,19 +38778,18 @@
          * @function Highcharts.Series#modifyStacks
          */
         function seriesModifyStacks() {
-            const series = this, yAxis = series.yAxis, stackKey = series.stackKey, stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
+            const series = this, yAxis = series.yAxis, stackKey = series.stackKey || '', stacks = yAxis.stacking.stacks, processedXData = series.processedXData, stacking = series.options.stacking, stacker = series[stacking + 'Stacker'];
             let stackIndicator;
             if (stacker) { // Modifier function exists (Series.percentStacker etc.)
                 [stackKey, '-' + stackKey].forEach((key) => {
-                    let i = processedXData.length, x, stack, pointExtremes;
+                    let i = processedXData.length, x, stackItem, pointExtremes;
                     while (i--) {
                         x = processedXData[i];
                         stackIndicator = series.getStackIndicator(stackIndicator, x, series.index, key);
-                        stack = stacks[key] && stacks[key][x];
-                        pointExtremes =
-                            stack && stack.points[stackIndicator.key];
+                        stackItem = stacks[key]?.[x];
+                        pointExtremes = stackItem?.points[stackIndicator.key || ''];
                         if (pointExtremes) {
-                            stacker.call(series, pointExtremes, stack, i);
+                            stacker.call(series, pointExtremes, stackItem, i);
                         }
                     }
                 });
@@ -38662,11 +38815,10 @@
          * to handle grouping of points within the same category.
          *
          * @private
-         * @function Highcharts.Series#setStackedPoints
+         * @function Highcharts.Series#setGroupedPoints
          * @return {void}
          */
-        function seriesSetGroupedPoints() {
-            const stacking = this.yAxis.stacking;
+        function seriesSetGroupedPoints(axis) {
             if (this.options.centerInCategory &&
                 (this.is('column') || this.is('columnrange')) &&
                 // With stacking enabled, we already have stacks that we can compute
@@ -38674,17 +38826,12 @@
                 !this.options.stacking &&
                 // With only one series, we don't need to consider centerInCategory
                 this.chart.series.length > 1) {
-                seriesProto.setStackedPoints.call(this, 'group');
+                seriesProto.setStackedPoints.call(this, axis, 'group');
                 // After updating, if we now have proper stacks, we must delete the group
-                // pseudo stacks (#14986)
+                // pseudo stacks (#14980)
             }
-            else if (stacking) {
-                objectEach(stacking.stacks, (type, key) => {
-                    if (key.slice(-5) === 'group') {
-                        objectEach(type, (stack) => stack.destroy());
-                        delete stacking.stacks[key];
-                    }
-                });
+            else {
+                axis.stacking.resetStacks();
             }
         }
         /**
@@ -38693,23 +38840,25 @@
          * @private
          * @function Highcharts.Series#setStackedPoints
          */
-        function seriesSetStackedPoints(stackingParam) {
-            const chart = this.chart, stacking = stackingParam || this.options.stacking;
-            if (!stacking || (this.visible !== true &&
-                chart.options.chart.ignoreHiddenSeries !== false)) {
+        function seriesSetStackedPoints(axis, stackingParam) {
+            const type = stackingParam || this.options.stacking;
+            if (!type ||
+                !this.reserveSpace() ||
+                // Group stacks (centerInCategory) belong on the x-axis, other stacks on
+                // the y-axis.
+                ({ group: 'xAxis' }[type] || 'yAxis') !== axis.coll) {
                 return;
             }
-            const series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? `${series.type},${stacking}` : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = stacking === 'group' ?
-                chart.yAxis[0] :
-                series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks;
+            const series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold || 0, stackThreshold = seriesOptions.startFromThreshold ? threshold : 0, stackOption = seriesOptions.stack, stackKey = stackingParam ?
+                `${series.type},${type}` : (series.stackKey || ''), negKey = '-' + stackKey, negStacks = series.negStacks, stacking = axis.stacking, stacks = stacking.stacks, oldStacks = stacking.oldStacks;
             let stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;
-            yAxis.stacking.stacksTouched += 1;
-            // loop over the non-null y values and read them into a local array
+            stacking.stacksTouched += 1;
+            // Loop over the non-null y values and read them into a local array
             for (i = 0; i < yDataLength; i++) {
                 x = xData[i];
                 y = yData[i];
                 stackIndicator = series.getStackIndicator(stackIndicator, x, series.index);
-                pointKey = stackIndicator.key;
+                pointKey = stackIndicator.key || '';
                 // Read stacked values into a stack based on the x value,
                 // the sign of y and the stack key. Stacking is also handled for null
                 // values (#739)
@@ -38721,89 +38870,88 @@
                 }
                 // Initialize StackItem for this x
                 if (!stacks[key][x]) {
-                    if (oldStacks[key] &&
-                        oldStacks[key][x]) {
+                    if (oldStacks[key]?.[x]) {
                         stacks[key][x] = oldStacks[key][x];
                         stacks[key][x].total = null;
                     }
                     else {
-                        stacks[key][x] = new StackItem(yAxis, yAxis.options.stackLabels, !!isNegative, x, stackOption);
+                        stacks[key][x] = new StackItem(axis, axis.options.stackLabels, !!isNegative, x, stackOption);
                     }
                 }
                 // If the StackItem doesn't exist, create it first
                 stack = stacks[key][x];
                 if (y !== null) {
-                    stack.points[pointKey] = stack.points[series.index] =
-                        [pick(stack.cumulative, stackThreshold)];
+                    stack.points[pointKey] = stack.points[series.index] = [
+                        pick(stack.cumulative, stackThreshold)
+                    ];
                     // Record the base of the stack
                     if (!defined(stack.cumulative)) {
                         stack.base = pointKey;
                     }
-                    stack.touched = yAxis.stacking.stacksTouched;
+                    stack.touched = stacking.stacksTouched;
                     // In area charts, if there are multiple points on the same X value,
                     // let the area fill the full span of those points
                     if (stackIndicator.index > 0 && series.singleStacks === false) {
-                        stack.points[pointKey][0] =
-                            stack.points[series.index + ',' + x + ',0'][0];
+                        stack.points[pointKey][0] = stack.points[series.index + ',' + x + ',0'][0];
                     }
                     // When updating to null, reset the point stack (#7493)
                 }
                 else {
-                    stack.points[pointKey] = stack.points[series.index] =
-                        null;
+                    delete stack.points[pointKey];
+                    delete stack.points[series.index];
                 }
                 // Add value to the stack total
-                if (stacking === 'percent') {
+                let total = stack.total || 0;
+                if (type === 'percent') {
                     // Percent stacked column, totals are the same for the positive and
                     // negative stacks
                     other = isNegative ? stackKey : negKey;
-                    if (negStacks && stacks[other] && stacks[other][x]) {
+                    if (negStacks && stacks[other]?.[x]) {
                         other = stacks[other][x];
-                        stack.total = other.total =
-                            Math.max(other.total, stack.total) +
-                                Math.abs(y) ||
-                                0;
+                        total = other.total =
+                            Math.max(other.total || 0, total) +
+                                Math.abs(y) || 0;
                         // Percent stacked areas
                     }
                     else {
-                        stack.total =
-                            correctFloat(stack.total + (Math.abs(y) || 0));
+                        total = correctFloat(total + (Math.abs(y) || 0));
                     }
                 }
-                else if (stacking === 'group') {
+                else if (type === 'group') {
                     if (isArray(y)) {
                         y = y[0];
                     }
                     // In this stack, the total is the number of valid points
                     if (y !== null) {
-                        stack.total = (stack.total || 0) + 1;
+                        total++;
                     }
                 }
                 else {
-                    stack.total = correctFloat(stack.total + (y || 0));
+                    total = correctFloat(total + (y || 0));
                 }
-                if (stacking === 'group') {
+                if (type === 'group') {
                     // This point's index within the stack, pushed to stack.points[1]
-                    stack.cumulative = (stack.total || 1) - 1;
+                    stack.cumulative = (total || 1) - 1;
                 }
                 else {
                     stack.cumulative = correctFloat(pick(stack.cumulative, stackThreshold) +
                         (y || 0));
                 }
+                stack.total = total;
                 if (y !== null) {
                     stack.points[pointKey].push(stack.cumulative);
                     stackedYData[i] = stack.cumulative;
                     stack.hasValidPoints = true;
                 }
             }
-            if (stacking === 'percent') {
-                yAxis.stacking.usePercentage = true;
+            if (type === 'percent') {
+                stacking.usePercentage = true;
             }
-            if (stacking !== 'group') {
+            if (type !== 'group') {
                 this.stackedYData = stackedYData; // To be used in getExtremes
             }
             // Reset old stacks
-            yAxis.stacking.oldStacks = {};
+            stacking.oldStacks = {};
         }
         /* *
          *
@@ -38837,22 +38985,23 @@
              * @private
              */
             buildStacks() {
-                const stacking = this;
-                const axis = stacking.axis;
-                const axisSeries = axis.series;
-                const reversedStacks = axis.options.reversedStacks;
-                const len = axisSeries.length;
+                const stacking = this, axis = stacking.axis, axisSeries = axis.series, isXAxis = axis.coll === 'xAxis', reversedStacks = axis.options.reversedStacks, len = axisSeries.length;
                 let actualSeries, i;
+                this.resetStacks();
                 stacking.usePercentage = false;
                 i = len;
                 while (i--) {
                     actualSeries = axisSeries[reversedStacks ? i : len - i - 1];
-                    actualSeries.setStackedPoints();
-                    actualSeries.setGroupedPoints();
+                    if (isXAxis) {
+                        actualSeries.setGroupedPoints(axis);
+                    }
+                    actualSeries.setStackedPoints(axis);
                 }
                 // Loop up again to compute percent and stream stack
-                for (i = 0; i < len; i++) {
-                    axisSeries[i].modifyStacks();
+                if (!isXAxis) {
+                    for (i = 0; i < len; i++) {
+                        axisSeries[i].modifyStacks();
+                    }
                 }
                 fireEvent(axis, 'afterBuildStacks');
             }
@@ -38860,17 +39009,15 @@
              * @private
              */
             cleanStacks() {
-                const stacking = this;
-                let stacks;
-                if (stacking.oldStacks) {
-                    stacks = stacking.stacks = stacking.oldStacks;
-                }
-                // reset stacks
-                objectEach(stacks, function (type) {
-                    objectEach(type, function (stack) {
-                        stack.cumulative = stack.total;
+                if (this.oldStacks) {
+                    this.stacks = this.oldStacks;
+                    // Reset stacks
+                    objectEach(this.stacks, (type) => {
+                        objectEach(type, (stack) => {
+                            stack.cumulative = stack.total;
+                        });
                     });
-                });
+                }
             }
             /**
              * Set all the stacks to initial states and destroy unused ones.
@@ -38897,8 +39044,7 @@
              * @private
              */
             renderStackTotals() {
-                const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels &&
-                    axis.options.stackLabels.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
+                const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels?.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
                     renderer
                         .g('stack-labels')
                         .attr({
@@ -38906,13 +39052,13 @@
                         opacity: 0
                     })
                         .add());
-                // plotLeft/Top will change when y axis gets wider so we need to
+                // The plotLeft/Top will change when y axis gets wider so we need to
                 // translate the stackTotalGroup at every render call. See bug #506
                 // and #516
                 stackTotalGroup.translate(chart.plotLeft, chart.plotTop);
                 // Render each stack total
-                objectEach(stacks, function (type) {
-                    objectEach(type, function (stack) {
+                objectEach(stacks, (type) => {
+                    objectEach(type, (stack) => {
                         stack.render(stackTotalGroup);
                     });
                 });
@@ -38981,7 +39127,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defined, merge } = U;
+        const { defined, merge, isObject } = U;
         /* *
          *
          *  Class
@@ -39096,7 +39242,12 @@
                         graph[verb](attribs)
                             // Add shadow to normal series (0) or to first
                             // zone (1) #3932
-                            .shadow((i < 2) && options.shadow);
+                            .shadow((i < 2) &&
+                            options.shadow &&
+                            // If shadow is defined, call function with
+                            // `filterUnits: 'userSpaceOnUse'` to avoid known
+                            // SVG filter bug (#19093)
+                            merge({ filterUnits: 'userSpaceOnUse' }, isObject(options.shadow) ? options.shadow : {}));
                     }
                     // Helpers for animation
                     if (graph) {
@@ -39263,7 +39414,7 @@
          * A line series displays information as a series of data points connected by
          * straight line segments.
          *
-         * @sample {highcharts} highcharts/demo/line-basic/
+         * @sample {highcharts} highcharts/demo/line-chart/
          *         Line chart
          * @sample {highstock} stock/demo/basic-line/
          *         Line chart
@@ -39365,6 +39516,7 @@
          * chart's legend and tooltip.
          *
          * @sample {highcharts} highcharts/css/point-series-classname
+         *         Series and point class name
          *
          * @type      {string}
          * @since     5.0.0
@@ -39422,6 +39574,7 @@
          * @sample highcharts/point/datalabels/
          *         Show a label for the last value
          *
+         * @type      {*|Array<*>}
          * @declare   Highcharts.DataLabelsOptions
          * @extends   plotOptions.line.dataLabels
          * @product   highcharts highstock gantt
@@ -40174,56 +40327,70 @@
                     // record for drawing in next point
                     point.rightContX = rightContX;
                     point.rightContY = rightContY;
+                    // Visualize control points for debugging
+                    /*
+                    if (leftContX) {
+                        this.chart.renderer
+                            .circle(
+                                leftContX + this.chart.plotLeft,
+                                leftContY + this.chart.plotTop,
+                                2
+                            )
+                            .attr({
+                                stroke: 'red',
+                                'stroke-width': 2,
+                                fill: 'none',
+                                zIndex: 9
+                            })
+                            .add();
+                        this.chart.renderer
+                            .path([['M', leftContX + this.chart.plotLeft,
+                                leftContY + this.chart.plotTop
+                            ], ['L', plotX + this.chart.plotLeft,
+                                plotY + this.chart.plotTop
+                            ]])
+                            .attr({
+                                stroke: 'red',
+                                'stroke-width': 2,
+                                zIndex: 9
+                            })
+                            .add();
+                    }
+                    if (rightContX) {
+                        this.chart.renderer
+                            .circle(
+                                rightContX + this.chart.plotLeft,
+                                rightContY + this.chart.plotTop,
+                                2
+                            )
+                            .attr({
+                                stroke: 'green',
+                                'stroke-width': 2,
+                                fill: 'none',
+                                zIndex: 9
+                            })
+                            .add();
+                        this.chart.renderer
+                            .path([[
+                                'M', rightContX + this.chart.plotLeft,
+                                rightContY + this.chart.plotTop
+                            ], [
+                                'L', plotX + this.chart.plotLeft,
+                                plotY + this.chart.plotTop
+                            ]])
+                            .attr({
+                                stroke: 'green',
+                                'stroke-width': 2,
+                                zIndex: 9
+                            })
+                            .add();
+                    }
+                    // */
+                    point.controlPoints = {
+                        low: [leftContX, leftContY],
+                        high: [rightContX, rightContY]
+                    };
                 }
-                // Visualize control points for debugging
-                /*
-                if (leftContX) {
-                    this.chart.renderer.circle(
-                            leftContX + this.chart.plotLeft,
-                            leftContY + this.chart.plotTop,
-                            2
-                        )
-                        .attr({
-                            stroke: 'red',
-                            'stroke-width': 2,
-                            fill: 'none',
-                            zIndex: 9
-                        })
-                        .add();
-                    this.chart.renderer.path(['M', leftContX + this.chart.plotLeft,
-                        leftContY + this.chart.plotTop,
-                        'L', plotX + this.chart.plotLeft, plotY + this.chart.plotTop])
-                        .attr({
-                            stroke: 'red',
-                            'stroke-width': 2,
-                            zIndex: 9
-                        })
-                        .add();
-                }
-                if (rightContX) {
-                    this.chart.renderer.circle(
-                            rightContX + this.chart.plotLeft,
-                            rightContY + this.chart.plotTop,
-                            2
-                        )
-                        .attr({
-                            stroke: 'green',
-                            'stroke-width': 2,
-                            fill: 'none',
-                            zIndex: 9
-                        })
-                        .add();
-                    this.chart.renderer.path(['M', rightContX + this.chart.plotLeft,
-                        rightContY + this.chart.plotTop,
-                        'L', plotX + this.chart.plotLeft, plotY + this.chart.plotTop])
-                        .attr({
-                            stroke: 'green',
-                            'stroke-width': 2,
-                            zIndex: 9
-                        })
-                        .add();
-                }
-                // */
                 const ret = [
                     'C',
                     pick(lastPoint.rightContX, lastPoint.plotX, 0),
@@ -41162,8 +41329,7 @@
                         const otherYAxis = otherSeries.yAxis, otherOptions = otherSeries.options;
                         let columnIndex;
                         if (otherSeries.type === series.type &&
-                            (otherSeries.visible ||
-                                !series.chart.options.chart.ignoreHiddenSeries) &&
+                            otherSeries.reserveSpace() &&
                             yAxis.len === otherYAxis.len &&
                             yAxis.pos === otherYAxis.pos) { // #642, #2086
                             if (otherOptions.stacking &&
@@ -41182,7 +41348,7 @@
                         }
                     });
                 }
-                const categoryWidth = Math.min(Math.abs(xAxis.transA) * ((xAxis.ordinal && xAxis.ordinal.slope) ||
+                const categoryWidth = Math.min(Math.abs(xAxis.transA) * ((!xAxis.brokenAxis?.hasBreaks && xAxis.ordinal?.slope) ||
                     options.pointRange ||
                     xAxis.closestPointRange ||
                     xAxis.tickInterval ||
@@ -41259,39 +41425,27 @@
              * The adjusted x position, or the original if not adjusted
              */
             adjustForMissingColumns(x, pointWidth, point, metrics) {
-                const stacking = this.options.stacking;
                 if (!point.isNull && metrics.columnCount > 1) {
-                    const reversedStacks = this.yAxis.options.reversedStacks;
-                    let indexInCategory = 0, totalInCategory = reversedStacks ? 0 : -metrics.columnCount;
+                    const visibleSeries = this.xAxis.series
+                        .filter((s) => s.visible)
+                        .map((s) => s.index);
+                    let indexInCategory = 0, totalInCategory = 0;
                     // Loop over all the stacks on the Y axis. When stacking is enabled,
                     // these are real point stacks. When stacking is not enabled, but
                     // `centerInCategory` is true, there is one stack handling the
                     // grouping of points in each category. This is done in the
                     // `setGroupedPoints` function.
-                    objectEach(this.yAxis.stacking && this.yAxis.stacking.stacks, (stack) => {
+                    objectEach(this.xAxis.stacking?.stacks, (stack) => {
                         if (typeof point.x === 'number') {
                             const stackItem = stack[point.x.toString()];
                             if (stackItem) {
                                 const pointValues = stackItem.points[this.index];
-                                // If true `stacking` is enabled, count the total
-                                // number of non-null stacks in the category, and
-                                // note which index this point is within those
-                                // stacks.
-                                if (stacking) {
-                                    if (pointValues) {
-                                        indexInCategory = totalInCategory;
-                                    }
-                                    if (stackItem.hasValidPoints) {
-                                        reversedStacks ? // #16169
-                                            totalInCategory++ : totalInCategory--;
-                                    }
-                                    // If `stacking` is not enabled, look for the index
-                                }
-                                else if (isArray(pointValues)) {
+                                // Look for the index
+                                if (isArray(pointValues)) {
                                     // If there are multiple points with the same X
                                     // then gather all series in category, and
                                     // assign index
-                                    let seriesIndexes = Object
+                                    const seriesIndexes = Object
                                         .keys(stackItem.points)
                                         .filter((pointKey) => 
                                     // Filter out duplicate X's
@@ -41300,6 +41454,7 @@
                                         stackItem.points[pointKey] &&
                                         stackItem.points[pointKey].length > 1)
                                         .map(parseFloat)
+                                        .filter((index) => visibleSeries.indexOf(index) !== -1)
                                         .sort((a, b) => b - a);
                                     indexInCategory = seriesIndexes.indexOf(this.index);
                                     totalInCategory = seriesIndexes.length;
@@ -41384,7 +41539,7 @@
                         barX -= Math.round((pointWidth - seriesPointWidth) / 2);
                     }
                     // Adjust for null or missing points
-                    if (options.centerInCategory) {
+                    if (options.centerInCategory && !options.stacking) {
                         barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
                     }
                     // Cache for access in polar
@@ -41630,12 +41785,11 @@
         }
         ColumnSeries.defaultOptions = merge(Series.defaultOptions, ColumnSeriesDefaults);
         extend(ColumnSeries.prototype, {
-            cropShoulder: 0,
             // When tooltip is not shared, this series (and derivatives) requires
             // direct touch/hover. KD-tree does not apply.
             directTouch: true,
             getSymbol: noop,
-            // use separate negative stacks, unlike area stacks where a negative
+            // Use separate negative stacks, unlike area stacks where a negative
             // point is substracted from previous (#1910)
             negStacks: true,
             trackerGroups: ['group', 'dataLabelsGroup']
@@ -41681,7 +41835,7 @@
          * */
         const { getDeferredAnimation } = A;
         const { format } = F;
-        const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, splat } = U;
+        const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
         /* *
          *
          *  Composition
@@ -41707,6 +41861,15 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
+            /**
+             * Check if this series has data labels, either a series-level setting, or
+             * individual. In case of individual point labels, this method is overridden
+             * to always return true.
+             * @private
+             */
+            function hasDataLabels() {
+                return splat(this.options.dataLabels || {}).some((o) => o?.enabled);
+            }
             /**
              * Align each individual data label.
              * @private
@@ -41889,6 +42052,7 @@
                     seriesProto.drawDataLabels = drawDataLabels;
                     seriesProto.justifyDataLabel = justifyDataLabel;
                     seriesProto.setDataLabelStartPos = setDataLabelStartPos;
+                    seriesProto.hasDataLabels = hasDataLabels;
                 }
             }
             DataLabel.compose = compose;
@@ -41926,45 +42090,39 @@
              * Draw the data labels
              * @private
              */
-            function drawDataLabels(points = this.points) {
-                var _a,
-                    _b;
+            function drawDataLabels(points) {
+                points = points || this.points;
                 const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
                     (isString(backgroundColor) && backgroundColor) ||
                     "#000000" /* Palette.neutralColor100 */);
                 let seriesDlOptions = seriesOptions.dataLabels, pointOptions, dataLabelsGroup;
-                const firstDLOptions = splat(seriesDlOptions)[0], dataLabelAnim = firstDLOptions.animation, animationConfig = firstDLOptions.defer ?
-                    getDeferredAnimation(chart, dataLabelAnim, series) :
-                    { defer: 0, duration: 0 };
                 // Merge in plotOptions.dataLabels for series
-                seriesDlOptions = mergeArrays(mergeArrays((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.dataLabels, (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[series.type]) === null || _b === void 0 ? void 0 : _b.dataLabels), seriesDlOptions);
+                seriesDlOptions = mergeArrays(mergeArrays(plotOptions?.series?.dataLabels, plotOptions?.[series.type]?.dataLabels), seriesDlOptions);
+                // Resolve the animation
+                const { animation, defer } = splat(seriesDlOptions)[0], animationConfig = defer ?
+                    getDeferredAnimation(chart, animation, series) :
+                    { defer: 0, duration: 0 };
                 fireEvent(this, 'drawDataLabels');
-                if (isArray(seriesDlOptions) ||
-                    seriesDlOptions.enabled ||
-                    series._hasPointLabels) {
+                if (series.hasDataLabels?.()) {
                     dataLabelsGroup = this.initDataLabels(animationConfig);
                     // Make the labels for each point
                     points.forEach((point) => {
-                        var _a;
                         const dataLabels = point.dataLabels || [];
                         // Merge in series options for the point.
                         // @note dataLabelAttribs (like pointAttribs) would eradicate
                         // the need for dlOptions, and simplify the section below.
                         pointOptions = splat(mergeArrays(seriesDlOptions, 
-                        // dlOptions is used in treemaps
-                        point.dlOptions || ((_a = point.options) === null || _a === void 0 ? void 0 : _a.dataLabels)));
+                        // The dlOptions prop is used in treemaps
+                        point.dlOptions || point.options?.dataLabels));
                         // Handle each individual data label for this point
                         pointOptions.forEach((labelOptions, i) => {
-                            var _a;
                             // Options for one datalabel
                             const labelEnabled = (labelOptions.enabled &&
+                                point.visible &&
                                 // #2282, #4641, #7112, #10049
                                 (!point.isNull || point.dataLabelOnNull) &&
-                                applyFilter(point, labelOptions)), connector = point.connectors ?
-                                point.connectors[i] :
-                                point.connector, style = labelOptions.style || {};
+                                applyFilter(point, labelOptions)), style = labelOptions.style || {}, labelDistance = labelOptions.distance;
                             let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel;
-                            const labelDistance = pick(labelOptions.distance, point.labelDistance);
                             if (labelEnabled) {
                                 // Create individual options structure that can be
                                 // extended without affecting others
@@ -41983,7 +42141,7 @@
                                         point.contrastColor = renderer.getContrast((point.color || series.color));
                                         style.color = ((!defined(labelDistance) &&
                                             labelOptions.inside) ||
-                                            (labelDistance || 0) < 0 ||
+                                            pInt(labelDistance || 0) < 0 ||
                                             seriesOptions.stacking) ?
                                             point.contrastColor :
                                             contrastColor;
@@ -42033,19 +42191,6 @@
                                     dataLabel.rotation !== labelOptions.rotation))) {
                                 dataLabel = void 0;
                                 isNew = true;
-                                if (connector && point.connector) {
-                                    point.connector = point.connector.destroy();
-                                    if (point.connectors) {
-                                        // Remove point.connectors if this was the last
-                                        // one
-                                        if (point.connectors.length === 1) {
-                                            delete point.connectors;
-                                        }
-                                        else {
-                                            delete point.connectors[i];
-                                        }
-                                    }
-                                }
                             }
                             // Individual labels are disabled if the are explicitly
                             // disabled in the point options, or if they fall outside
@@ -42084,7 +42229,7 @@
                                     }
                                     const textPathOptions = labelOptions[point.formatPrefix + 'TextPath'] || labelOptions.textPath;
                                     if (textPathOptions && !labelOptions.useHTML) {
-                                        dataLabel.setTextPath(((_a = point.getDataLabelPath) === null || _a === void 0 ? void 0 : _a.call(point, dataLabel)) ||
+                                        dataLabel.setTextPath(point.getDataLabelPath?.(dataLabel) ||
                                             point.graphic, textPathOptions);
                                         if (point.dataLabelPath &&
                                             !textPathOptions.enabled) {
@@ -42109,12 +42254,14 @@
                         // Destroy and remove the inactive ones
                         let j = dataLabels.length;
                         while (j--) {
-                            if (dataLabels[j].isActive) {
-                                dataLabels[j].isActive = false;
+                            // The item can be undefined if a disabled data label is
+                            // succeeded by an enabled one (#19457)
+                            if (!dataLabels[j] || !dataLabels[j].isActive) {
+                                dataLabels[j]?.destroy();
+                                dataLabels.splice(j, 1);
                             }
                             else {
-                                dataLabels[j].destroy();
-                                dataLabels.splice(j, 1);
+                                dataLabels[j].isActive = false;
                             }
                         }
                         // Write back
@@ -42222,7 +42369,7 @@
              * @private
              */
             function setDataLabelStartPos(point, dataLabel, isNew, isInside, alignOptions) {
-                const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = inverted ? dataLabel.height / 2 : dataLabel.width / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
+                const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = ((inverted ? dataLabel.height : dataLabel.width) || 0) / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
                 dataLabel.startXPos = inverted ?
                     alignOptions.x :
                     (reversed ?
@@ -42328,25 +42475,28 @@
              * @private
              */
             function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-                let inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
-                // data label box for alignment
-                dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // range series
+                const inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
+                // Data label box for alignment
+                dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // Fange series
                 point.plotY >
                     pick(this.translatedThreshold, yLen)), 
-                // draw it inside the box?
-                inside = pick(options.inside, !!this.options.stacking), overshoot;
+                // Draw it inside the box?
+                inside = pick(options.inside, !!this.options.stacking);
                 // Align to the column itself, or the top of it
                 if (dlBox) { // Area range uses this method but not alignTo
                     alignTo = merge(dlBox);
-                    if (alignTo.y < 0) {
-                        alignTo.height += alignTo.y;
-                        alignTo.y = 0;
-                    }
-                    // If parts of the box overshoots outside the plot area, modify the
-                    // box to center the label inside
-                    overshoot = alignTo.y + alignTo.height - yLen;
-                    if (overshoot > 0 && overshoot < alignTo.height) {
-                        alignTo.height -= overshoot;
+                    // Check for specific overflow and crop conditions (#13240)
+                    if (!(options.overflow === 'allow' && options.crop === false)) {
+                        if (alignTo.y < 0) {
+                            alignTo.height += alignTo.y;
+                            alignTo.y = 0;
+                        }
+                        // If parts of the box overshoots outside the plot area, modify
+                        // the box to center the label inside
+                        const overshoot = alignTo.y + alignTo.height - yLen;
+                        if (overshoot > 0 && overshoot < alignTo.height) {
+                            alignTo.height -= overshoot;
+                        }
                     }
                     if (inverted) {
                         alignTo = {
@@ -43011,7 +43161,7 @@
          *
          * */
         const { setAnimation } = A;
-        const { addEvent, defined, extend, isNumber, pick, relativeLength } = U;
+        const { addEvent, defined, extend, isNumber, isString, pick, relativeLength } = U;
         /* *
          *
          *  Class
@@ -43025,7 +43175,7 @@
                  *
                  * */
                 super(...arguments);
-                this.labelDistance = void 0;
+                this.half = 0;
                 this.options = void 0;
                 this.series = void 0;
             }
@@ -43040,25 +43190,19 @@
              * data label and the pie slice.
              * @private
              */
-            getConnectorPath() {
-                const labelPosition = this.labelPosition, options = this.series.options.dataLabels, predefinedShapes = this.connectorShapes;
-                let connectorShape = options.connectorShape;
-                // find out whether to use the predefined shape
-                if (predefinedShapes[connectorShape]) {
-                    connectorShape = predefinedShapes[connectorShape];
-                }
-                return connectorShape.call(this, {
-                    // pass simplified label position object for user's convenience
-                    x: labelPosition.computed.x,
-                    y: labelPosition.computed.y,
+            getConnectorPath(dataLabel) {
+                const labelPosition = dataLabel.dataLabelPosition, options = (dataLabel.options || {}), connectorShape = options.connectorShape, shapeFunc = (this.connectorShapes[connectorShape] || connectorShape);
+                return labelPosition && shapeFunc.call(this, {
+                    // Pass simplified label position object for user's convenience
+                    ...labelPosition.computed,
                     alignment: labelPosition.alignment
-                }, labelPosition.connectorPosition, options);
+                }, labelPosition.connectorPosition, options) || [];
             }
             /**
              * @private
              */
             getTranslate() {
-                return this.sliced ? this.slicedTranslation : {
+                return this.sliced && this.slicedTranslation || {
                     translateX: 0,
                     translateY: 0
                 };
@@ -43221,7 +43365,7 @@
                     ];
                 },
                 crookedLine: function (labelPosition, connectorPosition, options) {
-                    const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, plotWidth = series.chart.plotWidth, plotLeft = series.chart.plotLeft, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
+                    const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
                     let crookX = breakAt.x;
                     if (options.crookDistance) {
                         const crookDistance = relativeLength(// % to fraction
@@ -43278,7 +43422,7 @@
          * A pie chart is a circular graphic which is divided into slices to
          * illustrate numerical proportion.
          *
-         * @sample highcharts/demo/pie-basic/
+         * @sample highcharts/demo/pie-chart/
          *         Pie chart
          *
          * @extends      plotOptions.line
@@ -43431,7 +43575,6 @@
                  * @product   highcharts highmaps
                  * @apioption plotOptions.pie.dataLabels.alignTo
                  */
-                allowOverlap: true,
                 /**
                  * The color of the line connecting the data label to the pie slice.
                  * The default color is the same as the point's color.
@@ -43649,8 +43792,8 @@
              */
             ignoreHiddenPoint: true,
             /**
-             * @ignore-option
-             *
+             * @default   true
+             * @extends   plotOptions.series.inactiveOtherPoints
              * @private
              */
             inactiveOtherPoints: true,
@@ -43948,7 +44091,7 @@
          * */
         const { getStartAndEndRadians } = CU;
         const { noop } = H;
-        const { clamp, extend, fireEvent, merge, pick, relativeLength } = U;
+        const { clamp, extend, fireEvent, merge, pick, relativeLength, splat } = U;
         /* *
          *
          *  Class
@@ -43978,7 +44121,6 @@
                  * */
                 this.center = void 0;
                 this.data = void 0;
-                this.maxLabelDistance = void 0;
                 this.options = void 0;
                 this.points = void 0;
                 /* eslint-enable valid-jsdoc */
@@ -44085,23 +44227,22 @@
                 this.updateTotals();
             }
             /**
-             * Utility for getting the x value from a given y, used for
-             * anticollision logic in data labels. Added point for using specific
-             * points' label distance.
+             * Utility for getting the x value from a given y, used for anticollision
+             * logic in data labels.
              * @private
              */
-            getX(y, left, point) {
+            getX(y, left, point, dataLabel) {
                 const center = this.center, 
                 // Variable pie has individual radius
                 radius = this.radii ?
                     this.radii[point.index] || 0 :
-                    center[2] / 2;
-                const angle = Math.asin(clamp((y - center[1]) / (radius + point.labelDistance), -1, 1));
+                    center[2] / 2, labelPosition = dataLabel.dataLabelPosition, distance = labelPosition?.distance || 0;
+                const angle = Math.asin(clamp((y - center[1]) / (radius + distance), -1, 1));
                 const x = center[0] +
                     (left ? -1 : 1) *
-                        (Math.cos(angle) * (radius + point.labelDistance)) +
-                    (point.labelDistance > 0 ?
-                        (left ? -1 : 1) * this.options.dataLabels.padding :
+                        (Math.cos(angle) * (radius + distance)) +
+                    (distance > 0 ?
+                        (left ? -1 : 1) * (dataLabel.padding || 0) :
                         0);
                 return x;
             }
@@ -44189,10 +44330,10 @@
                 fireEvent(this, 'translate');
                 this.generatePoints();
                 const series = this, precision = 1000, // issue #172
-                options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
-                points = series.points, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
-                let finalConnectorOffset, start, end, angle, 
-                // the x component of the radius vector for a given point
+                options = series.options, slicedOffset = options.slicedOffset, radians = getStartAndEndRadians(options.startAngle, options.endAngle), startAngleRad = series.startAngleRad = radians.start, endAngleRad = series.endAngleRad = radians.end, circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint, len = points.length;
+                let start, end, angle, 
+                // The x component of the radius vector for a given point
                 radiusX, radiusY, i, point, cumulative = 0;
                 // Get positions - either an integer or a percentage string must be
                 // given. If positions are passed as a parameter, we're in a
@@ -44203,14 +44344,14 @@
                 // Calculate the geometry for each point
                 for (i = 0; i < len; i++) {
                     point = points[i];
-                    // set start and end angle
+                    // Set start and end angle
                     start = startAngleRad + (cumulative * circ);
                     if (point.isValid() &&
                         (!ignoreHiddenPoint || point.visible)) {
                         cumulative += point.percentage / 100;
                     }
                     end = startAngleRad + (cumulative * circ);
-                    // set the shape
+                    // Set the shape
                     const shapeArgs = {
                         x: positions[0],
                         y: positions[1],
@@ -44221,14 +44362,6 @@
                     };
                     point.shapeType = 'arc';
                     point.shapeArgs = shapeArgs;
-                    // Used for distance calculation for specific point.
-                    point.labelDistance = pick((point.options.dataLabels &&
-                        point.options.dataLabels.distance), labelDistance);
-                    // Compute point.labelDistance if it's defined as percentage
-                    // of slice radius (#8854)
-                    point.labelDistance = relativeLength(point.labelDistance, shapeArgs.r);
-                    // Saved for later dataLabels distance calculation.
-                    series.maxLabelDistance = Math.max(series.maxLabelDistance || 0, point.labelDistance);
                     // The angle must stay within -90 and 270 (#2645)
                     angle = (end + start) / 2;
                     if (angle > 1.5 * Math.PI) {
@@ -44242,7 +44375,7 @@
                         translateX: Math.round(Math.cos(angle) * slicedOffset),
                         translateY: Math.round(Math.sin(angle) * slicedOffset)
                     };
-                    // set the anchor point for tooltips
+                    // Set the anchor point for tooltips
                     radiusX = Math.cos(angle) * positions[2] / 2;
                     radiusY = Math.sin(angle) * positions[2] / 2;
                     point.tooltipPos = [
@@ -44253,43 +44386,6 @@
                         1 :
                         0;
                     point.angle = angle;
-                    // Set the anchor point for data labels. Use point.labelDistance
-                    // instead of labelDistance // #1174
-                    // finalConnectorOffset - not override connectorOffset value.
-                    finalConnectorOffset = Math.min(connectorOffset, point.labelDistance / 5); // #1678
-                    point.labelPosition = {
-                        natural: {
-                            // initial position of the data label - it's utilized for
-                            // finding the final position for the label
-                            x: positions[0] + radiusX + Math.cos(angle) *
-                                point.labelDistance,
-                            y: positions[1] + radiusY + Math.sin(angle) *
-                                point.labelDistance
-                        },
-                        computed: {
-                        // used for generating connector path -
-                        // initialized later in drawDataLabels function
-                        // x: undefined,
-                        // y: undefined
-                        },
-                        // left - pie on the left side of the data label
-                        // right - pie on the right side of the data label
-                        // center - data label overlaps the pie
-                        alignment: point.labelDistance < 0 ?
-                            'center' : point.half ? 'right' : 'left',
-                        connectorPosition: {
-                            breakAt: {
-                                x: positions[0] + radiusX + Math.cos(angle) *
-                                    finalConnectorOffset,
-                                y: positions[1] + radiusY + Math.sin(angle) *
-                                    finalConnectorOffset
-                            },
-                            touchingSliceAt: {
-                                x: positions[0] + radiusX,
-                                y: positions[1] + radiusY
-                            }
-                        }
-                    };
                 }
                 fireEvent(series, 'afterTranslate');
             }
@@ -44358,7 +44454,7 @@
         const { noop } = H;
         const { distribute } = R;
         const { series: Series } = SeriesRegistry;
-        const { arrayMax, clamp, defined, merge, pick, relativeLength } = U;
+        const { arrayMax, clamp, defined, pick, relativeLength } = U;
         /* *
          *
          *  Composition
@@ -44374,22 +44470,24 @@
             const composedMembers = [];
             const dataLabelPositioners = {
                 // Based on the value computed in Highcharts' distribute algorithm.
-                radialDistributionY: function (point) {
-                    return point.top + point.distributeBox.pos;
+                radialDistributionY: function (point, dataLabel) {
+                    return (dataLabel.dataLabelPosition?.top || 0) +
+                        point.distributeBox.pos;
                 },
-                // get the x - use the natural x position for labels near the
-                // top and bottom, to prevent the top and botton slice
-                // connectors from touching each other on either side
-                // Based on the value computed in Highcharts' distribute algorithm.
-                radialDistributionX: function (series, point, y, naturalY) {
-                    return series.getX(y < point.top + 2 || y > point.bottom - 2 ?
+                // Get the x - use the natural x position for labels near the top and
+                // bottom, to prevent the top and botton slice connectors from touching
+                // each other on either side. Based on the value computed in Highcharts'
+                // distribute algorithm.
+                radialDistributionX: function (series, point, y, naturalY, dataLabel) {
+                    const pos = dataLabel.dataLabelPosition;
+                    return series.getX(y < (pos?.top || 0) + 2 || y > (pos?.bottom || 0) - 2 ?
                         naturalY :
-                        y, point.half, point);
+                        y, point.half, point, dataLabel);
                 },
-                // dataLabels.distance determines the x position of the label
-                justify: function (point, radius, seriesCenter) {
+                // The dataLabels.distance determines the x position of the label
+                justify: function (point, dataLabel, radius, seriesCenter) {
                     return seriesCenter[0] + (point.half ? -1 : 1) *
-                        (radius + point.labelDistance);
+                        (radius + (dataLabel.dataLabelPosition?.distance || 0));
                 },
                 // Left edges of the left-half labels touch the left edge of the plot
                 // area. Right edges of the right-half labels touch the right edge of
@@ -44430,263 +44528,279 @@
                     pieProto.dataLabelPositioners = dataLabelPositioners;
                     pieProto.alignDataLabel = noop;
                     pieProto.drawDataLabels = drawDataLabels;
+                    pieProto.getDataLabelPosition = getDataLabelPosition;
                     pieProto.placeDataLabels = placeDataLabels;
                     pieProto.verifyDataLabelOverflow = verifyDataLabelOverflow;
                 }
             }
             ColumnDataLabel.compose = compose;
+            /** @private */
+            function getDataLabelPosition(point, distance) {
+                const { center, options } = this, r = center[2] / 2, angle = point.angle || 0, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
+                return {
+                    natural: {
+                        // Initial position of the data label - it's utilized for
+                        // finding the final position for the label
+                        x: x + cosAngle * distance,
+                        y: y + sinAngle * distance
+                    },
+                    computed: {
+                    // Used for generating connector path - initialized later in
+                    // drawDataLabels function x: undefined, y: undefined
+                    },
+                    // Left - pie on the left side of the data label
+                    // Right - pie on the right side of the data label
+                    // Center - data label overlaps the pie
+                    alignment: distance < 0 ? 'center' : point.half ? 'right' : 'left',
+                    connectorPosition: {
+                        breakAt: {
+                            x: x + cosAngle * finalConnectorOffset,
+                            y: y + sinAngle * finalConnectorOffset
+                        },
+                        touchingSliceAt: {
+                            x,
+                            y
+                        }
+                    },
+                    distance
+                };
+            }
             /**
              * Override the base drawDataLabels method by pie specific functionality
              * @private
              */
             function drawDataLabels() {
-                const series = this, data = series.data, chart = series.chart, options = series.options.dataLabels || {}, connectorPadding = options.connectorPadding, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
+                const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
                     [],
-                    [] // left
-                ], overflow = [0, 0, 0, 0], // top, right, bottom, left
+                    [] // Left
+                ], overflow = [0, 0, 0, 0], // Top, right, bottom, left
                 dataLabelPositioners = series.dataLabelPositioners;
-                let point, connectorWidth, connector, dataLabel, dataLabelWidth, 
-                // labelPos,
-                labelPosition, labelHeight, 
-                // divide the points into right and left halves for anti collision
-                x, y, visibility, j, pointDataLabelsOptions;
-                // get out if not enabled
-                if (!series.visible ||
-                    (!options.enabled &&
-                        !series._hasPointLabels)) {
+                let connector, dataLabelWidth, labelHeight, maxLabelDistance = 0;
+                // Get out if not enabled
+                if (!series.visible || !series.hasDataLabels?.()) {
                     return;
                 }
                 // Reset all labels that have been shortened
-                data.forEach(function (point) {
-                    if (point.dataLabel && point.visible && point.dataLabel.shortened) {
-                        point.dataLabel
-                            .attr({
-                            width: 'auto'
-                        }).css({
-                            width: 'auto',
-                            textOverflow: 'clip'
-                        });
-                        point.dataLabel.shortened = false;
-                    }
+                points.forEach((point) => {
+                    (point.dataLabels || []).forEach((dataLabel) => {
+                        if (dataLabel.shortened) {
+                            dataLabel
+                                .attr({
+                                width: 'auto'
+                            }).css({
+                                width: 'auto',
+                                textOverflow: 'clip'
+                            });
+                            dataLabel.shortened = false;
+                        }
+                    });
                 });
-                // run parent method
+                // Run parent method
                 Series.prototype.drawDataLabels.apply(series);
-                data.forEach(function (point) {
-                    if (point.dataLabel) {
-                        if (point.visible) { // #407, #2510
-                            // Arrange points for detection collision
+                points.forEach((point) => {
+                    (point.dataLabels || []).forEach((dataLabel, i) => {
+                        const r = seriesCenter[2] / 2, dataLabelOptions = dataLabel.options, distance = relativeLength(dataLabelOptions?.distance || 0, r);
+                        // Arrange points for collision detection
+                        if (i === 0) {
                             halves[point.half].push(point);
-                            // Reset positions (#4905)
-                            point.dataLabel._pos = null;
-                            // Avoid long labels squeezing the pie size too far down
-                            if (!defined(options.style.width) &&
-                                !defined(point.options.dataLabels &&
-                                    point.options.dataLabels.style &&
-                                    point.options.dataLabels.style.width)) {
-                                if (point.dataLabel.getBBox().width > maxWidth) {
-                                    point.dataLabel.css({
-                                        // Use a fraction of the maxWidth to avoid
-                                        // wrapping close to the end of the string.
-                                        width: Math.round(maxWidth * 0.7) + 'px'
-                                    });
-                                    point.dataLabel.shortened = true;
-                                }
+                        }
+                        // Avoid long labels squeezing the pie size too far down
+                        if (!defined(dataLabelOptions?.style?.width)) {
+                            if (dataLabel.getBBox().width > maxWidth) {
+                                dataLabel.css({
+                                    // Use a fraction of the maxWidth to avoid wrapping
+                                    // close to the end of the string.
+                                    width: Math.round(maxWidth * 0.7) + 'px'
+                                });
+                                dataLabel.shortened = true;
                             }
                         }
-                        else {
-                            point.dataLabel = point.dataLabel.destroy();
-                            // Workaround to make pies destroy multiple datalabels
-                            // correctly. This logic needs rewriting to support multiple
-                            // datalabels fully.
-                            if (point.dataLabels && point.dataLabels.length === 1) {
-                                delete point.dataLabels;
-                            }
-                        }
-                    }
+                        dataLabel.dataLabelPosition = this.getDataLabelPosition(point, distance);
+                        maxLabelDistance = Math.max(maxLabelDistance, distance);
+                    });
                 });
                 /* Loop over the points in each half, starting from the top and bottom
                  * of the pie to detect overlapping labels.
                  */
-                halves.forEach((points, i) => {
+                halves.forEach((points, halfIdx) => {
                     const length = points.length, positions = [];
-                    let top, bottom, naturalY, sideOverflow, size = 0, distributionLength;
+                    let top, bottom, size = 0, distributionLength;
                     if (!length) {
                         return;
                     }
                     // Sort by angle
-                    series.sortByAngle(points, i - 0.5);
+                    series.sortByAngle(points, halfIdx - 0.5);
                     // Only do anti-collision when we have dataLabels outside the pie
                     // and have connectors. (#856)
-                    if (series.maxLabelDistance > 0) {
-                        top = Math.max(0, centerY - radius - series.maxLabelDistance);
-                        bottom = Math.min(centerY + radius + series.maxLabelDistance, chart.plotHeight);
-                        points.forEach(function (point) {
-                            // check if specific points' label is outside the pie
-                            if (point.labelDistance > 0 && point.dataLabel) {
-                                // point.top depends on point.labelDistance value
-                                // Used for calculation of y value in getX method
-                                point.top = Math.max(0, centerY - radius - point.labelDistance);
-                                point.bottom = Math.min(centerY + radius + point.labelDistance, chart.plotHeight);
-                                size = point.dataLabel.getBBox().height || 21;
-                                // point.positionsIndex is needed for getting index of
-                                // parameter related to specific point inside positions
-                                // array - not every point is in positions array.
-                                point.distributeBox = {
-                                    target: point.labelPosition.natural.y -
-                                        point.top + size / 2,
-                                    size,
-                                    rank: point.y
-                                };
-                                positions.push(point.distributeBox);
-                            }
+                    if (maxLabelDistance > 0) {
+                        top = Math.max(0, centerY - radius - maxLabelDistance);
+                        bottom = Math.min(centerY + radius + maxLabelDistance, chart.plotHeight);
+                        points.forEach((point) => {
+                            // Check if specific points' label is outside the pie
+                            (point.dataLabels || []).forEach((dataLabel, i) => {
+                                const labelPosition = dataLabel.dataLabelPosition;
+                                if (labelPosition &&
+                                    labelPosition.distance > 0) {
+                                    // The point.top depends on point.labelDistance
+                                    // value. Used for calculation of y value in getX
+                                    // method
+                                    labelPosition.top = Math.max(0, centerY - radius - labelPosition.distance);
+                                    labelPosition.bottom = Math.min(centerY + radius + labelPosition.distance, chart.plotHeight);
+                                    size = dataLabel.getBBox().height || 21;
+                                    point.distributeBox = {
+                                        target: ((dataLabel.dataLabelPosition
+                                            ?.natural.y || 0) -
+                                            labelPosition.top +
+                                            size / 2),
+                                        size,
+                                        rank: point.y
+                                    };
+                                    positions.push(point.distributeBox);
+                                }
+                            });
                         });
                         distributionLength = bottom + size - top;
                         distribute(positions, distributionLength, distributionLength / 5);
                     }
                     // Now the used slots are sorted, fill them up sequentially
-                    for (j = 0; j < length; j++) {
-                        point = points[j];
-                        // labelPos = point.labelPos;
-                        labelPosition = point.labelPosition;
-                        dataLabel = point.dataLabel;
-                        visibility = point.visible === false ? 'hidden' : 'inherit';
-                        naturalY = labelPosition.natural.y;
-                        y = naturalY;
-                        if (positions && defined(point.distributeBox)) {
-                            if (typeof point.distributeBox.pos === 'undefined') {
-                                visibility = 'hidden';
+                    points.forEach((point) => {
+                        (point.dataLabels || []).forEach((dataLabel) => {
+                            const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = labelPosition?.natural.y || 0, connectorPadding = dataLabelOptions
+                                .connectorPadding || 0;
+                            let x = 0, y = naturalY, visibility = 'inherit';
+                            if (labelPosition) {
+                                if (positions &&
+                                    defined(distributeBox) &&
+                                    labelPosition.distance > 0) {
+                                    if (typeof distributeBox.pos === 'undefined') {
+                                        visibility = 'hidden';
+                                    }
+                                    else {
+                                        labelHeight = distributeBox.size;
+                                        // Find label's y position
+                                        y = dataLabelPositioners
+                                            .radialDistributionY(point, dataLabel);
+                                    }
+                                }
+                                // Find label's x position. The justify option is
+                                // undocumented in the API - preserve support for it
+                                if (dataLabelOptions.justify) {
+                                    x = dataLabelPositioners.justify(point, dataLabel, radius, seriesCenter);
+                                }
+                                else {
+                                    switch (dataLabelOptions.alignTo) {
+                                        case 'connectors':
+                                            x = dataLabelPositioners.alignToConnectors(points, halfIdx, plotWidth, plotLeft);
+                                            break;
+                                        case 'plotEdges':
+                                            x = dataLabelPositioners.alignToPlotEdges(dataLabel, halfIdx, plotWidth, plotLeft);
+                                            break;
+                                        default:
+                                            x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY, dataLabel);
+                                    }
+                                }
+                                // Record the placement and visibility
+                                labelPosition.attribs = {
+                                    visibility,
+                                    align: labelPosition.alignment
+                                };
+                                labelPosition.posAttribs = {
+                                    x: x +
+                                        (dataLabelOptions.x || 0) + // (#12985)
+                                        ({
+                                            left: connectorPadding,
+                                            right: -connectorPadding
+                                        }[labelPosition.alignment] || 0),
+                                    y: y +
+                                        (dataLabelOptions.y || 0) - // (#12985)
+                                        // Vertically center
+                                        dataLabel.getBBox().height / 2
+                                };
+                                labelPosition.computed.x = x;
+                                labelPosition.computed.y = y;
+                                // Detect overflowing data labels
+                                if (pick(dataLabelOptions.crop, true)) {
+                                    dataLabelWidth = dataLabel.getBBox().width;
+                                    let sideOverflow;
+                                    // Overflow left
+                                    if (x - dataLabelWidth < connectorPadding &&
+                                        halfIdx === 1 // Left half
+                                    ) {
+                                        sideOverflow = Math.round(dataLabelWidth - x + connectorPadding);
+                                        overflow[3] = Math.max(sideOverflow, overflow[3]);
+                                        // Overflow right
+                                    }
+                                    else if (x + dataLabelWidth >
+                                        plotWidth - connectorPadding &&
+                                        halfIdx === 0 // Right half
+                                    ) {
+                                        sideOverflow = Math.round(x +
+                                            dataLabelWidth -
+                                            plotWidth +
+                                            connectorPadding);
+                                        overflow[1] = Math.max(sideOverflow, overflow[1]);
+                                    }
+                                    // Overflow top
+                                    if (y - labelHeight / 2 < 0) {
+                                        overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
+                                        // Overflow left
+                                    }
+                                    else if (y + labelHeight / 2 > plotHeight) {
+                                        overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
+                                    }
+                                    labelPosition.sideOverflow = sideOverflow;
+                                }
                             }
-                            else {
-                                labelHeight = point.distributeBox.size;
-                                // Find label's y position
-                                y = dataLabelPositioners
-                                    .radialDistributionY(point);
-                            }
-                        }
-                        // It is needed to delete point.positionIndex for
-                        // dynamically added points etc.
-                        delete point.positionIndex; // @todo unused
-                        // Find label's x position
-                        // justify is undocumented in the API - preserve support for it
-                        if (options.justify) {
-                            x = dataLabelPositioners.justify(point, radius, seriesCenter);
-                        }
-                        else {
-                            switch (options.alignTo) {
-                                case 'connectors':
-                                    x = dataLabelPositioners.alignToConnectors(points, i, plotWidth, plotLeft);
-                                    break;
-                                case 'plotEdges':
-                                    x = dataLabelPositioners.alignToPlotEdges(dataLabel, i, plotWidth, plotLeft);
-                                    break;
-                                default:
-                                    x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY);
-                            }
-                        }
-                        // Record the placement and visibility
-                        dataLabel._attr = {
-                            visibility: visibility,
-                            align: labelPosition.alignment
-                        };
-                        pointDataLabelsOptions = point.options.dataLabels || {};
-                        dataLabel._pos = {
-                            x: (x +
-                                pick(pointDataLabelsOptions.x, options.x) + // (#12985)
-                                ({
-                                    left: connectorPadding,
-                                    right: -connectorPadding
-                                }[labelPosition.alignment] || 0)),
-                            y: (y +
-                                pick(pointDataLabelsOptions.y, options.y) - // (#12985)
-                                // Vertically center
-                                dataLabel.getBBox().height / 2)
-                        };
-                        // labelPos.x = x;
-                        // labelPos.y = y;
-                        if (labelPosition) {
-                            labelPosition.computed.x = x;
-                            labelPosition.computed.y = y;
-                        }
-                        // Detect overflowing data labels
-                        if (pick(options.crop, true)) {
-                            dataLabelWidth = dataLabel.getBBox().width;
-                            sideOverflow = null;
-                            // Overflow left
-                            if (x - dataLabelWidth < connectorPadding &&
-                                i === 1 // left half
-                            ) {
-                                sideOverflow = Math.round(dataLabelWidth - x + connectorPadding);
-                                overflow[3] = Math.max(sideOverflow, overflow[3]);
-                                // Overflow right
-                            }
-                            else if (x + dataLabelWidth > plotWidth - connectorPadding &&
-                                i === 0 // right half
-                            ) {
-                                sideOverflow = Math.round(x + dataLabelWidth - plotWidth + connectorPadding);
-                                overflow[1] = Math.max(sideOverflow, overflow[1]);
-                            }
-                            // Overflow top
-                            if (y - labelHeight / 2 < 0) {
-                                overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
-                                // Overflow left
-                            }
-                            else if (y + labelHeight / 2 > plotHeight) {
-                                overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
-                            }
-                            dataLabel.sideOverflow = sideOverflow;
-                        }
-                    } // for each point
-                }); // for each half
+                        }); // For each data label of the point
+                    }); // For each point
+                }); // For each half
                 // Do not apply the final placement and draw the connectors until we
                 // have verified that labels are not spilling over.
                 if (arrayMax(overflow) === 0 ||
                     this.verifyDataLabelOverflow(overflow)) {
                     // Place the labels in the final position
                     this.placeDataLabels();
-                    this.points.forEach(function (point) {
-                        // #8864: every connector can have individual options
-                        pointDataLabelsOptions =
-                            merge(options, point.options.dataLabels);
-                        connectorWidth =
-                            pick(pointDataLabelsOptions.connectorWidth, 1);
-                        // Draw the connector
-                        if (connectorWidth) {
-                            let isNew;
-                            connector = point.connector;
-                            dataLabel = point.dataLabel;
-                            if (dataLabel &&
-                                dataLabel._pos &&
-                                point.visible &&
-                                point.labelDistance > 0) {
-                                visibility = dataLabel._attr.visibility;
-                                isNew = !connector;
-                                if (isNew) {
-                                    point.connector = connector = chart.renderer
-                                        .path()
-                                        .addClass('highcharts-data-label-connector ' +
-                                        ' highcharts-color-' + point.colorIndex +
-                                        (point.className ?
-                                            ' ' + point.className :
-                                            ''))
-                                        .add(series.dataLabelsGroup);
+                    this.points.forEach((point) => {
+                        (point.dataLabels || []).forEach((dataLabel) => {
+                            // #8864: every connector can have individual options
+                            const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
+                            // Draw the connector
+                            if (connectorWidth) {
+                                let isNew;
+                                connector = dataLabel.connector;
+                                if (labelPosition && labelPosition.distance > 0) {
+                                    isNew = !connector;
+                                    if (!connector) {
+                                        dataLabel.connector = connector = chart.renderer
+                                            .path()
+                                            .addClass('highcharts-data-label-connector ' +
+                                            ' highcharts-color-' +
+                                            point.colorIndex +
+                                            (point.className ?
+                                                ' ' + point.className :
+                                                ''))
+                                            .add(series.dataLabelsGroup);
+                                    }
                                     if (!chart.styledMode) {
                                         connector.attr({
                                             'stroke-width': connectorWidth,
-                                            'stroke': (pointDataLabelsOptions.connectorColor ||
+                                            'stroke': (connectorColor ||
                                                 point.color ||
                                                 "#666666" /* Palette.neutralColor60 */)
                                         });
                                     }
+                                    connector[isNew ? 'attr' : 'animate']({
+                                        d: point.getConnectorPath(dataLabel)
+                                    });
+                                    connector.attr({
+                                        visibility: labelPosition.attribs?.visibility
+                                    });
                                 }
-                                connector[isNew ? 'attr' : 'animate']({
-                                    d: point.getConnectorPath()
-                                });
-                                connector.attr('visibility', visibility);
+                                else if (connector) {
+                                    dataLabel.connector = connector.destroy();
+                                }
                             }
-                            else if (connector) {
-                                point.connector = connector.destroy();
-                            }
-                        }
+                        });
                     });
                 }
             }
@@ -44696,33 +44810,30 @@
              * @private
              */
             function placeDataLabels() {
-                this.points.forEach(function (point) {
-                    let dataLabel = point.dataLabel, _pos;
-                    if (dataLabel && point.visible) {
-                        _pos = dataLabel._pos;
-                        if (_pos) {
+                this.points.forEach((point) => {
+                    (point.dataLabels || []).forEach((dataLabel) => {
+                        const labelPosition = dataLabel.dataLabelPosition;
+                        if (labelPosition) {
                             // Shorten data labels with ellipsis if they still overflow
                             // after the pie has reached minSize (#223).
-                            if (dataLabel.sideOverflow) {
-                                dataLabel._attr.width =
-                                    Math.max(dataLabel.getBBox().width -
-                                        dataLabel.sideOverflow, 0);
+                            if (labelPosition.sideOverflow) {
                                 dataLabel.css({
-                                    width: dataLabel._attr.width + 'px',
-                                    textOverflow: ((this.options.dataLabels.style || {})
+                                    width: (Math.max(dataLabel.getBBox().width -
+                                        labelPosition.sideOverflow, 0)) + 'px',
+                                    textOverflow: ((dataLabel.options?.style || {})
                                         .textOverflow ||
                                         'ellipsis')
                                 });
                                 dataLabel.shortened = true;
                             }
-                            dataLabel.attr(dataLabel._attr);
-                            dataLabel[dataLabel.moved ? 'animate' : 'attr'](_pos);
+                            dataLabel.attr(labelPosition.attribs);
+                            dataLabel[dataLabel.moved ? 'animate' : 'attr'](labelPosition.posAttribs);
                             dataLabel.moved = true;
                         }
                         else if (dataLabel) {
                             dataLabel.attr({ y: -9999 });
                         }
-                    }
+                    });
                     // Clear for update
                     delete point.distributeBox;
                 }, this);
@@ -44792,7 +44903,7 @@
 
         return ColumnDataLabel;
     });
-    _registerModule(_modules, 'Extensions/OverlappingDataLabels.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Chart, U) {
+    _registerModule(_modules, 'Extensions/OverlappingDataLabels.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  Highcharts module to hide overlapping data labels.
@@ -44805,86 +44916,41 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, fireEvent, isArray, isNumber, objectEach, pick } = U;
-        /**
-         * Internal type
-         * @private
-         */
-        /* eslint-disable no-invalid-this */
-        // Collect potensial overlapping data labels. Stack labels probably don't need
-        // to be considered because they are usually accompanied by data labels that lie
-        // inside the columns.
-        addEvent(Chart, 'render', function collectAndHide() {
-            let chart = this, labels = [];
-            // Consider external label collectors
-            (this.labelCollectors || []).forEach(function (collector) {
-                labels = labels.concat(collector());
-            });
-            (this.yAxis || []).forEach(function (yAxis) {
-                if (yAxis.stacking &&
-                    yAxis.options.stackLabels &&
-                    !yAxis.options.stackLabels.allowOverlap) {
-                    objectEach(yAxis.stacking.stacks, function (stack) {
-                        objectEach(stack, function (stackItem) {
-                            if (stackItem.label) {
-                                labels.push(stackItem.label);
-                            }
-                        });
-                    });
-                }
-            });
-            (this.series || []).forEach(function (series) {
-                const dlOptions = series.options.dataLabels;
-                if (series.visible &&
-                    !(dlOptions.enabled === false && !series._hasPointLabels)) { // #3866
-                    const push = (points) => points.forEach((point) => {
-                        if (point.visible) {
-                            const dataLabels = (isArray(point.dataLabels) ?
-                                point.dataLabels :
-                                (point.dataLabel ? [point.dataLabel] : []));
-                            dataLabels.forEach(function (label) {
-                                const options = label.options;
-                                label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
-                                if (!options.allowOverlap) {
-                                    labels.push(label);
-                                }
-                                else { // #13449
-                                    label.oldOpacity = label.opacity;
-                                    label.newOpacity = 1;
-                                    hideOrShow(label, chart);
-                                }
-                            });
-                        }
-                    });
-                    push(series.nodes || []);
-                    push(series.points);
-                }
-            });
-            this.hideOverlappingLabels(labels);
-        });
+        const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const composedMembers = [];
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Hide overlapping labels. Labels are moved and faded in and out on zoom to
          * provide a smooth visual imression.
          *
+         * @requires modules/overlapping-datalabels
+         *
          * @private
          * @function Highcharts.Chart#hideOverlappingLabels
          * @param {Array<Highcharts.SVGElement>} labels
-         * Rendered data labels
-         * @requires modules/overlapping-datalabels
+         *        Rendered data labels
          */
-        Chart.prototype.hideOverlappingLabels = function (labels) {
-            let chart = this, len = labels.length, ren = chart.renderer, label, i, j, label1, label2, box1, box2, isLabelAffected = false, isIntersectRect = function (box1, box2) {
-                return !(box2.x >= box1.x + box1.width ||
-                    box2.x + box2.width <= box1.x ||
-                    box2.y >= box1.y + box1.height ||
-                    box2.y + box2.height <= box1.y);
-            }, 
+        function chartHideOverlappingLabels(labels) {
+            const chart = this, len = labels.length, ren = chart.renderer, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
+                box2.x + box2.width <= box1.x ||
+                box2.y >= box1.y + box1.height ||
+                box2.y + box2.height <= box1.y), 
             // Get the box with its position inside the chart, as opposed to getBBox
             // that only reports the position relative to the parent.
-            getAbsoluteBox = function (label) {
+            getAbsoluteBox = (label) => {
+                const padding = label.box ? 0 : (label.padding || 0);
                 let pos, parent, bBox, 
                 // Substract the padding if no background or border (#4333)
-                padding = label.box ? 0 : (label.padding || 0), lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
+                lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
                 if (label &&
                     (!label.alignAttr || label.placed)) {
                     pos = label.alignAttr || {
@@ -44912,7 +44978,7 @@
                     }
                     else if (isNumber(label.x) &&
                         Math.round(label.x) !== label.translateX) {
-                        xOffset = label.x - label.translateX;
+                        xOffset = label.x - (label.translateX || 0);
                     }
                     return {
                         x: pos.x + (parent.translateX || 0) + padding -
@@ -44920,11 +44986,12 @@
                         y: pos.y + (parent.translateY || 0) + padding -
                             lineHeightCorrection,
                         width: label.width - 2 * padding,
-                        height: label.height - 2 * padding
+                        height: (label.height || 0) - 2 * padding
                     };
                 }
             };
-            for (i = 0; i < len; i++) {
+            let label, label1, label2, box1, box2, isLabelAffected = false;
+            for (let i = 0; i < len; i++) {
                 label = labels[i];
                 if (label) {
                     // Mark with initial opacity
@@ -44935,14 +45002,12 @@
             }
             // Prevent a situation in a gradually rising slope, that each label will
             // hide the previous one because the previous one always has lower rank.
-            labels.sort(function (a, b) {
-                return (b.labelrank || 0) - (a.labelrank || 0);
-            });
+            labels.sort((a, b) => (b.labelrank || 0) - (a.labelrank || 0));
             // Detect overlapping labels
-            for (i = 0; i < len; i++) {
+            for (let i = 0; i < len; ++i) {
                 label1 = labels[i];
                 box1 = label1 && label1.absoluteBox;
-                for (j = i + 1; j < len; ++j) {
+                for (let j = i + 1; j < len; ++j) {
                     label2 = labels[j];
                     box2 = label2 && label2.absoluteBox;
                     if (box1 &&
@@ -44961,15 +45026,23 @@
                 }
             }
             // Hide or show
-            labels.forEach(function (label) {
+            for (const label of labels) {
                 if (hideOrShow(label, chart)) {
                     isLabelAffected = true;
                 }
-            });
+            }
             if (isLabelAffected) {
                 fireEvent(chart, 'afterHideAllOverlappingLabels');
             }
-        };
+        }
+        /** @private */
+        function compose(ChartClass) {
+            if (pushUnique(composedMembers, ChartClass)) {
+                const chartProto = ChartClass.prototype;
+                chartProto.hideOverlappingLabels = chartHideOverlappingLabels;
+                addEvent(ChartClass, 'render', onChartRender);
+            }
+        }
         /**
          * Hide or show labels based on opacity.
          *
@@ -45014,9 +45087,77 @@
             }
             return isLabelAffected;
         }
+        /**
+         * Collect potensial overlapping data labels. Stack labels probably don't need
+         * to be considered because they are usually accompanied by data labels that lie
+         * inside the columns.
+         * @private
+         */
+        function onChartRender() {
+            const chart = this;
+            let labels = [];
+            // Consider external label collectors
+            for (const collector of (chart.labelCollectors || [])) {
+                labels = labels.concat(collector());
+            }
+            for (const yAxis of (chart.yAxis || [])) {
+                if (yAxis.stacking &&
+                    yAxis.options.stackLabels &&
+                    !yAxis.options.stackLabels.allowOverlap) {
+                    objectEach(yAxis.stacking.stacks, (stack) => {
+                        objectEach(stack, (stackItem) => {
+                            if (stackItem.label) {
+                                labels.push(stackItem.label);
+                            }
+                        });
+                    });
+                }
+            }
+            for (const series of (chart.series || [])) {
+                if (series.visible && series.hasDataLabels?.()) { // #3866
+                    const push = (points) => {
+                        for (const point of points) {
+                            if (point.visible) {
+                                (point.dataLabels || []).forEach((label) => {
+                                    const options = label.options || {};
+                                    label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs?.height); // #4118
+                                    // Allow overlap if the option is explicitly true
+                                    if (
+                                    // #13449
+                                    options.allowOverlap ??
+                                        // Pie labels outside have a separate placement
+                                        // logic, skip the overlap logic
+                                        Number(options.distance) > 0) {
+                                        label.oldOpacity = label.opacity;
+                                        label.newOpacity = 1;
+                                        hideOrShow(label, chart);
+                                        // Do not allow overlap
+                                    }
+                                    else {
+                                        labels.push(label);
+                                    }
+                                });
+                            }
+                        }
+                    };
+                    push(series.nodes || []);
+                    push(series.points);
+                }
+            }
+            this.hideOverlappingLabels(labels);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const OverlappingDataLabels = {
+            compose
+        };
 
+        return OverlappingDataLabels;
     });
-    _registerModule(_modules, 'Extensions/BorderRadius.js', [_modules['Core/Defaults.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (D, Series, SeriesRegistry, SVGElement, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/BorderRadius.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (D, G, U) {
         /* *
          *
          *  Highcharts Border Radius module
@@ -45029,25 +45170,35 @@
          *
          * */
         const { defaultOptions } = D;
-        const { seriesTypes } = SeriesRegistry;
-        const { addEvent, extend, isObject, merge, relativeLength } = U;
+        const { noop } = G;
+        const { addEvent, extend, isObject, merge, pushUnique, relativeLength } = U;
         /* *
          *
          *  Constants
          *
          * */
+        const composedMembers = [];
         const defaultBorderRadiusOptions = {
             radius: 0,
             scope: 'stack',
             where: void 0
         };
-        const optionsToObject = (options, seriesBROptions) => {
-            if (!isObject(options)) {
-                options = { radius: options || 0 };
-            }
-            return merge(defaultBorderRadiusOptions, seriesBROptions, options);
-        };
-        const applyBorderRadius = (path, i, r) => {
+        /* *
+         *
+         *  Variables
+         *
+         * */
+        let oldArc = noop;
+        let oldRoundedRect = noop;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function applyBorderRadius(path, i, r) {
             const a = path[i];
             let b = path[i + 1];
             if (b[0] === 'Z') {
@@ -45125,196 +45276,217 @@
                 // start and end points
                 arc[4] = Math.abs(params.end - params.start) < Math.PI ? 0 : 1;
             }
-        };
-        /* *
-         *
-         *  Modifications
-         *
-         * */
-        // Check if the module has already been imported
-        // @todo implement as composition
-        if (SVGElement.symbolCustomAttribs.indexOf('borderRadius') === -1) {
-            SVGElement.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
-            // Extend arc with borderRadius
-            const arc = SVGRenderer.prototype.symbols.arc;
-            SVGRenderer.prototype.symbols.arc = function (x, y, w, h, options = {}) {
-                const path = arc(x, y, w, h, options), { innerR = 0, r = w, start = 0, end = 0 } = options;
-                if (options.open || !options.borderRadius) {
-                    return path;
-                }
-                const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
-                // Cap to half the sector radius
-                (r - innerR) / 2, 
-                // For smaller pie slices, cap to the largest small circle that
-                // can be fitted within the sector
-                (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
-                // For the inner radius, we need an extra cap because the inner arc
-                // is shorter than the outer arc
-                innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
-                // Apply turn-by-turn border radius. Start at the end since we're
-                // splicing in arc segments.
-                let i = path.length - 1;
-                while (i--) {
-                    applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
-                }
+        }
+        /**
+         * Extend arc with borderRadius.
+         * @private
+         */
+        function arc(x, y, w, h, options = {}) {
+            const path = oldArc(x, y, w, h, options), { innerR = 0, r = w, start = 0, end = 0 } = options;
+            if (options.open || !options.borderRadius) {
                 return path;
-            };
-            // Extend roundedRect with individual cutting through rOffset
-            const roundedRect = SVGRenderer.prototype.symbols.roundedRect;
-            SVGRenderer.prototype.symbols.roundedRect = function (x, y, width, height, options = {}) {
-                const path = roundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
-                // When the distance to the border-radius box is greater than the r
-                // itself, it means no border radius. The -0.1 accounts for float
-                // rounding errors.
-                rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
-                /*
-
-                The naming of control points:
-
-                  / a -------- b \
-                 /                \
-                h                  c
-                |                  |
-                |                  |
-                |                  |
-                g                  d
-                 \                /
-                  \ f -------- e /
-
-                */
-                const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
-                    x + width, y + height - rBtm
-                ], e = [
-                    x + width - rBtm,
-                    y + height
-                ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
-                const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
-                // Inside stacks, cut off part of the top
-                if (cutTop) {
-                    const base = applyPythagoras(rTop, rTop - cutTop);
-                    a[0] -= base;
-                    b[0] += base;
-                    c[1] = h[1] = y + rTop - cutTop;
-                }
-                // Column is lower than the radius. Cut off bottom inside the top
-                // radius.
-                if (height < rTop - cutTop) {
-                    const base = applyPythagoras(rTop, rTop - cutTop - height);
-                    c[0] = d[0] = x + width - rTop + base;
-                    e[0] = Math.min(c[0], e[0]);
-                    f[0] = Math.max(d[0], f[0]);
-                    g[0] = h[0] = x + rTop - base;
-                    c[1] = h[1] = y + height;
-                }
-                // Inside stacks, cut off part of the bottom
-                if (cutBtm) {
-                    const base = applyPythagoras(rBtm, rBtm - cutBtm);
-                    e[0] += base;
-                    f[0] -= base;
-                    d[1] = g[1] = y + height - rBtm + cutBtm;
-                }
-                // Cut off top inside the bottom radius
-                if (height < rBtm - cutBtm) {
-                    const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
-                    c[0] = d[0] = x + width - rBtm + base;
-                    b[0] = Math.min(c[0], b[0]);
-                    a[0] = Math.max(d[0], a[0]);
-                    g[0] = h[0] = x + rBtm - base;
-                    d[1] = g[1] = y;
-                }
-                // Preserve the box for data labels
-                path.length = 0;
-                path.push(['M', ...a], 
-                // top side
-                ['L', ...b], 
-                // top right corner
-                ['A', rTop, rTop, 0, 0, 1, ...c], 
-                // right side
-                ['L', ...d], 
-                // bottom right corner
-                ['A', rBtm, rBtm, 0, 0, 1, ...e], 
-                // bottom side
-                ['L', ...f], 
-                // bottom left corner
-                ['A', rBtm, rBtm, 0, 0, 1, ...g], 
-                // left side
-                ['L', ...h], 
-                // top left corner
-                ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
-                return path;
-            };
-            addEvent(seriesTypes.pie, 'afterTranslate', function () {
-                const borderRadius = optionsToObject(this.options.borderRadius);
+            }
+            const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
+            // Cap to half the sector radius
+            (r - innerR) / 2, 
+            // For smaller pie slices, cap to the largest small circle that
+            // can be fitted within the sector
+            (r * sinHalfAlpha) / (1 + sinHalfAlpha)), 0), 
+            // For the inner radius, we need an extra cap because the inner arc
+            // is shorter than the outer arc
+            innerBorderRadius = Math.min(borderRadius, 2 * (alpha / Math.PI) * innerR);
+            // Apply turn-by-turn border radius. Start at the end since we're
+            // splicing in arc segments.
+            let i = path.length - 1;
+            while (i--) {
+                applyBorderRadius(path, i, i > 1 ? innerBorderRadius : borderRadius);
+            }
+            return path;
+        }
+        /** @private */
+        function seriesOnAfterColumnTranslate() {
+            if (this.options.borderRadius &&
+                !(this.chart.is3d && this.chart.is3d())) {
+                const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = defaultOptions.plotOptions?.[this.type]
+                    ?.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
                 for (const point of this.points) {
-                    const shapeArgs = point.shapeArgs;
-                    if (shapeArgs) {
-                        shapeArgs.borderRadius = relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
-                    }
-                }
-            });
-            addEvent(Series, 'afterColumnTranslate', function () {
-                var _a,
-                    _b;
-                if (this.options.borderRadius &&
-                    !(this.chart.is3d && this.chart.is3d())) {
-                    const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = (_b = (_a = defaultOptions.plotOptions) === null || _a === void 0 ? void 0 : _a[this.type]) === null || _b === void 0 ? void 0 : _b.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
-                    for (const point of this.points) {
-                        const { shapeArgs } = point;
-                        if (point.shapeType === 'roundedRect' && shapeArgs) {
-                            const { width = 0, height = 0, y = 0 } = shapeArgs;
-                            let brBoxY = y, brBoxHeight = height;
-                            // It would be nice to refactor StackItem.getStackBox/
-                            // setOffset so that we could get a reliable box out of
-                            // it. Currently it is close if we remove the label
-                            // offset, but we still need to run crispCol and also
-                            // flip it if inverted, so atm it is simpler to do it
-                            // like the below.
-                            if (borderRadius.scope === 'stack' &&
-                                point.stackTotal) {
-                                const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
-                                brBoxY = box.y;
-                                brBoxHeight = box.height;
-                            }
-                            const flip = (point.negative ? -1 : 1) *
-                                (reversed ? -1 : 1) === -1;
-                            // Handle the where option
-                            let where = borderRadius.where;
-                            // Waterfall, hanging columns should have rounding on
-                            // all sides
-                            if (!where &&
-                                this.is('waterfall') &&
-                                Math.abs((point.yBottom || 0) -
-                                    (this.translatedThreshold || 0)) > this.borderWidth) {
-                                where = 'all';
-                            }
-                            if (!where) {
-                                where = 'end';
-                            }
-                            // Get the radius
-                            const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
-                            // Cap to the height, but not if where is `end`
-                            where === 'all' ? height / 2 : Infinity) || 0;
-                            // If the `where` option is 'end', cut off the
-                            // rectangles by making the border-radius box one r
-                            // greater, so that the imaginary radius falls outside
-                            // the rectangle.
-                            if (where === 'end') {
-                                if (flip) {
-                                    brBoxY -= r;
-                                    brBoxHeight += r;
-                                }
-                                else {
-                                    brBoxHeight += r;
-                                }
-                            }
-                            extend(shapeArgs, { brBoxHeight, brBoxY, r });
+                    const { shapeArgs } = point;
+                    if (point.shapeType === 'roundedRect' && shapeArgs) {
+                        const { width = 0, height = 0, y = 0 } = shapeArgs;
+                        let brBoxY = y, brBoxHeight = height;
+                        // It would be nice to refactor StackItem.getStackBox/
+                        // setOffset so that we could get a reliable box out of
+                        // it. Currently it is close if we remove the label
+                        // offset, but we still need to run crispCol and also
+                        // flip it if inverted, so atm it is simpler to do it
+                        // like the below.
+                        if (borderRadius.scope === 'stack' &&
+                            point.stackTotal) {
+                            const stackEnd = yAxis.translate(percent ? 100 : point.stackTotal, false, true, false, true), stackThreshold = yAxis.translate(options.threshold || 0, false, true, false, true), box = this.crispCol(0, Math.min(stackEnd, stackThreshold), 0, Math.abs(stackEnd - stackThreshold));
+                            brBoxY = box.y;
+                            brBoxHeight = box.height;
                         }
+                        const flip = (point.negative ? -1 : 1) *
+                            (reversed ? -1 : 1) === -1;
+                        // Handle the where option
+                        let where = borderRadius.where;
+                        // Waterfall, hanging columns should have rounding on
+                        // all sides
+                        if (!where &&
+                            this.is('waterfall') &&
+                            Math.abs((point.yBottom || 0) -
+                                (this.translatedThreshold || 0)) > this.borderWidth) {
+                            where = 'all';
+                        }
+                        if (!where) {
+                            where = 'end';
+                        }
+                        // Get the radius
+                        const r = Math.min(relativeLength(borderRadius.radius, width), width / 2, 
+                        // Cap to the height, but not if where is `end`
+                        where === 'all' ? height / 2 : Infinity) || 0;
+                        // If the `where` option is 'end', cut off the
+                        // rectangles by making the border-radius box one r
+                        // greater, so that the imaginary radius falls outside
+                        // the rectangle.
+                        if (where === 'end') {
+                            if (flip) {
+                                brBoxY -= r;
+                                brBoxHeight += r;
+                            }
+                            else {
+                                brBoxHeight += r;
+                            }
+                        }
+                        extend(shapeArgs, { brBoxHeight, brBoxY, r });
                     }
                 }
-            }, {
-                // After columnrange and polar column modifications
-                order: 9
-            });
+            }
+        }
+        /** @private */
+        function compose(SeriesClass, PieSeriesClass, SVGElementClass, SVGRendererClass) {
+            if (pushUnique(composedMembers, SeriesClass)) {
+                addEvent(SeriesClass, 'afterColumnTranslate', seriesOnAfterColumnTranslate, {
+                    // After columnrange and polar column modifications
+                    order: 9
+                });
+            }
+            if (pushUnique(composedMembers, PieSeriesClass)) {
+                addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
+            }
+            if (pushUnique(composedMembers, SVGElementClass)) {
+                SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
+            }
+            if (pushUnique(composedMembers, SVGRendererClass)) {
+                const symbols = SVGRendererClass.prototype.symbols;
+                oldArc = symbols.arc;
+                oldRoundedRect = symbols.roundedRect;
+                symbols.arc = arc;
+                symbols.roundedRect = roundedRect;
+            }
+        }
+        /** @private */
+        function optionsToObject(options, seriesBROptions) {
+            if (!isObject(options)) {
+                options = { radius: options || 0 };
+            }
+            return merge(defaultBorderRadiusOptions, seriesBROptions, options);
+        }
+        /** @private */
+        function pieSeriesOnAfterTranslate() {
+            const borderRadius = optionsToObject(this.options.borderRadius);
+            for (const point of this.points) {
+                const shapeArgs = point.shapeArgs;
+                if (shapeArgs) {
+                    shapeArgs.borderRadius = relativeLength(borderRadius.radius, (shapeArgs.r || 0) - ((shapeArgs.innerR) || 0));
+                }
+            }
+        }
+        /**
+         * Extend roundedRect with individual cutting through rOffset.
+         * @private
+         */
+        function roundedRect(x, y, width, height, options = {}) {
+            const path = oldRoundedRect(x, y, width, height, options), { r = 0, brBoxHeight = height, brBoxY = y } = options, brOffsetTop = y - brBoxY, brOffsetBtm = (brBoxY + brBoxHeight) - (y + height), 
+            // When the distance to the border-radius box is greater than the r
+            // itself, it means no border radius. The -0.1 accounts for float
+            // rounding errors.
+            rTop = (brOffsetTop - r) > -0.1 ? 0 : r, rBtm = (brOffsetBtm - r) > -0.1 ? 0 : r, cutTop = Math.max(rTop && brOffsetTop, 0), cutBtm = Math.max(rBtm && brOffsetBtm, 0);
+            /*
+
+            The naming of control points:
+
+              / a -------- b \
+             /                \
+            h                  c
+            |                  |
+            |                  |
+            |                  |
+            g                  d
+             \                /
+              \ f -------- e /
+
+            */
+            const a = [x + rTop, y], b = [x + width - rTop, y], c = [x + width, y + rTop], d = [
+                x + width, y + height - rBtm
+            ], e = [
+                x + width - rBtm,
+                y + height
+            ], f = [x + rBtm, y + height], g = [x, y + height - rBtm], h = [x, y + rTop];
+            const applyPythagoras = (r, altitude) => Math.sqrt(Math.pow(r, 2) - Math.pow(altitude, 2));
+            // Inside stacks, cut off part of the top
+            if (cutTop) {
+                const base = applyPythagoras(rTop, rTop - cutTop);
+                a[0] -= base;
+                b[0] += base;
+                c[1] = h[1] = y + rTop - cutTop;
+            }
+            // Column is lower than the radius. Cut off bottom inside the top
+            // radius.
+            if (height < rTop - cutTop) {
+                const base = applyPythagoras(rTop, rTop - cutTop - height);
+                c[0] = d[0] = x + width - rTop + base;
+                e[0] = Math.min(c[0], e[0]);
+                f[0] = Math.max(d[0], f[0]);
+                g[0] = h[0] = x + rTop - base;
+                c[1] = h[1] = y + height;
+            }
+            // Inside stacks, cut off part of the bottom
+            if (cutBtm) {
+                const base = applyPythagoras(rBtm, rBtm - cutBtm);
+                e[0] += base;
+                f[0] -= base;
+                d[1] = g[1] = y + height - rBtm + cutBtm;
+            }
+            // Cut off top inside the bottom radius
+            if (height < rBtm - cutBtm) {
+                const base = applyPythagoras(rBtm, rBtm - cutBtm - height);
+                c[0] = d[0] = x + width - rBtm + base;
+                b[0] = Math.min(c[0], b[0]);
+                a[0] = Math.max(d[0], a[0]);
+                g[0] = h[0] = x + rBtm - base;
+                d[1] = g[1] = y;
+            }
+            // Preserve the box for data labels
+            path.length = 0;
+            path.push(['M', ...a], 
+            // top side
+            ['L', ...b], 
+            // top right corner
+            ['A', rTop, rTop, 0, 0, 1, ...c], 
+            // right side
+            ['L', ...d], 
+            // bottom right corner
+            ['A', rBtm, rBtm, 0, 0, 1, ...e], 
+            // bottom side
+            ['L', ...f], 
+            // bottom left corner
+            ['A', rBtm, rBtm, 0, 0, 1, ...g], 
+            // left side
+            ['L', ...h], 
+            // top left corner
+            ['A', rTop, rTop, 0, 0, 1, ...a], ['Z']);
+            return path;
         }
         /* *
          *
@@ -45322,6 +45494,7 @@
          *
          * */
         const BorderRadius = {
+            compose,
             optionsToObject
         };
         /* *
@@ -45630,7 +45803,7 @@
 
         return Responsive;
     });
-    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Defaults.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Templating.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Renderer/HTML/HTMLElement.js'], _modules['Core/Renderer/HTML/HTMLRenderer.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Axis/LogarithmicAxis.js'], _modules['Core/Axis/PlotLineOrBand/PlotLineOrBand.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Tooltip.js'], _modules['Core/Series/Point.js'], _modules['Core/Pointer.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Axis/Stacking/StackingAxis.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Series/Column/ColumnDataLabel.js'], _modules['Series/Pie/PieSeries.js'], _modules['Series/Pie/PieDataLabel.js'], _modules['Core/Series/DataLabel.js'], _modules['Core/Responsive.js'], _modules['Core/Color/Color.js'], _modules['Core/Time.js']], function (Highcharts, Utilities, Defaults, Fx, Animation, AST, Templating, RendererUtilities, SVGElement, SVGRenderer, HTMLElement, HTMLRenderer, Axis, DateTimeAxis, LogarithmicAxis, PlotLineOrBand, Tick, Tooltip, Point, Pointer, Legend, Chart, StackingAxis, StackItem, Series, SeriesRegistry, ColumnSeries, ColumnDataLabel, PieSeries, PieDataLabel, DataLabel, Responsive, Color, Time) {
+    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Defaults.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Templating.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Renderer/HTML/HTMLElement.js'], _modules['Core/Renderer/HTML/HTMLRenderer.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Axis/LogarithmicAxis.js'], _modules['Core/Axis/PlotLineOrBand/PlotLineOrBand.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Tooltip.js'], _modules['Core/Series/Point.js'], _modules['Core/Pointer.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Axis/Stacking/StackingAxis.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Series/Column/ColumnDataLabel.js'], _modules['Series/Pie/PieSeries.js'], _modules['Series/Pie/PieDataLabel.js'], _modules['Core/Series/DataLabel.js'], _modules['Extensions/OverlappingDataLabels.js'], _modules['Extensions/BorderRadius.js'], _modules['Core/Responsive.js'], _modules['Core/Color/Color.js'], _modules['Core/Time.js']], function (Highcharts, Utilities, Defaults, Fx, Animation, AST, Templating, RendererUtilities, SVGElement, SVGRenderer, HTMLElement, HTMLRenderer, Axis, DateTimeAxis, LogarithmicAxis, PlotLineOrBand, Tick, Tooltip, Point, Pointer, Legend, Chart, StackingAxis, StackItem, Series, SeriesRegistry, ColumnSeries, ColumnDataLabel, PieSeries, PieDataLabel, DataLabel, OverlappingDataLabels, BorderRadius, Responsive, Color, Time) {
 
         const G = Highcharts;
         // Animation
@@ -45676,57 +45849,16 @@
         G.format = Templating.format;
         G.numberFormat = Templating.numberFormat;
         // Utilities
-        G.addEvent = Utilities.addEvent;
-        G.arrayMax = Utilities.arrayMax;
-        G.arrayMin = Utilities.arrayMin;
-        G.attr = Utilities.attr;
-        G.clearTimeout = Utilities.clearTimeout;
-        G.correctFloat = Utilities.correctFloat;
-        G.createElement = Utilities.createElement;
-        G.css = Utilities.css;
-        G.defined = Utilities.defined;
-        G.destroyObjectProperties = Utilities.destroyObjectProperties;
-        G.discardElement = Utilities.discardElement;
+        Utilities.extend(G, Utilities);
         G.distribute = RendererUtilities.distribute;
-        G.erase = Utilities.erase;
-        G.error = Utilities.error;
-        G.extend = Utilities.extend;
-        G.extendClass = Utilities.extendClass;
-        G.find = Utilities.find;
-        G.fireEvent = Utilities.fireEvent;
-        G.getMagnitude = Utilities.getMagnitude;
-        G.getStyle = Utilities.getStyle;
-        G.inArray = Utilities.inArray;
-        G.isArray = Utilities.isArray;
-        G.isClass = Utilities.isClass;
-        G.isDOMElement = Utilities.isDOMElement;
-        G.isFunction = Utilities.isFunction;
-        G.isNumber = Utilities.isNumber;
-        G.isObject = Utilities.isObject;
-        G.isString = Utilities.isString;
-        G.keys = Utilities.keys;
-        G.merge = Utilities.merge;
-        G.normalizeTickInterval = Utilities.normalizeTickInterval;
-        G.objectEach = Utilities.objectEach;
-        G.offset = Utilities.offset;
-        G.pad = Utilities.pad;
-        G.pick = Utilities.pick;
-        G.pInt = Utilities.pInt;
-        G.relativeLength = Utilities.relativeLength;
-        G.removeEvent = Utilities.removeEvent;
         G.seriesType = SeriesRegistry.seriesType;
-        G.splat = Utilities.splat;
-        G.stableSort = Utilities.stableSort;
-        G.syncTimeout = Utilities.syncTimeout;
-        G.timeUnits = Utilities.timeUnits;
-        G.uniqueKey = Utilities.uniqueKey;
-        G.useSerialIds = Utilities.useSerialIds;
-        G.wrap = Utilities.wrap;
         // Compositions
         ColumnDataLabel.compose(ColumnSeries);
+        BorderRadius.compose(Series, PieSeries, SVGElement, SVGRenderer);
         DataLabel.compose(Series);
         DateTimeAxis.compose(Axis);
         LogarithmicAxis.compose(Axis);
+        OverlappingDataLabels.compose(Chart);
         PieDataLabel.compose(PieSeries);
         PlotLineOrBand.compose(Axis);
         Responsive.compose(Chart);
@@ -45735,6 +45867,368 @@
         // Default Export
 
         return G;
+    });
+    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Authors: Øystein Moseng, Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { defined, error, merge, objectEach } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const deg2rad = H.deg2rad, max = Math.max, min = Math.min;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The Connection class. Used internally to represent a connection between two
+         * points.
+         *
+         * @private
+         * @class
+         * @name Highcharts.Connection
+         *
+         * @param {Highcharts.Point} from
+         *        Connection runs from this Point.
+         *
+         * @param {Highcharts.Point} to
+         *        Connection runs to this Point.
+         *
+         * @param {Highcharts.ConnectorsOptions} [options]
+         *        Connection options.
+         */
+        class Connection {
+            constructor(from, to, options) {
+                /* *
+                *
+                * Properties
+                *
+                * */
+                this.chart = void 0;
+                this.fromPoint = void 0;
+                this.graphics = void 0;
+                this.pathfinder = void 0;
+                this.toPoint = void 0;
+                this.init(from, to, options);
+            }
+            /**
+             * Initialize the Connection object. Used as constructor only.
+             *
+             * @function Highcharts.Connection#init
+             *
+             * @param {Highcharts.Point} from
+             *        Connection runs from this Point.
+             *
+             * @param {Highcharts.Point} to
+             *        Connection runs to this Point.
+             *
+             * @param {Highcharts.ConnectorsOptions} [options]
+             *        Connection options.
+             */
+            init(from, to, options) {
+                this.fromPoint = from;
+                this.toPoint = to;
+                this.options = options;
+                this.chart = from.series.chart;
+                this.pathfinder = this.chart.pathfinder;
+            }
+            /**
+             * Add (or update) this connection's path on chart. Stores reference to the
+             * created element on this.graphics.path.
+             *
+             * @function Highcharts.Connection#renderPath
+             *
+             * @param {Highcharts.SVGPathArray} path
+             *        Path to render, in array format. E.g. ['M', 0, 0, 'L', 10, 10]
+             *
+             * @param {Highcharts.SVGAttributes} [attribs]
+             *        SVG attributes for the path.
+             *
+             * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
+             *        Animation options for the rendering.
+             */
+            renderPath(path, attribs, animation) {
+                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, anim = {};
+                let pathGraphic = connection.graphics && connection.graphics.path;
+                // Add the SVG element of the pathfinder group if it doesn't exist
+                if (!pathfinder.group) {
+                    pathfinder.group = chart.renderer.g()
+                        .addClass('highcharts-pathfinder-group')
+                        .attr({ zIndex: -1 })
+                        .add(chart.seriesGroup);
+                }
+                // Shift the group to compensate for plot area.
+                // Note: Do this always (even when redrawing a path) to avoid issues
+                // when updating chart in a way that changes plot metrics.
+                pathfinder.group.translate(chart.plotLeft, chart.plotTop);
+                // Create path if does not exist
+                if (!(pathGraphic && pathGraphic.renderer)) {
+                    pathGraphic = chart.renderer.path()
+                        .add(pathfinder.group);
+                    if (!styledMode) {
+                        pathGraphic.attr({
+                            opacity: 0
+                        });
+                    }
+                }
+                // Set path attribs and animate to the new path
+                pathGraphic.attr(attribs);
+                anim.d = path;
+                if (!styledMode) {
+                    anim.opacity = 1;
+                }
+                pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
+                // Store reference on connection
+                this.graphics = this.graphics || {};
+                this.graphics.path = pathGraphic;
+            }
+            /**
+             * Calculate and add marker graphics for connection to the chart. The
+             * created/updated elements are stored on this.graphics.start and
+             * this.graphics.end.
+             *
+             * @function Highcharts.Connection#addMarker
+             *
+             * @param {string} type
+             *        Marker type, either 'start' or 'end'.
+             *
+             * @param {Highcharts.ConnectorsMarkerOptions} options
+             *        All options for this marker. Not calculated or merged with other
+             *        options.
+             *
+             * @param {Highcharts.SVGPathArray} path
+             *        Connection path in array format. This is used to calculate the
+             *        rotation angle of the markers.
+             */
+            addMarker(type, options, path) {
+                const connection = this, chart = connection.fromPoint.series.chart, pathfinder = chart.pathfinder, renderer = chart.renderer, point = (type === 'start' ?
+                    connection.fromPoint :
+                    connection.toPoint), anchor = point.getPathfinderAnchorPoint(options);
+                let markerVector, radians, rotation, box, width, height, pathVector, segment;
+                if (!options.enabled) {
+                    return;
+                }
+                // Last vector before start/end of path, used to get angle
+                if (type === 'start') {
+                    segment = path[1];
+                }
+                else { // 'end'
+                    segment = path[path.length - 2];
+                }
+                if (segment && segment[0] === 'M' || segment[0] === 'L') {
+                    pathVector = {
+                        x: segment[1],
+                        y: segment[2]
+                    };
+                    // Get angle between pathVector and anchor point and use it to
+                    // create marker position.
+                    radians = point.getRadiansToVector(pathVector, anchor);
+                    markerVector = point.getMarkerVector(radians, options.radius, anchor);
+                    // Rotation of marker is calculated from angle between pathVector
+                    // and markerVector.
+                    // (Note:
+                    //  Used to recalculate radians between markerVector and pathVector,
+                    //  but this should be the same as between pathVector and anchor.)
+                    rotation = -radians / deg2rad;
+                    if (options.width && options.height) {
+                        width = options.width;
+                        height = options.height;
+                    }
+                    else {
+                        width = height = options.radius * 2;
+                    }
+                    // Add graphics object if it does not exist
+                    connection.graphics = connection.graphics || {};
+                    box = {
+                        x: markerVector.x - (width / 2),
+                        y: markerVector.y - (height / 2),
+                        width: width,
+                        height: height,
+                        rotation: rotation,
+                        rotationOriginX: markerVector.x,
+                        rotationOriginY: markerVector.y
+                    };
+                    if (!connection.graphics[type]) {
+                        // Create new marker element
+                        connection.graphics[type] = renderer
+                            .symbol(options.symbol)
+                            .addClass('highcharts-point-connecting-path-' + type + '-marker' +
+                            ' highcharts-color-' + this.fromPoint.colorIndex)
+                            .attr(box)
+                            .add(pathfinder.group);
+                        if (!renderer.styledMode) {
+                            connection.graphics[type].attr({
+                                fill: options.color || connection.fromPoint.color,
+                                stroke: options.lineColor,
+                                'stroke-width': options.lineWidth,
+                                opacity: 0
+                            })
+                                .animate({
+                                opacity: 1
+                            }, point.series.options.animation);
+                        }
+                    }
+                    else {
+                        connection.graphics[type].animate(box);
+                    }
+                }
+            }
+            /**
+             * Calculate and return connection path.
+             * Note: Recalculates chart obstacles on demand if they aren't calculated.
+             *
+             * @function Highcharts.Connection#getPath
+             *
+             * @param {Highcharts.ConnectorsOptions} options
+             *        Connector options. Not calculated or merged with other options.
+             *
+             * @return {object|undefined}
+             *         Calculated SVG path data in array format.
+             */
+            getPath(options) {
+                const pathfinder = this.pathfinder, chart = this.chart, algorithm = pathfinder.algorithms[options.type];
+                let chartObstacles = pathfinder.chartObstacles;
+                if (typeof algorithm !== 'function') {
+                    error('"' + options.type + '" is not a Pathfinder algorithm.');
+                    return {
+                        path: [],
+                        obstacles: []
+                    };
+                }
+                // This function calculates obstacles on demand if they don't exist
+                if (algorithm.requiresObstacles && !chartObstacles) {
+                    chartObstacles =
+                        pathfinder.chartObstacles =
+                            pathfinder.getChartObstacles(options);
+                    // If the algorithmMargin was computed, store the result in default
+                    // options.
+                    chart.options.connectors.algorithmMargin =
+                        options.algorithmMargin;
+                    // Cache some metrics too
+                    pathfinder.chartObstacleMetrics =
+                        pathfinder.getObstacleMetrics(chartObstacles);
+                }
+                // Get the SVG path
+                return algorithm(
+                // From
+                this.fromPoint.getPathfinderAnchorPoint(options.startMarker), 
+                // To
+                this.toPoint.getPathfinderAnchorPoint(options.endMarker), merge({
+                    chartObstacles: chartObstacles,
+                    lineObstacles: pathfinder.lineObstacles || [],
+                    obstacleMetrics: pathfinder.chartObstacleMetrics,
+                    hardBounds: {
+                        xMin: 0,
+                        xMax: chart.plotWidth,
+                        yMin: 0,
+                        yMax: chart.plotHeight
+                    },
+                    obstacleOptions: {
+                        margin: options.algorithmMargin
+                    },
+                    startDirectionX: pathfinder.getAlgorithmStartDirection(options.startMarker)
+                }, options));
+            }
+            /**
+             * (re)Calculate and (re)draw the connection.
+             *
+             * @function Highcharts.Connection#render
+             */
+            render() {
+                const connection = this, fromPoint = connection.fromPoint, series = fromPoint.series, chart = series.chart, pathfinder = chart.pathfinder, attribs = {};
+                let options = merge(chart.options.connectors, series.options.connectors, fromPoint.options.connectors, connection.options);
+                // Set path attribs
+                if (!chart.styledMode) {
+                    attribs.stroke = options.lineColor || fromPoint.color;
+                    attribs['stroke-width'] = options.lineWidth;
+                    if (options.dashStyle) {
+                        attribs.dashstyle = options.dashStyle;
+                    }
+                }
+                attribs['class'] = // eslint-disable-line dot-notation
+                    'highcharts-point-connecting-path ' +
+                        'highcharts-color-' + fromPoint.colorIndex;
+                options = merge(attribs, options);
+                // Set common marker options
+                if (!defined(options.marker.radius)) {
+                    options.marker.radius = min(max(Math.ceil((options.algorithmMargin || 8) / 2) - 1, 1), 5);
+                }
+                // Get the path
+                const pathResult = connection.getPath(options), path = pathResult.path;
+                // Always update obstacle storage with obstacles from this path.
+                // We don't know if future calls will need this for their algorithm.
+                if (pathResult.obstacles) {
+                    pathfinder.lineObstacles =
+                        pathfinder.lineObstacles || [];
+                    pathfinder.lineObstacles =
+                        pathfinder.lineObstacles.concat(pathResult.obstacles);
+                }
+                // Add the calculated path to the pathfinder group
+                connection.renderPath(path, attribs, series.options.animation);
+                // Render the markers
+                connection.addMarker('start', merge(options.marker, options.startMarker), path);
+                connection.addMarker('end', merge(options.marker, options.endMarker), path);
+            }
+            /**
+             * Destroy connection by destroying the added graphics elements.
+             *
+             * @function Highcharts.Connection#destroy
+             */
+            destroy() {
+                if (this.graphics) {
+                    objectEach(this.graphics, function (val) {
+                        val.destroy();
+                    });
+                    delete this.graphics;
+                }
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * The default pathfinder algorithm to use for a chart. It is possible to define
+         * your own algorithms by adding them to the
+         * `Highcharts.Pathfinder.prototype.algorithms`
+         * object before the chart has been created.
+         *
+         * The default algorithms are as follows:
+         *
+         * `straight`:      Draws a straight line between the connecting
+         *                  points. Does not avoid other points when drawing.
+         *
+         * `simpleConnect`: Finds a path between the points using right angles
+         *                  only. Takes only starting/ending points into
+         *                  account, and will not avoid other points.
+         *
+         * `fastAvoid`:     Finds a path between the points using right angles
+         *                  only. Will attempt to avoid other points, but its
+         *                  focus is performance over accuracy. Works well with
+         *                  less dense datasets.
+         *
+         * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
+         */
+        ''; // Keeps doclets above in JS file
+
+        return Connection;
     });
     _registerModule(_modules, 'Core/Axis/NavigatorAxisComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
@@ -45985,7 +46479,7 @@
              * Whether the mask should be inside the range marking the zoomed
              * range, or outside. In Highcharts Stock 1.x it was always `false`.
              *
-             * @sample {highstock} stock/navigator/maskinside-false/
+             * @sample {highstock} stock/demo/maskinside-false/
              *         False, mask outside
              *
              * @since   2.0
@@ -46515,7 +47009,6 @@
          * @private
          */
         function onChartAfterSetChartSize() {
-            var _a;
             const legend = this.legend, navigator = this.navigator;
             let legendOptions, xAxis, yAxis;
             if (navigator) {
@@ -46537,7 +47030,7 @@
                         this.chartHeight -
                             navigator.height -
                             scrollbarHeight -
-                            (((_a = this.scrollbar) === null || _a === void 0 ? void 0 : _a.options.margin) || 0) -
+                            (this.scrollbar?.options.margin || 0) -
                             this.spacing[2] -
                             (this.rangeSelector && this.extraBottomMargin ?
                                 this.rangeSelector.getHeight() :
@@ -46653,189 +47146,213 @@
     _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2023 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, defined, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, defined, pick, pushUnique } = U;
         /* *
          *
          *  Composition
          *
          * */
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * Creates scrollbars if enabled.
-         * @private
-         */
-        class ScrollbarAxis {
+        var ScrollbarAxis;
+        (function (ScrollbarAxis) {
             /* *
-             *
-             *  Static Properties
-             *
-             * */
+            *
+            *  Constants
+            *
+            * */
+            const composedMembers = [];
+            /* *
+            *
+            *  Variables
+            *
+            * */
+            let Scrollbar;
+            /* *
+            *
+            *  Functions
+            *
+            * */
             /**
              * Attaches to axis events to create scrollbars if enabled.
              *
              * @private
              *
-             * @param AxisClass
+             * @param {Highcharts.Axis} AxisClass
              * Axis class to extend.
              *
-             * @param ScrollbarClass
+             * @param {Highcharts.Scrollbar} ScrollbarClass
              * Scrollbar class to use.
              */
-            static compose(AxisClass, ScrollbarClass) {
-                if (!U.pushUnique(composedMembers, AxisClass)) {
-                    return AxisClass;
+            function compose(AxisClass, ScrollbarClass) {
+                if (pushUnique(composedMembers, ScrollbarClass)) {
+                    Scrollbar = ScrollbarClass;
                 }
-                const getExtremes = (axis) => {
-                    const axisMin = pick(axis.options && axis.options.min, axis.min);
-                    const axisMax = pick(axis.options && axis.options.max, axis.max);
-                    return {
-                        axisMin,
-                        axisMax,
-                        scrollMin: defined(axis.dataMin) ?
-                            Math.min(axisMin, axis.min, axis.dataMin, pick(axis.threshold, Infinity)) : axisMin,
-                        scrollMax: defined(axis.dataMax) ?
-                            Math.max(axisMax, axis.max, axis.dataMax, pick(axis.threshold, -Infinity)) : axisMax
-                    };
-                };
-                // Wrap axis initialization and create scrollbar if enabled:
-                addEvent(AxisClass, 'afterInit', function () {
-                    const axis = this;
-                    if (axis.options &&
-                        axis.options.scrollbar &&
-                        axis.options.scrollbar.enabled) {
-                        // Predefined options:
-                        axis.options.scrollbar.vertical = !axis.horiz;
-                        axis.options.startOnTick = axis.options.endOnTick = false;
-                        axis.scrollbar = new ScrollbarClass(axis.chart.renderer, axis.options.scrollbar, axis.chart);
-                        addEvent(axis.scrollbar, 'changed', function (e) {
-                            let { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), range = unitedMax - unitedMin, to, from;
-                            // #12834, scroll when show/hide series, wrong extremes
-                            if (!defined(axisMin) || !defined(axisMax)) {
-                                return;
-                            }
-                            if ((axis.horiz && !axis.reversed) ||
-                                (!axis.horiz && axis.reversed)) {
-                                to = unitedMin + range * this.to;
-                                from = unitedMin + range * this.from;
-                            }
-                            else {
-                                // y-values in browser are reversed, but this also
-                                // applies for reversed horizontal axis:
-                                to = unitedMin + range * (1 - this.from);
-                                from = unitedMin + range * (1 - this.to);
-                            }
-                            if (this.shouldUpdateExtremes(e.DOMType)) {
-                                // #17977, set animation to undefined instead of true
-                                const animate = e.DOMType === 'mousemove' ||
-                                    e.DOMType === 'touchmove' ? false : void 0;
-                                axis.setExtremes(from, to, true, animate, e);
-                            }
-                            else {
-                                // When live redraw is disabled, don't change extremes
-                                // Only change the position of the scollbar thumb
-                                this.setRange(this.from, this.to);
-                            }
-                        });
-                    }
-                });
-                // Wrap rendering axis, and update scrollbar if one is created:
-                addEvent(AxisClass, 'afterRender', function () {
-                    let axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin + (axis.titleOffset || 0)), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0, offsetsIndex, from, to;
-                    if (scrollbar) {
-                        if (axis.horiz) {
-                            // Reserve space for labels/title
-                            if (!axis.opposite) {
-                                scrollbarsOffsets[1] += offset;
-                            }
-                            scrollbar.position(axis.left, (axis.top +
-                                axis.height +
-                                2 +
-                                scrollbarsOffsets[1] -
-                                (axis.opposite ? axisMargin : 0)), axis.width, axis.height);
-                            // Next scrollbar should reserve space for margin (if set)
-                            if (!axis.opposite) {
-                                scrollbarsOffsets[1] += axisMargin;
-                            }
-                            offsetsIndex = 1;
-                        }
-                        else {
-                            // Reserve space for labels/title
-                            if (axis.opposite) {
-                                scrollbarsOffsets[0] += offset;
-                            }
-                            let xPosition;
-                            if (!scrollbar.options.opposite) {
-                                xPosition = axis.opposite ? 0 : axisMargin;
-                            }
-                            else {
-                                xPosition = axis.left +
-                                    axis.width +
-                                    2 +
-                                    scrollbarsOffsets[0] -
-                                    (axis.opposite ? 0 : axisMargin);
-                            }
-                            scrollbar.position(xPosition, axis.top, axis.width, axis.height);
-                            // Next scrollbar should reserve space for margin (if set)
-                            if (axis.opposite) {
-                                scrollbarsOffsets[0] += axisMargin;
-                            }
-                            offsetsIndex = 0;
-                        }
-                        scrollbarsOffsets[offsetsIndex] += scrollbar.size +
-                            (scrollbar.options.margin || 0);
-                        if (isNaN(scrollMin) ||
-                            isNaN(scrollMax) ||
-                            !defined(axis.min) ||
-                            !defined(axis.max) ||
-                            axis.min === axis.max // #10733
-                        ) {
-                            // default action: when extremes are the same or there is
-                            // not extremes on the axis, but scrollbar exists, make it
-                            // full size
-                            scrollbar.setRange(0, 1);
-                        }
-                        else {
-                            from = ((axis.min - scrollMin) /
-                                (scrollMax - scrollMin));
-                            to = ((axis.max - scrollMin) /
-                                (scrollMax - scrollMin));
-                            if ((axis.horiz && !axis.reversed) ||
-                                (!axis.horiz && axis.reversed)) {
-                                scrollbar.setRange(from, to);
-                            }
-                            else {
-                                // inverse vertical axis
-                                scrollbar.setRange(1 - to, 1 - from);
-                            }
-                        }
-                    }
-                });
-                // Make space for a scrollbar:
-                addEvent(AxisClass, 'afterGetOffset', function () {
-                    const axis = this, scrollbar = axis.scrollbar, opposite = scrollbar && !scrollbar.options.opposite, index = axis.horiz ? 2 : opposite ? 3 : 1;
-                    if (scrollbar) {
-                        // reset scrollbars offsets
-                        axis.chart.scrollbarsOffsets = [0, 0];
-                        axis.chart.axisOffset[index] +=
-                            scrollbar.size + (scrollbar.options.margin || 0);
-                    }
-                });
-                return AxisClass;
+                if (pushUnique(composedMembers, AxisClass)) {
+                    addEvent(AxisClass, 'afterGetOffset', onAxisAfterGetOffset);
+                    addEvent(AxisClass, 'afterInit', onAxisAfterInit);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
+                }
             }
-        }
+            ScrollbarAxis.compose = compose;
+            /** @private */
+            function getExtremes(axis) {
+                const axisMin = pick(axis.options && axis.options.min, axis.min);
+                const axisMax = pick(axis.options && axis.options.max, axis.max);
+                return {
+                    axisMin,
+                    axisMax,
+                    scrollMin: defined(axis.dataMin) ?
+                        Math.min(axisMin, axis.min, axis.dataMin, pick(axis.threshold, Infinity)) : axisMin,
+                    scrollMax: defined(axis.dataMax) ?
+                        Math.max(axisMax, axis.max, axis.dataMax, pick(axis.threshold, -Infinity)) : axisMax
+                };
+            }
+            /**
+             * Make space for a scrollbar.
+             * @private
+             */
+            function onAxisAfterGetOffset() {
+                const axis = this, scrollbar = axis.scrollbar, opposite = scrollbar && !scrollbar.options.opposite, index = axis.horiz ? 2 : opposite ? 3 : 1;
+                if (scrollbar) {
+                    // Reset scrollbars offsets
+                    axis.chart.scrollbarsOffsets = [0, 0];
+                    axis.chart.axisOffset[index] +=
+                        scrollbar.size + (scrollbar.options.margin || 0);
+                }
+            }
+            /**
+             * Wrap axis initialization and create scrollbar if enabled.
+             * @private
+             */
+            function onAxisAfterInit() {
+                const axis = this;
+                if (axis.options &&
+                    axis.options.scrollbar &&
+                    axis.options.scrollbar.enabled) {
+                    // Predefined options:
+                    axis.options.scrollbar.vertical = !axis.horiz;
+                    axis.options.startOnTick = axis.options.endOnTick = false;
+                    axis.scrollbar = new Scrollbar(axis.chart.renderer, axis.options.scrollbar, axis.chart);
+                    addEvent(axis.scrollbar, 'changed', function (e) {
+                        const { axisMin, axisMax, scrollMin: unitedMin, scrollMax: unitedMax } = getExtremes(axis), range = unitedMax - unitedMin;
+                        let to, from;
+                        // #12834, scroll when show/hide series, wrong extremes
+                        if (!defined(axisMin) || !defined(axisMax)) {
+                            return;
+                        }
+                        if ((axis.horiz && !axis.reversed) ||
+                            (!axis.horiz && axis.reversed)) {
+                            to = unitedMin + range * this.to;
+                            from = unitedMin + range * this.from;
+                        }
+                        else {
+                            // Y-values in browser are reversed, but this also
+                            // applies for reversed horizontal axis:
+                            to = unitedMin + range * (1 - this.from);
+                            from = unitedMin + range * (1 - this.to);
+                        }
+                        if (this.shouldUpdateExtremes(e.DOMType)) {
+                            // #17977, set animation to undefined instead of true
+                            const animate = e.DOMType === 'mousemove' ||
+                                e.DOMType === 'touchmove' ? false : void 0;
+                            axis.setExtremes(from, to, true, animate, e);
+                        }
+                        else {
+                            // When live redraw is disabled, don't change extremes
+                            // Only change the position of the scollbar thumb
+                            this.setRange(this.from, this.to);
+                        }
+                    });
+                }
+            }
+            /**
+             * Wrap rendering axis, and update scrollbar if one is created.
+             * @private
+             */
+            function onAxisAfterRender() {
+                const axis = this, { scrollMin, scrollMax } = getExtremes(axis), scrollbar = axis.scrollbar, offset = (axis.axisTitleMargin + (axis.titleOffset || 0)), scrollbarsOffsets = axis.chart.scrollbarsOffsets, axisMargin = axis.options.margin || 0;
+                let offsetsIndex, from, to;
+                if (scrollbar && scrollbarsOffsets) {
+                    if (axis.horiz) {
+                        // Reserve space for labels/title
+                        if (!axis.opposite) {
+                            scrollbarsOffsets[1] += offset;
+                        }
+                        scrollbar.position(axis.left, (axis.top +
+                            axis.height +
+                            2 +
+                            scrollbarsOffsets[1] -
+                            (axis.opposite ? axisMargin : 0)), axis.width, axis.height);
+                        // Next scrollbar should reserve space for margin (if set)
+                        if (!axis.opposite) {
+                            scrollbarsOffsets[1] += axisMargin;
+                        }
+                        offsetsIndex = 1;
+                    }
+                    else {
+                        // Reserve space for labels/title
+                        if (axis.opposite) {
+                            scrollbarsOffsets[0] += offset;
+                        }
+                        let xPosition;
+                        if (!scrollbar.options.opposite) {
+                            xPosition = axis.opposite ? 0 : axisMargin;
+                        }
+                        else {
+                            xPosition = axis.left +
+                                axis.width +
+                                2 +
+                                scrollbarsOffsets[0] -
+                                (axis.opposite ? 0 : axisMargin);
+                        }
+                        scrollbar.position(xPosition, axis.top, axis.width, axis.height);
+                        // Next scrollbar should reserve space for margin (if set)
+                        if (axis.opposite) {
+                            scrollbarsOffsets[0] += axisMargin;
+                        }
+                        offsetsIndex = 0;
+                    }
+                    scrollbarsOffsets[offsetsIndex] += scrollbar.size +
+                        (scrollbar.options.margin || 0);
+                    if (isNaN(scrollMin) ||
+                        isNaN(scrollMax) ||
+                        !defined(axis.min) ||
+                        !defined(axis.max) ||
+                        axis.min === axis.max // #10733
+                    ) {
+                        // Default action: when extremes are the same or there is
+                        // not extremes on the axis, but scrollbar exists, make it
+                        // full size
+                        scrollbar.setRange(0, 1);
+                    }
+                    else {
+                        from = ((axis.min - scrollMin) /
+                            (scrollMax - scrollMin));
+                        to = ((axis.max - scrollMin) /
+                            (scrollMax - scrollMin));
+                        if ((axis.horiz && !axis.reversed) ||
+                            (!axis.horiz && axis.reversed)) {
+                            scrollbar.setRange(from, to);
+                        }
+                        else {
+                            // Inverse vertical axis
+                            scrollbar.setRange(1 - to, 1 - from);
+                        }
+                    }
+                }
+            }
+        })(ScrollbarAxis || (ScrollbarAxis = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return ScrollbarAxis;
     });
@@ -47742,7 +48259,7 @@
          * */
         const { defaultOptions } = D;
         const { hasTouch, isTouchDevice } = H;
-        const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, isArray, isNumber, merge, pick, removeEvent, splat } = U;
+        const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, fireEvent, isArray, isNumber, merge, pick, removeEvent, splat } = U;
         /* *
          *
          *  Functions
@@ -48225,6 +48742,7 @@
                     navigator.zoomedMin / (navigatorSize || 1), navigator.zoomedMax / (navigatorSize || 1));
                 }
                 navigator.rendered = true;
+                fireEvent(this, 'afterRender');
             }
             /**
              * Set up the mouse and touch events for the navigator
@@ -49131,6 +49649,1799 @@
 
         return Navigator;
     });
+    _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
+        /* *
+         *
+         *  (c) 2010-2022 Pawel Lysy
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const getLinkPath = {
+            'default': getDefaultPath,
+            straight: getStraightPath,
+            curved: getCurvedPath
+        };
+        function getDefaultPath(pathParams) {
+            const { x1, y1, x2, y2, width = 0, inverted = false, radius, parentVisible } = pathParams;
+            const path = [
+                ['M', x1, y1],
+                ['L', x1, y1],
+                ['C', x1, y1, x1, y2, x1, y2],
+                ['L', x1, y2],
+                ['C', x1, y1, x1, y2, x1, y2],
+                ['L', x1, y2]
+            ];
+            return parentVisible ?
+                applyRadius([
+                    ['M', x1, y1],
+                    ['L', x1 + width * (inverted ? -0.5 : 0.5), y1],
+                    ['L', x1 + width * (inverted ? -0.5 : 0.5), y2],
+                    ['L', x2, y2]
+                ], radius) :
+                path;
+        }
+        function getStraightPath(pathParams) {
+            const { x1, y1, x2, y2, width = 0, inverted = false, parentVisible } = pathParams;
+            return parentVisible ? [
+                ['M', x1, y1],
+                ['L', x1 + width * (inverted ? -1 : 1), y2],
+                ['L', x2, y2]
+            ] : [
+                ['M', x1, y1],
+                ['L', x1, y2],
+                ['L', x1, y2]
+            ];
+        }
+        function getCurvedPath(pathParams) {
+            const { x1, y1, x2, y2, offset = 0, width = 0, inverted = false, parentVisible } = pathParams;
+            return parentVisible ?
+                [
+                    ['M', x1, y1],
+                    [
+                        'C',
+                        x1 + offset,
+                        y1,
+                        x1 - offset + width * (inverted ? -1 : 1),
+                        y2,
+                        x1 + width * (inverted ? -1 : 1),
+                        y2
+                    ],
+                    ['L', x2, y2]
+                ] :
+                [
+                    ['M', x1, y1],
+                    ['C', x1, y1, x1, y2, x1, y2],
+                    ['L', x2, y2]
+                ];
+        }
+        /**
+         * General function to apply corner radius to a path
+         * @private
+         */
+        function applyRadius(path, r) {
+            const d = [];
+            for (let i = 0; i < path.length; i++) {
+                const x = path[i][1];
+                const y = path[i][2];
+                if (typeof x === 'number' && typeof y === 'number') {
+                    // moveTo
+                    if (i === 0) {
+                        d.push(['M', x, y]);
+                    }
+                    else if (i === path.length - 1) {
+                        d.push(['L', x, y]);
+                        // curveTo
+                    }
+                    else if (r) {
+                        const prevSeg = path[i - 1];
+                        const nextSeg = path[i + 1];
+                        if (prevSeg && nextSeg) {
+                            const x1 = prevSeg[1], y1 = prevSeg[2], x2 = nextSeg[1], y2 = nextSeg[2];
+                            // Only apply to breaks
+                            if (typeof x1 === 'number' &&
+                                typeof x2 === 'number' &&
+                                typeof y1 === 'number' &&
+                                typeof y2 === 'number' &&
+                                x1 !== x2 &&
+                                y1 !== y2) {
+                                const directionX = x1 < x2 ? 1 : -1, directionY = y1 < y2 ? 1 : -1;
+                                d.push([
+                                    'L',
+                                    x - directionX * Math.min(Math.abs(x - x1), r),
+                                    y - directionY * Math.min(Math.abs(y - y1), r)
+                                ], [
+                                    'C',
+                                    x,
+                                    y,
+                                    x,
+                                    y,
+                                    x + directionX * Math.min(Math.abs(x - x2), r),
+                                    y + directionY * Math.min(Math.abs(y - y2), r)
+                                ]);
+                            }
+                        }
+                        // lineTo
+                    }
+                    else {
+                        d.push(['L', x, y]);
+                    }
+                }
+            }
+            return d;
+        }
+        const PathUtilities = {
+            applyRadius,
+            getLinkPath
+        };
+
+        return PathUtilities;
+    });
+    _registerModule(_modules, 'Gantt/PathfinderAlgorithms.js', [_modules['Series/PathUtilities.js'], _modules['Core/Utilities.js']], function (PathUtilities, U) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Author: Øystein Moseng
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { pick } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const { min, max, abs } = Math;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get index of last obstacle before xMin. Employs a type of binary search, and
+         * thus requires that obstacles are sorted by xMin value.
+         *
+         * @private
+         * @function findLastObstacleBefore
+         *
+         * @param {Array<object>} obstacles
+         *        Array of obstacles to search in.
+         *
+         * @param {number} xMin
+         *        The xMin threshold.
+         *
+         * @param {number} [startIx]
+         *        Starting index to search from. Must be within array range.
+         *
+         * @return {number}
+         *         The index of the last obstacle element before xMin.
+         */
+        function findLastObstacleBefore(obstacles, xMin, startIx) {
+            const min = xMin - 0.0000001; // Make sure we include all obstacles at xMin
+            let left = startIx || 0, // Left limit
+            right = obstacles.length - 1, // Right limit
+            cursor, cmp;
+            while (left <= right) {
+                cursor = (right + left) >> 1;
+                cmp = min - obstacles[cursor].xMin;
+                if (cmp > 0) {
+                    left = cursor + 1;
+                }
+                else if (cmp < 0) {
+                    right = cursor - 1;
+                }
+                else {
+                    return cursor;
+                }
+            }
+            return left > 0 ? left - 1 : 0;
+        }
+        /**
+         * Test if a point lays within an obstacle.
+         *
+         * @private
+         * @function pointWithinObstacle
+         *
+         * @param {Object} obstacle
+         *        Obstacle to test.
+         *
+         * @param {Highcharts.Point} point
+         *        Point with x/y props.
+         *
+         * @return {boolean}
+         *         Whether point is within the obstacle or not.
+         */
+        function pointWithinObstacle(obstacle, point) {
+            return (point.x <= obstacle.xMax &&
+                point.x >= obstacle.xMin &&
+                point.y <= obstacle.yMax &&
+                point.y >= obstacle.yMin);
+        }
+        /**
+         * Find the index of an obstacle that wraps around a point.
+         * Returns -1 if not found.
+         *
+         * @private
+         * @function findObstacleFromPoint
+         *
+         * @param {Array<object>} obstacles
+         *        Obstacles to test.
+         *
+         * @param {Highcharts.Point} point
+         *        Point with x/y props.
+         *
+         * @return {number}
+         *         Ix of the obstacle in the array, or -1 if not found.
+         */
+        function findObstacleFromPoint(obstacles, point) {
+            let i = findLastObstacleBefore(obstacles, point.x + 1) + 1;
+            while (i--) {
+                if (obstacles[i].xMax >= point.x &&
+                    // Optimization using lazy evaluation
+                    pointWithinObstacle(obstacles[i], point)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        /**
+         * Get SVG path array from array of line segments.
+         *
+         * @private
+         * @function pathFromSegments
+         *
+         * @param {Array<object>} segments
+         *        The segments to build the path from.
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         SVG path array as accepted by the SVG Renderer.
+         */
+        function pathFromSegments(segments) {
+            const path = [];
+            if (segments.length) {
+                path.push(['M', segments[0].start.x, segments[0].start.y]);
+                for (let i = 0; i < segments.length; ++i) {
+                    path.push(['L', segments[i].end.x, segments[i].end.y]);
+                }
+            }
+            return path;
+        }
+        /**
+         * Limits obstacle max/mins in all directions to bounds. Modifies input
+         * obstacle.
+         *
+         * @private
+         * @function limitObstacleToBounds
+         *
+         * @param {Object} obstacle
+         *        Obstacle to limit.
+         *
+         * @param {Object} bounds
+         *        Bounds to use as limit.
+         *
+         * @return {void}
+         */
+        function limitObstacleToBounds(obstacle, bounds) {
+            obstacle.yMin = max(obstacle.yMin, bounds.yMin);
+            obstacle.yMax = min(obstacle.yMax, bounds.yMax);
+            obstacle.xMin = max(obstacle.xMin, bounds.xMin);
+            obstacle.xMax = min(obstacle.xMax, bounds.xMax);
+        }
+        /**
+         * Get an SVG path from a starting coordinate to an ending coordinate.
+         * Draws a straight line.
+         *
+         * @function Highcharts.Pathfinder.algorithms.straight
+         *
+         * @param {Highcharts.PositionObject} start
+         *        Starting coordinate, object with x/y props.
+         *
+         * @param {Highcharts.PositionObject} end
+         *        Ending coordinate, object with x/y props.
+         *
+         * @return {Object}
+         *         An object with the SVG path in Array form as accepted by the SVG
+         *         renderer, as well as an array of new obstacles making up this
+         *         path.
+         */
+        function straight(start, end) {
+            return {
+                path: [
+                    ['M', start.x, start.y],
+                    ['L', end.x, end.y]
+                ],
+                obstacles: [{ start: start, end: end }]
+            };
+        }
+        /**
+         * Find a path from a starting coordinate to an ending coordinate, using
+         * right angles only, and taking only starting/ending obstacle into
+         * consideration.
+         *
+         * @function Highcharts.Pathfinder.algorithms.simpleConnect
+         *
+         * @param {Highcharts.PositionObject} start
+         *        Starting coordinate, object with x/y props.
+         *
+         * @param {Highcharts.PositionObject} end
+         *        Ending coordinate, object with x/y props.
+         *
+         * @param {Object} options
+         *        Options for the algorithm:
+         *        - chartObstacles: Array of chart obstacles to avoid
+         *        - startDirectionX: Optional. True if starting in the X direction.
+         *          If not provided, the algorithm starts in the direction that is
+         *          the furthest between start/end.
+         *
+         * @return {Object}
+         *         An object with the SVG path in Array form as accepted by the SVG
+         *         renderer, as well as an array of new obstacles making up this
+         *         path.
+         */
+        const simpleConnect = function (start, end, options) {
+            const segments = [], chartObstacles = options.chartObstacles, startObstacleIx = findObstacleFromPoint(chartObstacles, start), endObstacleIx = findObstacleFromPoint(chartObstacles, end);
+            let endSegment, dir = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)) ? 'x' : 'y', startObstacle, endObstacle, waypoint, useMax, endPoint;
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Return a clone of a point with a property set from a target object,
+             * optionally with an offset
+             * @private
+             */
+            function copyFromPoint(from, fromKey, to, toKey, offset) {
+                const point = {
+                    x: from.x,
+                    y: from.y
+                };
+                point[fromKey] = to[toKey || fromKey] + (offset || 0);
+                return point;
+            }
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Return waypoint outside obstacle.
+             * @private
+             */
+            function getMeOut(obstacle, point, direction) {
+                const useMax = abs(point[direction] - obstacle[direction + 'Min']) >
+                    abs(point[direction] - obstacle[direction + 'Max']);
+                return copyFromPoint(point, direction, obstacle, direction + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1);
+            }
+            // Pull out end point
+            if (endObstacleIx > -1) {
+                endObstacle = chartObstacles[endObstacleIx];
+                waypoint = getMeOut(endObstacle, end, dir);
+                endSegment = {
+                    start: waypoint,
+                    end: end
+                };
+                endPoint = waypoint;
+            }
+            else {
+                endPoint = end;
+            }
+            // If an obstacle envelops the start point, add a segment to get out,
+            // and around it.
+            if (startObstacleIx > -1) {
+                startObstacle = chartObstacles[startObstacleIx];
+                waypoint = getMeOut(startObstacle, start, dir);
+                segments.push({
+                    start: start,
+                    end: waypoint
+                });
+                // If we are going back again, switch direction to get around start
+                // obstacle.
+                if (
+                // Going towards max from start:
+                waypoint[dir] >= start[dir] ===
+                    // Going towards min to end:
+                    waypoint[dir] >= endPoint[dir]) {
+                    dir = dir === 'y' ? 'x' : 'y';
+                    useMax = start[dir] < end[dir];
+                    segments.push({
+                        start: waypoint,
+                        end: copyFromPoint(waypoint, dir, startObstacle, dir + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1)
+                    });
+                    // Switch direction again
+                    dir = dir === 'y' ? 'x' : 'y';
+                }
+            }
+            // We are around the start obstacle. Go towards the end in one
+            // direction.
+            const prevWaypoint = segments.length ?
+                segments[segments.length - 1].end :
+                start;
+            waypoint = copyFromPoint(prevWaypoint, dir, endPoint);
+            segments.push({
+                start: prevWaypoint,
+                end: waypoint
+            });
+            // Final run to end point in the other direction
+            dir = dir === 'y' ? 'x' : 'y';
+            const waypoint2 = copyFromPoint(waypoint, dir, endPoint);
+            segments.push({
+                start: waypoint,
+                end: waypoint2
+            });
+            // Finally add the endSegment
+            segments.push(endSegment);
+            const path = PathUtilities.applyRadius(pathFromSegments(segments), options.radius);
+            return {
+                path,
+                obstacles: segments
+            };
+        };
+        simpleConnect.requiresObstacles = true;
+        /**
+         * Find a path from a starting coordinate to an ending coordinate, taking
+         * obstacles into consideration. Might not always find the optimal path,
+         * but is fast, and usually good enough.
+         *
+         * @function Highcharts.Pathfinder.algorithms.fastAvoid
+         *
+         * @param {Highcharts.PositionObject} start
+         *        Starting coordinate, object with x/y props.
+         *
+         * @param {Highcharts.PositionObject} end
+         *        Ending coordinate, object with x/y props.
+         *
+         * @param {Object} options
+         *        Options for the algorithm.
+         *        - chartObstacles:  Array of chart obstacles to avoid
+         *        - lineObstacles:   Array of line obstacles to jump over
+         *        - obstacleMetrics: Object with metrics of chartObstacles cached
+         *        - hardBounds:      Hard boundaries to not cross
+         *        - obstacleOptions: Options for the obstacles, including margin
+         *        - startDirectionX: Optional. True if starting in the X direction.
+         *                           If not provided, the algorithm starts in the
+         *                           direction that is the furthest between
+         *                           start/end.
+         *
+         * @return {Object}
+         *         An object with the SVG path in Array form as accepted by the SVG
+         *         renderer, as well as an array of new obstacles making up this
+         *         path.
+         */
+        function fastAvoid(start, end, options) {
+            /*
+                Algorithm rules/description
+                - Find initial direction
+                - Determine soft/hard max for each direction.
+                - Move along initial direction until obstacle.
+                - Change direction.
+                - If hitting obstacle, first try to change length of previous line
+                    before changing direction again.
+
+                Soft min/max x = start/destination x +/- widest obstacle + margin
+                Soft min/max y = start/destination y +/- tallest obstacle + margin
+
+                @todo:
+                    - Make retrospective, try changing prev segment to reduce
+                        corners
+                    - Fix logic for breaking out of end-points - not always picking
+                        the best direction currently
+                    - When going around the end obstacle we should not always go the
+                        shortest route, rather pick the one closer to the end point
+            */
+            const dirIsX = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)), dir = dirIsX ? 'x' : 'y', endSegments = [], 
+            // Boundaries to stay within. If beyond soft boundary, prefer to
+            // change direction ASAP. If at hard max, always change immediately.
+            metrics = options.obstacleMetrics, softMinX = min(start.x, end.x) - metrics.maxWidth - 10, softMaxX = max(start.x, end.x) + metrics.maxWidth + 10, softMinY = min(start.y, end.y) - metrics.maxHeight - 10, softMaxY = max(start.y, end.y) + metrics.maxHeight + 10;
+            let segments, useMax, extractedEndPoint, forceObstacleBreak = false, // Used in clearPathTo to keep track of
+            // when to force break through an obstacle.
+            // Obstacles
+            chartObstacles = options.chartObstacles, endObstacleIx = findLastObstacleBefore(chartObstacles, softMaxX);
+            const startObstacleIx = findLastObstacleBefore(chartObstacles, softMinX);
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * How far can you go between two points before hitting an obstacle?
+             * Does not work for diagonal lines (because it doesn't have to).
+             * @private
+             */
+            function pivotPoint(fromPoint, toPoint, directionIsX) {
+                const searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
+                let firstPoint, lastPoint, highestPoint, lowestPoint;
+                if (fromPoint.x < toPoint.x) {
+                    firstPoint = fromPoint;
+                    lastPoint = toPoint;
+                }
+                else {
+                    firstPoint = toPoint;
+                    lastPoint = fromPoint;
+                }
+                if (fromPoint.y < toPoint.y) {
+                    lowestPoint = fromPoint;
+                    highestPoint = toPoint;
+                }
+                else {
+                    lowestPoint = toPoint;
+                    highestPoint = fromPoint;
+                }
+                // Go through obstacle range in reverse if toPoint is before
+                // fromPoint in the X-dimension.
+                let i = searchDirection < 0 ?
+                    // Searching backwards, start at last obstacle before last point
+                    min(findLastObstacleBefore(chartObstacles, lastPoint.x), chartObstacles.length - 1) :
+                    // Forwards. Since we're not sorted by xMax, we have to look
+                    // at all obstacles.
+                    0;
+                // Go through obstacles in this X range
+                while (chartObstacles[i] && (searchDirection > 0 && chartObstacles[i].xMin <= lastPoint.x ||
+                    searchDirection < 0 && chartObstacles[i].xMax >= firstPoint.x)) {
+                    // If this obstacle is between from and to points in a straight
+                    // line, pivot at the intersection.
+                    if (chartObstacles[i].xMin <= lastPoint.x &&
+                        chartObstacles[i].xMax >= firstPoint.x &&
+                        chartObstacles[i].yMin <= highestPoint.y &&
+                        chartObstacles[i].yMax >= lowestPoint.y) {
+                        if (directionIsX) {
+                            return {
+                                y: fromPoint.y,
+                                x: fromPoint.x < toPoint.x ?
+                                    chartObstacles[i].xMin - 1 :
+                                    chartObstacles[i].xMax + 1,
+                                obstacle: chartObstacles[i]
+                            };
+                        }
+                        // Else ...
+                        return {
+                            x: fromPoint.x,
+                            y: fromPoint.y < toPoint.y ?
+                                chartObstacles[i].yMin - 1 :
+                                chartObstacles[i].yMax + 1,
+                            obstacle: chartObstacles[i]
+                        };
+                    }
+                    i += searchDirection;
+                }
+                return toPoint;
+            }
+            /**
+             * Decide in which direction to dodge or get out of an obstacle.
+             * Considers desired direction, which way is shortest, soft and hard
+             * bounds.
+             *
+             * (? Returns a string, either xMin, xMax, yMin or yMax.)
+             *
+             * @private
+             * @function
+             *
+             * @param {Object} obstacle
+             *        Obstacle to dodge/escape.
+             *
+             * @param {Object} fromPoint
+             *        Point with x/y props that's dodging/escaping.
+             *
+             * @param {Object} toPoint
+             *        Goal point.
+             *
+             * @param {boolean} dirIsX
+             *        Dodge in X dimension.
+             *
+             * @param {Object} bounds
+             *        Hard and soft boundaries.
+             *
+             * @return {boolean}
+             *         Use max or not.
+             */
+            function getDodgeDirection(obstacle, fromPoint, toPoint, dirIsX, bounds) {
+                const softBounds = bounds.soft, hardBounds = bounds.hard, dir = dirIsX ? 'x' : 'y', toPointMax = { x: fromPoint.x, y: fromPoint.y }, toPointMin = { x: fromPoint.x, y: fromPoint.y }, maxOutOfSoftBounds = obstacle[dir + 'Max'] >=
+                    softBounds[dir + 'Max'], minOutOfSoftBounds = obstacle[dir + 'Min'] <=
+                    softBounds[dir + 'Min'], maxOutOfHardBounds = obstacle[dir + 'Max'] >=
+                    hardBounds[dir + 'Max'], minOutOfHardBounds = obstacle[dir + 'Min'] <=
+                    hardBounds[dir + 'Min'], 
+                // Find out if we should prefer one direction over the other if
+                // we can choose freely
+                minDistance = abs(obstacle[dir + 'Min'] - fromPoint[dir]), maxDistance = abs(obstacle[dir + 'Max'] - fromPoint[dir]);
+                let // If it's a small difference, pick the one leading towards dest
+                // point. Otherwise pick the shortest distance
+                useMax = abs(minDistance - maxDistance) < 10 ?
+                    fromPoint[dir] < toPoint[dir] :
+                    maxDistance < minDistance;
+                // Check if we hit any obstacles trying to go around in either
+                // direction.
+                toPointMin[dir] = obstacle[dir + 'Min'];
+                toPointMax[dir] = obstacle[dir + 'Max'];
+                const minPivot = pivotPoint(fromPoint, toPointMin, dirIsX)[dir] !==
+                    toPointMin[dir], maxPivot = pivotPoint(fromPoint, toPointMax, dirIsX)[dir] !==
+                    toPointMax[dir];
+                useMax = minPivot ?
+                    (maxPivot ? useMax : true) :
+                    (maxPivot ? false : useMax);
+                // `useMax` now contains our preferred choice, bounds not taken into
+                // account. If both or neither direction is out of bounds we want to
+                // use this.
+                // Deal with soft bounds
+                useMax = minOutOfSoftBounds ?
+                    (maxOutOfSoftBounds ? useMax : true) : // Out on min
+                    (maxOutOfSoftBounds ? false : useMax); // Not out on min
+                // Deal with hard bounds
+                useMax = minOutOfHardBounds ?
+                    (maxOutOfHardBounds ? useMax : true) : // Out on min
+                    (maxOutOfHardBounds ? false : useMax); // Not out on min
+                return useMax;
+            }
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Find a clear path between point.
+             * @private
+             */
+            function clearPathTo(fromPoint, toPoint, dirIsX) {
+                // Don't waste time if we've hit goal
+                if (fromPoint.x === toPoint.x && fromPoint.y === toPoint.y) {
+                    return [];
+                }
+                const dir = dirIsX ? 'x' : 'y', obstacleMargin = options.obstacleOptions.margin, bounds = {
+                    soft: {
+                        xMin: softMinX,
+                        xMax: softMaxX,
+                        yMin: softMinY,
+                        yMax: softMaxY
+                    },
+                    hard: options.hardBounds
+                };
+                let pivot, segments, waypoint, waypointUseMax, envelopingObstacle, secondEnvelopingObstacle, envelopWaypoint;
+                // If fromPoint is inside an obstacle we have a problem. Break out
+                // by just going to the outside of this obstacle. We prefer to go to
+                // the nearest edge in the chosen direction.
+                envelopingObstacle =
+                    findObstacleFromPoint(chartObstacles, fromPoint);
+                if (envelopingObstacle > -1) {
+                    envelopingObstacle = chartObstacles[envelopingObstacle];
+                    waypointUseMax = getDodgeDirection(envelopingObstacle, fromPoint, toPoint, dirIsX, bounds);
+                    // Cut obstacle to hard bounds to make sure we stay within
+                    limitObstacleToBounds(envelopingObstacle, options.hardBounds);
+                    envelopWaypoint = dirIsX ? {
+                        y: fromPoint.y,
+                        x: envelopingObstacle[waypointUseMax ? 'xMax' : 'xMin'] +
+                            (waypointUseMax ? 1 : -1)
+                    } : {
+                        x: fromPoint.x,
+                        y: envelopingObstacle[waypointUseMax ? 'yMax' : 'yMin'] +
+                            (waypointUseMax ? 1 : -1)
+                    };
+                    // If we crashed into another obstacle doing this, we put the
+                    // waypoint between them instead
+                    secondEnvelopingObstacle = findObstacleFromPoint(chartObstacles, envelopWaypoint);
+                    if (secondEnvelopingObstacle > -1) {
+                        secondEnvelopingObstacle = chartObstacles[secondEnvelopingObstacle];
+                        // Cut obstacle to hard bounds
+                        limitObstacleToBounds(secondEnvelopingObstacle, options.hardBounds);
+                        // Modify waypoint to lay between obstacles
+                        envelopWaypoint[dir] = waypointUseMax ? max(envelopingObstacle[dir + 'Max'] - obstacleMargin + 1, (secondEnvelopingObstacle[dir + 'Min'] +
+                            envelopingObstacle[dir + 'Max']) / 2) :
+                            min((envelopingObstacle[dir + 'Min'] + obstacleMargin - 1), ((secondEnvelopingObstacle[dir + 'Max'] +
+                                envelopingObstacle[dir + 'Min']) / 2));
+                        // We are not going anywhere. If this happens for the first
+                        // time, do nothing. Otherwise, try to go to the extreme of
+                        // the obstacle pair in the current direction.
+                        if (fromPoint.x === envelopWaypoint.x &&
+                            fromPoint.y === envelopWaypoint.y) {
+                            if (forceObstacleBreak) {
+                                envelopWaypoint[dir] = waypointUseMax ?
+                                    max(envelopingObstacle[dir + 'Max'], secondEnvelopingObstacle[dir + 'Max']) + 1 :
+                                    min(envelopingObstacle[dir + 'Min'], secondEnvelopingObstacle[dir + 'Min']) - 1;
+                            }
+                            // Toggle on if off, and the opposite
+                            forceObstacleBreak = !forceObstacleBreak;
+                        }
+                        else {
+                            // This point is not identical to previous.
+                            // Clear break trigger.
+                            forceObstacleBreak = false;
+                        }
+                    }
+                    segments = [{
+                            start: fromPoint,
+                            end: envelopWaypoint
+                        }];
+                }
+                else { // If not enveloping, use standard pivot calculation
+                    pivot = pivotPoint(fromPoint, {
+                        x: dirIsX ? toPoint.x : fromPoint.x,
+                        y: dirIsX ? fromPoint.y : toPoint.y
+                    }, dirIsX);
+                    segments = [{
+                            start: fromPoint,
+                            end: {
+                                x: pivot.x,
+                                y: pivot.y
+                            }
+                        }];
+                    // Pivot before goal, use a waypoint to dodge obstacle
+                    if (pivot[dirIsX ? 'x' : 'y'] !== toPoint[dirIsX ? 'x' : 'y']) {
+                        // Find direction of waypoint
+                        waypointUseMax = getDodgeDirection(pivot.obstacle, pivot, toPoint, !dirIsX, bounds);
+                        // Cut waypoint to hard bounds
+                        limitObstacleToBounds(pivot.obstacle, options.hardBounds);
+                        waypoint = {
+                            x: dirIsX ?
+                                pivot.x :
+                                pivot.obstacle[waypointUseMax ? 'xMax' : 'xMin'] +
+                                    (waypointUseMax ? 1 : -1),
+                            y: dirIsX ?
+                                pivot.obstacle[waypointUseMax ? 'yMax' : 'yMin'] +
+                                    (waypointUseMax ? 1 : -1) :
+                                pivot.y
+                        };
+                        // We're changing direction here, store that to make sure we
+                        // also change direction when adding the last segment array
+                        // after handling waypoint.
+                        dirIsX = !dirIsX;
+                        segments = segments.concat(clearPathTo({
+                            x: pivot.x,
+                            y: pivot.y
+                        }, waypoint, dirIsX));
+                    }
+                }
+                // Get segments for the other direction too
+                // Recursion is our friend
+                segments = segments.concat(clearPathTo(segments[segments.length - 1].end, toPoint, !dirIsX));
+                return segments;
+            }
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Extract point to outside of obstacle in whichever direction is
+             * closest. Returns new point outside obstacle.
+             * @private
+             */
+            function extractFromObstacle(obstacle, point, goalPoint) {
+                const dirIsX = min(obstacle.xMax - point.x, point.x - obstacle.xMin) <
+                    min(obstacle.yMax - point.y, point.y - obstacle.yMin), bounds = {
+                    soft: options.hardBounds,
+                    hard: options.hardBounds
+                }, useMax = getDodgeDirection(obstacle, point, goalPoint, dirIsX, bounds);
+                return dirIsX ? {
+                    y: point.y,
+                    x: obstacle[useMax ? 'xMax' : 'xMin'] + (useMax ? 1 : -1)
+                } : {
+                    x: point.x,
+                    y: obstacle[useMax ? 'yMax' : 'yMin'] + (useMax ? 1 : -1)
+                };
+            }
+            // Cut the obstacle array to soft bounds for optimization in large
+            // datasets.
+            chartObstacles =
+                chartObstacles.slice(startObstacleIx, endObstacleIx + 1);
+            // If an obstacle envelops the end point, move it out of there and add
+            // a little segment to where it was.
+            if ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
+                extractedEndPoint = extractFromObstacle(chartObstacles[endObstacleIx], end, start);
+                endSegments.push({
+                    end: end,
+                    start: extractedEndPoint
+                });
+                end = extractedEndPoint;
+            }
+            // If it's still inside one or more obstacles, get out of there by
+            // force-moving towards the start point.
+            while ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
+                useMax = end[dir] - start[dir] < 0;
+                extractedEndPoint = {
+                    x: end.x,
+                    y: end.y
+                };
+                extractedEndPoint[dir] = chartObstacles[endObstacleIx][useMax ? dir + 'Max' : dir + 'Min'] + (useMax ? 1 : -1);
+                endSegments.push({
+                    end: end,
+                    start: extractedEndPoint
+                });
+                end = extractedEndPoint;
+            }
+            // Find the path
+            segments = clearPathTo(start, end, dirIsX);
+            // Add the end-point segments
+            segments = segments.concat(endSegments.reverse());
+            return {
+                path: pathFromSegments(segments),
+                obstacles: segments
+            };
+        }
+        fastAvoid.requiresObstacles = true;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        // Define the available pathfinding algorithms.
+        // Algorithms take up to 3 arguments: starting point, ending point, and an
+        // options object.
+        const algorithms = {
+            fastAvoid,
+            straight,
+            simpleConnect
+        };
+
+        return algorithms;
+    });
+    _registerModule(_modules, 'Gantt/ConnectorsDefaults.js', [], function () {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Authors: Øystein Moseng, Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Defaults
+         *
+         * */
+        /*
+         @todo:
+             - Document how to write your own algorithms
+             - Consider adding a Point.pathTo method that wraps creating a connection
+               and rendering it
+        */
+        const connectorsDefaults = {
+            /**
+             * The Pathfinder module allows you to define connections between any two
+             * points, represented as lines - optionally with markers for the start
+             * and/or end points. Multiple algorithms are available for calculating how
+             * the connecting lines are drawn.
+             *
+             * Connector functionality requires Highcharts Gantt to be loaded. In Gantt
+             * charts, the connectors are used to draw dependencies between tasks.
+             *
+             * @see [dependency](series.gantt.data.dependency)
+             *
+             * @sample gantt/pathfinder/demo
+             *         Pathfinder connections
+             *
+             * @declare      Highcharts.ConnectorsOptions
+             * @product      gantt
+             * @optionparent connectors
+             */
+            connectors: {
+                /**
+                 * Enable connectors for this chart. Requires Highcharts Gantt.
+                 *
+                 * @type      {boolean}
+                 * @default   true
+                 * @since     6.2.0
+                 * @apioption connectors.enabled
+                 */
+                /**
+                 * Set the default dash style for this chart's connecting lines.
+                 *
+                 * @type      {string}
+                 * @default   solid
+                 * @since     6.2.0
+                 * @apioption connectors.dashStyle
+                 */
+                /**
+                 * Set the default color for this chart's Pathfinder connecting lines.
+                 * Defaults to the color of the point being connected.
+                 *
+                 * @type      {Highcharts.ColorString}
+                 * @since     6.2.0
+                 * @apioption connectors.lineColor
+                 */
+                /**
+                 * Set the default pathfinder margin to use, in pixels. Some Pathfinder
+                 * algorithms attempt to avoid obstacles, such as other points in the
+                 * chart. These algorithms use this margin to determine how close lines
+                 * can be to an obstacle. The default is to compute this automatically
+                 * from the size of the obstacles in the chart.
+                 *
+                 * To draw connecting lines close to existing points, set this to a low
+                 * number. For more space around existing points, set this number
+                 * higher.
+                 *
+                 * @sample gantt/pathfinder/algorithm-margin
+                 *         Small algorithmMargin
+                 *
+                 * @type      {number}
+                 * @since     6.2.0
+                 * @apioption connectors.algorithmMargin
+                 */
+                /**
+                 * Set the default pathfinder algorithm to use for this chart. It is
+                 * possible to define your own algorithms by adding them to the
+                 * Highcharts.Pathfinder.prototype.algorithms object before the chart
+                 * has been created.
+                 *
+                 * The default algorithms are as follows:
+                 *
+                 * `straight`:      Draws a straight line between the connecting
+                 *                  points. Does not avoid other points when drawing.
+                 *
+                 * `simpleConnect`: Finds a path between the points using right angles
+                 *                  only. Takes only starting/ending points into
+                 *                  account, and will not avoid other points.
+                 *
+                 * `fastAvoid`:     Finds a path between the points using right angles
+                 *                  only. Will attempt to avoid other points, but its
+                 *                  focus is performance over accuracy. Works well with
+                 *                  less dense datasets.
+                 *
+                 * Default value: `straight` is used as default for most series types,
+                 * while `simpleConnect` is used as default for Gantt series, to show
+                 * dependencies between points.
+                 *
+                 * @sample gantt/pathfinder/demo
+                 *         Different types used
+                 *
+                 * @type    {Highcharts.PathfinderTypeValue}
+                 * @default undefined
+                 * @since   6.2.0
+                 */
+                type: 'straight',
+                /**
+                 * The corner radius for the connector line.
+                 *
+                 * @since 11.2.0
+                 */
+                radius: 0,
+                /**
+                 * Set the default pixel width for this chart's Pathfinder connecting
+                 * lines.
+                 *
+                 * @since 6.2.0
+                 */
+                lineWidth: 1,
+                /**
+                 * Marker options for this chart's Pathfinder connectors. Note that
+                 * this option is overridden by the `startMarker` and `endMarker`
+                 * options.
+                 *
+                 * @declare Highcharts.ConnectorsMarkerOptions
+                 * @since   6.2.0
+                 */
+                marker: {
+                    /**
+                     * Set the radius of the connector markers. The default is
+                     * automatically computed based on the algorithmMargin setting.
+                     *
+                     * Setting marker.width and marker.height will override this
+                     * setting.
+                     *
+                     * @type      {number}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.radius
+                     */
+                    /**
+                     * Set the width of the connector markers. If not supplied, this
+                     * is inferred from the marker radius.
+                     *
+                     * @type      {number}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.width
+                     */
+                    /**
+                     * Set the height of the connector markers. If not supplied, this
+                     * is inferred from the marker radius.
+                     *
+                     * @type      {number}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.height
+                     */
+                    /**
+                     * Set the color of the connector markers. By default this is the
+                     * same as the connector color.
+                     *
+                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.color
+                     */
+                    /**
+                     * Set the line/border color of the connector markers. By default
+                     * this is the same as the marker color.
+                     *
+                     * @type      {Highcharts.ColorString}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.lineColor
+                     */
+                    /**
+                     * Enable markers for the connectors.
+                     */
+                    enabled: false,
+                    /**
+                     * Horizontal alignment of the markers relative to the points.
+                     *
+                     * @type {Highcharts.AlignValue}
+                     */
+                    align: 'center',
+                    /**
+                     * Vertical alignment of the markers relative to the points.
+                     *
+                     * @type {Highcharts.VerticalAlignValue}
+                     */
+                    verticalAlign: 'middle',
+                    /**
+                     * Whether or not to draw the markers inside the points.
+                     */
+                    inside: false,
+                    /**
+                     * Set the line/border width of the pathfinder markers.
+                     */
+                    lineWidth: 1
+                },
+                /**
+                 * Marker options specific to the start markers for this chart's
+                 * Pathfinder connectors. Overrides the generic marker options.
+                 *
+                 * @declare Highcharts.ConnectorsStartMarkerOptions
+                 * @extends connectors.marker
+                 * @since   6.2.0
+                 */
+                startMarker: {
+                    /**
+                     * Set the symbol of the connector start markers.
+                     */
+                    symbol: 'diamond'
+                },
+                /**
+                 * Marker options specific to the end markers for this chart's
+                 * Pathfinder connectors. Overrides the generic marker options.
+                 *
+                 * @declare Highcharts.ConnectorsEndMarkerOptions
+                 * @extends connectors.marker
+                 * @since   6.2.0
+                 */
+                endMarker: {
+                    /**
+                     * Set the symbol of the connector end markers.
+                     */
+                    symbol: 'arrow-filled'
+                }
+            }
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * Override Pathfinder connector options for a series. Requires Highcharts Gantt
+         * to be loaded.
+         *
+         * @declare   Highcharts.SeriesConnectorsOptionsObject
+         * @extends   connectors
+         * @since     6.2.0
+         * @excluding enabled, algorithmMargin
+         * @product   gantt
+         * @apioption plotOptions.series.connectors
+         */
+        /**
+         * Connect to a point. This option can be either a string, referring to the ID
+         * of another point, or an object, or an array of either. If the option is an
+         * array, each element defines a connection.
+         *
+         * @sample gantt/pathfinder/demo
+         *         Different connection types
+         *
+         * @declare   Highcharts.XrangePointConnectorsOptionsObject
+         * @type      {string|Array<string|*>|*}
+         * @extends   plotOptions.series.connectors
+         * @since     6.2.0
+         * @excluding enabled
+         * @product   gantt
+         * @requires  highcharts-gantt
+         * @apioption series.xrange.data.connect
+         */
+        /**
+         * The ID of the point to connect to.
+         *
+         * @type      {string}
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption series.xrange.data.connect.to
+         */
+        ''; // Keeps doclets above in JS file
+
+        return connectorsDefaults;
+    });
+    _registerModule(_modules, 'Gantt/PathfinderComposition.js', [_modules['Gantt/ConnectorsDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (ConnectorsDefaults, D, U) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Authors: Øystein Moseng, Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { setOptions } = D;
+        const { defined, error, merge, pushUnique } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get point bounding box using plotX/plotY and shapeArgs. If using
+         * graphic.getBBox() directly, the bbox will be affected by animation.
+         *
+         * @private
+         * @function
+         *
+         * @param {Highcharts.Point} point
+         *        The point to get BB of.
+         *
+         * @return {Highcharts.Dictionary<number>|null}
+         *         Result xMax, xMin, yMax, yMin.
+         */
+        function getPointBB(point) {
+            const shapeArgs = point.shapeArgs;
+            // Prefer using shapeArgs (columns)
+            if (shapeArgs) {
+                return {
+                    xMin: shapeArgs.x || 0,
+                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+                    yMin: shapeArgs.y || 0,
+                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
+                };
+            }
+            // Otherwise use plotX/plotY and bb
+            const bb = point.graphic && point.graphic.getBBox();
+            return bb ? {
+                xMin: point.plotX - bb.width / 2,
+                xMax: point.plotX + bb.width / 2,
+                yMin: point.plotY - bb.height / 2,
+                yMax: point.plotY + bb.height / 2
+            } : null;
+        }
+        /**
+         * Warn if using legacy options. Copy the options over. Note that this will
+         * still break if using the legacy options in chart.update, addSeries etc.
+         * @private
+         */
+        function warnLegacy(chart) {
+            if (chart.options.pathfinder ||
+                chart.series.reduce(function (acc, series) {
+                    if (series.options) {
+                        merge(true, (series.options.connectors = series.options.connectors ||
+                            {}), series.options.pathfinder);
+                    }
+                    return acc || series.options && series.options.pathfinder;
+                }, false)) {
+                merge(true, (chart.options.connectors = chart.options.connectors || {}), chart.options.pathfinder);
+                error('WARNING: Pathfinder options have been renamed. ' +
+                    'Use "chart.connectors" or "series.connectors" instead.');
+            }
+        }
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var ConnectionComposition;
+        (function (ConnectionComposition) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            const composedMembers = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /** @private */
+            function compose(ChartClass, PathfinderClass, PointClass) {
+                if (pushUnique(composedMembers, ChartClass)) {
+                    // Initialize Pathfinder for charts
+                    ChartClass.prototype.callbacks.push(function (chart) {
+                        const options = chart.options;
+                        if (options.connectors.enabled !== false) {
+                            warnLegacy(chart);
+                            this.pathfinder = new PathfinderClass(this);
+                            this.pathfinder.update(true); // First draw, defer render
+                        }
+                    });
+                }
+                if (pushUnique(composedMembers, PointClass)) {
+                    const pointProto = PointClass.prototype;
+                    pointProto.getMarkerVector = pointGetMarkerVector;
+                    pointProto.getPathfinderAnchorPoint = pointGetPathfinderAnchorPoint;
+                    pointProto.getRadiansToVector = pointGetRadiansToVector;
+                }
+                if (pushUnique(composedMembers, setOptions)) {
+                    // Set default Pathfinder options
+                    setOptions(ConnectorsDefaults);
+                }
+            }
+            ConnectionComposition.compose = compose;
+            /**
+             * Get coordinates of anchor point for pathfinder connection.
+             *
+             * @private
+             * @function Highcharts.Point#getPathfinderAnchorPoint
+             *
+             * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
+             *        Connection options for position on point.
+             *
+             * @return {Highcharts.PositionObject}
+             *         An object with x/y properties for the position. Coordinates are
+             *         in plot values, not relative to point.
+             */
+            function pointGetPathfinderAnchorPoint(markerOptions) {
+                const bb = getPointBB(this);
+                let x, y;
+                switch (markerOptions.align) { // eslint-disable-line default-case
+                    case 'right':
+                        x = 'xMax';
+                        break;
+                    case 'left':
+                        x = 'xMin';
+                }
+                switch (markerOptions.verticalAlign) { // eslint-disable-line default-case
+                    case 'top':
+                        y = 'yMin';
+                        break;
+                    case 'bottom':
+                        y = 'yMax';
+                }
+                return {
+                    x: x ? bb[x] : (bb.xMin + bb.xMax) / 2,
+                    y: y ? bb[y] : (bb.yMin + bb.yMax) / 2
+                };
+            }
+            /**
+             * Utility to get the angle from one point to another.
+             *
+             * @private
+             * @function Highcharts.Point#getRadiansToVector
+             *
+             * @param {Highcharts.PositionObject} v1
+             *        The first vector, as an object with x/y properties.
+             *
+             * @param {Highcharts.PositionObject} v2
+             *        The second vector, as an object with x/y properties.
+             *
+             * @return {number}
+             *         The angle in degrees
+             */
+            function pointGetRadiansToVector(v1, v2) {
+                let box;
+                if (!defined(v2)) {
+                    box = getPointBB(this);
+                    if (box) {
+                        v2 = {
+                            x: (box.xMin + box.xMax) / 2,
+                            y: (box.yMin + box.yMax) / 2
+                        };
+                    }
+                }
+                return Math.atan2(v2.y - v1.y, v1.x - v2.x);
+            }
+            /**
+             * Utility to get the position of the marker, based on the path angle and
+             * the marker's radius.
+             *
+             * @private
+             * @function Highcharts.Point#getMarkerVector
+             *
+             * @param {number} radians
+             *        The angle in radians from the point center to another vector.
+             *
+             * @param {number} markerRadius
+             *        The radius of the marker, to calculate the additional distance to
+             *        the center of the marker.
+             *
+             * @param {Object} anchor
+             *        The anchor point of the path and marker as an object with x/y
+             *        properties.
+             *
+             * @return {Object}
+             *         The marker vector as an object with x/y properties.
+             */
+            function pointGetMarkerVector(radians, markerRadius, anchor) {
+                const twoPI = Math.PI * 2.0, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
+                    x: rectHorizontalCenter,
+                    y: rectVerticalCenter
+                };
+                let theta = radians, tanTheta = 1, leftOrRightRegion = false, xFactor = 1, yFactor = 1;
+                while (theta < -Math.PI) {
+                    theta += twoPI;
+                }
+                while (theta > Math.PI) {
+                    theta -= twoPI;
+                }
+                tanTheta = Math.tan(theta);
+                if ((theta > -rAtan) && (theta <= rAtan)) {
+                    // Right side
+                    yFactor = -1;
+                    leftOrRightRegion = true;
+                }
+                else if (theta > rAtan && theta <= (Math.PI - rAtan)) {
+                    // Top side
+                    yFactor = -1;
+                }
+                else if (theta > (Math.PI - rAtan) || theta <= -(Math.PI - rAtan)) {
+                    // Left side
+                    xFactor = -1;
+                    leftOrRightRegion = true;
+                }
+                else {
+                    // Bottom side
+                    xFactor = -1;
+                }
+                // Correct the edgePoint according to the placement of the marker
+                if (leftOrRightRegion) {
+                    edgePoint.x += xFactor * (rectHalfWidth);
+                    edgePoint.y += yFactor * (rectHalfWidth) * tanTheta;
+                }
+                else {
+                    edgePoint.x += xFactor * (rectHeight / (2.0 * tanTheta));
+                    edgePoint.y += yFactor * (rectHalfHeight);
+                }
+                if (anchor.x !== rectHorizontalCenter) {
+                    edgePoint.x = anchor.x;
+                }
+                if (anchor.y !== rectVerticalCenter) {
+                    edgePoint.y = anchor.y;
+                }
+                return {
+                    x: edgePoint.x + (markerRadius * Math.cos(theta)),
+                    y: edgePoint.y - (markerRadius * Math.sin(theta))
+                };
+            }
+        })(ConnectionComposition || (ConnectionComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ConnectionComposition;
+    });
+    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Gantt/PathfinderAlgorithms.js'], _modules['Gantt/PathfinderComposition.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Connection, PathfinderAlgorithms, PathfinderComposition, Point, U) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Authors: Øystein Moseng, Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { addEvent, defined, pick, splat } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const max = Math.max, min = Math.min;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get point bounding box using plotX/plotY and shapeArgs. If using
+         * graphic.getBBox() directly, the bbox will be affected by animation.
+         *
+         * @private
+         * @function
+         *
+         * @param {Highcharts.Point} point
+         *        The point to get BB of.
+         *
+         * @return {Highcharts.Dictionary<number>|null}
+         *         Result xMax, xMin, yMax, yMin.
+         */
+        function getPointBB(point) {
+            const shapeArgs = point.shapeArgs;
+            // Prefer using shapeArgs (columns)
+            if (shapeArgs) {
+                return {
+                    xMin: shapeArgs.x || 0,
+                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+                    yMin: shapeArgs.y || 0,
+                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
+                };
+            }
+            // Otherwise use plotX/plotY and bb
+            const bb = point.graphic && point.graphic.getBBox();
+            return bb ? {
+                xMin: point.plotX - bb.width / 2,
+                xMax: point.plotX + bb.width / 2,
+                yMin: point.plotY - bb.height / 2,
+                yMax: point.plotY + bb.height / 2
+            } : null;
+        }
+        /**
+         * Compute smallest distance between two rectangles.
+         * @private
+         */
+        function calculateObstacleDistance(a, b, bbMargin) {
+            // Count the distance even if we are slightly off
+            const margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
+                a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
+                a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
+            // If the rectangles collide, try recomputing with smaller margin.
+            // If they collide anyway, discard the obstacle.
+            if (xOverlap && yOverlap) {
+                return (margin ?
+                    calculateObstacleDistance(a, b, Math.floor(margin / 2)) :
+                    Infinity);
+            }
+            return min(xDistance, yDistance);
+        }
+        /**
+         * Calculate margin to place around obstacles for the pathfinder in pixels.
+         * Returns a minimum of 1 pixel margin.
+         *
+         * @private
+         * @function
+         *
+         * @param {Array<object>} obstacles
+         *        Obstacles to calculate margin from.
+         *
+         * @return {number}
+         *         The calculated margin in pixels. At least 1.
+         */
+        function calculateObstacleMargin(obstacles) {
+            const len = obstacles.length, distances = [];
+            let onstacleDistance;
+            // Go over all obstacles and compare them to the others.
+            for (let i = 0; i < len; ++i) {
+                // Compare to all obstacles ahead. We will already have compared this
+                // obstacle to the ones before.
+                for (let j = i + 1; j < len; ++j) {
+                    onstacleDistance =
+                        calculateObstacleDistance(obstacles[i], obstacles[j]);
+                    // TODO: Magic number 80
+                    if (onstacleDistance < 80) { // Ignore large distances
+                        distances.push(onstacleDistance);
+                    }
+                }
+            }
+            // Ensure we always have at least one value, even in very spaceous charts
+            distances.push(80);
+            return max(Math.floor(distances.sort(function (a, b) {
+                return (a - b);
+            })[
+            // Discard first 10% of the relevant distances, and then grab
+            // the smallest one.
+            Math.floor(distances.length / 10)] / 2 - 1 // Divide the distance by 2 and subtract 1.
+            ), 1 // 1 is the minimum margin
+            );
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The Pathfinder class.
+         *
+         * @private
+         * @class
+         * @name Highcharts.Pathfinder
+         *
+         * @param {Highcharts.Chart} chart
+         *        The chart to operate on.
+         */
+        class Pathfinder {
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            static compose(ChartClass, PointClass) {
+                PathfinderComposition.compose(ChartClass, Pathfinder, PointClass);
+            }
+            /* *
+             *
+             *  Constructor
+             *
+             * */
+            constructor(chart) {
+                /* *
+                 *
+                 * Properties
+                 *
+                 * */
+                this.chart = void 0;
+                this.chartObstacles = void 0;
+                this.chartObstacleMetrics = void 0;
+                this.connections = void 0;
+                this.group = void 0;
+                this.lineObstacles = void 0;
+                this.init(chart);
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Initialize the Pathfinder object.
+             *
+             * @function Highcharts.Pathfinder#init
+             *
+             * @param {Highcharts.Chart} chart
+             *        The chart context.
+             */
+            init(chart) {
+                // Initialize pathfinder with chart context
+                this.chart = chart;
+                // Init connection reference list
+                this.connections = [];
+                // Recalculate paths/obstacles on chart redraw
+                addEvent(chart, 'redraw', function () {
+                    this.pathfinder.update();
+                });
+            }
+            /**
+             * Update Pathfinder connections from scratch.
+             *
+             * @function Highcharts.Pathfinder#update
+             *
+             * @param {boolean} [deferRender]
+             *        Whether or not to defer rendering of connections until
+             *        series.afterAnimate event has fired. Used on first render.
+             */
+            update(deferRender) {
+                const chart = this.chart, pathfinder = this, oldConnections = pathfinder.connections;
+                // Rebuild pathfinder connections from options
+                pathfinder.connections = [];
+                chart.series.forEach(function (series) {
+                    if (series.visible && !series.options.isInternal) {
+                        series.points.forEach(function (point) {
+                            const ganttPointOptions = point.options;
+                            // For Gantt series the connect could be
+                            // defined as a dependency
+                            if (ganttPointOptions && ganttPointOptions.dependency) {
+                                ganttPointOptions.connect = ganttPointOptions
+                                    .dependency;
+                            }
+                            const connects = (point.options?.connect &&
+                                splat(point.options.connect));
+                            let to;
+                            if (point.visible && point.isInside !== false && connects) {
+                                connects.forEach(function (connect) {
+                                    to = chart.get(typeof connect === 'string' ?
+                                        connect : connect.to);
+                                    if (to instanceof Point &&
+                                        to.series.visible &&
+                                        to.visible &&
+                                        to.isInside !== false) {
+                                        // Add new connection
+                                        pathfinder.connections.push(new Connection(point, // From
+                                        to, typeof connect === 'string' ?
+                                            {} :
+                                            connect));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                // Clear connections that should not be updated, and move old info over
+                // to new connections.
+                for (let j = 0, k, found, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
+                    found = false;
+                    const oldCon = oldConnections[j];
+                    for (k = 0; k < lenNew; ++k) {
+                        const newCon = pathfinder.connections[k];
+                        if ((oldCon.options && oldCon.options.type) ===
+                            (newCon.options && newCon.options.type) &&
+                            oldCon.fromPoint === newCon.fromPoint &&
+                            oldCon.toPoint === newCon.toPoint) {
+                            newCon.graphics = oldCon.graphics;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        oldCon.destroy();
+                    }
+                }
+                // Clear obstacles to force recalculation. This must be done on every
+                // redraw in case positions have changed. Recalculation is handled in
+                // Connection.getPath on demand.
+                delete this.chartObstacles;
+                delete this.lineObstacles;
+                // Draw the pending connections
+                pathfinder.renderConnections(deferRender);
+            }
+            /**
+             * Draw the chart's connecting paths.
+             *
+             * @function Highcharts.Pathfinder#renderConnections
+             *
+             * @param {boolean} [deferRender]
+             *        Whether or not to defer render until series animation is finished.
+             *        Used on first render.
+             */
+            renderConnections(deferRender) {
+                if (deferRender) {
+                    // Render after series are done animating
+                    this.chart.series.forEach(function (series) {
+                        const render = function () {
+                            // Find pathfinder connections belonging to this series
+                            // that haven't rendered, and render them now.
+                            const pathfinder = series.chart.pathfinder, conns = pathfinder && pathfinder.connections || [];
+                            conns.forEach(function (connection) {
+                                if (connection.fromPoint &&
+                                    connection.fromPoint.series === series) {
+                                    connection.render();
+                                }
+                            });
+                            if (series.pathfinderRemoveRenderEvent) {
+                                series.pathfinderRemoveRenderEvent();
+                                delete series.pathfinderRemoveRenderEvent;
+                            }
+                        };
+                        if (series.options.animation === false) {
+                            render();
+                        }
+                        else {
+                            series.pathfinderRemoveRenderEvent = addEvent(series, 'afterAnimate', render);
+                        }
+                    });
+                }
+                else {
+                    // Go through connections and render them
+                    this.connections.forEach(function (connection) {
+                        connection.render();
+                    });
+                }
+            }
+            /**
+             * Get obstacles for the points in the chart. Does not include connecting
+             * lines from Pathfinder. Applies algorithmMargin to the obstacles.
+             *
+             * @function Highcharts.Pathfinder#getChartObstacles
+             *
+             * @param {Object} options
+             *        Options for the calculation. Currenlty only
+             *        options.algorithmMargin.
+             *
+             * @return {Array<object>}
+             *         An array of calculated obstacles. Each obstacle is defined as an
+             *         object with xMin, xMax, yMin and yMax properties.
+             */
+            getChartObstacles(options) {
+                const series = this.chart.series, margin = pick(options.algorithmMargin, 0);
+                let obstacles = [], calculatedMargin;
+                for (let i = 0, sLen = series.length; i < sLen; ++i) {
+                    if (series[i].visible && !series[i].options.isInternal) {
+                        for (let j = 0, pLen = series[i].points.length, bb, point; j < pLen; ++j) {
+                            point = series[i].points[j];
+                            if (point.visible) {
+                                bb = getPointBB(point);
+                                if (bb) {
+                                    obstacles.push({
+                                        xMin: bb.xMin - margin,
+                                        xMax: bb.xMax + margin,
+                                        yMin: bb.yMin - margin,
+                                        yMax: bb.yMax + margin
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+                // Sort obstacles by xMin for optimization
+                obstacles = obstacles.sort(function (a, b) {
+                    return a.xMin - b.xMin;
+                });
+                // Add auto-calculated margin if the option is not defined
+                if (!defined(options.algorithmMargin)) {
+                    calculatedMargin =
+                        options.algorithmMargin =
+                            calculateObstacleMargin(obstacles);
+                    obstacles.forEach(function (obstacle) {
+                        obstacle.xMin -= calculatedMargin;
+                        obstacle.xMax += calculatedMargin;
+                        obstacle.yMin -= calculatedMargin;
+                        obstacle.yMax += calculatedMargin;
+                    });
+                }
+                return obstacles;
+            }
+            /**
+             * Utility function to get metrics for obstacles:
+             * - Widest obstacle width
+             * - Tallest obstacle height
+             *
+             * @function Highcharts.Pathfinder#getObstacleMetrics
+             *
+             * @param {Array<object>} obstacles
+             *        An array of obstacles to inspect.
+             *
+             * @return {Object}
+             *         The calculated metrics, as an object with maxHeight and maxWidth
+             *         properties.
+             */
+            getObstacleMetrics(obstacles) {
+                let maxWidth = 0, maxHeight = 0, width, height, i = obstacles.length;
+                while (i--) {
+                    width = obstacles[i].xMax - obstacles[i].xMin;
+                    height = obstacles[i].yMax - obstacles[i].yMin;
+                    if (maxWidth < width) {
+                        maxWidth = width;
+                    }
+                    if (maxHeight < height) {
+                        maxHeight = height;
+                    }
+                }
+                return {
+                    maxHeight: maxHeight,
+                    maxWidth: maxWidth
+                };
+            }
+            /**
+             * Utility to get which direction to start the pathfinding algorithm
+             * (X vs Y), calculated from a set of marker options.
+             *
+             * @function Highcharts.Pathfinder#getAlgorithmStartDirection
+             *
+             * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
+             *        Marker options to calculate from.
+             *
+             * @return {boolean}
+             *         Returns true for X, false for Y, and undefined for autocalculate.
+             */
+            getAlgorithmStartDirection(markerOptions) {
+                const xCenter = markerOptions.align !== 'left' &&
+                    markerOptions.align !== 'right', yCenter = markerOptions.verticalAlign !== 'top' &&
+                    markerOptions.verticalAlign !== 'bottom';
+                return xCenter ?
+                    (yCenter ? void 0 : false) : // When x is centered
+                    (yCenter ? true : void 0); // When x is off-center
+            }
+        }
+        /**
+         * @name Highcharts.Pathfinder#algorithms
+         * @type {Highcharts.Dictionary<Function>}
+         */
+        Pathfinder.prototype.algorithms = PathfinderAlgorithms;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * The default pathfinder algorithm to use for a chart. It is possible to define
+         * your own algorithms by adding them to the
+         * `Highcharts.Pathfinder.prototype.algorithms`
+         * object before the chart has been created.
+         *
+         * The default algorithms are as follows:
+         *
+         * `straight`:      Draws a straight line between the connecting
+         *                  points. Does not avoid other points when drawing.
+         *
+         * `simpleConnect`: Finds a path between the points using right angles
+         *                  only. Takes only starting/ending points into
+         *                  account, and will not avoid other points.
+         *
+         * `fastAvoid`:     Finds a path between the points using right angles
+         *                  only. Will attempt to avoid other points, but its
+         *                  focus is performance over accuracy. Works well with
+         *                  less dense datasets.
+         *
+         * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
+         */
+        ''; // Keeps doclets above in JS file
+
+        return Pathfinder;
+    });
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorDefaults.js', [], function () {
         /* *
          *
@@ -49249,7 +51560,7 @@
              * }]
              * ```
              *
-             * @sample {highstock} stock/rangeselector/datagrouping/
+             * @sample {highstock} stock/demo/rangeselector-datagrouping/
              *         Data grouping by buttons
              *
              * @type      {Array<*>}
@@ -49324,7 +51635,7 @@
              *
              * @see [series.dataGrouping](#plotOptions.series.dataGrouping)
              *
-             * @sample {highstock} stock/rangeselector/datagrouping/
+             * @sample {highstock} stock/demo/rangeselector-datagrouping/
              *         Data grouping by range selector buttons
              *
              * @type      {*}
@@ -50188,10 +52499,10 @@
                 const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
                     const minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
                     // #3274 in some case blur is not defined
-                    if (minInput && (minInput.blur)) {
+                    if (minInput && !!minInput.blur) {
                         fireEvent(minInput, 'blur');
                     }
-                    if (maxInput && (maxInput.blur)) {
+                    if (maxInput && !!maxInput.blur) {
                         fireEvent(maxInput, 'blur');
                     }
                 };
@@ -50415,22 +52726,19 @@
              * @param {string} name
              */
             showInput(name) {
-                const dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
-                const input = name === 'min' ? this.minInput : this.maxInput;
+                const dateBox = name === 'min' ? this.minDateBox : this.maxDateBox, input = name === 'min' ? this.minInput : this.maxInput;
                 if (input && dateBox && this.inputGroup) {
-                    const isTextInput = input.type === 'text';
-                    const { translateX, translateY } = this.inputGroup;
-                    const { inputBoxWidth } = this.options;
+                    const isTextInput = input.type === 'text', { translateX = 0, translateY = 0 } = this.inputGroup, { x = 0, width = 0, height = 0 } = dateBox, { inputBoxWidth } = this.options;
                     css(input, {
                         width: isTextInput ?
-                            ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') :
+                            ((width + (inputBoxWidth ? -2 : 20)) + 'px') :
                             'auto',
-                        height: (dateBox.height - 2) + 'px',
+                        height: (height - 2) + 'px',
                         border: '2px solid silver'
                     });
                     if (isTextInput && inputBoxWidth) {
                         css(input, {
-                            left: (translateX + dateBox.x) + 'px',
+                            left: (translateX + x) + 'px',
                             top: translateY + 'px'
                         });
                         // Inputs of types date, time or datetime-local should be centered
@@ -50438,10 +52746,10 @@
                     }
                     else {
                         css(input, {
-                            left: Math.min(Math.round(dateBox.x +
+                            left: Math.min(Math.round(x +
                                 translateX -
-                                (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                                (input.offsetWidth - width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
+                            top: (translateY - (input.offsetHeight - height) / 2) + 'px'
                         });
                     }
                 }
@@ -50507,9 +52815,7 @@
                  * @private
                  */
                 function updateExtremes() {
-                    const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], dataAxis = chart.scroller && chart.scroller.xAxis ?
-                        chart.scroller.xAxis :
-                        chartAxis, dataMin = dataAxis.dataMin, dataMax = dataAxis.dataMax;
+                    const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chartAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax;
                     let value = rangeSelector.getInputValue(name);
                     if (value !== Number(input.getAttribute('data-hc-time-previous')) &&
                         isNumber(value)) {
@@ -50898,7 +53204,7 @@
                                 width += zoomText.getBBox().width + 5;
                             }
                             buttons.forEach((button, i) => {
-                                width += button.width;
+                                width += button.width || 0;
                                 if (i !== buttons.length - 1) {
                                     width += options.buttonSpacing;
                                 }
@@ -51047,8 +53353,8 @@
                 for (let i = 0, iEnd = this.buttonOptions.length; i < iEnd; ++i) {
                     if (buttons[i].visibility !== 'hidden') {
                         buttons[i][verb]({ x: buttonLeft });
-                        // increase button position for the next button
-                        buttonLeft += buttons[i].width + options.buttonSpacing;
+                        // Increase the button position for the next button
+                        buttonLeft += (buttons[i].width || 0) + options.buttonSpacing;
                     }
                     else {
                         buttons[i][verb]({ x: plotLeft });
@@ -51246,8 +53552,7 @@
             showDropdown() {
                 const { buttonGroup, buttons, chart, dropdown } = this;
                 if (buttonGroup && dropdown) {
-                    const { translateX, translateY } = buttonGroup;
-                    const bBox = buttons[this.currentButtonIndex()].getBBox();
+                    const { translateX = 0, translateY = 0 } = buttonGroup, bBox = buttons[this.currentButtonIndex()].getBBox();
                     css(dropdown, {
                         left: (chart.plotLeft + translateX) + 'px',
                         top: (translateY + 0.5) + 'px',
@@ -51451,6 +53756,119 @@
         (''); // keeps doclets above in JS file
 
         return RangeSelector;
+    });
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { addEvent, defined, isNumber, pick, pushUnique } = U;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const composedMembers = [];
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        /** @private */
+        function compose(AxisClass, ChartClass) {
+            if (pushUnique(composedMembers, AxisClass)) {
+                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+            }
+            if (pushUnique(composedMembers, ChartClass)) {
+                const chartProto = ChartClass.prototype;
+                chartProto.adjustHeight = chartAdjustHeight;
+                addEvent(ChartClass, 'render', chartProto.adjustHeight);
+            }
+        }
+        /** @private */
+        function onAxisAfterSetOptions() {
+            const chartOptions = this.chart.options.chart;
+            if (!this.horiz &&
+                isNumber(this.options.staticScale) &&
+                (!chartOptions.height ||
+                    (chartOptions.scrollablePlotArea &&
+                        chartOptions.scrollablePlotArea.minHeight))) {
+                this.staticScale = this.options.staticScale;
+            }
+        }
+        /** @private */
+        function chartAdjustHeight() {
+            const chart = this;
+            if (chart.redrawTrigger !== 'adjustHeight') {
+                for (const axis of (chart.axes || [])) {
+                    const chart = axis.chart, animate = !!chart.initiatedScale &&
+                        chart.options.animation, staticScale = axis.options.staticScale;
+                    if (axis.staticScale && defined(axis.min)) {
+                        let height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
+                        // Minimum height is 1 x staticScale.
+                        height = Math.max(height, staticScale);
+                        let diff = height - chart.plotHeight;
+                        if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
+                            chart.plotHeight = height;
+                            chart.redrawTrigger = 'adjustHeight';
+                            chart.setSize(void 0, chart.chartHeight + diff, animate);
+                        }
+                        // Make sure clip rects have the right height before initial
+                        // animation.
+                        axis.series.forEach(function (series) {
+                            const clipRect = series.sharedClipKey &&
+                                chart.sharedClips[series.sharedClipKey];
+                            if (clipRect) {
+                                clipRect.attr(chart.inverted ? {
+                                    width: chart.plotHeight
+                                } : {
+                                    height: chart.plotHeight
+                                });
+                            }
+                        });
+                    }
+                }
+                this.initiatedScale = true;
+            }
+            this.redrawTrigger = null;
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const StaticScale = {
+            compose
+        };
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * For vertical axes only. Setting the static scale ensures that each tick unit
+         * is translated into a fixed pixel height. For example, setting the static
+         * scale to 24 results in each Y axis category taking up 24 pixels, and the
+         * height of the chart adjusts. Adding or removing items will make the chart
+         * resize.
+         *
+         * @sample gantt/xrange-series/demo/
+         *         X-range series with static scale
+         *
+         * @type      {number}
+         * @default   50
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption yAxis.staticScale
+         */
+        ''; // keeps doclets above in JS file
+
+        return StaticScale;
     });
     _registerModule(_modules, 'Series/XRange/XRangeSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
@@ -51676,7 +54094,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { series: { prototype: { pointClass: { prototype: pointProto } } }, seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
+        const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.seriesTypes;
         const { extend } = U;
         /* *
          *
@@ -51752,7 +54170,7 @@
              * @private
              */
             init() {
-                pointProto.init.apply(this, arguments);
+                super.init.apply(this, arguments);
                 if (!this.y) {
                     this.y = 0;
                 }
@@ -51762,7 +54180,7 @@
              * @private
              */
             setState() {
-                pointProto.setState.apply(this, arguments);
+                super.setState.apply(this, arguments);
                 this.series.drawPoint(this, this.series.getAnimationVerb());
             }
             /**
@@ -51771,9 +54189,12 @@
              * @private
              */
             getLabelConfig() {
-                const cfg = pointProto.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
+                const cfg = super.getLabelConfig.call(this), yCats = this.series.yAxis.categories;
                 cfg.x2 = this.x2;
                 cfg.yCategory = this.yCategory = yCats && yCats[this.y];
+                // Use 'category' as 'key' to ensure tooltip datetime formatting.
+                // Use 'name' only when 'category' is undefined.
+                cfg.key = this.category || this.name;
                 return cfg;
             }
             /**
@@ -51839,8 +54260,8 @@
          * */
         const { noop } = H;
         const { parse: color } = Color;
-        const { series: { prototype: seriesProto }, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick } = U;
+        const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
+        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
         /* *
          *
          *  Constants
@@ -51914,7 +54335,6 @@
                     return retVal;
                 }
                 //*/
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
@@ -51963,7 +54383,7 @@
              */
             cropData(xData, yData, min, max) {
                 // Replace xData with x2Data to find the appropriate cropStart
-                const crop = seriesProto.cropData.call(this, this.x2Data, yData, min, max);
+                const crop = super.cropData(this.x2Data, yData, min, max);
                 // Re-insert the cropped xData
                 crop.xData = xData.slice(crop.start, crop.end);
                 return crop;
@@ -52014,7 +54434,7 @@
              * @private
              */
             translatePoint(point) {
-                const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, { borderRadius } = options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0));
+                const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = pick(point.x2, point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
                 let plotX = point.plotX, plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
                 const length = Math.abs(plotX2 - plotX), inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1), crisper = borderWidth % 2 / 2;
                 let widthDifference, partialFill, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
@@ -52039,18 +54459,18 @@
                     yAxis.categories) {
                     point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
                 }
-                const x = Math.floor(Math.min(plotX, plotX2)) + crisper;
-                const x2 = Math.floor(Math.max(plotX, plotX2)) + crisper;
+                const x = Math.floor(Math.min(plotX, plotX2)) + crisper, x2 = Math.floor(Math.max(plotX, plotX2)) + crisper, width = x2 - x;
+                const r = Math.min(relativeLength((typeof borderRadius === 'object' ?
+                    borderRadius.radius :
+                    borderRadius || 0), pointHeight), Math.min(width, pointHeight) / 2);
                 const shapeArgs = {
                     x,
                     y: Math.floor(point.plotY + yOffset) + crisper,
-                    width: x2 - x,
-                    height: pointHeight
+                    width,
+                    height: pointHeight,
+                    r
                 };
                 point.shapeArgs = shapeArgs;
-                if (isNumber(borderRadius)) {
-                    point.shapeArgs.r = borderRadius;
-                }
                 // Move tooltip to default position
                 if (!inverted) {
                     point.tooltipPos[0] -= oldColWidth +
@@ -52085,14 +54505,14 @@
                     this.columnMetrics.offset :
                     -metrics.width / 2);
                 // Centering tooltip position (#14147)
-                if (!inverted) {
-                    tooltipPos[xIndex] = clamp(tooltipPos[xIndex] +
-                        (xAxis.reversed ? -1 : 0) * shapeArgs.width, 0, xAxis.len - 1);
-                }
-                else {
+                if (inverted) {
                     tooltipPos[xIndex] += shapeArgs.width / 2;
                 }
-                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), 0, yAxis.len - 1);
+                else {
+                    tooltipPos[xIndex] = clamp(tooltipPos[xIndex] +
+                        (xAxis.reversed ? -1 : 0) * shapeArgs.width, xAxis.left - plotLeft, xAxis.left + xAxis.len - plotLeft - 1);
+                }
+                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), yAxis.top - plotTop, yAxis.top + yAxis.len - plotTop - 1);
                 // Add a partShapeArgs to the point, based on the shapeArgs property
                 partialFill = point.partialFill;
                 if (partialFill) {
@@ -52104,11 +54524,7 @@
                     if (!isNumber(partialFill)) {
                         partialFill = 0;
                     }
-                    if (isNumber(borderRadius)) {
-                        point.partShapeArgs = merge(shapeArgs, {
-                            r: borderRadius
-                        });
-                    }
+                    point.partShapeArgs = merge(shapeArgs);
                     clipRectWidth = Math.max(Math.round(length * partialFill + point.plotX -
                         plotX), 0);
                     point.clipRectArgs = {
@@ -52145,7 +54561,7 @@
              *        'animate' (animates changes) or 'attr' (sets options)
              */
             drawPoint(point, verb) {
-                const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
+                const seriesOpts = this.options, renderer = this.chart.renderer, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
                     {}), pointStateVerb = typeof pointState === 'undefined' ?
                     'attr' : verb, pointAttr = this.pointAttribs(point, pointState), animation = pick(this.chart.options.chart.animation, stateOpts.animation);
                 let graphic = point.graphic, pfOptions = point.partialFill;
@@ -52247,12 +54663,12 @@
         XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
         extend(XRangeSeries.prototype, {
             pointClass: XRangePoint,
-            cropShoulder: 1,
+            pointArrayMap: ['x2', 'y'],
             getExtremesFromAll: true,
             parallelArrays: ['x', 'x2', 'y'],
             requireSorting: false,
             type: 'xrange',
-            animate: seriesProto.animate,
+            animate: SeriesRegistry.series.prototype.animate,
             autoIncrement: noop,
             buildKDTree: noop
         });
@@ -52433,7 +54849,7 @@
              */
             function onAxisAfterSetOptions() {
                 const axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if (axis.brokenAxis?.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -52442,8 +54858,7 @@
              */
             function onAxisAfterSetTickPositions() {
                 const axis = this, brokenAxis = axis.brokenAxis;
-                if (brokenAxis &&
-                    brokenAxis.hasBreaks) {
+                if (brokenAxis?.hasBreaks) {
                     const tickPositions = axis.tickPositions, info = axis.tickPositions.info, newPositions = [];
                     for (let i = 0; i < tickPositions.length; i++) {
                         if (!brokenAxis.isInAnyBreak(tickPositions[i])) {
@@ -52476,11 +54891,8 @@
                         const point = points[i];
                         // Respect nulls inside the break (#4275)
                         const nullGap = point.y === null && connectNulls === false;
-                        const isPointInBreak = (!nullGap && ((xAxis &&
-                            xAxis.brokenAxis &&
-                            xAxis.brokenAxis.isInAnyBreak(point.x, true)) || (yAxis &&
-                            yAxis.brokenAxis &&
-                            yAxis.brokenAxis.isInAnyBreak(point.y, true))));
+                        const isPointInBreak = (!nullGap && (xAxis?.brokenAxis?.isInAnyBreak(point.x, true) ||
+                            yAxis?.brokenAxis?.isInAnyBreak(point.y, true)));
                         // Set point.visible if in any break.
                         // If not in break, reset visible to original value.
                         point.visible = isPointInBreak ?
@@ -52501,21 +54913,35 @@
              */
             function seriesDrawBreaks(axis, keys) {
                 const series = this, points = series.points;
-                let breaks, threshold, eventName, y;
-                if (axis && // #5950
-                    axis.brokenAxis &&
-                    axis.brokenAxis.hasBreaks) {
+                let breaks, threshold, y;
+                if (axis?.brokenAxis?.hasBreaks) {
                     const brokenAxis = axis.brokenAxis;
                     keys.forEach(function (key) {
-                        breaks = brokenAxis && brokenAxis.breakArray || [];
+                        breaks = brokenAxis?.breakArray || [];
                         threshold = axis.isXAxis ?
                             axis.min :
                             pick(series.options.threshold, axis.min);
+                        // Array of breaks that have been "zoomed-out" which means that
+                        // they were shown previously, but now after zoom, they are not
+                        // (#19885).
+                        const breaksOutOfRange = axis?.options?.breaks?.filter(function (brk) {
+                            let isOut = true;
+                            // Iterate to see if "brk" is in axis range
+                            for (let i = 0; i < breaks.length; i++) {
+                                const otherBreak = breaks[i];
+                                if (otherBreak.from === brk.from &&
+                                    otherBreak.to === brk.to) {
+                                    isOut = false;
+                                    break;
+                                }
+                            }
+                            return isOut;
+                        });
                         points.forEach(function (point) {
                             y = pick(point['stack' + key.toUpperCase()], point[key]);
                             breaks.forEach(function (brk) {
                                 if (isNumber(threshold) && isNumber(y)) {
-                                    eventName = false;
+                                    let eventName = '';
                                     if ((threshold < brk.from && y > brk.to) ||
                                         (threshold > brk.from && y < brk.from)) {
                                         eventName = 'pointBreak';
@@ -52531,6 +54957,9 @@
                                         fireEvent(axis, eventName, { point, brk });
                                     }
                                 }
+                            });
+                            breaksOutOfRange?.forEach(function (brk) {
+                                fireEvent(axis, 'pointOutsideOfBreak', { point, brk });
                             });
                         });
                     });
@@ -52548,7 +54977,7 @@
              * Gapped path
              */
             function seriesGappedPath() {
-                const currentDataGrouping = this.currentDataGrouping, groupingSize = currentDataGrouping && currentDataGrouping.gapSize, points = this.points.slice(), yAxis = this.yAxis;
+                const currentDataGrouping = this.currentDataGrouping, groupingSize = currentDataGrouping?.gapSize, points = this.points.slice(), yAxis = this.yAxis;
                 let gapSize = this.options.gapSize, i = points.length - 1, stack;
                 /**
                  * Defines when to display a gap in the graph, together with the
@@ -52806,7 +55235,9 @@
                 setBreaks(breaks, redraw) {
                     const brokenAxis = this;
                     const axis = brokenAxis.axis;
-                    const hasBreaks = (isArray(breaks) && !!breaks.length);
+                    const hasBreaks = isArray(breaks) &&
+                        !!breaks.length &&
+                        !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
@@ -53036,6 +55467,8 @@
             // help.
             axis.labelRotation = 0;
             options.labels.rotation = 0;
+            // Allow putting ticks closer than their data points.
+            options.minTickInterval = 1;
         }
         /**
          * Extends axis class with grid support.
@@ -53990,7 +56423,8 @@
          */
         /**
          * Set cell height for grid axis labels. By default this is calculated from font
-         * size. This option only applies to horizontal axes.
+         * size. This option only applies to horizontal axes. For vertical axes, check
+         * the [#yAxis.staticScale](yAxis.staticScale) option.
          *
          * @sample gantt/grid-axis/cellheight
          *         Gant chart with custom cell height
@@ -54013,8 +56447,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint no-console: 0 */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         const { extend, isNumber, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an object map from parent id to childrens index.
          *
@@ -54028,47 +56471,51 @@
          *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
+         * Map from parent id to children index in data
          */
-        const getListOfParents = function (data, ids) {
-            const listOfParents = data.reduce(function (prev, curr) {
+        function getListOfParents(data) {
+            const listOfParents = data.reduce((prev, curr) => {
                 const parent = pick(curr.parent, '');
                 if (typeof prev[parent] === 'undefined') {
                     prev[parent] = [];
                 }
                 prev[parent].push(curr);
                 return prev;
-            }, {}), parents = Object.keys(listOfParents);
+            }, {});
+            // parents = Object.keys(listOfParents);
             // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                const children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
+            // parents.forEach((parent, list): void => {
+            //     const children = listOfParents[parent];
+            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+            //         for (const child of children) {
+            //             (list as any)[''].push(child);
+            //         }
+            //         delete (list as any)[parent];
+            //     }
+            // });
             return listOfParents;
-        };
-        const getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-            let descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
-                data: data,
+        }
+        /** @private */
+        function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+            const after = options && options.after, before = options && options.before, node = {
+                data,
                 depth: level - 1,
-                id: id,
-                level: level,
-                parent: parent
-            }, start, end, children;
+                id,
+                level,
+                parent: (parent || '')
+            };
+            let descendants = 0, height = 0, start, end;
             // Allow custom logic before the children has been created.
             if (typeof before === 'function') {
                 before(node, options);
             }
             // Call getNode recursively on the children. Calulate the height of the
             // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+            const children = ((mapOfIdToChildren[id] || [])).map((child) => {
+                const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
                     childStart :
-                    child.end);
+                    child.end ||
+                        NaN);
                 // Start should be the lowest child.start.
                 start = ((!isNumber(start) || childStart < start) ?
                     childStart :
@@ -54097,15 +56544,18 @@
                 after(node, options);
             }
             return node;
-        };
-        const getTree = function (data, options) {
-            const ids = data.map(function (d) {
-                return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
+        }
+        /** @private */
+        function getTree(data, options) {
+            const mapOfIdToChildren = getListOfParents(data);
             return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         const Tree = {
-            getListOfParents,
             getNode,
             getTree
         };
@@ -55340,2386 +57790,6 @@
 
         return TreeGridAxisAdditions;
     });
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Axis, Chart, U) {
-        /* *
-         *
-         *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { addEvent, defined, isNumber, pick } = U;
-        /* eslint-disable no-invalid-this */
-        /**
-         * For vertical axes only. Setting the static scale ensures that each tick unit
-         * is translated into a fixed pixel height. For example, setting the static
-         * scale to 24 results in each Y axis category taking up 24 pixels, and the
-         * height of the chart adjusts. Adding or removing items will make the chart
-         * resize.
-         *
-         * @sample gantt/xrange-series/demo/
-         *         X-range series with static scale
-         *
-         * @type      {number}
-         * @default   50
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption yAxis.staticScale
-         */
-        addEvent(Axis, 'afterSetOptions', function () {
-            const chartOptions = this.chart.options.chart;
-            if (!this.horiz &&
-                isNumber(this.options.staticScale) &&
-                (!chartOptions.height ||
-                    (chartOptions.scrollablePlotArea &&
-                        chartOptions.scrollablePlotArea.minHeight))) {
-                this.staticScale = this.options.staticScale;
-            }
-        });
-        Chart.prototype.adjustHeight = function () {
-            if (this.redrawTrigger !== 'adjustHeight') {
-                (this.axes || []).forEach(function (axis) {
-                    let chart = axis.chart, animate = !!chart.initiatedScale &&
-                        chart.options.animation, staticScale = axis.options.staticScale, height, diff;
-                    if (axis.staticScale && defined(axis.min)) {
-                        height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
-                        // Minimum height is 1 x staticScale.
-                        height = Math.max(height, staticScale);
-                        diff = height - chart.plotHeight;
-                        if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
-                            chart.plotHeight = height;
-                            chart.redrawTrigger = 'adjustHeight';
-                            chart.setSize(void 0, chart.chartHeight + diff, animate);
-                        }
-                        // Make sure clip rects have the right height before initial
-                        // animation.
-                        axis.series.forEach(function (series) {
-                            const clipRect = series.sharedClipKey &&
-                                chart.sharedClips[series.sharedClipKey];
-                            if (clipRect) {
-                                clipRect.attr(chart.inverted ? {
-                                    width: chart.plotHeight
-                                } : {
-                                    height: chart.plotHeight
-                                });
-                            }
-                        });
-                    }
-                });
-                this.initiatedScale = true;
-            }
-            this.redrawTrigger = null;
-        };
-        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
-
-    });
-    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (D, H, Point, U) {
-        /* *
-         *
-         *  (c) 2016 Highsoft AS
-         *  Authors: Øystein Moseng, Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { defaultOptions } = D;
-        const { defined, error, extend, merge, objectEach, pick } = U;
-        /**
-         * The default pathfinder algorithm to use for a chart. It is possible to define
-         * your own algorithms by adding them to the
-         * `Highcharts.Pathfinder.prototype.algorithms`
-         * object before the chart has been created.
-         *
-         * The default algorithms are as follows:
-         *
-         * `straight`:      Draws a straight line between the connecting
-         *                  points. Does not avoid other points when drawing.
-         *
-         * `simpleConnect`: Finds a path between the points using right angles
-         *                  only. Takes only starting/ending points into
-         *                  account, and will not avoid other points.
-         *
-         * `fastAvoid`:     Finds a path between the points using right angles
-         *                  only. Will attempt to avoid other points, but its
-         *                  focus is performance over accuracy. Works well with
-         *                  less dense datasets.
-         *
-         * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
-         */
-        ''; // detach doclets above
-        const deg2rad = H.deg2rad, max = Math.max, min = Math.min;
-        /*
-         @todo:
-             - Document how to write your own algorithms
-             - Consider adding a Point.pathTo method that wraps creating a connection
-               and rendering it
-        */
-        // Set default Pathfinder options
-        extend(defaultOptions, {
-            /**
-             * The Pathfinder module allows you to define connections between any two
-             * points, represented as lines - optionally with markers for the start
-             * and/or end points. Multiple algorithms are available for calculating how
-             * the connecting lines are drawn.
-             *
-             * Connector functionality requires Highcharts Gantt to be loaded. In Gantt
-             * charts, the connectors are used to draw dependencies between tasks.
-             *
-             * @see [dependency](series.gantt.data.dependency)
-             *
-             * @sample gantt/pathfinder/demo
-             *         Pathfinder connections
-             *
-             * @declare      Highcharts.ConnectorsOptions
-             * @product      gantt
-             * @optionparent connectors
-             */
-            connectors: {
-                /**
-                 * Enable connectors for this chart. Requires Highcharts Gantt.
-                 *
-                 * @type      {boolean}
-                 * @default   true
-                 * @since     6.2.0
-                 * @apioption connectors.enabled
-                 */
-                /**
-                 * Set the default dash style for this chart's connecting lines.
-                 *
-                 * @type      {string}
-                 * @default   solid
-                 * @since     6.2.0
-                 * @apioption connectors.dashStyle
-                 */
-                /**
-                 * Set the default color for this chart's Pathfinder connecting lines.
-                 * Defaults to the color of the point being connected.
-                 *
-                 * @type      {Highcharts.ColorString}
-                 * @since     6.2.0
-                 * @apioption connectors.lineColor
-                 */
-                /**
-                 * Set the default pathfinder margin to use, in pixels. Some Pathfinder
-                 * algorithms attempt to avoid obstacles, such as other points in the
-                 * chart. These algorithms use this margin to determine how close lines
-                 * can be to an obstacle. The default is to compute this automatically
-                 * from the size of the obstacles in the chart.
-                 *
-                 * To draw connecting lines close to existing points, set this to a low
-                 * number. For more space around existing points, set this number
-                 * higher.
-                 *
-                 * @sample gantt/pathfinder/algorithm-margin
-                 *         Small algorithmMargin
-                 *
-                 * @type      {number}
-                 * @since     6.2.0
-                 * @apioption connectors.algorithmMargin
-                 */
-                /**
-                 * Set the default pathfinder algorithm to use for this chart. It is
-                 * possible to define your own algorithms by adding them to the
-                 * Highcharts.Pathfinder.prototype.algorithms object before the chart
-                 * has been created.
-                 *
-                 * The default algorithms are as follows:
-                 *
-                 * `straight`:      Draws a straight line between the connecting
-                 *                  points. Does not avoid other points when drawing.
-                 *
-                 * `simpleConnect`: Finds a path between the points using right angles
-                 *                  only. Takes only starting/ending points into
-                 *                  account, and will not avoid other points.
-                 *
-                 * `fastAvoid`:     Finds a path between the points using right angles
-                 *                  only. Will attempt to avoid other points, but its
-                 *                  focus is performance over accuracy. Works well with
-                 *                  less dense datasets.
-                 *
-                 * Default value: `straight` is used as default for most series types,
-                 * while `simpleConnect` is used as default for Gantt series, to show
-                 * dependencies between points.
-                 *
-                 * @sample gantt/pathfinder/demo
-                 *         Different types used
-                 *
-                 * @type    {Highcharts.PathfinderTypeValue}
-                 * @default undefined
-                 * @since   6.2.0
-                 */
-                type: 'straight',
-                /**
-                 * Set the default pixel width for this chart's Pathfinder connecting
-                 * lines.
-                 *
-                 * @since 6.2.0
-                 */
-                lineWidth: 1,
-                /**
-                 * Marker options for this chart's Pathfinder connectors. Note that
-                 * this option is overridden by the `startMarker` and `endMarker`
-                 * options.
-                 *
-                 * @declare Highcharts.ConnectorsMarkerOptions
-                 * @since   6.2.0
-                 */
-                marker: {
-                    /**
-                     * Set the radius of the connector markers. The default is
-                     * automatically computed based on the algorithmMargin setting.
-                     *
-                     * Setting marker.width and marker.height will override this
-                     * setting.
-                     *
-                     * @type      {number}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.radius
-                     */
-                    /**
-                     * Set the width of the connector markers. If not supplied, this
-                     * is inferred from the marker radius.
-                     *
-                     * @type      {number}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.width
-                     */
-                    /**
-                     * Set the height of the connector markers. If not supplied, this
-                     * is inferred from the marker radius.
-                     *
-                     * @type      {number}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.height
-                     */
-                    /**
-                     * Set the color of the connector markers. By default this is the
-                     * same as the connector color.
-                     *
-                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.color
-                     */
-                    /**
-                     * Set the line/border color of the connector markers. By default
-                     * this is the same as the marker color.
-                     *
-                     * @type      {Highcharts.ColorString}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.lineColor
-                     */
-                    /**
-                     * Enable markers for the connectors.
-                     */
-                    enabled: false,
-                    /**
-                     * Horizontal alignment of the markers relative to the points.
-                     *
-                     * @type {Highcharts.AlignValue}
-                     */
-                    align: 'center',
-                    /**
-                     * Vertical alignment of the markers relative to the points.
-                     *
-                     * @type {Highcharts.VerticalAlignValue}
-                     */
-                    verticalAlign: 'middle',
-                    /**
-                     * Whether or not to draw the markers inside the points.
-                     */
-                    inside: false,
-                    /**
-                     * Set the line/border width of the pathfinder markers.
-                     */
-                    lineWidth: 1
-                },
-                /**
-                 * Marker options specific to the start markers for this chart's
-                 * Pathfinder connectors. Overrides the generic marker options.
-                 *
-                 * @declare Highcharts.ConnectorsStartMarkerOptions
-                 * @extends connectors.marker
-                 * @since   6.2.0
-                 */
-                startMarker: {
-                    /**
-                     * Set the symbol of the connector start markers.
-                     */
-                    symbol: 'diamond'
-                },
-                /**
-                 * Marker options specific to the end markers for this chart's
-                 * Pathfinder connectors. Overrides the generic marker options.
-                 *
-                 * @declare Highcharts.ConnectorsEndMarkerOptions
-                 * @extends connectors.marker
-                 * @since   6.2.0
-                 */
-                endMarker: {
-                    /**
-                     * Set the symbol of the connector end markers.
-                     */
-                    symbol: 'arrow-filled'
-                }
-            }
-        });
-        /**
-         * Override Pathfinder connector options for a series. Requires Highcharts Gantt
-         * to be loaded.
-         *
-         * @declare   Highcharts.SeriesConnectorsOptionsObject
-         * @extends   connectors
-         * @since     6.2.0
-         * @excluding enabled, algorithmMargin
-         * @product   gantt
-         * @apioption plotOptions.series.connectors
-         */
-        /**
-         * Connect to a point. This option can be either a string, referring to the ID
-         * of another point, or an object, or an array of either. If the option is an
-         * array, each element defines a connection.
-         *
-         * @sample gantt/pathfinder/demo
-         *         Different connection types
-         *
-         * @declare   Highcharts.XrangePointConnectorsOptionsObject
-         * @type      {string|Array<string|*>|*}
-         * @extends   plotOptions.series.connectors
-         * @since     6.2.0
-         * @excluding enabled
-         * @product   gantt
-         * @requires  highcharts-gantt
-         * @apioption series.xrange.data.connect
-         */
-        /**
-         * The ID of the point to connect to.
-         *
-         * @type      {string}
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption series.xrange.data.connect.to
-         */
-        /**
-         * Get point bounding box using plotX/plotY and shapeArgs. If using
-         * graphic.getBBox() directly, the bbox will be affected by animation.
-         *
-         * @private
-         * @function
-         *
-         * @param {Highcharts.Point} point
-         *        The point to get BB of.
-         *
-         * @return {Highcharts.Dictionary<number>|null}
-         *         Result xMax, xMin, yMax, yMin.
-         */
-        function getPointBB(point) {
-            let shapeArgs = point.shapeArgs, bb;
-            // Prefer using shapeArgs (columns)
-            if (shapeArgs) {
-                return {
-                    xMin: shapeArgs.x || 0,
-                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
-                    yMin: shapeArgs.y || 0,
-                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
-                };
-            }
-            // Otherwise use plotX/plotY and bb
-            bb = point.graphic && point.graphic.getBBox();
-            return bb ? {
-                xMin: point.plotX - bb.width / 2,
-                xMax: point.plotX + bb.width / 2,
-                yMin: point.plotY - bb.height / 2,
-                yMax: point.plotY + bb.height / 2
-            } : null;
-        }
-        /**
-         * Calculate margin to place around obstacles for the pathfinder in pixels.
-         * Returns a minimum of 1 pixel margin.
-         *
-         * @private
-         * @function
-         *
-         * @param {Array<object>} obstacles
-         *        Obstacles to calculate margin from.
-         *
-         * @return {number}
-         *         The calculated margin in pixels. At least 1.
-         */
-        function calculateObstacleMargin(obstacles) {
-            let len = obstacles.length, i = 0, j, obstacleDistance, distances = [], 
-            // Compute smallest distance between two rectangles
-            distance = function (a, b, bbMargin) {
-                // Count the distance even if we are slightly off
-                const margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
-                    a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
-                    a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
-                // If the rectangles collide, try recomputing with smaller margin.
-                // If they collide anyway, discard the obstacle.
-                if (xOverlap && yOverlap) {
-                    return (margin ?
-                        distance(a, b, Math.floor(margin / 2)) :
-                        Infinity);
-                }
-                return min(xDistance, yDistance);
-            };
-            // Go over all obstacles and compare them to the others.
-            for (; i < len; ++i) {
-                // Compare to all obstacles ahead. We will already have compared this
-                // obstacle to the ones before.
-                for (j = i + 1; j < len; ++j) {
-                    obstacleDistance = distance(obstacles[i], obstacles[j]);
-                    // TODO: Magic number 80
-                    if (obstacleDistance < 80) { // Ignore large distances
-                        distances.push(obstacleDistance);
-                    }
-                }
-            }
-            // Ensure we always have at least one value, even in very spaceous charts
-            distances.push(80);
-            return max(Math.floor(distances.sort(function (a, b) {
-                return (a - b);
-            })[
-            // Discard first 10% of the relevant distances, and then grab
-            // the smallest one.
-            Math.floor(distances.length / 10)] / 2 - 1 // Divide the distance by 2 and subtract 1.
-            ), 1 // 1 is the minimum margin
-            );
-        }
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * The Connection class. Used internally to represent a connection between two
-         * points.
-         *
-         * @private
-         * @class
-         * @name Highcharts.Connection
-         *
-         * @param {Highcharts.Point} from
-         *        Connection runs from this Point.
-         *
-         * @param {Highcharts.Point} to
-         *        Connection runs to this Point.
-         *
-         * @param {Highcharts.ConnectorsOptions} [options]
-         *        Connection options.
-         */
-        class Connection {
-            constructor(from, to, options) {
-                /* *
-                *
-                * Properties
-                *
-                * */
-                this.chart = void 0;
-                this.fromPoint = void 0;
-                this.graphics = void 0;
-                this.pathfinder = void 0;
-                this.toPoint = void 0;
-                this.init(from, to, options);
-            }
-            /**
-             * Initialize the Connection object. Used as constructor only.
-             *
-             * @function Highcharts.Connection#init
-             *
-             * @param {Highcharts.Point} from
-             *        Connection runs from this Point.
-             *
-             * @param {Highcharts.Point} to
-             *        Connection runs to this Point.
-             *
-             * @param {Highcharts.ConnectorsOptions} [options]
-             *        Connection options.
-             */
-            init(from, to, options) {
-                this.fromPoint = from;
-                this.toPoint = to;
-                this.options = options;
-                this.chart = from.series.chart;
-                this.pathfinder = this.chart.pathfinder;
-            }
-            /**
-             * Add (or update) this connection's path on chart. Stores reference to the
-             * created element on this.graphics.path.
-             *
-             * @function Highcharts.Connection#renderPath
-             *
-             * @param {Highcharts.SVGPathArray} path
-             *        Path to render, in array format. E.g. ['M', 0, 0, 'L', 10, 10]
-             *
-             * @param {Highcharts.SVGAttributes} [attribs]
-             *        SVG attributes for the path.
-             *
-             * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
-             *        Animation options for the rendering.
-             */
-            renderPath(path, attribs, animation) {
-                let connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, pathGraphic = connection.graphics && connection.graphics.path, anim;
-                // Add the SVG element of the pathfinder group if it doesn't exist
-                if (!pathfinder.group) {
-                    pathfinder.group = chart.renderer.g()
-                        .addClass('highcharts-pathfinder-group')
-                        .attr({ zIndex: -1 })
-                        .add(chart.seriesGroup);
-                }
-                // Shift the group to compensate for plot area.
-                // Note: Do this always (even when redrawing a path) to avoid issues
-                // when updating chart in a way that changes plot metrics.
-                pathfinder.group.translate(chart.plotLeft, chart.plotTop);
-                // Create path if does not exist
-                if (!(pathGraphic && pathGraphic.renderer)) {
-                    pathGraphic = chart.renderer.path()
-                        .add(pathfinder.group);
-                    if (!styledMode) {
-                        pathGraphic.attr({
-                            opacity: 0
-                        });
-                    }
-                }
-                // Set path attribs and animate to the new path
-                pathGraphic.attr(attribs);
-                anim = { d: path };
-                if (!styledMode) {
-                    anim.opacity = 1;
-                }
-                pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
-                // Store reference on connection
-                this.graphics = this.graphics || {};
-                this.graphics.path = pathGraphic;
-            }
-            /**
-             * Calculate and add marker graphics for connection to the chart. The
-             * created/updated elements are stored on this.graphics.start and
-             * this.graphics.end.
-             *
-             * @function Highcharts.Connection#addMarker
-             *
-             * @param {string} type
-             *        Marker type, either 'start' or 'end'.
-             *
-             * @param {Highcharts.ConnectorsMarkerOptions} options
-             *        All options for this marker. Not calculated or merged with other
-             *        options.
-             *
-             * @param {Highcharts.SVGPathArray} path
-             *        Connection path in array format. This is used to calculate the
-             *        rotation angle of the markers.
-             */
-            addMarker(type, options, path) {
-                let connection = this, chart = connection.fromPoint.series.chart, pathfinder = chart.pathfinder, renderer = chart.renderer, point = (type === 'start' ?
-                    connection.fromPoint :
-                    connection.toPoint), anchor = point.getPathfinderAnchorPoint(options), markerVector, radians, rotation, box, width, height, pathVector, segment;
-                if (!options.enabled) {
-                    return;
-                }
-                // Last vector before start/end of path, used to get angle
-                if (type === 'start') {
-                    segment = path[1];
-                }
-                else { // 'end'
-                    segment = path[path.length - 2];
-                }
-                if (segment && segment[0] === 'M' || segment[0] === 'L') {
-                    pathVector = {
-                        x: segment[1],
-                        y: segment[2]
-                    };
-                    // Get angle between pathVector and anchor point and use it to
-                    // create marker position.
-                    radians = point.getRadiansToVector(pathVector, anchor);
-                    markerVector = point.getMarkerVector(radians, options.radius, anchor);
-                    // Rotation of marker is calculated from angle between pathVector
-                    // and markerVector.
-                    // (Note:
-                    //  Used to recalculate radians between markerVector and pathVector,
-                    //  but this should be the same as between pathVector and anchor.)
-                    rotation = -radians / deg2rad;
-                    if (options.width && options.height) {
-                        width = options.width;
-                        height = options.height;
-                    }
-                    else {
-                        width = height = options.radius * 2;
-                    }
-                    // Add graphics object if it does not exist
-                    connection.graphics = connection.graphics || {};
-                    box = {
-                        x: markerVector.x - (width / 2),
-                        y: markerVector.y - (height / 2),
-                        width: width,
-                        height: height,
-                        rotation: rotation,
-                        rotationOriginX: markerVector.x,
-                        rotationOriginY: markerVector.y
-                    };
-                    if (!connection.graphics[type]) {
-                        // Create new marker element
-                        connection.graphics[type] = renderer
-                            .symbol(options.symbol)
-                            .addClass('highcharts-point-connecting-path-' + type + '-marker' +
-                            ' highcharts-color-' + this.fromPoint.colorIndex)
-                            .attr(box)
-                            .add(pathfinder.group);
-                        if (!renderer.styledMode) {
-                            connection.graphics[type].attr({
-                                fill: options.color || connection.fromPoint.color,
-                                stroke: options.lineColor,
-                                'stroke-width': options.lineWidth,
-                                opacity: 0
-                            })
-                                .animate({
-                                opacity: 1
-                            }, point.series.options.animation);
-                        }
-                    }
-                    else {
-                        connection.graphics[type].animate(box);
-                    }
-                }
-            }
-            /**
-             * Calculate and return connection path.
-             * Note: Recalculates chart obstacles on demand if they aren't calculated.
-             *
-             * @function Highcharts.Connection#getPath
-             *
-             * @param {Highcharts.ConnectorsOptions} options
-             *        Connector options. Not calculated or merged with other options.
-             *
-             * @return {object|undefined}
-             *         Calculated SVG path data in array format.
-             */
-            getPath(options) {
-                let pathfinder = this.pathfinder, chart = this.chart, algorithm = pathfinder.algorithms[options.type], chartObstacles = pathfinder.chartObstacles;
-                if (typeof algorithm !== 'function') {
-                    error('"' + options.type + '" is not a Pathfinder algorithm.');
-                    return {
-                        path: [],
-                        obstacles: []
-                    };
-                }
-                // This function calculates obstacles on demand if they don't exist
-                if (algorithm.requiresObstacles && !chartObstacles) {
-                    chartObstacles =
-                        pathfinder.chartObstacles =
-                            pathfinder.getChartObstacles(options);
-                    // If the algorithmMargin was computed, store the result in default
-                    // options.
-                    chart.options.connectors.algorithmMargin =
-                        options.algorithmMargin;
-                    // Cache some metrics too
-                    pathfinder.chartObstacleMetrics =
-                        pathfinder.getObstacleMetrics(chartObstacles);
-                }
-                // Get the SVG path
-                return algorithm(
-                // From
-                this.fromPoint.getPathfinderAnchorPoint(options.startMarker), 
-                // To
-                this.toPoint.getPathfinderAnchorPoint(options.endMarker), merge({
-                    chartObstacles: chartObstacles,
-                    lineObstacles: pathfinder.lineObstacles || [],
-                    obstacleMetrics: pathfinder.chartObstacleMetrics,
-                    hardBounds: {
-                        xMin: 0,
-                        xMax: chart.plotWidth,
-                        yMin: 0,
-                        yMax: chart.plotHeight
-                    },
-                    obstacleOptions: {
-                        margin: options.algorithmMargin
-                    },
-                    startDirectionX: pathfinder.getAlgorithmStartDirection(options.startMarker)
-                }, options));
-            }
-            /**
-             * (re)Calculate and (re)draw the connection.
-             *
-             * @function Highcharts.Connection#render
-             */
-            render() {
-                let connection = this, fromPoint = connection.fromPoint, series = fromPoint.series, chart = series.chart, pathfinder = chart.pathfinder, pathResult, path, options = merge(chart.options.connectors, series.options.connectors, fromPoint.options.connectors, connection.options), attribs = {};
-                // Set path attribs
-                if (!chart.styledMode) {
-                    attribs.stroke = options.lineColor || fromPoint.color;
-                    attribs['stroke-width'] = options.lineWidth;
-                    if (options.dashStyle) {
-                        attribs.dashstyle = options.dashStyle;
-                    }
-                }
-                attribs['class'] = // eslint-disable-line dot-notation
-                    'highcharts-point-connecting-path ' +
-                        'highcharts-color-' + fromPoint.colorIndex;
-                options = merge(attribs, options);
-                // Set common marker options
-                if (!defined(options.marker.radius)) {
-                    options.marker.radius = min(max(Math.ceil((options.algorithmMargin || 8) / 2) - 1, 1), 5);
-                }
-                // Get the path
-                pathResult = connection.getPath(options);
-                path = pathResult.path;
-                // Always update obstacle storage with obstacles from this path.
-                // We don't know if future calls will need this for their algorithm.
-                if (pathResult.obstacles) {
-                    pathfinder.lineObstacles =
-                        pathfinder.lineObstacles || [];
-                    pathfinder.lineObstacles =
-                        pathfinder.lineObstacles.concat(pathResult.obstacles);
-                }
-                // Add the calculated path to the pathfinder group
-                connection.renderPath(path, attribs, series.options.animation);
-                // Render the markers
-                connection.addMarker('start', merge(options.marker, options.startMarker), path);
-                connection.addMarker('end', merge(options.marker, options.endMarker), path);
-            }
-            /**
-             * Destroy connection by destroying the added graphics elements.
-             *
-             * @function Highcharts.Connection#destroy
-             */
-            destroy() {
-                if (this.graphics) {
-                    objectEach(this.graphics, function (val) {
-                        val.destroy();
-                    });
-                    delete this.graphics;
-                }
-            }
-        }
-        // Add to Highcharts namespace
-        H.Connection = Connection;
-        // Add pathfinding capabilities to Points
-        extend(Point.prototype, /** @lends Point.prototype */ {
-            /**
-             * Get coordinates of anchor point for pathfinder connection.
-             *
-             * @private
-             * @function Highcharts.Point#getPathfinderAnchorPoint
-             *
-             * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
-             *        Connection options for position on point.
-             *
-             * @return {Highcharts.PositionObject}
-             *         An object with x/y properties for the position. Coordinates are
-             *         in plot values, not relative to point.
-             */
-            getPathfinderAnchorPoint: function (markerOptions) {
-                let bb = getPointBB(this), x, y;
-                switch (markerOptions.align) { // eslint-disable-line default-case
-                    case 'right':
-                        x = 'xMax';
-                        break;
-                    case 'left':
-                        x = 'xMin';
-                }
-                switch (markerOptions.verticalAlign) { // eslint-disable-line default-case
-                    case 'top':
-                        y = 'yMin';
-                        break;
-                    case 'bottom':
-                        y = 'yMax';
-                }
-                return {
-                    x: x ? bb[x] : (bb.xMin + bb.xMax) / 2,
-                    y: y ? bb[y] : (bb.yMin + bb.yMax) / 2
-                };
-            },
-            /**
-             * Utility to get the angle from one point to another.
-             *
-             * @private
-             * @function Highcharts.Point#getRadiansToVector
-             *
-             * @param {Highcharts.PositionObject} v1
-             *        The first vector, as an object with x/y properties.
-             *
-             * @param {Highcharts.PositionObject} v2
-             *        The second vector, as an object with x/y properties.
-             *
-             * @return {number}
-             *         The angle in degrees
-             */
-            getRadiansToVector: function (v1, v2) {
-                let box;
-                if (!defined(v2)) {
-                    box = getPointBB(this);
-                    if (box) {
-                        v2 = {
-                            x: (box.xMin + box.xMax) / 2,
-                            y: (box.yMin + box.yMax) / 2
-                        };
-                    }
-                }
-                return Math.atan2(v2.y - v1.y, v1.x - v2.x);
-            },
-            /**
-             * Utility to get the position of the marker, based on the path angle and
-             * the marker's radius.
-             *
-             * @private
-             * @function Highcharts.Point#getMarkerVector
-             *
-             * @param {number} radians
-             *        The angle in radians from the point center to another vector.
-             *
-             * @param {number} markerRadius
-             *        The radius of the marker, to calculate the additional distance to
-             *        the center of the marker.
-             *
-             * @param {Object} anchor
-             *        The anchor point of the path and marker as an object with x/y
-             *        properties.
-             *
-             * @return {Object}
-             *         The marker vector as an object with x/y properties.
-             */
-            getMarkerVector: function (radians, markerRadius, anchor) {
-                let twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
-                    x: rectHorizontalCenter,
-                    y: rectVerticalCenter
-                }, xFactor = 1, yFactor = 1;
-                while (theta < -Math.PI) {
-                    theta += twoPI;
-                }
-                while (theta > Math.PI) {
-                    theta -= twoPI;
-                }
-                tanTheta = Math.tan(theta);
-                if ((theta > -rAtan) && (theta <= rAtan)) {
-                    // Right side
-                    yFactor = -1;
-                    leftOrRightRegion = true;
-                }
-                else if (theta > rAtan && theta <= (Math.PI - rAtan)) {
-                    // Top side
-                    yFactor = -1;
-                }
-                else if (theta > (Math.PI - rAtan) || theta <= -(Math.PI - rAtan)) {
-                    // Left side
-                    xFactor = -1;
-                    leftOrRightRegion = true;
-                }
-                else {
-                    // Bottom side
-                    xFactor = -1;
-                }
-                // Correct the edgePoint according to the placement of the marker
-                if (leftOrRightRegion) {
-                    edgePoint.x += xFactor * (rectHalfWidth);
-                    edgePoint.y += yFactor * (rectHalfWidth) * tanTheta;
-                }
-                else {
-                    edgePoint.x += xFactor * (rectHeight / (2.0 * tanTheta));
-                    edgePoint.y += yFactor * (rectHalfHeight);
-                }
-                if (anchor.x !== rectHorizontalCenter) {
-                    edgePoint.x = anchor.x;
-                }
-                if (anchor.y !== rectVerticalCenter) {
-                    edgePoint.y = anchor.y;
-                }
-                return {
-                    x: edgePoint.x + (markerRadius * Math.cos(theta)),
-                    y: edgePoint.y - (markerRadius * Math.sin(theta))
-                };
-            }
-        });
-        /**
-         * Warn if using legacy options. Copy the options over. Note that this will
-         * still break if using the legacy options in chart.update, addSeries etc.
-         * @private
-         */
-        function warnLegacy(chart) {
-            if (chart.options.pathfinder ||
-                chart.series.reduce(function (acc, series) {
-                    if (series.options) {
-                        merge(true, (series.options.connectors = series.options.connectors ||
-                            {}), series.options.pathfinder);
-                    }
-                    return acc || series.options && series.options.pathfinder;
-                }, false)) {
-                merge(true, (chart.options.connectors = chart.options.connectors || {}), chart.options.pathfinder);
-                error('WARNING: Pathfinder options have been renamed. ' +
-                    'Use "chart.connectors" or "series.connectors" instead.');
-            }
-        }
-
-        return Connection;
-    });
-    _registerModule(_modules, 'Gantt/PathfinderAlgorithms.js', [_modules['Core/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2016 Highsoft AS
-         *  Author: Øystein Moseng
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { extend, pick } = U;
-        const { min, max, abs } = Math;
-        /**
-         * Get index of last obstacle before xMin. Employs a type of binary search, and
-         * thus requires that obstacles are sorted by xMin value.
-         *
-         * @private
-         * @function findLastObstacleBefore
-         *
-         * @param {Array<object>} obstacles
-         *        Array of obstacles to search in.
-         *
-         * @param {number} xMin
-         *        The xMin threshold.
-         *
-         * @param {number} [startIx]
-         *        Starting index to search from. Must be within array range.
-         *
-         * @return {number}
-         *         The index of the last obstacle element before xMin.
-         */
-        function findLastObstacleBefore(obstacles, xMin, startIx) {
-            let left = startIx || 0, // left limit
-            right = obstacles.length - 1, // right limit
-            min = xMin - 0.0000001, // Make sure we include all obstacles at xMin
-            cursor, cmp;
-            while (left <= right) {
-                cursor = (right + left) >> 1;
-                cmp = min - obstacles[cursor].xMin;
-                if (cmp > 0) {
-                    left = cursor + 1;
-                }
-                else if (cmp < 0) {
-                    right = cursor - 1;
-                }
-                else {
-                    return cursor;
-                }
-            }
-            return left > 0 ? left - 1 : 0;
-        }
-        /**
-         * Test if a point lays within an obstacle.
-         *
-         * @private
-         * @function pointWithinObstacle
-         *
-         * @param {Object} obstacle
-         *        Obstacle to test.
-         *
-         * @param {Highcharts.Point} point
-         *        Point with x/y props.
-         *
-         * @return {boolean}
-         *         Whether point is within the obstacle or not.
-         */
-        function pointWithinObstacle(obstacle, point) {
-            return (point.x <= obstacle.xMax &&
-                point.x >= obstacle.xMin &&
-                point.y <= obstacle.yMax &&
-                point.y >= obstacle.yMin);
-        }
-        /**
-         * Find the index of an obstacle that wraps around a point.
-         * Returns -1 if not found.
-         *
-         * @private
-         * @function findObstacleFromPoint
-         *
-         * @param {Array<object>} obstacles
-         *        Obstacles to test.
-         *
-         * @param {Highcharts.Point} point
-         *        Point with x/y props.
-         *
-         * @return {number}
-         *         Ix of the obstacle in the array, or -1 if not found.
-         */
-        function findObstacleFromPoint(obstacles, point) {
-            let i = findLastObstacleBefore(obstacles, point.x + 1) + 1;
-            while (i--) {
-                if (obstacles[i].xMax >= point.x &&
-                    // optimization using lazy evaluation
-                    pointWithinObstacle(obstacles[i], point)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-        /**
-         * Get SVG path array from array of line segments.
-         *
-         * @private
-         * @function pathFromSegments
-         *
-         * @param {Array<object>} segments
-         *        The segments to build the path from.
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         SVG path array as accepted by the SVG Renderer.
-         */
-        function pathFromSegments(segments) {
-            const path = [];
-            if (segments.length) {
-                path.push(['M', segments[0].start.x, segments[0].start.y]);
-                for (let i = 0; i < segments.length; ++i) {
-                    path.push(['L', segments[i].end.x, segments[i].end.y]);
-                }
-            }
-            return path;
-        }
-        /**
-         * Limits obstacle max/mins in all directions to bounds. Modifies input
-         * obstacle.
-         *
-         * @private
-         * @function limitObstacleToBounds
-         *
-         * @param {Object} obstacle
-         *        Obstacle to limit.
-         *
-         * @param {Object} bounds
-         *        Bounds to use as limit.
-         *
-         * @return {void}
-         */
-        function limitObstacleToBounds(obstacle, bounds) {
-            obstacle.yMin = max(obstacle.yMin, bounds.yMin);
-            obstacle.yMax = min(obstacle.yMax, bounds.yMax);
-            obstacle.xMin = max(obstacle.xMin, bounds.xMin);
-            obstacle.xMax = min(obstacle.xMax, bounds.xMax);
-        }
-        /**
-         * Get an SVG path from a starting coordinate to an ending coordinate.
-         * Draws a straight line.
-         *
-         * @function Highcharts.Pathfinder.algorithms.straight
-         *
-         * @param {Highcharts.PositionObject} start
-         *        Starting coordinate, object with x/y props.
-         *
-         * @param {Highcharts.PositionObject} end
-         *        Ending coordinate, object with x/y props.
-         *
-         * @return {Object}
-         *         An object with the SVG path in Array form as accepted by the SVG
-         *         renderer, as well as an array of new obstacles making up this
-         *         path.
-         */
-        function straight(start, end) {
-            return {
-                path: [
-                    ['M', start.x, start.y],
-                    ['L', end.x, end.y]
-                ],
-                obstacles: [{ start: start, end: end }]
-            };
-        }
-        /**
-         * Find a path from a starting coordinate to an ending coordinate, using
-         * right angles only, and taking only starting/ending obstacle into
-         * consideration.
-         *
-         * @function Highcharts.Pathfinder.algorithms.simpleConnect
-         *
-         * @param {Highcharts.PositionObject} start
-         *        Starting coordinate, object with x/y props.
-         *
-         * @param {Highcharts.PositionObject} end
-         *        Ending coordinate, object with x/y props.
-         *
-         * @param {Object} options
-         *        Options for the algorithm:
-         *        - chartObstacles: Array of chart obstacles to avoid
-         *        - startDirectionX: Optional. True if starting in the X direction.
-         *          If not provided, the algorithm starts in the direction that is
-         *          the furthest between start/end.
-         *
-         * @return {Object}
-         *         An object with the SVG path in Array form as accepted by the SVG
-         *         renderer, as well as an array of new obstacles making up this
-         *         path.
-         */
-        const simpleConnect = function (start, end, options) {
-            let segments = [], endSegment, dir = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)) ? 'x' : 'y', chartObstacles = options.chartObstacles, startObstacleIx = findObstacleFromPoint(chartObstacles, start), endObstacleIx = findObstacleFromPoint(chartObstacles, end), startObstacle, endObstacle, prevWaypoint, waypoint, waypoint2, useMax, endPoint;
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Return a clone of a point with a property set from a target object,
-             * optionally with an offset
-             * @private
-             */
-            function copyFromPoint(from, fromKey, to, toKey, offset) {
-                const point = {
-                    x: from.x,
-                    y: from.y
-                };
-                point[fromKey] = to[toKey || fromKey] + (offset || 0);
-                return point;
-            }
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Return waypoint outside obstacle.
-             * @private
-             */
-            function getMeOut(obstacle, point, direction) {
-                const useMax = abs(point[direction] - obstacle[direction + 'Min']) >
-                    abs(point[direction] - obstacle[direction + 'Max']);
-                return copyFromPoint(point, direction, obstacle, direction + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1);
-            }
-            // Pull out end point
-            if (endObstacleIx > -1) {
-                endObstacle = chartObstacles[endObstacleIx];
-                waypoint = getMeOut(endObstacle, end, dir);
-                endSegment = {
-                    start: waypoint,
-                    end: end
-                };
-                endPoint = waypoint;
-            }
-            else {
-                endPoint = end;
-            }
-            // If an obstacle envelops the start point, add a segment to get out,
-            // and around it.
-            if (startObstacleIx > -1) {
-                startObstacle = chartObstacles[startObstacleIx];
-                waypoint = getMeOut(startObstacle, start, dir);
-                segments.push({
-                    start: start,
-                    end: waypoint
-                });
-                // If we are going back again, switch direction to get around start
-                // obstacle.
-                if (
-                // Going towards max from start:
-                waypoint[dir] >= start[dir] ===
-                    // Going towards min to end:
-                    waypoint[dir] >= endPoint[dir]) {
-                    dir = dir === 'y' ? 'x' : 'y';
-                    useMax = start[dir] < end[dir];
-                    segments.push({
-                        start: waypoint,
-                        end: copyFromPoint(waypoint, dir, startObstacle, dir + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1)
-                    });
-                    // Switch direction again
-                    dir = dir === 'y' ? 'x' : 'y';
-                }
-            }
-            // We are around the start obstacle. Go towards the end in one
-            // direction.
-            prevWaypoint = segments.length ?
-                segments[segments.length - 1].end :
-                start;
-            waypoint = copyFromPoint(prevWaypoint, dir, endPoint);
-            segments.push({
-                start: prevWaypoint,
-                end: waypoint
-            });
-            // Final run to end point in the other direction
-            dir = dir === 'y' ? 'x' : 'y';
-            waypoint2 = copyFromPoint(waypoint, dir, endPoint);
-            segments.push({
-                start: waypoint,
-                end: waypoint2
-            });
-            // Finally add the endSegment
-            segments.push(endSegment);
-            return {
-                path: pathFromSegments(segments),
-                obstacles: segments
-            };
-        };
-        simpleConnect.requiresObstacles = true;
-        /**
-         * Find a path from a starting coordinate to an ending coordinate, taking
-         * obstacles into consideration. Might not always find the optimal path,
-         * but is fast, and usually good enough.
-         *
-         * @function Highcharts.Pathfinder.algorithms.fastAvoid
-         *
-         * @param {Highcharts.PositionObject} start
-         *        Starting coordinate, object with x/y props.
-         *
-         * @param {Highcharts.PositionObject} end
-         *        Ending coordinate, object with x/y props.
-         *
-         * @param {Object} options
-         *        Options for the algorithm.
-         *        - chartObstacles:  Array of chart obstacles to avoid
-         *        - lineObstacles:   Array of line obstacles to jump over
-         *        - obstacleMetrics: Object with metrics of chartObstacles cached
-         *        - hardBounds:      Hard boundaries to not cross
-         *        - obstacleOptions: Options for the obstacles, including margin
-         *        - startDirectionX: Optional. True if starting in the X direction.
-         *                           If not provided, the algorithm starts in the
-         *                           direction that is the furthest between
-         *                           start/end.
-         *
-         * @return {Object}
-         *         An object with the SVG path in Array form as accepted by the SVG
-         *         renderer, as well as an array of new obstacles making up this
-         *         path.
-         */
-        const fastAvoid = function (start, end, options) {
-            /*
-                Algorithm rules/description
-                - Find initial direction
-                - Determine soft/hard max for each direction.
-                - Move along initial direction until obstacle.
-                - Change direction.
-                - If hitting obstacle, first try to change length of previous line
-                    before changing direction again.
-
-                Soft min/max x = start/destination x +/- widest obstacle + margin
-                Soft min/max y = start/destination y +/- tallest obstacle + margin
-
-                @todo:
-                    - Make retrospective, try changing prev segment to reduce
-                        corners
-                    - Fix logic for breaking out of end-points - not always picking
-                        the best direction currently
-                    - When going around the end obstacle we should not always go the
-                        shortest route, rather pick the one closer to the end point
-            */
-            let dirIsX = pick(options.startDirectionX, abs(end.x - start.x) > abs(end.y - start.y)), dir = dirIsX ? 'x' : 'y', segments, useMax, extractedEndPoint, endSegments = [], forceObstacleBreak = false, // Used in clearPathTo to keep track of
-            // when to force break through an obstacle.
-            // Boundaries to stay within. If beyond soft boundary, prefer to
-            // change direction ASAP. If at hard max, always change immediately.
-            metrics = options.obstacleMetrics, softMinX = min(start.x, end.x) - metrics.maxWidth - 10, softMaxX = max(start.x, end.x) + metrics.maxWidth + 10, softMinY = min(start.y, end.y) - metrics.maxHeight - 10, softMaxY = max(start.y, end.y) + metrics.maxHeight + 10, 
-            // Obstacles
-            chartObstacles = options.chartObstacles, startObstacleIx = findLastObstacleBefore(chartObstacles, softMinX), endObstacleIx = findLastObstacleBefore(chartObstacles, softMaxX);
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * How far can you go between two points before hitting an obstacle?
-             * Does not work for diagonal lines (because it doesn't have to).
-             * @private
-             */
-            function pivotPoint(fromPoint, toPoint, directionIsX) {
-                let firstPoint, lastPoint, highestPoint, lowestPoint, i, searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
-                if (fromPoint.x < toPoint.x) {
-                    firstPoint = fromPoint;
-                    lastPoint = toPoint;
-                }
-                else {
-                    firstPoint = toPoint;
-                    lastPoint = fromPoint;
-                }
-                if (fromPoint.y < toPoint.y) {
-                    lowestPoint = fromPoint;
-                    highestPoint = toPoint;
-                }
-                else {
-                    lowestPoint = toPoint;
-                    highestPoint = fromPoint;
-                }
-                // Go through obstacle range in reverse if toPoint is before
-                // fromPoint in the X-dimension.
-                i = searchDirection < 0 ?
-                    // Searching backwards, start at last obstacle before last point
-                    min(findLastObstacleBefore(chartObstacles, lastPoint.x), chartObstacles.length - 1) :
-                    // Forwards. Since we're not sorted by xMax, we have to look
-                    // at all obstacles.
-                    0;
-                // Go through obstacles in this X range
-                while (chartObstacles[i] && (searchDirection > 0 && chartObstacles[i].xMin <= lastPoint.x ||
-                    searchDirection < 0 && chartObstacles[i].xMax >= firstPoint.x)) {
-                    // If this obstacle is between from and to points in a straight
-                    // line, pivot at the intersection.
-                    if (chartObstacles[i].xMin <= lastPoint.x &&
-                        chartObstacles[i].xMax >= firstPoint.x &&
-                        chartObstacles[i].yMin <= highestPoint.y &&
-                        chartObstacles[i].yMax >= lowestPoint.y) {
-                        if (directionIsX) {
-                            return {
-                                y: fromPoint.y,
-                                x: fromPoint.x < toPoint.x ?
-                                    chartObstacles[i].xMin - 1 :
-                                    chartObstacles[i].xMax + 1,
-                                obstacle: chartObstacles[i]
-                            };
-                        }
-                        // else ...
-                        return {
-                            x: fromPoint.x,
-                            y: fromPoint.y < toPoint.y ?
-                                chartObstacles[i].yMin - 1 :
-                                chartObstacles[i].yMax + 1,
-                            obstacle: chartObstacles[i]
-                        };
-                    }
-                    i += searchDirection;
-                }
-                return toPoint;
-            }
-            /**
-             * Decide in which direction to dodge or get out of an obstacle.
-             * Considers desired direction, which way is shortest, soft and hard
-             * bounds.
-             *
-             * (? Returns a string, either xMin, xMax, yMin or yMax.)
-             *
-             * @private
-             * @function
-             *
-             * @param {Object} obstacle
-             *        Obstacle to dodge/escape.
-             *
-             * @param {Object} fromPoint
-             *        Point with x/y props that's dodging/escaping.
-             *
-             * @param {Object} toPoint
-             *        Goal point.
-             *
-             * @param {boolean} dirIsX
-             *        Dodge in X dimension.
-             *
-             * @param {Object} bounds
-             *        Hard and soft boundaries.
-             *
-             * @return {boolean}
-             *         Use max or not.
-             */
-            function getDodgeDirection(obstacle, fromPoint, toPoint, dirIsX, bounds) {
-                let softBounds = bounds.soft, hardBounds = bounds.hard, dir = dirIsX ? 'x' : 'y', toPointMax = { x: fromPoint.x, y: fromPoint.y }, toPointMin = { x: fromPoint.x, y: fromPoint.y }, minPivot, maxPivot, maxOutOfSoftBounds = obstacle[dir + 'Max'] >=
-                    softBounds[dir + 'Max'], minOutOfSoftBounds = obstacle[dir + 'Min'] <=
-                    softBounds[dir + 'Min'], maxOutOfHardBounds = obstacle[dir + 'Max'] >=
-                    hardBounds[dir + 'Max'], minOutOfHardBounds = obstacle[dir + 'Min'] <=
-                    hardBounds[dir + 'Min'], 
-                // Find out if we should prefer one direction over the other if
-                // we can choose freely
-                minDistance = abs(obstacle[dir + 'Min'] - fromPoint[dir]), maxDistance = abs(obstacle[dir + 'Max'] - fromPoint[dir]), 
-                // If it's a small difference, pick the one leading towards dest
-                // point. Otherwise pick the shortest distance
-                useMax = abs(minDistance - maxDistance) < 10 ?
-                    fromPoint[dir] < toPoint[dir] :
-                    maxDistance < minDistance;
-                // Check if we hit any obstacles trying to go around in either
-                // direction.
-                toPointMin[dir] = obstacle[dir + 'Min'];
-                toPointMax[dir] = obstacle[dir + 'Max'];
-                minPivot = pivotPoint(fromPoint, toPointMin, dirIsX)[dir] !==
-                    toPointMin[dir];
-                maxPivot = pivotPoint(fromPoint, toPointMax, dirIsX)[dir] !==
-                    toPointMax[dir];
-                useMax = minPivot ?
-                    (maxPivot ? useMax : true) :
-                    (maxPivot ? false : useMax);
-                // useMax now contains our preferred choice, bounds not taken into
-                // account. If both or neither direction is out of bounds we want to
-                // use this.
-                // Deal with soft bounds
-                useMax = minOutOfSoftBounds ?
-                    (maxOutOfSoftBounds ? useMax : true) : // Out on min
-                    (maxOutOfSoftBounds ? false : useMax); // Not out on min
-                // Deal with hard bounds
-                useMax = minOutOfHardBounds ?
-                    (maxOutOfHardBounds ? useMax : true) : // Out on min
-                    (maxOutOfHardBounds ? false : useMax); // Not out on min
-                return useMax;
-            }
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Find a clear path between point.
-             * @private
-             */
-            function clearPathTo(fromPoint, toPoint, dirIsX) {
-                // Don't waste time if we've hit goal
-                if (fromPoint.x === toPoint.x && fromPoint.y === toPoint.y) {
-                    return [];
-                }
-                let dir = dirIsX ? 'x' : 'y', pivot, segments, waypoint, waypointUseMax, envelopingObstacle, secondEnvelopingObstacle, envelopWaypoint, obstacleMargin = options.obstacleOptions.margin, bounds = {
-                    soft: {
-                        xMin: softMinX,
-                        xMax: softMaxX,
-                        yMin: softMinY,
-                        yMax: softMaxY
-                    },
-                    hard: options.hardBounds
-                };
-                // If fromPoint is inside an obstacle we have a problem. Break out
-                // by just going to the outside of this obstacle. We prefer to go to
-                // the nearest edge in the chosen direction.
-                envelopingObstacle =
-                    findObstacleFromPoint(chartObstacles, fromPoint);
-                if (envelopingObstacle > -1) {
-                    envelopingObstacle = chartObstacles[envelopingObstacle];
-                    waypointUseMax = getDodgeDirection(envelopingObstacle, fromPoint, toPoint, dirIsX, bounds);
-                    // Cut obstacle to hard bounds to make sure we stay within
-                    limitObstacleToBounds(envelopingObstacle, options.hardBounds);
-                    envelopWaypoint = dirIsX ? {
-                        y: fromPoint.y,
-                        x: envelopingObstacle[waypointUseMax ? 'xMax' : 'xMin'] +
-                            (waypointUseMax ? 1 : -1)
-                    } : {
-                        x: fromPoint.x,
-                        y: envelopingObstacle[waypointUseMax ? 'yMax' : 'yMin'] +
-                            (waypointUseMax ? 1 : -1)
-                    };
-                    // If we crashed into another obstacle doing this, we put the
-                    // waypoint between them instead
-                    secondEnvelopingObstacle = findObstacleFromPoint(chartObstacles, envelopWaypoint);
-                    if (secondEnvelopingObstacle > -1) {
-                        secondEnvelopingObstacle = chartObstacles[secondEnvelopingObstacle];
-                        // Cut obstacle to hard bounds
-                        limitObstacleToBounds(secondEnvelopingObstacle, options.hardBounds);
-                        // Modify waypoint to lay between obstacles
-                        envelopWaypoint[dir] = waypointUseMax ? max(envelopingObstacle[dir + 'Max'] - obstacleMargin + 1, (secondEnvelopingObstacle[dir + 'Min'] +
-                            envelopingObstacle[dir + 'Max']) / 2) :
-                            min((envelopingObstacle[dir + 'Min'] + obstacleMargin - 1), ((secondEnvelopingObstacle[dir + 'Max'] +
-                                envelopingObstacle[dir + 'Min']) / 2));
-                        // We are not going anywhere. If this happens for the first
-                        // time, do nothing. Otherwise, try to go to the extreme of
-                        // the obstacle pair in the current direction.
-                        if (fromPoint.x === envelopWaypoint.x &&
-                            fromPoint.y === envelopWaypoint.y) {
-                            if (forceObstacleBreak) {
-                                envelopWaypoint[dir] = waypointUseMax ?
-                                    max(envelopingObstacle[dir + 'Max'], secondEnvelopingObstacle[dir + 'Max']) + 1 :
-                                    min(envelopingObstacle[dir + 'Min'], secondEnvelopingObstacle[dir + 'Min']) - 1;
-                            }
-                            // Toggle on if off, and the opposite
-                            forceObstacleBreak = !forceObstacleBreak;
-                        }
-                        else {
-                            // This point is not identical to previous.
-                            // Clear break trigger.
-                            forceObstacleBreak = false;
-                        }
-                    }
-                    segments = [{
-                            start: fromPoint,
-                            end: envelopWaypoint
-                        }];
-                }
-                else { // If not enveloping, use standard pivot calculation
-                    pivot = pivotPoint(fromPoint, {
-                        x: dirIsX ? toPoint.x : fromPoint.x,
-                        y: dirIsX ? fromPoint.y : toPoint.y
-                    }, dirIsX);
-                    segments = [{
-                            start: fromPoint,
-                            end: {
-                                x: pivot.x,
-                                y: pivot.y
-                            }
-                        }];
-                    // Pivot before goal, use a waypoint to dodge obstacle
-                    if (pivot[dirIsX ? 'x' : 'y'] !== toPoint[dirIsX ? 'x' : 'y']) {
-                        // Find direction of waypoint
-                        waypointUseMax = getDodgeDirection(pivot.obstacle, pivot, toPoint, !dirIsX, bounds);
-                        // Cut waypoint to hard bounds
-                        limitObstacleToBounds(pivot.obstacle, options.hardBounds);
-                        waypoint = {
-                            x: dirIsX ?
-                                pivot.x :
-                                pivot.obstacle[waypointUseMax ? 'xMax' : 'xMin'] +
-                                    (waypointUseMax ? 1 : -1),
-                            y: dirIsX ?
-                                pivot.obstacle[waypointUseMax ? 'yMax' : 'yMin'] +
-                                    (waypointUseMax ? 1 : -1) :
-                                pivot.y
-                        };
-                        // We're changing direction here, store that to make sure we
-                        // also change direction when adding the last segment array
-                        // after handling waypoint.
-                        dirIsX = !dirIsX;
-                        segments = segments.concat(clearPathTo({
-                            x: pivot.x,
-                            y: pivot.y
-                        }, waypoint, dirIsX));
-                    }
-                }
-                // Get segments for the other direction too
-                // Recursion is our friend
-                segments = segments.concat(clearPathTo(segments[segments.length - 1].end, toPoint, !dirIsX));
-                return segments;
-            }
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Extract point to outside of obstacle in whichever direction is
-             * closest. Returns new point outside obstacle.
-             * @private
-             */
-            function extractFromObstacle(obstacle, point, goalPoint) {
-                const dirIsX = min(obstacle.xMax - point.x, point.x - obstacle.xMin) <
-                    min(obstacle.yMax - point.y, point.y - obstacle.yMin), bounds = {
-                    soft: options.hardBounds,
-                    hard: options.hardBounds
-                }, useMax = getDodgeDirection(obstacle, point, goalPoint, dirIsX, bounds);
-                return dirIsX ? {
-                    y: point.y,
-                    x: obstacle[useMax ? 'xMax' : 'xMin'] + (useMax ? 1 : -1)
-                } : {
-                    x: point.x,
-                    y: obstacle[useMax ? 'yMax' : 'yMin'] + (useMax ? 1 : -1)
-                };
-            }
-            // Cut the obstacle array to soft bounds for optimization in large
-            // datasets.
-            chartObstacles =
-                chartObstacles.slice(startObstacleIx, endObstacleIx + 1);
-            // If an obstacle envelops the end point, move it out of there and add
-            // a little segment to where it was.
-            if ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
-                extractedEndPoint = extractFromObstacle(chartObstacles[endObstacleIx], end, start);
-                endSegments.push({
-                    end: end,
-                    start: extractedEndPoint
-                });
-                end = extractedEndPoint;
-            }
-            // If it's still inside one or more obstacles, get out of there by
-            // force-moving towards the start point.
-            while ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
-                useMax = end[dir] - start[dir] < 0;
-                extractedEndPoint = {
-                    x: end.x,
-                    y: end.y
-                };
-                extractedEndPoint[dir] = chartObstacles[endObstacleIx][useMax ? dir + 'Max' : dir + 'Min'] + (useMax ? 1 : -1);
-                endSegments.push({
-                    end: end,
-                    start: extractedEndPoint
-                });
-                end = extractedEndPoint;
-            }
-            // Find the path
-            segments = clearPathTo(start, end, dirIsX);
-            // Add the end-point segments
-            segments = segments.concat(endSegments.reverse());
-            return {
-                path: pathFromSegments(segments),
-                obstacles: segments
-            };
-        };
-        fastAvoid.requiresObstacles = true;
-        // Define the available pathfinding algorithms.
-        // Algorithms take up to 3 arguments: starting point, ending point, and an
-        // options object.
-        const algorithms = {
-            fastAvoid,
-            straight,
-            simpleConnect
-        };
-
-        return algorithms;
-    });
-    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Gantt/PathfinderAlgorithms.js']], function (Connection, Chart, D, H, Point, U, pathfinderAlgorithms) {
-        /* *
-         *
-         *  (c) 2016 Highsoft AS
-         *  Authors: Øystein Moseng, Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { defaultOptions } = D;
-        const { addEvent, defined, error, extend, merge, pick, splat } = U;
-        /**
-         * The default pathfinder algorithm to use for a chart. It is possible to define
-         * your own algorithms by adding them to the
-         * `Highcharts.Pathfinder.prototype.algorithms`
-         * object before the chart has been created.
-         *
-         * The default algorithms are as follows:
-         *
-         * `straight`:      Draws a straight line between the connecting
-         *                  points. Does not avoid other points when drawing.
-         *
-         * `simpleConnect`: Finds a path between the points using right angles
-         *                  only. Takes only starting/ending points into
-         *                  account, and will not avoid other points.
-         *
-         * `fastAvoid`:     Finds a path between the points using right angles
-         *                  only. Will attempt to avoid other points, but its
-         *                  focus is performance over accuracy. Works well with
-         *                  less dense datasets.
-         *
-         * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
-         */
-        ''; // detach doclets above
-        const max = Math.max, min = Math.min;
-        /*
-         @todo:
-             - Document how to write your own algorithms
-             - Consider adding a Point.pathTo method that wraps creating a connection
-               and rendering it
-        */
-        // Set default Pathfinder options
-        extend(defaultOptions, {
-            /**
-             * The Pathfinder module allows you to define connections between any two
-             * points, represented as lines - optionally with markers for the start
-             * and/or end points. Multiple algorithms are available for calculating how
-             * the connecting lines are drawn.
-             *
-             * Connector functionality requires Highcharts Gantt to be loaded. In Gantt
-             * charts, the connectors are used to draw dependencies between tasks.
-             *
-             * @see [dependency](series.gantt.data.dependency)
-             *
-             * @sample gantt/pathfinder/demo
-             *         Pathfinder connections
-             *
-             * @declare      Highcharts.ConnectorsOptions
-             * @product      gantt
-             * @optionparent connectors
-             */
-            connectors: {
-                /**
-                 * Enable connectors for this chart. Requires Highcharts Gantt.
-                 *
-                 * @type      {boolean}
-                 * @default   true
-                 * @since     6.2.0
-                 * @apioption connectors.enabled
-                 */
-                /**
-                 * Set the default dash style for this chart's connecting lines.
-                 *
-                 * @type      {string}
-                 * @default   solid
-                 * @since     6.2.0
-                 * @apioption connectors.dashStyle
-                 */
-                /**
-                 * Set the default color for this chart's Pathfinder connecting lines.
-                 * Defaults to the color of the point being connected.
-                 *
-                 * @type      {Highcharts.ColorString}
-                 * @since     6.2.0
-                 * @apioption connectors.lineColor
-                 */
-                /**
-                 * Set the default pathfinder margin to use, in pixels. Some Pathfinder
-                 * algorithms attempt to avoid obstacles, such as other points in the
-                 * chart. These algorithms use this margin to determine how close lines
-                 * can be to an obstacle. The default is to compute this automatically
-                 * from the size of the obstacles in the chart.
-                 *
-                 * To draw connecting lines close to existing points, set this to a low
-                 * number. For more space around existing points, set this number
-                 * higher.
-                 *
-                 * @sample gantt/pathfinder/algorithm-margin
-                 *         Small algorithmMargin
-                 *
-                 * @type      {number}
-                 * @since     6.2.0
-                 * @apioption connectors.algorithmMargin
-                 */
-                /**
-                 * Set the default pathfinder algorithm to use for this chart. It is
-                 * possible to define your own algorithms by adding them to the
-                 * Highcharts.Pathfinder.prototype.algorithms object before the chart
-                 * has been created.
-                 *
-                 * The default algorithms are as follows:
-                 *
-                 * `straight`:      Draws a straight line between the connecting
-                 *                  points. Does not avoid other points when drawing.
-                 *
-                 * `simpleConnect`: Finds a path between the points using right angles
-                 *                  only. Takes only starting/ending points into
-                 *                  account, and will not avoid other points.
-                 *
-                 * `fastAvoid`:     Finds a path between the points using right angles
-                 *                  only. Will attempt to avoid other points, but its
-                 *                  focus is performance over accuracy. Works well with
-                 *                  less dense datasets.
-                 *
-                 * Default value: `straight` is used as default for most series types,
-                 * while `simpleConnect` is used as default for Gantt series, to show
-                 * dependencies between points.
-                 *
-                 * @sample gantt/pathfinder/demo
-                 *         Different types used
-                 *
-                 * @type    {Highcharts.PathfinderTypeValue}
-                 * @default undefined
-                 * @since   6.2.0
-                 */
-                type: 'straight',
-                /**
-                 * Set the default pixel width for this chart's Pathfinder connecting
-                 * lines.
-                 *
-                 * @since 6.2.0
-                 */
-                lineWidth: 1,
-                /**
-                 * Marker options for this chart's Pathfinder connectors. Note that
-                 * this option is overridden by the `startMarker` and `endMarker`
-                 * options.
-                 *
-                 * @declare Highcharts.ConnectorsMarkerOptions
-                 * @since   6.2.0
-                 */
-                marker: {
-                    /**
-                     * Set the radius of the connector markers. The default is
-                     * automatically computed based on the algorithmMargin setting.
-                     *
-                     * Setting marker.width and marker.height will override this
-                     * setting.
-                     *
-                     * @type      {number}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.radius
-                     */
-                    /**
-                     * Set the width of the connector markers. If not supplied, this
-                     * is inferred from the marker radius.
-                     *
-                     * @type      {number}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.width
-                     */
-                    /**
-                     * Set the height of the connector markers. If not supplied, this
-                     * is inferred from the marker radius.
-                     *
-                     * @type      {number}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.height
-                     */
-                    /**
-                     * Set the color of the connector markers. By default this is the
-                     * same as the connector color.
-                     *
-                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.color
-                     */
-                    /**
-                     * Set the line/border color of the connector markers. By default
-                     * this is the same as the marker color.
-                     *
-                     * @type      {Highcharts.ColorString}
-                     * @since     6.2.0
-                     * @apioption connectors.marker.lineColor
-                     */
-                    /**
-                     * Enable markers for the connectors.
-                     */
-                    enabled: false,
-                    /**
-                     * Horizontal alignment of the markers relative to the points.
-                     *
-                     * @type {Highcharts.AlignValue}
-                     */
-                    align: 'center',
-                    /**
-                     * Vertical alignment of the markers relative to the points.
-                     *
-                     * @type {Highcharts.VerticalAlignValue}
-                     */
-                    verticalAlign: 'middle',
-                    /**
-                     * Whether or not to draw the markers inside the points.
-                     */
-                    inside: false,
-                    /**
-                     * Set the line/border width of the pathfinder markers.
-                     */
-                    lineWidth: 1
-                },
-                /**
-                 * Marker options specific to the start markers for this chart's
-                 * Pathfinder connectors. Overrides the generic marker options.
-                 *
-                 * @declare Highcharts.ConnectorsStartMarkerOptions
-                 * @extends connectors.marker
-                 * @since   6.2.0
-                 */
-                startMarker: {
-                    /**
-                     * Set the symbol of the connector start markers.
-                     */
-                    symbol: 'diamond'
-                },
-                /**
-                 * Marker options specific to the end markers for this chart's
-                 * Pathfinder connectors. Overrides the generic marker options.
-                 *
-                 * @declare Highcharts.ConnectorsEndMarkerOptions
-                 * @extends connectors.marker
-                 * @since   6.2.0
-                 */
-                endMarker: {
-                    /**
-                     * Set the symbol of the connector end markers.
-                     */
-                    symbol: 'arrow-filled'
-                }
-            }
-        });
-        /**
-         * Override Pathfinder connector options for a series. Requires Highcharts Gantt
-         * to be loaded.
-         *
-         * @declare   Highcharts.SeriesConnectorsOptionsObject
-         * @extends   connectors
-         * @since     6.2.0
-         * @excluding enabled, algorithmMargin
-         * @product   gantt
-         * @apioption plotOptions.series.connectors
-         */
-        /**
-         * Connect to a point. This option can be either a string, referring to the ID
-         * of another point, or an object, or an array of either. If the option is an
-         * array, each element defines a connection.
-         *
-         * @sample gantt/pathfinder/demo
-         *         Different connection types
-         *
-         * @declare   Highcharts.XrangePointConnectorsOptionsObject
-         * @type      {string|Array<string|*>|*}
-         * @extends   plotOptions.series.connectors
-         * @since     6.2.0
-         * @excluding enabled
-         * @product   gantt
-         * @requires  highcharts-gantt
-         * @apioption series.xrange.data.connect
-         */
-        /**
-         * The ID of the point to connect to.
-         *
-         * @type      {string}
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption series.xrange.data.connect.to
-         */
-        /**
-         * Get point bounding box using plotX/plotY and shapeArgs. If using
-         * graphic.getBBox() directly, the bbox will be affected by animation.
-         *
-         * @private
-         * @function
-         *
-         * @param {Highcharts.Point} point
-         *        The point to get BB of.
-         *
-         * @return {Highcharts.Dictionary<number>|null}
-         *         Result xMax, xMin, yMax, yMin.
-         */
-        function getPointBB(point) {
-            let shapeArgs = point.shapeArgs, bb;
-            // Prefer using shapeArgs (columns)
-            if (shapeArgs) {
-                return {
-                    xMin: shapeArgs.x || 0,
-                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
-                    yMin: shapeArgs.y || 0,
-                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
-                };
-            }
-            // Otherwise use plotX/plotY and bb
-            bb = point.graphic && point.graphic.getBBox();
-            return bb ? {
-                xMin: point.plotX - bb.width / 2,
-                xMax: point.plotX + bb.width / 2,
-                yMin: point.plotY - bb.height / 2,
-                yMax: point.plotY + bb.height / 2
-            } : null;
-        }
-        /**
-         * Calculate margin to place around obstacles for the pathfinder in pixels.
-         * Returns a minimum of 1 pixel margin.
-         *
-         * @private
-         * @function
-         *
-         * @param {Array<object>} obstacles
-         *        Obstacles to calculate margin from.
-         *
-         * @return {number}
-         *         The calculated margin in pixels. At least 1.
-         */
-        function calculateObstacleMargin(obstacles) {
-            let len = obstacles.length, i = 0, j, obstacleDistance, distances = [], 
-            // Compute smallest distance between two rectangles
-            distance = function (a, b, bbMargin) {
-                // Count the distance even if we are slightly off
-                const margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
-                    a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
-                    a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
-                // If the rectangles collide, try recomputing with smaller margin.
-                // If they collide anyway, discard the obstacle.
-                if (xOverlap && yOverlap) {
-                    return (margin ?
-                        distance(a, b, Math.floor(margin / 2)) :
-                        Infinity);
-                }
-                return min(xDistance, yDistance);
-            };
-            // Go over all obstacles and compare them to the others.
-            for (; i < len; ++i) {
-                // Compare to all obstacles ahead. We will already have compared this
-                // obstacle to the ones before.
-                for (j = i + 1; j < len; ++j) {
-                    obstacleDistance = distance(obstacles[i], obstacles[j]);
-                    // TODO: Magic number 80
-                    if (obstacleDistance < 80) { // Ignore large distances
-                        distances.push(obstacleDistance);
-                    }
-                }
-            }
-            // Ensure we always have at least one value, even in very spaceous charts
-            distances.push(80);
-            return max(Math.floor(distances.sort(function (a, b) {
-                return (a - b);
-            })[
-            // Discard first 10% of the relevant distances, and then grab
-            // the smallest one.
-            Math.floor(distances.length / 10)] / 2 - 1 // Divide the distance by 2 and subtract 1.
-            ), 1 // 1 is the minimum margin
-            );
-        }
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * The Pathfinder class.
-         *
-         * @private
-         * @class
-         * @name Highcharts.Pathfinder
-         *
-         * @param {Highcharts.Chart} chart
-         *        The chart to operate on.
-         */
-        class Pathfinder {
-            constructor(chart) {
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.chartObstacles = void 0;
-                this.chartObstacleMetrics = void 0;
-                this.connections = void 0;
-                this.group = void 0;
-                this.lineObstacles = void 0;
-                this.init(chart);
-            }
-            /**
-             * @name Highcharts.Pathfinder#algorithms
-             * @type {Highcharts.Dictionary<Function>}
-             */
-            /**
-             * Initialize the Pathfinder object.
-             *
-             * @function Highcharts.Pathfinder#init
-             *
-             * @param {Highcharts.Chart} chart
-             *        The chart context.
-             */
-            init(chart) {
-                // Initialize pathfinder with chart context
-                this.chart = chart;
-                // Init connection reference list
-                this.connections = [];
-                // Recalculate paths/obstacles on chart redraw
-                addEvent(chart, 'redraw', function () {
-                    this.pathfinder.update();
-                });
-            }
-            /**
-             * Update Pathfinder connections from scratch.
-             *
-             * @function Highcharts.Pathfinder#update
-             *
-             * @param {boolean} [deferRender]
-             *        Whether or not to defer rendering of connections until
-             *        series.afterAnimate event has fired. Used on first render.
-             */
-            update(deferRender) {
-                const chart = this.chart, pathfinder = this, oldConnections = pathfinder.connections;
-                // Rebuild pathfinder connections from options
-                pathfinder.connections = [];
-                chart.series.forEach(function (series) {
-                    if (series.visible && !series.options.isInternal) {
-                        series.points.forEach(function (point) {
-                            const ganttPointOptions = point.options;
-                            // For Gantt series the connect could be
-                            // defined as a dependency
-                            if (ganttPointOptions && ganttPointOptions.dependency) {
-                                ganttPointOptions.connect = ganttPointOptions
-                                    .dependency;
-                            }
-                            let to, connects = (point.options &&
-                                point.options.connect &&
-                                splat(point.options.connect));
-                            if (point.visible && point.isInside !== false && connects) {
-                                connects.forEach(function (connect) {
-                                    to = chart.get(typeof connect === 'string' ?
-                                        connect : connect.to);
-                                    if (to instanceof Point &&
-                                        to.series.visible &&
-                                        to.visible &&
-                                        to.isInside !== false) {
-                                        // Add new connection
-                                        pathfinder.connections.push(new Connection(point, // from
-                                        to, typeof connect === 'string' ?
-                                            {} :
-                                            connect));
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-                // Clear connections that should not be updated, and move old info over
-                // to new connections.
-                for (let j = 0, k, found, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
-                    found = false;
-                    const oldCon = oldConnections[j];
-                    for (k = 0; k < lenNew; ++k) {
-                        const newCon = pathfinder.connections[k];
-                        if ((oldCon.options && oldCon.options.type) ===
-                            (newCon.options && newCon.options.type) &&
-                            oldCon.fromPoint === newCon.fromPoint &&
-                            oldCon.toPoint === newCon.toPoint) {
-                            newCon.graphics = oldCon.graphics;
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        oldCon.destroy();
-                    }
-                }
-                // Clear obstacles to force recalculation. This must be done on every
-                // redraw in case positions have changed. Recalculation is handled in
-                // Connection.getPath on demand.
-                delete this.chartObstacles;
-                delete this.lineObstacles;
-                // Draw the pending connections
-                pathfinder.renderConnections(deferRender);
-            }
-            /**
-             * Draw the chart's connecting paths.
-             *
-             * @function Highcharts.Pathfinder#renderConnections
-             *
-             * @param {boolean} [deferRender]
-             *        Whether or not to defer render until series animation is finished.
-             *        Used on first render.
-             */
-            renderConnections(deferRender) {
-                if (deferRender) {
-                    // Render after series are done animating
-                    this.chart.series.forEach(function (series) {
-                        const render = function () {
-                            // Find pathfinder connections belonging to this series
-                            // that haven't rendered, and render them now.
-                            const pathfinder = series.chart.pathfinder, conns = pathfinder && pathfinder.connections || [];
-                            conns.forEach(function (connection) {
-                                if (connection.fromPoint &&
-                                    connection.fromPoint.series === series) {
-                                    connection.render();
-                                }
-                            });
-                            if (series.pathfinderRemoveRenderEvent) {
-                                series.pathfinderRemoveRenderEvent();
-                                delete series.pathfinderRemoveRenderEvent;
-                            }
-                        };
-                        if (series.options.animation === false) {
-                            render();
-                        }
-                        else {
-                            series.pathfinderRemoveRenderEvent = addEvent(series, 'afterAnimate', render);
-                        }
-                    });
-                }
-                else {
-                    // Go through connections and render them
-                    this.connections.forEach(function (connection) {
-                        connection.render();
-                    });
-                }
-            }
-            /**
-             * Get obstacles for the points in the chart. Does not include connecting
-             * lines from Pathfinder. Applies algorithmMargin to the obstacles.
-             *
-             * @function Highcharts.Pathfinder#getChartObstacles
-             *
-             * @param {Object} options
-             *        Options for the calculation. Currenlty only
-             *        options.algorithmMargin.
-             *
-             * @return {Array<object>}
-             *         An array of calculated obstacles. Each obstacle is defined as an
-             *         object with xMin, xMax, yMin and yMax properties.
-             */
-            getChartObstacles(options) {
-                let obstacles = [], series = this.chart.series, margin = pick(options.algorithmMargin, 0), calculatedMargin;
-                for (let i = 0, sLen = series.length; i < sLen; ++i) {
-                    if (series[i].visible && !series[i].options.isInternal) {
-                        for (let j = 0, pLen = series[i].points.length, bb, point; j < pLen; ++j) {
-                            point = series[i].points[j];
-                            if (point.visible) {
-                                bb = getPointBB(point);
-                                if (bb) {
-                                    obstacles.push({
-                                        xMin: bb.xMin - margin,
-                                        xMax: bb.xMax + margin,
-                                        yMin: bb.yMin - margin,
-                                        yMax: bb.yMax + margin
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                // Sort obstacles by xMin for optimization
-                obstacles = obstacles.sort(function (a, b) {
-                    return a.xMin - b.xMin;
-                });
-                // Add auto-calculated margin if the option is not defined
-                if (!defined(options.algorithmMargin)) {
-                    calculatedMargin =
-                        options.algorithmMargin =
-                            calculateObstacleMargin(obstacles);
-                    obstacles.forEach(function (obstacle) {
-                        obstacle.xMin -= calculatedMargin;
-                        obstacle.xMax += calculatedMargin;
-                        obstacle.yMin -= calculatedMargin;
-                        obstacle.yMax += calculatedMargin;
-                    });
-                }
-                return obstacles;
-            }
-            /**
-             * Utility function to get metrics for obstacles:
-             * - Widest obstacle width
-             * - Tallest obstacle height
-             *
-             * @function Highcharts.Pathfinder#getObstacleMetrics
-             *
-             * @param {Array<object>} obstacles
-             *        An array of obstacles to inspect.
-             *
-             * @return {Object}
-             *         The calculated metrics, as an object with maxHeight and maxWidth
-             *         properties.
-             */
-            getObstacleMetrics(obstacles) {
-                let maxWidth = 0, maxHeight = 0, width, height, i = obstacles.length;
-                while (i--) {
-                    width = obstacles[i].xMax - obstacles[i].xMin;
-                    height = obstacles[i].yMax - obstacles[i].yMin;
-                    if (maxWidth < width) {
-                        maxWidth = width;
-                    }
-                    if (maxHeight < height) {
-                        maxHeight = height;
-                    }
-                }
-                return {
-                    maxHeight: maxHeight,
-                    maxWidth: maxWidth
-                };
-            }
-            /**
-             * Utility to get which direction to start the pathfinding algorithm
-             * (X vs Y), calculated from a set of marker options.
-             *
-             * @function Highcharts.Pathfinder#getAlgorithmStartDirection
-             *
-             * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
-             *        Marker options to calculate from.
-             *
-             * @return {boolean}
-             *         Returns true for X, false for Y, and undefined for autocalculate.
-             */
-            getAlgorithmStartDirection(markerOptions) {
-                let xCenter = markerOptions.align !== 'left' &&
-                    markerOptions.align !== 'right', yCenter = markerOptions.verticalAlign !== 'top' &&
-                    markerOptions.verticalAlign !== 'bottom', undef;
-                return xCenter ?
-                    (yCenter ? undef : false) : // x is centered
-                    (yCenter ? true : undef); // x is off-center
-            }
-        }
-        Pathfinder.prototype.algorithms = pathfinderAlgorithms;
-        // Add to Highcharts namespace
-        H.Pathfinder = Pathfinder;
-        // Add pathfinding capabilities to Points
-        extend(Point.prototype, /** @lends Point.prototype */ {
-            /**
-             * Get coordinates of anchor point for pathfinder connection.
-             *
-             * @private
-             * @function Highcharts.Point#getPathfinderAnchorPoint
-             *
-             * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
-             *        Connection options for position on point.
-             *
-             * @return {Highcharts.PositionObject}
-             *         An object with x/y properties for the position. Coordinates are
-             *         in plot values, not relative to point.
-             */
-            getPathfinderAnchorPoint: function (markerOptions) {
-                let bb = getPointBB(this), x, y;
-                switch (markerOptions.align) { // eslint-disable-line default-case
-                    case 'right':
-                        x = 'xMax';
-                        break;
-                    case 'left':
-                        x = 'xMin';
-                }
-                switch (markerOptions.verticalAlign) { // eslint-disable-line default-case
-                    case 'top':
-                        y = 'yMin';
-                        break;
-                    case 'bottom':
-                        y = 'yMax';
-                }
-                return {
-                    x: x ? bb[x] : (bb.xMin + bb.xMax) / 2,
-                    y: y ? bb[y] : (bb.yMin + bb.yMax) / 2
-                };
-            },
-            /**
-             * Utility to get the angle from one point to another.
-             *
-             * @private
-             * @function Highcharts.Point#getRadiansToVector
-             *
-             * @param {Highcharts.PositionObject} v1
-             *        The first vector, as an object with x/y properties.
-             *
-             * @param {Highcharts.PositionObject} v2
-             *        The second vector, as an object with x/y properties.
-             *
-             * @return {number}
-             *         The angle in degrees
-             */
-            getRadiansToVector: function (v1, v2) {
-                let box;
-                if (!defined(v2)) {
-                    box = getPointBB(this);
-                    if (box) {
-                        v2 = {
-                            x: (box.xMin + box.xMax) / 2,
-                            y: (box.yMin + box.yMax) / 2
-                        };
-                    }
-                }
-                return Math.atan2(v2.y - v1.y, v1.x - v2.x);
-            },
-            /**
-             * Utility to get the position of the marker, based on the path angle and
-             * the marker's radius.
-             *
-             * @private
-             * @function Highcharts.Point#getMarkerVector
-             *
-             * @param {number} radians
-             *        The angle in radians from the point center to another vector.
-             *
-             * @param {number} markerRadius
-             *        The radius of the marker, to calculate the additional distance to
-             *        the center of the marker.
-             *
-             * @param {Object} anchor
-             *        The anchor point of the path and marker as an object with x/y
-             *        properties.
-             *
-             * @return {Object}
-             *         The marker vector as an object with x/y properties.
-             */
-            getMarkerVector: function (radians, markerRadius, anchor) {
-                let twoPI = Math.PI * 2.0, theta = radians, bb = getPointBB(this), rectWidth = bb.xMax - bb.xMin, rectHeight = bb.yMax - bb.yMin, rAtan = Math.atan2(rectHeight, rectWidth), tanTheta = 1, leftOrRightRegion = false, rectHalfWidth = rectWidth / 2.0, rectHalfHeight = rectHeight / 2.0, rectHorizontalCenter = bb.xMin + rectHalfWidth, rectVerticalCenter = bb.yMin + rectHalfHeight, edgePoint = {
-                    x: rectHorizontalCenter,
-                    y: rectVerticalCenter
-                }, xFactor = 1, yFactor = 1;
-                while (theta < -Math.PI) {
-                    theta += twoPI;
-                }
-                while (theta > Math.PI) {
-                    theta -= twoPI;
-                }
-                tanTheta = Math.tan(theta);
-                if ((theta > -rAtan) && (theta <= rAtan)) {
-                    // Right side
-                    yFactor = -1;
-                    leftOrRightRegion = true;
-                }
-                else if (theta > rAtan && theta <= (Math.PI - rAtan)) {
-                    // Top side
-                    yFactor = -1;
-                }
-                else if (theta > (Math.PI - rAtan) || theta <= -(Math.PI - rAtan)) {
-                    // Left side
-                    xFactor = -1;
-                    leftOrRightRegion = true;
-                }
-                else {
-                    // Bottom side
-                    xFactor = -1;
-                }
-                // Correct the edgePoint according to the placement of the marker
-                if (leftOrRightRegion) {
-                    edgePoint.x += xFactor * (rectHalfWidth);
-                    edgePoint.y += yFactor * (rectHalfWidth) * tanTheta;
-                }
-                else {
-                    edgePoint.x += xFactor * (rectHeight / (2.0 * tanTheta));
-                    edgePoint.y += yFactor * (rectHalfHeight);
-                }
-                if (anchor.x !== rectHorizontalCenter) {
-                    edgePoint.x = anchor.x;
-                }
-                if (anchor.y !== rectVerticalCenter) {
-                    edgePoint.y = anchor.y;
-                }
-                return {
-                    x: edgePoint.x + (markerRadius * Math.cos(theta)),
-                    y: edgePoint.y - (markerRadius * Math.sin(theta))
-                };
-            }
-        });
-        /**
-         * Warn if using legacy options. Copy the options over. Note that this will
-         * still break if using the legacy options in chart.update, addSeries etc.
-         * @private
-         */
-        function warnLegacy(chart) {
-            if (chart.options.pathfinder ||
-                chart.series.reduce(function (acc, series) {
-                    if (series.options) {
-                        merge(true, (series.options.connectors = series.options.connectors ||
-                            {}), series.options.pathfinder);
-                    }
-                    return acc || series.options && series.options.pathfinder;
-                }, false)) {
-                merge(true, (chart.options.connectors = chart.options.connectors || {}), chart.options.pathfinder);
-                error('WARNING: Pathfinder options have been renamed. ' +
-                    'Use "chart.connectors" or "series.connectors" instead.');
-            }
-        }
-        // Initialize Pathfinder for charts
-        Chart.prototype.callbacks.push(function (chart) {
-            const options = chart.options;
-            if (options.connectors.enabled !== false) {
-                warnLegacy(chart);
-                this.pathfinder = new Pathfinder(this);
-                this.pathfinder.update(true); // First draw, defer render
-            }
-        });
-
-        return Pathfinder;
-    });
     _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Series/Gantt/GanttPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/TreeGrid/TreeGridAxis.js']], function (Axis, Chart, GanttPoint, SeriesRegistry, Tick, U, TreeGridAxis) {
         /* *
          *
@@ -57881,6 +57951,7 @@
                 animation: {
                     reversed: true // Dependencies go from child to parent
                 },
+                radius: 0,
                 startMarker: {
                     enabled: true,
                     symbol: 'arrow-filled',
@@ -57914,7 +57985,7 @@
          * A `gantt` series.
          *
          * @extends   series,plotOptions.gantt
-         * @excluding boostThreshold, connectors, dashStyle, findNearestPointBy,
+         * @excluding boostThreshold, dashStyle, findNearestPointBy,
          *            getExtremesFromAll, marker, negativeColor, pointInterval,
          *            pointIntervalUnit, pointPlacement, pointStart
          * @product   gantt
@@ -58077,6 +58148,11 @@
          * @extends Highcharts.Chart
          */
         class GanttChart extends Chart {
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Initializes the chart. The constructor's arguments are passed on
              * directly.
@@ -58104,7 +58180,7 @@
                         type: 'gantt'
                     },
                     title: {
-                        text: null
+                        text: ''
                     },
                     legend: {
                         enabled: false
@@ -58128,7 +58204,7 @@
                 // second axis by default.
                 options.xAxis = (!isArray(userOptions.xAxis) ?
                     [userOptions.xAxis || {}, {}] :
-                    userOptions.xAxis).map(function (xAxisOptions, i) {
+                    userOptions.xAxis).map((xAxisOptions, i) => {
                     if (i === 1) { // Second xAxis
                         defaultLinkedTo = 0;
                     }
@@ -58144,26 +58220,33 @@
                     });
                 });
                 // apply Y axis options to both single and multi y axes
-                options.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
-                    return merge(defaultOptions.yAxis, // #3802
-                    {
-                        grid: {
-                            enabled: true
-                        },
-                        staticScale: 50,
-                        reversed: true,
-                        // Set default type treegrid, but only if 'categories' is
-                        // undefined
-                        type: yAxisOptions.categories ?
-                            yAxisOptions.type : 'treegrid'
-                    }, yAxisOptions // user options
-                    );
-                });
+                options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(defaultOptions.yAxis, // #3802
+                {
+                    grid: {
+                        enabled: true
+                    },
+                    staticScale: 50,
+                    reversed: true,
+                    // Set default type treegrid, but only if 'categories' is
+                    // undefined
+                    type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
+                }, yAxisOptions // user options
+                ));
                 super.init(options, callback);
             }
         }
-        /* eslint-disable valid-jsdoc */
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
         (function (GanttChart) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable jsdoc/check-param-names */
             /**
              * The factory function for creating new gantt charts. Creates a new {@link
              * Highcharts.GanttChart|GanttChart} object with different default options
@@ -58201,7 +58284,13 @@
                 return new GanttChart(a, b, c);
             }
             GanttChart.ganttChart = ganttChart;
+            /* eslint-enable jsdoc/check-param-names */
         })(GanttChart || (GanttChart = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return GanttChart;
     });
@@ -58527,22 +58616,26 @@
 
         return CurrentDateIndication;
     });
-    _registerModule(_modules, 'masters/modules/gantt.src.js', [_modules['Core/Globals.js'], _modules['Stock/Navigator/Navigator.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Stock/RangeSelector/RangeSelector.js'], _modules['Series/XRange/XRangeSeries.js'], _modules['Core/Chart/GanttChart.js'], _modules['Extensions/ArrowSymbols.js'], _modules['Extensions/CurrentDateIndication.js']], function (Highcharts, Navigator, Scrollbar, RangeSelector, XRangeSeries, GanttChart, ArrowSymbols, CurrentDateIndication) {
+    _registerModule(_modules, 'masters/modules/gantt.src.js', [_modules['Core/Globals.js'], _modules['Gantt/Connection.js'], _modules['Stock/Navigator/Navigator.js'], _modules['Gantt/Pathfinder.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Stock/RangeSelector/RangeSelector.js'], _modules['Extensions/StaticScale.js'], _modules['Series/XRange/XRangeSeries.js'], _modules['Core/Chart/GanttChart.js'], _modules['Extensions/ArrowSymbols.js'], _modules['Extensions/CurrentDateIndication.js']], function (Highcharts, Connection, Navigator, Pathfinder, Scrollbar, RangeSelector, StaticScale, XRangeSeries, GanttChart, ArrowSymbols, CurrentDateIndication) {
 
         const G = Highcharts;
         // Classes
+        G.Connection = Connection;
         G.GanttChart = GanttChart;
         G.ganttChart = GanttChart.ganttChart;
         G.Navigator = Navigator;
+        G.Pathfinder = Pathfinder;
         G.RangeSelector = RangeSelector;
         G.Scrollbar = Scrollbar;
         // Compositions
         ArrowSymbols.compose(G.SVGRenderer);
         CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
+        Pathfinder.compose(G.Chart, G.Point);
         Navigator.compose(G.Axis, G.Chart, G.Series);
         RangeSelector.compose(G.Axis, G.Chart);
         Scrollbar.compose(G.Axis);
         XRangeSeries.compose(G.Axis);
+        StaticScale.compose(G.Axis, G.Chart);
 
     });
     _registerModule(_modules, 'masters/highcharts-gantt.src.js', [_modules['masters/highcharts.src.js']], function (Highcharts) {

@@ -210,7 +210,7 @@ var OfflineExporting;
                     curParent = curParent.parentNode;
                 }
             };
-            let titleElements;
+            let titleElements, outlineElements;
             // Workaround for the text styling. Making sure it does pick up
             // settings for parent elements.
             [].forEach.call(textElements, function (el) {
@@ -232,11 +232,17 @@ var OfflineExporting;
                 [].forEach.call(titleElements, function (titleElement) {
                     el.removeChild(titleElement);
                 });
+                // Remove all .highcharts-text-outline elements, #17170
+                outlineElements =
+                    el.getElementsByClassName('highcharts-text-outline');
+                while (outlineElements.length > 0) {
+                    el.removeChild(outlineElements[0]);
+                }
             });
             const svgNode = dummySVGContainer.querySelector('svg');
             if (svgNode) {
                 loadPdfFonts(svgNode, () => {
-                    svgToPdf(svgNode, 0, (pdfData) => {
+                    svgToPdf(svgNode, 0, scale, (pdfData) => {
                         try {
                             downloadURL(pdfData, filename);
                             if (successCallback) {
@@ -657,8 +663,10 @@ var OfflineExporting;
     /**
      * @private
      */
-    function svgToPdf(svgElement, margin, callback) {
-        const width = Number(svgElement.getAttribute('width')) + 2 * margin, height = Number(svgElement.getAttribute('height')) + 2 * margin, pdfDoc = new win.jspdf.jsPDF(// eslint-disable-line new-cap
+    function svgToPdf(svgElement, margin, scale, callback) {
+        const width = (Number(svgElement.getAttribute('width')) + 2 * margin) *
+            scale, height = (Number(svgElement.getAttribute('height')) + 2 * margin) *
+            scale, pdfDoc = new win.jspdf.jsPDF(// eslint-disable-line new-cap
         // setting orientation to portrait if height exceeds width
         height > width ? 'p' : 'l', 'pt', [width, height]);
         // Workaround for #7090, hidden elements were drawn anyway. It comes

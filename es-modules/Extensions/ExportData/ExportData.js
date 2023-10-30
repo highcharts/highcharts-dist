@@ -22,7 +22,7 @@ const { getOptions, setOptions } = D;
 import DownloadURL from '../DownloadURL.js';
 const { downloadURL } = DownloadURL;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries } } = SeriesRegistry;
+const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries, xrange: XRangeSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, extend, find, fireEvent, isNumber, pick } = U;
 /* *
@@ -112,7 +112,7 @@ function chartGetCSV(useLocalDecimalPoint) {
         while (j--) {
             val = row[j];
             if (typeof val === 'string') {
-                val = '"' + val + '"';
+                val = `"${val}"`;
             }
             if (typeof val === 'number') {
                 if (decimalPoint !== '.') {
@@ -201,22 +201,16 @@ function chartGetDataRows(multiLevelHeaders) {
     // Create point array depends if xAxis is category
     // or point.name is defined #13293
     getPointArray = function (series, xAxis) {
-        const namedPoints = series.data.filter((d) => (typeof d.y !== 'undefined') && d.name);
-        if (namedPoints.length &&
+        const pointArrayMap = series.pointArrayMap || ['y'], namedPoints = series.data.some((d) => (typeof d.y !== 'undefined') && d.name);
+        // If there are points with a name, we also want the x value in the
+        // table
+        if (namedPoints &&
             xAxis &&
             !xAxis.categories &&
-            !series.keyToAxis) {
-            if (series.pointArrayMap) {
-                const pointArrayMapCheck = series.pointArrayMap
-                    .filter((p) => p === 'x');
-                if (pointArrayMapCheck.length) {
-                    series.pointArrayMap.unshift('x');
-                    return series.pointArrayMap;
-                }
-            }
-            return ['x', 'y'];
+            series.exportKey !== 'name') {
+            return ['x', ...pointArrayMap];
         }
-        return series.pointArrayMap || ['y'];
+        return pointArrayMap;
     }, xAxisIndices = [];
     let xAxis, dataRows, columnTitleObj, i = 0, // Loop the series and index values
     x, xTitle;
@@ -254,6 +248,7 @@ function chartGetDataRows(multiLevelHeaders) {
                 pointArrayMap: series.pointArrayMap,
                 index: series.index
             };
+            const seriesIndex = mockSeries.index;
             // Export directly from options.data because we need the uncropped
             // data (#7913), and we need to support Boost (#7026).
             series.options.data.forEach(function eachData(options, pIdx) {
@@ -265,18 +260,8 @@ function chartGetDataRows(multiLevelHeaders) {
                     categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap, pIdx);
                 }
                 series.pointClass.prototype.applyOptions.apply(mockPoint, [options]);
-                key = mockPoint.x;
-                if (defined(rows[key]) &&
-                    rows[key].seriesIndices.includes(mockSeries.index)) {
-                    // find keys, which belong to actual series
-                    const keysFromActualSeries = Object.keys(rows).filter((i) => rows[i].seriesIndices.includes(mockSeries.index) &&
-                        key), 
-                    // find all properties, which start with actual key
-                    existingKeys = keysFromActualSeries
-                        .filter((propertyName) => propertyName.indexOf(String(key)) === 0);
-                    key = key.toString() + ',' + existingKeys.length;
-                }
                 const name = series.data[pIdx] && series.data[pIdx].name;
+                key = (mockPoint.x ?? '') + ',' + name;
                 j = 0;
                 // Pies, funnels, geo maps etc. use point name in X row
                 if (!xAxis ||
@@ -291,20 +276,36 @@ function chartGetDataRows(multiLevelHeaders) {
                     xTaken[key] = true;
                 }
                 if (!rows[key]) {
-                    // Generate the row
                     rows[key] = [];
-                    // Contain the X values from one or more X axes
                     rows[key].xValues = [];
+                    // ES5 replacement for Array.from / fill.
+                    const arr = [];
+                    for (let i = 0; i < series.chart.series.length; i++) {
+                        arr[i] = 0;
+                    }
+                    // Create poiners array, holding information how many
+                    // duplicates of specific x occurs in each series.
+                    // Used for creating rows with duplicates.
+                    rows[key].pointers = arr;
+                    rows[key].pointers[series.index] = 1;
+                }
+                else {
+                    // Handle duplicates (points with the same x), by creating
+                    // extra rows based on pointers for better performance.
+                    const modifiedKey = `${key},${rows[key].pointers[series.index]}`, originalKey = key;
+                    if (rows[key].pointers[series.index]) {
+                        if (!rows[modifiedKey]) {
+                            rows[modifiedKey] = [];
+                            rows[modifiedKey].xValues = [];
+                            rows[modifiedKey].pointers = [];
+                        }
+                        key = modifiedKey;
+                    }
+                    rows[originalKey].pointers[series.index] += 1;
                 }
                 rows[key].x = mockPoint.x;
                 rows[key].name = name;
                 rows[key].xValues[xAxisIndex] = mockPoint.x;
-                if (!defined(rows[key].seriesIndices)) {
-                    rows[key].seriesIndices = [];
-                }
-                rows[key].seriesIndices = [
-                    ...rows[key].seriesIndices, mockSeries.index
-                ];
                 while (j < valueCount) {
                     prop = pointArrayMap[j]; // y, z etc
                     val = mockPoint[prop];
@@ -636,6 +637,9 @@ function chartToggleDataTable(show) {
                 wasHidden: createContainer || oldDisplay !== style.display
             });
         }
+        else {
+            fireEvent(this, 'afterHideData');
+        }
     }
     // Set the flag
     this.isDataTableVisible = show;
@@ -724,9 +728,15 @@ function compose(ChartClass) {
         };
     }
     if (GanttSeries && U.pushUnique(composedMembers, GanttSeries)) {
+        GanttSeries.prototype.exportKey = 'name';
         GanttSeries.prototype.keyToAxis = {
             start: 'x',
             end: 'x'
+        };
+    }
+    if (XRangeSeries && U.pushUnique(composedMembers, XRangeSeries)) {
+        XRangeSeries.prototype.keyToAxis = {
+            x2: 'x'
         };
     }
     if (MapSeries && U.pushUnique(composedMembers, MapSeries)) {
@@ -751,8 +761,7 @@ function compose(ChartClass) {
  *         The blob object, or undefined if not supported.
  */
 function getBlobFromContent(content, type) {
-    const nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-        nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
+    const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
     try {
         // MS specific
         if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
@@ -760,12 +769,8 @@ function getBlobFromContent(content, type) {
             blob.append(content);
             return blob.getBlob('image/svg+xml');
         }
-        // Safari requires data URI since it doesn't allow navigation to blob
-        // URLs.
-        if (!webKit) {
-            return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
-            { type: type }));
-        }
+        return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+        { type: type }));
     }
     catch (e) {
         // Ignore

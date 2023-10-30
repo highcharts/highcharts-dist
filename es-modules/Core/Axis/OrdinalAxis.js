@@ -286,12 +286,7 @@ var OrdinalAxis;
         // If the value is not inside the plot area, use the extended positions.
         // (array contains also points that are outside of the plotArea).
         if (!isInside) {
-            // When iterating for the first time,
-            // get the extended ordinal positional and assign them.
-            if (!ordinal.extendedOrdinalPositions) {
-                ordinal.extendedOrdinalPositions = (ordinal.getExtendedPositions());
-            }
-            positions = ordinal.extendedOrdinalPositions;
+            positions = ordinal.getExtendedPositions();
         }
         // In some cases (especially in early stages of the chart creation) the
         // getExtendedPositions might return undefined.
@@ -304,15 +299,8 @@ var OrdinalAxis;
                 const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                 return positions[Math.floor(index)] + mantissa * distance;
             }
-            // For cases when the index is not in the extended ordinal position
-            // array, like when the value we are looking for exceed the
-            // available data, approximate that value based on the calculated
-            // slope.
-            const positionsLength = positions.length, firstPositionsValue = positions[0], lastPositionsValue = positions[positionsLength - 1], slope = (lastPositionsValue - firstPositionsValue) / (positionsLength - 1);
-            if (index < 0) {
-                return firstPositionsValue + slope * index;
-            }
-            return lastPositionsValue + slope * (index - positionsLength);
+            // If the value is outside positions array, return initial value
+            return val; // #16784
         }
         return val;
     }
@@ -486,7 +474,6 @@ var OrdinalAxis;
         // and destroy extendedOrdinalPositions, #16055.
         if (xAxis && xAxis.options.ordinal) {
             delete xAxis.ordinal.index;
-            delete xAxis.ordinal.extendedOrdinalPositions;
         }
     }
     /**
@@ -504,7 +491,7 @@ var OrdinalAxis;
      */
     function val2lin(val, toIndex) {
         const axis = this, ordinal = axis.ordinal, ordinalPositions = ordinal.positions;
-        let slope = ordinal.slope, extendedOrdinalPositions = ordinal.extendedOrdinalPositions;
+        let slope = ordinal.slope, extendedOrdinalPositions;
         if (!ordinalPositions) {
             return val;
         }
@@ -518,12 +505,9 @@ var OrdinalAxis;
             // final return value is based on ordinalIndex
         }
         else {
-            if (!extendedOrdinalPositions) {
-                extendedOrdinalPositions =
-                    ordinal.getExtendedPositions &&
-                        ordinal.getExtendedPositions();
-                ordinal.extendedOrdinalPositions = extendedOrdinalPositions;
-            }
+            extendedOrdinalPositions =
+                ordinal.getExtendedPositions &&
+                    ordinal.getExtendedPositions();
             if (!(extendedOrdinalPositions && extendedOrdinalPositions.length)) {
                 return val;
             }
@@ -547,6 +531,11 @@ var OrdinalAxis;
                     originalPositionsReference;
             }
             else {
+                if (!toIndex) {
+                    // If the value is outside positions array,
+                    // return initial value, #16784
+                    return val;
+                }
                 // Since ordinal.slope is the average distance between 2
                 // points on visible plotArea, this can be used to calculete
                 // the approximate position of the point, which is outside
@@ -601,7 +590,7 @@ var OrdinalAxis;
          * @private
          */
         beforeSetTickPositions() {
-            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.isXAxis && !!axis.options.breaks, isOrdinal = axis.options.ordinal, ignoreHiddenSeries = axis.chart.options.chart.ignoreHiddenSeries;
+            const axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.brokenAxis?.hasBreaks, isOrdinal = axis.options.ordinal;
             let len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false, adjustOrdinalExtremesPoints = false, isBoosted = false;
             // Apply the ordinal logic
             if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
@@ -622,10 +611,9 @@ var OrdinalAxis;
                     if (series.boosted) {
                         isBoosted = series.boosted;
                     }
-                    if ((!ignoreHiddenSeries || series.visible !== false) &&
+                    if (series.reserveSpace() &&
                         (series
-                            .takeOrdinalPosition !== false ||
-                            hasBreaks)) {
+                            .takeOrdinalPosition !== false || hasBreaks)) {
                         // concatenate the processed X data into the existing
                         // positions, or the empty array
                         ordinalPositions = ordinalPositions.concat(series.processedXData);
@@ -727,8 +715,9 @@ var OrdinalAxis;
                     Math.max(min, ordinalPositions[0]), true);
                     maxIndex = Math.max(axis.ordinal2lin(Math.min(max, ordinalPositions[ordinalPositions.length - 1]), true), 1); // #3339
                     // Set the slope and offset of the values compared to the
-                    // indices in the ordinal positions
-                    ordinal.slope = slope = (max - min) / (maxIndex - minIndex);
+                    // indices in the ordinal positions.
+                    ordinal.slope = slope =
+                        (max - min) / (maxIndex - minIndex);
                     ordinal.offset = min - (minIndex * slope);
                 }
                 else {
@@ -806,6 +795,7 @@ var OrdinalAxis;
                             max: extremes.dataMax + overscroll
                         };
                     },
+                    applyGrouping: axisProto.applyGrouping,
                     getGroupPixelWidth: axisProto.getGroupPixelWidth,
                     getTimeTicks: axisProto.getTimeTicks,
                     options: {
@@ -826,9 +816,12 @@ var OrdinalAxis;
                         xAxis: fakeAxis,
                         xData: series.xData.slice(),
                         chart: chart,
+                        groupPixelWidth: series.groupPixelWidth,
                         destroyGroupedData: H.noop,
                         getProcessedData: Series.prototype.getProcessedData,
-                        applyGrouping: Series.prototype.applyGrouping
+                        applyGrouping: Series.prototype.applyGrouping,
+                        reserveSpace: Series.prototype.reserveSpace,
+                        visible: series.visible
                     };
                     fakeSeries.xData = fakeSeries.xData.concat(ordinal.getOverscrollPositions());
                     fakeSeries.options = {
@@ -851,6 +844,7 @@ var OrdinalAxis;
                     fakeAxis.series.push(fakeSeries);
                     series.processData.apply(fakeSeries);
                 });
+                fakeAxis.applyGrouping({ hasExtremesChanged: true });
                 // Force to use the ordinal when points are evenly spaced (e.g.
                 // weeks), #3825.
                 if ((fakeSeries.closestPointRange !==
@@ -930,14 +924,17 @@ var OrdinalAxis;
             const ordinal = this, axis = ordinal.axis, firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
             // Check whether the series has at least one point inside the chart
             const hasPointsInside = function (series) {
-                return series.points.some((point) => !!point.isInside);
+                const { min, max } = axis;
+                if (defined(min) && defined(max)) {
+                    return series.points.some((point) => point.x >= min && point.x <= max);
+                }
+                return false;
             };
             let firstPointX;
             // When more series assign to axis, find the smallest one, #15987.
             axis.series.forEach((series) => {
-                var _a;
-                const firstPoint = (_a = series.points) === null || _a === void 0 ? void 0 : _a[0];
-                if (defined(firstPoint === null || firstPoint === void 0 ? void 0 : firstPoint.plotX) &&
+                const firstPoint = series.points?.[0];
+                if (defined(firstPoint?.plotX) &&
                     (firstPoint.plotX < firstPointX ||
                         !defined(firstPointX)) &&
                     hasPointsInside(series)) {
@@ -945,7 +942,7 @@ var OrdinalAxis;
                 }
             });
             // If undefined, give a default value
-            firstPointX !== null && firstPointX !== void 0 ? firstPointX : (firstPointX = axis.minPixelPadding);
+            firstPointX ?? (firstPointX = axis.minPixelPadding);
             // Distance in pixels between two points on the ordinal axis in the
             // current zoom.
             const ordinalPointPixelInterval = axis.translationSlope * (ordinal.slope ||

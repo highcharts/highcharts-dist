@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Highcharts 3D funnel module
  *
@@ -28,16 +28,14 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
-    _registerModule(_modules, 'Series/Pyramid3D/Pyramid3DSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Pyramid3D/Pyramid3DSeriesDefaults.js', [], function () {
         /* *
          *
          *  Highcharts pyramid3d series module
@@ -50,42 +48,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { funnel3d: Funnel3DSeries } } = SeriesRegistry;
-        const { merge } = U;
         /* *
          *
-         *  Class
+         *  API Options
          *
          * */
-        /**
-         * The pyramid3d series type.
-         *
-         * @class
-         * @name Highcharts.seriesTypes.pyramid3d
-         * @augments seriesTypes.funnel3d
-         * @requires highcharts-3d
-         * @requires modules/cylinder
-         * @requires modules/funnel3d
-         * @requires modules/pyramid3d
-         */
-        class Pyramid3DSeries extends Funnel3DSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
-        }
         /**
          * A pyramid3d is a 3d version of pyramid series type. Pyramid charts are
          * a type of chart often used to visualize stages in a sales project,
@@ -104,7 +71,7 @@
          * @requires     modules/pyramid3d
          * @optionparent plotOptions.pyramid3d
          */
-        Pyramid3DSeries.defaultOptions = merge(Funnel3DSeries.defaultOptions, {
+        const Pyramid3DSeriesDefaults = {
             /**
              * A reversed pyramid3d is funnel3d, but the latter supports neck
              * related options: neckHeight and neckWidth
@@ -120,18 +87,7 @@
                  */
                 verticalAlign: 'top'
             }
-        });
-        SeriesRegistry.registerSeriesType('pyramid3d', Pyramid3DSeries);
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
+        };
         /**
          * A `pyramid3d` series. If the [type](#series.pyramid3d.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -192,7 +148,71 @@
          * @product   highcharts
          * @apioption series.pyramid3d.data
          */
-        ''; // adds doclets above to the transpiled file
+        ''; // detachs doclets above
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return Pyramid3DSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Pyramid3D/Pyramid3DSeries.js', [_modules['Series/Pyramid3D/Pyramid3DSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Pyramid3DSeriesDefaults, SeriesRegistry, U) {
+        /* *
+         *
+         *  Highcharts pyramid3d series module
+         *
+         *  (c) 2010-2021 Highsoft AS
+         *  Author: Kacper Madej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { funnel3d: Funnel3DSeries } = SeriesRegistry.seriesTypes;
+        const { merge } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The pyramid3d series type.
+         *
+         * @class
+         * @name Highcharts.seriesTypes.pyramid3d
+         * @augments seriesTypes.funnel3d
+         * @requires highcharts-3d
+         * @requires modules/cylinder
+         * @requires modules/funnel3d
+         * @requires modules/pyramid3d
+         */
+        class Pyramid3DSeries extends Funnel3DSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+            }
+        }
+        Pyramid3DSeries.defaultOptions = merge(Funnel3DSeries.defaultOptions, Pyramid3DSeriesDefaults);
+        SeriesRegistry.registerSeriesType('pyramid3d', Pyramid3DSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Pyramid3DSeries;
     });

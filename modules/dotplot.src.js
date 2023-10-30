@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Dot plot series type for Highcharts
  *
@@ -28,16 +28,49 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
-    _registerModule(_modules, 'Series/DotPlot/DotPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/DotPlot/DotPlotSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  (c) 2009-2021 Torstein Honsi
+         *
+         *  Dot plot series type for Highcharts
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        const DotPlotSeriesDefaults = {
+            itemPadding: 0.2,
+            marker: {
+                symbol: 'circle',
+                states: {
+                    hover: {},
+                    select: {}
+                }
+            }
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return DotPlotSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/DotPlot/DotPlotSeries.js', [_modules['Series/DotPlot/DotPlotSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DotPlotSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2009-2021 Torstein Honsi
@@ -56,6 +89,7 @@
          * - Custom icons like persons, carts etc. Either as images, font icons or
          *   Highcharts symbols.
          */
+        const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
         const { extend, merge, pick } = U;
         /* *
          *
@@ -73,13 +107,13 @@
             constructor() {
                 /* *
                  *
-                 * Static Properties
+                 *  Static Properties
                  *
                  * */
                 super(...arguments);
                 /* *
                  *
-                 * Properties
+                 *  Properties
                  *
                  * */
                 this.data = void 0;
@@ -88,17 +122,18 @@
             }
             /* *
              *
-             * Functions
+             *  Functions
              *
              * */
             drawPoints() {
-                const series = this, renderer = series.chart.renderer, seriesMarkerOptions = this.options.marker, itemPaddingTranslated = this.yAxis.transA *
-                    series.options.itemPadding, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1;
-                this.points.forEach(function (point) {
-                    let yPos, attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                        seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size, yTop, isSquare = symbol !== 'rect', x, y;
+                const series = this, options = series.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, itemPaddingTranslated = series.yAxis.transA *
+                    options.itemPadding, borderWidth = series.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1;
+                for (const point of series.points) {
+                    const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
+                        seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), isSquare = symbol !== 'rect';
+                    let yPos, attr, graphics, size, yTop, x, y;
                     point.graphics = graphics = point.graphics || [];
-                    pointAttr = point.pointAttr ?
+                    const pointAttr = point.pointAttr ?
                         (point.pointAttr[point.selected ? 'selected' : ''] ||
                             series.pointAttr['']) :
                         series.pointAttribs(point, point.selected && 'select');
@@ -144,38 +179,30 @@
                             graphics[i] = graphic;
                         }
                     }
-                    graphics.forEach((graphic, i) => {
-                        if (!graphic) {
-                            return;
+                    let i = -1;
+                    for (const graphic of graphics) {
+                        ++i;
+                        if (graphic) {
+                            if (!graphic.isActive) {
+                                graphic.destroy();
+                                graphics.splice(i, 1);
+                            }
+                            else {
+                                graphic.isActive = false;
+                            }
                         }
-                        if (!graphic.isActive) {
-                            graphic.destroy();
-                            graphics.splice(i, 1);
-                        }
-                        else {
-                            graphic.isActive = false;
-                        }
-                    });
-                });
-            }
-        }
-        DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-            itemPadding: 0.2,
-            marker: {
-                symbol: 'circle',
-                states: {
-                    hover: {},
-                    select: {}
+                    }
                 }
             }
-        });
+        }
+        DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, DotPlotSeriesDefaults);
         extend(DotPlotSeries.prototype, {
             markerAttribs: void 0
         });
         SeriesRegistry.registerSeriesType('dotplot', DotPlotSeries);
         /* *
          *
-         * Default Export
+         *  Default Export
          *
          * */
 

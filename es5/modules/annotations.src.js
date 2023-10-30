@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Annotations module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -948,6 +946,12 @@
              * @apioption annotations.events.click
              */
             /**
+             * Fires when the annotation is dragged.
+             *
+             * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
+             * @apioption annotations.events.drag
+             */
+            /**
              * Event callback when annotation is removed from the chart.
              *
              * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
@@ -1162,6 +1166,7 @@
              * @private
              */
             EventEmitter.prototype.onMouseDown = function (e) {
+                var _a;
                 if (e.preventDefault) {
                     e.preventDefault();
                 }
@@ -1170,13 +1175,16 @@
                     return;
                 }
                 var emitter = this,
-                    pointer = emitter.chart.pointer;
+                    pointer = emitter.chart.pointer, 
+                    // Using experimental property on event object to check if event was
+                    // created by touch on screen on hybrid device (#18122)
+                    firesTouchEvents = ((_a = e === null || e === void 0 ? void 0 : e.sourceCapabilities) === null || _a === void 0 ? void 0 : _a.firesTouchEvents) || false;
                 e = pointer.normalize(e);
                 var prevChartX = e.chartX,
                     prevChartY = e.chartY;
                 emitter.cancelClick = false;
                 emitter.chart.hasDraggedAnnotation = true;
-                emitter.removeDrag = addEvent(doc, isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                emitter.removeDrag = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchmove' : 'mousemove', function (e) {
                     emitter.hasDragged = true;
                     e = pointer.normalize(e);
                     e.prevChartX = prevChartX;
@@ -1184,8 +1192,8 @@
                     fireEvent(emitter, 'drag', e);
                     prevChartX = e.chartX;
                     prevChartY = e.chartY;
-                }, isTouchDevice ? { passive: false } : void 0);
-                emitter.removeMouseUp = addEvent(doc, isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+                }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
+                emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function (e) {
                     // Sometimes the target is the annotation and sometimes its the
                     // controllable
                     var annotation = pick(emitter.target && emitter.target.annotation,
@@ -1201,7 +1209,7 @@
                     fireEvent(pick(annotation, // #15952
                     emitter), 'afterUpdate');
                     emitter.onMouseUp(e);
-                }, isTouchDevice ? { passive: false } : void 0);
+                }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
             };
             /**
              * Mouse up handler.
@@ -4467,7 +4475,9 @@
                             langKey: 'label',
                             type: 'basicAnnotation',
                             labelOptions: {
-                                format: '{y:.2f}'
+                                format: '{y:.2f}',
+                                overflow: 'none',
+                                crop: true
                             },
                             labels: [{
                                     point: {
@@ -4475,9 +4485,7 @@
                                         yAxis: coordsY.axis.index,
                                         x: coordsX.value,
                                         y: coordsY.value
-                                    },
-                                    overflow: 'none',
-                                    crop: true
+                                    }
                                 }]
                         }, navigation
                             .annotationsOptions, navigation
@@ -4492,7 +4500,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.1.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.2.0/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -5180,7 +5188,7 @@
                 function traverse(option, key, parentEditables, parent, parentKey) {
                     var nextParent;
                     if (parentEditables &&
-                        option &&
+                        defined(option) &&
                         nonEditables.indexOf(key) === -1 &&
                         ((parentEditables.indexOf &&
                             parentEditables.indexOf(key)) >= 0 ||
@@ -5511,6 +5519,12 @@
                 ['click', 'touchstart'].forEach(function (eventName) {
                     addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
                 });
+                // close popup when press ESC
+                addEvent(document, 'keydown', function (event) {
+                    if (event.code === 'Escape') {
+                        popup.closeButtonEvents();
+                    }
+                });
                 return closeButton;
             };
             /**
@@ -5641,7 +5655,7 @@
                 toolbarClass = 'highcharts-annotation-toolbar';
             // set small size
             if (popupDiv.className.indexOf(toolbarClass) === -1) {
-                popupDiv.className += ' ' + toolbarClass;
+                popupDiv.className += ' ' + toolbarClass + ' highcharts-no-mousewheel';
             }
             // set position
             if (chart) {
@@ -6645,7 +6659,7 @@
                     parentDiv,
                     iconsURL) || this;
                 _this.chart = chart;
-                _this.lang = getOptions().lang.navigation.popup;
+                _this.lang = (getOptions().lang.navigation || {}).popup || {};
                 addEvent(_this.container, 'mousedown', function () {
                     var activeAnnotation = chart &&
                             chart.navigationBindings &&
@@ -6858,7 +6872,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.1.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.2.0/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }

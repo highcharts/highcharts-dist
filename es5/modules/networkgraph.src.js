@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Force directed graph module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -988,7 +986,8 @@
         var NetworkgraphSeriesDefaults = {
                 stickyTracking: false,
                 /**
-                 * @ignore-option
+                 * @default   true
+                 * @extends   plotOptions.series.inactiveOtherPoints
                  * @private
                  */
                 inactiveOtherPoints: true,

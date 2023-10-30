@@ -145,13 +145,13 @@ class FlagsSeries extends ColumnSeries {
                     if (!boxesMap[point.plotX]) {
                         boxesMap[point.plotX] = {
                             align: centered ? 0.5 : 0,
-                            size: graphic.width,
+                            size: graphic.width || 0,
                             target: plotX,
                             anchorX: plotX
                         };
                     }
                     else {
-                        boxesMap[point.plotX].size = Math.max(boxesMap[point.plotX].size, graphic.width);
+                        boxesMap[point.plotX].size = Math.max(boxesMap[point.plotX].size, graphic.width || 0);
                     }
                 }
                 // Set the tooltip anchor position

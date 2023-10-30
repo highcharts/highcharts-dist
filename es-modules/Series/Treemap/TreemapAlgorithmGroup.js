@@ -51,7 +51,6 @@ class TreemapAlgorithmGroup {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     addElement(el) {
         this.lP.total = this.elArr[this.elArr.length - 1];
         this.total = this.total + el;

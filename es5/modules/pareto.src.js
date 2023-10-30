@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Pareto series type for Highcharts
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -175,7 +173,88 @@
 
         return DerivedComposition;
     });
-    _registerModule(_modules, 'Series/ParetoSeries/ParetoSeries.js', [_modules['Series/DerivedComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DerivedComposition, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ParetoSeries/ParetoSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  (c) 2010-2021 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A pareto diagram is a type of chart that contains both bars and a line
+         * graph, where individual values are represented in descending order by
+         * bars, and the cumulative total is represented by the line.
+         *
+         * @sample {highcharts} highcharts/demo/pareto/
+         *         Pareto diagram
+         *
+         * @extends      plotOptions.line
+         * @since        6.0.0
+         * @product      highcharts
+         * @excluding    allAreas, boostThreshold, borderColor, borderRadius,
+         *               borderWidth, crisp, colorAxis, depth, data, dragDrop,
+         *               edgeColor, edgeWidth, findNearestPointBy, gapSize, gapUnit,
+         *               grouping, groupPadding, groupZPadding, maxPointWidth, keys,
+         *               negativeColor, pointInterval, pointIntervalUnit,
+         *               pointPadding, pointPlacement, pointRange, pointStart,
+         *               pointWidth, shadow, step, softThreshold, stacking,
+         *               threshold, zoneAxis, zones, boostBlending
+         * @requires     modules/pareto
+         * @optionparent plotOptions.pareto
+         */
+        var ParetoSeriesDefaults = {
+                /**
+                 * Higher zIndex than column series to draw line above shapes.
+                 */
+                zIndex: 3
+            };
+        /**
+         * A `pareto` series. If the [type](#series.pareto.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.pareto
+         * @since     6.0.0
+         * @product   highcharts
+         * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
+         * @requires  modules/pareto
+         * @apioption series.pareto
+         */
+        /**
+         * An integer identifying the index to use for the base series, or a string
+         * representing the id of the series.
+         *
+         * @type      {number|string}
+         * @default   undefined
+         * @apioption series.pareto.baseSeries
+         */
+        /**
+         * An array of data points for the series. For the `pareto` series type,
+         * points are calculated dynamically.
+         *
+         * @type      {Array<Array<number|string>|*>}
+         * @extends   series.column.data
+         * @since     6.0.0
+         * @product   highcharts
+         * @apioption series.pareto.data
+         */
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ParetoSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/ParetoSeries/ParetoSeries.js', [_modules['Series/DerivedComposition.js'], _modules['Series/ParetoSeries/ParetoSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DerivedComposition, ParetoSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Sebastian Bochan
@@ -224,7 +303,7 @@
             function ParetoSeries() {
                 /* *
                  *
-                 *  Static properties
+                 *  Static Properties
                  *
                  * */
                 var _this = _super !== null && _super.apply(this,
@@ -268,11 +347,13 @@
              * @requires modules/pareto
              */
             ParetoSeries.prototype.sumPointsPercents = function (yValues, xValues, sum, isSum) {
-                var sumY = 0,
+                var percentPoints = [];
+                var i = 0,
+                    sumY = 0,
                     sumPercent = 0,
-                    percentPoints = [],
                     percentPoint;
-                yValues.forEach(function (point, i) {
+                for (var _i = 0, yValues_1 = yValues; _i < yValues_1.length; _i++) {
+                    var point = yValues_1[_i];
                     if (point !== null) {
                         if (isSum) {
                             sumY += point;
@@ -286,7 +367,8 @@
                             sumPercent += percentPoint;
                         }
                     }
-                });
+                    ++i;
+                }
                 return (isSum ? sumY : percentPoints);
             };
             /**
@@ -305,34 +387,7 @@
                     true);
                 this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
             };
-            /**
-             * A pareto diagram is a type of chart that contains both bars and a line
-             * graph, where individual values are represented in descending order by
-             * bars, and the cumulative total is represented by the line.
-             *
-             * @sample {highcharts} highcharts/demo/pareto/
-             *         Pareto diagram
-             *
-             * @extends      plotOptions.line
-             * @since        6.0.0
-             * @product      highcharts
-             * @excluding    allAreas, boostThreshold, borderColor, borderRadius,
-             *               borderWidth, crisp, colorAxis, depth, data, dragDrop,
-             *               edgeColor, edgeWidth, findNearestPointBy, gapSize, gapUnit,
-             *               grouping, groupPadding, groupZPadding, maxPointWidth, keys,
-             *               negativeColor, pointInterval, pointIntervalUnit,
-             *               pointPadding, pointPlacement, pointRange, pointStart,
-             *               pointWidth, shadow, step, softThreshold, stacking,
-             *               threshold, zoneAxis, zones, boostBlending
-             * @requires     modules/pareto
-             * @optionparent plotOptions.pareto
-             */
-            ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, {
-                /**
-                 * Higher zIndex than column series to draw line above shapes.
-                 */
-                zIndex: 3
-            });
+            ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, ParetoSeriesDefaults);
             return ParetoSeries;
         }(LineSeries));
         extend(ParetoSeries.prototype, {
@@ -345,41 +400,6 @@
          *  Default export
          *
          * */
-        /* *
-         *
-         *  API options
-         *
-         * */
-        /**
-         * A `pareto` series. If the [type](#series.pareto.type) option is not
-         * specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @extends   series,plotOptions.pareto
-         * @since     6.0.0
-         * @product   highcharts
-         * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
-         * @requires  modules/pareto
-         * @apioption series.pareto
-         */
-        /**
-         * An integer identifying the index to use for the base series, or a string
-         * representing the id of the series.
-         *
-         * @type      {number|string}
-         * @default   undefined
-         * @apioption series.pareto.baseSeries
-         */
-        /**
-         * An array of data points for the series. For the `pareto` series type,
-         * points are calculated dynamically.
-         *
-         * @type      {Array<Array<number|string>|*>}
-         * @extends   series.column.data
-         * @since     6.0.0
-         * @product   highcharts
-         * @apioption series.pareto.data
-         */
-        ''; // adds the doclets above to the transpiled file
 
         return ParetoSeries;
     });

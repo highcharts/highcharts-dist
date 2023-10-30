@@ -11,88 +11,42 @@
  *
  * */
 'use strict';
-import Chart from '../Core/Chart/Chart.js';
 import U from '../Core/Utilities.js';
-const { addEvent, fireEvent, isArray, isNumber, objectEach, pick } = U;
-/**
- * Internal type
- * @private
- */
-/* eslint-disable no-invalid-this */
-// Collect potensial overlapping data labels. Stack labels probably don't need
-// to be considered because they are usually accompanied by data labels that lie
-// inside the columns.
-addEvent(Chart, 'render', function collectAndHide() {
-    let chart = this, labels = [];
-    // Consider external label collectors
-    (this.labelCollectors || []).forEach(function (collector) {
-        labels = labels.concat(collector());
-    });
-    (this.yAxis || []).forEach(function (yAxis) {
-        if (yAxis.stacking &&
-            yAxis.options.stackLabels &&
-            !yAxis.options.stackLabels.allowOverlap) {
-            objectEach(yAxis.stacking.stacks, function (stack) {
-                objectEach(stack, function (stackItem) {
-                    if (stackItem.label) {
-                        labels.push(stackItem.label);
-                    }
-                });
-            });
-        }
-    });
-    (this.series || []).forEach(function (series) {
-        const dlOptions = series.options.dataLabels;
-        if (series.visible &&
-            !(dlOptions.enabled === false && !series._hasPointLabels)) { // #3866
-            const push = (points) => points.forEach((point) => {
-                if (point.visible) {
-                    const dataLabels = (isArray(point.dataLabels) ?
-                        point.dataLabels :
-                        (point.dataLabel ? [point.dataLabel] : []));
-                    dataLabels.forEach(function (label) {
-                        const options = label.options;
-                        label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
-                        if (!options.allowOverlap) {
-                            labels.push(label);
-                        }
-                        else { // #13449
-                            label.oldOpacity = label.opacity;
-                            label.newOpacity = 1;
-                            hideOrShow(label, chart);
-                        }
-                    });
-                }
-            });
-            push(series.nodes || []);
-            push(series.points);
-        }
-    });
-    this.hideOverlappingLabels(labels);
-});
+const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const composedMembers = [];
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Hide overlapping labels. Labels are moved and faded in and out on zoom to
  * provide a smooth visual imression.
  *
+ * @requires modules/overlapping-datalabels
+ *
  * @private
  * @function Highcharts.Chart#hideOverlappingLabels
  * @param {Array<Highcharts.SVGElement>} labels
- * Rendered data labels
- * @requires modules/overlapping-datalabels
+ *        Rendered data labels
  */
-Chart.prototype.hideOverlappingLabels = function (labels) {
-    let chart = this, len = labels.length, ren = chart.renderer, label, i, j, label1, label2, box1, box2, isLabelAffected = false, isIntersectRect = function (box1, box2) {
-        return !(box2.x >= box1.x + box1.width ||
-            box2.x + box2.width <= box1.x ||
-            box2.y >= box1.y + box1.height ||
-            box2.y + box2.height <= box1.y);
-    }, 
+function chartHideOverlappingLabels(labels) {
+    const chart = this, len = labels.length, ren = chart.renderer, isIntersectRect = (box1, box2) => !(box2.x >= box1.x + box1.width ||
+        box2.x + box2.width <= box1.x ||
+        box2.y >= box1.y + box1.height ||
+        box2.y + box2.height <= box1.y), 
     // Get the box with its position inside the chart, as opposed to getBBox
     // that only reports the position relative to the parent.
-    getAbsoluteBox = function (label) {
+    getAbsoluteBox = (label) => {
+        const padding = label.box ? 0 : (label.padding || 0);
         let pos, parent, bBox, 
         // Substract the padding if no background or border (#4333)
-        padding = label.box ? 0 : (label.padding || 0), lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
+        lineHeightCorrection = 0, xOffset = 0, boxWidth, alignValue;
         if (label &&
             (!label.alignAttr || label.placed)) {
             pos = label.alignAttr || {
@@ -120,7 +74,7 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
             }
             else if (isNumber(label.x) &&
                 Math.round(label.x) !== label.translateX) {
-                xOffset = label.x - label.translateX;
+                xOffset = label.x - (label.translateX || 0);
             }
             return {
                 x: pos.x + (parent.translateX || 0) + padding -
@@ -128,11 +82,12 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
                 y: pos.y + (parent.translateY || 0) + padding -
                     lineHeightCorrection,
                 width: label.width - 2 * padding,
-                height: label.height - 2 * padding
+                height: (label.height || 0) - 2 * padding
             };
         }
     };
-    for (i = 0; i < len; i++) {
+    let label, label1, label2, box1, box2, isLabelAffected = false;
+    for (let i = 0; i < len; i++) {
         label = labels[i];
         if (label) {
             // Mark with initial opacity
@@ -143,14 +98,12 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
     }
     // Prevent a situation in a gradually rising slope, that each label will
     // hide the previous one because the previous one always has lower rank.
-    labels.sort(function (a, b) {
-        return (b.labelrank || 0) - (a.labelrank || 0);
-    });
+    labels.sort((a, b) => (b.labelrank || 0) - (a.labelrank || 0));
     // Detect overlapping labels
-    for (i = 0; i < len; i++) {
+    for (let i = 0; i < len; ++i) {
         label1 = labels[i];
         box1 = label1 && label1.absoluteBox;
-        for (j = i + 1; j < len; ++j) {
+        for (let j = i + 1; j < len; ++j) {
             label2 = labels[j];
             box2 = label2 && label2.absoluteBox;
             if (box1 &&
@@ -169,15 +122,23 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
         }
     }
     // Hide or show
-    labels.forEach(function (label) {
+    for (const label of labels) {
         if (hideOrShow(label, chart)) {
             isLabelAffected = true;
         }
-    });
+    }
     if (isLabelAffected) {
         fireEvent(chart, 'afterHideAllOverlappingLabels');
     }
-};
+}
+/** @private */
+function compose(ChartClass) {
+    if (pushUnique(composedMembers, ChartClass)) {
+        const chartProto = ChartClass.prototype;
+        chartProto.hideOverlappingLabels = chartHideOverlappingLabels;
+        addEvent(ChartClass, 'render', onChartRender);
+    }
+}
 /**
  * Hide or show labels based on opacity.
  *
@@ -222,3 +183,71 @@ function hideOrShow(label, chart) {
     }
     return isLabelAffected;
 }
+/**
+ * Collect potensial overlapping data labels. Stack labels probably don't need
+ * to be considered because they are usually accompanied by data labels that lie
+ * inside the columns.
+ * @private
+ */
+function onChartRender() {
+    const chart = this;
+    let labels = [];
+    // Consider external label collectors
+    for (const collector of (chart.labelCollectors || [])) {
+        labels = labels.concat(collector());
+    }
+    for (const yAxis of (chart.yAxis || [])) {
+        if (yAxis.stacking &&
+            yAxis.options.stackLabels &&
+            !yAxis.options.stackLabels.allowOverlap) {
+            objectEach(yAxis.stacking.stacks, (stack) => {
+                objectEach(stack, (stackItem) => {
+                    if (stackItem.label) {
+                        labels.push(stackItem.label);
+                    }
+                });
+            });
+        }
+    }
+    for (const series of (chart.series || [])) {
+        if (series.visible && series.hasDataLabels?.()) { // #3866
+            const push = (points) => {
+                for (const point of points) {
+                    if (point.visible) {
+                        (point.dataLabels || []).forEach((label) => {
+                            const options = label.options || {};
+                            label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs?.height); // #4118
+                            // Allow overlap if the option is explicitly true
+                            if (
+                            // #13449
+                            options.allowOverlap ??
+                                // Pie labels outside have a separate placement
+                                // logic, skip the overlap logic
+                                Number(options.distance) > 0) {
+                                label.oldOpacity = label.opacity;
+                                label.newOpacity = 1;
+                                hideOrShow(label, chart);
+                                // Do not allow overlap
+                            }
+                            else {
+                                labels.push(label);
+                            }
+                        });
+                    }
+                }
+            };
+            push(series.nodes || []);
+            push(series.points);
+        }
+    }
+    this.hideOverlappingLabels(labels);
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const OverlappingDataLabels = {
+    compose
+};
+export default OverlappingDataLabels;

@@ -1535,15 +1535,15 @@ class SeriesBuilder {
                 }
             });
             if (columnIndexes.length >= 2) {
-                // remove the first one (x col)
+                // Remove the first one (x col)
                 columnIndexes.shift();
                 // Sort the remaining
                 columnIndexes.sort(function (a, b) {
                     return a - b;
                 });
-                // Now use the lowest index as name column
-                this.name = columns[columnIndexes.shift()].name;
             }
+            // Now use the lowest index as name column
+            this.name = columns[pick(columnIndexes.shift(), 0)].name;
         }
         return point;
     }

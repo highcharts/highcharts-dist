@@ -153,8 +153,8 @@ TimeCycles.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions
                 positioner: function (target) {
                     const point = target.points[0], position = target.anchor(point).absolutePosition;
                     return {
-                        x: position.x - this.graphic.width / 2,
-                        y: target.y - this.graphic.height
+                        x: position.x - (this.graphic.width || 0) / 2,
+                        y: target.y - (this.graphic.height || 0)
                     };
                 },
                 events: {
@@ -168,8 +168,8 @@ TimeCycles.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions
                 positioner: function (target) {
                     const point = target.points[1], position = target.anchor(point).absolutePosition;
                     return {
-                        x: position.x - this.graphic.width / 2,
-                        y: target.y - this.graphic.height
+                        x: position.x - (this.graphic.width || 0) / 2,
+                        y: target.y - (this.graphic.height || 0)
                     };
                 },
                 events: {

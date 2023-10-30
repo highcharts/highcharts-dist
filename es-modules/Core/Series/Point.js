@@ -209,8 +209,6 @@ class Point {
         if (pointValKey) {
             point.y = Point.prototype.getNestedProperty.call(point, pointValKey);
         }
-        point.isNull = this.isValid && !this.isValid();
-        point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
         // The point is initially selected by options (#5777)
         if (point.selected) {
             point.state = 'select';
@@ -240,6 +238,8 @@ class Point {
         else if (isNumber(options.x) && series.options.relativeXValue) {
             point.x = series.autoIncrement(options.x);
         }
+        point.isNull = this.isValid && !this.isValid();
+        point.formatPrefix = point.isNull ? 'null' : 'point'; // #9233, #10874
         return point;
     }
     /**
@@ -347,7 +347,7 @@ class Point {
             defaultFunction = function (event) {
                 // Control key is for Windows, meta (= Cmd key) for Mac, Shift
                 // for Opera.
-                if (point.select) { // #2911
+                if (!point.destroyed && point.select) { // #2911, #19075
                     point.select(null, event.ctrlKey || event.metaKey || event.shiftKey);
                 }
             };
@@ -386,10 +386,11 @@ class Point {
         let prop, i;
         kinds = kinds || { graphic: 1, dataLabel: 1 };
         if (kinds.graphic) {
-            props.push('graphic');
+            props.push('graphic', 'connector' // Used by dumbbell
+            );
         }
         if (kinds.dataLabel) {
-            props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper', 'connector');
+            props.push('dataLabel', 'dataLabelPath', 'dataLabelUpper');
         }
         i = props.length;
         while (i--) {
@@ -400,8 +401,7 @@ class Point {
         }
         [
             'graphic',
-            'dataLabel',
-            'connector'
+            'dataLabel'
         ].forEach(function (prop) {
             const plural = prop + 's';
             if (kinds[prop] && point[plural]) {
@@ -519,7 +519,9 @@ class Point {
      * @function Highcharts.Point#isValid
      */
     isValid() {
-        return this.x !== null && isNumber(this.y);
+        return ((isNumber(this.x) ||
+            this.x instanceof Date) &&
+            isNumber(this.y));
     }
     /**
      * Transform number or array configs into objects. Also called for object
@@ -577,7 +579,9 @@ class Point {
             // dataLabels that need to be considered in drawDataLabels. These
             // can only occur in object configs.
             if (options.dataLabels) {
-                series._hasPointLabels = true;
+                // Override the prototype function to always return true,
+                // regardless of whether data labels are enabled series-wide
+                series.hasDataLabels = () => true;
             }
             // Same approach as above for markers
             if (options.marker) {
@@ -588,8 +592,22 @@ class Point {
     }
     /**
      * Get the pixel position of the point relative to the plot area.
-     * @private
      * @function Highcharts.Point#pos
+     *
+     * @sample highcharts/point/position
+     *         Get point's position in pixels.
+     *
+     * @param {boolean} chartCoordinates
+     * If true, the returned position is relative to the full chart area.
+     * If false, it is relative to the plot area determined by the axes.
+     *
+     * @param {number|undefined} plotY
+     * A custom plot y position to be computed. Used internally for some
+     * series types that have multiple `y` positions, like area range (low
+     * and high values).
+     *
+     * @return {Array<number>|undefined}
+     * Coordinates of the point if the point exists.
      */
     pos(chartCoordinates, plotY = this.plotY) {
         if (!this.destroyed) {
@@ -779,11 +797,8 @@ class Point {
                         point.graphic = graphic.destroy();
                     }
                 }
-                if (options && options.dataLabels && point.dataLabel) {
+                if (options?.dataLabels && point.dataLabel) {
                     point.dataLabel = point.dataLabel.destroy(); // #2468
-                }
-                if (point.connector) {
-                    point.connector = point.connector.destroy(); // #7243
                 }
             }
             // record changes in the parallel arrays
@@ -1028,11 +1043,11 @@ class Point {
                         if (label &&
                             !label.hasClass('highcharts-data-label-hidden')) {
                             label.animate({ opacity }, pointAttribsAnimation);
+                            if (label.connector) {
+                                label.connector.animate({ opacity }, pointAttribsAnimation);
+                            }
                         }
                     });
-                    if (point.connector) {
-                        point.connector.animate({ opacity }, pointAttribsAnimation);
-                    }
                 }
                 point.graphic.animate(pointAttribs, pointAttribsAnimation);
             }

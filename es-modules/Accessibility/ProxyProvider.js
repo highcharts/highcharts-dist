@@ -59,12 +59,13 @@ class ProxyProvider {
     /**
      * Add a new proxy element to a group, proxying a target control.
      */
-    addProxyElement(groupKey, target, attributes) {
+    addProxyElement(groupKey, target, proxyElementType = 'button', attributes) {
         const group = this.groups[groupKey];
         if (!group) {
             throw new Error('ProxyProvider.addProxyElement: Invalid group key ' + groupKey);
         }
-        const proxy = new ProxyElement(this.chart, target, group.type, attributes);
+        const wrapperElementType = group.type === 'ul' || group.type === 'ol' ?
+            'li' : void 0, proxy = new ProxyElement(this.chart, target, proxyElementType, wrapperElementType, attributes);
         group.proxyContainerElement.appendChild(proxy.element);
         group.proxyElements.push(proxy);
         return proxy;
@@ -75,16 +76,18 @@ class ProxyProvider {
      *
      * Returns the added group.
      */
-    addGroup(groupKey, groupType, attributes) {
+    addGroup(groupKey, groupElementType = 'div', attributes) {
         const existingGroup = this.groups[groupKey];
         if (existingGroup) {
             return existingGroup.groupElement;
         }
-        const proxyContainer = this.domElementProvider.createElement(groupType);
+        const proxyContainer = this.domElementProvider
+            .createElement(groupElementType);
         // If we want to add a role to the group, and still use e.g.
-        // a list group, we need a wrapper div.
+        // a list group, we need a wrapper div around the proxyContainer.
+        // Used for setting region role on legend.
         let groupElement;
-        if (attributes && attributes.role && groupType !== 'div') {
+        if (attributes && attributes.role && groupElementType !== 'div') {
             groupElement = this.domElementProvider.createElement('div');
             groupElement.appendChild(proxyContainer);
         }
@@ -96,11 +99,11 @@ class ProxyProvider {
         this.groups[groupKey] = {
             proxyContainerElement: proxyContainer,
             groupElement,
-            type: groupType,
+            type: groupElementType,
             proxyElements: []
         };
         attr(groupElement, attributes || {});
-        if (groupType === 'ul') {
+        if (groupElementType === 'ul') {
             proxyContainer.setAttribute('role', 'list'); // Needed for webkit
         }
         // Add the group to the end by default, and perhaps then we

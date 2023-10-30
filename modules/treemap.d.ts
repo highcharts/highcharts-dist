@@ -16,8 +16,6 @@ declare module "../highcharts" {
     interface BreadcrumbsOptions {
         buttonTheme?: SVGAttributes;
     }
-    function eachObject(): void;
-    function isBoolean(): void;
     function recursive(): void;
 }
 export default factory;

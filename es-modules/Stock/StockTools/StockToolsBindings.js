@@ -721,10 +721,9 @@ const StockToolsBindings = {
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
      * @product highstock
-     * @default {"className": "highcharts-fibonacci", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
+     * @default {"className": "highcharts-fibonacci", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": { "typeOptions": { "reversed": false }}}
      */
     fibonacci: {
-        /** @ignore-option */
         className: 'highcharts-fibonacci',
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */

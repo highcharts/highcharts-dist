@@ -2,8 +2,23 @@
  * Stamen provider, used for tile map services
  * */
 'use strict';
+/* *
+ *
+ *  Class
+ *
+ * */
 class Stamen {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.defaultCredits = ('&copy; Map tiles by <a href="https://stamen.com">Stamen Design</a>,' +
+            ' under <a href="https://creativecommons.org/licenses/by/3.0">CC BY' +
+            ' 3.0</a>. Data by <a href="https://openstreetmap.org">OpenStreetMap' +
+            '</a>, under <a href="https://www.openstreetmap.org/copyright">ODbL</a>');
+        this.initialProjectionName = 'WebMercator';
         this.subdomains = ['a', 'b', 'c', 'd'];
         this.themes = {
             Toner: {
@@ -35,17 +50,18 @@ class Stamen {
                 url: 'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png',
                 minZoom: 1,
                 maxZoom: 16,
-                credits: `\u00a9 Map tiles by <a href="https://stamen.com">Stamen Design</a>,
-            under <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.
-            Data by <a href="https://openstreetmap.org">OpenStreetMap</a>, under
-            <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>`
+                credits: ('&copy Map tiles by <a href="https://stamen.com">Stamen' +
+                    ' Design</a>, under <a href="https://creativecommons.org/' +
+                    'licenses/by/3.0">CC BY 3.0</a>. Data by <a href="https://' +
+                    'openstreetmap.org">OpenStreetMap</a>, under <a href=' +
+                    '"https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>')
             }
         };
-        this.initialProjectionName = 'WebMercator';
-        this.defaultCredits = `\u00a9 Map tiles by <a href="https://stamen.com">Stamen Design</a>,
-        under <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>.
-        Data by <a href="https://openstreetmap.org">OpenStreetMap</a>, under
-        <a href="https://www.openstreetmap.org/copyright">ODbL</a>`;
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Stamen;

@@ -35,7 +35,7 @@ var ColorAxisComposition;
      *  Variables
      *
      * */
-    let ColorAxisClass;
+    let ColorAxisConstructor;
     /* *
      *
      *  Functions
@@ -45,9 +45,9 @@ var ColorAxisComposition;
     /**
      * @private
      */
-    function compose(ColorAxisType, ChartClass, FxClass, LegendClass, SeriesClass) {
-        if (!ColorAxisClass) {
-            ColorAxisClass = ColorAxisType;
+    function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
+        if (!ColorAxisConstructor) {
+            ColorAxisConstructor = ColorAxisClass;
         }
         if (U.pushUnique(composedMembers, ChartClass)) {
             const chartProto = ChartClass.prototype;
@@ -90,9 +90,7 @@ var ColorAxisComposition;
         this.colorAxis = [];
         if (options.colorAxis) {
             options.colorAxis = splat(options.colorAxis);
-            options.colorAxis.forEach((axisOptions) => {
-                new ColorAxisClass(this, axisOptions); // eslint-disable-line no-new
-            });
+            options.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
         }
     }
     /**
@@ -157,13 +155,10 @@ var ColorAxisComposition;
      * Updates in the legend need to be reflected in the color axis. (#6888)
      * @private
      */
-    function onLegendAfterUpdate() {
-        const colorAxes = this.chart.colorAxis;
-        if (colorAxes) {
-            colorAxes.forEach(function (colorAxis) {
-                colorAxis.update({}, arguments[2]);
-            });
-        }
+    function onLegendAfterUpdate(e) {
+        this.chart.colorAxis?.forEach((colorAxis) => {
+            colorAxis.update({}, e.redraw);
+        });
     }
     /**
      * Calculate and set colors for points.
@@ -237,24 +232,25 @@ var ColorAxisComposition;
     function wrapChartCreateAxis(ChartClass) {
         const superCreateAxis = ChartClass.prototype.createAxis;
         ChartClass.prototype.createAxis = function (type, options) {
+            const chart = this;
             if (type !== 'colorAxis') {
-                return superCreateAxis.apply(this, arguments);
+                return superCreateAxis.apply(chart, arguments);
             }
-            const axis = new ColorAxisClass(this, merge(options.axis, {
-                index: this[type].length,
+            const axis = new ColorAxisConstructor(chart, merge(options.axis, {
+                index: chart[type].length,
                 isX: false
             }));
-            this.isDirtyLegend = true;
+            chart.isDirtyLegend = true;
             // Clear before 'bindAxes' (#11924)
-            this.axes.forEach(function (axis) {
+            chart.axes.forEach((axis) => {
                 axis.series = [];
             });
-            this.series.forEach(function (series) {
+            chart.series.forEach((series) => {
                 series.bindAxes();
                 series.isDirtyData = true;
             });
             if (pick(options.redraw, true)) {
-                this.redraw(options.animation);
+                chart.redraw(options.animation);
             }
             return axis;
         };

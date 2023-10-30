@@ -257,6 +257,25 @@ class VBPIndicator extends SMAIndicator {
             }
         }
     }
+    getExtremes() {
+        const prevCompare = this.options.compare, prevCumulative = this.options.cumulative;
+        let ret;
+        // Temporarily disable cumulative and compare while getting the extremes
+        if (this.options.compare) {
+            this.options.compare = void 0;
+            ret = super.getExtremes();
+            this.options.compare = prevCompare;
+        }
+        else if (this.options.cumulative) {
+            this.options.cumulative = false;
+            ret = super.getExtremes();
+            this.options.cumulative = prevCumulative;
+        }
+        else {
+            ret = super.getExtremes();
+        }
+        return ret;
+    }
     getValues(series, params) {
         const indicator = this, xValues = series.processedXData, yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
         // Checks if base series exists

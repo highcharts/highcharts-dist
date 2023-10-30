@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Boost module
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -159,8 +157,28 @@
                     x: chart.plotLeft,
                     y: chart.plotTop,
                     width: chart.plotWidth,
-                    height: chart.plotHeight
+                    height: chart.navigator ? // #17820
+                        chart.navigator.top + chart.navigator.height - chart.plotTop :
+                        chart.plotHeight
                 };
+            // Clipping of individal series (#11906, #19039).
+            if (target.getClipBox) {
+                var _a = target,
+                    xAxis = _a.xAxis,
+                    yAxis = _a.yAxis;
+                clipBox = target.getClipBox();
+                if (chart.inverted) {
+                    var lateral = clipBox.width;
+                    clipBox.width = clipBox.height;
+                    clipBox.height = lateral;
+                    clipBox.x = yAxis.pos;
+                    clipBox.y = xAxis.pos;
+                }
+                else {
+                    clipBox.x = xAxis.pos;
+                    clipBox.y = yAxis.pos;
+                }
+            }
             if (target === chart) {
                 var verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
                     if (verticalAxes.length <= 1) {
@@ -169,9 +187,6 @@
                     clipBox.height = (verticalAxes[0].pos -
                         chart.plotTop +
                         verticalAxes[0].len);
-                }
-                else {
-                    clipBox.height = chart.plotHeight;
                 }
             }
             return clipBox;
@@ -244,8 +259,12 @@
                     ++needBoostCount;
                 }
             }
-            boost.forceChartBoost = allowBoostForce && ((canBoostCount === allSeries.length &&
-                needBoostCount > 0) ||
+            boost.forceChartBoost = allowBoostForce && ((
+            // Even when the series that need a boost are less than or equal
+            // to 5, force a chart boost when all series are to be boosted.
+            // See #18815
+            canBoostCount === allSeries.length &&
+                needBoostCount === canBoostCount) ||
                 needBoostCount > 5);
             return boost.forceChartBoost;
         }
@@ -1284,8 +1303,8 @@
             WGLRenderer.prototype.pushSeriesData = function (series, inst) {
                 var _this = this;
                 var data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
-                        series.pointArrayMap.join(',') === 'low,high'), chart = series.chart, options = series.options, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
-                        series.processedZData), yAxis = series.yAxis, xAxis = series.xAxis, useRaw = !xData || xData.length === 0, 
+                        series.pointArrayMap.join(',') === 'low,high'), chart = series.chart, options = series.options, sorted = series.sorted, xAxis = series.xAxis, yAxis = series.yAxis, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
+                        series.processedZData), useRaw = !xData || xData.length === 0, 
                     // threshold = options.threshold,
                     // yBottom = chart.yAxis[0].getThreshold(threshold),
                     // hasThreshold = isNumber(threshold),
@@ -1658,8 +1677,9 @@
                         return "continue";
                     }
                     // The first point before and first after extremes should be
-                    // rendered (#9962)
-                    if ((nx >= xMin || x >= xMin) &&
+                    // rendered (#9962, 19701)
+                    if (sorted &&
+                        (nx >= xMin || x >= xMin) &&
                         (px <= xMax || x <= xMax)) {
                         isXInside = true;
                     }
@@ -2077,12 +2097,19 @@
                     shader.reset();
                     // If there are entries in the colorData buffer, build and bind it.
                     if (s.colorData.length > 0) {
-                        shader.setUniform('hasColor', 1.0);
+                        shader.setUniform('hasColor', 1);
                         cbuffer = new WGLVertexBuffer(gl, shader);
-                        cbuffer.build(s.colorData, 'aColor', 4);
+                        cbuffer.build(
+                        // The color array attribute for vertex is assigned from 0,
+                        // so it needs to be shifted to be applied to further
+                        // segments. #18858
+                        Array(s.segments[0].from).concat(s.colorData), 'aColor', 4);
                         cbuffer.bind();
                     }
                     else {
+                        // Set the hasColor uniform to false (0) when the series
+                        // contains no colorData buffer points. #18858
+                        shader.setUniform('hasColor', 0);
                         // #15869, a buffer with fewer points might already be bound by
                         // a different series/chart causing out of range errors
                         gl.disableVertexAttribArray(gl.getAttribLocation(shader.getProgram(), 'aColor'));
@@ -2346,7 +2373,8 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick,
-            wrap = U.wrap;
+            wrap = U.wrap,
+            defined = U.defined;
         /* *
          *
          *  Constants
@@ -2592,7 +2620,16 @@
                     }
                 };
                 boost.clipRect = chart.renderer.clipRect();
-                (boost.targetFo || boost.target).clip(boost.clipRect);
+                (boost.targetFo || boost.target)
+                    .attr({
+                    // Set the z index of the boost target to that of the last
+                    // series using it. This logic is not perfect, as it will not
+                    // handle interleaved series with boost enabled or disabled. But
+                    // it will cover the most common use case of one or more
+                    // successive boosted or non-boosted series (#9819).
+                    zIndex: series.options.zIndex
+                })
+                    .clip(boost.clipRect);
                 if (target instanceof ChartClass) {
                     target.boost.markerGroup = target.renderer
                         .g()
@@ -2996,7 +3033,7 @@
                     percentage,
                     low = false,
                     isYInside = true;
-                if (typeof d === 'undefined') {
+                if (!defined(d)) {
                     return true;
                 }
                 if (!chartDestroyed) {
@@ -3026,7 +3063,7 @@
                     if (!requireSorting) {
                         isYInside = (y || 0) >= yMin && y <= yMax;
                     }
-                    if (x >= xMin && x <= xMax && isYInside) {
+                    if (y !== null && x >= xMin && x <= xMax && isYInside) {
                         clientX = xAxis.toPixels(x, true);
                         if (sampling) {
                             if (typeof minI === 'undefined' ||
@@ -3264,7 +3301,7 @@
 
         return BoostSeries;
     });
-    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Extensions/Boost/BoostChart.js'], _modules['Extensions/Boost/BoostSeries.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BoostChart, BoostSeries, Chart, Color, H, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Extensions/Boost/BoostChart.js'], _modules['Extensions/Boost/BoostSeries.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BoostChart, BoostSeries, Chart, Color, H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -3285,560 +3322,652 @@
         var color = Color.parse;
         var doc = H.doc,
             noop = H.noop;
-        var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
-            extend = U.extend,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
+            pushUnique = U.pushUnique,
             wrap = U.wrap;
-        // Use a blank pixel for clearing canvas (#17182)
-        var b64BlankPixel = (
-            /* eslint-disable-next-line max-len */
-            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
-        var CHUNK_SIZE = 50000,
-            destroyLoadingDiv;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Namespace
+         *
+         * */
+        var BoostCanvas;
+        (function (BoostCanvas) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            // Use a blank pixel for clearing canvas (#17182)
+            var b64BlankPixel = ('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAw' +
+                    'CAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+            var CHUNK_SIZE = 50000;
+            var composedMembers = [];
+            /* *
+             *
+             *  Variables
+             *
+             * */
+            var destroyLoadingDiv;
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function areaCvsDrawPoint(ctx, clientX, plotY, yBottom, lastPoint) {
+                if (lastPoint && clientX !== lastPoint.clientX) {
+                    ctx.moveTo(lastPoint.clientX, lastPoint.yBottom);
+                    ctx.lineTo(lastPoint.clientX, lastPoint.plotY);
+                    ctx.lineTo(clientX, plotY);
+                    ctx.lineTo(clientX, yBottom);
+                }
+            }
+            /**
+             * @private
+             */
+            function bubbleCvsMarkerCircle(ctx, clientX, plotY, r, i) {
+                ctx.moveTo(clientX, plotY);
+                ctx.arc(clientX, plotY, this.radii && this.radii[i], 0, 2 * Math.PI, false);
+            }
+            /**
+             * @private
+             */
+            function columnCvsDrawPoint(ctx, clientX, plotY, yBottom) {
+                ctx.rect(clientX - 1, plotY, 1, yBottom - plotY);
+            }
+            /**
+             * @private
+             */
+            function compose(ChartClass, SeriesClass, seriesTypes) {
+                if (pushUnique(composedMembers, ChartClass)) {
+                    Chart.prototype.callbacks.push(function (chart) {
+                        addEvent(chart, 'predraw', onChartClear);
+                        addEvent(chart, 'render', onChartCanvasToSVG);
+                    });
+                }
+                if (pushUnique(composedMembers, SeriesClass)) {
+                    var seriesProto = SeriesClass.prototype;
+                    seriesProto.canvasToSVG = seriesCanvasToSVG;
+                    seriesProto.cvsLineTo = seriesCvsLineTo;
+                    seriesProto.getContext = seriesGetContext;
+                    seriesProto.renderCanvas = seriesRenderCanvas;
+                }
+                var AreaSeries = seriesTypes.area,
+                    BubbleSeries = seriesTypes.bubble,
+                    ColumnSeries = seriesTypes.column,
+                    HeatmapSeries = seriesTypes.heatmap,
+                    ScatterSeries = seriesTypes.scatter;
+                if (AreaSeries &&
+                    pushUnique(composedMembers, AreaSeries)) {
+                    var areaProto = AreaSeries.prototype;
+                    areaProto.cvsDrawPoint = areaCvsDrawPoint;
+                    areaProto.fill = true;
+                    areaProto.fillOpacity = true;
+                    areaProto.sampling = true;
+                }
+                if (BubbleSeries &&
+                    pushUnique(composedMembers, BubbleSeries)) {
+                    var bubbleProto = BubbleSeries.prototype;
+                    bubbleProto.cvsMarkerCircle = bubbleCvsMarkerCircle;
+                    bubbleProto.cvsStrokeBatch = 1;
+                }
+                if (ColumnSeries &&
+                    pushUnique(composedMembers, ColumnSeries)) {
+                    var columnProto = ColumnSeries.prototype;
+                    columnProto.cvsDrawPoint = columnCvsDrawPoint;
+                    columnProto.fill = true;
+                    columnProto.sampling = true;
+                }
+                if (HeatmapSeries &&
+                    pushUnique(composedMembers, HeatmapSeries)) {
+                    var heatmapProto = HeatmapSeries.prototype;
+                    wrap(heatmapProto, 'drawPoints', wrapHeatmapDrawPoints);
+                }
+                if (ScatterSeries &&
+                    pushUnique(composedMembers, ScatterSeries)) {
+                    var scatterProto = ScatterSeries.prototype;
+                    scatterProto.cvsMarkerCircle = scatterCvsMarkerCircle;
+                    scatterProto.cvsMarkerSquare = scatterCvsMarkerSquare;
+                    scatterProto.fill = true;
+                }
+            }
+            BoostCanvas.compose = compose;
+            /**
+             * @private
+             */
+            function onChartCanvasToSVG() {
+                if (this.boost && this.boost.copy) {
+                    this.boost.copy();
+                }
+            }
+            /**
+             * @private
+             */
+            function onChartClear() {
+                var boost = this.boost || {};
+                if (boost.target) {
+                    boost.target.attr({ href: b64BlankPixel });
+                }
+                if (boost.canvas) {
+                    boost.canvas.getContext('2d').clearRect(0, 0, boost.canvas.width, boost.canvas.height);
+                }
+            }
+            /**
+             * Draw the canvas image inside an SVG image
+             *
+             * @private
+             * @function Highcharts.Series#canvasToSVG
+             */
+            function seriesCanvasToSVG() {
+                if (!isChartSeriesBoosting(this.chart)) {
+                    if (this.boost && this.boost.copy) {
+                        this.boost.copy();
+                    }
+                    else if (this.chart.boost && this.chart.boost.copy) {
+                        this.chart.boost.copy();
+                    }
+                }
+                else if (this.boost && this.boost.clear) {
+                    this.boost.clear();
+                }
+            }
+            /**
+             * @private
+             */
+            function seriesCvsLineTo(ctx, clientX, plotY) {
+                ctx.lineTo(clientX, plotY);
+            }
+            /**
+             * Create a hidden canvas to draw the graph on. The contents is later
+             * copied over to an SVG image element.
+             *
+             * @private
+             * @function Highcharts.Series#getContext
+             */
+            function seriesGetContext() {
+                var chart = this.chart,
+                    target = isChartSeriesBoosting(chart) ? chart : this,
+                    targetGroup = (target === chart ?
+                        chart.seriesGroup :
+                        chart.seriesGroup || this.group),
+                    width = chart.chartWidth,
+                    height = chart.chartHeight,
+                    swapXY = function (proceed,
+                    x,
+                    y,
+                    a,
+                    b,
+                    c,
+                    d) {
+                        proceed.call(this,
+                    y,
+                    x,
+                    a,
+                    b,
+                    c,
+                    d);
+                };
+                var ctx;
+                var boost = target.boost =
+                        target.boost ||
+                            {};
+                ctx = boost.targetCtx;
+                if (!boost.canvas) {
+                    boost.canvas = doc.createElement('canvas');
+                    boost.target = chart.renderer
+                        .image('', 0, 0, width, height)
+                        .addClass('highcharts-boost-canvas')
+                        .add(targetGroup);
+                    ctx = boost.targetCtx =
+                        boost.canvas.getContext('2d');
+                    if (chart.inverted) {
+                        ['moveTo', 'lineTo', 'rect', 'arc'].forEach(function (fn) {
+                            wrap(ctx, fn, swapXY);
+                        });
+                    }
+                    boost.copy = function () {
+                        boost.target.attr({
+                            href: boost.canvas.toDataURL('image/png')
+                        });
+                    };
+                    boost.clear = function () {
+                        ctx.clearRect(0, 0, boost.canvas.width, boost.canvas.height);
+                        if (target === boost.target) {
+                            boost.target.attr({
+                                href: b64BlankPixel
+                            });
+                        }
+                    };
+                    boost.clipRect = chart.renderer.clipRect();
+                    boost.target.clip(boost.clipRect);
+                }
+                else if (!(target instanceof Chart)) {
+                    // ctx.clearRect(0, 0, width, height);
+                }
+                if (boost.canvas.width !== width) {
+                    boost.canvas.width = width;
+                }
+                if (boost.canvas.height !== height) {
+                    boost.canvas.height = height;
+                }
+                boost.target.attr({
+                    x: 0,
+                    y: 0,
+                    width: width,
+                    height: height,
+                    style: 'pointer-events: none',
+                    href: b64BlankPixel
+                });
+                if (boost.clipRect) {
+                    boost.clipRect.attr(getBoostClipRect(chart, target));
+                }
+                return ctx;
+            }
+            /**
+             * @private
+             */
+            function seriesRenderCanvas() {
+                var series = this, options = series.options, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
+                        timeRendering: activeBoostSettings.timeRendering || false,
+                        timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
+                        timeSetup: activeBoostSettings.timeSetup || false
+                    }, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
+                        series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, connectNulls = options.connectNulls, useRaw = !xData, sdata = (isStacked ?
+                        series.data :
+                        (xData || rawData)), fillColor = (series.fillOpacity ?
+                        Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
+                        series.color), compareX = options.findNearestPointBy === 'x', boost = this.boost || {}, cvsDrawPoint = series.cvsDrawPoint, cvsLineTo = options.lineWidth ? series.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
+                        series.cvsMarkerSquare :
+                        series.cvsMarkerCircle);
+                if (boost.target) {
+                    boost.target.attr({ href: b64BlankPixel });
+                }
+                // If we are zooming out from SVG mode, destroy the graphics
+                if (series.points || series.graph) {
+                    destroyGraphics(series);
+                }
+                // The group
+                series.plotGroup('group', 'series', series.visible ? 'visible' : 'hidden', options.zIndex, chart.seriesGroup);
+                series.markerGroup = series.group;
+                addEvent(series, 'destroy', function () {
+                    // Prevent destroy twice
+                    series.markerGroup = null;
+                });
+                var points = this.points = [],
+                    ctx = this.getContext();
+                series.buildKDTree = noop; // Do not start building while drawing
+                if (boost.clear) {
+                    boost.clear();
+                }
+                // if (series.canvas) {
+                //     ctx.clearRect(
+                //         0,
+                //         0,
+                //         series.canvas.width,
+                //         series.canvas.height
+                //     );
+                // }
+                if (!series.visible) {
+                    return;
+                }
+                // Display a loading indicator
+                if (rawData.length > 99999) {
+                    chart.options.loading = merge(loadingOptions, {
+                        labelStyle: {
+                            backgroundColor: color("#ffffff" /* Palette.backgroundColor */).setOpacity(0.75).get(),
+                            padding: '1em',
+                            borderRadius: '0.5em'
+                        },
+                        style: {
+                            backgroundColor: 'none',
+                            opacity: 1
+                        }
+                    });
+                    U.clearTimeout(destroyLoadingDiv);
+                    chart.showLoading('Drawing...');
+                    chart.options.loading = loadingOptions; // reset
+                }
+                if (boostSettings.timeRendering) {
+                    console.time('canvas rendering'); // eslint-disable-line no-console
+                }
+                // Loop variables
+                var c = 0,
+                    lastClientX,
+                    lastPoint,
+                    yBottom = translatedThreshold,
+                    wasNull,
+                    minVal,
+                    maxVal,
+                    minI,
+                    maxI,
+                    index;
+                // Loop helpers
+                var stroke = function () {
+                        if (doFill) {
+                            ctx.fillStyle = fillColor;
+                        ctx.fill();
+                    }
+                    else {
+                        ctx.strokeStyle = series.color;
+                        ctx.lineWidth = options.lineWidth;
+                        ctx.stroke();
+                    }
+                }, 
+                //
+                drawPoint = function (clientX, plotY, yBottom, i) {
+                    if (c === 0) {
+                        ctx.beginPath();
+                        if (cvsLineTo) {
+                            ctx.lineJoin = 'round';
+                        }
+                    }
+                    if (chart.scroller &&
+                        series.options.className ===
+                            'highcharts-navigator-series') {
+                        plotY += chart.scroller.top;
+                        if (yBottom) {
+                            yBottom += chart.scroller.top;
+                        }
+                    }
+                    else {
+                        plotY += chart.plotTop;
+                    }
+                    clientX += chart.plotLeft;
+                    if (wasNull) {
+                        ctx.moveTo(clientX, plotY);
+                    }
+                    else {
+                        if (cvsDrawPoint) {
+                            cvsDrawPoint(ctx, clientX, plotY, yBottom, lastPoint);
+                        }
+                        else if (cvsLineTo) {
+                            cvsLineTo(ctx, clientX, plotY);
+                        }
+                        else if (cvsMarker) {
+                            cvsMarker.call(series, ctx, clientX, plotY, r, i);
+                        }
+                    }
+                    // We need to stroke the line for every 1000 pixels. It will
+                    // crash the browser memory use if we stroke too
+                    // infrequently.
+                    c = c + 1;
+                    if (c === strokeBatch) {
+                        stroke();
+                        c = 0;
+                    }
+                    // Area charts need to keep track of the last point
+                    lastPoint = {
+                        clientX: clientX,
+                        plotY: plotY,
+                        yBottom: yBottom
+                    };
+                }, xDataFull = (this.xData ||
+                    this.options.xData ||
+                    this.processedXData ||
+                    false), 
+                //
+                addKDPoint = function (clientX, plotY, i) {
+                    // Shaves off about 60ms compared to repeated concatenation
+                    index = compareX ? clientX : clientX + ',' + plotY;
+                    // The k-d tree requires series points.
+                    // Reduce the amount of points, since the time to build the
+                    // tree increases exponentially.
+                    if (enableMouseTracking && !pointTaken[index]) {
+                        pointTaken[index] = true;
+                        if (chart.inverted) {
+                            clientX = xAxis.len - clientX;
+                            plotY = yAxis.len - plotY;
+                        }
+                        points.push({
+                            x: xDataFull ?
+                                xDataFull[cropStart + i] :
+                                false,
+                            clientX: clientX,
+                            plotX: clientX,
+                            plotY: plotY,
+                            i: cropStart + i
+                        });
+                    }
+                };
+                // Loop over the points
+                BoostSeries.eachAsync(sdata, function (d, i) {
+                    var chartDestroyed = typeof chart.index === 'undefined';
+                    var x,
+                        y,
+                        clientX,
+                        plotY,
+                        isNull,
+                        low,
+                        isNextInside = false,
+                        isPrevInside = false,
+                        nx = NaN,
+                        px = NaN,
+                        isYInside = true;
+                    if (!chartDestroyed) {
+                        if (useRaw) {
+                            x = d[0];
+                            y = d[1];
+                            if (sdata[i + 1]) {
+                                nx = sdata[i + 1][0];
+                            }
+                            if (sdata[i - 1]) {
+                                px = sdata[i - 1][0];
+                            }
+                        }
+                        else {
+                            x = d;
+                            y = yData[i];
+                            if (sdata[i + 1]) {
+                                nx = sdata[i + 1];
+                            }
+                            if (sdata[i - 1]) {
+                                px = sdata[i - 1];
+                            }
+                        }
+                        if (nx && nx >= xMin && nx <= xMax) {
+                            isNextInside = true;
+                        }
+                        if (px && px >= xMin && px <= xMax) {
+                            isPrevInside = true;
+                        }
+                        // Resolve low and high for range series
+                        if (isRange) {
+                            if (useRaw) {
+                                y = d.slice(1, 3);
+                            }
+                            low = y[0];
+                            y = y[1];
+                        }
+                        else if (isStacked) {
+                            x = d.x;
+                            y = d.stackY;
+                            low = y - d.y;
+                        }
+                        isNull = y === null;
+                        // Optimize for scatter zooming
+                        if (!requireSorting) {
+                            isYInside = y >= yMin && y <= yMax;
+                        }
+                        if (!isNull &&
+                            ((x >= xMin && x <= xMax && isYInside) ||
+                                (isNextInside || isPrevInside))) {
+                            clientX = Math.round(xAxis.toPixels(x, true));
+                            if (sampling) {
+                                if (typeof minI === 'undefined' ||
+                                    clientX === lastClientX) {
+                                    if (!isRange) {
+                                        low = y;
+                                    }
+                                    if (typeof maxI === 'undefined' || y > maxVal) {
+                                        maxVal = y;
+                                        maxI = i;
+                                    }
+                                    if (typeof minI === 'undefined' ||
+                                        low < minVal) {
+                                        minVal = low;
+                                        minI = i;
+                                    }
+                                }
+                                // Add points and reset
+                                if (clientX !== lastClientX) {
+                                    // maxI also a number:
+                                    if (typeof minI !== 'undefined') {
+                                        plotY = yAxis.toPixels(maxVal, true);
+                                        yBottom = yAxis.toPixels(minVal, true);
+                                        drawPoint(clientX, hasThreshold ?
+                                            Math.min(plotY, translatedThreshold) : plotY, hasThreshold ?
+                                            Math.max(yBottom, translatedThreshold) : yBottom, i);
+                                        addKDPoint(clientX, plotY, maxI);
+                                        if (yBottom !== plotY) {
+                                            addKDPoint(clientX, yBottom, minI);
+                                        }
+                                    }
+                                    minI = maxI = void 0;
+                                    lastClientX = clientX;
+                                }
+                            }
+                            else {
+                                plotY = Math.round(yAxis.toPixels(y, true));
+                                drawPoint(clientX, plotY, yBottom, i);
+                                addKDPoint(clientX, plotY, i);
+                            }
+                        }
+                        wasNull = isNull && !connectNulls;
+                        if (i % CHUNK_SIZE === 0) {
+                            if (series.boost &&
+                                series.boost.copy) {
+                                series.boost.copy();
+                            }
+                            else if (series.chart.boost &&
+                                series.chart.boost.copy) {
+                                series.chart.boost.copy();
+                            }
+                        }
+                    }
+                    return !chartDestroyed;
+                }, function () {
+                    var loadingDiv = chart.loadingDiv,
+                        loadingShown = chart.loadingShown;
+                    stroke();
+                    // if (series.boostCopy || series.chart.boostCopy) {
+                    //     (series.boostCopy || series.chart.boostCopy)();
+                    // }
+                    series.canvasToSVG();
+                    if (boostSettings.timeRendering) {
+                        console.timeEnd('canvas rendering'); // eslint-disable-line no-console
+                    }
+                    fireEvent(series, 'renderedCanvas');
+                    // Do not use chart.hideLoading, as it runs JS animation and
+                    // will be blocked by buildKDTree. CSS animation looks good, but
+                    // then it must be deleted in timeout. If we add the module to
+                    // core, change hideLoading so we can skip this block.
+                    if (loadingShown) {
+                        loadingDiv.style.transition = 'opacity 250ms';
+                        loadingDiv.opacity = 0;
+                        chart.loadingShown = false;
+                        destroyLoadingDiv = setTimeout(function () {
+                            if (loadingDiv.parentNode) { // In exporting it is falsy
+                                loadingDiv.parentNode.removeChild(loadingDiv);
+                            }
+                            chart.loadingDiv = chart.loadingSpan = null;
+                        }, 250);
+                    }
+                    // Go back to prototype, ready to build
+                    delete series.buildKDTree;
+                    series.buildKDTree();
+                    // Don't do async on export, the exportChart, getSVGForExport and
+                    // getSVG methods are not chained for it.
+                }, chart.renderer.forExport ? Number.MAX_VALUE : void 0);
+            }
+            /**
+             * @private
+             */
+            function scatterCvsMarkerCircle(ctx, clientX, plotY, r) {
+                ctx.moveTo(clientX, plotY);
+                ctx.arc(clientX, plotY, r, 0, 2 * Math.PI, false);
+            }
+            /**
+             * Rect is twice as fast as arc, should be used for small markers.
+             * @private
+             */
+            function scatterCvsMarkerSquare(ctx, clientX, plotY, r) {
+                ctx.rect(clientX - r, plotY - r, r * 2, r * 2);
+            }
+            /**
+             * @private
+             */
+            function wrapHeatmapDrawPoints() {
+                var chart = this.chart,
+                    ctx = this.getContext(),
+                    inverted = this.chart.inverted,
+                    xAxis = this.xAxis,
+                    yAxis = this.yAxis;
+                if (ctx) {
+                    // Draw the columns
+                    this.points.forEach(function (point) {
+                        var plotY = point.plotY,
+                            pointAttr;
+                        if (typeof plotY !== 'undefined' &&
+                            !isNaN(plotY) &&
+                            point.y !== null &&
+                            ctx) {
+                            var _a = point.shapeArgs || {},
+                                _b = _a.x,
+                                x = _b === void 0 ? 0 : _b,
+                                _c = _a.y,
+                                y = _c === void 0 ? 0 : _c,
+                                _d = _a.width,
+                                width = _d === void 0 ? 0 : _d,
+                                _e = _a.height,
+                                height = _e === void 0 ? 0 : _e;
+                            if (!chart.styledMode) {
+                                pointAttr = point.series.pointAttribs(point);
+                            }
+                            else {
+                                pointAttr = point.series.colorAttribs(point);
+                            }
+                            ctx.fillStyle = pointAttr.fill;
+                            if (inverted) {
+                                ctx.fillRect(yAxis.len - y + xAxis.left, xAxis.len - x + yAxis.top, -height, -width);
+                            }
+                            else {
+                                ctx.fillRect(x + xAxis.left, y + yAxis.top, width, height);
+                            }
+                        }
+                    });
+                    this.canvasToSVG();
+                }
+                else {
+                    this.chart.showLoading('Your browser doesn\'t support HTML5 canvas, <br>' +
+                        'please use a modern browser');
+                }
+            }
+        })(BoostCanvas || (BoostCanvas = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return BoostCanvas;
+    });
+    _registerModule(_modules, 'masters/modules/boost-canvas.src.js', [_modules['Core/Globals.js'], _modules['Extensions/BoostCanvas.js']], function (Highcharts, BoostCanvas) {
+
+        var G = Highcharts;
         /**
          * Initialize the canvas boost.
          *
          * @function Highcharts.initCanvasBoost
          */
-        var initCanvasBoost = function () {
-                if (H.seriesTypes.heatmap) {
-                    wrap(H.seriesTypes.heatmap.prototype, 'drawPoints',
-            function () {
-                        var chart = this.chart,
-            ctx = this.getContext(),
-            inverted = this.chart.inverted,
-            xAxis = this.xAxis,
-            yAxis = this.yAxis;
-                    if (ctx) {
-                        // draw the columns
-                        this.points.forEach(function (point) {
-                            var plotY = point.plotY,
-                                pointAttr;
-                            if (typeof plotY !== 'undefined' &&
-                                !isNaN(plotY) &&
-                                point.y !== null &&
-                                ctx) {
-                                var _a = point.shapeArgs || {},
-                                    _b = _a.x,
-                                    x = _b === void 0 ? 0 : _b,
-                                    _c = _a.y,
-                                    y = _c === void 0 ? 0 : _c,
-                                    _d = _a.width,
-                                    width = _d === void 0 ? 0 : _d,
-                                    _e = _a.height,
-                                    height = _e === void 0 ? 0 : _e;
-                                if (!chart.styledMode) {
-                                    pointAttr = point.series.pointAttribs(point);
-                                }
-                                else {
-                                    pointAttr = point.series.colorAttribs(point);
-                                }
-                                ctx.fillStyle = pointAttr.fill;
-                                if (inverted) {
-                                    ctx.fillRect(yAxis.len - y + xAxis.left, xAxis.len - x + yAxis.top, -height, -width);
-                                }
-                                else {
-                                    ctx.fillRect(x + xAxis.left, y + yAxis.top, width, height);
-                                }
-                            }
-                        });
-                        this.canvasToSVG();
-                    }
-                    else {
-                        this.chart.showLoading('Your browser doesn\'t support HTML5 canvas, <br>' +
-                            'please use a modern browser');
-                    }
-                });
-            }
-            extend(Series.prototype, {
-                /**
-                 * Create a hidden canvas to draw the graph on. The contents is later
-                 * copied over to an SVG image element.
-                 *
-                 * @private
-                 * @function Highcharts.Series#getContext
-                 */
-                getContext: function () {
-                    var chart = this.chart,
-                        target = isChartSeriesBoosting(chart) ? chart : this,
-                        targetGroup = (target === chart ?
-                            chart.seriesGroup :
-                            chart.seriesGroup || this.group);
-                    var width = chart.chartWidth,
-                        height = chart.chartHeight,
-                        ctx,
-                        swapXY = function (proceed,
-                        x,
-                        y,
-                        a,
-                        b,
-                        c,
-                        d) {
-                            proceed.call(this,
-                        y,
-                        x,
-                        a,
-                        b,
-                        c,
-                        d);
-                    };
-                    var boost = target.boost =
-                            target.boost ||
-                                {};
-                    ctx = boost.targetCtx;
-                    if (!boost.canvas) {
-                        boost.canvas = doc.createElement('canvas');
-                        boost.target = chart.renderer
-                            .image('', 0, 0, width, height)
-                            .addClass('highcharts-boost-canvas')
-                            .add(targetGroup);
-                        ctx = boost.targetCtx =
-                            boost.canvas.getContext('2d');
-                        if (chart.inverted) {
-                            ['moveTo', 'lineTo', 'rect', 'arc'].forEach(function (fn) {
-                                wrap(ctx, fn, swapXY);
-                            });
-                        }
-                        boost.copy = function () {
-                            boost.target.attr({
-                                href: boost.canvas.toDataURL('image/png')
-                            });
-                        };
-                        boost.clear = function () {
-                            ctx.clearRect(0, 0, boost.canvas.width, boost.canvas.height);
-                            if (target === boost.target) {
-                                boost.target.attr({
-                                    href: b64BlankPixel
-                                });
-                            }
-                        };
-                        boost.clipRect = chart.renderer.clipRect();
-                        boost.target.clip(boost.clipRect);
-                    }
-                    else if (!(target instanceof Chart)) {
-                        // ctx.clearRect(0, 0, width, height);
-                    }
-                    if (boost.canvas.width !== width) {
-                        boost.canvas.width = width;
-                    }
-                    if (boost.canvas.height !== height) {
-                        boost.canvas.height = height;
-                    }
-                    boost.target.attr({
-                        x: 0,
-                        y: 0,
-                        width: width,
-                        height: height,
-                        style: 'pointer-events: none',
-                        href: b64BlankPixel
-                    });
-                    if (boost.clipRect) {
-                        boost.clipRect.attr(getBoostClipRect(chart, target));
-                    }
-                    return ctx;
-                },
-                /**
-                 * Draw the canvas image inside an SVG image
-                 *
-                 * @private
-                 * @function Highcharts.Series#canvasToSVG
-                 */
-                canvasToSVG: function () {
-                    if (!isChartSeriesBoosting(this.chart)) {
-                        if (this.boost && this.boost.copy) {
-                            this.boost.copy();
-                        }
-                        else if (this.chart.boost && this.chart.boost.copy) {
-                            this.chart.boost.copy();
-                        }
-                    }
-                    else if (this.boost && this.boost.clear) {
-                        this.boost.clear();
-                    }
-                },
-                cvsLineTo: function (ctx, clientX, plotY) {
-                    ctx.lineTo(clientX, plotY);
-                },
-                renderCanvas: function () {
-                    var series = this, options = series.options, chart = series.chart, xAxis = this.xAxis, yAxis = this.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
-                            timeRendering: activeBoostSettings.timeRendering || false,
-                            timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
-                            timeSetup: activeBoostSettings.timeSetup || false
-                        }, ctx, c = 0, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, lastClientX, sampling = !!series.sampling, points, r = options.marker && options.marker.radius, cvsDrawPoint = this.cvsDrawPoint, cvsLineTo = options.lineWidth ? this.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
-                            this.cvsMarkerSquare :
-                            this.cvsMarkerCircle), strokeBatch = this.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, lastPoint, threshold = options.threshold, yBottom = yAxis.getThreshold(threshold), hasThreshold = isNumber(threshold), translatedThreshold = yBottom, doFill = this.fill, isRange = (series.pointArrayMap &&
-                            series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, wasNull, connectNulls = options.connectNulls, useRaw = !xData, minVal, maxVal, minI, maxI, index, sdata = (isStacked ?
-                            series.data :
-                            (xData || rawData)), fillColor = (series.fillOpacity ?
-                            Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
-                            series.color), 
-                        //
-                        stroke = function () {
-                            if (doFill) {
-                                ctx.fillStyle = fillColor;
-                            ctx.fill();
-                        }
-                        else {
-                            ctx.strokeStyle = series.color;
-                            ctx.lineWidth = options.lineWidth;
-                            ctx.stroke();
-                        }
-                    }, 
-                    //
-                    drawPoint = function (clientX, plotY, yBottom, i) {
-                        if (c === 0) {
-                            ctx.beginPath();
-                            if (cvsLineTo) {
-                                ctx.lineJoin = 'round';
-                            }
-                        }
-                        if (chart.scroller &&
-                            series.options.className ===
-                                'highcharts-navigator-series') {
-                            plotY += chart.scroller.top;
-                            if (yBottom) {
-                                yBottom += chart.scroller.top;
-                            }
-                        }
-                        else {
-                            plotY += chart.plotTop;
-                        }
-                        clientX += chart.plotLeft;
-                        if (wasNull) {
-                            ctx.moveTo(clientX, plotY);
-                        }
-                        else {
-                            if (cvsDrawPoint) {
-                                cvsDrawPoint(ctx, clientX, plotY, yBottom, lastPoint);
-                            }
-                            else if (cvsLineTo) {
-                                cvsLineTo(ctx, clientX, plotY);
-                            }
-                            else if (cvsMarker) {
-                                cvsMarker.call(series, ctx, clientX, plotY, r, i);
-                            }
-                        }
-                        // We need to stroke the line for every 1000 pixels. It will
-                        // crash the browser memory use if we stroke too
-                        // infrequently.
-                        c = c + 1;
-                        if (c === strokeBatch) {
-                            stroke();
-                            c = 0;
-                        }
-                        // Area charts need to keep track of the last point
-                        lastPoint = {
-                            clientX: clientX,
-                            plotY: plotY,
-                            yBottom: yBottom
-                        };
-                    }, 
-                    //
-                    compareX = options.findNearestPointBy === 'x', 
-                    //
-                    xDataFull = (this.xData ||
-                        this.options.xData ||
-                        this.processedXData ||
-                        false), 
-                    //
-                    addKDPoint = function (clientX, plotY, i) {
-                        // Shaves off about 60ms compared to repeated concatenation
-                        index = compareX ? clientX : clientX + ',' + plotY;
-                        // The k-d tree requires series points.
-                        // Reduce the amount of points, since the time to build the
-                        // tree increases exponentially.
-                        if (enableMouseTracking && !pointTaken[index]) {
-                            pointTaken[index] = true;
-                            if (chart.inverted) {
-                                clientX = xAxis.len - clientX;
-                                plotY = yAxis.len - plotY;
-                            }
-                            points.push({
-                                x: xDataFull ?
-                                    xDataFull[cropStart + i] :
-                                    false,
-                                clientX: clientX,
-                                plotX: clientX,
-                                plotY: plotY,
-                                i: cropStart + i
-                            });
-                        }
-                    }, boost = this.boost || {};
-                    if (boost.target) {
-                        boost.target.attr({ href: b64BlankPixel });
-                    }
-                    // If we are zooming out from SVG mode, destroy the graphics
-                    if (this.points || this.graph) {
-                        destroyGraphics(this);
-                    }
-                    // The group
-                    series.plotGroup('group', 'series', series.visible ? 'visible' : 'hidden', options.zIndex, chart.seriesGroup);
-                    series.markerGroup = series.group;
-                    addEvent(series, 'destroy', function () {
-                        // Prevent destroy twice
-                        series.markerGroup = null;
-                    });
-                    points = this.points = [];
-                    ctx = this.getContext();
-                    series.buildKDTree = noop; // Do not start building while drawing
-                    if (boost.clear) {
-                        boost.clear();
-                    }
-                    // if (this.canvas) {
-                    //     ctx.clearRect(
-                    //         0,
-                    //         0,
-                    //         this.canvas.width,
-                    //         this.canvas.height
-                    //     );
-                    // }
-                    if (!this.visible) {
-                        return;
-                    }
-                    // Display a loading indicator
-                    if (rawData.length > 99999) {
-                        chart.options.loading = merge(loadingOptions, {
-                            labelStyle: {
-                                backgroundColor: color("#ffffff" /* Palette.backgroundColor */).setOpacity(0.75).get(),
-                                padding: '1em',
-                                borderRadius: '0.5em'
-                            },
-                            style: {
-                                backgroundColor: 'none',
-                                opacity: 1
-                            }
-                        });
-                        U.clearTimeout(destroyLoadingDiv);
-                        chart.showLoading('Drawing...');
-                        chart.options.loading = loadingOptions; // reset
-                    }
-                    if (boostSettings.timeRendering) {
-                        console.time('canvas rendering'); // eslint-disable-line no-console
-                    }
-                    // Loop over the points
-                    BoostSeries.eachAsync(sdata, function (d, i) {
-                        var x,
-                            y,
-                            clientX,
-                            plotY,
-                            isNull,
-                            low,
-                            isNextInside = false,
-                            isPrevInside = false,
-                            nx = false,
-                            px = false,
-                            chartDestroyed = typeof chart.index === 'undefined',
-                            isYInside = true;
-                        if (!chartDestroyed) {
-                            if (useRaw) {
-                                x = d[0];
-                                y = d[1];
-                                if (sdata[i + 1]) {
-                                    nx = sdata[i + 1][0];
-                                }
-                                if (sdata[i - 1]) {
-                                    px = sdata[i - 1][0];
-                                }
-                            }
-                            else {
-                                x = d;
-                                y = yData[i];
-                                if (sdata[i + 1]) {
-                                    nx = sdata[i + 1];
-                                }
-                                if (sdata[i - 1]) {
-                                    px = sdata[i - 1];
-                                }
-                            }
-                            if (nx && nx >= xMin && nx <= xMax) {
-                                isNextInside = true;
-                            }
-                            if (px && px >= xMin && px <= xMax) {
-                                isPrevInside = true;
-                            }
-                            // Resolve low and high for range series
-                            if (isRange) {
-                                if (useRaw) {
-                                    y = d.slice(1, 3);
-                                }
-                                low = y[0];
-                                y = y[1];
-                            }
-                            else if (isStacked) {
-                                x = d.x;
-                                y = d.stackY;
-                                low = y - d.y;
-                            }
-                            isNull = y === null;
-                            // Optimize for scatter zooming
-                            if (!requireSorting) {
-                                isYInside = y >= yMin && y <= yMax;
-                            }
-                            if (!isNull &&
-                                ((x >= xMin && x <= xMax && isYInside) ||
-                                    (isNextInside || isPrevInside))) {
-                                clientX = Math.round(xAxis.toPixels(x, true));
-                                if (sampling) {
-                                    if (typeof minI === 'undefined' ||
-                                        clientX === lastClientX) {
-                                        if (!isRange) {
-                                            low = y;
-                                        }
-                                        if (typeof maxI === 'undefined' || y > maxVal) {
-                                            maxVal = y;
-                                            maxI = i;
-                                        }
-                                        if (typeof minI === 'undefined' ||
-                                            low < minVal) {
-                                            minVal = low;
-                                            minI = i;
-                                        }
-                                    }
-                                    // Add points and reset
-                                    if (clientX !== lastClientX) {
-                                        // maxI also a number:
-                                        if (typeof minI !== 'undefined') {
-                                            plotY = yAxis.toPixels(maxVal, true);
-                                            yBottom = yAxis.toPixels(minVal, true);
-                                            drawPoint(clientX, hasThreshold ?
-                                                Math.min(plotY, translatedThreshold) : plotY, hasThreshold ?
-                                                Math.max(yBottom, translatedThreshold) : yBottom, i);
-                                            addKDPoint(clientX, plotY, maxI);
-                                            if (yBottom !== plotY) {
-                                                addKDPoint(clientX, yBottom, minI);
-                                            }
-                                        }
-                                        minI = maxI = void 0;
-                                        lastClientX = clientX;
-                                    }
-                                }
-                                else {
-                                    plotY = Math.round(yAxis.toPixels(y, true));
-                                    drawPoint(clientX, plotY, yBottom, i);
-                                    addKDPoint(clientX, plotY, i);
-                                }
-                            }
-                            wasNull = isNull && !connectNulls;
-                            if (i % CHUNK_SIZE === 0) {
-                                if (series.boost &&
-                                    series.boost.copy) {
-                                    series.boost.copy();
-                                }
-                                else if (series.chart.boost &&
-                                    series.chart.boost.copy) {
-                                    series.chart.boost.copy();
-                                }
-                            }
-                        }
-                        return !chartDestroyed;
-                    }, function () {
-                        var loadingDiv = chart.loadingDiv,
-                            loadingShown = chart.loadingShown;
-                        stroke();
-                        // if (series.boostCopy || series.chart.boostCopy) {
-                        //     (series.boostCopy || series.chart.boostCopy)();
-                        // }
-                        series.canvasToSVG();
-                        if (boostSettings.timeRendering) {
-                            console.timeEnd('canvas rendering'); // eslint-disable-line no-console
-                        }
-                        fireEvent(series, 'renderedCanvas');
-                        // Do not use chart.hideLoading, as it runs JS animation and
-                        // will be blocked by buildKDTree. CSS animation looks good, but
-                        // then it must be deleted in timeout. If we add the module to
-                        // core, change hideLoading so we can skip this block.
-                        if (loadingShown) {
-                            extend(loadingDiv.style, {
-                                transition: 'opacity 250ms',
-                                opacity: 0
-                            });
-                            chart.loadingShown = false;
-                            destroyLoadingDiv = setTimeout(function () {
-                                if (loadingDiv.parentNode) { // In exporting it is falsy
-                                    loadingDiv.parentNode.removeChild(loadingDiv);
-                                }
-                                chart.loadingDiv = chart.loadingSpan = null;
-                            }, 250);
-                        }
-                        // Go back to prototype, ready to build
-                        delete series.buildKDTree;
-                        series.buildKDTree();
-                        // Don't do async on export, the exportChart, getSVGForExport and
-                        // getSVG methods are not chained for it.
-                    }, chart.renderer.forExport ? Number.MAX_VALUE : void 0);
-                }
-            });
-            seriesTypes.scatter.prototype.cvsMarkerCircle = function (ctx, clientX, plotY, r) {
-                ctx.moveTo(clientX, plotY);
-                ctx.arc(clientX, plotY, r, 0, 2 * Math.PI, false);
-            };
-            // Rect is twice as fast as arc, should be used for small markers
-            seriesTypes.scatter.prototype.cvsMarkerSquare = function (ctx, clientX, plotY, r) {
-                ctx.rect(clientX - r, plotY - r, r * 2, r * 2);
-            };
-            seriesTypes.scatter.prototype.fill = true;
-            if (seriesTypes.bubble) {
-                seriesTypes.bubble.prototype.cvsMarkerCircle = function (ctx, clientX, plotY, r, i) {
-                    ctx.moveTo(clientX, plotY);
-                    ctx.arc(clientX, plotY, this.radii && this.radii[i], 0, 2 * Math.PI, false);
-                };
-                seriesTypes.bubble.prototype.cvsStrokeBatch = 1;
-            }
-            extend(seriesTypes.area.prototype, {
-                cvsDrawPoint: function (ctx, clientX, plotY, yBottom, lastPoint) {
-                    if (lastPoint && clientX !== lastPoint.clientX) {
-                        ctx.moveTo(lastPoint.clientX, lastPoint.yBottom);
-                        ctx.lineTo(lastPoint.clientX, lastPoint.plotY);
-                        ctx.lineTo(clientX, plotY);
-                        ctx.lineTo(clientX, yBottom);
-                    }
-                },
-                fill: true,
-                fillOpacity: true,
-                sampling: true
-            });
-            extend(seriesTypes.column.prototype, {
-                cvsDrawPoint: function (ctx, clientX, plotY, yBottom) {
-                    ctx.rect(clientX - 1, plotY, 1, yBottom - plotY);
-                },
-                fill: true,
-                sampling: true
-            });
-            Chart.prototype.callbacks.push(function (chart) {
-                /**
-                 * @private
-                 */
-                function canvasToSVG() {
-                    if (chart.boost && chart.boost.copy) {
-                        chart.boost.copy();
-                    }
-                }
-                /**
-                 * @private
-                 */
-                function clear() {
-                    var boost = this.boost || {};
-                    if (boost.target) {
-                        boost.target.attr({ href: b64BlankPixel });
-                    }
-                    if (boost.canvas) {
-                        boost.canvas.getContext('2d').clearRect(0, 0, boost.canvas.width, boost.canvas.height);
-                    }
-                }
-                addEvent(chart, 'predraw', clear);
-                addEvent(chart, 'render', canvasToSVG);
-            });
+        G.initCanvasBoost = function () {
+            BoostCanvas.compose(G.Chart, G.Series, G.seriesTypes);
         };
-
-        return initCanvasBoost;
-    });
-    _registerModule(_modules, 'masters/modules/boost-canvas.src.js', [], function () {
-
 
     });
 }));

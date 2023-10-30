@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -114,8 +112,9 @@
              * @private
              */
             function onAxisAfterSetOptions() {
+                var _a;
                 var axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if ((_a = axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -125,8 +124,7 @@
             function onAxisAfterSetTickPositions() {
                 var axis = this,
                     brokenAxis = axis.brokenAxis;
-                if (brokenAxis &&
-                    brokenAxis.hasBreaks) {
+                if (brokenAxis === null || brokenAxis === void 0 ? void 0 : brokenAxis.hasBreaks) {
                     var tickPositions = axis.tickPositions,
                         info = axis.tickPositions.info,
                         newPositions = [];
@@ -152,12 +150,14 @@
              * @private
              */
             function onSeriesAfterGeneratePoints() {
-                var _a = this,
-                    isDirty = _a.isDirty,
-                    connectNulls = _a.options.connectNulls,
-                    points = _a.points,
-                    xAxis = _a.xAxis,
-                    yAxis = _a.yAxis;
+                var _a,
+                    _b;
+                var _c = this,
+                    isDirty = _c.isDirty,
+                    connectNulls = _c.options.connectNulls,
+                    points = _c.points,
+                    xAxis = _c.xAxis,
+                    yAxis = _c.yAxis;
                 // Set, or reset visibility of the points. Axis.setBreaks marks
                 // the series as isDirty
                 if (isDirty) {
@@ -166,12 +166,9 @@
                         var point = points[i];
                         // Respect nulls inside the break (#4275)
                         var nullGap = point.y === null && connectNulls === false;
-                        var isPointInBreak = (!nullGap && ((xAxis &&
-                                xAxis.brokenAxis &&
-                                xAxis.brokenAxis.isInAnyBreak(point.x,
-                            true)) || (yAxis &&
-                                yAxis.brokenAxis &&
-                                yAxis.brokenAxis.isInAnyBreak(point.y,
+                        var isPointInBreak = (!nullGap && (((_a = xAxis === null || xAxis === void 0 ? void 0 : xAxis.brokenAxis) === null || _a === void 0 ? void 0 : _a.isInAnyBreak(point.x,
+                            true)) ||
+                                ((_b = yAxis === null || yAxis === void 0 ? void 0 : yAxis.brokenAxis) === null || _b === void 0 ? void 0 : _b.isInAnyBreak(point.y,
                             true))));
                         // Set point.visible if in any break.
                         // If not in break, reset visible to original value.
@@ -192,26 +189,42 @@
              * @private
              */
             function seriesDrawBreaks(axis, keys) {
+                var _a;
                 var series = this,
                     points = series.points;
                 var breaks,
                     threshold,
-                    eventName,
                     y;
-                if (axis && // #5950
-                    axis.brokenAxis &&
-                    axis.brokenAxis.hasBreaks) {
+                if ((_a = axis === null || axis === void 0 ? void 0 : axis.brokenAxis) === null || _a === void 0 ? void 0 : _a.hasBreaks) {
                     var brokenAxis_1 = axis.brokenAxis;
                     keys.forEach(function (key) {
-                        breaks = brokenAxis_1 && brokenAxis_1.breakArray || [];
+                        var _a,
+                            _b;
+                        breaks = (brokenAxis_1 === null || brokenAxis_1 === void 0 ? void 0 : brokenAxis_1.breakArray) || [];
                         threshold = axis.isXAxis ?
                             axis.min :
                             pick(series.options.threshold, axis.min);
+                        // Array of breaks that have been "zoomed-out" which means that
+                        // they were shown previously, but now after zoom, they are not
+                        // (#19885).
+                        var breaksOutOfRange = (_b = (_a = axis === null || axis === void 0 ? void 0 : axis.options) === null || _a === void 0 ? void 0 : _a.breaks) === null || _b === void 0 ? void 0 : _b.filter(function (brk) {
+                                var isOut = true;
+                            // Iterate to see if "brk" is in axis range
+                            for (var i = 0; i < breaks.length; i++) {
+                                var otherBreak = breaks[i];
+                                if (otherBreak.from === brk.from &&
+                                    otherBreak.to === brk.to) {
+                                    isOut = false;
+                                    break;
+                                }
+                            }
+                            return isOut;
+                        });
                         points.forEach(function (point) {
                             y = pick(point['stack' + key.toUpperCase()], point[key]);
                             breaks.forEach(function (brk) {
                                 if (isNumber(threshold) && isNumber(y)) {
-                                    eventName = false;
+                                    var eventName = '';
                                     if ((threshold < brk.from && y > brk.to) ||
                                         (threshold > brk.from && y < brk.from)) {
                                         eventName = 'pointBreak';
@@ -227,6 +240,9 @@
                                         fireEvent(axis, eventName, { point: point, brk: brk });
                                     }
                                 }
+                            });
+                            breaksOutOfRange === null || breaksOutOfRange === void 0 ? void 0 : breaksOutOfRange.forEach(function (brk) {
+                                fireEvent(axis, 'pointOutsideOfBreak', { point: point, brk: brk });
                             });
                         });
                     });
@@ -245,7 +261,7 @@
              */
             function seriesGappedPath() {
                 var currentDataGrouping = this.currentDataGrouping,
-                    groupingSize = currentDataGrouping && currentDataGrouping.gapSize,
+                    groupingSize = currentDataGrouping === null || currentDataGrouping === void 0 ? void 0 : currentDataGrouping.gapSize,
                     points = this.points.slice(),
                     yAxis = this.yAxis;
                 var gapSize = this.options.gapSize,
@@ -520,8 +536,10 @@
                 Additions.prototype.setBreaks = function (breaks, redraw) {
                     var brokenAxis = this;
                     var axis = brokenAxis.axis;
-                    var hasBreaks = (isArray(breaks) && !!breaks.length);
-                    axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
+                    var hasBreaks = isArray(breaks) &&
+                            !!breaks.length &&
+                            !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
+                        axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
                         axis.options.breaks = axis.userOptions.breaks = breaks;

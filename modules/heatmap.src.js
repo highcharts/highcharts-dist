@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v11.1.0 (2023-06-05)
+ * @license Highmaps JS v11.2.0 (2023-10-30)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -70,7 +68,7 @@
              *  Variables
              *
              * */
-            let ColorAxisClass;
+            let ColorAxisConstructor;
             /* *
              *
              *  Functions
@@ -80,9 +78,9 @@
             /**
              * @private
              */
-            function compose(ColorAxisType, ChartClass, FxClass, LegendClass, SeriesClass) {
-                if (!ColorAxisClass) {
-                    ColorAxisClass = ColorAxisType;
+            function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
+                if (!ColorAxisConstructor) {
+                    ColorAxisConstructor = ColorAxisClass;
                 }
                 if (U.pushUnique(composedMembers, ChartClass)) {
                     const chartProto = ChartClass.prototype;
@@ -125,9 +123,7 @@
                 this.colorAxis = [];
                 if (options.colorAxis) {
                     options.colorAxis = splat(options.colorAxis);
-                    options.colorAxis.forEach((axisOptions) => {
-                        new ColorAxisClass(this, axisOptions); // eslint-disable-line no-new
-                    });
+                    options.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
                 }
             }
             /**
@@ -192,13 +188,10 @@
              * Updates in the legend need to be reflected in the color axis. (#6888)
              * @private
              */
-            function onLegendAfterUpdate() {
-                const colorAxes = this.chart.colorAxis;
-                if (colorAxes) {
-                    colorAxes.forEach(function (colorAxis) {
-                        colorAxis.update({}, arguments[2]);
-                    });
-                }
+            function onLegendAfterUpdate(e) {
+                this.chart.colorAxis?.forEach((colorAxis) => {
+                    colorAxis.update({}, e.redraw);
+                });
             }
             /**
              * Calculate and set colors for points.
@@ -272,24 +265,25 @@
             function wrapChartCreateAxis(ChartClass) {
                 const superCreateAxis = ChartClass.prototype.createAxis;
                 ChartClass.prototype.createAxis = function (type, options) {
+                    const chart = this;
                     if (type !== 'colorAxis') {
-                        return superCreateAxis.apply(this, arguments);
+                        return superCreateAxis.apply(chart, arguments);
                     }
-                    const axis = new ColorAxisClass(this, merge(options.axis, {
-                        index: this[type].length,
+                    const axis = new ColorAxisConstructor(chart, merge(options.axis, {
+                        index: chart[type].length,
                         isX: false
                     }));
-                    this.isDirtyLegend = true;
+                    chart.isDirtyLegend = true;
                     // Clear before 'bindAxes' (#11924)
-                    this.axes.forEach(function (axis) {
+                    chart.axes.forEach((axis) => {
                         axis.series = [];
                     });
-                    this.series.forEach(function (series) {
+                    chart.series.forEach((series) => {
                         series.bindAxes();
                         series.isDirtyData = true;
                     });
                     if (pick(options.redraw, true)) {
-                        this.redraw(options.animation);
+                        chart.redraw(options.animation);
                     }
                     return axis;
                 };
@@ -757,7 +751,7 @@
 
         return colorAxisDefaults;
     });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Color/Color.js'], _modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Axis/Color/ColorAxisDefaults.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Color, ColorAxisComposition, ColorAxisDefaults, LegendSymbol, SeriesRegistry, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisLike.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -768,8 +762,151 @@
          *
          * */
         const { parse: color } = Color;
+        const { merge } = U;
+        /* *
+         *
+         *  Namespace
+         *
+         * */
+        var ColorAxisLike;
+        (function (ColorAxisLike) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Initialize defined data classes.
+             * @private
+             */
+            function initDataClasses(userOptions) {
+                const axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, options = axis.options, userDataClasses = userOptions.dataClasses || [];
+                let dataClass, dataClasses, colorCount = chart.options.chart.colorCount, colorCounter = 0, colors;
+                axis.dataClasses = dataClasses = [];
+                legendItem.labels = [];
+                for (let i = 0, iEnd = userDataClasses.length; i < iEnd; ++i) {
+                    dataClass = userDataClasses[i];
+                    dataClass = merge(dataClass);
+                    dataClasses.push(dataClass);
+                    if (!chart.styledMode && dataClass.color) {
+                        continue;
+                    }
+                    if (options.dataClassColor === 'category') {
+                        if (!chart.styledMode) {
+                            colors = chart.options.colors || [];
+                            colorCount = colors.length;
+                            dataClass.color = colors[colorCounter];
+                        }
+                        dataClass.colorIndex = colorCounter;
+                        // Loop back to zero
+                        colorCounter++;
+                        if (colorCounter === colorCount) {
+                            colorCounter = 0;
+                        }
+                    }
+                    else {
+                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), iEnd < 2 ? 0.5 : i / (iEnd - 1) // #3219
+                        );
+                    }
+                }
+            }
+            ColorAxisLike.initDataClasses = initDataClasses;
+            /**
+             * Create initial color stops.
+             * @private
+             */
+            function initStops() {
+                const axis = this, options = axis.options, stops = axis.stops = options.stops || [
+                    [0, options.minColor || ''],
+                    [1, options.maxColor || '']
+                ];
+                for (let i = 0, iEnd = stops.length; i < iEnd; ++i) {
+                    stops[i].color = color(stops[i][1]);
+                }
+            }
+            ColorAxisLike.initStops = initStops;
+            /**
+             * Normalize logarithmic values.
+             * @private
+             */
+            function normalizedValue(value) {
+                const axis = this, max = axis.max || 0, min = axis.min || 0;
+                if (axis.logarithmic) {
+                    value = axis.logarithmic.log2lin(value);
+                }
+                return 1 - ((max - value) /
+                    ((max - min) || 1));
+            }
+            ColorAxisLike.normalizedValue = normalizedValue;
+            /**
+             * Translate from a value to a color.
+             * @private
+             */
+            function toColor(value, point) {
+                const axis = this;
+                const dataClasses = axis.dataClasses;
+                const stops = axis.stops;
+                let pos, from, to, color, dataClass, i;
+                if (dataClasses) {
+                    i = dataClasses.length;
+                    while (i--) {
+                        dataClass = dataClasses[i];
+                        from = dataClass.from;
+                        to = dataClass.to;
+                        if ((typeof from === 'undefined' || value >= from) &&
+                            (typeof to === 'undefined' || value <= to)) {
+                            color = dataClass.color;
+                            if (point) {
+                                point.dataClass = i;
+                                point.colorIndex = dataClass.colorIndex;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    pos = axis.normalizedValue(value);
+                    i = stops.length;
+                    while (i--) {
+                        if (pos > stops[i][0]) {
+                            break;
+                        }
+                    }
+                    from = stops[i] || stops[i + 1];
+                    to = stops[i + 1] || from;
+                    // The position within the gradient
+                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
+                    color = from.color.tweenTo(to.color, pos);
+                }
+                return color;
+            }
+            ColorAxisLike.toColor = toColor;
+        })(ColorAxisLike || (ColorAxisLike = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ColorAxisLike;
+    });
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Axis/Color/ColorAxisDefaults.js'], _modules['Core/Axis/Color/ColorAxisLike.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, ColorAxisComposition, ColorAxisDefaults, ColorAxisLike, LegendSymbol, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         const { series: Series } = SeriesRegistry;
-        const { extend, isArray, isNumber, merge, pick } = U;
+        const { extend, fireEvent, isArray, isNumber, merge, pick } = U;
         /* *
          *
          *  Class
@@ -863,40 +1000,6 @@
                 axis.zoomEnabled = false;
             }
             /**
-             * @private
-             */
-            initDataClasses(userOptions) {
-                const axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, len = userOptions.dataClasses.length, options = axis.options;
-                let dataClasses, colorCounter = 0, colorCount = chart.options.chart.colorCount;
-                axis.dataClasses = dataClasses = [];
-                legendItem.labels = [];
-                (userOptions.dataClasses || []).forEach(function (dataClass, i) {
-                    let colors;
-                    dataClass = merge(dataClass);
-                    dataClasses.push(dataClass);
-                    if (!chart.styledMode && dataClass.color) {
-                        return;
-                    }
-                    if (options.dataClassColor === 'category') {
-                        if (!chart.styledMode) {
-                            colors = chart.options.colors;
-                            colorCount = colors.length;
-                            dataClass.color = colors[colorCounter];
-                        }
-                        dataClass.colorIndex = colorCounter;
-                        // increase and loop back to zero
-                        colorCounter++;
-                        if (colorCounter === colorCount) {
-                            colorCounter = 0;
-                        }
-                    }
-                    else {
-                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), len < 2 ? 0.5 : i / (len - 1) // #3219
-                        );
-                    }
-                });
-            }
-            /**
              * Returns true if the series has points at all.
              *
              * @function Highcharts.ColorAxis#hasData
@@ -915,19 +1018,6 @@
                 if (!this.dataClasses) {
                     return super.setTickPositions();
                 }
-            }
-            /**
-             * @private
-             */
-            initStops() {
-                const axis = this;
-                axis.stops = axis.options.stops || [
-                    [0, axis.options.minColor],
-                    [1, axis.options.maxColor]
-                ];
-                axis.stops.forEach(function (stop) {
-                    stop.color = color(stop[1]);
-                });
             }
             /**
              * Extend the setOptions method to process extreme colors and color stops.
@@ -964,59 +1054,6 @@
                         legendOptions.symbolWidth :
                         legendOptions.symbolHeight) || ColorAxis.defaultLegendLength;
                 }
-            }
-            /**
-             * @private
-             */
-            normalizedValue(value) {
-                const axis = this;
-                if (axis.logarithmic) {
-                    value = axis.logarithmic.log2lin(value);
-                }
-                return 1 - ((axis.max - value) /
-                    ((axis.max - axis.min) || 1));
-            }
-            /**
-             * Translate from a value to a color.
-             * @private
-             */
-            toColor(value, point) {
-                const axis = this;
-                const dataClasses = axis.dataClasses;
-                const stops = axis.stops;
-                let pos, from, to, color, dataClass, i;
-                if (dataClasses) {
-                    i = dataClasses.length;
-                    while (i--) {
-                        dataClass = dataClasses[i];
-                        from = dataClass.from;
-                        to = dataClass.to;
-                        if ((typeof from === 'undefined' || value >= from) &&
-                            (typeof to === 'undefined' || value <= to)) {
-                            color = dataClass.color;
-                            if (point) {
-                                point.dataClass = i;
-                                point.colorIndex = dataClass.colorIndex;
-                            }
-                            break;
-                        }
-                    }
-                }
-                else {
-                    pos = axis.normalizedValue(value);
-                    i = stops.length;
-                    while (i--) {
-                        if (pos > stops[i][0]) {
-                            break;
-                        }
-                    }
-                    from = stops[i] || stops[i + 1];
-                    to = stops[i + 1] || from;
-                    // The position within the gradient
-                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
-                    color = from.color.tweenTo(to.color, pos);
-                }
-                return color;
             }
             /**
              * Override the getOffset method to add the whole axis groups inside the
@@ -1079,7 +1116,6 @@
              * @private
              */
             drawLegendSymbol(legend, item) {
-                var _a;
                 const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength), labelPadding = pick(
                 // @todo: This option is not documented, nor implemented when
                 // vertical
@@ -1087,7 +1123,7 @@
                 this.setLegendColor();
                 // Create the gradient
                 if (!legendItem.symbol) {
-                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: (_a = legendOptions.symbolRadius) !== null && _a !== void 0 ? _a : 3 }).attr({
+                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: legendOptions.symbolRadius ?? 3 }).attr({
                         zIndex: 1
                     }).add(legendItem.group);
                 }
@@ -1356,10 +1392,17 @@
                             // data class
                             setVisible: function () {
                                 this.visible = vis = axis.visible = !vis;
+                                const affectedSeries = [];
                                 for (const point of getPointsInDataClass(i)) {
                                     point.setVisible(vis);
+                                    if (affectedSeries.indexOf(point.series) === -1) {
+                                        affectedSeries.push(point.series);
+                                    }
                                 }
                                 chart.legend.colorizeItem(this, vis);
+                                affectedSeries.forEach((series) => {
+                                    fireEvent(series, 'afterDataClassLegendClick');
+                                });
                             }
                         }, dataClass));
                     });
@@ -1380,6 +1423,7 @@
         ColorAxis.keepProps = [
             'legendItem'
         ];
+        extend(ColorAxis.prototype, ColorAxisLike);
         /* *
          *
          *  Registry
@@ -1521,7 +1565,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } } } } = SeriesRegistry;
+        const { scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
         const { clamp, defined, extend, pick } = U;
         /* *
          *
@@ -1541,17 +1585,13 @@
                 this.value = void 0;
                 this.x = void 0;
                 this.y = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
+            /** @private */
             applyOptions(options, x) {
                 // #17970, if point is null remove its color, because it may be updated
                 if (this.isNull || this.value === null) {
@@ -1562,6 +1602,7 @@
                     'null' : 'point';
                 return this;
             }
+            /** @private */
             getCellAttributes() {
                 const point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
                 pointPadding = pick(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
@@ -1575,7 +1616,7 @@
                 const dimensions = [['width', 'x'], ['height', 'y']];
                 // Handle marker's fixed width, and height values including border
                 // and pointPadding while calculating cell attributes.
-                dimensions.forEach(function (dimension) {
+                for (const dimension of dimensions) {
                     const prop = dimension[0], direction = dimension[1];
                     let start = direction + '1', end = direction + '2';
                     const side = Math.abs(cellAttr[start] - cellAttr[end]), borderWidth = markerOptions &&
@@ -1595,7 +1636,7 @@
                         cellAttr[start] += pointPadding;
                         cellAttr[end] -= pointPadding;
                     }
-                });
+                }
                 return cellAttr;
             }
             /**
@@ -1638,7 +1679,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, HeatmapPoint, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1648,314 +1689,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { doc } = H;
-        const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = SeriesRegistry;
-        const { prototype: { symbols } } = SVGRenderer;
-        const { clamp, extend, fireEvent, isNumber, merge, pick, defined } = U;
+        const { isNumber } = U;
         /* *
          *
-         *  Class
+         *  API Options
          *
          * */
-        /**
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes.heatmap
-         *
-         * @augments Highcharts.Series
-         */
-        class HeatmapSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.canvas = void 0;
-                this.colorAxis = void 0;
-                this.context = void 0;
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.valueMax = NaN;
-                this.valueMin = NaN;
-                /* eslint-enable valid-jsdoc */
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            drawPoints() {
-                const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
-                if (interpolation) {
-                    const { image, chart, xAxis, yAxis, points } = series, lastPointIndex = points.length - 1, { len: xAxisLen, reversed: xRev } = xAxis, { len: yAxisLen, reversed: yRev } = yAxis, { min: xMin, max: xMax } = xAxis.getExtremes(), { min: yMin, max: yMax } = yAxis.getExtremes(), [colsize, rowsize] = [
-                        pick(seriesOptions.colsize, 1),
-                        pick(seriesOptions.rowsize, 1)
-                    ], inverted = chart.inverted, xTranslationPad = colsize / 2, userMinPadding = xAxis.userOptions.minPadding, isUserMinPadZero = (defined(userMinPadding) &&
-                        !(userMinPadding > 0)), noOffset = (inverted || isUserMinPadZero), padIfMinSet = (isUserMinPadZero && xTranslationPad || 0), [x1, x2, postTranslationOffset] = [
-                        xMin - padIfMinSet,
-                        xMax + (padIfMinSet * 2),
-                        isUserMinPadZero && 0 || (xMin + colsize)
-                    ].map((side) => (clamp(Math.round(xAxis.len -
-                        xAxis.translate(side, false, true, false, true, -series.pointPlacementToXValue())), -xAxis.len, 2 * xAxis.len))), [xStart, xEnd] = xRev ? [x2, x1] : [x1, x2], xOffset = (noOffset && 0 ||
-                        (((xAxisLen / postTranslationOffset) / 2) / 2) / 2), dimensions = inverted ?
-                        {
-                            width: xAxisLen,
-                            height: yAxisLen,
-                            x: 0,
-                            y: 0
-                        } : {
-                        x: xStart - xOffset,
-                        width: xEnd - xOffset,
-                        height: yAxisLen,
-                        y: 0
-                    };
-                    if (!image || series.isDirtyData) {
-                        const colorAxis = (chart.colorAxis &&
-                            chart.colorAxis[0]), ctx = series.getContext(), canvas = series.canvas;
-                        if (canvas && ctx && colorAxis) {
-                            const canvasWidth = canvas.width = ~~((xMax - xMin) / colsize) + 1, canvasHeight = canvas.height = ~~((yMax - yMin) / rowsize) + 1, canvasArea = canvasWidth * canvasHeight, pixelData = new Uint8ClampedArray(canvasArea * 4), widthLastIndex = (canvasWidth - (noOffset && 1 || 0)), heightLastIndex = canvasHeight - 1, colorFromPoint = (p) => {
-                                const rgba = (colorAxis.toColor(p.value ||
-                                    0, pick(p))
-                                    .split(')')[0]
-                                    .split('(')[1]
-                                    .split(',')
-                                    .map((s) => pick(parseFloat(s), parseInt(s, 10))));
-                                rgba[3] = pick(rgba[3], 1.0) * 255;
-                                return rgba;
-                            }, scaleToImg = (val, fromMin, fromMax, toMin, toMax) => ~~((val - fromMin) * ((toMax - toMin) /
-                                (fromMax - fromMin))), xPlacement = (xRev ?
-                                (xToImg) => (widthLastIndex - xToImg) :
-                                (xToImg) => xToImg), yPlacement = (yRev ?
-                                (yToImg) => (heightLastIndex - yToImg) :
-                                (yToImg) => yToImg), scaledPointPos = (x, y) => (Math.ceil(canvasWidth *
-                                yPlacement(scaleToImg(yMax - y, yMin, yMax, 0, heightLastIndex)) +
-                                xPlacement(scaleToImg(x, xMin, xMax, 0, widthLastIndex))));
-                            series.buildKDTree();
-                            series.directTouch = false;
-                            for (let i = 0; i < canvasArea; i++) {
-                                const toPointScale = scaleToImg(i * 4, 0, pixelData.length - 4, 0, lastPointIndex), p = points[toPointScale], sourceArr = new Uint8ClampedArray(colorFromPoint(p));
-                                pixelData.set(sourceArr, scaledPointPos(p.x, p.y) * 4);
-                            }
-                            ctx.putImageData(new ImageData(pixelData, canvasWidth, canvasHeight), 0, 0);
-                            if (image) {
-                                image.attr(Object.assign(Object.assign({}, dimensions), { href: canvas.toDataURL() }));
-                            }
-                            else {
-                                series.image = chart.renderer.image(canvas.toDataURL())
-                                    .attr(dimensions)
-                                    .add(series.group);
-                            }
-                        }
-                    }
-                    else if (image.width !== dimensions.width ||
-                        image.height !== dimensions.height) {
-                        image.attr(dimensions);
-                    }
-                }
-                else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
-                    Series.prototype.drawPoints.call(series);
-                    series.points.forEach((point) => {
-                        if (point.graphic) {
-                            // In styled mode, use CSS, otherwise the fill used in
-                            // the style sheet will take precedence over
-                            // the fill attribute.
-                            point.graphic[series.chart.styledMode ? 'css' : 'animate'](series.colorAttribs(point));
-                            if (point.value === null) { // #15708
-                                point.graphic.addClass('highcharts-null-point');
-                            }
-                        }
-                    });
-                }
-            }
-            /**
-             * @private
-             */
-            getContext() {
-                const series = this, { canvas, context } = series;
-                if (canvas && context) {
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                }
-                else {
-                    series.canvas = doc.createElement('canvas');
-                    series.context = series.canvas.getContext('2d') || void 0;
-                    return series.context;
-                }
-                return context;
-            }
-            /**
-             * @private
-             */
-            getExtremes() {
-                // Get the extremes from the value data
-                const { dataMin, dataMax } = Series.prototype.getExtremes
-                    .call(this, this.valueData);
-                if (isNumber(dataMin)) {
-                    this.valueMin = dataMin;
-                }
-                if (isNumber(dataMax)) {
-                    this.valueMax = dataMax;
-                }
-                // Get the extremes from the y data
-                return Series.prototype.getExtremes.call(this);
-            }
-            /**
-             * Override to also allow null points, used when building the k-d-tree for
-             * tooltips in boost mode.
-             * @private
-             */
-            getValidPoints(points, insideOnly) {
-                return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
-            }
-            /**
-             * Define hasData function for non-cartesian series. Returns true if the
-             * series has points at all.
-             * @private
-             */
-            hasData() {
-                return !!this.processedXData.length; // != 0
-            }
-            /**
-             * Override the init method to add point ranges on both axes.
-             * @private
-             */
-            init() {
-                super.init.apply(this, arguments);
-                const options = this.options;
-                // #3758, prevent resetting in setData
-                options.pointRange = pick(options.pointRange, options.colsize || 1);
-                // general point range
-                this.yAxis.axisPointRange = options.rowsize || 1;
-                // Bind new symbol names
-                symbols.ellipse = symbols.circle;
-                // @todo
-                //
-                // Setting the border radius here is a workaround. It should be set in
-                // the shapeArgs or returned from `markerAttribs`. However,
-                // Series.drawPoints does not pick up markerAttribs to be passed over to
-                // `renderer.symbol`. Also, image symbols are not positioned by their
-                // top left corner like other symbols are. This should be refactored,
-                // then we could save ourselves some tests for .hasImage etc. And the
-                // evaluation of borderRadius would be moved to `markerAttribs`.
-                if (options.marker && isNumber(options.borderRadius)) {
-                    options.marker.r = options.borderRadius;
-                }
-            }
-            /**
-             * @private
-             */
-            markerAttribs(point, state) {
-                const shapeArgs = point.shapeArgs || {};
-                if (point.hasImage) {
-                    return {
-                        x: point.plotX,
-                        y: point.plotY
-                    };
-                }
-                // Setting width and height attributes on image does not affect on its
-                // dimensions.
-                if (state && state !== 'normal') {
-                    const pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states &&
-                        seriesMarkerOptions.states[state]) || {}, pointStateOptions = (pointMarkerOptions.states &&
-                        pointMarkerOptions.states[state]) || {};
-                    // Set new width and height basing on state options.
-                    const width = (pointStateOptions.width ||
-                        seriesStateOptions.width ||
-                        shapeArgs.width ||
-                        0) + (pointStateOptions.widthPlus ||
-                        seriesStateOptions.widthPlus ||
-                        0);
-                    const height = (pointStateOptions.height ||
-                        seriesStateOptions.height ||
-                        shapeArgs.height ||
-                        0) + (pointStateOptions.heightPlus ||
-                        seriesStateOptions.heightPlus ||
-                        0);
-                    // Align marker by the new size.
-                    const x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2, y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
-                    return { x, y, width, height };
-                }
-                return shapeArgs;
-            }
-            /**
-             * @private
-             */
-            pointAttribs(point, state) {
-                const series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
-                // Get old properties in order to keep backward compatibility
-                borderColor = (point && point.options.borderColor) ||
-                    seriesOptions.borderColor ||
-                    heatmapPlotOptions.borderColor ||
-                    seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
-                    seriesOptions.borderWidth ||
-                    heatmapPlotOptions.borderWidth ||
-                    seriesPlotOptions.borderWidth ||
-                    attr['stroke-width'];
-                // Apply lineColor, or set it to default series color.
-                attr.stroke = ((point && point.marker && point.marker.lineColor) ||
-                    (seriesOptions.marker && seriesOptions.marker.lineColor) ||
-                    borderColor ||
-                    this.color);
-                // Apply old borderWidth property if exists.
-                attr['stroke-width'] = borderWidth;
-                if (state && state !== 'normal') {
-                    const stateOptions = merge((seriesOptions.states &&
-                        seriesOptions.states[state]), (seriesOptions.marker &&
-                        seriesOptions.marker.states &&
-                        seriesOptions.marker.states[state]), (point &&
-                        point.options.states &&
-                        point.options.states[state] || {}));
-                    attr.fill =
-                        stateOptions.color ||
-                            Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
-                    attr.stroke = (stateOptions.lineColor || attr.stroke); // #17896
-                }
-                return attr;
-            }
-            /**
-             * @private
-             */
-            translate() {
-                const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
-                series.generatePoints();
-                series.points.forEach(function (point) {
-                    const cellAttr = point.getCellAttributes();
-                    let x = Math.min(cellAttr.x1, cellAttr.x2), y = Math.min(cellAttr.y1, cellAttr.y2), width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0), height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
-                    point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
-                    // If marker shape is regular (square), find the shorter cell's
-                    // side.
-                    if (hasRegularShape) {
-                        const sizeDiff = Math.abs(width - height);
-                        x = Math.min(cellAttr.x1, cellAttr.x2) +
-                            (width < height ? 0 : sizeDiff / 2);
-                        y = Math.min(cellAttr.y1, cellAttr.y2) +
-                            (width < height ? sizeDiff / 2 : 0);
-                        width = height = Math.min(width, height);
-                    }
-                    if (point.hasImage) {
-                        point.marker = { width, height };
-                    }
-                    point.plotX = point.clientX = (cellAttr.x1 + cellAttr.x2) / 2;
-                    point.plotY = (cellAttr.y1 + cellAttr.y2) / 2;
-                    point.shapeType = 'path';
-                    point.shapeArgs = merge(true, { x, y, width, height }, {
-                        d: symbols[shape](x, y, width, height, { r: isNumber(borderRadius) ? borderRadius : 0 })
-                    });
-                });
-                fireEvent(series, 'afterTranslate');
-            }
-        }
         /**
          * A heatmap is a graphical representation of data where the individual
          * values contained in a matrix are represented as colors.
@@ -1977,7 +1716,7 @@
          * @product      highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
-        HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
+        const HeatmapSeriesDefaults = {
             /**
              * Animation is disabled by default on the heatmap series.
              */
@@ -2152,12 +1891,12 @@
                          *
                          * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
                         *          20px greater width and height on hover
-                         *
-                         * @type      {number|undefined}
-                         * @default   undefined
-                         * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.hover.heightPlus
-                         */
+                            *
+                            * @type      {number|undefined}
+                            * @default   undefined
+                            * @product   highcharts highmaps
+                            * @apioption plotOptions.heatmap.marker.states.hover.heightPlus
+                            */
                         /**
                          * The additional line width for a hovered point.
                          *
@@ -2243,65 +1982,7 @@
                 }
             },
             legendSymbol: 'rectangle'
-        });
-        extend(HeatmapSeries.prototype, {
-            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
-            colorKey: ColorMapComposition.seriesMembers.colorKey,
-            directTouch: true,
-            getExtremesFromAll: true,
-            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
-            pointArrayMap: ['y', 'value'],
-            pointClass: HeatmapPoint,
-            specialGroup: 'group',
-            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
-            /**
-             * @private
-             */
-            alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
-            getSymbol: Series.prototype.getSymbol
-        });
-        ColorMapComposition.compose(HeatmapSeries);
-        SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Declarations
-         *
-         * */
-        /**
-         * Heatmap series only. Padding between the points in the heatmap.
-         * @name Highcharts.Point#pointPadding
-         * @type {number|undefined}
-         */
-        /**
-         * Heatmap series only. The value of the point, resulting in a color
-         * controled by options as set in the colorAxis configuration.
-         * @name Highcharts.Point#value
-         * @type {number|null|undefined}
-         */
-        /* *
-         * @interface Highcharts.PointOptionsObject in parts/Point.ts
-         */ /**
-        * Heatmap series only. Point padding for a single point.
-        * @name Highcharts.PointOptionsObject#pointPadding
-        * @type {number|undefined}
-        */ /**
-        * Heatmap series only. The value of the point, resulting in a color controled
-        * by options as set in the colorAxis configuration.
-        * @name Highcharts.PointOptionsObject#value
-        * @type {number|null|undefined}
-        */
-        ''; // detach doclets above
-        /* *
-         *
-         *  API Options
-         *
-         * */
+        };
         /**
          * A `heatmap` series. If the [type](#series.heatmap.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -2629,7 +2310,420 @@
          * @product   highcharts highstock
          * @apioption series.heatmap.data.marker.states.select.heightPlus
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return HeatmapSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2010-2023 Hubert Kozik
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { doc } = H;
+        const { defined, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Find color of point based on color axis.
+         *
+         * @function Highcharts.colorFromPoint
+         *
+         * @param {number | null} value
+         *        Value to find corresponding color on the color axis.
+         *
+         * @param {Highcharts.Point} point
+         *        Point to find it's color from color axis.
+         *
+         * @return {number[]}
+         *        Color in RGBa array.
+         */
+        function colorFromPoint(value, point) {
+            const colorAxis = point.series.colorAxis;
+            if (colorAxis) {
+                const rgba = (colorAxis.toColor(value || 0, point)
+                    .split(')')[0]
+                    .split('(')[1]
+                    .split(',')
+                    .map((s) => pick(parseFloat(s), parseInt(s, 10))));
+                rgba[3] = pick(rgba[3], 1.0) * 255;
+                if (!defined(value) || !point.visible) {
+                    rgba[3] = 0;
+                }
+                return rgba;
+            }
+            return [0, 0, 0, 0];
+        }
+        /**
+         * Method responsible for creating a canvas for interpolation image.
+         * @private
+         */
+        function getContext(series) {
+            const { canvas, context } = series;
+            if (canvas && context) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            else {
+                series.canvas = doc.createElement('canvas');
+                series.context = series.canvas.getContext('2d', {
+                    willReadFrequently: true
+                }) || void 0;
+                return series.context;
+            }
+            return context;
+        }
+        const InterpolationUtilities = {
+            colorFromPoint,
+            getContext
+        };
+
+        return InterpolationUtilities;
+    });
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Series/Heatmap/HeatmapSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Series/InterpolationUtilities.js']], function (Color, ColorMapComposition, HeatmapPoint, HeatmapSeriesDefaults, SeriesRegistry, SVGRenderer, U, IU) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = SeriesRegistry;
+        const { prototype: { symbols } } = SVGRenderer;
+        const { addEvent, extend, fireEvent, isNumber, merge, pick } = U;
+        const { colorFromPoint, getContext } = IU;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.heatmap
+         *
+         * @augments Highcharts.Series
+         */
+        class HeatmapSeries extends ScatterSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.canvas = void 0;
+                this.colorAxis = void 0;
+                this.context = void 0;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.valueMax = NaN;
+                this.valueMin = NaN;
+                this.isDirtyCanvas = true;
+                /* eslint-enable valid-jsdoc */
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            drawPoints() {
+                const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
+                if (interpolation) {
+                    const { image, chart, xAxis, yAxis } = series, { reversed: xRev = false, len: width } = xAxis, { reversed: yRev = false, len: height } = yAxis, dimensions = { width, height };
+                    if (!image || series.isDirtyData || series.isDirtyCanvas) {
+                        const ctx = getContext(series), { canvas, options: { colsize = 1, rowsize = 1 }, points, points: { length } } = series, pointsLen = length - 1, colorAxis = (chart.colorAxis && chart.colorAxis[0]);
+                        if (canvas && ctx && colorAxis) {
+                            const { min: xMin, max: xMax } = xAxis.getExtremes(), { min: yMin, max: yMax } = yAxis.getExtremes(), xDelta = xMax - xMin, yDelta = yMax - yMin, imgMultiple = 8.0, lastX = Math.round(imgMultiple * ((xDelta / colsize) / imgMultiple)), lastY = Math.round(imgMultiple * ((yDelta / rowsize) / imgMultiple)), [transformX, transformY] = [
+                                [lastX, lastX / xDelta, xRev, 'ceil'],
+                                [lastY, lastY / yDelta, !yRev, 'floor']
+                            ].map(([last, scale, rev, rounding]) => (rev ?
+                                (v) => (Math[rounding](last -
+                                    (scale * (v)))) :
+                                (v) => (Math[rounding](scale * v)))), canvasWidth = canvas.width = lastX + 1, canvasHeight = canvas.height = lastY + 1, canvasArea = canvasWidth * canvasHeight, pixelToPointScale = pointsLen / canvasArea, pixelData = new Uint8ClampedArray(canvasArea * 4), pointInPixels = (x, y) => (Math.ceil((canvasWidth * transformY(y - yMin)) +
+                                transformX(x - xMin)) * 4);
+                            series.buildKDTree();
+                            for (let i = 0; i < canvasArea; i++) {
+                                const point = points[Math.ceil(pixelToPointScale * i)], { x, y } = point;
+                                pixelData.set(colorFromPoint(point.value, point), pointInPixels(x, y));
+                            }
+                            ctx.putImageData(new ImageData(pixelData, canvasWidth), 0, 0);
+                            if (image) {
+                                image.attr({
+                                    ...dimensions,
+                                    href: canvas.toDataURL('image/png', 1)
+                                });
+                            }
+                            else {
+                                series.directTouch = false;
+                                series.image = chart.renderer.image(canvas.toDataURL('image/png', 1))
+                                    .attr(dimensions)
+                                    .add(series.group);
+                            }
+                        }
+                        series.isDirtyCanvas = false;
+                    }
+                    else if (image.width !== width || image.height !== height) {
+                        image.attr(dimensions);
+                    }
+                }
+                else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
+                    Series.prototype.drawPoints.call(series);
+                    series.points.forEach((point) => {
+                        if (point.graphic) {
+                            // In styled mode, use CSS, otherwise the fill used in
+                            // the style sheet will take precedence over
+                            // the fill attribute.
+                            point.graphic[series.chart.styledMode ? 'css' : 'animate'](series.colorAttribs(point));
+                            if (point.value === null) { // #15708
+                                point.graphic.addClass('highcharts-null-point');
+                            }
+                        }
+                    });
+                }
+            }
+            /**
+             * @private
+             */
+            getExtremes() {
+                // Get the extremes from the value data
+                const { dataMin, dataMax } = Series.prototype.getExtremes
+                    .call(this, this.valueData);
+                if (isNumber(dataMin)) {
+                    this.valueMin = dataMin;
+                }
+                if (isNumber(dataMax)) {
+                    this.valueMax = dataMax;
+                }
+                // Get the extremes from the y data
+                return Series.prototype.getExtremes.call(this);
+            }
+            /**
+             * Override to also allow null points, used when building the k-d-tree for
+             * tooltips in boost mode.
+             * @private
+             */
+            getValidPoints(points, insideOnly) {
+                return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
+            }
+            /**
+             * Define hasData function for non-cartesian series. Returns true if the
+             * series has points at all.
+             * @private
+             */
+            hasData() {
+                return !!this.processedXData.length; // != 0
+            }
+            /**
+             * Override the init method to add point ranges on both axes.
+             * @private
+             */
+            init() {
+                super.init.apply(this, arguments);
+                const options = this.options;
+                // #3758, prevent resetting in setData
+                options.pointRange = pick(options.pointRange, options.colsize || 1);
+                // general point range
+                this.yAxis.axisPointRange = options.rowsize || 1;
+                // Bind new symbol names
+                symbols.ellipse = symbols.circle;
+                // @todo
+                //
+                // Setting the border radius here is a workaround. It should be set in
+                // the shapeArgs or returned from `markerAttribs`. However,
+                // Series.drawPoints does not pick up markerAttribs to be passed over to
+                // `renderer.symbol`. Also, image symbols are not positioned by their
+                // top left corner like other symbols are. This should be refactored,
+                // then we could save ourselves some tests for .hasImage etc. And the
+                // evaluation of borderRadius would be moved to `markerAttribs`.
+                if (options.marker && isNumber(options.borderRadius)) {
+                    options.marker.r = options.borderRadius;
+                }
+            }
+            /**
+             * @private
+             */
+            markerAttribs(point, state) {
+                const shapeArgs = point.shapeArgs || {};
+                if (point.hasImage) {
+                    return {
+                        x: point.plotX,
+                        y: point.plotY
+                    };
+                }
+                // Setting width and height attributes on image does not affect on its
+                // dimensions.
+                if (state && state !== 'normal') {
+                    const pointMarkerOptions = point.options.marker || {}, seriesMarkerOptions = this.options.marker || {}, seriesStateOptions = (seriesMarkerOptions.states &&
+                        seriesMarkerOptions.states[state]) || {}, pointStateOptions = (pointMarkerOptions.states &&
+                        pointMarkerOptions.states[state]) || {};
+                    // Set new width and height basing on state options.
+                    const width = (pointStateOptions.width ||
+                        seriesStateOptions.width ||
+                        shapeArgs.width ||
+                        0) + (pointStateOptions.widthPlus ||
+                        seriesStateOptions.widthPlus ||
+                        0);
+                    const height = (pointStateOptions.height ||
+                        seriesStateOptions.height ||
+                        shapeArgs.height ||
+                        0) + (pointStateOptions.heightPlus ||
+                        seriesStateOptions.heightPlus ||
+                        0);
+                    // Align marker by the new size.
+                    const x = (shapeArgs.x || 0) + ((shapeArgs.width || 0) - width) / 2, y = (shapeArgs.y || 0) + ((shapeArgs.height || 0) - height) / 2;
+                    return { x, y, width, height };
+                }
+                return shapeArgs;
+            }
+            /**
+             * @private
+             */
+            pointAttribs(point, state) {
+                const series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+                // Get old properties in order to keep backward compatibility
+                borderColor = (point && point.options.borderColor) ||
+                    seriesOptions.borderColor ||
+                    heatmapPlotOptions.borderColor ||
+                    seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
+                    seriesOptions.borderWidth ||
+                    heatmapPlotOptions.borderWidth ||
+                    seriesPlotOptions.borderWidth ||
+                    attr['stroke-width'];
+                // Apply lineColor, or set it to default series color.
+                attr.stroke = ((point && point.marker && point.marker.lineColor) ||
+                    (seriesOptions.marker && seriesOptions.marker.lineColor) ||
+                    borderColor ||
+                    this.color);
+                // Apply old borderWidth property if exists.
+                attr['stroke-width'] = borderWidth;
+                if (state && state !== 'normal') {
+                    const stateOptions = merge((seriesOptions.states &&
+                        seriesOptions.states[state]), (seriesOptions.marker &&
+                        seriesOptions.marker.states &&
+                        seriesOptions.marker.states[state]), (point &&
+                        point.options.states &&
+                        point.options.states[state] || {}));
+                    attr.fill =
+                        stateOptions.color ||
+                            Color.parse(attr.fill).brighten(stateOptions.brightness || 0).get();
+                    attr.stroke = (stateOptions.lineColor || attr.stroke); // #17896
+                }
+                return attr;
+            }
+            /**
+             * @private
+             */
+            translate() {
+                const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker && marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                series.generatePoints();
+                for (const point of series.points) {
+                    const cellAttr = point.getCellAttributes();
+                    let x = Math.min(cellAttr.x1, cellAttr.x2), y = Math.min(cellAttr.y1, cellAttr.y2), width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0), height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
+                    point.hasImage = (point.marker && point.marker.symbol || symbol || '').indexOf('url') === 0;
+                    // If marker shape is regular (square), find the shorter cell's
+                    // side.
+                    if (hasRegularShape) {
+                        const sizeDiff = Math.abs(width - height);
+                        x = Math.min(cellAttr.x1, cellAttr.x2) +
+                            (width < height ? 0 : sizeDiff / 2);
+                        y = Math.min(cellAttr.y1, cellAttr.y2) +
+                            (width < height ? sizeDiff / 2 : 0);
+                        width = height = Math.min(width, height);
+                    }
+                    if (point.hasImage) {
+                        point.marker = { width, height };
+                    }
+                    point.plotX = point.clientX = (cellAttr.x1 + cellAttr.x2) / 2;
+                    point.plotY = (cellAttr.y1 + cellAttr.y2) / 2;
+                    point.shapeType = 'path';
+                    point.shapeArgs = merge(true, { x, y, width, height }, {
+                        d: symbols[shape](x, y, width, height, { r: isNumber(borderRadius) ? borderRadius : 0 })
+                    });
+                }
+                fireEvent(series, 'afterTranslate');
+            }
+        }
+        HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, HeatmapSeriesDefaults);
+        addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
+            this.isDirtyCanvas = true;
+            this.drawPoints();
+        });
+        extend(HeatmapSeries.prototype, {
+            axisTypes: ColorMapComposition.seriesMembers.axisTypes,
+            colorKey: ColorMapComposition.seriesMembers.colorKey,
+            directTouch: true,
+            getExtremesFromAll: true,
+            parallelArrays: ColorMapComposition.seriesMembers.parallelArrays,
+            pointArrayMap: ['y', 'value'],
+            pointClass: HeatmapPoint,
+            specialGroup: 'group',
+            trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
+            /**
+             * @private
+             */
+            alignDataLabel: ColumnSeries.prototype.alignDataLabel,
+            colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
+            getSymbol: Series.prototype.getSymbol
+        });
+        ColorMapComposition.compose(HeatmapSeries);
+        SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * Heatmap series only. Padding between the points in the heatmap.
+         * @name Highcharts.Point#pointPadding
+         * @type {number|undefined}
+         */
+        /**
+         * Heatmap series only. The value of the point, resulting in a color
+         * controled by options as set in the colorAxis configuration.
+         * @name Highcharts.Point#value
+         * @type {number|null|undefined}
+         */
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
+         */ /**
+        * Heatmap series only. Point padding for a single point.
+        * @name Highcharts.PointOptionsObject#pointPadding
+        * @type {number|undefined}
+        */ /**
+        * Heatmap series only. The value of the point, resulting in a color controled
+        * by options as set in the colorAxis configuration.
+        * @name Highcharts.PointOptionsObject#value
+        * @type {number|null|undefined}
+        */
+        ''; // detach doclets above
 
         return HeatmapSeries;
     });

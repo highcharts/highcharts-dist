@@ -38,25 +38,28 @@ var ColumnDataLabel;
      * @private
      */
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        let inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
-        // data label box for alignment
-        dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // range series
+        const inverted = this.chart.inverted, series = point.series, xLen = (series.xAxis ? series.xAxis.len : this.chart.plotSizeX) || 0, yLen = (series.yAxis ? series.yAxis.len : this.chart.plotSizeY) || 0, 
+        // Data label box for alignment
+        dlBox = point.dlBox || point.shapeArgs, below = pick(point.below, // Fange series
         point.plotY >
             pick(this.translatedThreshold, yLen)), 
-        // draw it inside the box?
-        inside = pick(options.inside, !!this.options.stacking), overshoot;
+        // Draw it inside the box?
+        inside = pick(options.inside, !!this.options.stacking);
         // Align to the column itself, or the top of it
         if (dlBox) { // Area range uses this method but not alignTo
             alignTo = merge(dlBox);
-            if (alignTo.y < 0) {
-                alignTo.height += alignTo.y;
-                alignTo.y = 0;
-            }
-            // If parts of the box overshoots outside the plot area, modify the
-            // box to center the label inside
-            overshoot = alignTo.y + alignTo.height - yLen;
-            if (overshoot > 0 && overshoot < alignTo.height) {
-                alignTo.height -= overshoot;
+            // Check for specific overflow and crop conditions (#13240)
+            if (!(options.overflow === 'allow' && options.crop === false)) {
+                if (alignTo.y < 0) {
+                    alignTo.height += alignTo.y;
+                    alignTo.y = 0;
+                }
+                // If parts of the box overshoots outside the plot area, modify
+                // the box to center the label inside
+                const overshoot = alignTo.y + alignTo.height - yLen;
+                if (overshoot > 0 && overshoot < alignTo.height) {
+                    alignTo.height -= overshoot;
+                }
             }
             if (inverted) {
                 alignTo = {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -468,7 +466,7 @@
         });
         H.Pane = Pane;
 
-        return H.Pane;
+        return Pane;
     });
     _registerModule(_modules, 'Series/AreaRange/AreaRangePoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
@@ -481,7 +479,7 @@
          *
          * */
         const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
-        const { defined, isNumber } = U;
+        const { defined, isNumber, merge } = U;
         /* *
          *
          *  Class
@@ -520,7 +518,7 @@
              * @private
              */
             setState() {
-                const prevState = this.state, series = this.series, isPolar = series.chart.polar;
+                const prevState = this.state, series = this.series, isPolar = series.chart.polar, seriesOptionsMarker = series.options.marker, seriesDefaultSymbol = series.symbol;
                 if (!defined(this.plotHigh)) {
                     // Boost doesn't calculate plotHigh
                     this.plotHigh = series.yAxis.toPixels(this.high, true);
@@ -529,10 +527,8 @@
                     // Boost doesn't calculate plotLow
                     this.plotLow = this.plotY = series.yAxis.toPixels(this.low, true);
                 }
-                if (series.stateMarkerGraphic) {
-                    series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
-                    series.stateMarkerGraphic = series.upperStateMarkerGraphic;
-                }
+                series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
+                series.stateMarkerGraphic = series.upperStateMarkerGraphic;
                 // Change state also for the top marker
                 this.graphic = this.graphics && this.graphics[1];
                 this.plotY = this.plotHigh;
@@ -548,14 +544,16 @@
                 if (isPolar && isNumber(this.plotLowX)) {
                     this.plotX = this.plotLowX;
                 }
-                if (series.stateMarkerGraphic) {
-                    series.upperStateMarkerGraphic = series.stateMarkerGraphic;
-                    series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
-                    // Lower marker is stored at stateMarkerGraphic
-                    // to avoid reference duplication (#7021)
-                    series.lowerStateMarkerGraphic = void 0;
-                }
+                series.upperStateMarkerGraphic = series.stateMarkerGraphic;
+                series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
+                // Lower marker is stored at stateMarkerGraphic
+                // to avoid reference duplication (#7021)
+                series.lowerStateMarkerGraphic = void 0;
+                const originalSettings = series.modifyMarkerSettings();
+                // Bottom state
                 areaProto.setState.apply(this, arguments);
+                // Restore previous state
+                series.restoreMarkerSettings(originalSettings);
             }
             haloPath() {
                 const isPolar = this.series.chart.polar;
@@ -909,7 +907,7 @@
                         lowerDataLabelOptions.y = dataLabelOptions.yLow;
                     }
                     // Draw upper labels
-                    if (upperDataLabelOptions.enabled || this._hasPointLabels) {
+                    if (upperDataLabelOptions.enabled || this.hasDataLabels?.()) {
                         // Set preliminary values for plotY and dataLabel
                         // and draw the upper labels
                         i = length;
@@ -965,7 +963,7 @@
                         }
                     }
                     // Draw lower labels
-                    if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
+                    if (lowerDataLabelOptions.enabled || this.hasDataLabels?.()) {
                         i = length;
                         while (i--) {
                             point = data[i];
@@ -1018,11 +1016,33 @@
             alignDataLabel() {
                 columnProto.alignDataLabel.apply(this, arguments);
             }
+            modifyMarkerSettings() {
+                const series = this, originalMarkerSettings = {
+                    marker: series.options.marker,
+                    symbol: series.symbol
+                };
+                if (series.options.lowMarker) {
+                    const { options: { marker, lowMarker } } = series;
+                    series.options.marker = merge(marker, lowMarker);
+                    if (lowMarker.symbol) {
+                        series.symbol = lowMarker.symbol;
+                    }
+                }
+                return originalMarkerSettings;
+            }
+            restoreMarkerSettings(originalSettings) {
+                const series = this;
+                series.options.marker = originalSettings.marker;
+                series.symbol = originalSettings.symbol;
+            }
             drawPoints() {
                 const series = this, pointLength = series.points.length;
                 let i, point;
+                const originalSettings = series.modifyMarkerSettings();
                 // Draw bottom points
                 areaProto.drawPoints.apply(series, arguments);
+                // Restore previous state
+                series.restoreMarkerSettings(originalSettings);
                 // Prepare drawing top points
                 i = 0;
                 while (i < pointLength) {
@@ -1087,6 +1107,14 @@
                     }
                     i++;
                 }
+            }
+            hasMarkerChanged(options, oldOptions) {
+                const series = this, lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
+                return (lowMarker && (lowMarker.enabled === false ||
+                    oldMarker.symbol !== lowMarker.symbol || // #10870, #15946
+                    oldMarker.height !== lowMarker.height || // #16274
+                    oldMarker.width !== lowMarker.width // #16274
+                )) || super.hasMarkerChanged(options, oldOptions);
             }
         }
         AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
@@ -1243,6 +1271,28 @@
          * @default   {highcharts} 0.75
          * @default   {highstock} 0.75
          * @apioption series.arearange.fillOpacity
+         */
+        /**
+         * Options for the lower markers of the arearange-like series. When `lowMarker`
+         * is not defined, options inherit form the marker.
+         *
+         * @see [marker](#series.arearange.marker)
+         *
+         * @declare   Highcharts.PointMarkerOptionsObject
+         * @extends   plotOptions.series.marker
+         * @default   undefined
+         * @product   highcharts highstock
+         * @apioption plotOptions.arearange.lowMarker
+         */
+        /**
+         *
+         * @sample {highcharts} highcharts/series-arearange/lowmarker/
+         *         Area range chart with `lowMarker` option
+         *
+         * @declare   Highcharts.PointMarkerOptionsObject
+         * @extends   plotOptions.series.marker.symbol
+         * @product   highcharts highstock
+         * @apioption plotOptions.arearange.lowMarker.symbol
          */
         /**
          * The high or maximum value for each data point.
@@ -1442,7 +1492,7 @@
 
         return AreaSplineRangeSeries;
     });
-    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1452,210 +1502,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
-        const { extend, merge, pick } = U;
-        /**
-         * The boxplot series type.
-         *
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes#boxplot
-         *
-         * @augments Highcharts.Series
-         */
         /* *
          *
-         *  Class
+         *  API Options
          *
          * */
-        class BoxPlotSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 * Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            // Get presentational attributes
-            pointAttribs() {
-                // No attributes should be set on point.graphic which is the group
-                return {};
-            }
-            // Translate data points from raw values x and y to plotX and plotY
-            translate() {
-                const series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
-                super.translate.apply(series);
-                // do the translation on each point dimension
-                series.points.forEach(function (point) {
-                    pointArrayMap.forEach(function (key) {
-                        if (point[key] !== null) {
-                            point[key + 'Plot'] = yAxis.translate(point[key], 0, 1, 0, 1);
-                        }
-                    });
-                    point.plotHigh = point.highPlot; // For data label validation
-                });
-            }
-            // eslint-disable-next-line valid-jsdoc
-            /**
-             * Draw the data points
-             * @private
-             */
-            drawPoints() {
-                let series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, crispCorr, crispX = 0, boxPath, width, left, right, halfWidth, 
-                // error bar inherits this series type but doesn't do quartiles
-                doQuartiles = series.doQuartiles !== false, pointWiskerLength, whiskerLength = series.options.whiskerLength;
-                points.forEach(function (point) {
-                    let graphic = point.graphic, verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
-                    if (typeof point.plotY !== 'undefined') {
-                        // crisp vector coordinates
-                        width = Math.round(shapeArgs.width);
-                        left = Math.floor(shapeArgs.x);
-                        right = left + width;
-                        halfWidth = Math.round(width / 2);
-                        q1Plot = Math.floor(doQuartiles ? point.q1Plot : point.lowPlot);
-                        q3Plot = Math.floor(doQuartiles ? point.q3Plot : point.lowPlot);
-                        highPlot = Math.floor(point.highPlot);
-                        lowPlot = Math.floor(point.lowPlot);
-                        if (!graphic) {
-                            point.graphic = graphic = renderer.g('point')
-                                .add(series.group);
-                            point.stem = renderer.path()
-                                .addClass('highcharts-boxplot-stem')
-                                .add(graphic);
-                            if (whiskerLength) {
-                                point.whiskers = renderer.path()
-                                    .addClass('highcharts-boxplot-whisker')
-                                    .add(graphic);
-                            }
-                            if (doQuartiles) {
-                                point.box = renderer.path(boxPath)
-                                    .addClass('highcharts-boxplot-box')
-                                    .add(graphic);
-                            }
-                            point.medianShape = renderer.path(medianPath)
-                                .addClass('highcharts-boxplot-median')
-                                .add(graphic);
-                        }
-                        if (!chart.styledMode) {
-                            // Stem attributes
-                            stemAttr.stroke =
-                                point.stemColor || options.stemColor || color;
-                            stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
-                            stemAttr.dashstyle = (point.stemDashStyle ||
-                                options.stemDashStyle ||
-                                options.dashStyle);
-                            point.stem.attr(stemAttr);
-                            // Whiskers attributes
-                            if (whiskerLength) {
-                                whiskersAttr.stroke = (point.whiskerColor ||
-                                    options.whiskerColor ||
-                                    color);
-                                whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
-                                whiskersAttr.dashstyle = (point.whiskerDashStyle ||
-                                    options.whiskerDashStyle ||
-                                    options.dashStyle);
-                                point.whiskers.attr(whiskersAttr);
-                            }
-                            if (doQuartiles) {
-                                boxAttr.fill = (point.fillColor ||
-                                    options.fillColor ||
-                                    color);
-                                boxAttr.stroke = options.lineColor || color;
-                                boxAttr['stroke-width'] = options.lineWidth || 0;
-                                boxAttr.dashstyle = (point.boxDashStyle ||
-                                    options.boxDashStyle ||
-                                    options.dashStyle);
-                                point.box.attr(boxAttr);
-                            }
-                            // Median attributes
-                            medianAttr.stroke = (point.medianColor ||
-                                options.medianColor ||
-                                color);
-                            medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
-                            medianAttr.dashstyle = (point.medianDashStyle ||
-                                options.medianDashStyle ||
-                                options.dashStyle);
-                            point.medianShape.attr(medianAttr);
-                        }
-                        let d;
-                        // The stem
-                        crispCorr = (point.stem.strokeWidth() % 2) / 2;
-                        crispX = left + halfWidth + crispCorr;
-                        d = [
-                            // stem up
-                            ['M', crispX, q3Plot],
-                            ['L', crispX, highPlot],
-                            // stem down
-                            ['M', crispX, q1Plot],
-                            ['L', crispX, lowPlot]
-                        ];
-                        point.stem[verb]({ d });
-                        // The box
-                        if (doQuartiles) {
-                            crispCorr = (point.box.strokeWidth() % 2) / 2;
-                            q1Plot = Math.floor(q1Plot) + crispCorr;
-                            q3Plot = Math.floor(q3Plot) + crispCorr;
-                            left += crispCorr;
-                            right += crispCorr;
-                            d = [
-                                ['M', left, q3Plot],
-                                ['L', left, q1Plot],
-                                ['L', right, q1Plot],
-                                ['L', right, q3Plot],
-                                ['L', left, q3Plot],
-                                ['Z']
-                            ];
-                            point.box[verb]({ d });
-                        }
-                        // The whiskers
-                        if (whiskerLength) {
-                            crispCorr = (point.whiskers.strokeWidth() % 2) / 2;
-                            highPlot = highPlot + crispCorr;
-                            lowPlot = lowPlot + crispCorr;
-                            pointWiskerLength = (/%$/).test(whiskerLength) ?
-                                halfWidth * parseFloat(whiskerLength) / 100 :
-                                whiskerLength / 2;
-                            d = [
-                                // High whisker
-                                ['M', crispX - pointWiskerLength, highPlot],
-                                ['L', crispX + pointWiskerLength, highPlot],
-                                // Low whisker
-                                ['M', crispX - pointWiskerLength, lowPlot],
-                                ['L', crispX + pointWiskerLength, lowPlot]
-                            ];
-                            point.whiskers[verb]({ d });
-                        }
-                        // The median
-                        medianPlot = Math.round(point.medianPlot);
-                        crispCorr = (point.medianShape.strokeWidth() % 2) / 2;
-                        medianPlot = medianPlot + crispCorr;
-                        d = [
-                            ['M', left, medianPlot],
-                            ['L', right, medianPlot]
-                        ];
-                        point.medianShape[verb]({ d });
-                    }
-                });
-            }
-            // return a plain array for speedy calculation
-            toYData(point) {
-                return [point.low, point.q1, point.median, point.q3, point.high];
-            }
-        }
         /**
          * A box plot is a convenient way of depicting groups of data through their
          * five-number summaries: the smallest observation (sample minimum), lower
@@ -1672,7 +1523,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.boxplot
          */
-        BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+        const BoxPlotSeriesDefaults = {
             /**
              * @type {number|null}
              */
@@ -1911,32 +1762,7 @@
              * @product highcharts
              */
             whiskerWidth: 2
-        });
-        extend(BoxPlotSeries.prototype, {
-            // array point configs are mapped to this
-            pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
-            // defines the top of the tracker
-            pointValKey: 'high',
-            // Disable data labels for box plot
-            drawDataLabels: noop,
-            setStackedPoints: noop // #3890
-        });
-        /* *
-         *
-         * Registry
-         *
-         * */
-        SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
-        /* *
-         *
-         * Default Export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+        };
         /**
          * A `boxplot` series. If the [type](#series.boxplot.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -2104,7 +1930,246 @@
          * @product   highcharts
          * @apioption series.boxplot.data.whiskerDashStyle
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return BoxPlotSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeries.js', [_modules['Series/BoxPlot/BoxPlotSeriesDefaults.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BoxPlotSeriesDefaults, ColumnSeries, H, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { noop } = H;
+        const { extend, merge, pick } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The boxplot series type.
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes#boxplot
+         *
+         * @augments Highcharts.Series
+         */
+        class BoxPlotSeries extends ColumnSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            // Get presentational attributes
+            pointAttribs() {
+                // No attributes should be set on point.graphic which is the group
+                return {};
+            }
+            // Translate data points from raw values x and y to plotX and plotY
+            translate() {
+                const series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
+                super.translate.apply(series);
+                // do the translation on each point dimension
+                series.points.forEach(function (point) {
+                    pointArrayMap.forEach(function (key) {
+                        if (point[key] !== null) {
+                            point[key + 'Plot'] = yAxis.translate(point[key], 0, 1, 0, 1);
+                        }
+                    });
+                    point.plotHigh = point.highPlot; // For data label validation
+                });
+            }
+            /**
+             * Draw the data points
+             * @private
+             */
+            drawPoints() {
+                const series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
+                // error bar inherits this series type but doesn't do quartiles
+                doQuartiles = series.doQuartiles !== false, whiskerLength = series.options.whiskerLength;
+                let q1Plot, q3Plot, highPlot, lowPlot, medianPlot, medianPath, crispCorr, crispX = 0, boxPath, graphic, width, left, right, halfWidth, pointWiskerLength;
+                for (const point of points) {
+                    graphic = point.graphic;
+                    const verb = graphic ? 'animate' : 'attr', shapeArgs = point.shapeArgs, boxAttr = {}, stemAttr = {}, whiskersAttr = {}, medianAttr = {}, color = point.color || series.color;
+                    if (typeof point.plotY !== 'undefined') {
+                        // crisp vector coordinates
+                        width = Math.round(shapeArgs.width);
+                        left = Math.floor(shapeArgs.x);
+                        right = left + width;
+                        halfWidth = Math.round(width / 2);
+                        q1Plot = Math.floor(doQuartiles ? point.q1Plot : point.lowPlot);
+                        q3Plot = Math.floor(doQuartiles ? point.q3Plot : point.lowPlot);
+                        highPlot = Math.floor(point.highPlot);
+                        lowPlot = Math.floor(point.lowPlot);
+                        if (!graphic) {
+                            point.graphic = graphic = renderer.g('point')
+                                .add(series.group);
+                            point.stem = renderer.path()
+                                .addClass('highcharts-boxplot-stem')
+                                .add(graphic);
+                            if (whiskerLength) {
+                                point.whiskers = renderer.path()
+                                    .addClass('highcharts-boxplot-whisker')
+                                    .add(graphic);
+                            }
+                            if (doQuartiles) {
+                                point.box = renderer.path(boxPath)
+                                    .addClass('highcharts-boxplot-box')
+                                    .add(graphic);
+                            }
+                            point.medianShape = renderer.path(medianPath)
+                                .addClass('highcharts-boxplot-median')
+                                .add(graphic);
+                        }
+                        if (!chart.styledMode) {
+                            // Stem attributes
+                            stemAttr.stroke =
+                                point.stemColor || options.stemColor || color;
+                            stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
+                            stemAttr.dashstyle = (point.stemDashStyle ||
+                                options.stemDashStyle ||
+                                options.dashStyle);
+                            point.stem.attr(stemAttr);
+                            // Whiskers attributes
+                            if (whiskerLength) {
+                                whiskersAttr.stroke = (point.whiskerColor ||
+                                    options.whiskerColor ||
+                                    color);
+                                whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
+                                whiskersAttr.dashstyle = (point.whiskerDashStyle ||
+                                    options.whiskerDashStyle ||
+                                    options.dashStyle);
+                                point.whiskers.attr(whiskersAttr);
+                            }
+                            if (doQuartiles) {
+                                boxAttr.fill = (point.fillColor ||
+                                    options.fillColor ||
+                                    color);
+                                boxAttr.stroke = options.lineColor || color;
+                                boxAttr['stroke-width'] = options.lineWidth || 0;
+                                boxAttr.dashstyle = (point.boxDashStyle ||
+                                    options.boxDashStyle ||
+                                    options.dashStyle);
+                                point.box.attr(boxAttr);
+                            }
+                            // Median attributes
+                            medianAttr.stroke = (point.medianColor ||
+                                options.medianColor ||
+                                color);
+                            medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
+                            medianAttr.dashstyle = (point.medianDashStyle ||
+                                options.medianDashStyle ||
+                                options.dashStyle);
+                            point.medianShape.attr(medianAttr);
+                        }
+                        let d;
+                        // The stem
+                        crispCorr = (point.stem.strokeWidth() % 2) / 2;
+                        crispX = left + halfWidth + crispCorr;
+                        d = [
+                            // stem up
+                            ['M', crispX, q3Plot],
+                            ['L', crispX, highPlot],
+                            // stem down
+                            ['M', crispX, q1Plot],
+                            ['L', crispX, lowPlot]
+                        ];
+                        point.stem[verb]({ d });
+                        // The box
+                        if (doQuartiles) {
+                            crispCorr = (point.box.strokeWidth() % 2) / 2;
+                            q1Plot = Math.floor(q1Plot) + crispCorr;
+                            q3Plot = Math.floor(q3Plot) + crispCorr;
+                            left += crispCorr;
+                            right += crispCorr;
+                            d = [
+                                ['M', left, q3Plot],
+                                ['L', left, q1Plot],
+                                ['L', right, q1Plot],
+                                ['L', right, q3Plot],
+                                ['L', left, q3Plot],
+                                ['Z']
+                            ];
+                            point.box[verb]({ d });
+                        }
+                        // The whiskers
+                        if (whiskerLength) {
+                            crispCorr = (point.whiskers.strokeWidth() % 2) / 2;
+                            highPlot = highPlot + crispCorr;
+                            lowPlot = lowPlot + crispCorr;
+                            pointWiskerLength = (/%$/).test(whiskerLength) ?
+                                halfWidth * parseFloat(whiskerLength) / 100 :
+                                whiskerLength / 2;
+                            d = [
+                                // High whisker
+                                ['M', crispX - pointWiskerLength, highPlot],
+                                ['L', crispX + pointWiskerLength, highPlot],
+                                // Low whisker
+                                ['M', crispX - pointWiskerLength, lowPlot],
+                                ['L', crispX + pointWiskerLength, lowPlot]
+                            ];
+                            point.whiskers[verb]({ d });
+                        }
+                        // The median
+                        medianPlot = Math.round(point.medianPlot);
+                        crispCorr = (point.medianShape.strokeWidth() % 2) / 2;
+                        medianPlot = medianPlot + crispCorr;
+                        d = [
+                            ['M', left, medianPlot],
+                            ['L', right, medianPlot]
+                        ];
+                        point.medianShape[verb]({ d });
+                    }
+                }
+            }
+            // return a plain array for speedy calculation
+            toYData(point) {
+                return [point.low, point.q1, point.median, point.q3, point.high];
+            }
+        }
+        BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BoxPlotSeriesDefaults);
+        extend(BoxPlotSeries.prototype, {
+            // array point configs are mapped to this
+            pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
+            // defines the top of the tracker
+            pointValKey: 'high',
+            // Disable data labels for box plot
+            drawDataLabels: noop,
+            setStackedPoints: noop // #3890
+        });
+        SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return BoxPlotSeries;
     });
@@ -2874,7 +2939,7 @@
                     legend.allItems.forEach((item) => {
                         legendItem = item.legendItem || {};
                         if (legendItem.group) {
-                            legendItem.group.translateY = null;
+                            legendItem.group.translateY = void 0;
                         }
                     });
                 }
@@ -3201,8 +3266,7 @@
             let pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
             // Handle padding on the second pass, or on redraw
             this.series.forEach((series) => {
-                if (series.bubblePadding &&
-                    (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+                if (series.bubblePadding && series.reserveSpace()) {
                     // Correction for #1673
                     this.allowZoomOutside = true;
                     hasActiveSeries = true;
@@ -3330,8 +3394,7 @@
                     let zMax = -Number.MAX_VALUE;
                     let valid;
                     this.chart.series.forEach((otherSeries) => {
-                        if (otherSeries.bubblePadding && (otherSeries.visible ||
-                            !this.chart.options.chart.ignoreHiddenSeries)) {
+                        if (otherSeries.bubblePadding && otherSeries.reserveSpace()) {
                             const zExtremes = (otherSeries.onPoint || otherSeries).getZExtremes();
                             if (zExtremes) {
                                 // Changed '||' to 'pick' because min or max can be 0.
@@ -3723,8 +3786,6 @@
             alignDataLabel: columnProto.alignDataLabel,
             applyZones: noop,
             bubblePadding: true,
-            buildKDTree: noop,
-            directTouch: true,
             isBubble: true,
             pointArrayMap: ['y', 'z'],
             pointClass: BubblePoint,
@@ -4198,7 +4259,7 @@
 
         return ColumnRangeSeries;
     });
-    _registerModule(_modules, 'Series/ColumnPyramid/ColumnPyramidSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ColumnPyramid/ColumnPyramidSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Sebastian Bochan
@@ -4208,167 +4269,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { prototype: colProto } = ColumnSeries;
-        const { clamp, extend, merge, pick } = U;
-        /**
-         * The ColumnPyramidSeries class
+        /* *
          *
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes.columnpyramid
+         *  API Options
          *
-         * @augments Highcharts.Series
-         */
-        class ColumnPyramidSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 * Static properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            /* eslint-disable-next-line valid-jsdoc */
-            /**
-             * Overrides the column translate method
-             * @private
-             */
-            translate() {
-                let series = this, chart = series.chart, options = series.options, dense = series.dense =
-                    series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
-                ), yAxis = series.yAxis, threshold = options.threshold, translatedThreshold = series.translatedThreshold =
-                    yAxis.getThreshold(threshold), minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, 
-                // postprocessed for border width
-                seriesBarW = series.barW =
-                    Math.max(pointWidth, 1 + 2 * borderWidth), pointXOffset = series.pointXOffset = metrics.offset;
-                if (chart.inverted) {
-                    translatedThreshold -= 0.5; // #3355
-                }
-                // When the pointPadding is 0,
-                // we want the pyramids to be packed tightly,
-                // so we allow individual pyramids to have individual sizes.
-                // When pointPadding is greater,
-                // we strive for equal-width columns (#2694).
-                if (options.pointPadding) {
-                    seriesBarW = Math.ceil(seriesBarW);
-                }
-                colProto.translate.apply(series);
-                // Record the new values
-                series.points.forEach(function (point) {
-                    let yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
-                    // Don't draw too far outside plot area
-                    // (#1303, #2241, #4264)
-                    barX = point.plotX + pointXOffset, barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
-                    point.barX = barX;
-                    point.pointWidth = pointWidth;
-                    // Fix the tooltip on center of grouped pyramids
-                    // (#1216, #424, #3648)
-                    point.tooltipPos = chart.inverted ?
-                        [
-                            yAxis.len + yAxis.pos - chart.plotLeft - plotY,
-                            series.xAxis.len - barX - barW,
-                            barH
-                        ] :
-                        [
-                            barX + barW,
-                            plotY + yAxis.pos - chart.plotTop,
-                            barH
-                        ];
-                    stackTotal =
-                        threshold + (point.total || point.y);
-                    // overwrite stacktotal (always 100 / -100)
-                    if (options.stacking === 'percent') {
-                        stackTotal =
-                            threshold + (point.y < 0) ?
-                                -100 :
-                                100;
-                    }
-                    // get the highest point (if stack, extract from total)
-                    topPointY = yAxis.toPixels((stackTotal), true);
-                    // calculate height of stack (in pixels)
-                    stackHeight =
-                        chart.plotHeight - topPointY -
-                            (chart.plotHeight - translatedThreshold);
-                    // topXwidth and bottomXwidth = width of lines from the center
-                    // calculated from tanges proportion.
-                    // Cannot be a NaN #12514
-                    topXwidth = stackHeight ?
-                        (barW * (barY - topPointY)) / stackHeight : 0;
-                    // like topXwidth, but with height of point
-                    bottomXwidth = stackHeight ?
-                        (barW * (barY + barH - topPointY)) / stackHeight :
-                        0;
-                    /*
-                            /\
-                           /  \
-                    x1,y1,------ x2,y1
-                        /      \
-                       ----------
-                    x4,y2        x3,y2
-                    */
-                    x1 = barX - topXwidth + barW;
-                    x2 = barX + topXwidth + barW;
-                    x3 = barX + bottomXwidth + barW;
-                    x4 = barX - bottomXwidth + barW;
-                    y1 = barY - minPointLength;
-                    y2 = barY + barH;
-                    if (point.y < 0) {
-                        y1 = barY;
-                        y2 = barY + barH + minPointLength;
-                    }
-                    // inverted chart
-                    if (chart.inverted) {
-                        invBarPos = yAxis.width - barY;
-                        stackHeight =
-                            topPointY - (yAxis.width - translatedThreshold);
-                        // proportion tanges
-                        topXwidth = (barW *
-                            (topPointY - invBarPos)) / stackHeight;
-                        bottomXwidth = (barW *
-                            (topPointY - (invBarPos - barH))) / stackHeight;
-                        x1 = barX + barW + topXwidth; // top bottom
-                        x2 = x1 - 2 * topXwidth; // top top
-                        x3 = barX - bottomXwidth + barW; // bottom top
-                        x4 = barX + bottomXwidth + barW; // bottom bottom
-                        y1 = barY;
-                        y2 = barY + barH - minPointLength;
-                        if (point.y < 0) {
-                            y2 = barY + barH + minPointLength;
-                        }
-                    }
-                    // Register shape type and arguments to be used in drawPoints
-                    point.shapeType = 'path';
-                    point.shapeArgs = {
-                        // args for datalabels positioning
-                        x: x1,
-                        y: y1,
-                        width: x2 - x1,
-                        height: barH,
-                        // path of pyramid
-                        d: [
-                            ['M', x1, y1],
-                            ['L', x2, y1],
-                            ['L', x3, y2],
-                            ['L', x4, y2],
-                            ['Z']
-                        ]
-                    };
-                });
-            }
-        }
+         * */
         /**
          * Column pyramid series display one pyramid per value along an X axis.
          * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
@@ -4390,20 +4295,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.columnpyramid
          */
-        ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-        // Nothing here
-        });
-        SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
-        /* *
-         *
-         * Default export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+        const ColumnPyramidSeriesDefaults = {};
         /**
          * A `columnpyramid` series. If the [type](#series.columnpyramid.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -4485,7 +4377,202 @@
          * @product   highcharts highstock
          * @apioption series.columnpyramid.data
          */
-        ''; // adds doclets above to transpiled file;
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ColumnPyramidSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/ColumnPyramid/ColumnPyramidSeries.js', [_modules['Series/ColumnPyramid/ColumnPyramidSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnPyramidSeriesDefaults, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Sebastian Bochan
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
+        const { clamp, merge, pick } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The ColumnPyramidSeries class
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.columnpyramid
+         *
+         * @augments Highcharts.Series
+         */
+        class ColumnPyramidSeries extends ColumnSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Overrides the column translate method
+             * @private
+             */
+            translate() {
+                const series = this, chart = series.chart, options = series.options, dense = series.dense =
+                    series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
+                ), yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, pointXOffset = series.pointXOffset = metrics.offset;
+                let translatedThreshold = series.translatedThreshold =
+                    yAxis.getThreshold(threshold), 
+                // postprocessed for border width
+                seriesBarW = series.barW =
+                    Math.max(pointWidth, 1 + 2 * borderWidth);
+                if (chart.inverted) {
+                    translatedThreshold -= 0.5; // #3355
+                }
+                // When the pointPadding is 0,
+                // we want the pyramids to be packed tightly,
+                // so we allow individual pyramids to have individual sizes.
+                // When pointPadding is greater,
+                // we strive for equal-width columns (#2694).
+                if (options.pointPadding) {
+                    seriesBarW = Math.ceil(seriesBarW);
+                }
+                super.translate();
+                // Record the new values
+                for (const point of series.points) {
+                    const yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
+                    // Don't draw too far outside plot area
+                    // (#1303, #2241, #4264)
+                    barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY;
+                    let barX = point.plotX + pointXOffset, stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth, invBarPos, x1, x2, x3, x4, y1, y2;
+                    // Adjust for null or missing points
+                    if (options.centerInCategory) {
+                        barX = series.adjustForMissingColumns(barX, pointWidth, point, metrics);
+                    }
+                    point.barX = barX;
+                    point.pointWidth = pointWidth;
+                    // Fix the tooltip on center of grouped pyramids
+                    // (#1216, #424, #3648)
+                    point.tooltipPos = chart.inverted ?
+                        [
+                            yAxis.len + yAxis.pos - chart.plotLeft - plotY,
+                            series.xAxis.len - barX - barW,
+                            barH
+                        ] :
+                        [
+                            barX + barW,
+                            plotY + yAxis.pos - chart.plotTop,
+                            barH
+                        ];
+                    stackTotal =
+                        threshold + (point.total || point.y);
+                    // overwrite stacktotal (always 100 / -100)
+                    if (options.stacking === 'percent') {
+                        stackTotal =
+                            threshold + (point.y < 0) ?
+                                -100 :
+                                100;
+                    }
+                    // get the highest point (if stack, extract from total)
+                    topPointY = yAxis.toPixels((stackTotal), true);
+                    // calculate height of stack (in pixels)
+                    stackHeight =
+                        chart.plotHeight - topPointY -
+                            (chart.plotHeight - translatedThreshold);
+                    // topXwidth and bottomXwidth = width of lines from the center
+                    // calculated from tanges proportion.
+                    // Cannot be a NaN #12514
+                    topXwidth = stackHeight ?
+                        (barW * (barY - topPointY)) / stackHeight : 0;
+                    // like topXwidth, but with height of point
+                    bottomXwidth = stackHeight ?
+                        (barW * (barY + barH - topPointY)) / stackHeight :
+                        0;
+                    /*
+                            /\
+                           /  \
+                    x1,y1,------ x2,y1
+                        /       \
+                       -----------
+                    x4,y2        x3,y2
+                    */
+                    x1 = barX - topXwidth + barW;
+                    x2 = barX + topXwidth + barW;
+                    x3 = barX + bottomXwidth + barW;
+                    x4 = barX - bottomXwidth + barW;
+                    y1 = barY - minPointLength;
+                    y2 = barY + barH;
+                    if (point.y < 0) {
+                        y1 = barY;
+                        y2 = barY + barH + minPointLength;
+                    }
+                    // inverted chart
+                    if (chart.inverted) {
+                        invBarPos = yAxis.width - barY;
+                        stackHeight =
+                            topPointY - (yAxis.width - translatedThreshold);
+                        // proportion tanges
+                        topXwidth = (barW *
+                            (topPointY - invBarPos)) / stackHeight;
+                        bottomXwidth = (barW *
+                            (topPointY - (invBarPos - barH))) / stackHeight;
+                        x1 = barX + barW + topXwidth; // top bottom
+                        x2 = x1 - 2 * topXwidth; // top top
+                        x3 = barX - bottomXwidth + barW; // bottom top
+                        x4 = barX + bottomXwidth + barW; // bottom bottom
+                        y1 = barY;
+                        y2 = barY + barH - minPointLength;
+                        if (point.y < 0) {
+                            y2 = barY + barH + minPointLength;
+                        }
+                    }
+                    // Register shape type and arguments to be used in drawPoints
+                    point.shapeType = 'path';
+                    point.shapeArgs = {
+                        x: x1,
+                        y: y1,
+                        width: x2 - x1,
+                        height: barH,
+                        // path of pyramid
+                        d: [
+                            ['M', x1, y1],
+                            ['L', x2, y1],
+                            ['L', x3, y2],
+                            ['L', x4, y2],
+                            ['Z']
+                        ]
+                    };
+                }
+            }
+        }
+        ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, ColumnPyramidSeriesDefaults);
+        SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return ColumnPyramidSeries;
     });
@@ -4663,7 +4750,6 @@
          * @name Highcharts.seriesTypes.errorbar
          *
          * @augments Highcharts.Series
-         *
          */
         class ErrorBarSeries extends BoxPlotSeries {
             constructor() {
@@ -4688,20 +4774,21 @@
              *
              * */
             getColumnMetrics() {
+                const series = this;
                 // Get the width and X offset, either on top of the linked series
                 // column or standalone
-                return ((this.linkedParent && this.linkedParent.columnMetrics) ||
-                    ColumnSeries.prototype.getColumnMetrics.call(this));
+                return ((series.linkedParent && series.linkedParent.columnMetrics) ||
+                    ColumnSeries.prototype.getColumnMetrics.call(series));
             }
             drawDataLabels() {
-                const valKey = this.pointValKey;
+                const series = this, valKey = series.pointValKey;
                 if (AreaRangeSeries) {
-                    AreaRangeSeries.prototype.drawDataLabels.call(this);
+                    AreaRangeSeries.prototype.drawDataLabels.call(series);
                     // Arearange drawDataLabels does not reset point.y to high,
                     // but to low after drawing (#4133)
-                    this.data.forEach(function (point) {
+                    for (const point of series.data) {
                         point.y = point[valKey];
-                    });
+                    }
                 }
             }
             toYData(point) {
@@ -4711,9 +4798,9 @@
         }
         ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults);
         addEvent(ErrorBarSeries, 'afterTranslate', function () {
-            this.points.forEach((point) => {
+            for (const point of this.points) {
                 point.plotLow = point.plotY;
-            });
+            }
         }, { order: 0 });
         extend(ErrorBarSeries.prototype, {
             // pointClass: ErrorBarPoint, // just a declaration
@@ -7725,14 +7812,13 @@
          * @private
          */
         function initDataLabelsDefer() {
-            var _a;
             const dlOptions = this.options.dataLabels;
             // drawDataLabels() fires for the first time after
             // dataLabels.animation.defer time unless
             // the dataLabels.animation = false or dataLabels.defer = false
             // or if the simulation is disabled
-            if (!(dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.defer) ||
-                !((_a = this.options.layoutAlgorithm) === null || _a === void 0 ? void 0 : _a.enableSimulation)) {
+            if (!dlOptions?.defer ||
+                !this.options.layoutAlgorithm?.enableSimulation) {
                 this.deferDataLabels = false;
             }
             else {
@@ -7753,7 +7839,7 @@
                 const dataLabelsGroup = this.initDataLabelsGroup();
                 // Apply the dataLabels.style not only to the
                 // individual dataLabels but also to the entire group
-                if (!series.chart.styledMode && (dlOptions === null || dlOptions === void 0 ? void 0 : dlOptions.style)) {
+                if (!series.chart.styledMode && dlOptions?.style) {
                     dataLabelsGroup.css(dlOptions.style);
                 }
                 // Initialize the opacity of the group to 0 (start of animation)
@@ -7849,8 +7935,7 @@
                 let yData;
                 for (const series of chart.series) {
                     if (series.is('packedbubble') && // #13574
-                        series.visible ||
-                        !chart.options.chart.ignoreHiddenSeries) {
+                        series.reserveSpace()) {
                         yData = series.yData || [];
                         // add data to array only if series is visible
                         for (let j = 0; j < yData.length; j++) {
@@ -8092,7 +8177,6 @@
              * @private
              */
             drawGraph() {
-                var _a;
                 // if the series is not using layout, don't add parent nodes
                 if (!this.layout || !this.layout.options.splitSeries) {
                     return;
@@ -8108,7 +8192,7 @@
                 // Create the group for parent Nodes if doesn't exist
                 // If exists it will only be adjusted to the updated plot size (#12063)
                 this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-                (_a = this.group) === null || _a === void 0 ? void 0 : _a.attr({
+                this.group?.attr({
                     zIndex: 2
                 });
                 this.calculateParentRadius();
@@ -8659,7 +8743,7 @@
 
         return PackedBubbleSeries;
     });
-    _registerModule(_modules, 'Series/Polygon/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Polygon/PolygonSeriesDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -8669,48 +8753,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
-        const { series: Series, seriesTypes: { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } } = SeriesRegistry;
-        const { extend, merge } = U;
         /* *
          *
-         * Class
+         *  API Options
          *
          * */
-        class PolygonSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 * Static properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            getGraphPath() {
-                let graphPath = LineSeries.prototype.getGraphPath.call(this), i = graphPath.length + 1;
-                // Close all segments
-                while (i--) {
-                    if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
-                        graphPath.splice(i, 0, ['Z']);
-                    }
-                }
-                this.areaPath = graphPath;
-                return graphPath;
-            }
-            drawGraph() {
-                // Hack into the fill logic in area.drawGraph
-                this.options.fillColor = this.color;
-                AreaSeries.prototype.drawGraph.call(this);
-            }
-        }
         /**
          * A polygon series can be used to draw any freeform shape in the cartesian
          * coordinate system. A fill is applied with the `color` option, and
@@ -8729,7 +8776,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.polygon
          */
-        PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
+        const PolygonSeriesDefaults = {
             marker: {
                 enabled: false,
                 states: {
@@ -8745,23 +8792,7 @@
             },
             trackByArea: true,
             legendSymbol: 'rectangle'
-        });
-        extend(PolygonSeries.prototype, {
-            type: 'polygon',
-            drawTracker: Series.prototype.drawTracker,
-            setStackedPoints: noop // No stacking points on polygons (#5310)
-        });
-        SeriesRegistry.registerSeriesType('polygon', PolygonSeries);
-        /* *
-         *
-         * Export
-         *
-         * */
-        /* *
-         *
-         * API Options
-         *
-         * */
+        };
         /**
          * A `polygon` series. If the [type](#series.polygon.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -8831,162 +8862,16 @@
          * @product   highcharts highstock
          * @apioption series.polygon.data
          */
-        ''; // adds doclets above to transpiled file
-
-        return PolygonSeries;
-    });
-    _registerModule(_modules, 'Core/Axis/WaterfallAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { addEvent, objectEach } = U;
-        /**
-         * @private
-         */
-        var WaterfallAxis;
-        (function (WaterfallAxis) {
-            /* *
-             *
-             *  Interfaces
-             *
-             * */
-            /* *
-             *
-             *  Classes
-             *
-             * */
-            /**
-             * @private
-             */
-            class Composition {
-                /* eslint-disable no-invalid-this, valid-jsdoc */
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                /**
-                 * @private
-                 */
-                constructor(axis) {
-                    this.axis = axis;
-                    this.stacks = {
-                        changed: false
-                    };
-                }
-                /* *
-                 *
-                 *  Functions
-                 *
-                 * */
-                /**
-                 * Calls StackItem.prototype.render function that creates and renders
-                 * stack total label for each waterfall stack item.
-                 *
-                 * @private
-                 * @function Highcharts.Axis#renderWaterfallStackTotals
-                 */
-                renderStackTotals() {
-                    const yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = (yAxis.stacking && yAxis.stacking.stackTotalGroup), dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
-                    this.dummyStackItem = dummyStackItem;
-                    // Render each waterfall stack total
-                    if (stackTotalGroup) {
-                        objectEach(waterfallStacks, function (type) {
-                            objectEach(type, function (stackItem, key) {
-                                dummyStackItem.total = stackItem.stackTotal;
-                                dummyStackItem.x = +key;
-                                if (stackItem.label) {
-                                    dummyStackItem.label = stackItem.label;
-                                }
-                                StackItem.prototype.render.call(dummyStackItem, stackTotalGroup);
-                                stackItem.label = dummyStackItem.label;
-                                delete dummyStackItem.label;
-                            });
-                        });
-                    }
-                    dummyStackItem.total = null;
-                }
-            }
-            WaterfallAxis.Composition = Composition;
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable no-invalid-this, valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(AxisClass, ChartClass) {
-                addEvent(AxisClass, 'init', onInit);
-                addEvent(AxisClass, 'afterBuildStacks', onAfterBuildStacks);
-                addEvent(AxisClass, 'afterRender', onAfterRender);
-                addEvent(ChartClass, 'beforeRedraw', onBeforeRedraw);
-            }
-            WaterfallAxis.compose = compose;
-            /**
-             * @private
-             */
-            function onAfterBuildStacks() {
-                const axis = this;
-                const stacks = axis.waterfall.stacks;
-                if (stacks) {
-                    stacks.changed = false;
-                    delete stacks.alreadyChanged;
-                }
-            }
-            /**
-             * @private
-             */
-            function onAfterRender() {
-                const axis = this;
-                const stackLabelOptions = axis.options.stackLabels;
-                if (stackLabelOptions && stackLabelOptions.enabled &&
-                    axis.waterfall.stacks) {
-                    axis.waterfall.renderStackTotals();
-                }
-            }
-            /**
-             * @private
-             */
-            function onBeforeRedraw() {
-                let axes = this.axes, series = this.series, i = series.length;
-                while (i--) {
-                    if (series[i].options.stacking) {
-                        axes.forEach(function (axis) {
-                            if (!axis.isXAxis) {
-                                axis.waterfall.stacks.changed = true;
-                            }
-                        });
-                        i = 0;
-                    }
-                }
-            }
-            /**
-             * @private
-             */
-            function onInit() {
-                const axis = this;
-                if (!axis.waterfall) {
-                    axis.waterfall = new Composition(axis);
-                }
-            }
-        })(WaterfallAxis || (WaterfallAxis = {}));
+        ''; // keeps doclets above separate
         /* *
          *
          *  Default Export
          *
          * */
 
-        return WaterfallAxis;
+        return PolygonSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Waterfall/WaterfallPoint.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Point, U) {
+    _registerModule(_modules, 'Series/Polygon/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Series/Polygon/PolygonSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, PolygonSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -8996,783 +8881,63 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isNumber } = U;
+        const { noop } = H;
+        const { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
+        const { extend, merge } = U;
         /* *
          *
-         * Class
+         *  Class
          *
          * */
-        class WaterfallPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
-            /* *
-             *
-             * Functions
-             *
-             * */
-            getClassName() {
-                let className = Point.prototype.getClassName.call(this);
-                if (this.isSum) {
-                    className += ' highcharts-sum';
-                }
-                else if (this.isIntermediateSum) {
-                    className += ' highcharts-intermediate-sum';
-                }
-                return className;
-            }
-            // Pass the null test in ColumnSeries.translate.
-            isValid() {
-                return (isNumber(this.y) ||
-                    this.isSum ||
-                    Boolean(this.isIntermediateSum));
-            }
-        }
-        /* *
-         *
-         * Export
-         *
-         * */
-
-        return WaterfallPoint;
-    });
-    _registerModule(_modules, 'Series/Waterfall/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/WaterfallAxis.js'], _modules['Series/Waterfall/WaterfallPoint.js']], function (Axis, Chart, SeriesRegistry, U, WaterfallAxis, WaterfallPoint) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { seriesTypes: { column: ColumnSeries, line: LineSeries } } = SeriesRegistry;
-        const { addEvent, arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach, pick } = U;
-        /**
-         * Returns true if the key is a direct property of the object.
-         * @private
-         * @param {*} obj
-         * Object with property to test
-         * @param {string} key
-         * Property key to test
-         * @return {boolean}
-         * Whether it is a direct property
-         */
-        function ownProp(obj, key) {
-            return Object.hasOwnProperty.call(obj, key);
-        }
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        // eslint-disable-next-line valid-jsdoc
-        /**
-         * Waterfall series type.
-         *
-         * @private
-         */
-        class WaterfallSeries extends ColumnSeries {
+        class PolygonSeries extends ScatterSeries {
             constructor() {
                 /* *
                  *
-                 * Static properties
+                 *  Static Properties
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.chart = void 0;
                 this.data = void 0;
                 this.options = void 0;
                 this.points = void 0;
-                this.stackedYNeg = void 0;
-                this.stackedYPos = void 0;
-                this.stackKey = void 0;
-                this.xData = void 0;
-                this.yAxis = void 0;
-                this.yData = void 0;
             }
             /* *
              *
-             * Functions
+             *  Functions
              *
              * */
-            // After generating points, set y-values for all sums.
-            generatePoints() {
-                // Parent call:
-                ColumnSeries.prototype.generatePoints.apply(this);
-                for (let i = 0, len = this.points.length; i < len; i++) {
-                    const point = this.points[i], y = this.processedYData[i];
-                    // Override point value for sums. #3710 Update point does not
-                    // propagate to sum
-                    if (isNumber(y) && (point.isIntermediateSum || point.isSum)) {
-                        point.y = correctFloat(y);
-                    }
-                }
-            }
-            // Call default processData then override yData to reflect waterfall's
-            // extremes on yAxis
-            processData(force) {
-                let series = this, options = series.options, yData = series.yData, 
-                // #3710 Update point does not propagate to sum
-                points = options.data, point, dataLength = yData.length, threshold = options.threshold || 0, subSum, sum, dataMin, dataMax, y, i;
-                sum = subSum = dataMin = dataMax = 0;
-                for (i = 0; i < dataLength; i++) {
-                    y = yData[i];
-                    point = points && points[i] ? points[i] : {};
-                    if (y === 'sum' || point.isSum) {
-                        yData[i] = correctFloat(sum);
-                    }
-                    else if (y === 'intermediateSum' ||
-                        point.isIntermediateSum) {
-                        yData[i] = correctFloat(subSum);
-                        subSum = 0;
-                    }
-                    else {
-                        sum += y;
-                        subSum += y;
-                    }
-                    dataMin = Math.min(sum, dataMin);
-                    dataMax = Math.max(sum, dataMax);
-                }
-                super.processData.call(this, force);
-                // Record extremes only if stacking was not set:
-                if (!options.stacking) {
-                    series.dataMin = dataMin + threshold;
-                    series.dataMax = dataMax;
-                }
-                return;
-            }
-            // Return y value or string if point is sum
-            toYData(pt) {
-                if (pt.isSum) {
-                    return 'sum';
-                }
-                if (pt.isIntermediateSum) {
-                    return 'intermediateSum';
-                }
-                return pt.y;
-            }
-            updateParallelArrays(point, i) {
-                super.updateParallelArrays.call(this, point, i);
-                // Prevent initial sums from triggering an error (#3245, #7559)
-                if (this.yData[0] === 'sum' || this.yData[0] === 'intermediateSum') {
-                    this.yData[0] = null;
-                }
-            }
-            // Postprocess mapping between options and SVG attributes
-            pointAttribs(point, state) {
-                const upColor = this.options.upColor;
-                // Set or reset up color (#3710, update to negative)
-                if (upColor && !point.options.color && isNumber(point.y)) {
-                    point.color = point.y > 0 ? upColor : void 0;
-                }
-                const attr = ColumnSeries.prototype.pointAttribs.call(this, point, state);
-                // The dashStyle option in waterfall applies to the graph, not
-                // the points
-                delete attr.dashstyle;
-                return attr;
-            }
-            // Return an empty path initially, because we need to know the stroke-width
-            // in order to set the final path.
             getGraphPath() {
-                return [['M', 0, 0]];
-            }
-            // Draw columns' connector lines
-            getCrispPath() {
-                let data = this.data.filter((d) => 
-                // Skip points where Y is not a number (#18636)
-                isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphNormalizer = Math.round(this.graph.strokeWidth()) % 2 / 2, borderNormalizer = Math.round(this.borderWidth) % 2 / 2, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
-                for (let i = 1; i < length; i++) {
-                    if (!( // Skip lines that would pass over the null point (#18636)
-                    this.options.connectNulls ||
-                        isNumber(this.data[data[i].index - 1].y))) {
-                        continue;
-                    }
-                    const box = data[i].box, prevPoint = data[i - 1], prevY = prevPoint.y || 0, prevBox = data[i - 1].box;
-                    if (!box || !prevBox) {
-                        continue;
-                    }
-                    const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
-                    if (prevStack && prevBox && box) {
-                        const prevStackX = prevStack[i - 1];
-                        // y position of the connector is different when series are
-                        // stacked, yAxis is reversed and it also depends on point's
-                        // value
-                        let yPos;
-                        if (stacking) {
-                            const connectorThreshold = prevStackX.connectorThreshold;
-                            yPos = Math.round((yAxis.translate(connectorThreshold, false, true, false, true) +
-                                (reversedYAxis ? isPos : 0))) - graphNormalizer;
-                        }
-                        else {
-                            yPos =
-                                prevBox.y + prevPoint.minPointLengthOffset +
-                                    borderNormalizer - graphNormalizer;
-                        }
-                        path.push([
-                            'M',
-                            (prevBox.x || 0) + (reversedXAxis ?
-                                0 :
-                                (prevBox.width || 0)),
-                            yPos
-                        ], [
-                            'L',
-                            (box.x || 0) + (reversedXAxis ?
-                                (box.width || 0) :
-                                0),
-                            yPos
-                        ]);
-                    }
-                    if (prevBox &&
-                        path.length &&
-                        ((!stacking && prevY < 0 && !reversedYAxis) ||
-                            (prevY > 0 && reversedYAxis))) {
-                        const nextLast = path[path.length - 2];
-                        if (nextLast && typeof nextLast[2] === 'number') {
-                            nextLast[2] += prevBox.height || 0;
-                        }
-                        const last = path[path.length - 1];
-                        if (last && typeof last[2] === 'number') {
-                            last[2] += prevBox.height || 0;
-                        }
+                const graphPath = LineSeries.prototype.getGraphPath.call(this);
+                let i = graphPath.length + 1;
+                // Close all segments
+                while (i--) {
+                    if ((i === graphPath.length || graphPath[i][0] === 'M') && i > 0) {
+                        graphPath.splice(i, 0, ['Z']);
                     }
                 }
-                return path;
+                this.areaPath = graphPath;
+                return graphPath;
             }
-            // The graph is initially drawn with an empty definition, then updated with
-            // crisp rendering.
             drawGraph() {
-                LineSeries.prototype.drawGraph.call(this);
-                if (this.graph) {
-                    this.graph.attr({
-                        d: this.getCrispPath()
-                    });
-                }
-            }
-            // Waterfall has stacking along the x-values too.
-            setStackedPoints() {
-                let series = this, options = series.options, waterfallStacks = series.yAxis.waterfall.stacks, seriesThreshold = options.threshold || 0, stackThreshold = seriesThreshold, interSum = stackThreshold, stackKey = series.stackKey, xData = series.xData, xLength = xData.length, actualStackX, totalYVal, actualSum, prevSum, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
-                // Function responsible for calculating correct values for stackState
-                // array of each stack item. The arguments are: firstS - the value for
-                // the first state, nextS - the difference between the previous and the
-                // newest state, sInx - counter used in the for that updates each state
-                // when necessary, sOff - offset that must be added to each state when
-                // they need to be updated (if point isn't a total sum)
-                // eslint-disable-next-line require-jsdoc
-                function calculateStackState(firstS, nextS, sInx, sOff) {
-                    if (actualStackX) {
-                        if (!statesLen) {
-                            actualStackX.stackState[0] = firstS;
-                            statesLen = actualStackX.stackState.length;
-                        }
-                        else {
-                            for (sInx; sInx < statesLen; sInx++) {
-                                actualStackX.stackState[sInx] += sOff;
-                            }
-                        }
-                        actualStackX.stackState.push(actualStackX.stackState[statesLen - 1] + nextS);
-                    }
-                }
-                series.yAxis.stacking.usePercentage = false;
-                totalYVal = actualSum = prevSum = stackThreshold;
-                // code responsible for creating stacks for waterfall series
-                if (series.visible ||
-                    !series.chart.options.chart.ignoreHiddenSeries) {
-                    changed = waterfallStacks.changed;
-                    alreadyChanged = waterfallStacks.alreadyChanged;
-                    // In case of a redraw, stack for each x value must be emptied (only
-                    // for the first series in a specific stack) and recalculated once
-                    // more
-                    if (alreadyChanged &&
-                        alreadyChanged.indexOf(stackKey) < 0) {
-                        changed = true;
-                    }
-                    if (!waterfallStacks[stackKey]) {
-                        waterfallStacks[stackKey] = {};
-                    }
-                    const actualStack = waterfallStacks[stackKey];
-                    if (actualStack) {
-                        for (let i = 0; i < xLength; i++) {
-                            x = xData[i];
-                            if (!actualStack[x] || changed) {
-                                actualStack[x] = {
-                                    negTotal: 0,
-                                    posTotal: 0,
-                                    stackTotal: 0,
-                                    threshold: 0,
-                                    stateIndex: 0,
-                                    stackState: [],
-                                    label: ((changed &&
-                                        actualStack[x]) ?
-                                        actualStack[x].label :
-                                        void 0)
-                                };
-                            }
-                            actualStackX = actualStack[x];
-                            yVal = series.yData[i];
-                            if (yVal >= 0) {
-                                actualStackX.posTotal += yVal;
-                            }
-                            else {
-                                actualStackX.negTotal += yVal;
-                            }
-                            // points do not exist yet, so raw data is used
-                            xPoint = options.data[i];
-                            posTotal = actualStackX.absolutePos = actualStackX.posTotal;
-                            negTotal = actualStackX.absoluteNeg = actualStackX.negTotal;
-                            actualStackX.stackTotal = posTotal + negTotal;
-                            statesLen = actualStackX.stackState.length;
-                            if (xPoint && xPoint.isIntermediateSum) {
-                                calculateStackState(prevSum, actualSum, 0, prevSum);
-                                prevSum = actualSum;
-                                actualSum = seriesThreshold;
-                                // swapping values
-                                stackThreshold ^= interSum;
-                                interSum ^= stackThreshold;
-                                stackThreshold ^= interSum;
-                            }
-                            else if (xPoint && xPoint.isSum) {
-                                calculateStackState(seriesThreshold, totalYVal, statesLen, 0);
-                                stackThreshold = seriesThreshold;
-                            }
-                            else {
-                                calculateStackState(stackThreshold, yVal, 0, totalYVal);
-                                if (xPoint) {
-                                    totalYVal += yVal;
-                                    actualSum += yVal;
-                                }
-                            }
-                            actualStackX.stateIndex++;
-                            actualStackX.threshold = stackThreshold;
-                            stackThreshold += actualStackX.stackTotal;
-                        }
-                    }
-                    waterfallStacks.changed = false;
-                    if (!waterfallStacks.alreadyChanged) {
-                        waterfallStacks.alreadyChanged = [];
-                    }
-                    waterfallStacks.alreadyChanged.push(stackKey);
-                }
-            }
-            // Extremes for a non-stacked series are recorded in processData.
-            // In case of stacking, use Series.stackedYData to calculate extremes.
-            getExtremes() {
-                let stacking = this.options.stacking, yAxis, waterfallStacks, stackedYNeg, stackedYPos;
-                if (stacking) {
-                    yAxis = this.yAxis;
-                    waterfallStacks = yAxis.waterfall.stacks;
-                    stackedYNeg = this.stackedYNeg = [];
-                    stackedYPos = this.stackedYPos = [];
-                    // the visible y range can be different when stacking is set to
-                    // overlap and different when it's set to normal
-                    if (stacking === 'overlap') {
-                        objectEach(waterfallStacks[this.stackKey], function (stackX) {
-                            stackedYNeg.push(arrayMin(stackX.stackState));
-                            stackedYPos.push(arrayMax(stackX.stackState));
-                        });
-                    }
-                    else {
-                        objectEach(waterfallStacks[this.stackKey], function (stackX) {
-                            stackedYNeg.push(stackX.negTotal + stackX.threshold);
-                            stackedYPos.push(stackX.posTotal + stackX.threshold);
-                        });
-                    }
-                    return {
-                        dataMin: arrayMin(stackedYNeg),
-                        dataMax: arrayMax(stackedYPos)
-                    };
-                }
-                // When not stacking, data extremes have already been computed in the
-                // processData function.
-                return {
-                    dataMin: this.dataMin,
-                    dataMax: this.dataMax
-                };
+                // Hack into the fill logic in area.drawGraph
+                this.options.fillColor = this.color;
+                AreaSeries.prototype.drawGraph.call(this);
             }
         }
-        /**
-         * A waterfall chart displays sequentially introduced positive or negative
-         * values in cumulative columns.
-         *
-         * @sample highcharts/demo/waterfall/
-         *         Waterfall chart
-         * @sample highcharts/plotoptions/waterfall-inverted/
-         *         Horizontal (inverted) waterfall
-         * @sample highcharts/plotoptions/waterfall-stacked/
-         *         Stacked waterfall chart
-         *
-         * @extends      plotOptions.column
-         * @excluding    boostThreshold, boostBlending
-         * @product      highcharts
-         * @requires     highcharts-more
-         * @optionparent plotOptions.waterfall
-         */
-        WaterfallSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
-            /**
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @apioption plotOptions.waterfall.color
-             */
-            /**
-             * The color used specifically for positive point columns. When not
-             * specified, the general series color is used.
-             *
-             * In styled mode, the waterfall colors can be set with the
-             * `.highcharts-point-negative`, `.highcharts-sum` and
-             * `.highcharts-intermediate-sum` classes.
-             *
-             * @sample {highcharts} highcharts/demo/waterfall/
-             *         Waterfall
-             *
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @product   highcharts
-             * @apioption plotOptions.waterfall.upColor
-             */
-            dataLabels: {
-                inside: true
-            },
-            /**
-             * The width of the line connecting waterfall columns.
-             *
-             * @product highcharts
-             */
-            lineWidth: 1,
-            /**
-             * The color of the line that connects columns in a waterfall series.
-             *
-             * In styled mode, the stroke can be set with the `.highcharts-graph`
-             * class.
-             *
-             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @since   3.0
-             * @product highcharts
-             */
-            lineColor: "#333333" /* Palette.neutralColor80 */,
-            /**
-             * A name for the dash style to use for the line connecting the columns
-             * of the waterfall series. Possible values: Dash, DashDot, Dot,
-             * LongDash, LongDashDot, LongDashDotDot, ShortDash, ShortDashDot,
-             * ShortDashDotDot, ShortDot, Solid
-             *
-             * In styled mode, the stroke dash-array can be set with the
-             * `.highcharts-graph` class.
-             *
-             * @type    {Highcharts.DashStyleValue}
-             * @since   3.0
-             * @product highcharts
-             */
-            dashStyle: 'Dot',
-            /**
-             * The color of the border of each waterfall column.
-             *
-             * In styled mode, the border stroke can be set with the
-             * `.highcharts-point` class.
-             *
-             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @since   3.0
-             * @product highcharts
-             */
-            borderColor: "#333333" /* Palette.neutralColor80 */,
-            states: {
-                hover: {
-                    lineWidthPlus: 0 // #3126
-                }
-            }
+        PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PolygonSeriesDefaults);
+        extend(PolygonSeries.prototype, {
+            type: 'polygon',
+            drawTracker: LineSeries.prototype.drawTracker,
+            setStackedPoints: noop // No stacking points on polygons (#5310)
         });
-        // Translate data points from raw values
-        addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
-            const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey];
-            let previousIntermediate = threshold, previousY = threshold, y, total, yPos, hPos;
-            for (let i = 0; i < points.length; i++) {
-                const point = points[i], yValue = series.processedYData[i], shapeArgs = point.shapeArgs, box = extend({
-                    x: 0,
-                    y: 0,
-                    width: 0,
-                    height: 0
-                }, shapeArgs || {});
-                point.box = box;
-                const range = [0, yValue], pointY = point.y || 0;
-                // code responsible for correct positions of stacked points
-                // starts here
-                if (stacking) {
-                    if (actualStack) {
-                        const actualStackX = actualStack[i];
-                        if (stacking === 'overlap') {
-                            total =
-                                actualStackX.stackState[actualStackX.stateIndex--];
-                            y = pointY >= 0 ? total : total - pointY;
-                            if (ownProp(actualStackX, 'absolutePos')) {
-                                delete actualStackX.absolutePos;
-                            }
-                            if (ownProp(actualStackX, 'absoluteNeg')) {
-                                delete actualStackX.absoluteNeg;
-                            }
-                        }
-                        else {
-                            if (pointY >= 0) {
-                                total = actualStackX.threshold +
-                                    actualStackX.posTotal;
-                                actualStackX.posTotal -= pointY;
-                                y = total;
-                            }
-                            else {
-                                total = actualStackX.threshold +
-                                    actualStackX.negTotal;
-                                actualStackX.negTotal -= pointY;
-                                y = total - pointY;
-                            }
-                            if (!actualStackX.posTotal) {
-                                if (isNumber(actualStackX.absolutePos) &&
-                                    ownProp(actualStackX, 'absolutePos')) {
-                                    actualStackX.posTotal =
-                                        actualStackX.absolutePos;
-                                    delete actualStackX.absolutePos;
-                                }
-                            }
-                            if (!actualStackX.negTotal) {
-                                if (isNumber(actualStackX.absoluteNeg) &&
-                                    ownProp(actualStackX, 'absoluteNeg')) {
-                                    actualStackX.negTotal =
-                                        actualStackX.absoluteNeg;
-                                    delete actualStackX.absoluteNeg;
-                                }
-                            }
-                        }
-                        if (!point.isSum) {
-                            // the connectorThreshold property is later used in
-                            // getCrispPath function to draw a connector line in a
-                            // correct place
-                            actualStackX.connectorThreshold =
-                                actualStackX.threshold + actualStackX.stackTotal;
-                        }
-                        if (yAxis.reversed) {
-                            yPos = (pointY >= 0) ? (y - pointY) : (y + pointY);
-                            hPos = y;
-                        }
-                        else {
-                            yPos = y;
-                            hPos = y - pointY;
-                        }
-                        point.below = yPos <= threshold;
-                        box.y = yAxis.translate(yPos, false, true, false, true);
-                        box.height = Math.abs(box.y -
-                            yAxis.translate(hPos, false, true, false, true));
-                        const dummyStackItem = yAxis.waterfall.dummyStackItem;
-                        if (dummyStackItem) {
-                            dummyStackItem.x = i;
-                            dummyStackItem.label = actualStack[i].label;
-                            dummyStackItem.setOffset(series.pointXOffset || 0, series.barW || 0, series.stackedYNeg[i], series.stackedYPos[i], void 0, this.xAxis);
-                        }
-                    }
-                }
-                else {
-                    // up points
-                    y = Math.max(previousY, previousY + pointY) + range[0];
-                    box.y = yAxis.translate(y, false, true, false, true);
-                    // sum points
-                    if (point.isSum) {
-                        box.y = yAxis.translate(range[1], false, true, false, true);
-                        box.height = Math.min(yAxis.translate(range[0], false, true, false, true), yAxis.len) - box.y; // #4256
-                        point.below = range[1] <= threshold;
-                    }
-                    else if (point.isIntermediateSum) {
-                        if (pointY >= 0) {
-                            yPos = range[1] + previousIntermediate;
-                            hPos = previousIntermediate;
-                        }
-                        else {
-                            yPos = previousIntermediate;
-                            hPos = range[1] + previousIntermediate;
-                        }
-                        if (yAxis.reversed) {
-                            // swapping values
-                            yPos ^= hPos;
-                            hPos ^= yPos;
-                            yPos ^= hPos;
-                        }
-                        box.y = yAxis.translate(yPos, false, true, false, true);
-                        box.height = Math.abs(box.y -
-                            Math.min(yAxis.translate(hPos, false, true, false, true), yAxis.len));
-                        previousIntermediate += range[1];
-                        point.below = yPos <= threshold;
-                        // If it's not the sum point, update previous stack end position
-                        // and get shape height (#3886)
-                    }
-                    else {
-                        box.height = yValue > 0 ?
-                            yAxis.translate(previousY, false, true, false, true) - box.y :
-                            yAxis.translate(previousY, false, true, false, true) - yAxis.translate(previousY - yValue, false, true, false, true);
-                        previousY += yValue;
-                        point.below = previousY < threshold;
-                    }
-                    // #3952 Negative sum or intermediate sum not rendered correctly
-                    if (box.height < 0) {
-                        box.y += box.height;
-                        box.height *= -1;
-                    }
-                }
-                point.plotY = box.y =
-                    Math.round(box.y || 0) - (series.borderWidth % 2) / 2;
-                // #3151
-                box.height =
-                    Math.max(Math.round(box.height || 0), 0.001);
-                point.yBottom = box.y + box.height;
-                if (box.height <= minPointLength && !point.isNull) {
-                    box.height = minPointLength;
-                    box.y -= halfMinPointLength;
-                    point.plotY = box.y;
-                    if (pointY < 0) {
-                        point.minPointLengthOffset = -halfMinPointLength;
-                    }
-                    else {
-                        point.minPointLengthOffset = halfMinPointLength;
-                    }
-                }
-                else {
-                    // #8024, empty gaps in the line for null data
-                    if (point.isNull) {
-                        box.width = 0;
-                    }
-                    point.minPointLengthOffset = 0;
-                }
-                // Correct tooltip placement (#3014)
-                const tooltipY = point.plotY + (point.negative ? box.height : 0);
-                if (point.below) { // #15334
-                    point.plotY += box.height;
-                }
-                if (point.tooltipPos) {
-                    if (series.chart.inverted) {
-                        point.tooltipPos[0] = yAxis.len - tooltipY;
-                    }
-                    else {
-                        point.tooltipPos[1] = tooltipY;
-                    }
-                }
-                // Check point position after recalculation (#16788)
-                point.isInside = this.isPointInside(point);
-                merge(true, point.shapeArgs, box);
-            }
-        }, { order: 2 });
-        extend(WaterfallSeries.prototype, {
-            getZonesGraphs: LineSeries.prototype.getZonesGraphs,
-            pointValKey: 'y',
-            // Property needed to prevent lines between the columns from disappearing
-            // when negativeColor is used.
-            showLine: true,
-            pointClass: WaterfallPoint
-        });
-        SeriesRegistry.registerSeriesType('waterfall', WaterfallSeries);
-        WaterfallAxis.compose(Axis, Chart);
+        SeriesRegistry.registerSeriesType('polygon', PolygonSeries);
         /* *
          *
-         * Export
+         *  Default Export
          *
          * */
-        /**
-         *
-         * API Options
-         *
-         */
-        /**
-         * A `waterfall` series. If the [type](#series.waterfall.type) option
-         * is not specified, it is inherited from [chart.type](#chart.type).
-         *
-         * @extends   series,plotOptions.waterfall
-         * @excluding dataParser, dataURL, boostThreshold, boostBlending
-         * @product   highcharts
-         * @requires  highcharts-more
-         * @apioption series.waterfall
-         */
-        /**
-         * An array of data points for the series. For the `waterfall` series
-         * type, points can be given in the following ways:
-         *
-         * 1. An array of numerical values. In this case, the numerical values will be
-         *    interpreted as `y` options. The `x` values will be automatically
-         *    calculated, either starting at 0 and incremented by 1, or from
-         *    `pointStart` and `pointInterval` given in the series options. If the axis
-         *    has categories, these will be used. Example:
-         *    ```js
-         *    data: [0, 5, 3, 5]
-         *    ```
-         *
-         * 2. An array of arrays with 2 values. In this case, the values correspond to
-         *    `x,y`. If the first value is a string, it is applied as the name of the
-         *    point, and the `x` value is inferred.
-         *    ```js
-         *    data: [
-         *        [0, 7],
-         *        [1, 8],
-         *        [2, 3]
-         *    ]
-         *    ```
-         *
-         * 3. An array of objects with named values. The following snippet shows only a
-         *    few settings, see the complete options set below. If the total number of
-         *    data points exceeds the series'
-         *    [turboThreshold](#series.waterfall.turboThreshold), this option is not
-         *    available.
-         *    ```js
-         *    data: [{
-         *        x: 1,
-         *        y: 8,
-         *        name: "Point2",
-         *        color: "#00FF00"
-         *    }, {
-         *        x: 1,
-         *        y: 8,
-         *        name: "Point1",
-         *        color: "#FF00FF"
-         *    }]
-         *    ```
-         *
-         * @sample {highcharts} highcharts/chart/reflow-true/
-         *         Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/
-         *         Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
-         *         Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/
-         *         Arrays of point.name and y
-         * @sample {highcharts} highcharts/series/data-array-of-objects/
-         *         Config objects
-         *
-         * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
-         * @extends   series.line.data
-         * @excluding marker
-         * @product   highcharts
-         * @apioption series.waterfall.data
-         */
-        /**
-         * When this property is true, the points acts as a summary column for
-         * the values added or substracted since the last intermediate sum,
-         * or since the start of the series. The `y` value is ignored.
-         *
-         * @sample {highcharts} highcharts/demo/waterfall/
-         *         Waterfall
-         *
-         * @type      {boolean}
-         * @default   false
-         * @product   highcharts
-         * @apioption series.waterfall.data.isIntermediateSum
-         */
-        /**
-         * When this property is true, the point display the total sum across
-         * the entire series. The `y` value is ignored.
-         *
-         * @sample {highcharts} highcharts/demo/waterfall/
-         *         Waterfall
-         *
-         * @type      {boolean}
-         * @default   false
-         * @product   highcharts
-         * @apioption series.waterfall.data.isSum
-         */
-        ''; // adds doclets above to transpiled file
 
-        return WaterfallSeries;
+        return PolygonSeries;
     });
     _registerModule(_modules, 'Core/Axis/RadialAxis.js', [_modules['Core/Axis/AxisDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (AxisDefaults, D, H, U) {
         /* *
@@ -10401,7 +9566,7 @@
              * Modify axis instance with radial logic before common axis init.
              */
             function onAxisInit(e) {
-                const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, chartOptions = chart.options, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
+                const chart = this.chart, inverted = chart.inverted, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, coll = this.coll, isHidden = angular && isX, paneIndex = e.userOptions.pane || 0, pane = this.pane = chart.pane && chart.pane[paneIndex];
                 let isCircular;
                 // Prevent changes for colorAxis
                 if (coll === 'colorAxis') {
@@ -11104,7 +10269,7 @@
                 if (!this.hasClipCircleSetter) {
                     this.hasClipCircleSetter = !!series.eventsToUnbind.push(addEvent(series, 'afterRender', function () {
                         let circ;
-                        if (chart.polar) {
+                        if (chart.polar && this.options.clip !== false) {
                             // For clipping purposes there is a need for
                             // coordinates from the absolute center
                             circ = this.yAxis.pane.center;
@@ -11745,12 +10910,989 @@
 
         return PolarAdditions;
     });
-    _registerModule(_modules, 'masters/highcharts-more.src.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Bubble/BubbleSeries.js'], _modules['Series/PackedBubble/PackedBubbleSeries.js'], _modules['Series/PolarComposition.js']], function (Highcharts, SeriesRegistry, BubbleSeries, PackedBubbleSeries, PolarAdditions) {
+    _registerModule(_modules, 'Core/Axis/WaterfallAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { addEvent, objectEach, pushUnique } = U;
+        /* *
+         *
+         *  Namespace
+         *
+         * */
+        var WaterfallAxis;
+        (function (WaterfallAxis) {
+            /* *
+             *
+             *  Interfaces
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            const composedMembers = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function compose(AxisClass, ChartClass) {
+                if (pushUnique(composedMembers, AxisClass)) {
+                    addEvent(AxisClass, 'init', onAxisInit);
+                    addEvent(AxisClass, 'afterBuildStacks', onAxisAfterBuildStacks);
+                    addEvent(AxisClass, 'afterRender', onAxisAfterRender);
+                }
+                if (pushUnique(composedMembers, ChartClass)) {
+                    addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
+                }
+            }
+            WaterfallAxis.compose = compose;
+            /**
+             * @private
+             */
+            function onAxisAfterBuildStacks() {
+                const axis = this, stacks = axis.waterfall.stacks;
+                if (stacks) {
+                    stacks.changed = false;
+                    delete stacks.alreadyChanged;
+                }
+            }
+            /**
+             * @private
+             */
+            function onAxisAfterRender() {
+                const axis = this, stackLabelOptions = axis.options.stackLabels;
+                if (stackLabelOptions && stackLabelOptions.enabled &&
+                    axis.waterfall.stacks) {
+                    axis.waterfall.renderStackTotals();
+                }
+            }
+            /**
+             * @private
+             */
+            function onAxisInit() {
+                const axis = this;
+                if (!axis.waterfall) {
+                    axis.waterfall = new Composition(axis);
+                }
+            }
+            /**
+             * @private
+             */
+            function onChartBeforeRedraw() {
+                const axes = this.axes, series = this.series;
+                for (const seri of series) {
+                    if (seri.options.stacking) {
+                        for (const axis of axes) {
+                            if (!axis.isXAxis) {
+                                axis.waterfall.stacks.changed = true;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            /* *
+             *
+             *  Classes
+             *
+             * */
+            class Composition {
+                /* *
+                 *
+                 *  Constructors
+                 *
+                 * */
+                constructor(axis) {
+                    this.axis = axis;
+                    this.stacks = {
+                        changed: false
+                    };
+                }
+                /* *
+                 *
+                 *  Functions
+                 *
+                 * */
+                /**
+                 * Calls StackItem.prototype.render function that creates and renders
+                 * stack total label for each waterfall stack item.
+                 *
+                 * @private
+                 * @function Highcharts.Axis#renderWaterfallStackTotals
+                 */
+                renderStackTotals() {
+                    const yAxis = this.axis, waterfallStacks = yAxis.waterfall.stacks, stackTotalGroup = (yAxis.stacking && yAxis.stacking.stackTotalGroup), dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
+                    this.dummyStackItem = dummyStackItem;
+                    // Render each waterfall stack total
+                    if (stackTotalGroup) {
+                        objectEach(waterfallStacks, (type) => {
+                            objectEach(type, (stackItem, key) => {
+                                dummyStackItem.total = stackItem.stackTotal;
+                                dummyStackItem.x = +key;
+                                if (stackItem.label) {
+                                    dummyStackItem.label = stackItem.label;
+                                }
+                                StackItem.prototype.render.call(dummyStackItem, stackTotalGroup);
+                                stackItem.label = dummyStackItem.label;
+                                delete dummyStackItem.label;
+                            });
+                        });
+                    }
+                    dummyStackItem.total = null;
+                }
+            }
+            WaterfallAxis.Composition = Composition;
+        })(WaterfallAxis || (WaterfallAxis = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return WaterfallAxis;
+    });
+    _registerModule(_modules, 'Series/Waterfall/WaterfallPoint.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Point, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { isNumber } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        class WaterfallPoint extends ColumnSeries.prototype.pointClass {
+            constructor() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                super(...arguments);
+                this.options = void 0;
+                this.series = void 0;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            getClassName() {
+                let className = Point.prototype.getClassName.call(this);
+                if (this.isSum) {
+                    className += ' highcharts-sum';
+                }
+                else if (this.isIntermediateSum) {
+                    className += ' highcharts-intermediate-sum';
+                }
+                return className;
+            }
+            // Pass the null test in ColumnSeries.translate.
+            isValid() {
+                return (isNumber(this.y) ||
+                    this.isSum ||
+                    Boolean(this.isIntermediateSum));
+            }
+        }
+        /* *
+         *
+         *  Export
+         *
+         * */
+
+        return WaterfallPoint;
+    });
+    _registerModule(_modules, 'Series/Waterfall/WaterfallSeriesDefaults.js', [], function () {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A waterfall chart displays sequentially introduced positive or negative
+         * values in cumulative columns.
+         *
+         * @sample highcharts/demo/waterfall/
+         *         Waterfall chart
+         * @sample highcharts/plotoptions/waterfall-inverted/
+         *         Horizontal (inverted) waterfall
+         * @sample highcharts/plotoptions/waterfall-stacked/
+         *         Stacked waterfall chart
+         *
+         * @extends      plotOptions.column
+         * @excluding    boostThreshold, boostBlending
+         * @product      highcharts
+         * @requires     highcharts-more
+         * @optionparent plotOptions.waterfall
+         */
+        const WaterfallSeriesDefaults = {
+            /**
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @apioption plotOptions.waterfall.color
+             */
+            /**
+             * The color used specifically for positive point columns. When not
+             * specified, the general series color is used.
+             *
+             * In styled mode, the waterfall colors can be set with the
+             * `.highcharts-point-negative`, `.highcharts-sum` and
+             * `.highcharts-intermediate-sum` classes.
+             *
+             * @sample {highcharts} highcharts/demo/waterfall/
+             *         Waterfall
+             *
+             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @product   highcharts
+             * @apioption plotOptions.waterfall.upColor
+             */
+            dataLabels: {
+                inside: true
+            },
+            /**
+             * The width of the line connecting waterfall columns.
+             *
+             * @product highcharts
+             */
+            lineWidth: 1,
+            /**
+             * The color of the line that connects columns in a waterfall series.
+             *
+             * In styled mode, the stroke can be set with the `.highcharts-graph`
+             * class.
+             *
+             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since   3.0
+             * @product highcharts
+             */
+            lineColor: "#333333" /* Palette.neutralColor80 */,
+            /**
+             * A name for the dash style to use for the line connecting the columns
+             * of the waterfall series. Possible values: Dash, DashDot, Dot,
+             * LongDash, LongDashDot, LongDashDotDot, ShortDash, ShortDashDot,
+             * ShortDashDotDot, ShortDot, Solid
+             *
+             * In styled mode, the stroke dash-array can be set with the
+             * `.highcharts-graph` class.
+             *
+             * @type    {Highcharts.DashStyleValue}
+             * @since   3.0
+             * @product highcharts
+             */
+            dashStyle: 'Dot',
+            /**
+             * The color of the border of each waterfall column.
+             *
+             * In styled mode, the border stroke can be set with the
+             * `.highcharts-point` class.
+             *
+             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since   3.0
+             * @product highcharts
+             */
+            borderColor: "#333333" /* Palette.neutralColor80 */,
+            states: {
+                hover: {
+                    lineWidthPlus: 0 // #3126
+                }
+            }
+        };
+        /**
+         * A `waterfall` series. If the [type](#series.waterfall.type) option
+         * is not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.waterfall
+         * @excluding dataParser, dataURL, boostThreshold, boostBlending
+         * @product   highcharts
+         * @requires  highcharts-more
+         * @apioption series.waterfall
+         */
+        /**
+         * An array of data points for the series. For the `waterfall` series
+         * type, points can be given in the following ways:
+         *
+         * 1. An array of numerical values. In this case, the numerical values will be
+         *    interpreted as `y` options. The `x` values will be automatically
+         *    calculated, either starting at 0 and incremented by 1, or from
+         *    `pointStart` and `pointInterval` given in the series options. If the axis
+         *    has categories, these will be used. Example:
+         *    ```js
+         *    data: [0, 5, 3, 5]
+         *    ```
+         *
+         * 2. An array of arrays with 2 values. In this case, the values correspond to
+         *    `x,y`. If the first value is a string, it is applied as the name of the
+         *    point, and the `x` value is inferred.
+         *    ```js
+         *    data: [
+         *        [0, 7],
+         *        [1, 8],
+         *        [2, 3]
+         *    ]
+         *    ```
+         *
+         * 3. An array of objects with named values. The following snippet shows only a
+         *    few settings, see the complete options set below. If the total number of
+         *    data points exceeds the series'
+         *    [turboThreshold](#series.waterfall.turboThreshold), this option is not
+         *    available.
+         *    ```js
+         *    data: [{
+         *        x: 1,
+         *        y: 8,
+         *        name: "Point2",
+         *        color: "#00FF00"
+         *    }, {
+         *        x: 1,
+         *        y: 8,
+         *        name: "Point1",
+         *        color: "#FF00FF"
+         *    }]
+         *    ```
+         *
+         * @sample {highcharts} highcharts/chart/reflow-true/
+         *         Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
+         *
+         * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
+         * @extends   series.line.data
+         * @excluding marker
+         * @product   highcharts
+         * @apioption series.waterfall.data
+         */
+        /**
+         * When this property is true, the points acts as a summary column for
+         * the values added or substracted since the last intermediate sum,
+         * or since the start of the series. The `y` value is ignored.
+         *
+         * @sample {highcharts} highcharts/demo/waterfall/
+         *         Waterfall
+         *
+         * @type      {boolean}
+         * @default   false
+         * @product   highcharts
+         * @apioption series.waterfall.data.isIntermediateSum
+         */
+        /**
+         * When this property is true, the point display the total sum across
+         * the entire series. The `y` value is ignored.
+         *
+         * @sample {highcharts} highcharts/demo/waterfall/
+         *         Waterfall
+         *
+         * @type      {boolean}
+         * @default   false
+         * @product   highcharts
+         * @apioption series.waterfall.data.isSum
+         */
+        ''; // adds doclets above to transpiled file
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return WaterfallSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Waterfall/WaterfallSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/WaterfallAxis.js'], _modules['Series/Waterfall/WaterfallPoint.js'], _modules['Series/Waterfall/WaterfallSeriesDefaults.js']], function (SeriesRegistry, U, WaterfallAxis, WaterfallPoint, WaterfallSeriesDefaults) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
+        const { addEvent, arrayMax, arrayMin, correctFloat, extend, isNumber, merge, objectEach, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Returns true if the key is a direct property of the object.
+         * @private
+         * @param {*} obj
+         * Object with property to test
+         * @param {string} key
+         * Property key to test
+         * @return {boolean}
+         * Whether it is a direct property
+         */
+        function ownProp(obj, key) {
+            return Object.hasOwnProperty.call(obj, key);
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * Waterfall series type.
+         *
+         * @private
+         */
+        class WaterfallSeries extends ColumnSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.chart = void 0;
+                this.data = void 0;
+                this.options = void 0;
+                this.points = void 0;
+                this.stackedYNeg = void 0;
+                this.stackedYPos = void 0;
+                this.stackKey = void 0;
+                this.xData = void 0;
+                this.yAxis = void 0;
+                this.yData = void 0;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            // After generating points, set y-values for all sums.
+            generatePoints() {
+                // Parent call:
+                ColumnSeries.prototype.generatePoints.apply(this);
+                for (let i = 0, len = this.points.length; i < len; i++) {
+                    const point = this.points[i], y = this.processedYData[i];
+                    // Override point value for sums. #3710 Update point does not
+                    // propagate to sum
+                    if (isNumber(y) && (point.isIntermediateSum || point.isSum)) {
+                        point.y = correctFloat(y);
+                    }
+                }
+            }
+            // Call default processData then override yData to reflect waterfall's
+            // extremes on yAxis
+            processData(force) {
+                const series = this, options = series.options, yData = series.yData, 
+                // #3710 Update point does not propagate to sum
+                points = options.data, dataLength = yData.length, threshold = options.threshold || 0;
+                let point, subSum, sum, dataMin, dataMax, y;
+                sum = subSum = dataMin = dataMax = 0;
+                for (let i = 0; i < dataLength; i++) {
+                    y = yData[i];
+                    point = points && points[i] ? points[i] : {};
+                    if (y === 'sum' || point.isSum) {
+                        yData[i] = correctFloat(sum);
+                    }
+                    else if (y === 'intermediateSum' ||
+                        point.isIntermediateSum) {
+                        yData[i] = correctFloat(subSum);
+                        subSum = 0;
+                    }
+                    else {
+                        sum += y;
+                        subSum += y;
+                    }
+                    dataMin = Math.min(sum, dataMin);
+                    dataMax = Math.max(sum, dataMax);
+                }
+                super.processData.call(this, force);
+                // Record extremes only if stacking was not set:
+                if (!options.stacking) {
+                    series.dataMin = dataMin + threshold;
+                    series.dataMax = dataMax;
+                }
+                return;
+            }
+            // Return y value or string if point is sum
+            toYData(pt) {
+                if (pt.isSum) {
+                    return 'sum';
+                }
+                if (pt.isIntermediateSum) {
+                    return 'intermediateSum';
+                }
+                return pt.y;
+            }
+            updateParallelArrays(point, i) {
+                super.updateParallelArrays.call(this, point, i);
+                // Prevent initial sums from triggering an error (#3245, #7559)
+                if (this.yData[0] === 'sum' || this.yData[0] === 'intermediateSum') {
+                    this.yData[0] = null;
+                }
+            }
+            // Postprocess mapping between options and SVG attributes
+            pointAttribs(point, state) {
+                const upColor = this.options.upColor;
+                // Set or reset up color (#3710, update to negative)
+                if (upColor && !point.options.color && isNumber(point.y)) {
+                    point.color = point.y > 0 ? upColor : void 0;
+                }
+                const attr = ColumnSeries.prototype.pointAttribs.call(this, point, state);
+                // The dashStyle option in waterfall applies to the graph, not
+                // the points
+                delete attr.dashstyle;
+                return attr;
+            }
+            // Return an empty path initially, because we need to know the stroke-width
+            // in order to set the final path.
+            getGraphPath() {
+                return [['M', 0, 0]];
+            }
+            // Draw columns' connector lines
+            getCrispPath() {
+                const // Skip points where Y is not a number (#18636)
+                data = this.data.filter((d) => isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphNormalizer = Math.round(this.graph.strokeWidth()) % 2 / 2, borderNormalizer = Math.round(this.borderWidth) % 2 / 2, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
+                for (let i = 1; i < length; i++) {
+                    if (!( // Skip lines that would pass over the null point (#18636)
+                    this.options.connectNulls ||
+                        isNumber(this.data[data[i].index - 1].y))) {
+                        continue;
+                    }
+                    const box = data[i].box, prevPoint = data[i - 1], prevY = prevPoint.y || 0, prevBox = data[i - 1].box;
+                    if (!box || !prevBox) {
+                        continue;
+                    }
+                    const prevStack = yAxis.waterfall.stacks[this.stackKey], isPos = prevY > 0 ? -prevBox.height : 0;
+                    if (prevStack && prevBox && box) {
+                        const prevStackX = prevStack[i - 1];
+                        // y position of the connector is different when series are
+                        // stacked, yAxis is reversed and it also depends on point's
+                        // value
+                        let yPos;
+                        if (stacking) {
+                            const connectorThreshold = prevStackX.connectorThreshold;
+                            yPos = Math.round((yAxis.translate(connectorThreshold, false, true, false, true) +
+                                (reversedYAxis ? isPos : 0))) - graphNormalizer;
+                        }
+                        else {
+                            yPos =
+                                prevBox.y + prevPoint.minPointLengthOffset +
+                                    borderNormalizer - graphNormalizer;
+                        }
+                        path.push([
+                            'M',
+                            (prevBox.x || 0) + (reversedXAxis ?
+                                0 :
+                                (prevBox.width || 0)),
+                            yPos
+                        ], [
+                            'L',
+                            (box.x || 0) + (reversedXAxis ?
+                                (box.width || 0) :
+                                0),
+                            yPos
+                        ]);
+                    }
+                    if (prevBox &&
+                        path.length &&
+                        ((!stacking && prevY < 0 && !reversedYAxis) ||
+                            (prevY > 0 && reversedYAxis))) {
+                        const nextLast = path[path.length - 2];
+                        if (nextLast && typeof nextLast[2] === 'number') {
+                            nextLast[2] += prevBox.height || 0;
+                        }
+                        const last = path[path.length - 1];
+                        if (last && typeof last[2] === 'number') {
+                            last[2] += prevBox.height || 0;
+                        }
+                    }
+                }
+                return path;
+            }
+            // The graph is initially drawn with an empty definition, then updated with
+            // crisp rendering.
+            drawGraph() {
+                LineSeries.prototype.drawGraph.call(this);
+                if (this.graph) {
+                    this.graph.attr({
+                        d: this.getCrispPath()
+                    });
+                }
+            }
+            // Waterfall has stacking along the x-values too.
+            setStackedPoints(axis) {
+                const series = this, options = series.options, waterfallStacks = axis.waterfall?.stacks, seriesThreshold = options.threshold || 0, stackKey = series.stackKey, xData = series.xData, xLength = xData.length;
+                let stackThreshold = seriesThreshold, interSum = stackThreshold, actualStackX, totalYVal = 0, actualSum = 0, prevSum = 0, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
+                // Function responsible for calculating correct values for stackState
+                // array of each stack item. The arguments are: firstS - the value for
+                // the first state, nextS - the difference between the previous and the
+                // newest state, sInx - counter used in the for that updates each state
+                // when necessary, sOff - offset that must be added to each state when
+                // they need to be updated (if point isn't a total sum)
+                // eslint-disable-next-line require-jsdoc
+                const calculateStackState = (firstS, nextS, sInx, sOff) => {
+                    if (actualStackX) {
+                        if (!statesLen) {
+                            actualStackX.stackState[0] = firstS;
+                            statesLen = actualStackX.stackState.length;
+                        }
+                        else {
+                            for (sInx; sInx < statesLen; sInx++) {
+                                actualStackX.stackState[sInx] += sOff;
+                            }
+                        }
+                        actualStackX.stackState.push(actualStackX.stackState[statesLen - 1] + nextS);
+                    }
+                };
+                if (axis.stacking && waterfallStacks) {
+                    // Code responsible for creating stacks for waterfall series
+                    if (series.reserveSpace()) {
+                        changed = waterfallStacks.changed;
+                        alreadyChanged = waterfallStacks.alreadyChanged;
+                        // In case of a redraw, stack for each x value must be emptied
+                        // (only for the first series in a specific stack) and
+                        // recalculated once more
+                        if (alreadyChanged &&
+                            alreadyChanged.indexOf(stackKey) < 0) {
+                            changed = true;
+                        }
+                        if (!waterfallStacks[stackKey]) {
+                            waterfallStacks[stackKey] = {};
+                        }
+                        const actualStack = waterfallStacks[stackKey];
+                        if (actualStack) {
+                            for (let i = 0; i < xLength; i++) {
+                                x = xData[i];
+                                if (!actualStack[x] || changed) {
+                                    actualStack[x] = {
+                                        negTotal: 0,
+                                        posTotal: 0,
+                                        stackTotal: 0,
+                                        threshold: 0,
+                                        stateIndex: 0,
+                                        stackState: [],
+                                        label: ((changed &&
+                                            actualStack[x]) ?
+                                            actualStack[x].label :
+                                            void 0)
+                                    };
+                                }
+                                actualStackX = actualStack[x];
+                                yVal = series.yData[i];
+                                if (yVal >= 0) {
+                                    actualStackX.posTotal += yVal;
+                                }
+                                else {
+                                    actualStackX.negTotal += yVal;
+                                }
+                                // Points do not exist yet, so raw data is used
+                                xPoint = options.data[i];
+                                posTotal = actualStackX.absolutePos =
+                                    actualStackX.posTotal;
+                                negTotal = actualStackX.absoluteNeg =
+                                    actualStackX.negTotal;
+                                actualStackX.stackTotal = posTotal + negTotal;
+                                statesLen = actualStackX.stackState.length;
+                                if (xPoint && xPoint.isIntermediateSum) {
+                                    calculateStackState(prevSum, actualSum, 0, prevSum);
+                                    prevSum = actualSum;
+                                    actualSum = seriesThreshold;
+                                    // Swapping values
+                                    stackThreshold ^= interSum;
+                                    interSum ^= stackThreshold;
+                                    stackThreshold ^= interSum;
+                                }
+                                else if (xPoint && xPoint.isSum) {
+                                    calculateStackState(seriesThreshold, totalYVal, statesLen, 0);
+                                    stackThreshold = seriesThreshold;
+                                }
+                                else {
+                                    calculateStackState(stackThreshold, yVal, 0, totalYVal);
+                                    if (xPoint) {
+                                        totalYVal += yVal;
+                                        actualSum += yVal;
+                                    }
+                                }
+                                actualStackX.stateIndex++;
+                                actualStackX.threshold = stackThreshold;
+                                stackThreshold += actualStackX.stackTotal;
+                            }
+                        }
+                        waterfallStacks.changed = false;
+                        if (!waterfallStacks.alreadyChanged) {
+                            waterfallStacks.alreadyChanged = [];
+                        }
+                        waterfallStacks.alreadyChanged.push(stackKey);
+                    }
+                }
+            }
+            // Extremes for a non-stacked series are recorded in processData.
+            // In case of stacking, use Series.stackedYData to calculate extremes.
+            getExtremes() {
+                const stacking = this.options.stacking;
+                let yAxis, waterfallStacks, stackedYNeg, stackedYPos;
+                if (stacking) {
+                    yAxis = this.yAxis;
+                    waterfallStacks = yAxis.waterfall.stacks;
+                    stackedYNeg = this.stackedYNeg = [];
+                    stackedYPos = this.stackedYPos = [];
+                    // the visible y range can be different when stacking is set to
+                    // overlap and different when it's set to normal
+                    if (stacking === 'overlap') {
+                        objectEach(waterfallStacks[this.stackKey], function (stackX) {
+                            stackedYNeg.push(arrayMin(stackX.stackState));
+                            stackedYPos.push(arrayMax(stackX.stackState));
+                        });
+                    }
+                    else {
+                        objectEach(waterfallStacks[this.stackKey], function (stackX) {
+                            stackedYNeg.push(stackX.negTotal + stackX.threshold);
+                            stackedYPos.push(stackX.posTotal + stackX.threshold);
+                        });
+                    }
+                    return {
+                        dataMin: arrayMin(stackedYNeg),
+                        dataMax: arrayMax(stackedYPos)
+                    };
+                }
+                // When not stacking, data extremes have already been computed in the
+                // processData function.
+                return {
+                    dataMin: this.dataMin,
+                    dataMax: this.dataMax
+                };
+            }
+        }
+        WaterfallSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WaterfallSeriesDefaults);
+        WaterfallSeries.compose = WaterfallAxis.compose;
+        extend(WaterfallSeries.prototype, {
+            getZonesGraphs: LineSeries.prototype.getZonesGraphs,
+            pointValKey: 'y',
+            // Property needed to prevent lines between the columns from disappearing
+            // when negativeColor is used.
+            showLine: true,
+            pointClass: WaterfallPoint
+        });
+        // Translate data points from raw values
+        addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
+            const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall.stacks[series.stackKey];
+            let previousIntermediate = threshold, previousY = threshold, y, total, yPos, hPos;
+            for (let i = 0; i < points.length; i++) {
+                const point = points[i], yValue = series.processedYData[i], shapeArgs = point.shapeArgs, box = extend({
+                    x: 0,
+                    y: 0,
+                    width: 0,
+                    height: 0
+                }, shapeArgs || {});
+                point.box = box;
+                const range = [0, yValue], pointY = point.y || 0;
+                // code responsible for correct positions of stacked points
+                // starts here
+                if (stacking) {
+                    if (actualStack) {
+                        const actualStackX = actualStack[i];
+                        if (stacking === 'overlap') {
+                            total =
+                                actualStackX.stackState[actualStackX.stateIndex--];
+                            y = pointY >= 0 ? total : total - pointY;
+                            if (ownProp(actualStackX, 'absolutePos')) {
+                                delete actualStackX.absolutePos;
+                            }
+                            if (ownProp(actualStackX, 'absoluteNeg')) {
+                                delete actualStackX.absoluteNeg;
+                            }
+                        }
+                        else {
+                            if (pointY >= 0) {
+                                total = actualStackX.threshold +
+                                    actualStackX.posTotal;
+                                actualStackX.posTotal -= pointY;
+                                y = total;
+                            }
+                            else {
+                                total = actualStackX.threshold +
+                                    actualStackX.negTotal;
+                                actualStackX.negTotal -= pointY;
+                                y = total - pointY;
+                            }
+                            if (!actualStackX.posTotal) {
+                                if (isNumber(actualStackX.absolutePos) &&
+                                    ownProp(actualStackX, 'absolutePos')) {
+                                    actualStackX.posTotal =
+                                        actualStackX.absolutePos;
+                                    delete actualStackX.absolutePos;
+                                }
+                            }
+                            if (!actualStackX.negTotal) {
+                                if (isNumber(actualStackX.absoluteNeg) &&
+                                    ownProp(actualStackX, 'absoluteNeg')) {
+                                    actualStackX.negTotal =
+                                        actualStackX.absoluteNeg;
+                                    delete actualStackX.absoluteNeg;
+                                }
+                            }
+                        }
+                        if (!point.isSum) {
+                            // the connectorThreshold property is later used in
+                            // getCrispPath function to draw a connector line in a
+                            // correct place
+                            actualStackX.connectorThreshold =
+                                actualStackX.threshold + actualStackX.stackTotal;
+                        }
+                        if (yAxis.reversed) {
+                            yPos = (pointY >= 0) ? (y - pointY) : (y + pointY);
+                            hPos = y;
+                        }
+                        else {
+                            yPos = y;
+                            hPos = y - pointY;
+                        }
+                        point.below = yPos <= threshold;
+                        box.y = yAxis.translate(yPos, false, true, false, true);
+                        box.height = Math.abs(box.y -
+                            yAxis.translate(hPos, false, true, false, true));
+                        const dummyStackItem = yAxis.waterfall.dummyStackItem;
+                        if (dummyStackItem) {
+                            dummyStackItem.x = i;
+                            dummyStackItem.label = actualStack[i].label;
+                            dummyStackItem.setOffset(series.pointXOffset || 0, series.barW || 0, series.stackedYNeg[i], series.stackedYPos[i], void 0, this.xAxis);
+                        }
+                    }
+                }
+                else {
+                    // up points
+                    y = Math.max(previousY, previousY + pointY) + range[0];
+                    box.y = yAxis.translate(y, false, true, false, true);
+                    // sum points
+                    if (point.isSum) {
+                        box.y = yAxis.translate(range[1], false, true, false, true);
+                        box.height = Math.min(yAxis.translate(range[0], false, true, false, true), yAxis.len) - box.y; // #4256
+                        point.below = range[1] <= threshold;
+                    }
+                    else if (point.isIntermediateSum) {
+                        if (pointY >= 0) {
+                            yPos = range[1] + previousIntermediate;
+                            hPos = previousIntermediate;
+                        }
+                        else {
+                            yPos = previousIntermediate;
+                            hPos = range[1] + previousIntermediate;
+                        }
+                        if (yAxis.reversed) {
+                            // swapping values
+                            yPos ^= hPos;
+                            hPos ^= yPos;
+                            yPos ^= hPos;
+                        }
+                        box.y = yAxis.translate(yPos, false, true, false, true);
+                        box.height = Math.abs(box.y -
+                            Math.min(yAxis.translate(hPos, false, true, false, true), yAxis.len));
+                        previousIntermediate += range[1];
+                        point.below = yPos <= threshold;
+                        // If it's not the sum point, update previous stack end position
+                        // and get shape height (#3886)
+                    }
+                    else {
+                        box.height = yValue > 0 ?
+                            yAxis.translate(previousY, false, true, false, true) - box.y :
+                            yAxis.translate(previousY, false, true, false, true) - yAxis.translate(previousY - yValue, false, true, false, true);
+                        previousY += yValue;
+                        point.below = previousY < threshold;
+                    }
+                    // #3952 Negative sum or intermediate sum not rendered correctly
+                    if (box.height < 0) {
+                        box.y += box.height;
+                        box.height *= -1;
+                    }
+                }
+                point.plotY = box.y =
+                    Math.round(box.y || 0) - (series.borderWidth % 2) / 2;
+                // #3151
+                box.height =
+                    Math.max(Math.round(box.height || 0), 0.001);
+                point.yBottom = box.y + box.height;
+                if (box.height <= minPointLength && !point.isNull) {
+                    box.height = minPointLength;
+                    box.y -= halfMinPointLength;
+                    point.plotY = box.y;
+                    if (pointY < 0) {
+                        point.minPointLengthOffset = -halfMinPointLength;
+                    }
+                    else {
+                        point.minPointLengthOffset = halfMinPointLength;
+                    }
+                }
+                else {
+                    // #8024, empty gaps in the line for null data
+                    if (point.isNull) {
+                        box.width = 0;
+                    }
+                    point.minPointLengthOffset = 0;
+                }
+                // Correct tooltip placement (#3014)
+                const tooltipY = point.plotY + (point.negative ? box.height : 0);
+                if (point.below) { // #15334
+                    point.plotY += box.height;
+                }
+                if (point.tooltipPos) {
+                    if (series.chart.inverted) {
+                        point.tooltipPos[0] = yAxis.len - tooltipY;
+                    }
+                    else {
+                        point.tooltipPos[1] = tooltipY;
+                    }
+                }
+                // Check point position after recalculation (#16788)
+                point.isInside = this.isPointInside(point);
+                merge(true, point.shapeArgs, box);
+            }
+        }, { order: 2 });
+        SeriesRegistry.registerSeriesType('waterfall', WaterfallSeries);
+        /* *
+         *
+         * Export
+         *
+         * */
+
+        return WaterfallSeries;
+    });
+    _registerModule(_modules, 'masters/highcharts-more.src.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Bubble/BubbleSeries.js'], _modules['Series/PackedBubble/PackedBubbleSeries.js'], _modules['Series/PolarComposition.js'], _modules['Series/Waterfall/WaterfallSeries.js']], function (Highcharts, SeriesRegistry, BubbleSeries, PackedBubbleSeries, PolarAdditions, WaterfallSeries) {
 
         const G = Highcharts;
         BubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
         PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend, G.Series);
         PolarAdditions.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, SeriesRegistry.seriesTypes.areasplinerange, SeriesRegistry.seriesTypes.column, SeriesRegistry.seriesTypes.line, SeriesRegistry.seriesTypes.spline);
+        WaterfallSeries.compose(G.Axis, G.Chart);
 
     });
 }));

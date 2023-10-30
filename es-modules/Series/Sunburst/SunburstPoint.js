@@ -15,7 +15,7 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { correctFloat, extend } = U;
+const { correctFloat, extend, pInt } = U;
 /* *
  *
  *  Class
@@ -34,19 +34,19 @@ class SunburstPoint extends TreemapPoint {
         this.series = void 0;
         this.shapeExisting = void 0;
         this.shapeType = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     getDataLabelPath(label) {
-        let renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, start = shapeArgs.start, end = shapeArgs.end, angle = start + (end - start) / 2, // arc middle value
-        upperHalf = angle < 0 &&
+        const renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, r = shapeArgs.r + pInt(label.options?.distance || 0);
+        let start = shapeArgs.start, end = shapeArgs.end;
+        const angle = start + (end - start) / 2; // arc middle value
+        let upperHalf = angle < 0 &&
             angle > -Math.PI ||
-            angle > Math.PI, r = (shapeArgs.r + (label.options.distance || 0)), moreThanHalf;
+            angle > Math.PI, moreThanHalf;
         // Check if point is a full circle
         if (start === -Math.PI / 2 &&
             correctFloat(end) === correctFloat(Math.PI * 1.5)) {

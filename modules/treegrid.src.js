@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
  *
  * Tree Grid
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -112,7 +110,7 @@
              */
             function onAxisAfterSetOptions() {
                 const axis = this;
-                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                if (axis.brokenAxis?.hasBreaks) {
                     axis.options.ordinal = false;
                 }
             }
@@ -121,8 +119,7 @@
              */
             function onAxisAfterSetTickPositions() {
                 const axis = this, brokenAxis = axis.brokenAxis;
-                if (brokenAxis &&
-                    brokenAxis.hasBreaks) {
+                if (brokenAxis?.hasBreaks) {
                     const tickPositions = axis.tickPositions, info = axis.tickPositions.info, newPositions = [];
                     for (let i = 0; i < tickPositions.length; i++) {
                         if (!brokenAxis.isInAnyBreak(tickPositions[i])) {
@@ -155,11 +152,8 @@
                         const point = points[i];
                         // Respect nulls inside the break (#4275)
                         const nullGap = point.y === null && connectNulls === false;
-                        const isPointInBreak = (!nullGap && ((xAxis &&
-                            xAxis.brokenAxis &&
-                            xAxis.brokenAxis.isInAnyBreak(point.x, true)) || (yAxis &&
-                            yAxis.brokenAxis &&
-                            yAxis.brokenAxis.isInAnyBreak(point.y, true))));
+                        const isPointInBreak = (!nullGap && (xAxis?.brokenAxis?.isInAnyBreak(point.x, true) ||
+                            yAxis?.brokenAxis?.isInAnyBreak(point.y, true)));
                         // Set point.visible if in any break.
                         // If not in break, reset visible to original value.
                         point.visible = isPointInBreak ?
@@ -180,21 +174,35 @@
              */
             function seriesDrawBreaks(axis, keys) {
                 const series = this, points = series.points;
-                let breaks, threshold, eventName, y;
-                if (axis && // #5950
-                    axis.brokenAxis &&
-                    axis.brokenAxis.hasBreaks) {
+                let breaks, threshold, y;
+                if (axis?.brokenAxis?.hasBreaks) {
                     const brokenAxis = axis.brokenAxis;
                     keys.forEach(function (key) {
-                        breaks = brokenAxis && brokenAxis.breakArray || [];
+                        breaks = brokenAxis?.breakArray || [];
                         threshold = axis.isXAxis ?
                             axis.min :
                             pick(series.options.threshold, axis.min);
+                        // Array of breaks that have been "zoomed-out" which means that
+                        // they were shown previously, but now after zoom, they are not
+                        // (#19885).
+                        const breaksOutOfRange = axis?.options?.breaks?.filter(function (brk) {
+                            let isOut = true;
+                            // Iterate to see if "brk" is in axis range
+                            for (let i = 0; i < breaks.length; i++) {
+                                const otherBreak = breaks[i];
+                                if (otherBreak.from === brk.from &&
+                                    otherBreak.to === brk.to) {
+                                    isOut = false;
+                                    break;
+                                }
+                            }
+                            return isOut;
+                        });
                         points.forEach(function (point) {
                             y = pick(point['stack' + key.toUpperCase()], point[key]);
                             breaks.forEach(function (brk) {
                                 if (isNumber(threshold) && isNumber(y)) {
-                                    eventName = false;
+                                    let eventName = '';
                                     if ((threshold < brk.from && y > brk.to) ||
                                         (threshold > brk.from && y < brk.from)) {
                                         eventName = 'pointBreak';
@@ -210,6 +218,9 @@
                                         fireEvent(axis, eventName, { point, brk });
                                     }
                                 }
+                            });
+                            breaksOutOfRange?.forEach(function (brk) {
+                                fireEvent(axis, 'pointOutsideOfBreak', { point, brk });
                             });
                         });
                     });
@@ -227,7 +238,7 @@
              * Gapped path
              */
             function seriesGappedPath() {
-                const currentDataGrouping = this.currentDataGrouping, groupingSize = currentDataGrouping && currentDataGrouping.gapSize, points = this.points.slice(), yAxis = this.yAxis;
+                const currentDataGrouping = this.currentDataGrouping, groupingSize = currentDataGrouping?.gapSize, points = this.points.slice(), yAxis = this.yAxis;
                 let gapSize = this.options.gapSize, i = points.length - 1, stack;
                 /**
                  * Defines when to display a gap in the graph, together with the
@@ -485,7 +496,9 @@
                 setBreaks(breaks, redraw) {
                     const brokenAxis = this;
                     const axis = brokenAxis.axis;
-                    const hasBreaks = (isArray(breaks) && !!breaks.length);
+                    const hasBreaks = isArray(breaks) &&
+                        !!breaks.length &&
+                        !!Object.keys(breaks[0]).length; // Check for [{}], #16368.
                     axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
                     brokenAxis.hasBreaks = hasBreaks;
                     if (breaks !== axis.options.breaks) {
@@ -715,6 +728,8 @@
             // help.
             axis.labelRotation = 0;
             options.labels.rotation = 0;
+            // Allow putting ticks closer than their data points.
+            options.minTickInterval = 1;
         }
         /**
          * Extends axis class with grid support.
@@ -1669,7 +1684,8 @@
          */
         /**
          * Set cell height for grid axis labels. By default this is calculated from font
-         * size. This option only applies to horizontal axes.
+         * size. This option only applies to horizontal axes. For vertical axes, check
+         * the [#yAxis.staticScale](yAxis.staticScale) option.
          *
          * @sample gantt/grid-axis/cellheight
          *         Gant chart with custom cell height
@@ -1692,8 +1708,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint no-console: 0 */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         const { extend, isNumber, pick } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an object map from parent id to childrens index.
          *
@@ -1707,47 +1732,51 @@
          *        List of all point ids.
          *
          * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
+         * Map from parent id to children index in data
          */
-        const getListOfParents = function (data, ids) {
-            const listOfParents = data.reduce(function (prev, curr) {
+        function getListOfParents(data) {
+            const listOfParents = data.reduce((prev, curr) => {
                 const parent = pick(curr.parent, '');
                 if (typeof prev[parent] === 'undefined') {
                     prev[parent] = [];
                 }
                 prev[parent].push(curr);
                 return prev;
-            }, {}), parents = Object.keys(listOfParents);
+            }, {});
+            // parents = Object.keys(listOfParents);
             // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                const children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
+            // parents.forEach((parent, list): void => {
+            //     const children = listOfParents[parent];
+            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+            //         for (const child of children) {
+            //             (list as any)[''].push(child);
+            //         }
+            //         delete (list as any)[parent];
+            //     }
+            // });
             return listOfParents;
-        };
-        const getNode = function (id, parent, level, data, mapOfIdToChildren, options) {
-            let descendants = 0, height = 0, after = options && options.after, before = options && options.before, node = {
-                data: data,
+        }
+        /** @private */
+        function getNode(id, parent, level, data, mapOfIdToChildren, options) {
+            const after = options && options.after, before = options && options.before, node = {
+                data,
                 depth: level - 1,
-                id: id,
-                level: level,
-                parent: parent
-            }, start, end, children;
+                id,
+                level,
+                parent: (parent || '')
+            };
+            let descendants = 0, height = 0, start, end;
             // Allow custom logic before the children has been created.
             if (typeof before === 'function') {
                 before(node, options);
             }
             // Call getNode recursively on the children. Calulate the height of the
             // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start, childEnd = (child.milestone === true ?
+            const children = ((mapOfIdToChildren[id] || [])).map((child) => {
+                const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
                     childStart :
-                    child.end);
+                    child.end ||
+                        NaN);
                 // Start should be the lowest child.start.
                 start = ((!isNumber(start) || childStart < start) ?
                     childStart :
@@ -1776,15 +1805,18 @@
                 after(node, options);
             }
             return node;
-        };
-        const getTree = function (data, options) {
-            const ids = data.map(function (d) {
-                return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
+        }
+        /** @private */
+        function getTree(data, options) {
+            const mapOfIdToChildren = getListOfParents(data);
             return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         const Tree = {
-            getListOfParents,
             getNode,
             getTree
         };

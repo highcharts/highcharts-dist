@@ -11,6 +11,7 @@
  * */
 'use strict';
 import ScatterSeries from '../Scatter/ScatterSeries.js';
+const { pointClass: ScatterPoint } = ScatterSeries.prototype;
 import U from '../../Core/Utilities.js';
 const { defined } = U;
 /* *
@@ -18,7 +19,7 @@ const { defined } = U;
  *  Class
  *
  * */
-class Scatter3DPoint extends ScatterSeries.prototype.pointClass {
+class Scatter3DPoint extends ScatterPoint {
     constructor() {
         /* *
          *

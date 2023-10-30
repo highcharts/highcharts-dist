@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,12 +26,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -455,8 +453,8 @@
                         var _a = label.getBBox(),
                             width = _a.width,
                             height = _a.height,
-                            left = label.translateX + (s.xAxis ? s.xAxis.pos : s.chart.plotLeft),
-                            top = label.translateY + (s.yAxis ? s.yAxis.pos : s.chart.plotTop);
+                            left = (label.translateX || 0) + (s.xAxis ? s.xAxis.pos : s.chart.plotLeft),
+                            top = (label.translateY || 0) + (s.yAxis ? s.yAxis.pos : s.chart.plotTop);
                         boxesToAvoid.push({
                             left: left,
                             top: top,

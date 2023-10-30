@@ -9,15 +9,14 @@
  * */
 'use strict';
 import Axis from '../Axis.js';
-import Color from '../../Color/Color.js';
-const { parse: color } = Color;
 import ColorAxisComposition from './ColorAxisComposition.js';
 import ColorAxisDefaults from './ColorAxisDefaults.js';
+import ColorAxisLike from './ColorAxisLike.js';
 import LegendSymbol from '../../Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Utilities.js';
-const { extend, isArray, isNumber, merge, pick } = U;
+const { extend, fireEvent, isArray, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -111,40 +110,6 @@ class ColorAxis extends Axis {
         axis.zoomEnabled = false;
     }
     /**
-     * @private
-     */
-    initDataClasses(userOptions) {
-        const axis = this, chart = axis.chart, legendItem = axis.legendItem = axis.legendItem || {}, len = userOptions.dataClasses.length, options = axis.options;
-        let dataClasses, colorCounter = 0, colorCount = chart.options.chart.colorCount;
-        axis.dataClasses = dataClasses = [];
-        legendItem.labels = [];
-        (userOptions.dataClasses || []).forEach(function (dataClass, i) {
-            let colors;
-            dataClass = merge(dataClass);
-            dataClasses.push(dataClass);
-            if (!chart.styledMode && dataClass.color) {
-                return;
-            }
-            if (options.dataClassColor === 'category') {
-                if (!chart.styledMode) {
-                    colors = chart.options.colors;
-                    colorCount = colors.length;
-                    dataClass.color = colors[colorCounter];
-                }
-                dataClass.colorIndex = colorCounter;
-                // increase and loop back to zero
-                colorCounter++;
-                if (colorCounter === colorCount) {
-                    colorCounter = 0;
-                }
-            }
-            else {
-                dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), len < 2 ? 0.5 : i / (len - 1) // #3219
-                );
-            }
-        });
-    }
-    /**
      * Returns true if the series has points at all.
      *
      * @function Highcharts.ColorAxis#hasData
@@ -163,19 +128,6 @@ class ColorAxis extends Axis {
         if (!this.dataClasses) {
             return super.setTickPositions();
         }
-    }
-    /**
-     * @private
-     */
-    initStops() {
-        const axis = this;
-        axis.stops = axis.options.stops || [
-            [0, axis.options.minColor],
-            [1, axis.options.maxColor]
-        ];
-        axis.stops.forEach(function (stop) {
-            stop.color = color(stop[1]);
-        });
     }
     /**
      * Extend the setOptions method to process extreme colors and color stops.
@@ -212,59 +164,6 @@ class ColorAxis extends Axis {
                 legendOptions.symbolWidth :
                 legendOptions.symbolHeight) || ColorAxis.defaultLegendLength;
         }
-    }
-    /**
-     * @private
-     */
-    normalizedValue(value) {
-        const axis = this;
-        if (axis.logarithmic) {
-            value = axis.logarithmic.log2lin(value);
-        }
-        return 1 - ((axis.max - value) /
-            ((axis.max - axis.min) || 1));
-    }
-    /**
-     * Translate from a value to a color.
-     * @private
-     */
-    toColor(value, point) {
-        const axis = this;
-        const dataClasses = axis.dataClasses;
-        const stops = axis.stops;
-        let pos, from, to, color, dataClass, i;
-        if (dataClasses) {
-            i = dataClasses.length;
-            while (i--) {
-                dataClass = dataClasses[i];
-                from = dataClass.from;
-                to = dataClass.to;
-                if ((typeof from === 'undefined' || value >= from) &&
-                    (typeof to === 'undefined' || value <= to)) {
-                    color = dataClass.color;
-                    if (point) {
-                        point.dataClass = i;
-                        point.colorIndex = dataClass.colorIndex;
-                    }
-                    break;
-                }
-            }
-        }
-        else {
-            pos = axis.normalizedValue(value);
-            i = stops.length;
-            while (i--) {
-                if (pos > stops[i][0]) {
-                    break;
-                }
-            }
-            from = stops[i] || stops[i + 1];
-            to = stops[i + 1] || from;
-            // The position within the gradient
-            pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
-            color = from.color.tweenTo(to.color, pos);
-        }
-        return color;
     }
     /**
      * Override the getOffset method to add the whole axis groups inside the
@@ -327,7 +226,6 @@ class ColorAxis extends Axis {
      * @private
      */
     drawLegendSymbol(legend, item) {
-        var _a;
         const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength), labelPadding = pick(
         // @todo: This option is not documented, nor implemented when
         // vertical
@@ -335,7 +233,7 @@ class ColorAxis extends Axis {
         this.setLegendColor();
         // Create the gradient
         if (!legendItem.symbol) {
-            legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: (_a = legendOptions.symbolRadius) !== null && _a !== void 0 ? _a : 3 }).attr({
+            legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: legendOptions.symbolRadius ?? 3 }).attr({
                 zIndex: 1
             }).add(legendItem.group);
         }
@@ -604,10 +502,17 @@ class ColorAxis extends Axis {
                     // data class
                     setVisible: function () {
                         this.visible = vis = axis.visible = !vis;
+                        const affectedSeries = [];
                         for (const point of getPointsInDataClass(i)) {
                             point.setVisible(vis);
+                            if (affectedSeries.indexOf(point.series) === -1) {
+                                affectedSeries.push(point.series);
+                            }
                         }
                         chart.legend.colorizeItem(this, vis);
+                        affectedSeries.forEach((series) => {
+                            fireEvent(series, 'afterDataClassLegendClick');
+                        });
                     }
                 }, dataClass));
             });
@@ -628,6 +533,7 @@ ColorAxis.defaultLegendLength = 200;
 ColorAxis.keepProps = [
     'legendItem'
 ];
+extend(ColorAxis.prototype, ColorAxisLike);
 /* *
  *
  *  Registry

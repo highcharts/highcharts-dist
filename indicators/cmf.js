@@ -1,13 +1,8 @@
-/*
- Highstock JS v11.1.0 (2023-06-05)
-
- (c) 2010-2021 Highsoft AS
- Author: Sebastian Domas
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/cmf",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,e,b,g){a.hasOwnProperty(e)||(a[e]=g.apply(null,b),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,
-module:a[e]}})))}a=a?a._modules:{};b(a,"Stock/Indicators/CMF/CMFIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,e){const {sma:b}=a.seriesTypes;({merge:e}=e);class g extends b{constructor(){super(...arguments);this.yData=this.linkedParent=this.volumeSeries=this.points=this.options=this.data=void 0;this.nameBase="Chaikin Money Flow"}isValid(){var a=this.chart;const b=this.options,d=this.linkedParent;a=this.volumeSeries||(this.volumeSeries=a.get(b.params.volumeSeriesID));
-const f=d&&d.yData&&4===d.yData[0].length;return!!(d&&a&&d.xData&&d.xData.length>=b.params.period&&a.xData&&a.xData.length>=b.params.period&&f)}getValues(a,b){if(this.isValid())return this.getMoneyFlow(a.xData,a.yData,this.volumeSeries.yData,b.period)}getMoneyFlow(a,b,d,f){function e(a,b){const d=a[1],e=a[2];a=a[3];return null!==b&&null!==d&&null!==e&&null!==a&&d!==e?(a-e-(d-a))/(d-e)*b:(q=c,null)}const g=b.length,k=[],n=[],p=[],r=[];let c,l,q=-1,h=0,m=0;if(0<f&&f<=g){for(c=0;c<f;c++)k[c]=e(b[c],
-d[c]),h+=d[c],m+=k[c];n.push(a[c-1]);p.push(c-q>=f&&0!==h?m/h:null);for(r.push([n[0],p[0]]);c<g;c++)k[c]=e(b[c],d[c]),h-=d[c-f],h+=d[c],m-=k[c-f],m+=k[c],l=[a[c],c-q>=f?m/h:null],n.push(l[0]),p.push(l[1]),r.push([l[0],l[1]])}return{values:r,xData:n,yData:p}}}g.defaultOptions=e(b.defaultOptions,{params:{index:void 0,volumeSeriesID:"volume"}});a.registerSeriesType("cmf",g);"";return g});b(a,"masters/indicators/cmf.src.js",[],function(){})});
-//# sourceMappingURL=cmf.js.map
+/**
+ * Highstock JS v11.2.0 (2023-10-30)
+ *
+ * (c) 2010-2021 Highsoft AS
+ * Author: Sebastian Domas
+ *
+ * License: www.highcharts.com/license
+ */!function(e){"object"==typeof module&&module.exports?(e.default=e,module.exports=e):"function"==typeof define&&define.amd?define("highcharts/indicators/cmf",["highcharts","highcharts/modules/stock"],function(t){return e(t),e.Highcharts=t,e}):e("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(e){"use strict";var t=e?e._modules:{};function i(e,t,i,s){e.hasOwnProperty(t)||(e[t]=s.apply(null,i),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:t,module:e[t]}})))}i(t,"Stock/Indicators/CMF/CMFIndicator.js",[t["Core/Series/SeriesRegistry.js"],t["Core/Utilities.js"]],function(e,t){let{sma:i}=e.seriesTypes,{merge:s}=t;class o extends i{constructor(){super(...arguments),this.data=void 0,this.options=void 0,this.points=void 0,this.volumeSeries=void 0,this.linkedParent=void 0,this.yData=void 0,this.nameBase="Chaikin Money Flow"}isValid(){let e=this.chart,t=this.options,i=this.linkedParent,s=this.volumeSeries||(this.volumeSeries=e.get(t.params.volumeSeriesID)),o=i&&i.yData&&4===i.yData[0].length;function n(e){return e.xData&&e.xData.length>=t.params.period}return!!(i&&s&&n(i)&&n(s)&&o)}getValues(e,t){if(this.isValid())return this.getMoneyFlow(e.xData,e.yData,this.volumeSeries.yData,t.period)}getMoneyFlow(e,t,i,s){let o=t.length,n=[],a=[],r=[],u=[],l,h,d=-1,c=0,p=0;function f(e,t){let i=e[1],s=e[2],o=e[3];return null!==t&&null!==i&&null!==s&&null!==o&&i!==s?(o-s-(i-o))/(i-s)*t:(d=l,null)}if(s>0&&s<=o){for(l=0;l<s;l++)n[l]=f(t[l],i[l]),c+=i[l],p+=n[l];for(a.push(e[l-1]),r.push(l-d>=s&&0!==c?p/c:null),u.push([a[0],r[0]]);l<o;l++)n[l]=f(t[l],i[l]),c-=i[l-s],c+=i[l],p-=n[l-s],p+=n[l],h=[e[l],l-d>=s?p/c:null],a.push(h[0]),r.push(h[1]),u.push([h[0],h[1]])}return{values:u,xData:a,yData:r}}}return o.defaultOptions=s(i.defaultOptions,{params:{index:void 0,volumeSeriesID:"volume"}}),e.registerSeriesType("cmf",o),o}),i(t,"masters/indicators/cmf.src.js",[],function(){})});//# sourceMappingURL=cmf.js.map

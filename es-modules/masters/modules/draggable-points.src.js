@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/draggable-points
  * @requires highcharts
  *
@@ -8,4 +8,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/DraggablePoints.js';
+import Highcharts from '../../Core/Globals.js';
+import DraggablePoints from '../../Extensions/DraggablePoints/DraggablePoints.js';
+const G = Highcharts;
+DraggablePoints.compose(G.Chart, G.Series);

@@ -36,7 +36,7 @@ var LegendSymbol;
      * The legend object.
      */
     function lineMarker(legend, item) {
-        const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
+        const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
             Math.round(legend.fontMetrics.b * 0.3);
         let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
         // Draw the line
@@ -73,7 +73,7 @@ var LegendSymbol;
             // Do not allow the marker to be larger than the symbolHeight
             let radius = Math.min(pick(markerOptions.radius, generalRadius), generalRadius);
             // Restrict symbol markers size
-            if (this.symbol.indexOf('url') === 0) {
+            if (symbol.indexOf('url') === 0) {
                 markerOptions = merge(markerOptions, {
                     width: symbolHeight,
                     height: symbolHeight
@@ -81,7 +81,7 @@ var LegendSymbol;
                 radius = 0;
             }
             legendItem.symbol = legendSymbol = renderer
-                .symbol(this.symbol, (symbolWidth / 2) - radius, verticalCenter - radius, 2 * radius, 2 * radius, extend({ context: 'legend' }, markerOptions))
+                .symbol(symbol, (symbolWidth / 2) - radius, verticalCenter - radius, 2 * radius, 2 * radius, extend({ context: 'legend' }, markerOptions))
                 .addClass('highcharts-point')
                 .add(legendItemGroup);
             legendSymbol.isMarker = true;

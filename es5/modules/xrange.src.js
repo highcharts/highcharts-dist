@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * X-range series
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -279,8 +277,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var pointProto = SeriesRegistry.series.prototype.pointClass.prototype,
-            ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
+        var ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
         var extend = U.extend;
         /* *
          *
@@ -363,7 +360,7 @@
              * @private
              */
             XRangePoint.prototype.init = function () {
-                pointProto.init.apply(this, arguments);
+                _super.prototype.init.apply(this, arguments);
                 if (!this.y) {
                     this.y = 0;
                 }
@@ -373,7 +370,7 @@
              * @private
              */
             XRangePoint.prototype.setState = function () {
-                pointProto.setState.apply(this, arguments);
+                _super.prototype.setState.apply(this, arguments);
                 this.series.drawPoint(this, this.series.getAnimationVerb());
             };
             /**
@@ -382,10 +379,13 @@
              * @private
              */
             XRangePoint.prototype.getLabelConfig = function () {
-                var cfg = pointProto.getLabelConfig.call(this),
+                var cfg = _super.prototype.getLabelConfig.call(this),
                     yCats = this.series.yAxis.categories;
                 cfg.x2 = this.x2;
                 cfg.yCategory = this.yCategory = yCats && yCats[this.y];
+                // Use 'category' as 'key' to ensure tooltip datetime formatting.
+                // Use 'name' only when 'category' is undefined.
+                cfg.key = this.category || this.name;
                 return cfg;
             };
             /**
@@ -468,8 +468,7 @@
         })();
         var noop = H.noop;
         var color = Color.parse;
-        var seriesProto = SeriesRegistry.series.prototype,
-            ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
         var addEvent = U.addEvent,
             clamp = U.clamp,
             defined = U.defined,
@@ -478,7 +477,8 @@
             isNumber = U.isNumber,
             isObject = U.isObject,
             merge = U.merge,
-            pick = U.pick;
+            pick = U.pick,
+            relativeLength = U.relativeLength;
         /* *
          *
          *  Constants
@@ -558,7 +558,6 @@
                     return retVal;
                 }
                 //*/
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
@@ -610,7 +609,7 @@
              */
             XRangeSeries.prototype.cropData = function (xData, yData, min, max) {
                 // Replace xData with x2Data to find the appropriate cropStart
-                var crop = seriesProto.cropData.call(this,
+                var crop = _super.prototype.cropData.call(this,
                     this.x2Data,
                     yData,
                     min,
@@ -673,12 +672,14 @@
                     yAxis = this.yAxis,
                     metrics = this.columnMetrics,
                     options = this.options,
-                    borderRadius = options.borderRadius,
                     minPointLength = options.minPointLength || 0,
                     oldColWidth = (point.shapeArgs && point.shapeArgs.width || 0) / 2,
                     seriesXOffset = this.pointXOffset = metrics.offset,
                     posX = pick(point.x2,
-                    point.x + (point.len || 0));
+                    point.x + (point.len || 0)),
+                    borderRadius = options.borderRadius,
+                    plotTop = this.chart.plotTop,
+                    plotLeft = this.chart.plotLeft;
                 var plotX = point.plotX,
                     plotX2 = xAxis.translate(posX, 0, 0, 0, 1);
                 var length = Math.abs(plotX2 - plotX),
@@ -715,19 +716,24 @@
                     point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
                 }
                 var x = Math.floor(Math.min(plotX,
-                    plotX2)) + crisper;
-                var x2 = Math.floor(Math.max(plotX,
-                    plotX2)) + crisper;
+                    plotX2)) + crisper,
+                    x2 = Math.floor(Math.max(plotX,
+                    plotX2)) + crisper,
+                    width = x2 - x;
+                var r = Math.min(relativeLength((typeof borderRadius === 'object' ?
+                        borderRadius.radius :
+                        borderRadius || 0),
+                    pointHeight),
+                    Math.min(width,
+                    pointHeight) / 2);
                 var shapeArgs = {
                         x: x,
                         y: Math.floor(point.plotY + yOffset) + crisper,
-                        width: x2 - x,
-                        height: pointHeight
+                        width: width,
+                        height: pointHeight,
+                        r: r
                     };
                 point.shapeArgs = shapeArgs;
-                if (isNumber(borderRadius)) {
-                    point.shapeArgs.r = borderRadius;
-                }
                 // Move tooltip to default position
                 if (!inverted) {
                     point.tooltipPos[0] -= oldColWidth +
@@ -762,14 +768,14 @@
                         this.columnMetrics.offset :
                         -metrics.width / 2);
                 // Centering tooltip position (#14147)
-                if (!inverted) {
-                    tooltipPos[xIndex] = clamp(tooltipPos[xIndex] +
-                        (xAxis.reversed ? -1 : 0) * shapeArgs.width, 0, xAxis.len - 1);
-                }
-                else {
+                if (inverted) {
                     tooltipPos[xIndex] += shapeArgs.width / 2;
                 }
-                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), 0, yAxis.len - 1);
+                else {
+                    tooltipPos[xIndex] = clamp(tooltipPos[xIndex] +
+                        (xAxis.reversed ? -1 : 0) * shapeArgs.width, xAxis.left - plotLeft, xAxis.left + xAxis.len - plotLeft - 1);
+                }
+                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), yAxis.top - plotTop, yAxis.top + yAxis.len - plotTop - 1);
                 // Add a partShapeArgs to the point, based on the shapeArgs property
                 partialFill = point.partialFill;
                 if (partialFill) {
@@ -781,11 +787,7 @@
                     if (!isNumber(partialFill)) {
                         partialFill = 0;
                     }
-                    if (isNumber(borderRadius)) {
-                        point.partShapeArgs = merge(shapeArgs, {
-                            r: borderRadius
-                        });
-                    }
+                    point.partShapeArgs = merge(shapeArgs);
                     clipRectWidth = Math.max(Math.round(length * partialFill + point.plotX -
                         plotX), 0);
                     point.clipRectArgs = {
@@ -829,7 +831,6 @@
                     shapeArgs = point.shapeArgs,
                     partShapeArgs = point.partShapeArgs,
                     clipRectArgs = point.clipRectArgs,
-                    cutOff = seriesOpts.stacking && !seriesOpts.borderRadius,
                     pointState = point.state,
                     stateOpts = (seriesOpts.states[pointState || 'normal'] ||
                         {}),
@@ -943,12 +944,12 @@
         }(ColumnSeries));
         extend(XRangeSeries.prototype, {
             pointClass: XRangePoint,
-            cropShoulder: 1,
+            pointArrayMap: ['x2', 'y'],
             getExtremesFromAll: true,
             parallelArrays: ['x', 'x2', 'y'],
             requireSorting: false,
             type: 'xrange',
-            animate: seriesProto.animate,
+            animate: SeriesRegistry.series.prototype.animate,
             autoIncrement: noop,
             buildKDTree: noop
         });

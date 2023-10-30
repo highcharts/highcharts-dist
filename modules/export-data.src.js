@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Exporting module
  *
@@ -28,15 +28,139 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
+    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
+        /* *
+         *
+         *  (c) 2015-2023 Oystein Moseng
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         *  Mixin for downloading content in the browser
+         *
+         * */
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        const { isSafari, win, win: { document: doc } } = H;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        const domurl = win.URL || win.webkitURL || win;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
+         * @private
+         * @function Highcharts.dataURLtoBlob
+         * @param {string} dataURL
+         *        URL to convert
+         * @return {string|undefined}
+         *         Blob
+         */
+        function dataURLtoBlob(dataURL) {
+            const parts = dataURL
+                .replace(/filename=.*;/, '')
+                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+            if (parts &&
+                parts.length > 3 &&
+                (win.atob) &&
+                win.ArrayBuffer &&
+                win.Uint8Array &&
+                win.Blob &&
+                (domurl.createObjectURL)) {
+                // Try to convert data URL to Blob
+                const binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
+                for (let i = 0; i < binary.length; ++i) {
+                    binary[i] = binStr.charCodeAt(i);
+                }
+                return domurl
+                    .createObjectURL(new win.Blob([binary], { 'type': parts[1] }));
+            }
+        }
+        /**
+         * Download a data URL in the browser. Can also take a blob as first param.
+         *
+         * @private
+         * @function Highcharts.downloadURL
+         * @param {string|global.URL} dataURL
+         *        The dataURL/Blob to download
+         * @param {string} filename
+         *        The name of the resulting file (w/extension)
+         * @return {void}
+         */
+        function downloadURL(dataURL, filename) {
+            const nav = win.navigator, a = doc.createElement('a');
+            // IE specific blob implementation
+            // Don't use for normal dataURLs
+            if (typeof dataURL !== 'string' &&
+                !(dataURL instanceof String) &&
+                nav.msSaveOrOpenBlob) {
+                nav.msSaveOrOpenBlob(dataURL, filename);
+                return;
+            }
+            dataURL = '' + dataURL;
+            const // Some browsers have limitations for data URL lengths. Try to convert
+            // to Blob or fall back. Edge always needs that blob.
+            isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 
+            // Safari on iOS needs Blob in order to download PDF
+            safariBlob = (isSafari &&
+                typeof dataURL === 'string' &&
+                dataURL.indexOf('data:application/pdf') === 0);
+            if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
+                dataURL = dataURLtoBlob(dataURL) || '';
+                if (!dataURL) {
+                    throw new Error('Failed to convert to blob');
+                }
+            }
+            // Try HTML5 download attr if supported
+            if (typeof a.download !== 'undefined') {
+                a.href = dataURL;
+                a.download = filename; // HTML5 download attribute
+                doc.body.appendChild(a);
+                a.click();
+                doc.body.removeChild(a);
+            }
+            else {
+                // No download attr, just opening data URI
+                try {
+                    if (!win.open(dataURL, 'chart')) {
+                        throw new Error('Failed to open window');
+                    }
+                }
+                catch {
+                    // If window.open failed, try location.href
+                    win.location.href = dataURL;
+                }
+            }
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const DownloadURL = {
+            dataURLtoBlob,
+            downloadURL
+        };
+
+        return DownloadURL;
+    });
     _registerModule(_modules, 'Extensions/ExportData/ExportDataDefaults.js', [], function () {
         /* *
          *
@@ -311,113 +435,6 @@
 
         return ExportDataDefaults;
     });
-    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
-        /* *
-         *
-         *  (c) 2015-2021 Oystein Moseng
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         *  Mixin for downloading content in the browser
-         *
-         * */
-        const { isSafari } = Highcharts;
-        const win = Highcharts.win, doc = win.document, domurl = win.URL || win.webkitURL || win;
-        /**
-         * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
-         * @private
-         * @function Highcharts.dataURLtoBlob
-         * @param {string} dataURL
-         *        URL to convert
-         * @return {string|undefined}
-         *         Blob
-         */
-        const dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-            const parts = dataURL
-                .replace(/filename=.*;/, '')
-                .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
-            if (parts &&
-                parts.length > 3 &&
-                (win.atob) &&
-                win.ArrayBuffer &&
-                win.Uint8Array &&
-                win.Blob &&
-                (domurl.createObjectURL)) {
-                // Try to convert data URL to Blob
-                const binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf);
-                for (let i = 0; i < binary.length; ++i) {
-                    binary[i] = binStr.charCodeAt(i);
-                }
-                const blob = new win.Blob([binary], { 'type': parts[1] });
-                return domurl.createObjectURL(blob);
-            }
-        };
-        /**
-         * Download a data URL in the browser. Can also take a blob as first param.
-         *
-         * @private
-         * @function Highcharts.downloadURL
-         * @param {string|global.URL} dataURL
-         *        The dataURL/Blob to download
-         * @param {string} filename
-         *        The name of the resulting file (w/extension)
-         * @return {void}
-         */
-        const downloadURL = Highcharts.downloadURL = function (dataURL, filename) {
-            const nav = win.navigator, a = doc.createElement('a');
-            // IE specific blob implementation
-            // Don't use for normal dataURLs
-            if (typeof dataURL !== 'string' &&
-                !(dataURL instanceof String) &&
-                nav.msSaveOrOpenBlob) {
-                nav.msSaveOrOpenBlob(dataURL, filename);
-                return;
-            }
-            dataURL = `${dataURL}`;
-            // Some browsers have limitations for data URL lengths. Try to convert to
-            // Blob or fall back. Edge always needs that blob.
-            const isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-            // Safari on iOS needs Blob in order to download PDF
-            const safariBlob = (isSafari &&
-                typeof dataURL === 'string' &&
-                dataURL.indexOf('data:application/pdf') === 0);
-            if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
-                dataURL = dataURLtoBlob(dataURL) || '';
-                if (!dataURL) {
-                    throw new Error('Failed to convert to blob');
-                }
-            }
-            // Try HTML5 download attr if supported
-            if (typeof a.download !== 'undefined') {
-                a.href = dataURL;
-                a.download = filename; // HTML5 download attribute
-                doc.body.appendChild(a);
-                a.click();
-                doc.body.removeChild(a);
-            }
-            else {
-                // No download attr, just opening data URI
-                try {
-                    const windowRef = win.open(dataURL, 'chart');
-                    if (typeof windowRef === 'undefined' || windowRef === null) {
-                        throw new Error('Failed to open window');
-                    }
-                }
-                catch (e) {
-                    // window.open failed, trying location.href
-                    win.location.href = dataURL;
-                }
-            }
-        };
-        const DownloadURL = {
-            dataURLtoBlob,
-            downloadURL
-        };
-
-        return DownloadURL;
-    });
     _registerModule(_modules, 'Extensions/ExportData/ExportData.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Extensions/ExportData/ExportDataDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Extensions/DownloadURL.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AST, ExportDataDefaults, H, D, DownloadURL, SeriesRegistry, U) {
         /* *
          *
@@ -436,7 +453,7 @@
         const { doc, win } = H;
         const { getOptions, setOptions } = D;
         const { downloadURL } = DownloadURL;
-        const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries } } = SeriesRegistry;
+        const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries, xrange: XRangeSeries } } = SeriesRegistry;
         const { addEvent, defined, extend, find, fireEvent, isNumber, pick } = U;
         /* *
          *
@@ -525,7 +542,7 @@
                 while (j--) {
                     val = row[j];
                     if (typeof val === 'string') {
-                        val = '"' + val + '"';
+                        val = `"${val}"`;
                     }
                     if (typeof val === 'number') {
                         if (decimalPoint !== '.') {
@@ -614,22 +631,16 @@
             // Create point array depends if xAxis is category
             // or point.name is defined #13293
             getPointArray = function (series, xAxis) {
-                const namedPoints = series.data.filter((d) => (typeof d.y !== 'undefined') && d.name);
-                if (namedPoints.length &&
+                const pointArrayMap = series.pointArrayMap || ['y'], namedPoints = series.data.some((d) => (typeof d.y !== 'undefined') && d.name);
+                // If there are points with a name, we also want the x value in the
+                // table
+                if (namedPoints &&
                     xAxis &&
                     !xAxis.categories &&
-                    !series.keyToAxis) {
-                    if (series.pointArrayMap) {
-                        const pointArrayMapCheck = series.pointArrayMap
-                            .filter((p) => p === 'x');
-                        if (pointArrayMapCheck.length) {
-                            series.pointArrayMap.unshift('x');
-                            return series.pointArrayMap;
-                        }
-                    }
-                    return ['x', 'y'];
+                    series.exportKey !== 'name') {
+                    return ['x', ...pointArrayMap];
                 }
-                return series.pointArrayMap || ['y'];
+                return pointArrayMap;
             }, xAxisIndices = [];
             let xAxis, dataRows, columnTitleObj, i = 0, // Loop the series and index values
             x, xTitle;
@@ -667,6 +678,7 @@
                         pointArrayMap: series.pointArrayMap,
                         index: series.index
                     };
+                    const seriesIndex = mockSeries.index;
                     // Export directly from options.data because we need the uncropped
                     // data (#7913), and we need to support Boost (#7026).
                     series.options.data.forEach(function eachData(options, pIdx) {
@@ -678,18 +690,8 @@
                             categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap, pIdx);
                         }
                         series.pointClass.prototype.applyOptions.apply(mockPoint, [options]);
-                        key = mockPoint.x;
-                        if (defined(rows[key]) &&
-                            rows[key].seriesIndices.includes(mockSeries.index)) {
-                            // find keys, which belong to actual series
-                            const keysFromActualSeries = Object.keys(rows).filter((i) => rows[i].seriesIndices.includes(mockSeries.index) &&
-                                key), 
-                            // find all properties, which start with actual key
-                            existingKeys = keysFromActualSeries
-                                .filter((propertyName) => propertyName.indexOf(String(key)) === 0);
-                            key = key.toString() + ',' + existingKeys.length;
-                        }
                         const name = series.data[pIdx] && series.data[pIdx].name;
+                        key = (mockPoint.x ?? '') + ',' + name;
                         j = 0;
                         // Pies, funnels, geo maps etc. use point name in X row
                         if (!xAxis ||
@@ -704,20 +706,36 @@
                             xTaken[key] = true;
                         }
                         if (!rows[key]) {
-                            // Generate the row
                             rows[key] = [];
-                            // Contain the X values from one or more X axes
                             rows[key].xValues = [];
+                            // ES5 replacement for Array.from / fill.
+                            const arr = [];
+                            for (let i = 0; i < series.chart.series.length; i++) {
+                                arr[i] = 0;
+                            }
+                            // Create poiners array, holding information how many
+                            // duplicates of specific x occurs in each series.
+                            // Used for creating rows with duplicates.
+                            rows[key].pointers = arr;
+                            rows[key].pointers[series.index] = 1;
+                        }
+                        else {
+                            // Handle duplicates (points with the same x), by creating
+                            // extra rows based on pointers for better performance.
+                            const modifiedKey = `${key},${rows[key].pointers[series.index]}`, originalKey = key;
+                            if (rows[key].pointers[series.index]) {
+                                if (!rows[modifiedKey]) {
+                                    rows[modifiedKey] = [];
+                                    rows[modifiedKey].xValues = [];
+                                    rows[modifiedKey].pointers = [];
+                                }
+                                key = modifiedKey;
+                            }
+                            rows[originalKey].pointers[series.index] += 1;
                         }
                         rows[key].x = mockPoint.x;
                         rows[key].name = name;
                         rows[key].xValues[xAxisIndex] = mockPoint.x;
-                        if (!defined(rows[key].seriesIndices)) {
-                            rows[key].seriesIndices = [];
-                        }
-                        rows[key].seriesIndices = [
-                            ...rows[key].seriesIndices, mockSeries.index
-                        ];
                         while (j < valueCount) {
                             prop = pointArrayMap[j]; // y, z etc
                             val = mockPoint[prop];
@@ -1049,6 +1067,9 @@
                         wasHidden: createContainer || oldDisplay !== style.display
                     });
                 }
+                else {
+                    fireEvent(this, 'afterHideData');
+                }
             }
             // Set the flag
             this.isDataTableVisible = show;
@@ -1137,9 +1158,15 @@
                 };
             }
             if (GanttSeries && U.pushUnique(composedMembers, GanttSeries)) {
+                GanttSeries.prototype.exportKey = 'name';
                 GanttSeries.prototype.keyToAxis = {
                     start: 'x',
                     end: 'x'
+                };
+            }
+            if (XRangeSeries && U.pushUnique(composedMembers, XRangeSeries)) {
+                XRangeSeries.prototype.keyToAxis = {
+                    x2: 'x'
                 };
             }
             if (MapSeries && U.pushUnique(composedMembers, MapSeries)) {
@@ -1164,8 +1191,7 @@
          *         The blob object, or undefined if not supported.
          */
         function getBlobFromContent(content, type) {
-            const nav = win.navigator, webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-                nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
+            const nav = win.navigator, domurl = win.URL || win.webkitURL || win;
             try {
                 // MS specific
                 if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
@@ -1173,12 +1199,8 @@
                     blob.append(content);
                     return blob.getBlob('image/svg+xml');
                 }
-                // Safari requires data URI since it doesn't allow navigation to blob
-                // URLs.
-                if (!webKit) {
-                    return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
-                    { type: type }));
-                }
+                return domurl.createObjectURL(new win.Blob(['\uFEFF' + content], // #7084
+                { type: type }));
             }
             catch (e) {
                 // Ignore
@@ -1277,9 +1299,13 @@
 
         return ExportData;
     });
-    _registerModule(_modules, 'masters/modules/export-data.src.js', [_modules['Core/Globals.js'], _modules['Extensions/ExportData/ExportData.js']], function (Highcharts, ExportData) {
+    _registerModule(_modules, 'masters/modules/export-data.src.js', [_modules['Core/Globals.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/ExportData/ExportData.js']], function (Highcharts, DownloadURL, ExportData) {
 
         const G = Highcharts;
+        // Compatibility
+        G.dataURLtoBlob = DownloadURL.dataURLtoBlob;
+        G.downloadURL = DownloadURL.downloadURL;
+        // Compose
         ExportData.compose(G.Chart);
 
     });

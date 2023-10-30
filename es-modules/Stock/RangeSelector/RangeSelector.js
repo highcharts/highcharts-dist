@@ -251,10 +251,10 @@ class RangeSelector {
         const rangeSelector = this, options = chart.options.rangeSelector, buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()), selectedOption = options.selected, blurInputs = function () {
             const minInput = rangeSelector.minInput, maxInput = rangeSelector.maxInput;
             // #3274 in some case blur is not defined
-            if (minInput && (minInput.blur)) {
+            if (minInput && !!minInput.blur) {
                 fireEvent(minInput, 'blur');
             }
-            if (maxInput && (maxInput.blur)) {
+            if (maxInput && !!maxInput.blur) {
                 fireEvent(maxInput, 'blur');
             }
         };
@@ -478,22 +478,19 @@ class RangeSelector {
      * @param {string} name
      */
     showInput(name) {
-        const dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
-        const input = name === 'min' ? this.minInput : this.maxInput;
+        const dateBox = name === 'min' ? this.minDateBox : this.maxDateBox, input = name === 'min' ? this.minInput : this.maxInput;
         if (input && dateBox && this.inputGroup) {
-            const isTextInput = input.type === 'text';
-            const { translateX, translateY } = this.inputGroup;
-            const { inputBoxWidth } = this.options;
+            const isTextInput = input.type === 'text', { translateX = 0, translateY = 0 } = this.inputGroup, { x = 0, width = 0, height = 0 } = dateBox, { inputBoxWidth } = this.options;
             css(input, {
                 width: isTextInput ?
-                    ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') :
+                    ((width + (inputBoxWidth ? -2 : 20)) + 'px') :
                     'auto',
-                height: (dateBox.height - 2) + 'px',
+                height: (height - 2) + 'px',
                 border: '2px solid silver'
             });
             if (isTextInput && inputBoxWidth) {
                 css(input, {
-                    left: (translateX + dateBox.x) + 'px',
+                    left: (translateX + x) + 'px',
                     top: translateY + 'px'
                 });
                 // Inputs of types date, time or datetime-local should be centered
@@ -501,10 +498,10 @@ class RangeSelector {
             }
             else {
                 css(input, {
-                    left: Math.min(Math.round(dateBox.x +
+                    left: Math.min(Math.round(x +
                         translateX -
-                        (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                    top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                        (input.offsetWidth - width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
+                    top: (translateY - (input.offsetHeight - height) / 2) + 'px'
                 });
             }
         }
@@ -570,9 +567,7 @@ class RangeSelector {
          * @private
          */
         function updateExtremes() {
-            const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], dataAxis = chart.scroller && chart.scroller.xAxis ?
-                chart.scroller.xAxis :
-                chartAxis, dataMin = dataAxis.dataMin, dataMax = dataAxis.dataMax;
+            const { maxInput, minInput } = rangeSelector, chartAxis = chart.xAxis[0], unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chartAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax;
             let value = rangeSelector.getInputValue(name);
             if (value !== Number(input.getAttribute('data-hc-time-previous')) &&
                 isNumber(value)) {
@@ -961,7 +956,7 @@ class RangeSelector {
                         width += zoomText.getBBox().width + 5;
                     }
                     buttons.forEach((button, i) => {
-                        width += button.width;
+                        width += button.width || 0;
                         if (i !== buttons.length - 1) {
                             width += options.buttonSpacing;
                         }
@@ -1110,8 +1105,8 @@ class RangeSelector {
         for (let i = 0, iEnd = this.buttonOptions.length; i < iEnd; ++i) {
             if (buttons[i].visibility !== 'hidden') {
                 buttons[i][verb]({ x: buttonLeft });
-                // increase button position for the next button
-                buttonLeft += buttons[i].width + options.buttonSpacing;
+                // Increase the button position for the next button
+                buttonLeft += (buttons[i].width || 0) + options.buttonSpacing;
             }
             else {
                 buttons[i][verb]({ x: plotLeft });
@@ -1309,8 +1304,7 @@ class RangeSelector {
     showDropdown() {
         const { buttonGroup, buttons, chart, dropdown } = this;
         if (buttonGroup && dropdown) {
-            const { translateX, translateY } = buttonGroup;
-            const bBox = buttons[this.currentButtonIndex()].getBBox();
+            const { translateX = 0, translateY = 0 } = buttonGroup, bBox = buttons[this.currentButtonIndex()].getBBox();
             css(dropdown, {
                 left: (chart.plotLeft + translateX) + 'px',
                 top: (translateY + 0.5) + 'px',

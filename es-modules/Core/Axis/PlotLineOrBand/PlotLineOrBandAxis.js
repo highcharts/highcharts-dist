@@ -148,7 +148,8 @@ var PlotLineOrBandAxis;
      * @return {Highcharts.SVGPathArray}
      * The SVG path definition in array form.
      */
-    function getPlotBandPath(from, to, options = this.options) {
+    function getPlotBandPath(from, to, options) {
+        options = options || this.options;
         const toPath = this.getPlotLinePath({
             value: to,
             force: true,

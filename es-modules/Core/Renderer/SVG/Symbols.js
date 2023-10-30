@@ -87,8 +87,12 @@ function callout(x, y, w, h, options) {
     if (!isNumber(anchorX)) {
         return path;
     }
+    // Do not render a connector, if anchor starts inside the label
+    if (anchorX < w && anchorX > 0 && anchorY < h && anchorY > 0) {
+        return path;
+    }
     // Anchor on right side
-    if (x + anchorX >= w) {
+    if (x + anchorX > w - safeDistance) {
         // Chevron
         if (anchorY > y + safeDistance &&
             anchorY < y + h - safeDistance) {
@@ -96,11 +100,17 @@ function callout(x, y, w, h, options) {
             // Simple connector
         }
         else {
-            path.splice(3, 1, ['L', x + w, h / 2], ['L', anchorX, anchorY], ['L', x + w, h / 2], ['L', x + w, y + h - r]);
+            if (anchorX < w) { // Corner connector
+                const isTopCorner = anchorY < y + safeDistance, cornerY = isTopCorner ? y : y + h, sliceStart = isTopCorner ? 2 : 5;
+                path.splice(sliceStart, 0, ['L', anchorX, anchorY], ['L', x + w - r, cornerY]);
+            }
+            else { // Side connector
+                path.splice(3, 1, ['L', x + w, h / 2], ['L', anchorX, anchorY], ['L', x + w, h / 2], ['L', x + w, y + h - r]);
+            }
         }
         // Anchor on left side
     }
-    else if (x + anchorX <= 0) {
+    else if (x + anchorX < safeDistance) {
         // Chevron
         if (anchorY > y + safeDistance &&
             anchorY < y + h - safeDistance) {
@@ -108,21 +118,23 @@ function callout(x, y, w, h, options) {
             // Simple connector
         }
         else {
-            path.splice(7, 1, ['L', x, h / 2], ['L', anchorX, anchorY], ['L', x, h / 2], ['L', x, y + r]);
+            if (anchorX > 0) { // Corner connector
+                const isTopCorner = anchorY < y + safeDistance, cornerY = isTopCorner ? y : y + h, sliceStart = isTopCorner ? 1 : 6;
+                path.splice(sliceStart, 0, ['L', anchorX, anchorY], ['L', x + r, cornerY]);
+            }
+            else { // Side connector
+                path.splice(7, 1, ['L', x, h / 2], ['L', anchorX, anchorY], ['L', x, h / 2], ['L', x, y + r]);
+            }
         }
     }
     else if ( // replace bottom
-    anchorY &&
-        anchorY > h &&
-        anchorX > x + safeDistance &&
-        anchorX < x + w - safeDistance) {
+    anchorY > h &&
+        anchorX < w - safeDistance) {
         path.splice(5, 1, ['L', anchorX + halfDistance, y + h], ['L', anchorX, y + h + arrowLength], ['L', anchorX - halfDistance, y + h], ['L', x + r, y + h]);
     }
     else if ( // replace top
-    anchorY &&
-        anchorY < 0 &&
-        anchorX > x + safeDistance &&
-        anchorX < x + w - safeDistance) {
+    anchorY < 0 &&
+        anchorX > safeDistance) {
         path.splice(1, 1, ['L', anchorX - halfDistance, y], ['L', anchorX, y - arrowLength], ['L', anchorX + halfDistance, y], ['L', w - r, y]);
     }
     return path;
@@ -158,7 +170,7 @@ function rect(x, y, w, h, options) {
     ];
 }
 function roundedRect(x, y, w, h, options) {
-    const r = (options === null || options === void 0 ? void 0 : options.r) || 0;
+    const r = options?.r || 0;
     return [
         ['M', x + r, y],
         ['L', x + w - r, y],

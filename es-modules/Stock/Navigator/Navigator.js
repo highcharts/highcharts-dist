@@ -17,7 +17,7 @@ import NavigatorAxisAdditions from '../../Core/Axis/NavigatorAxisComposition.js'
 import NavigatorComposition from './NavigatorComposition.js';
 import Scrollbar from '../Scrollbar/Scrollbar.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, isArray, isNumber, merge, pick, removeEvent, splat } = U;
+const { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, fireEvent, isArray, isNumber, merge, pick, removeEvent, splat } = U;
 /* *
  *
  *  Functions
@@ -500,6 +500,7 @@ class Navigator {
             navigator.zoomedMin / (navigatorSize || 1), navigator.zoomedMax / (navigatorSize || 1));
         }
         navigator.rendered = true;
+        fireEvent(this, 'afterRender');
     }
     /**
      * Set up the mouse and touch events for the navigator

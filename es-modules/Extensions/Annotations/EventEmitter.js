@@ -174,12 +174,15 @@ class EventEmitter {
         if (e.button === 2) {
             return;
         }
-        const emitter = this, pointer = emitter.chart.pointer;
+        const emitter = this, pointer = emitter.chart.pointer, 
+        // Using experimental property on event object to check if event was
+        // created by touch on screen on hybrid device (#18122)
+        firesTouchEvents = (e?.sourceCapabilities?.firesTouchEvents) || false;
         e = pointer.normalize(e);
         let prevChartX = e.chartX, prevChartY = e.chartY;
         emitter.cancelClick = false;
         emitter.chart.hasDraggedAnnotation = true;
-        emitter.removeDrag = addEvent(doc, isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+        emitter.removeDrag = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchmove' : 'mousemove', function (e) {
             emitter.hasDragged = true;
             e = pointer.normalize(e);
             e.prevChartX = prevChartX;
@@ -187,8 +190,8 @@ class EventEmitter {
             fireEvent(emitter, 'drag', e);
             prevChartX = e.chartX;
             prevChartY = e.chartY;
-        }, isTouchDevice ? { passive: false } : void 0);
-        emitter.removeMouseUp = addEvent(doc, isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+        }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
+        emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function (e) {
             // Sometimes the target is the annotation and sometimes its the
             // controllable
             const annotation = pick(emitter.target && emitter.target.annotation, emitter.target);
@@ -203,7 +206,7 @@ class EventEmitter {
             fireEvent(pick(annotation, // #15952
             emitter), 'afterUpdate');
             emitter.onMouseUp(e);
-        }, isTouchDevice ? { passive: false } : void 0);
+        }, isTouchDevice || firesTouchEvents ? { passive: false } : void 0);
     }
     /**
      * Mouse up handler.

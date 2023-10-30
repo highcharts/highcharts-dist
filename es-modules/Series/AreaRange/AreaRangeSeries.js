@@ -321,7 +321,7 @@ class AreaRangeSeries extends AreaSeries {
                 lowerDataLabelOptions.y = dataLabelOptions.yLow;
             }
             // Draw upper labels
-            if (upperDataLabelOptions.enabled || this._hasPointLabels) {
+            if (upperDataLabelOptions.enabled || this.hasDataLabels?.()) {
                 // Set preliminary values for plotY and dataLabel
                 // and draw the upper labels
                 i = length;
@@ -377,7 +377,7 @@ class AreaRangeSeries extends AreaSeries {
                 }
             }
             // Draw lower labels
-            if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
+            if (lowerDataLabelOptions.enabled || this.hasDataLabels?.()) {
                 i = length;
                 while (i--) {
                     point = data[i];
@@ -430,11 +430,33 @@ class AreaRangeSeries extends AreaSeries {
     alignDataLabel() {
         columnProto.alignDataLabel.apply(this, arguments);
     }
+    modifyMarkerSettings() {
+        const series = this, originalMarkerSettings = {
+            marker: series.options.marker,
+            symbol: series.symbol
+        };
+        if (series.options.lowMarker) {
+            const { options: { marker, lowMarker } } = series;
+            series.options.marker = merge(marker, lowMarker);
+            if (lowMarker.symbol) {
+                series.symbol = lowMarker.symbol;
+            }
+        }
+        return originalMarkerSettings;
+    }
+    restoreMarkerSettings(originalSettings) {
+        const series = this;
+        series.options.marker = originalSettings.marker;
+        series.symbol = originalSettings.symbol;
+    }
     drawPoints() {
         const series = this, pointLength = series.points.length;
         let i, point;
+        const originalSettings = series.modifyMarkerSettings();
         // Draw bottom points
         areaProto.drawPoints.apply(series, arguments);
+        // Restore previous state
+        series.restoreMarkerSettings(originalSettings);
         // Prepare drawing top points
         i = 0;
         while (i < pointLength) {
@@ -499,6 +521,14 @@ class AreaRangeSeries extends AreaSeries {
             }
             i++;
         }
+    }
+    hasMarkerChanged(options, oldOptions) {
+        const series = this, lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
+        return (lowMarker && (lowMarker.enabled === false ||
+            oldMarker.symbol !== lowMarker.symbol || // #10870, #15946
+            oldMarker.height !== lowMarker.height || // #16274
+            oldMarker.width !== lowMarker.width // #16274
+        )) || super.hasMarkerChanged(options, oldOptions);
     }
 }
 AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
@@ -656,6 +686,28 @@ export default AreaRangeSeries;
  * @default   {highcharts} 0.75
  * @default   {highstock} 0.75
  * @apioption series.arearange.fillOpacity
+ */
+/**
+ * Options for the lower markers of the arearange-like series. When `lowMarker`
+ * is not defined, options inherit form the marker.
+ *
+ * @see [marker](#series.arearange.marker)
+ *
+ * @declare   Highcharts.PointMarkerOptionsObject
+ * @extends   plotOptions.series.marker
+ * @default   undefined
+ * @product   highcharts highstock
+ * @apioption plotOptions.arearange.lowMarker
+ */
+/**
+ *
+ * @sample {highcharts} highcharts/series-arearange/lowmarker/
+ *         Area range chart with `lowMarker` option
+ *
+ * @declare   Highcharts.PointMarkerOptionsObject
+ * @extends   plotOptions.series.marker.symbol
+ * @product   highcharts highstock
+ * @apioption plotOptions.arearange.lowMarker.symbol
  */
 /**
  * The high or maximum value for each data point.

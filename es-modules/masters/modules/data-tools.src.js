@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -19,6 +19,7 @@ import DataPool from '../../Data/DataPool.js';
 import DataTable from '../../Data/DataTable.js';
 import Formula from '../../Data/Formula/Formula.js';
 import '../../Data/Connectors/CSVConnector.js';
+import '../../Data/Connectors/JSONConnector.js';
 import '../../Data/Connectors/GoogleSheetsConnector.js';
 import '../../Data/Connectors/HTMLTableConnector.js';
 import '../../Data/Modifiers/ChainModifier.js';

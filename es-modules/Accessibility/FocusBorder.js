@@ -10,7 +10,6 @@
  *
  * */
 'use strict';
-import SVGLabel from '../Core/Renderer/SVG/SVGLabel.js';
 import U from '../Core/Utilities.js';
 const { addEvent, pick } = U;
 /* *
@@ -174,7 +173,7 @@ var FocusBorderComposition;
                 y: posYCorrection
             };
         }
-        const isLabel = this instanceof SVGLabel;
+        const isLabel = !!this.text;
         if (this.element.nodeName === 'text' || isLabel) {
             const isRotated = !!this.rotation;
             const correction = !isLabel ? getTextAnchorCorrection(this) :

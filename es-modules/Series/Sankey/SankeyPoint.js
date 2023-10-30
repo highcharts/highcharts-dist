@@ -12,7 +12,7 @@
 'use strict';
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { defined } = U;
 /* *
@@ -32,6 +32,7 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
         this.fromNode = void 0;
         this.level = void 0;
         this.linkBase = void 0;
+        this.linkColorMode = void 0;
         this.linksFrom = void 0;
         this.linksTo = void 0;
         this.mass = void 0;
@@ -40,14 +41,12 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
         this.options = void 0;
         this.series = void 0;
         this.toNode = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */

@@ -1,14 +1,9 @@
-/*
- Highstock JS v11.1.0 (2023-06-05)
-
- Money Flow Index indicator for Highcharts Stock
-
- (c) 2010-2021 Grzegorz Blachliski
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/mfi",["highcharts","highcharts/modules/stock"],function(c){a(c);a.Highcharts=c;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function c(a,f,c,l){a.hasOwnProperty(f)||(a[f]=l.apply(null,c),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:f,
-module:a[f]}})))}a=a?a._modules:{};c(a,"Stock/Indicators/MFI/MFIIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,c){function f(a){return a.reduce(function(a,v){return a+v})}function l(a){return(a[1]+a[2]+a[3])/3}const {sma:m}=a.seriesTypes,{extend:w,merge:x,error:y,isArray:z}=c;class k extends m{constructor(){super(...arguments);this.points=this.options=this.data=void 0}getValues(a,b){var e=b.period;const c=a.xData,g=a.yData,k=g?g.length:0,m=b.decimals;var d=a.chart.get(b.volumeSeriesID);
-const q=d&&d.yData,r=[],t=[],u=[],n=[],p=[];let h=1;if(!d)y("Series "+b.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,a.chart);else if(!(c.length<=e)&&z(g[0])&&4===g[0].length&&q){for(a=l(g[h]);h<e+1;)b=a,a=l(g[h]),d=a>=b,b=a*q[h],n.push(d?b:0),p.push(d?0:b),h++;for(e=h-1;e<k;e++)e>h-1&&(n.shift(),p.shift(),b=a,a=l(g[e]),d=a>b,b=a*q[e],n.push(d?b:0),p.push(d?0:b)),b=f(p),d=f(n),b=d/b,b=parseFloat((100-100/(1+b)).toFixed(m)),r.push([c[e],b]),t.push(c[e]),u.push(b);return{values:r,xData:t,
-yData:u}}}}k.defaultOptions=x(m.defaultOptions,{params:{index:void 0,volumeSeriesID:"volume",decimals:4}});w(k.prototype,{nameBase:"Money Flow Index"});a.registerSeriesType("mfi",k);"";return k});c(a,"masters/indicators/mfi.src.js",[],function(){})});
-//# sourceMappingURL=mfi.js.map
+/**
+ * Highstock JS v11.2.0 (2023-10-30)
+ *
+ * Money Flow Index indicator for Highcharts Stock
+ *
+ * (c) 2010-2021 Grzegorz Blachliński
+ *
+ * License: www.highcharts.com/license
+ */!function(e){"object"==typeof module&&module.exports?(e.default=e,module.exports=e):"function"==typeof define&&define.amd?define("highcharts/indicators/mfi",["highcharts","highcharts/modules/stock"],function(t){return e(t),e.Highcharts=t,e}):e("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(e){"use strict";var t=e?e._modules:{};function s(e,t,s,i){e.hasOwnProperty(t)||(e[t]=i.apply(null,s),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:t,module:e[t]}})))}s(t,"Stock/Indicators/MFI/MFIIndicator.js",[t["Core/Series/SeriesRegistry.js"],t["Core/Utilities.js"]],function(e,t){let{sma:s}=e.seriesTypes,{extend:i,merge:o,error:n,isArray:r}=t;function u(e){return e.reduce(function(e,t){return e+t})}function a(e){return(e[1]+e[2]+e[3])/3}class d extends s{constructor(){super(...arguments),this.data=void 0,this.options=void 0,this.points=void 0}getValues(e,t){let s=t.period,i=e.xData,o=e.yData,d=o?o.length:0,h=t.decimals,c=e.chart.get(t.volumeSeriesID),f=c&&c.yData,l=[],p=[],m=[],v=[],g=[],y,D,I,S,x,j,w=!1,C=1;if(!c){n("Series "+t.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,e.chart);return}if(!(i.length<=s)&&r(o[0])&&4===o[0].length&&f){for(y=a(o[C]);C<s+1;)D=y,w=(y=a(o[C]))>=D,I=y*f[C],v.push(w?I:0),g.push(w?0:I),C++;for(j=C-1;j<d;j++)j>C-1&&(v.shift(),g.shift(),D=y,w=(y=a(o[j]))>D,I=y*f[j],v.push(w?I:0),g.push(w?0:I)),S=u(g),x=parseFloat((100-100/(1+u(v)/S)).toFixed(h)),l.push([i[j],x]),p.push(i[j]),m.push(x);return{values:l,xData:p,yData:m}}}}return d.defaultOptions=o(s.defaultOptions,{params:{index:void 0,volumeSeriesID:"volume",decimals:4}}),i(d.prototype,{nameBase:"Money Flow Index"}),e.registerSeriesType("mfi",d),d}),s(t,"masters/indicators/mfi.src.js",[],function(){})});//# sourceMappingURL=mfi.js.map

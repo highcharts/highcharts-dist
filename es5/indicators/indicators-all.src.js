@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v11.1.0 (2023-06-05)
+ * @license Highstock JS v11.2.0 (2023-10-30)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -10113,6 +10111,26 @@
                         indicator.drawZones(chart, yAxis, indicator.zoneStarts, zoneLinesOptions.styles);
                     }
                 }
+            };
+            VBPIndicator.prototype.getExtremes = function () {
+                var prevCompare = this.options.compare,
+                    prevCumulative = this.options.cumulative;
+                var ret;
+                // Temporarily disable cumulative and compare while getting the extremes
+                if (this.options.compare) {
+                    this.options.compare = void 0;
+                    ret = _super.prototype.getExtremes.call(this);
+                    this.options.compare = prevCompare;
+                }
+                else if (this.options.cumulative) {
+                    this.options.cumulative = false;
+                    ret = _super.prototype.getExtremes.call(this);
+                    this.options.cumulative = prevCumulative;
+                }
+                else {
+                    ret = _super.prototype.getExtremes.call(this);
+                }
+                return ret;
             };
             VBPIndicator.prototype.getValues = function (series, params) {
                 var indicator = this,

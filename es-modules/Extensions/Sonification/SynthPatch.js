@@ -481,7 +481,10 @@ class SynthPatch {
      * @private
      */
     createEqChain(outputNode) {
-        this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, Object.assign({ type: 'peaking' }, eqDef)));
+        this.eqNodes = (this.options.eq || []).map((eqDef) => new BiquadFilterNode(this.audioContext, {
+            type: 'peaking',
+            ...eqDef
+        }));
         // Connect nodes
         this.eqNodes.reduceRight((chain, node) => {
             node.connect(chain);

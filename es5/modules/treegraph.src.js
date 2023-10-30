@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * Treegraph chart series type
  *
  *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
@@ -27,12 +27,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -512,7 +510,11 @@
                     shape = btnOptions.shape,
                     style = btnOptions.style,
                     padding = 2,
-                    chart = this.series.chart;
+                    chart = this.series.chart,
+                    calculatedOpacity = (point.visible &&
+                        (point.collapsed ||
+                            !btnOptions.onlyOnHover ||
+                            point.state === 'hover')) ? 1 : 0;
                 if (!point.shapeArgs) {
                     return;
                 }
@@ -538,7 +540,9 @@
                         'stroke-width': btnOptions.lineWidth,
                         'text-align': 'center',
                         align: 'center',
-                        zIndex: 1
+                        zIndex: 1,
+                        opacity: calculatedOpacity,
+                        visibility: point.visible ? 'inherit' : 'hidden'
                     })
                         .addClass('highcharts-tracker')
                         .addClass('highcharts-collapse-button')
@@ -550,9 +554,6 @@
                     }, style))
                         .add(parentGroup);
                     point.collapseButton.element.point = point;
-                    if (btnOptions.onlyOnHover && !point.collapsed) {
-                        point.collapseButton.attr({ opacity: 0 });
-                    }
                 }
                 else {
                     if (!point.node.children.length || !btnOptions.enabled) {
@@ -568,14 +569,13 @@
                             text: point.collapsed ? '+' : '-',
                             rotation: chart.inverted ? 90 : 0,
                             rotationOriginX: width / 2,
-                            rotationOriginY: height / 2
+                            rotationOriginY: height / 2,
+                            visibility: point.visible ? 'inherit' : 'hidden'
                         })
                             .animate({
                             x: x,
                             y: y,
-                            opacity: point.visible && (!btnOptions.onlyOnHover ||
-                                point.state === 'hover' ||
-                                point.collapsed) ? 1 : 0
+                            opacity: calculatedOpacity
                         });
                     }
                 }
@@ -590,6 +590,10 @@
                     this.collapseButton.destroy();
                     delete this.collapseButton;
                     this.collapseButton = void 0;
+                }
+                if (this.linkToParent) {
+                    this.linkToParent.destroy();
+                    delete this.linkToParent;
                 }
                 _super.prototype.destroy.apply(this, arguments);
             };
@@ -625,7 +629,7 @@
             }
         });
         addEvent(TreegraphPoint, 'mouseOver', function () {
-            if (this.collapseButton) {
+            if (this.collapseButton && this.visible) {
                 this.collapseButton.animate({ opacity: 1 }, this.series.options.states &&
                     this.series.options.states.hover &&
                     this.series.options.states.hover.animation);
@@ -1372,7 +1376,6 @@
         var symbols = SVGRenderer.prototype.symbols;
         var getLevelOptions = TU.getLevelOptions;
         var extend = U.extend,
-            isArray = U.isArray,
             merge = U.merge,
             pick = U.pick,
             relativeLength = U.relativeLength,
@@ -1504,6 +1507,7 @@
                 return { ax: ax, bx: bx, ay: ay, by: by };
             };
             TreegraphSeries.prototype.getLinks = function () {
+                var _this = this;
                 var series = this;
                 var links = [];
                 this.data.forEach(function (point, index) {
@@ -1519,7 +1523,10 @@
                             point.linkToParent = link;
                         }
                         else {
-                            point.linkToParent.update({ collapsed: pointOptions.collapsed }, false);
+                            // #19552
+                            point.collapsed = pick(point.collapsed, (_this.mapOptionsToLevel[point.node.level] || {}).collapsed);
+                            point.linkToParent.visible =
+                                point.linkToParent.toNode.visible;
                         }
                         point.linkToParent.index = links.push(point.linkToParent) - 1;
                     }
@@ -1681,7 +1688,7 @@
                     // If options for level exists, include them as well
                     if (level && level.dataLabels) {
                         options = merge(options, level.dataLabels);
-                        series._hasPointLabels = true;
+                        series.hasDataLabels = function () { return true; };
                     }
                     // Set dataLabel width to the width of the point shape.
                     if (point.shapeArgs &&
@@ -1748,30 +1755,37 @@
              */
             TreegraphSeries.prototype.pointAttribs = function (point, state) {
                 var series = this,
-                    levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {},
-                    options = point.options,
+                    levelOptions = point &&
+                        series.mapOptionsToLevel[point.node.level || 0] || {},
+                    options = point && point.options,
                     stateOptions = (levelOptions.states &&
                         levelOptions.states[state]) ||
                         {};
-                point.options.marker = merge(series.options.marker, levelOptions.marker, point.options.marker);
-                var linkColor = pick(stateOptions.link && stateOptions.link.color,
-                    options.link && options.link.color,
-                    levelOptions.link && levelOptions.link.color,
+                if (point) {
+                    point.options.marker = merge(series.options.marker, levelOptions.marker, point.options.marker);
+                }
+                var linkColor = pick(stateOptions && stateOptions.link && stateOptions.link.color,
+                    options && options.link && options.link.color,
+                    levelOptions && levelOptions.link && levelOptions.link.color,
                     series.options.link && series.options.link.color),
-                    linkLineWidth = pick(stateOptions.link && stateOptions.link.lineWidth,
-                    options.link && options.link.lineWidth,
-                    levelOptions.link && levelOptions.link.lineWidth,
+                    linkLineWidth = pick(stateOptions && stateOptions.link &&
+                        stateOptions.link.lineWidth,
+                    options && options.link && options.link.lineWidth,
+                    levelOptions && levelOptions.link &&
+                        levelOptions.link.lineWidth,
                     series.options.link && series.options.link.lineWidth),
                     attribs = seriesProto.pointAttribs.call(series,
                     point,
                     state);
-                if (point.isLink) {
-                    attribs.stroke = linkColor;
-                    attribs['stroke-width'] = linkLineWidth;
-                    delete attribs.fill;
-                }
-                if (!point.visible) {
-                    attribs.opacity = 0;
+                if (point) {
+                    if (point.isLink) {
+                        attribs.stroke = linkColor;
+                        attribs['stroke-width'] = linkLineWidth;
+                        delete attribs.fill;
+                    }
+                    if (!point.visible) {
+                        attribs.opacity = 0;
+                    }
                 }
                 return attribs;
             };
@@ -1812,8 +1826,16 @@
                         y - height / 2),
                     borderRadius = pick(point.options.borderRadius,
                     level.borderRadius,
-                    this.options.borderRadius);
-                point.shapeType = 'path';
+                    this.options.borderRadius),
+                    symbolFn = symbols[symbol || 'circle'];
+                if (symbolFn === void 0) {
+                    point.hasImage = true;
+                    point.shapeType = 'image';
+                    point.imageUrl = symbol.match(/^url\((.*?)\)$/)[1];
+                }
+                else {
+                    point.shapeType = 'path';
+                }
                 if (!point.visible && point.linkToParent) {
                     var parentNode = point.linkToParent.fromNode;
                     if (parentNode) {
@@ -1829,11 +1851,12 @@
                         if (!point.shapeArgs) {
                             point.shapeArgs = {};
                         }
-                        extend(point.shapeArgs, {
-                            d: symbols[symbol || 'circle'](x_1, y_1, width_1, height_1, borderRadius ? { r: borderRadius } : void 0),
-                            x: x_1,
-                            y: y_1
-                        });
+                        if (!point.hasImage) {
+                            extend(point.shapeArgs, {
+                                d: symbolFn(x_1, y_1, width_1, height_1, borderRadius ? { r: borderRadius } : void 0)
+                            });
+                        }
+                        extend(point.shapeArgs, { x: x_1, y: y_1 });
                         point.plotX = parentNode.plotX;
                         point.plotY = parentNode.plotY;
                     }
@@ -1842,13 +1865,15 @@
                     point.plotX = nodeX;
                     point.plotY = nodeY;
                     point.shapeArgs = {
-                        d: symbols[symbol || 'circle'](nodeX, nodeY, width, height, borderRadius ? { r: borderRadius } : void 0),
                         x: nodeX,
                         y: nodeY,
                         width: width,
                         height: height,
                         cursor: !point.node.isLeaf ? 'pointer' : 'default'
                     };
+                    if (!point.hasImage) {
+                        point.shapeArgs.d = symbolFn(nodeX, nodeY, width, height, borderRadius ? { r: borderRadius } : void 0);
+                    }
                 }
                 // Set the anchor position for tooltip.
                 point.tooltipPos = chart.inverted ?
@@ -1904,6 +1929,7 @@
          * @sample highcharts/series-treegraph/level-options
          *          Treegraph chart with level options applied
          *
+         * @type      {Array<*>}
          * @excluding layoutStartingDirection, layoutAlgorithm
          * @apioption series.treegraph.levels
          */
@@ -1911,6 +1937,11 @@
          * Set collapsed status for nodes level-wise.
          * @type {boolean}
          * @apioption series.treegraph.levels.collapsed
+         */
+        /**
+         * Set marker options for nodes at the level.
+         * @extends   series.treegraph.marker
+         * @apioption series.treegraph.levels.marker
          */
         /**
          * An array of data points for the series. For the `treegraph` series type,

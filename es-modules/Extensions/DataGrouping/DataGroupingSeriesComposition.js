@@ -118,7 +118,7 @@ function anchorPoints(series, groupedXData, xMax) {
  */
 function applyGrouping(hasExtremesChanged) {
     const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
-        pick(dataGroupingOptions.enabled, chart.options.isStock), visible = (series.visible || !chart.options.chart.ignoreHiddenSeries), lastDataGrouping = this.currentDataGrouping;
+        pick(dataGroupingOptions.enabled, chart.options.isStock), reserveSpace = series.reserveSpace(), lastDataGrouping = this.currentDataGrouping;
     let currentDataGrouping, croppedData, revertRequireSorting = false;
     // Data needs to be sorted for dataGrouping
     if (groupingEnabled && !series.requireSorting) {
@@ -174,7 +174,6 @@ function applyGrouping(hasExtremesChanged) {
                     'dataGrouping.smoothed': 'use dataGrouping.anchor'
                 });
             }
-            anchorPoints(series, groupedXData, xMax);
             // Record what data grouping values were used
             for (i = 1; i < groupPositions.length; i++) {
                 // The grouped gapSize needs to be the largest distance between
@@ -190,7 +189,9 @@ function applyGrouping(hasExtremesChanged) {
             currentDataGrouping.gapSize = gapSize;
             series.closestPointRange = groupPositions.info.totalRange;
             series.groupMap = groupedData.groupMap;
-            if (visible) {
+            series.currentDataGrouping = currentDataGrouping;
+            anchorPoints(series, groupedXData, xMax);
+            if (reserveSpace) {
                 adjustExtremes(xAxis, groupedXData);
             }
             // We calculated all group positions but we should render
@@ -199,8 +200,7 @@ function applyGrouping(hasExtremesChanged) {
                 // Keep the reference to all grouped points
                 // for further calculation (eg. heikinashi).
                 series.allGroupedData = groupedYData;
-                croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max, 1 // Ordinal xAxis will remove left-most points otherwise
-                );
+                croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max);
                 groupedXData = croppedData.xData;
                 groupedYData = croppedData.yData;
                 series.cropStart = croppedData.start; // #15005
@@ -213,7 +213,6 @@ function applyGrouping(hasExtremesChanged) {
             series.groupMap = null;
         }
         series.hasGroupedData = hasGroupedData;
-        series.currentDataGrouping = currentDataGrouping;
         series.preventGraphAnimation =
             (lastDataGrouping && lastDataGrouping.totalRange) !==
                 (currentDataGrouping && currentDataGrouping.totalRange);

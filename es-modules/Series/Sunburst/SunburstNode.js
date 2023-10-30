@@ -9,6 +9,16 @@
  * */
 'use strict';
 import TreemapNode from '../Treemap/TreemapNode.js';
+/* *
+ *
+ *  Class
+ *
+ * */
 class SunburstNode extends TreemapNode {
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default SunburstNode;

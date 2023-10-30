@@ -16,7 +16,7 @@ const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { arrayMax, clamp, defined, merge, pick, relativeLength } = U;
+const { arrayMax, clamp, defined, pick, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -32,22 +32,24 @@ var ColumnDataLabel;
     const composedMembers = [];
     const dataLabelPositioners = {
         // Based on the value computed in Highcharts' distribute algorithm.
-        radialDistributionY: function (point) {
-            return point.top + point.distributeBox.pos;
+        radialDistributionY: function (point, dataLabel) {
+            return (dataLabel.dataLabelPosition?.top || 0) +
+                point.distributeBox.pos;
         },
-        // get the x - use the natural x position for labels near the
-        // top and bottom, to prevent the top and botton slice
-        // connectors from touching each other on either side
-        // Based on the value computed in Highcharts' distribute algorithm.
-        radialDistributionX: function (series, point, y, naturalY) {
-            return series.getX(y < point.top + 2 || y > point.bottom - 2 ?
+        // Get the x - use the natural x position for labels near the top and
+        // bottom, to prevent the top and botton slice connectors from touching
+        // each other on either side. Based on the value computed in Highcharts'
+        // distribute algorithm.
+        radialDistributionX: function (series, point, y, naturalY, dataLabel) {
+            const pos = dataLabel.dataLabelPosition;
+            return series.getX(y < (pos?.top || 0) + 2 || y > (pos?.bottom || 0) - 2 ?
                 naturalY :
-                y, point.half, point);
+                y, point.half, point, dataLabel);
         },
-        // dataLabels.distance determines the x position of the label
-        justify: function (point, radius, seriesCenter) {
+        // The dataLabels.distance determines the x position of the label
+        justify: function (point, dataLabel, radius, seriesCenter) {
             return seriesCenter[0] + (point.half ? -1 : 1) *
-                (radius + point.labelDistance);
+                (radius + (dataLabel.dataLabelPosition?.distance || 0));
         },
         // Left edges of the left-half labels touch the left edge of the plot
         // area. Right edges of the right-half labels touch the right edge of
@@ -88,263 +90,279 @@ var ColumnDataLabel;
             pieProto.dataLabelPositioners = dataLabelPositioners;
             pieProto.alignDataLabel = noop;
             pieProto.drawDataLabels = drawDataLabels;
+            pieProto.getDataLabelPosition = getDataLabelPosition;
             pieProto.placeDataLabels = placeDataLabels;
             pieProto.verifyDataLabelOverflow = verifyDataLabelOverflow;
         }
     }
     ColumnDataLabel.compose = compose;
+    /** @private */
+    function getDataLabelPosition(point, distance) {
+        const { center, options } = this, r = center[2] / 2, angle = point.angle || 0, cosAngle = Math.cos(angle), sinAngle = Math.sin(angle), x = center[0] + cosAngle * r, y = center[1] + sinAngle * r, finalConnectorOffset = Math.min((options.slicedOffset || 0) + (options.borderWidth || 0), distance / 5); // #1678
+        return {
+            natural: {
+                // Initial position of the data label - it's utilized for
+                // finding the final position for the label
+                x: x + cosAngle * distance,
+                y: y + sinAngle * distance
+            },
+            computed: {
+            // Used for generating connector path - initialized later in
+            // drawDataLabels function x: undefined, y: undefined
+            },
+            // Left - pie on the left side of the data label
+            // Right - pie on the right side of the data label
+            // Center - data label overlaps the pie
+            alignment: distance < 0 ? 'center' : point.half ? 'right' : 'left',
+            connectorPosition: {
+                breakAt: {
+                    x: x + cosAngle * finalConnectorOffset,
+                    y: y + sinAngle * finalConnectorOffset
+                },
+                touchingSliceAt: {
+                    x,
+                    y
+                }
+            },
+            distance
+        };
+    }
     /**
      * Override the base drawDataLabels method by pie specific functionality
      * @private
      */
     function drawDataLabels() {
-        const series = this, data = series.data, chart = series.chart, options = series.options.dataLabels || {}, connectorPadding = options.connectorPadding, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
+        const series = this, points = series.points, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, plotLeft = chart.plotLeft, maxWidth = Math.round(chart.chartWidth / 3), seriesCenter = series.center, radius = seriesCenter[2] / 2, centerY = seriesCenter[1], halves = [
             [],
-            [] // left
-        ], overflow = [0, 0, 0, 0], // top, right, bottom, left
+            [] // Left
+        ], overflow = [0, 0, 0, 0], // Top, right, bottom, left
         dataLabelPositioners = series.dataLabelPositioners;
-        let point, connectorWidth, connector, dataLabel, dataLabelWidth, 
-        // labelPos,
-        labelPosition, labelHeight, 
-        // divide the points into right and left halves for anti collision
-        x, y, visibility, j, pointDataLabelsOptions;
-        // get out if not enabled
-        if (!series.visible ||
-            (!options.enabled &&
-                !series._hasPointLabels)) {
+        let connector, dataLabelWidth, labelHeight, maxLabelDistance = 0;
+        // Get out if not enabled
+        if (!series.visible || !series.hasDataLabels?.()) {
             return;
         }
         // Reset all labels that have been shortened
-        data.forEach(function (point) {
-            if (point.dataLabel && point.visible && point.dataLabel.shortened) {
-                point.dataLabel
-                    .attr({
-                    width: 'auto'
-                }).css({
-                    width: 'auto',
-                    textOverflow: 'clip'
-                });
-                point.dataLabel.shortened = false;
-            }
+        points.forEach((point) => {
+            (point.dataLabels || []).forEach((dataLabel) => {
+                if (dataLabel.shortened) {
+                    dataLabel
+                        .attr({
+                        width: 'auto'
+                    }).css({
+                        width: 'auto',
+                        textOverflow: 'clip'
+                    });
+                    dataLabel.shortened = false;
+                }
+            });
         });
-        // run parent method
+        // Run parent method
         Series.prototype.drawDataLabels.apply(series);
-        data.forEach(function (point) {
-            if (point.dataLabel) {
-                if (point.visible) { // #407, #2510
-                    // Arrange points for detection collision
+        points.forEach((point) => {
+            (point.dataLabels || []).forEach((dataLabel, i) => {
+                const r = seriesCenter[2] / 2, dataLabelOptions = dataLabel.options, distance = relativeLength(dataLabelOptions?.distance || 0, r);
+                // Arrange points for collision detection
+                if (i === 0) {
                     halves[point.half].push(point);
-                    // Reset positions (#4905)
-                    point.dataLabel._pos = null;
-                    // Avoid long labels squeezing the pie size too far down
-                    if (!defined(options.style.width) &&
-                        !defined(point.options.dataLabels &&
-                            point.options.dataLabels.style &&
-                            point.options.dataLabels.style.width)) {
-                        if (point.dataLabel.getBBox().width > maxWidth) {
-                            point.dataLabel.css({
-                                // Use a fraction of the maxWidth to avoid
-                                // wrapping close to the end of the string.
-                                width: Math.round(maxWidth * 0.7) + 'px'
-                            });
-                            point.dataLabel.shortened = true;
-                        }
+                }
+                // Avoid long labels squeezing the pie size too far down
+                if (!defined(dataLabelOptions?.style?.width)) {
+                    if (dataLabel.getBBox().width > maxWidth) {
+                        dataLabel.css({
+                            // Use a fraction of the maxWidth to avoid wrapping
+                            // close to the end of the string.
+                            width: Math.round(maxWidth * 0.7) + 'px'
+                        });
+                        dataLabel.shortened = true;
                     }
                 }
-                else {
-                    point.dataLabel = point.dataLabel.destroy();
-                    // Workaround to make pies destroy multiple datalabels
-                    // correctly. This logic needs rewriting to support multiple
-                    // datalabels fully.
-                    if (point.dataLabels && point.dataLabels.length === 1) {
-                        delete point.dataLabels;
-                    }
-                }
-            }
+                dataLabel.dataLabelPosition = this.getDataLabelPosition(point, distance);
+                maxLabelDistance = Math.max(maxLabelDistance, distance);
+            });
         });
         /* Loop over the points in each half, starting from the top and bottom
          * of the pie to detect overlapping labels.
          */
-        halves.forEach((points, i) => {
+        halves.forEach((points, halfIdx) => {
             const length = points.length, positions = [];
-            let top, bottom, naturalY, sideOverflow, size = 0, distributionLength;
+            let top, bottom, size = 0, distributionLength;
             if (!length) {
                 return;
             }
             // Sort by angle
-            series.sortByAngle(points, i - 0.5);
+            series.sortByAngle(points, halfIdx - 0.5);
             // Only do anti-collision when we have dataLabels outside the pie
             // and have connectors. (#856)
-            if (series.maxLabelDistance > 0) {
-                top = Math.max(0, centerY - radius - series.maxLabelDistance);
-                bottom = Math.min(centerY + radius + series.maxLabelDistance, chart.plotHeight);
-                points.forEach(function (point) {
-                    // check if specific points' label is outside the pie
-                    if (point.labelDistance > 0 && point.dataLabel) {
-                        // point.top depends on point.labelDistance value
-                        // Used for calculation of y value in getX method
-                        point.top = Math.max(0, centerY - radius - point.labelDistance);
-                        point.bottom = Math.min(centerY + radius + point.labelDistance, chart.plotHeight);
-                        size = point.dataLabel.getBBox().height || 21;
-                        // point.positionsIndex is needed for getting index of
-                        // parameter related to specific point inside positions
-                        // array - not every point is in positions array.
-                        point.distributeBox = {
-                            target: point.labelPosition.natural.y -
-                                point.top + size / 2,
-                            size,
-                            rank: point.y
-                        };
-                        positions.push(point.distributeBox);
-                    }
+            if (maxLabelDistance > 0) {
+                top = Math.max(0, centerY - radius - maxLabelDistance);
+                bottom = Math.min(centerY + radius + maxLabelDistance, chart.plotHeight);
+                points.forEach((point) => {
+                    // Check if specific points' label is outside the pie
+                    (point.dataLabels || []).forEach((dataLabel, i) => {
+                        const labelPosition = dataLabel.dataLabelPosition;
+                        if (labelPosition &&
+                            labelPosition.distance > 0) {
+                            // The point.top depends on point.labelDistance
+                            // value. Used for calculation of y value in getX
+                            // method
+                            labelPosition.top = Math.max(0, centerY - radius - labelPosition.distance);
+                            labelPosition.bottom = Math.min(centerY + radius + labelPosition.distance, chart.plotHeight);
+                            size = dataLabel.getBBox().height || 21;
+                            point.distributeBox = {
+                                target: ((dataLabel.dataLabelPosition
+                                    ?.natural.y || 0) -
+                                    labelPosition.top +
+                                    size / 2),
+                                size,
+                                rank: point.y
+                            };
+                            positions.push(point.distributeBox);
+                        }
+                    });
                 });
                 distributionLength = bottom + size - top;
                 distribute(positions, distributionLength, distributionLength / 5);
             }
             // Now the used slots are sorted, fill them up sequentially
-            for (j = 0; j < length; j++) {
-                point = points[j];
-                // labelPos = point.labelPos;
-                labelPosition = point.labelPosition;
-                dataLabel = point.dataLabel;
-                visibility = point.visible === false ? 'hidden' : 'inherit';
-                naturalY = labelPosition.natural.y;
-                y = naturalY;
-                if (positions && defined(point.distributeBox)) {
-                    if (typeof point.distributeBox.pos === 'undefined') {
-                        visibility = 'hidden';
+            points.forEach((point) => {
+                (point.dataLabels || []).forEach((dataLabel) => {
+                    const dataLabelOptions = (dataLabel.options || {}), distributeBox = point.distributeBox, labelPosition = dataLabel.dataLabelPosition, naturalY = labelPosition?.natural.y || 0, connectorPadding = dataLabelOptions
+                        .connectorPadding || 0;
+                    let x = 0, y = naturalY, visibility = 'inherit';
+                    if (labelPosition) {
+                        if (positions &&
+                            defined(distributeBox) &&
+                            labelPosition.distance > 0) {
+                            if (typeof distributeBox.pos === 'undefined') {
+                                visibility = 'hidden';
+                            }
+                            else {
+                                labelHeight = distributeBox.size;
+                                // Find label's y position
+                                y = dataLabelPositioners
+                                    .radialDistributionY(point, dataLabel);
+                            }
+                        }
+                        // Find label's x position. The justify option is
+                        // undocumented in the API - preserve support for it
+                        if (dataLabelOptions.justify) {
+                            x = dataLabelPositioners.justify(point, dataLabel, radius, seriesCenter);
+                        }
+                        else {
+                            switch (dataLabelOptions.alignTo) {
+                                case 'connectors':
+                                    x = dataLabelPositioners.alignToConnectors(points, halfIdx, plotWidth, plotLeft);
+                                    break;
+                                case 'plotEdges':
+                                    x = dataLabelPositioners.alignToPlotEdges(dataLabel, halfIdx, plotWidth, plotLeft);
+                                    break;
+                                default:
+                                    x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY, dataLabel);
+                            }
+                        }
+                        // Record the placement and visibility
+                        labelPosition.attribs = {
+                            visibility,
+                            align: labelPosition.alignment
+                        };
+                        labelPosition.posAttribs = {
+                            x: x +
+                                (dataLabelOptions.x || 0) + // (#12985)
+                                ({
+                                    left: connectorPadding,
+                                    right: -connectorPadding
+                                }[labelPosition.alignment] || 0),
+                            y: y +
+                                (dataLabelOptions.y || 0) - // (#12985)
+                                // Vertically center
+                                dataLabel.getBBox().height / 2
+                        };
+                        labelPosition.computed.x = x;
+                        labelPosition.computed.y = y;
+                        // Detect overflowing data labels
+                        if (pick(dataLabelOptions.crop, true)) {
+                            dataLabelWidth = dataLabel.getBBox().width;
+                            let sideOverflow;
+                            // Overflow left
+                            if (x - dataLabelWidth < connectorPadding &&
+                                halfIdx === 1 // Left half
+                            ) {
+                                sideOverflow = Math.round(dataLabelWidth - x + connectorPadding);
+                                overflow[3] = Math.max(sideOverflow, overflow[3]);
+                                // Overflow right
+                            }
+                            else if (x + dataLabelWidth >
+                                plotWidth - connectorPadding &&
+                                halfIdx === 0 // Right half
+                            ) {
+                                sideOverflow = Math.round(x +
+                                    dataLabelWidth -
+                                    plotWidth +
+                                    connectorPadding);
+                                overflow[1] = Math.max(sideOverflow, overflow[1]);
+                            }
+                            // Overflow top
+                            if (y - labelHeight / 2 < 0) {
+                                overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
+                                // Overflow left
+                            }
+                            else if (y + labelHeight / 2 > plotHeight) {
+                                overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
+                            }
+                            labelPosition.sideOverflow = sideOverflow;
+                        }
                     }
-                    else {
-                        labelHeight = point.distributeBox.size;
-                        // Find label's y position
-                        y = dataLabelPositioners
-                            .radialDistributionY(point);
-                    }
-                }
-                // It is needed to delete point.positionIndex for
-                // dynamically added points etc.
-                delete point.positionIndex; // @todo unused
-                // Find label's x position
-                // justify is undocumented in the API - preserve support for it
-                if (options.justify) {
-                    x = dataLabelPositioners.justify(point, radius, seriesCenter);
-                }
-                else {
-                    switch (options.alignTo) {
-                        case 'connectors':
-                            x = dataLabelPositioners.alignToConnectors(points, i, plotWidth, plotLeft);
-                            break;
-                        case 'plotEdges':
-                            x = dataLabelPositioners.alignToPlotEdges(dataLabel, i, plotWidth, plotLeft);
-                            break;
-                        default:
-                            x = dataLabelPositioners.radialDistributionX(series, point, y, naturalY);
-                    }
-                }
-                // Record the placement and visibility
-                dataLabel._attr = {
-                    visibility: visibility,
-                    align: labelPosition.alignment
-                };
-                pointDataLabelsOptions = point.options.dataLabels || {};
-                dataLabel._pos = {
-                    x: (x +
-                        pick(pointDataLabelsOptions.x, options.x) + // (#12985)
-                        ({
-                            left: connectorPadding,
-                            right: -connectorPadding
-                        }[labelPosition.alignment] || 0)),
-                    y: (y +
-                        pick(pointDataLabelsOptions.y, options.y) - // (#12985)
-                        // Vertically center
-                        dataLabel.getBBox().height / 2)
-                };
-                // labelPos.x = x;
-                // labelPos.y = y;
-                if (labelPosition) {
-                    labelPosition.computed.x = x;
-                    labelPosition.computed.y = y;
-                }
-                // Detect overflowing data labels
-                if (pick(options.crop, true)) {
-                    dataLabelWidth = dataLabel.getBBox().width;
-                    sideOverflow = null;
-                    // Overflow left
-                    if (x - dataLabelWidth < connectorPadding &&
-                        i === 1 // left half
-                    ) {
-                        sideOverflow = Math.round(dataLabelWidth - x + connectorPadding);
-                        overflow[3] = Math.max(sideOverflow, overflow[3]);
-                        // Overflow right
-                    }
-                    else if (x + dataLabelWidth > plotWidth - connectorPadding &&
-                        i === 0 // right half
-                    ) {
-                        sideOverflow = Math.round(x + dataLabelWidth - plotWidth + connectorPadding);
-                        overflow[1] = Math.max(sideOverflow, overflow[1]);
-                    }
-                    // Overflow top
-                    if (y - labelHeight / 2 < 0) {
-                        overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
-                        // Overflow left
-                    }
-                    else if (y + labelHeight / 2 > plotHeight) {
-                        overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
-                    }
-                    dataLabel.sideOverflow = sideOverflow;
-                }
-            } // for each point
-        }); // for each half
+                }); // For each data label of the point
+            }); // For each point
+        }); // For each half
         // Do not apply the final placement and draw the connectors until we
         // have verified that labels are not spilling over.
         if (arrayMax(overflow) === 0 ||
             this.verifyDataLabelOverflow(overflow)) {
             // Place the labels in the final position
             this.placeDataLabels();
-            this.points.forEach(function (point) {
-                // #8864: every connector can have individual options
-                pointDataLabelsOptions =
-                    merge(options, point.options.dataLabels);
-                connectorWidth =
-                    pick(pointDataLabelsOptions.connectorWidth, 1);
-                // Draw the connector
-                if (connectorWidth) {
-                    let isNew;
-                    connector = point.connector;
-                    dataLabel = point.dataLabel;
-                    if (dataLabel &&
-                        dataLabel._pos &&
-                        point.visible &&
-                        point.labelDistance > 0) {
-                        visibility = dataLabel._attr.visibility;
-                        isNew = !connector;
-                        if (isNew) {
-                            point.connector = connector = chart.renderer
-                                .path()
-                                .addClass('highcharts-data-label-connector ' +
-                                ' highcharts-color-' + point.colorIndex +
-                                (point.className ?
-                                    ' ' + point.className :
-                                    ''))
-                                .add(series.dataLabelsGroup);
+            this.points.forEach((point) => {
+                (point.dataLabels || []).forEach((dataLabel) => {
+                    // #8864: every connector can have individual options
+                    const { connectorColor, connectorWidth = 1 } = (dataLabel.options || {}), labelPosition = dataLabel.dataLabelPosition;
+                    // Draw the connector
+                    if (connectorWidth) {
+                        let isNew;
+                        connector = dataLabel.connector;
+                        if (labelPosition && labelPosition.distance > 0) {
+                            isNew = !connector;
+                            if (!connector) {
+                                dataLabel.connector = connector = chart.renderer
+                                    .path()
+                                    .addClass('highcharts-data-label-connector ' +
+                                    ' highcharts-color-' +
+                                    point.colorIndex +
+                                    (point.className ?
+                                        ' ' + point.className :
+                                        ''))
+                                    .add(series.dataLabelsGroup);
+                            }
                             if (!chart.styledMode) {
                                 connector.attr({
                                     'stroke-width': connectorWidth,
-                                    'stroke': (pointDataLabelsOptions.connectorColor ||
+                                    'stroke': (connectorColor ||
                                         point.color ||
                                         "#666666" /* Palette.neutralColor60 */)
                                 });
                             }
+                            connector[isNew ? 'attr' : 'animate']({
+                                d: point.getConnectorPath(dataLabel)
+                            });
+                            connector.attr({
+                                visibility: labelPosition.attribs?.visibility
+                            });
                         }
-                        connector[isNew ? 'attr' : 'animate']({
-                            d: point.getConnectorPath()
-                        });
-                        connector.attr('visibility', visibility);
+                        else if (connector) {
+                            dataLabel.connector = connector.destroy();
+                        }
                     }
-                    else if (connector) {
-                        point.connector = connector.destroy();
-                    }
-                }
+                });
             });
         }
     }
@@ -354,33 +372,30 @@ var ColumnDataLabel;
      * @private
      */
     function placeDataLabels() {
-        this.points.forEach(function (point) {
-            let dataLabel = point.dataLabel, _pos;
-            if (dataLabel && point.visible) {
-                _pos = dataLabel._pos;
-                if (_pos) {
+        this.points.forEach((point) => {
+            (point.dataLabels || []).forEach((dataLabel) => {
+                const labelPosition = dataLabel.dataLabelPosition;
+                if (labelPosition) {
                     // Shorten data labels with ellipsis if they still overflow
                     // after the pie has reached minSize (#223).
-                    if (dataLabel.sideOverflow) {
-                        dataLabel._attr.width =
-                            Math.max(dataLabel.getBBox().width -
-                                dataLabel.sideOverflow, 0);
+                    if (labelPosition.sideOverflow) {
                         dataLabel.css({
-                            width: dataLabel._attr.width + 'px',
-                            textOverflow: ((this.options.dataLabels.style || {})
+                            width: (Math.max(dataLabel.getBBox().width -
+                                labelPosition.sideOverflow, 0)) + 'px',
+                            textOverflow: ((dataLabel.options?.style || {})
                                 .textOverflow ||
                                 'ellipsis')
                         });
                         dataLabel.shortened = true;
                     }
-                    dataLabel.attr(dataLabel._attr);
-                    dataLabel[dataLabel.moved ? 'animate' : 'attr'](_pos);
+                    dataLabel.attr(labelPosition.attribs);
+                    dataLabel[dataLabel.moved ? 'animate' : 'attr'](labelPosition.posAttribs);
                     dataLabel.moved = true;
                 }
                 else if (dataLabel) {
                     dataLabel.attr({ y: -9999 });
                 }
-            }
+            });
             // Clear for update
             delete point.distributeBox;
         }, this);

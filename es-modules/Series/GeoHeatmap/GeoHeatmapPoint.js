@@ -27,6 +27,8 @@ class GeoHeatmapPoint extends MapPoint {
          *
          * */
         super(...arguments);
+        this.lat = void 0;
+        this.lon = void 0;
         this.options = void 0;
         this.series = void 0;
     }

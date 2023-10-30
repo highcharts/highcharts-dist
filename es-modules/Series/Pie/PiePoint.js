@@ -12,7 +12,7 @@ import A from '../../Core/Animation/AnimationUtilities.js';
 const { setAnimation } = A;
 import Point from '../../Core/Series/Point.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, isNumber, pick, relativeLength } = U;
+const { addEvent, defined, extend, isNumber, isString, pick, relativeLength } = U;
 /* *
  *
  *  Class
@@ -26,7 +26,7 @@ class PiePoint extends Point {
          *
          * */
         super(...arguments);
-        this.labelDistance = void 0;
+        this.half = 0;
         this.options = void 0;
         this.series = void 0;
     }
@@ -41,25 +41,19 @@ class PiePoint extends Point {
      * data label and the pie slice.
      * @private
      */
-    getConnectorPath() {
-        const labelPosition = this.labelPosition, options = this.series.options.dataLabels, predefinedShapes = this.connectorShapes;
-        let connectorShape = options.connectorShape;
-        // find out whether to use the predefined shape
-        if (predefinedShapes[connectorShape]) {
-            connectorShape = predefinedShapes[connectorShape];
-        }
-        return connectorShape.call(this, {
-            // pass simplified label position object for user's convenience
-            x: labelPosition.computed.x,
-            y: labelPosition.computed.y,
+    getConnectorPath(dataLabel) {
+        const labelPosition = dataLabel.dataLabelPosition, options = (dataLabel.options || {}), connectorShape = options.connectorShape, shapeFunc = (this.connectorShapes[connectorShape] || connectorShape);
+        return labelPosition && shapeFunc.call(this, {
+            // Pass simplified label position object for user's convenience
+            ...labelPosition.computed,
             alignment: labelPosition.alignment
-        }, labelPosition.connectorPosition, options);
+        }, labelPosition.connectorPosition, options) || [];
     }
     /**
      * @private
      */
     getTranslate() {
-        return this.sliced ? this.slicedTranslation : {
+        return this.sliced && this.slicedTranslation || {
             translateX: 0,
             translateY: 0
         };
@@ -222,7 +216,7 @@ extend(PiePoint.prototype, {
             ];
         },
         crookedLine: function (labelPosition, connectorPosition, options) {
-            const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, plotWidth = series.chart.plotWidth, plotLeft = series.chart.plotLeft, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
+            const { breakAt, touchingSliceAt } = connectorPosition, { series } = this, [cx, cy, diameter] = series.center, r = diameter / 2, { plotLeft, plotWidth } = series.chart, leftAligned = labelPosition.alignment === 'left', { x, y } = labelPosition;
             let crookX = breakAt.x;
             if (options.crookDistance) {
                 const crookDistance = relativeLength(// % to fraction

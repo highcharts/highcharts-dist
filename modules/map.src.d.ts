@@ -308,6 +308,18 @@ declare module "../highcharts.src" {
      */
     let maps: Record<string, any>;
     /**
+     * Find color of point based on color axis.
+     *
+     * @param value
+     *        Value to find corresponding color on the color axis.
+     *
+     * @param point
+     *        Point to find it's color from color axis.
+     *
+     * @return Color in RGBa array.
+     */
+    function colorFromPoint(value: (number|null), point: Point): Array<number>;
+    /**
      * Highcharts Maps only. Restructure a GeoJSON or TopoJSON object in
      * preparation to be read directly by the series.mapData option. The object
      * will be broken down to fit a specific Highcharts type, either `map`,
@@ -365,6 +377,9 @@ declare module "../highcharts.src" {
     /**
      * Utility for reading SVG paths directly.
      *
+     * @param path
+     *        Path to split.
+     *
      * @return Splitted SVG path
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
@@ -382,6 +397,11 @@ declare module "../highcharts.src" {
      * Toggle bubble legend depending on the visible status of bubble series.
      */
     function onSeriesLegendItemClick(): void;
+    /**
+     * Convert a TopoJSON topology to GeoJSON. By default the first object is
+     * handled. Based on https://github.com/topojson/topojson-specification
+     */
+    function topo2geo(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

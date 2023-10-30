@@ -2,9 +2,24 @@
  * Miller projection
  * */
 'use strict';
+/* *
+ *
+ *  Constants
+ *
+ * */
 const quarterPI = Math.PI / 4, deg2rad = Math.PI / 180, scale = 63.78137;
+/* *
+ *
+ *  Class
+ *
+ * */
 class Miller {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
         this.bounds = {
             x1: -200.37508342789243,
             x2: 200.37508342789243,
@@ -12,6 +27,11 @@ class Miller {
             y2: 146.91480769173063
         };
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     forward(lonLat) {
         return [
             lonLat[0] * deg2rad * scale,
@@ -25,4 +45,9 @@ class Miller {
         ];
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Miller;

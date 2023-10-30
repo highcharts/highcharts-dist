@@ -12,7 +12,7 @@
 'use strict';
 import BorderRadius from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { gauge: GaugeSeries, pie: { prototype: pieProto } } } = SeriesRegistry;
+const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
 import SolidGaugeSeriesDefaults from './SolidGaugeSeriesDefaults.js';
 import U from '../../Core/Utilities.js';
@@ -35,7 +35,7 @@ class SolidGaugeSeries extends GaugeSeries {
     constructor() {
         /* *
          *
-         *  Static properties
+         *  Static Properties
          *
          * */
         super(...arguments);
@@ -66,7 +66,7 @@ class SolidGaugeSeries extends GaugeSeries {
         if (!axis.dataClasses && axis.options.dataClasses) {
             axis.initDataClasses(axis.options);
         }
-        axis.initStops(axis.options);
+        axis.initStops();
         // Generate points and inherit data label position
         GaugeSeries.prototype.translate.call(this);
     }
@@ -161,7 +161,7 @@ class SolidGaugeSeries extends GaugeSeries {
     animate(init) {
         if (!init) {
             this.startAngleRad = this.thresholdAngleRad;
-            pieProto.animate.call(this, init);
+            PieSeries.prototype.animate.call(this, init);
         }
     }
 }

@@ -33,9 +33,19 @@ class Tunnel extends CrookedLine {
      *
      * */
     getPointsOptions() {
-        const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this);
+        const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this), yAxisIndex = this.options.typeOptions.yAxis || 0, yAxis = this.chart.yAxis[yAxisIndex];
         pointsOptions[2] = this.heightPointOptions(pointsOptions[1]);
         pointsOptions[3] = this.heightPointOptions(pointsOptions[0]);
+        // In case of log axis, translate the bottom left point again, #16769
+        if (yAxis && yAxis.logarithmic) {
+            // Get the height in pixels
+            const h = yAxis.toPixels(pointsOptions[2].y) -
+                yAxis.toPixels(pointsOptions[1].y), 
+            // Get the pixel position of the last point
+            y3 = yAxis.toPixels(pointsOptions[0].y) + h;
+            // Set the new value
+            pointsOptions[3].y = yAxis.toValue(y3);
+        }
         return pointsOptions;
     }
     getControlPointsOptions() {
@@ -149,9 +159,9 @@ Tunnel.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions,
             positioner: function (target) {
                 const startXY = MockPoint.pointToPixels(target.points[2]), endXY = MockPoint.pointToPixels(target.points[3]), x = (startXY.x + endXY.x) / 2;
                 return {
-                    x: x - this.graphic.width / 2,
+                    x: x - (this.graphic.width || 0) / 2,
                     y: getSecondCoordinate(startXY, endXY, x) -
-                        this.graphic.height / 2
+                        (this.graphic.height || 0) / 2
                 };
             },
             events: {

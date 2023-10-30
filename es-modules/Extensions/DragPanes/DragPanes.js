@@ -47,9 +47,9 @@ function compose(AxisClass, PointerClass) {
  * @private
  */
 function onAxisAfterRender() {
-    let axis = this, resizer = axis.resizer, resizerOptions = axis.options.resize, enabled;
+    const axis = this, resizer = axis.resizer, resizerOptions = axis.options.resize;
     if (resizerOptions) {
-        enabled = resizerOptions.enabled !== false;
+        const enabled = resizerOptions.enabled !== false;
         if (resizer) {
             // Resizer present and enabled
             if (enabled) {
@@ -77,8 +77,9 @@ function onAxisAfterRender() {
  * @private
  */
 function onAxisDestroy(e) {
-    if (!e.keepEvents && this.resizer) {
-        this.resizer.destroy();
+    const axis = this;
+    if (!e.keepEvents && axis.resizer) {
+        axis.resizer.destroy();
     }
 }
 /**
@@ -87,8 +88,9 @@ function onAxisDestroy(e) {
  * @private
  */
 function wrapPointerDrag(proceed) {
-    if (!this.chart.activeResizer) {
-        proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+    const pointer = this;
+    if (!pointer.chart.activeResizer) {
+        proceed.apply(pointer, [].slice.call(arguments, 1));
     }
 }
 /**
@@ -96,8 +98,9 @@ function wrapPointerDrag(proceed) {
  * @private
  */
 function wrapPointerRunPointActions(proceed) {
-    if (!this.chart.activeResizer) {
-        proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+    const pointer = this;
+    if (!pointer.chart.activeResizer) {
+        proceed.apply(pointer, [].slice.call(arguments, 1));
     }
 }
 /* *

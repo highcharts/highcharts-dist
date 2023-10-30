@@ -13,7 +13,7 @@ const { getDeferredAnimation } = A;
 import F from '../Templating.js';
 const { format } = F;
 import U from '../Utilities.js';
-const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, splat } = U;
+const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
 /* *
  *
  *  Composition
@@ -39,6 +39,15 @@ var DataLabel;
      *
      * */
     /* eslint-disable valid-jsdoc */
+    /**
+     * Check if this series has data labels, either a series-level setting, or
+     * individual. In case of individual point labels, this method is overridden
+     * to always return true.
+     * @private
+     */
+    function hasDataLabels() {
+        return splat(this.options.dataLabels || {}).some((o) => o?.enabled);
+    }
     /**
      * Align each individual data label.
      * @private
@@ -221,6 +230,7 @@ var DataLabel;
             seriesProto.drawDataLabels = drawDataLabels;
             seriesProto.justifyDataLabel = justifyDataLabel;
             seriesProto.setDataLabelStartPos = setDataLabelStartPos;
+            seriesProto.hasDataLabels = hasDataLabels;
         }
     }
     DataLabel.compose = compose;
@@ -258,44 +268,39 @@ var DataLabel;
      * Draw the data labels
      * @private
      */
-    function drawDataLabels(points = this.points) {
-        var _a, _b;
+    function drawDataLabels(points) {
+        points = points || this.points;
         const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
             (isString(backgroundColor) && backgroundColor) ||
             "#000000" /* Palette.neutralColor100 */);
         let seriesDlOptions = seriesOptions.dataLabels, pointOptions, dataLabelsGroup;
-        const firstDLOptions = splat(seriesDlOptions)[0], dataLabelAnim = firstDLOptions.animation, animationConfig = firstDLOptions.defer ?
-            getDeferredAnimation(chart, dataLabelAnim, series) :
-            { defer: 0, duration: 0 };
         // Merge in plotOptions.dataLabels for series
-        seriesDlOptions = mergeArrays(mergeArrays((_a = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions.series) === null || _a === void 0 ? void 0 : _a.dataLabels, (_b = plotOptions === null || plotOptions === void 0 ? void 0 : plotOptions[series.type]) === null || _b === void 0 ? void 0 : _b.dataLabels), seriesDlOptions);
+        seriesDlOptions = mergeArrays(mergeArrays(plotOptions?.series?.dataLabels, plotOptions?.[series.type]?.dataLabels), seriesDlOptions);
+        // Resolve the animation
+        const { animation, defer } = splat(seriesDlOptions)[0], animationConfig = defer ?
+            getDeferredAnimation(chart, animation, series) :
+            { defer: 0, duration: 0 };
         fireEvent(this, 'drawDataLabels');
-        if (isArray(seriesDlOptions) ||
-            seriesDlOptions.enabled ||
-            series._hasPointLabels) {
+        if (series.hasDataLabels?.()) {
             dataLabelsGroup = this.initDataLabels(animationConfig);
             // Make the labels for each point
             points.forEach((point) => {
-                var _a;
                 const dataLabels = point.dataLabels || [];
                 // Merge in series options for the point.
                 // @note dataLabelAttribs (like pointAttribs) would eradicate
                 // the need for dlOptions, and simplify the section below.
                 pointOptions = splat(mergeArrays(seriesDlOptions, 
-                // dlOptions is used in treemaps
-                point.dlOptions || ((_a = point.options) === null || _a === void 0 ? void 0 : _a.dataLabels)));
+                // The dlOptions prop is used in treemaps
+                point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
-                    var _a;
                     // Options for one datalabel
                     const labelEnabled = (labelOptions.enabled &&
+                        point.visible &&
                         // #2282, #4641, #7112, #10049
                         (!point.isNull || point.dataLabelOnNull) &&
-                        applyFilter(point, labelOptions)), connector = point.connectors ?
-                        point.connectors[i] :
-                        point.connector, style = labelOptions.style || {};
+                        applyFilter(point, labelOptions)), style = labelOptions.style || {}, labelDistance = labelOptions.distance;
                     let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel;
-                    const labelDistance = pick(labelOptions.distance, point.labelDistance);
                     if (labelEnabled) {
                         // Create individual options structure that can be
                         // extended without affecting others
@@ -314,7 +319,7 @@ var DataLabel;
                                 point.contrastColor = renderer.getContrast((point.color || series.color));
                                 style.color = ((!defined(labelDistance) &&
                                     labelOptions.inside) ||
-                                    (labelDistance || 0) < 0 ||
+                                    pInt(labelDistance || 0) < 0 ||
                                     seriesOptions.stacking) ?
                                     point.contrastColor :
                                     contrastColor;
@@ -364,19 +369,6 @@ var DataLabel;
                             dataLabel.rotation !== labelOptions.rotation))) {
                         dataLabel = void 0;
                         isNew = true;
-                        if (connector && point.connector) {
-                            point.connector = point.connector.destroy();
-                            if (point.connectors) {
-                                // Remove point.connectors if this was the last
-                                // one
-                                if (point.connectors.length === 1) {
-                                    delete point.connectors;
-                                }
-                                else {
-                                    delete point.connectors[i];
-                                }
-                            }
-                        }
                     }
                     // Individual labels are disabled if the are explicitly
                     // disabled in the point options, or if they fall outside
@@ -415,7 +407,7 @@ var DataLabel;
                             }
                             const textPathOptions = labelOptions[point.formatPrefix + 'TextPath'] || labelOptions.textPath;
                             if (textPathOptions && !labelOptions.useHTML) {
-                                dataLabel.setTextPath(((_a = point.getDataLabelPath) === null || _a === void 0 ? void 0 : _a.call(point, dataLabel)) ||
+                                dataLabel.setTextPath(point.getDataLabelPath?.(dataLabel) ||
                                     point.graphic, textPathOptions);
                                 if (point.dataLabelPath &&
                                     !textPathOptions.enabled) {
@@ -440,12 +432,14 @@ var DataLabel;
                 // Destroy and remove the inactive ones
                 let j = dataLabels.length;
                 while (j--) {
-                    if (dataLabels[j].isActive) {
-                        dataLabels[j].isActive = false;
+                    // The item can be undefined if a disabled data label is
+                    // succeeded by an enabled one (#19457)
+                    if (!dataLabels[j] || !dataLabels[j].isActive) {
+                        dataLabels[j]?.destroy();
+                        dataLabels.splice(j, 1);
                     }
                     else {
-                        dataLabels[j].destroy();
-                        dataLabels.splice(j, 1);
+                        dataLabels[j].isActive = false;
                     }
                 }
                 // Write back
@@ -553,7 +547,7 @@ var DataLabel;
      * @private
      */
     function setDataLabelStartPos(point, dataLabel, isNew, isInside, alignOptions) {
-        const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = inverted ? dataLabel.height / 2 : dataLabel.width / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
+        const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = ((inverted ? dataLabel.height : dataLabel.width) || 0) / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
         dataLabel.startXPos = inverted ?
             alignOptions.x :
             (reversed ?

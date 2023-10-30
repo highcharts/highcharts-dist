@@ -128,8 +128,8 @@ CrookedLine.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions
         positioner: function (target) {
             const graphic = this.graphic, xy = MockPoint.pointToPixels(target.points[this.index]);
             return {
-                x: xy.x - graphic.width / 2,
-                y: xy.y - graphic.height / 2
+                x: xy.x - (graphic.width || 0) / 2,
+                y: xy.y - (graphic.height || 0) / 2
             };
         },
         events: {

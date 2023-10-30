@@ -11,7 +11,7 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { pie: PieSeries } } = SeriesRegistry;
+const { series: { prototype: { pointClass: Point } }, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
 const { extend } = U;
 /* *
@@ -19,7 +19,7 @@ const { extend } = U;
  *  Class
  *
  * */
-class ItemPoint extends PieSeries.prototype.pointClass {
+class ItemPoint extends PiePoint {
     constructor() {
         /* *
          *
@@ -32,7 +32,7 @@ class ItemPoint extends PieSeries.prototype.pointClass {
     }
 }
 extend(ItemPoint.prototype, {
-    haloPath: Series.prototype.pointClass.prototype.haloPath
+    haloPath: Point.prototype.haloPath
 });
 /* *
  *

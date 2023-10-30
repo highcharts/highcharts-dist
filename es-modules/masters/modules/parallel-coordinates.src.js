@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/parallel-coordinates
  * @requires highcharts
  *
@@ -10,4 +10,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/ParallelCoordinates.js';
+import Highcharts from '../../Core/Globals.js';
+import ParallelCoordinates from '../../Extensions/ParallelCoordinates/ParallelCoordinates.js';
+const G = Highcharts;
+ParallelCoordinates.compose(G.Axis, G.Chart, G.defaultOptions, G.Series);

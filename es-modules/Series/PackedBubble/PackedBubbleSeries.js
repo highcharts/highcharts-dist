@@ -85,8 +85,7 @@ class PackedBubbleSeries extends BubbleSeries {
         let yData;
         for (const series of chart.series) {
             if (series.is('packedbubble') && // #13574
-                series.visible ||
-                !chart.options.chart.ignoreHiddenSeries) {
+                series.reserveSpace()) {
                 yData = series.yData || [];
                 // add data to array only if series is visible
                 for (let j = 0; j < yData.length; j++) {
@@ -328,7 +327,6 @@ class PackedBubbleSeries extends BubbleSeries {
      * @private
      */
     drawGraph() {
-        var _a;
         // if the series is not using layout, don't add parent nodes
         if (!this.layout || !this.layout.options.splitSeries) {
             return;
@@ -344,7 +342,7 @@ class PackedBubbleSeries extends BubbleSeries {
         // Create the group for parent Nodes if doesn't exist
         // If exists it will only be adjusted to the updated plot size (#12063)
         this.parentNodesGroup = this.plotGroup('parentNodesGroup', 'parentNode', this.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
-        (_a = this.group) === null || _a === void 0 ? void 0 : _a.attr({
+        this.group?.attr({
             zIndex: 2
         });
         this.calculateParentRadius();

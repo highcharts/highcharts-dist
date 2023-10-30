@@ -182,6 +182,19 @@ declare module "../highcharts.src" {
      */
     function i18nFormat(formatString: string, context: Dictionary<any>, chart: Chart): string;
     /**
+     * When we have vertical scrollbar, rifles and arrow in buttons should be
+     * rotated. The same method is used in Navigator's handles, to rotate them.
+     *
+     * @param path
+     *        Path to be rotated.
+     *
+     * @param vertical
+     *        If vertical scrollbar, swap x-y values.
+     *
+     * @return Rotated path.
+     */
+    function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
+    /**
      * If we have a clear root option node for old and new options and a mapping
      * between, we can use this generic function for the copy and warn logic.
      */

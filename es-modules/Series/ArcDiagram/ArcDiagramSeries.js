@@ -10,17 +10,6 @@
  *
  * */
 'use strict';
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 import ArcDiagramPoint from './ArcDiagramPoint.js';
 import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import Series from '../../Core/Series/Series.js';
@@ -322,8 +311,8 @@ class ArcDiagramSeries extends SankeySeries {
     }
     pointAttribs(point, state) {
         if (point && point.isNode) {
-            const _a = Series.prototype.pointAttribs
-                .apply(this, arguments), { opacity } = _a, attrs = __rest(_a, ["opacity"]);
+            const { opacity, ...attrs } = Series.prototype.pointAttribs
+                .apply(this, arguments);
             return attrs;
         }
         return super.pointAttribs.apply(this, arguments);
@@ -350,10 +339,11 @@ class ArcDiagramSeries extends SankeySeries {
  * @product      highcharts
  * @requires     modules/arc-diagram
  * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
- *               dataSorting, dragDrop, getExtremesFromAll, nodePadding,
- *               centerInCategory, pointInterval, pointIntervalUnit,
- *               pointPlacement, pointStart, relativeXValue, softThreshold,
- *               stack, stacking, step, xAxis, yAxis
+ *               dataSorting, dragDrop, getExtremesFromAll, nodeAlignment,
+ *               nodePadding, centerInCategory, pointInterval,
+ *               pointIntervalUnit, pointPlacement, pointStart,
+ *               relativeXValue, softThreshold, stack, stacking, step,
+ *               xAxis, yAxis
  * @optionparent plotOptions.arcdiagram
  */
 ArcDiagramSeries.defaultOptions = merge(SankeySeries.defaultOptions, {

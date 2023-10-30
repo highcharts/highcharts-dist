@@ -13,7 +13,7 @@ const { format } = T;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Utilities.js';
-const { destroyObjectProperties, fireEvent, isNumber, merge, pick } = U;
+const { destroyObjectProperties, fireEvent, isNumber, pick } = U;
 /* *
  *
  *  Class
@@ -67,6 +67,11 @@ class StackItem {
             options.textAlign ||
                 (inverted ? (!isNegative ? 'left' : 'right') : 'center');
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * @private
      */
@@ -169,7 +174,7 @@ class StackItem {
                 visible =
                     isNumber(label.x) &&
                         isNumber(label.y) &&
-                        chart.isInsidePlot(label.x - padding + label.width, label.y) &&
+                        chart.isInsidePlot(label.x - padding + (label.width || 0), label.y) &&
                         chart.isInsidePlot(label.x + padding, label.y);
             }
             label[visible ? 'show' : 'hide']();

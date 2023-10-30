@@ -189,7 +189,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.1.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.2.0'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -446,8 +446,8 @@ class SVGRenderer {
         const id = [
             `highcharts-drop-shadow-${this.chartIndex}`,
             ...Object.keys(shadowOptions)
-                .map((key) => shadowOptions[key])
-        ].join('-').replace(/[^a-z0-9\-]/g, ''), options = merge({
+                .map((key) => `${key}-${shadowOptions[key]}`)
+        ].join('-').toLowerCase().replace(/[^a-z0-9\-]/g, ''), options = merge({
             color: '#000000',
             offsetX: 1,
             offsetY: 1,
@@ -458,7 +458,8 @@ class SVGRenderer {
             this.definition({
                 tagName: 'filter',
                 attributes: {
-                    id
+                    id,
+                    filterUnits: options.filterUnits
                 },
                 children: [{
                         tagName: 'feDropShadow',
@@ -1141,37 +1142,35 @@ class SVGRenderer {
              * and the label size into consideration, and translates the image
              * to center within the label.
              */
-            ['width', 'height'].forEach(function (key) {
-                img[key + 'Setter'] = function (value, key) {
+            ['width', 'height'].forEach((key) => {
+                img[`${key}Setter`] = function (value, key) {
                     this[key] = value;
-                    const { alignByTranslate, element, width, height, imgwidth, imgheight } = this;
-                    let imgSize = this['img' + key];
-                    if (defined(imgSize)) {
-                        let scale = 1;
-                        // Scale and center the image within its container.
-                        // The name `backgroundSize` is taken from the CSS spec,
-                        // but the value `within` is made up. Other possible
-                        // values in the spec, `cover` and `contain`, can be
-                        // implemented if needed.
-                        if (options &&
-                            options.backgroundSize === 'within' &&
-                            width &&
-                            height) {
-                            scale = Math.min(width / imgwidth, height / imgheight);
-                            imgSize = Math.round(imgSize * scale);
-                            // Update both width and height to keep the ratio
-                            // correct (#17315)
-                            attr(element, {
-                                width: Math.round(imgwidth * scale),
-                                height: Math.round(imgheight * scale)
-                            });
-                        }
-                        else if (element) {
-                            element.setAttribute(key, imgSize);
-                        }
-                        if (!alignByTranslate) {
-                            this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
-                        }
+                    const { alignByTranslate, element, width, height, imgwidth, imgheight } = this, imgSize = key === 'width' ? imgwidth : imgheight;
+                    let scale = 1;
+                    // Scale and center the image within its container. The name
+                    // `backgroundSize` is taken from the CSS spec, but the
+                    // value `within` is made up. Other possible values in the
+                    // spec, `cover` and `contain`, can be implemented if
+                    // needed.
+                    if (options &&
+                        options.backgroundSize === 'within' &&
+                        width &&
+                        height &&
+                        imgwidth &&
+                        imgheight) {
+                        scale = Math.min(width / imgwidth, height / imgheight);
+                        // Update both width and height to keep the ratio
+                        // correct (#17315)
+                        attr(element, {
+                            width: Math.round(imgwidth * scale),
+                            height: Math.round(imgheight * scale)
+                        });
+                    }
+                    else if (element && imgSize) {
+                        element.setAttribute(key, imgSize);
+                    }
+                    if (!alignByTranslate && imgwidth && imgheight) {
+                        this.translate(((width || 0) - (imgwidth * scale)) / 2, ((height || 0) - (imgheight * scale)) / 2);
                     }
                 };
             });

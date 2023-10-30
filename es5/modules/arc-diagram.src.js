@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Arc diagram module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -528,10 +526,11 @@
              * @product      highcharts
              * @requires     modules/arc-diagram
              * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
-             *               dataSorting, dragDrop, getExtremesFromAll, nodePadding,
-             *               centerInCategory, pointInterval, pointIntervalUnit,
-             *               pointPlacement, pointStart, relativeXValue, softThreshold,
-             *               stack, stacking, step, xAxis, yAxis
+             *               dataSorting, dragDrop, getExtremesFromAll, nodeAlignment,
+             *               nodePadding, centerInCategory, pointInterval,
+             *               pointIntervalUnit, pointPlacement, pointStart,
+             *               relativeXValue, softThreshold, stack, stacking, step,
+             *               xAxis, yAxis
              * @optionparent plotOptions.arcdiagram
              */
             ArcDiagramSeries.defaultOptions = merge(SankeySeries.defaultOptions, {

@@ -2,8 +2,23 @@
  * Thunderforest provider, used for tile map services
  * */
 'use strict';
+/* *
+ *
+ *  Class
+ *
+ * */
 class Thunderforest {
     constructor() {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.defaultCredits = ('Maps &copy <a href="https://www.thunderforest.com">Thunderforest</a>' +
+            ', Data &copy; <a href="https://www.openstreetmap.org/copyright">' +
+            'OpenStreetMap contributors</a>');
+        this.initialProjectionName = 'WebMercator';
+        this.requiresApiKey = true;
         this.subdomains = ['a', 'b', 'c'];
         this.themes = {
             OpenCycleMap: {
@@ -52,10 +67,11 @@ class Thunderforest {
                 maxZoom: 22
             }
         };
-        this.initialProjectionName = 'WebMercator';
-        this.defaultCredits = `Maps \u00a9 <a href="https://www.thunderforest.com">Thunderforest</a>,
-        Data \u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>`;
-        this.requiresApiKey = true;
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Thunderforest;

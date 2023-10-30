@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v11.1.0 (2023-06-05)
+ * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -11,7 +11,9 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import '../../Gantt/Pathfinder.js';
+import Pathfinder from '../../Gantt/Pathfinder.js';
 import ArrowSymbols from '../../Extensions/ArrowSymbols.js';
 const G = Highcharts;
+G.Pathfinder = Pathfinder;
 ArrowSymbols.compose(G.SVGRenderer);
+Pathfinder.compose(G.Chart, G.Point);

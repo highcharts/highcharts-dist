@@ -1,15 +1,9 @@
-/*
- Highstock JS v11.1.0 (2023-06-05)
-
- Indicator series type for Highcharts Stock
-
- (c) 2010-2021 Karol Kolodziej
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/obv",["highcharts","highcharts/modules/stock"],function(d){a(d);a.Highcharts=d;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function d(a,b,d,f){a.hasOwnProperty(b)||(a[b]=f.apply(null,d),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:b,
-module:a[b]}})))}a=a?a._modules:{};d(a,"Stock/Indicators/OBV/OBVIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,b){var d=this&&this.__extends||function(){var a=function(b,c){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,c){a.__proto__=c}||function(a,c){for(var b in c)Object.prototype.hasOwnProperty.call(c,b)&&(a[b]=c[b])};return a(b,c)};return function(b,c){function d(){this.constructor=b}if("function"!==typeof c&&null!==c)throw new TypeError("Class extends value "+
-String(c)+" is not a constructor or null");a(b,c);b.prototype=null===c?Object.create(c):(d.prototype=c.prototype,new d)}}(),f=a.seriesTypes.sma,p=b.isNumber,q=b.error,r=b.extend,t=b.merge;b=function(a){function b(){var c=null!==a&&a.apply(this,arguments)||this;c.data=void 0;c.points=void 0;c.options=void 0;return c}d(b,a);b.prototype.getValues=function(a,b){var c=a.chart.get(b.volumeSeriesID),d=a.xData,g=a.yData,f=[],k=[],l=[],n=!p(g[0]),e=1,h=0;if(c){c=c.yData;a=[d[0],h];var m=n?g[0][3]:g[0];f.push(a);
-k.push(d[0]);l.push(a[1]);for(e;e<g.length;e++)b=n?g[e][3]:g[e],h=b>m?h+c[e]:b===m?h:h-c[e],a=[d[e],h],m=b,f.push(a),k.push(d[e]),l.push(a[1]);return{values:f,xData:k,yData:l}}q("Series "+b.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,a.chart)};b.defaultOptions=t(f.defaultOptions,{marker:{enabled:!1},params:{index:void 0,period:void 0,volumeSeriesID:"volume"},tooltip:{valueDecimals:0}});return b}(f);r(b.prototype,{nameComponents:void 0});a.registerSeriesType("obv",b);"";return b});d(a,
-"masters/indicators/obv.src.js",[],function(){})});
-//# sourceMappingURL=obv.js.map
+/**
+ * Highstock JS v11.2.0 (2023-10-30)
+ *
+ * Indicator series type for Highcharts Stock
+ *
+ * (c) 2010-2021 Karol Kolodziej
+ *
+ * License: www.highcharts.com/license
+ */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/indicators/obv",["highcharts","highcharts/modules/stock"],function(e){return t(e),t.Highcharts=e,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var e=t?t._modules:{};function o(t,e,o,r){t.hasOwnProperty(e)||(t[e]=r.apply(null,o),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:t[e]}})))}o(e,"Stock/Indicators/OBV/OBVIndicator.js",[e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(t,e){var o,r=this&&this.__extends||(o=function(t,e){return(o=Object.setPrototypeOf||({__proto__:[]})instanceof Array&&function(t,e){t.__proto__=e}||function(t,e){for(var o in e)Object.prototype.hasOwnProperty.call(e,o)&&(t[o]=e[o])})(t,e)},function(t,e){if("function"!=typeof e&&null!==e)throw TypeError("Class extends value "+String(e)+" is not a constructor or null");function r(){this.constructor=t}o(t,e),t.prototype=null===e?Object.create(e):(r.prototype=e.prototype,new r)}),n=t.seriesTypes.sma,i=e.isNumber,s=e.error,u=e.extend,a=e.merge,c=function(t){function e(){var e=null!==t&&t.apply(this,arguments)||this;return e.data=void 0,e.points=void 0,e.options=void 0,e}return r(e,t),e.prototype.getValues=function(t,e){var o,r=t.chart.get(e.volumeSeriesID),n=t.xData,u=t.yData,a=[],c=[],p=[],l=!i(u[0]),d=[],h=1,f=0,v=0,y=0,m=0;if(r)for(o=r.yData,d=[n[0],f],y=l?u[0][3]:u[0],a.push(d),c.push(n[0]),p.push(d[1]);h<u.length;h++)v=(m=l?u[h][3]:u[h])>y?f+o[h]:m===y?f:f-o[h],d=[n[h],v],f=v,y=m,a.push(d),c.push(n[h]),p.push(d[1]);else{s("Series "+e.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,t.chart);return}return{values:a,xData:c,yData:p}},e.defaultOptions=a(n.defaultOptions,{marker:{enabled:!1},params:{index:void 0,period:void 0,volumeSeriesID:"volume"},tooltip:{valueDecimals:0}}),e}(n);return u(c.prototype,{nameComponents:void 0}),t.registerSeriesType("obv",c),c}),o(e,"masters/indicators/obv.src.js",[],function(){})});//# sourceMappingURL=obv.js.map

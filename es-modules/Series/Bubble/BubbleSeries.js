@@ -38,8 +38,7 @@ function axisBeforePadding() {
     let pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
     // Handle padding on the second pass, or on redraw
     this.series.forEach((series) => {
-        if (series.bubblePadding &&
-            (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+        if (series.bubblePadding && series.reserveSpace()) {
             // Correction for #1673
             this.allowZoomOutside = true;
             hasActiveSeries = true;
@@ -167,8 +166,7 @@ class BubbleSeries extends ScatterSeries {
             let zMax = -Number.MAX_VALUE;
             let valid;
             this.chart.series.forEach((otherSeries) => {
-                if (otherSeries.bubblePadding && (otherSeries.visible ||
-                    !this.chart.options.chart.ignoreHiddenSeries)) {
+                if (otherSeries.bubblePadding && otherSeries.reserveSpace()) {
                     const zExtremes = (otherSeries.onPoint || otherSeries).getZExtremes();
                     if (zExtremes) {
                         // Changed '||' to 'pick' because min or max can be 0.
@@ -560,8 +558,6 @@ extend(BubbleSeries.prototype, {
     alignDataLabel: columnProto.alignDataLabel,
     applyZones: noop,
     bubblePadding: true,
-    buildKDTree: noop,
-    directTouch: true,
     isBubble: true,
     pointArrayMap: ['y', 'z'],
     pointClass: BubblePoint,

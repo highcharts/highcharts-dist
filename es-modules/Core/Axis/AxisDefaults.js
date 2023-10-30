@@ -533,7 +533,10 @@ var AxisDefaults;
          *
          * @productdesc {highstock}
          * In Highcharts Stock, `endOnTick` is always `false` when the navigator
-         * is enabled, to prevent jumpy scrolling.
+         * is enabled, to prevent jumpy scrolling. With disabled navigator
+         * enabling `endOnTick` may lead to extending the xAxis to show the last
+         * tick, therefore range selector buttons may not have an active state
+         * if the axis gets extended.
          *
          * @sample {highcharts} highcharts/yaxis/endontick/
          *         True by default
@@ -606,6 +609,14 @@ var AxisDefaults;
          * @product   highcharts highstock gantt
          * @context   Highcharts.Axis
          * @apioption xAxis.events.pointInBreak
+         */
+        /**
+         * An event fired when a point is outside a break after zoom.
+         *
+         * @type      {Highcharts.AxisPointBreakEventCallbackFunction}
+         * @product   highcharts highstock gantt
+         * @context   Highcharts.Axis
+         * @apioption xAxis.events.pointBreakOut
          */
         /**
          * Fires when the minimum and maximum is set for the axis, either by

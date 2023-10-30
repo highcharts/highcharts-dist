@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Timeline series
  *
@@ -29,12 +29,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -52,14 +50,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { series: Series, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
+        const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
         const { defined, isNumber, merge, objectEach, pick } = U;
         /* *
          *
          *  Class
          *
          * */
-        class TimelinePoint extends Series.prototype.pointClass {
+        class TimelinePoint extends LinePoint {
             constructor() {
                 /* *
                  *
@@ -69,86 +67,90 @@
                 super(...arguments);
                 this.options = void 0;
                 this.series = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             alignConnector() {
-                let point = this, series = point.series, connector = point.connector, dl = point.dataLabel, dlOptions = point.dataLabel.options = merge(series.options.dataLabels, point.options.dataLabels), chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
-                    x: bBox.x + dl.translateX,
-                    y: bBox.y + dl.translateY
-                }, isVisible;
+                const point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
+                    x: bBox.x + (dataLabel.translateX || 0),
+                    y: bBox.y + (dataLabel.translateY || 0)
+                };
                 // Include a half of connector width in order to run animation,
                 // when connectors are aligned to the plot area edge.
                 if (chart.inverted) {
-                    plotPos.y -= dl.options.connectorWidth / 2;
+                    plotPos.y -= connectorWidth / 2;
                 }
                 else {
-                    plotPos.x += dl.options.connectorWidth / 2;
+                    plotPos.x += connectorWidth / 2;
                 }
-                isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
+                const isVisible = chart.isInsidePlot(plotPos.x, plotPos.y);
                 connector[isVisible ? 'animate' : 'attr']({
                     d: point.getConnectorPath()
                 });
-                connector.addClass(`highcharts-color-${point.colorIndex}`);
+                connector.addClass('highcharts-color-' + point.colorIndex);
                 if (!series.chart.styledMode) {
                     connector.attr({
                         stroke: dlOptions.connectorColor || point.color,
                         'stroke-width': dlOptions.connectorWidth,
-                        opacity: dl[defined(dl.newOpacity) ? 'newOpacity' : 'opacity']
+                        opacity: dataLabel[defined(dataLabel.newOpacity) ? 'newOpacity' : 'opacity']
                     });
                 }
             }
             drawConnector() {
-                const point = this, series = point.series;
-                if (!point.connector) {
-                    point.connector = series.chart.renderer
-                        .path(point.getConnectorPath())
-                        .attr({
-                        zIndex: -1
-                    })
-                        .add(point.dataLabel);
-                }
-                if (point.series.chart.isInsidePlot(// #10507
-                point.dataLabel.x, point.dataLabel.y)) {
-                    point.alignConnector();
+                const point = this, { dataLabel, series } = point;
+                if (dataLabel) {
+                    if (!dataLabel.connector) {
+                        dataLabel.connector = series.chart.renderer
+                            .path(point.getConnectorPath())
+                            .attr({
+                            zIndex: -1
+                        })
+                            .add(dataLabel);
+                    }
+                    if (point.series.chart.isInsidePlot(// #10507
+                    dataLabel.x || 0, dataLabel.y || 0)) {
+                        point.alignConnector();
+                    }
                 }
             }
             getConnectorPath() {
-                let point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
-                    x1: point.plotX,
-                    y1: point.plotY,
-                    x2: point.plotX,
-                    y2: isNumber(targetDLPos.y) ? targetDLPos.y : dl.y
-                }, negativeDistance = ((dl.alignAttr || dl)[direction[0]] <
-                    point.series.yAxis.len / 2), path;
-                // Recalculate coords when the chart is inverted.
-                if (inverted) {
-                    coords = {
-                        x1: point.plotY,
-                        y1: xAxisLen - point.plotX,
-                        x2: targetDLPos.x || dl.x,
-                        y2: xAxisLen - point.plotX
+                const { plotX = 0, plotY = 0, series, dataLabel } = this, chart = series.chart, xAxisLen = series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2';
+                if (dataLabel) {
+                    const targetDLPos = dataLabel.targetPosition, negativeDistance = ((dataLabel.alignAttr || dataLabel)[direction[0]] <
+                        series.yAxis.len / 2);
+                    let coords = {
+                        x1: plotX,
+                        y1: plotY,
+                        x2: plotX,
+                        y2: isNumber(targetDLPos.y) ? targetDLPos.y : dataLabel.y
                     };
+                    // Recalculate coords when the chart is inverted.
+                    if (inverted) {
+                        coords = {
+                            x1: plotY,
+                            y1: xAxisLen - plotX,
+                            x2: targetDLPos.x || dataLabel.x,
+                            y2: xAxisLen - plotX
+                        };
+                    }
+                    // Subtract data label width or height from expected coordinate so
+                    // that the connector would start from the appropriate edge.
+                    if (negativeDistance) {
+                        coords[direction] += dataLabel[inverted ? 'width' : 'height'] || 0;
+                    }
+                    // Change coordinates so that they will be relative to data label.
+                    objectEach(coords, (_coord, i) => {
+                        coords[i] -= (dataLabel.alignAttr || dataLabel)[i[0]];
+                    });
+                    return chart.renderer.crispLine([
+                        ['M', coords.x1, coords.y1],
+                        ['L', coords.x2, coords.y2]
+                    ], dataLabel.options?.connectorWidth || 0);
                 }
-                // Subtract data label width or height from expected coordinate so
-                // that the connector would start from the appropriate edge.
-                if (negativeDistance) {
-                    coords[direction] += dl[inverted ? 'width' : 'height'];
-                }
-                // Change coordinates so that they will be relative to data label.
-                objectEach(coords, function (_coord, i) {
-                    coords[i] -= (dl.alignAttr || dl)[i[0]];
-                });
-                path = chart.renderer.crispLine([
-                    ['M', coords.x1, coords.y1],
-                    ['L', coords.x2, coords.y2]
-                ], dl.options.connectorWidth);
-                return path;
+                return [];
             }
             init() {
                 const point = super.init.apply(this, arguments);
@@ -299,10 +301,12 @@
                 connectorWidth: 1,
                 /**
                  * A pixel value defining the distance between the data label and
-                 * the point. Negative numbers puts the label on top of the point.
+                 * the point. Negative numbers puts the label on top of the point in a
+                 * non-inverted chart. Defaults to 100 for horizontal and 20 for
+                 * vertical timeline (`chart.inverted: true`).
                  */
-                distance: 100,
-                // eslint-disable-next-line valid-jsdoc
+                distance: void 0,
+                // eslint-disable-next-line jsdoc/require-description
                 /**
                  * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
                  * @default function () {
@@ -443,7 +447,7 @@
 
         return TimelineSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Series/Timeline/TimelineSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, SVGElement, TimelinePoint, TimelineSeriesDefaults, U) {
+    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Series/Timeline/TimelineSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TimelinePoint, TimelineSeriesDefaults, U) {
         /* *
          *
          *  Timeline Series.
@@ -457,7 +461,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { column: ColumnSeries, line: LineSeries } } = SeriesRegistry;
+        const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, arrayMax, arrayMin, defined, extend, merge, pick } = U;
         /* *
          *
@@ -491,18 +495,14 @@
                 this.points = void 0;
                 this.userOptions = void 0;
                 this.visibilityMap = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             alignDataLabel(point, dataLabel, _options, _alignTo) {
-                let series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter(function (point) {
-                    return point;
-                }), visiblePointsCount = series.visiblePointsCount, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
+                const series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter((point) => !!point), visiblePointsCount = series.visiblePointsCount || 0, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
                 // Define multiplier which is used to calculate data label
                 // width. If data labels are alternate, they have two times more
                 // space to adapt (excepting first and last ones, which has only
@@ -510,17 +510,19 @@
                 // by side.
                 multiplier = dataLabelsOptions.alternate ?
                     (isFirstOrLast ? 1.5 : 2) :
-                    1, distance, availableSpace = Math.floor(series.xAxis.len / visiblePointsCount), pad = dataLabel.padding, targetDLWidth, styles;
+                    1, availableSpace = Math.floor(series.xAxis.len / visiblePointsCount), pad = dataLabel.padding;
+                let distance, targetDLWidth, styles;
                 // Adjust data label width to the currently available space.
                 if (point.visible) {
                     distance = Math.abs(userDLOptions.x || point.options.dataLabels.x);
                     if (isInverted) {
-                        targetDLWidth = ((distance - pad) * 2 - (point.itemHeight / 2));
+                        targetDLWidth = ((distance - pad) * 2 - ((point.itemHeight || 0) / 2));
                         styles = {
-                            width: targetDLWidth + 'px',
+                            width: pick(dataLabelsOptions.style?.width, `${series.yAxis.len * 0.4}px`),
                             // Apply ellipsis when data label height is exceeded.
-                            textOverflow: dataLabel.width / targetDLWidth *
-                                dataLabel.height / 2 > availableSpace * multiplier ?
+                            textOverflow: (dataLabel.width || 0) / targetDLWidth *
+                                (dataLabel.height || 0) / 2 > availableSpace *
+                                multiplier ?
                                 'ellipsis' : 'none'
                         };
                     }
@@ -540,51 +542,50 @@
             }
             bindAxes() {
                 const series = this;
-                super.bindAxes.call(series);
-                ['xAxis', 'yAxis'].forEach(function (axis) {
-                    // Initially set the linked xAxis type to category.
-                    if (axis === 'xAxis' && !series[axis].userOptions.type) {
-                        series[axis].categories = series[axis].hasNames = true;
-                    }
-                });
+                super.bindAxes();
+                // Initially set the linked xAxis type to category.
+                if (!series.xAxis.userOptions.type) {
+                    series.xAxis.categories = series.xAxis.hasNames = true;
+                }
             }
             distributeDL() {
-                const series = this, dataLabelsOptions = series.options.dataLabels;
+                const series = this, dataLabelsOptions = series.options.dataLabels, inverted = series.chart.inverted;
                 let visibilityIndex = 1;
                 if (dataLabelsOptions) {
-                    const distance = dataLabelsOptions.distance || 0;
-                    series.points.forEach((point) => {
-                        point.options.dataLabels = merge({
-                            [series.chart.inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
+                    const distance = pick(dataLabelsOptions.distance, inverted ? 20 : 100);
+                    for (const point of series.points) {
+                        const defaults = {
+                            [inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
                                 -distance : distance
-                        }, point.userDLOptions);
+                        };
+                        if (inverted) {
+                            defaults.align = (dataLabelsOptions.alternate && visibilityIndex % 2) ? 'right' : 'left';
+                        }
+                        point.options.dataLabels = merge(defaults, point.userDLOptions);
                         visibilityIndex++;
-                    });
+                    }
                 }
             }
             generatePoints() {
-                const series = this;
-                super.generatePoints.apply(series);
-                series.points.forEach(function (point, i) {
-                    point.applyOptions({
+                super.generatePoints();
+                const series = this, points = series.points;
+                for (let i = 0, iEnd = points.length; i < iEnd; ++i) {
+                    points[i].applyOptions({
                         x: series.xData[i]
                     }, series.xData[i]);
-                });
+                }
             }
             getVisibilityMap() {
                 const series = this, map = (series.data.length ?
-                    series.data : series.userOptions.data).map(function (point) {
-                    return (point &&
-                        point.visible !== false &&
-                        !point.isNull) ? point : false;
-                });
+                    series.data :
+                    series.userOptions.data || []).map((point) => (point && point.visible !== false && !point.isNull ?
+                    point :
+                    false));
                 return map;
             }
             getXExtremes(xData) {
-                const series = this, filteredData = xData.filter(function (x, i) {
-                    return series.points[i].isValid() &&
-                        series.points[i].visible;
-                });
+                const series = this, filteredData = xData.filter((_x, i) => (series.points[i].isValid() &&
+                    series.points[i].visible));
                 return {
                     min: arrayMin(filteredData),
                     max: arrayMax(filteredData)
@@ -595,7 +596,7 @@
                 super.init.apply(series, arguments);
                 series.eventsToUnbind.push(addEvent(series, 'afterTranslate', function () {
                     let lastPlotX, closestPointRangePx = Number.MAX_VALUE;
-                    series.points.forEach(function (point) {
+                    for (const point of series.points) {
                         // Set the isInside parameter basing also on the real point
                         // visibility, in order to avoid showing hidden points
                         // in drawPoints method.
@@ -608,7 +609,7 @@
                             }
                             lastPlotX = point.plotX;
                         }
-                    });
+                    }
                     series.closestPointRangePx = closestPointRangePx;
                 }));
                 // Distribute data labels before rendering them. Distribution is
@@ -621,7 +622,7 @@
                 series.eventsToUnbind.push(addEvent(series, 'afterDrawDataLabels', function () {
                     let dataLabel; // @todo use this scope for series
                     // Draw or align connector for each point.
-                    series.points.forEach(function (point) {
+                    for (const point of series.points) {
                         dataLabel = point.dataLabel;
                         if (dataLabel) {
                             // Within this wrap method is necessary to save the
@@ -632,7 +633,8 @@
                                 if (this.targetPosition) {
                                     this.targetPosition = params;
                                 }
-                                return SVGElement.prototype.animate.apply(this, arguments);
+                                return this.renderer.Element.prototype
+                                    .animate.apply(this, arguments);
                             };
                             // Initialize the targetPosition field within data label
                             // object. It's necessary because there is need to know
@@ -642,26 +644,27 @@
                             if (!dataLabel.targetPosition) {
                                 dataLabel.targetPosition = {};
                             }
-                            return point.drawConnector();
+                            point.drawConnector();
                         }
-                    });
+                    }
                 }));
                 series.eventsToUnbind.push(addEvent(series.chart, 'afterHideOverlappingLabel', function () {
-                    series.points.forEach(function (p) {
-                        if (p.connector &&
-                            p.dataLabel &&
+                    for (const p of series.points) {
+                        if (p.dataLabel &&
+                            p.dataLabel.connector &&
                             p.dataLabel.oldOpacity !== p.dataLabel.newOpacity) {
                             p.alignConnector();
                         }
-                    });
+                    }
                 }));
             }
             markerAttribs(point, state) {
-                let series = this, seriesMarkerOptions = series.options.marker, seriesStateOptions, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), pointStateOptions, width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height), radius = 0, attribs;
+                const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height);
+                let seriesStateOptions, pointStateOptions, radius = 0;
                 // Call default markerAttribs method, when the xAxis type
                 // is set to datetime.
                 if (series.xAxis.dateTime) {
-                    return super.markerAttribs.call(this, point, state);
+                    return super.markerAttribs(point, state);
                 }
                 // Handle hover and select states
                 if (state) {
@@ -672,7 +675,7 @@
                     radius = pick(pointStateOptions.radius, seriesStateOptions.radius, radius + (seriesStateOptions.radiusPlus || 0));
                 }
                 point.hasImage = (symbol && symbol.indexOf('url') === 0);
-                attribs = {
+                const attribs = {
                     x: Math.floor(point.plotX) - (width / 2) - (radius / 2),
                     y: point.plotY - (height / 2) - (radius / 2),
                     width: width + radius,
@@ -687,14 +690,15 @@
                 } : attribs;
             }
             processData() {
-                let series = this, visiblePoints = 0, i;
+                const series = this;
+                let visiblePoints = 0, i;
                 series.visibilityMap = series.getVisibilityMap();
                 // Calculate currently visible points.
-                series.visibilityMap.forEach(function (point) {
+                for (const point of series.visibilityMap) {
                     if (point) {
                         visiblePoints++;
                     }
-                });
+                }
                 series.visiblePointsCount = visiblePoints;
                 for (i = 0; i < series.xData.length; i++) {
                     series.yData[i] = 1;

@@ -1,15 +1,9 @@
-/*
- Highstock JS v11.1.0 (2023-06-05)
-
- Parabolic SAR Indicator for Highcharts Stock
-
- (c) 2010-2021 Grzegorz Blachliski
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/psar",["highcharts","highcharts/modules/stock"],function(d){a(d);a.Highcharts=d;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function d(a,h,d,n){a.hasOwnProperty(h)||(a[h]=n.apply(null,d),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:h,
-module:a[h]}})))}a=a?a._modules:{};d(a,"Stock/Indicators/PSAR/PSARIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,h){const {sma:d}=a.seriesTypes;({merge:h}=h);class n extends d{constructor(){super(...arguments);this.options=this.points=this.nameComponents=this.data=void 0}getValues(a,e){const d=a.xData;a=a.yData;const h=e.maxAccelerationFactor,n=e.increment,z=e.initialAccelerationFactor,u=e.decimals;var f=e.index;const w=[],x=[],y=[];let p;var g=a[0][1],k=1;let v,
-c=a[0][2];let b;if(!(f>=a.length)){for(b=0;b<f;b++)g=Math.max(a[b][1],g),c=Math.min(a[b][2],parseFloat(c.toFixed(u)));p=a[b][1]>c?1:-1;e=e.initialAccelerationFactor;var l=e*(g-c);w.push([d[f],c]);x.push(d[f]);y.push(parseFloat(c.toFixed(u)));for(b=f+1;b<a.length;b++){f=a[b-1][2];var m=a[b-2][2];var t=a[b-1][1];v=a[b-2][1];var q=a[b][1];var r=a[b][2];null!==m&&null!==v&&null!==f&&null!==t&&null!==q&&null!==r&&(c=p===k?1===p?c+l<Math.min(m,f)?c+l:Math.min(m,f):c+l>Math.max(v,t)?c+l:Math.max(v,t):g,
-f=1===p?q>g?q:g:r<g?r:g,q=1===k&&r>c||-1===k&&q>c?1:-1,k=q,l=f,r=n,m=h,t=z,e=k===p?1===k&&l>g?e===m?m:parseFloat((e+r).toFixed(2)):-1===k&&l<g?e===m?m:parseFloat((e+r).toFixed(2)):e:t,g=f-c,l=e*g,w.push([d[b],parseFloat(c.toFixed(u))]),x.push(d[b]),y.push(parseFloat(c.toFixed(u))),k=p,p=q,g=f)}return{values:w,xData:x,yData:y}}}}n.defaultOptions=h(d.defaultOptions,{lineWidth:0,marker:{enabled:!0},states:{hover:{lineWidthPlus:0}},params:{period:void 0,initialAccelerationFactor:.02,maxAccelerationFactor:.2,
-increment:.02,index:2,decimals:4}});a.registerSeriesType("psar",n);"";return n});d(a,"masters/indicators/psar.src.js",[],function(){})});
-//# sourceMappingURL=psar.js.map
+/**
+ * Highstock JS v11.2.0 (2023-10-30)
+ *
+ * Parabolic SAR Indicator for Highcharts Stock
+ *
+ * (c) 2010-2021 Grzegorz Blachliński
+ *
+ * License: www.highcharts.com/license
+ */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/indicators/psar",["highcharts","highcharts/modules/stock"],function(e){return t(e),t.Highcharts=e,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var e=t?t._modules:{};function i(t,e,i,a){t.hasOwnProperty(e)||(t[e]=a.apply(null,i),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:t[e]}})))}i(e,"Stock/Indicators/PSAR/PSARIndicator.js",[e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(t,e){let{sma:i}=t.seriesTypes,{merge:a}=e;function n(t,e){return parseFloat(t.toFixed(e))}class s extends i{constructor(){super(...arguments),this.data=void 0,this.nameComponents=void 0,this.points=void 0,this.options=void 0}getValues(t,e){let i=t.xData,a=t.yData,s=e.maxAccelerationFactor,o=e.increment,r=e.initialAccelerationFactor,c=e.decimals,l=e.index,u=[],d=[],h=[],p=e.initialAccelerationFactor,m,f=a[0][1],v,x,g,y=1,A,F,M,S,j=a[0][2],C,w,D,H;if(!(l>=a.length)){for(H=0;H<l;H++)f=Math.max(a[H][1],f),j=Math.min(a[H][2],n(j,c));for(m=a[H][1]>j?1:-1,v=f-j,x=(p=e.initialAccelerationFactor)*v,u.push([i[l],j]),d.push(i[l]),h.push(n(j,c)),H=l+1;H<a.length;H++)if(A=a[H-1][2],F=a[H-2][2],M=a[H-1][1],S=a[H-2][1],w=a[H][1],D=a[H][2],null!==F&&null!==S&&null!==A&&null!==M&&null!==w&&null!==D){var P,k,E,O,R,b,I,T,W,L,U,V,_;R=m,b=y,I=j,T=x,W=f,j=R===b?1===R?I+T<Math.min(F,A)?I+T:Math.min(F,A):I+T>Math.max(S,M)?I+T:Math.max(S,M):W,P=m,k=f,C=1===P?w>k?w:k:D<k?D:k,E=y,O=j,L=g=1===E&&D>O||-1===E&&w>O?1:-1,U=m,V=f,_=p,x=(p=L===U?1===L&&C>V||-1===L&&C<V?_===s?s:n(_+o,2):_:r)*(v=C-j),u.push([i[H],n(j,c)]),d.push(i[H]),h.push(n(j,c)),y=m,m=g,f=C}return{values:u,xData:d,yData:h}}}}return s.defaultOptions=a(i.defaultOptions,{lineWidth:0,marker:{enabled:!0},states:{hover:{lineWidthPlus:0}},params:{period:void 0,initialAccelerationFactor:.02,maxAccelerationFactor:.2,increment:.02,index:2,decimals:4}}),t.registerSeriesType("psar",s),s}),i(e,"masters/indicators/psar.src.js",[],function(){})});//# sourceMappingURL=psar.js.map

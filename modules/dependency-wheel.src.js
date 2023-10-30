@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Dependency wheel module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -49,8 +47,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
-        const { wrap } = U;
+        const { sankey: { prototype: { pointClass: SankeyPoint } } } = SeriesRegistry.seriesTypes;
+        const { pInt, wrap } = U;
         /* *
          *
          *  Class
@@ -73,37 +71,35 @@
                 this.series = void 0;
                 this.shapeArgs = void 0;
                 this.toNode = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Return a text path that the data label uses.
              * @private
              */
             getDataLabelPath(label) {
-                const renderer = this.series.chart.renderer, shapeArgs = this.shapeArgs, upperHalf = this.angle < 0 || this.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
+                const point = this, renderer = point.series.chart.renderer, shapeArgs = point.shapeArgs, upperHalf = point.angle < 0 || point.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
                 // First time
-                if (!this.dataLabelPath) {
+                if (!point.dataLabelPath) {
                     // Destroy the path with the label
-                    wrap(label, 'destroy', (proceed) => {
-                        if (this.dataLabelPath) {
-                            this.dataLabelPath = this.dataLabelPath.destroy();
+                    wrap(label, 'destroy', function (proceed) {
+                        if (point.dataLabelPath) {
+                            point.dataLabelPath = point.dataLabelPath.destroy();
                         }
-                        return proceed.call(label);
+                        return proceed.call(this);
                     });
                     // Subsequent times
                 }
                 else {
-                    this.dataLabelPath = this.dataLabelPath.destroy();
-                    delete this.dataLabelPath;
+                    point.dataLabelPath = point.dataLabelPath.destroy();
+                    delete point.dataLabelPath;
                 }
                 // All times
-                this.dataLabelPath = renderer
+                point.dataLabelPath = renderer
                     .arc({
                     open: true,
                     longArc: Math.abs(Math.abs(start) - Math.abs(end)) < Math.PI ? 0 : 1
@@ -111,13 +107,13 @@
                     .attr({
                     x: shapeArgs.x,
                     y: shapeArgs.y,
-                    r: (shapeArgs.r + (label.options.distance || 0)),
+                    r: ((shapeArgs.r || 0) + pInt(label.options?.distance || 0)),
                     start: (upperHalf ? start : end),
                     end: (upperHalf ? end : start),
                     clockwise: +upperHalf
                 })
                     .add(renderer.defs);
-                return this.dataLabelPath;
+                return point.dataLabelPath;
             }
             isValid() {
                 // No null points here
@@ -146,7 +142,7 @@
          * */
         /* *
          *
-         *  Constants
+         *  API Options
          *
          * */
         /**
@@ -157,7 +153,7 @@
          *         Dependency wheel
          *
          * @extends      plotOptions.sankey
-         * @exclude      dataSorting
+         * @exclude      dataSorting, nodeAlignment
          * @since        7.1.0
          * @product      highcharts
          * @requires     modules/dependency-wheel
@@ -248,16 +244,6 @@
                 }
             }
         };
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
         /**
          * A `dependencywheel` series. If the [type](#series.dependencywheel.type)
          * option is not specified, it is inherited from [chart.type](#chart.type).
@@ -313,7 +299,12 @@
          *
          * @apioption series.dependencywheel.nodes.dataLabels
          */
-        ''; // adds doclets above to the transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return DependencyWheelSeriesDefaults;
     });
@@ -331,7 +322,7 @@
          * */
         const { animObject } = A;
         const { deg2rad } = H;
-        const { seriesTypes: { pie: PieSeries, sankey: SankeySeries } } = SeriesRegistry;
+        const { pie: PieSeries, sankey: SankeySeries } = SeriesRegistry.seriesTypes;
         const { extend, merge } = U;
         /* *
          *
@@ -363,73 +354,61 @@
                 this.nodeColumns = void 0;
                 this.nodes = void 0;
                 this.points = void 0;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             animate(init) {
+                const series = this;
                 if (!init) {
-                    const duration = animObject(this.options.animation).duration, step = (duration / 2) / this.nodes.length;
-                    this.nodes.forEach(function (point, i) {
+                    const duration = animObject(series.options.animation).duration, step = (duration / 2) / series.nodes.length;
+                    let i = 0;
+                    for (const point of series.nodes) {
                         const graphic = point.graphic;
                         if (graphic) {
                             graphic.attr({ opacity: 0 });
-                            setTimeout(function () {
+                            setTimeout(() => {
                                 if (point.graphic) {
                                     point.graphic.animate({ opacity: 1 }, { duration: step });
                                 }
-                            }, step * i);
+                            }, step * i++);
                         }
-                    }, this);
-                    this.points.forEach(function (point) {
+                    }
+                    for (const point of series.points) {
                         const graphic = point.graphic;
                         if (!point.isNode && graphic) {
                             graphic.attr({ opacity: 0 })
                                 .animate({
                                 opacity: 1
-                            }, this.options.animation);
+                            }, series.options.animation);
                         }
-                    }, this);
+                    }
                 }
             }
             createNode(id) {
-                const node = SankeySeries.prototype.createNode.call(this, id);
+                const node = super.createNode(id);
                 /**
                  * Return the sum of incoming and outgoing links.
                  * @private
                  */
-                node.getSum = function () {
-                    return node.linksFrom
-                        .concat(node.linksTo)
-                        .reduce(function (acc, link) {
-                        return acc + link.weight;
-                    }, 0);
-                };
+                node.getSum = () => (node.linksFrom
+                    .concat(node.linksTo)
+                    .reduce((acc, link) => (acc + link.weight), 0));
                 /**
                  * Get the offset in weight values of a point/link.
                  * @private
                  */
-                node.offset = function (point) {
-                    let offset = 0, i, links = node.linksFrom.concat(node.linksTo), sliced;
-                    /**
-                     * @private
-                     */
-                    function otherNode(link) {
-                        if (link.fromNode === node) {
-                            return link.toNode;
-                        }
-                        return link.fromNode;
-                    }
+                node.offset = (point) => {
+                    const otherNode = (link) => (link.fromNode === node ?
+                        link.toNode :
+                        link.fromNode);
+                    let offset = 0, links = node.linksFrom.concat(node.linksTo), sliced;
                     // Sort and slice the links to avoid links going out of each
                     // node crossing each other.
-                    links.sort(function (a, b) {
-                        return otherNode(a).index - otherNode(b).index;
-                    });
-                    for (i = 0; i < links.length; i++) {
+                    links.sort((a, b) => (otherNode(a).index - otherNode(b).index));
+                    for (let i = 0; i < links.length; i++) {
                         if (otherNode(links[i]).index > node.index) {
                             links = links.slice(0, i).reverse().concat(links.slice(i).reverse());
                             sliced = true;
@@ -439,7 +418,7 @@
                     if (!sliced) {
                         links.reverse();
                     }
-                    for (i = 0; i < links.length; i++) {
+                    for (let i = 0; i < links.length; i++) {
                         if (links[i] === point) {
                             return offset;
                         }
@@ -453,11 +432,11 @@
              * @private
              */
             createNodeColumns() {
-                const columns = [SankeyColumnComposition.compose([], this)];
-                this.nodes.forEach(function (node) {
+                const series = this, columns = [SankeyColumnComposition.compose([], series)];
+                for (const node of series.nodes) {
                     node.column = 0;
                     columns[0].push(node);
-                });
+                }
                 return columns;
             }
             /**
@@ -468,16 +447,16 @@
                 return this.options.nodePadding / Math.PI;
             }
             /**
-             * @private
+             * @ignore
              * @todo Override the refactored sankey translateLink and translateNode
              * functions instead of the whole translate function.
              */
             translate() {
-                const options = this.options, factor = 2 * Math.PI /
-                    (this.chart.plotHeight + this.getNodePadding()), center = this.getCenter(), startAngle = (options.startAngle - 90) * deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
+                const series = this, options = series.options, factor = 2 * Math.PI /
+                    (series.chart.plotHeight + series.getNodePadding()), center = series.getCenter(), startAngle = (options.startAngle - 90) * deg2rad, brOption = options.borderRadius, borderRadius = typeof brOption === 'object' ?
                     brOption.radius : brOption;
-                SankeySeries.prototype.translate.call(this);
-                this.nodeColumns[0].forEach(function (node) {
+                super.translate();
+                for (const node of this.nodeColumns[0]) {
                     // Don't render the nodes if sum is 0 #12453
                     if (node.sum) {
                         const shapeArgs = node.shapeArgs, centerX = center[0], centerY = center[1], r = center[2] / 2, innerR = r - options.nodeWidth, start = startAngle + factor * (shapeArgs.y || 0), end = startAngle +
@@ -501,11 +480,12 @@
                             height: 1
                         };
                         // Draw the links from this node
-                        node.linksFrom.forEach(function (point) {
+                        for (const point of node.linksFrom) {
                             if (point.linkBase) {
-                                let distance;
-                                const corners = point.linkBase.map(function (top, i) {
-                                    let angle = factor * top, x = Math.cos(startAngle + angle) * (innerR + 1), y = Math.sin(startAngle + angle) * (innerR + 1), curveFactor = options.curveFactor || 0;
+                                let curveFactor, distance;
+                                const corners = point.linkBase.map((top, i) => {
+                                    const angle = factor * top, x = Math.cos(startAngle + angle) * (innerR + 1), y = Math.sin(startAngle + angle) * (innerR + 1);
+                                    curveFactor = options.curveFactor || 0;
                                     // The distance between the from and to node
                                     // along the perimeter. This affect how curved
                                     // the link is, so that links between neighbours
@@ -556,9 +536,9 @@
                                         ]]
                                 };
                             }
-                        });
+                        }
                     }
-                });
+                }
             }
         }
         DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);

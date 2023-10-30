@@ -151,19 +151,25 @@ class InfoRegionsComponent extends AccessibilityComponent {
                 }, 300);
             }
         });
+        this.addEvent(chart, 'afterHideData', function () {
+            if (component.viewDataTableButton) {
+                component.viewDataTableButton
+                    .setAttribute('aria-expanded', 'false');
+            }
+        });
         this.announcer = new Announcer(chart, 'assertive');
     }
     /**
      * @private
      */
     initRegionsDefinitions() {
-        const component = this;
+        const component = this, accessibilityOptions = this.chart.options.accessibility;
         this.screenReaderSections = {
             before: {
                 element: null,
                 buildContent: function (chart) {
-                    const formatter = chart.options.accessibility
-                        .screenReaderSection.beforeChartFormatter;
+                    const formatter = accessibilityOptions.screenReaderSection
+                        .beforeChartFormatter;
                     return formatter ? formatter(chart) :
                         component.defaultBeforeChartFormatter(chart);
                 },
@@ -182,8 +188,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
             after: {
                 element: null,
                 buildContent: function (chart) {
-                    const formatter = chart.options.accessibility
-                        .screenReaderSection
+                    const formatter = accessibilityOptions.screenReaderSection
                         .afterChartFormatter;
                     return formatter ? formatter(chart) :
                         component.defaultAfterChartFormatter();
@@ -192,7 +197,8 @@ class InfoRegionsComponent extends AccessibilityComponent {
                     chart.renderTo.insertBefore(el, chart.container.nextSibling);
                 },
                 afterInserted: function () {
-                    if (component.chart.accessibility) {
+                    if (component.chart.accessibility &&
+                        accessibilityOptions.keyboardNavigation.enabled) {
                         component.chart.accessibility
                             .keyboardNavigation.updateExitAnchor(); // #15986
                     }
@@ -344,7 +350,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
      */
     getLinkedDescription() {
         const el = this.linkedDescriptionElement, content = el && el.innerHTML || '';
-        return stripHTMLTagsFromString(content);
+        return stripHTMLTagsFromString(content, this.chart.renderer.forExport);
     }
     /**
      * @private
@@ -389,7 +395,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
      */
     getSubtitleText() {
         const subtitle = (this.chart.options.subtitle);
-        return stripHTMLTagsFromString(subtitle && subtitle.text || '');
+        return stripHTMLTagsFromString(subtitle && subtitle.text || '', this.chart.renderer.forExport);
     }
     /**
      * @private

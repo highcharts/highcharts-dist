@@ -101,7 +101,9 @@ class ContainerComponent extends AccessibilityComponent {
         const chart = this.chart, credits = chart.credits;
         if (credits) {
             if (credits.textStr) {
-                credits.element.setAttribute('aria-label', chart.langFormat('accessibility.credits', { creditsStr: stripHTMLTags(credits.textStr) }));
+                credits.element.setAttribute('aria-label', chart.langFormat('accessibility.credits', {
+                    creditsStr: stripHTMLTags(credits.textStr, chart.renderer.forExport)
+                }));
             }
             unhideChartElementFromAT(chart, credits.element);
         }

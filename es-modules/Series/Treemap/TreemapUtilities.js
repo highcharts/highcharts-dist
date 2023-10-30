@@ -24,32 +24,23 @@ const { objectEach } = U;
  * */
 var TreemapUtilities;
 (function (TreemapUtilities) {
-    TreemapUtilities.AXIS_MAX = 100;
-    /* eslint-disable no-invalid-this, valid-jsdoc */
-    /**
-     * @todo Similar to eachObject, this function is likely redundant
-     */
-    function isBoolean(x) {
-        return typeof x === 'boolean';
-    }
-    TreemapUtilities.isBoolean = isBoolean;
-    /**
-     * @todo Similar to recursive, this function is likely redundant
-     */
-    function eachObject(list, func, context) {
-        context = context || this;
-        objectEach(list, function (val, key) {
-            func.call(context, val, key, list);
-        });
-    }
-    TreemapUtilities.eachObject = eachObject;
+    /* *
+     *
+     *  Declarations
+     *
+     * */
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * @todo find correct name for this function.
      * @todo Similar to reduce, this function is likely redundant
      */
-    function recursive(item, func, context = this) {
+    function recursive(item, func, context) {
         let next;
-        next = func.call(context, item);
+        next = func.call(context || this, item);
         if (next !== false) {
             recursive(next, func, context);
         }

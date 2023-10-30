@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Data module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
@@ -1876,15 +1874,15 @@
                         }
                     });
                     if (columnIndexes_1.length >= 2) {
-                        // remove the first one (x col)
+                        // Remove the first one (x col)
                         columnIndexes_1.shift();
                         // Sort the remaining
                         columnIndexes_1.sort(function (a, b) {
                             return a - b;
                         });
-                        // Now use the lowest index as name column
-                        this.name = columns[columnIndexes_1.shift()].name;
                     }
+                    // Now use the lowest index as name column
+                    this.name = columns[pick(columnIndexes_1.shift(), 0)].name;
                 }
                 return point;
             };

@@ -16,9 +16,9 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } } } } = SeriesRegistry;
+const { scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { extend, isNumber } = U;
+const { isNumber } = U;
 /* *
  *
  *  Class
@@ -34,14 +34,12 @@ class VennPoint extends ScatterPoint {
         super(...arguments);
         this.options = void 0;
         this.series = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     isValid() {
         return isNumber(this.value);
     }

@@ -4,16 +4,31 @@
  *
  * */
 'use strict';
+/* *
+ *
+ *  Imports
+ *
+ * */
 import LambertConformalConic from './LambertConformalConic.js';
 import EqualEarth from './EqualEarth.js';
 import Miller from './Miller.js';
 import Orthographic from './Orthographic.js';
 import WebMercator from './WebMercator.js';
-const registry = {
+/* *
+ *
+ *  Constants
+ *
+ * */
+const projectionRegistry = {
     EqualEarth,
     LambertConformalConic,
     Miller,
     Orthographic,
     WebMercator
 };
-export default registry;
+/* *
+ *
+ *  Default Export
+ *
+ * */
+export default projectionRegistry;

@@ -53,7 +53,10 @@ class TreegraphPoint extends TreemapPoint {
         this.renderCollapseButton();
     }
     renderCollapseButton() {
-        const point = this, series = point.series, parentGroup = point.graphic && point.graphic.parentGroup, levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {}, btnOptions = merge(series.options.collapseButton, levelOptions.collapseButton, point.options.collapseButton), { width, height, shape, style } = btnOptions, padding = 2, chart = this.series.chart;
+        const point = this, series = point.series, parentGroup = point.graphic && point.graphic.parentGroup, levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {}, btnOptions = merge(series.options.collapseButton, levelOptions.collapseButton, point.options.collapseButton), { width, height, shape, style } = btnOptions, padding = 2, chart = this.series.chart, calculatedOpacity = (point.visible &&
+            (point.collapsed ||
+                !btnOptions.onlyOnHover ||
+                point.state === 'hover')) ? 1 : 0;
         if (!point.shapeArgs) {
             return;
         }
@@ -79,7 +82,9 @@ class TreegraphPoint extends TreemapPoint {
                 'stroke-width': btnOptions.lineWidth,
                 'text-align': 'center',
                 align: 'center',
-                zIndex: 1
+                zIndex: 1,
+                opacity: calculatedOpacity,
+                visibility: point.visible ? 'inherit' : 'hidden'
             })
                 .addClass('highcharts-tracker')
                 .addClass('highcharts-collapse-button')
@@ -91,9 +96,6 @@ class TreegraphPoint extends TreemapPoint {
             }, style))
                 .add(parentGroup);
             point.collapseButton.element.point = point;
-            if (btnOptions.onlyOnHover && !point.collapsed) {
-                point.collapseButton.attr({ opacity: 0 });
-            }
         }
         else {
             if (!point.node.children.length || !btnOptions.enabled) {
@@ -107,14 +109,13 @@ class TreegraphPoint extends TreemapPoint {
                     text: point.collapsed ? '+' : '-',
                     rotation: chart.inverted ? 90 : 0,
                     rotationOriginX: width / 2,
-                    rotationOriginY: height / 2
+                    rotationOriginY: height / 2,
+                    visibility: point.visible ? 'inherit' : 'hidden'
                 })
                     .animate({
                     x,
                     y,
-                    opacity: point.visible && (!btnOptions.onlyOnHover ||
-                        point.state === 'hover' ||
-                        point.collapsed) ? 1 : 0
+                    opacity: calculatedOpacity
                 });
             }
         }
@@ -129,6 +130,10 @@ class TreegraphPoint extends TreemapPoint {
             this.collapseButton.destroy();
             delete this.collapseButton;
             this.collapseButton = void 0;
+        }
+        if (this.linkToParent) {
+            this.linkToParent.destroy();
+            delete this.linkToParent;
         }
         super.destroy.apply(this, arguments);
     }
@@ -149,7 +154,7 @@ addEvent(TreegraphPoint, 'mouseOut', function () {
     }
 });
 addEvent(TreegraphPoint, 'mouseOver', function () {
-    if (this.collapseButton) {
+    if (this.collapseButton && this.visible) {
         this.collapseButton.animate({ opacity: 1 }, this.series.options.states &&
             this.series.options.states.hover &&
             this.series.options.states.hover.animation);

@@ -14,7 +14,13 @@ import Math3D from '../Math3D.js';
 const { perspective } = Math3D;
 import Series from '../Series/Series.js';
 import U from '../Utilities.js';
-const { addEvent, extend, merge, pick, isNumber } = U;
+const { addEvent, extend, merge, pick, pushUnique, isNumber } = U;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const composedMembers = [];
 /* *
  *
  *  Class
@@ -23,24 +29,35 @@ const { addEvent, extend, merge, pick, isNumber } = U;
 class Series3D extends Series {
     /* *
      *
+     *  Static Functions
+     *
+     * */
+    static compose(SeriesClass) {
+        if (pushUnique(composedMembers, SeriesClass)) {
+            addEvent(SeriesClass, 'afterTranslate', function () {
+                if (this.chart.is3d()) {
+                    this.translate3dPoints();
+                }
+            });
+            extend(SeriesClass.prototype, {
+                translate3dPoints: Series3D.prototype.translate3dPoints
+            });
+        }
+    }
+    /* *
+     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
-    translate() {
-        super.translate.apply(this, arguments);
-        if (this.chart.is3d()) {
-            this.translate3dPoints();
-        }
-    }
     /**
      * Translate the plotX, plotY properties and add plotZ.
      * @private
      */
     translate3dPoints() {
-        let series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPoint, projectedPoints, projectedPoint, zValue, i, rawPointsX = [], stack = seriesOptions.stacking ?
+        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = pick(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
             (isNumber(seriesOptions.stack) ? seriesOptions.stack : 0) :
             series.index || 0;
+        let rawPoint, projectedPoint, zValue, i;
         series.zPadding = stack *
             (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
         for (i = 0; i < series.data.length; i++) {
@@ -69,7 +86,7 @@ class Series3D extends Series {
             rawPointsX.push(rawPoint.plotX || 0);
         }
         series.rawPointsX = rawPointsX;
-        projectedPoints = perspective(rawPoints, chart, true);
+        const projectedPoints = perspective(rawPoints, chart, true);
         for (i = 0; i < series.data.length; i++) {
             rawPoint = series.data[i];
             projectedPoint = projectedPoints[i];
@@ -85,21 +102,6 @@ class Series3D extends Series {
  *
  * */
 Series3D.defaultOptions = merge(Series.defaultOptions);
-/* *
- *
- *  Compatibility
- *
- * */
-/* eslint-disable no-invalid-this */
-addEvent(Series, 'afterTranslate', function () {
-    if (this.chart.is3d()) {
-        this.translate3dPoints();
-    }
-});
-/* eslint-enable no-invalid-this */
-extend(Series.prototype, {
-    translate3dPoints: Series3D.prototype.translate3dPoints
-});
 /* *
  *
  *  Default Export

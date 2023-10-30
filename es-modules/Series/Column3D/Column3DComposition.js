@@ -8,63 +8,27 @@
  *
  * */
 'use strict';
-import ColumnSeries from '../Column/ColumnSeries.js';
-const { prototype: columnProto } = ColumnSeries;
-import Series from '../../Core/Series/Series.js';
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, pick, wrap } = U;
+const { addEvent, extend, pick, pushUnique, wrap } = U;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const composedMembers = [];
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable no-invalid-this */
-/**
- * @private
- * @param {Highcharts.Chart} chart
- * Chart with stacks
- * @param {string} stacking
- * Stacking option
- */
-function retrieveStacks(chart, stacking) {
-    const series = chart.series, stacks = { totalStacks: 0 };
-    let stackNumber, i = 1;
-    series.forEach(function (s) {
-        stackNumber = pick(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
-        if (!stacks[stackNumber]) {
-            stacks[stackNumber] = { series: [s], position: i };
-            i++;
-        }
-        else {
-            stacks[stackNumber].series.push(s);
-        }
-    });
-    stacks.totalStacks = i + 1;
-    return stacks;
-}
-wrap(columnProto, 'translate', function (proceed) {
-    proceed.apply(this, [].slice.call(arguments, 1));
-    // Do not do this if the chart is not 3D
-    if (this.chart.is3d()) {
-        this.translate3dShapes();
-    }
-});
-// Don't use justifyDataLabel when point is outsidePlot
-wrap(Series.prototype, 'justifyDataLabel', function (proceed) {
-    return !(arguments[2].outside3dPlot) ?
-        proceed.apply(this, [].slice.call(arguments, 1)) :
-        false;
-});
-columnProto.translate3dPoints = function () { };
-columnProto.translate3dShapes = function () {
-    let series = this, chart = series.chart, seriesOptions = series.options, depth = seriesOptions.depth, stack = seriesOptions.stacking ?
+/** @private */
+function columnSeriesTranslate3dShapes() {
+    const series = this, chart = series.chart, seriesOptions = series.options, depth = seriesOptions.depth, stack = seriesOptions.stacking ?
         (seriesOptions.stack || 0) :
-        series.index, // #4743
-    z = stack * (depth + (seriesOptions.groupZPadding || 1)), borderCrisp = series.borderWidth % 2 ? 0.5 : 0, point2dPos; // Position of point in 2D, used for 3D position calculation
+        series.index; // #4743
+    let z = stack * (depth + (seriesOptions.groupZPadding || 1)), borderCrisp = series.borderWidth % 2 ? 0.5 : 0, point2dPos; // Position of point in 2D, used for 3D position calculation
     if (chart.inverted && !series.yAxis.reversed) {
         borderCrisp *= -1;
     }
@@ -72,7 +36,7 @@ columnProto.translate3dShapes = function () {
         z = 0;
     }
     z += (seriesOptions.groupZPadding || 1);
-    series.data.forEach(function (point) {
+    for (const point of series.data) {
         // #7103 Reset outside3dPlot flag
         point.outside3dPlot = null;
         if (point.y !== null) {
@@ -82,7 +46,7 @@ columnProto.translate3dShapes = function () {
             dimensions = [['x', 'width'], ['y', 'height']], tooltipPos = point.tooltipPos;
             let borderlessBase; // Crisped rects can have +/- 0.5 pixels offset.
             // #3131 We need to check if column is inside plotArea.
-            dimensions.forEach((d) => {
+            for (const d of dimensions) {
                 borderlessBase = shapeArgs[d[0]] - borderCrisp;
                 if (borderlessBase < 0) {
                     // If borderLessBase is smaller than 0, it is needed to set
@@ -114,7 +78,7 @@ columnProto.translate3dShapes = function () {
                     // currently outside of plot.
                     point.outside3dPlot = true;
                 }
-            });
+            }
             // Change from 2d to 3d
             if (point.shapeType === 'roundedRect') {
                 point.shapeType = 'cuboid';
@@ -148,18 +112,115 @@ columnProto.translate3dShapes = function () {
                 point.tooltipPos = [translatedTTPos.x, translatedTTPos.y];
             }
         }
-    });
+    }
     // store for later use #4067
     series.z = z;
-};
-wrap(columnProto, 'animate', function (proceed) {
+}
+/** @private */
+function compose(SeriesClass, StackItemClass) {
+    if (pushUnique(composedMembers, SeriesClass)) {
+        const seriesProto = SeriesClass.prototype;
+        wrap(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
+        wrap(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);
+    }
+    if (pushUnique(composedMembers, StackItemClass)) {
+        const stackItemProto = StackItemClass.prototype;
+        wrap(stackItemProto, 'getStackBox', wrapStackItemGetStackBox);
+    }
+    const { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
+    if (ColumnSeriesClass &&
+        pushUnique(composedMembers, ColumnSeriesClass)) {
+        const columnSeriesProto = ColumnSeriesClass.prototype, columnPointProto = columnSeriesProto.pointClass.prototype;
+        columnSeriesProto.translate3dPoints = () => void 0;
+        columnSeriesProto.translate3dShapes = columnSeriesTranslate3dShapes;
+        addEvent(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
+        wrap(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+        wrap(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
+        wrap(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+        wrap(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+        wrap(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
+        wrap(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+        wrap(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
+    }
+    if (ColumnRangeSeriesClass &&
+        pushUnique(composedMembers, ColumnRangeSeriesClass)) {
+        const columnRangeSeriesProto = ColumnRangeSeriesClass.prototype, columnRangePointProto = columnRangeSeriesProto.pointClass.prototype;
+        wrap(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+        wrap(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+        wrap(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+        wrap(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
+        wrap(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+    }
+}
+/**
+ * @private
+ * @param {Highcharts.Chart} chart
+ * Chart with stacks
+ * @param {string} stacking
+ * Stacking option
+ */
+function retrieveStacks(chart, stacking) {
+    const series = chart.series, stacks = { totalStacks: 0 };
+    let stackNumber, i = 1;
+    series.forEach(function (s) {
+        stackNumber = pick(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
+        if (!stacks[stackNumber]) {
+            stacks[stackNumber] = { series: [s], position: i };
+            i++;
+        }
+        else {
+            stacks[stackNumber].series.push(s);
+        }
+    });
+    stacks.totalStacks = i + 1;
+    return stacks;
+}
+/** @private */
+function onColumnSeriesAfterInit() {
+    if (this.chart.is3d()) {
+        const series = this, seriesOptions = series.options, grouping = seriesOptions.grouping, stacking = seriesOptions.stacking, reversedStacks = series.yAxis.options.reversedStacks;
+        let z = 0;
+        // @todo grouping === true ?
+        if (!(typeof grouping !== 'undefined' && !grouping)) {
+            const stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0;
+            let i; // position within the stack
+            for (i = 0; i < stacks[stack].series.length; i++) {
+                if (stacks[stack].series[i] === this) {
+                    break;
+                }
+            }
+            z = (10 * (stacks.totalStacks - stacks[stack].position)) +
+                (reversedStacks ? i : -i); // #4369
+            // In case when axis is reversed, columns are also reversed inside
+            // the group (#3737)
+            if (!this.xAxis.reversed) {
+                z = (stacks.totalStacks * 10) - z;
+            }
+        }
+        seriesOptions.depth = seriesOptions.depth || 25;
+        series.z = series.z || 0;
+        seriesOptions.zIndex = z;
+    }
+}
+/**
+ * In 3D mode, simple checking for a new shape to animate is not enough.
+ * Additionally check if graphic is a group of elements
+ * @private
+ */
+function wrapColumnPointHasNewShapeType(proceed, ...args) {
+    return this.series.chart.is3d() ?
+        this.graphic && this.graphic.element.nodeName !== 'g' :
+        proceed.apply(this, args);
+}
+/** @private */
+function wrapColumnSeriesAnimate(proceed) {
     if (!this.chart.is3d()) {
         proceed.apply(this, [].slice.call(arguments, 1));
     }
     else {
         const args = arguments, init = args[1], yAxis = this.yAxis, series = this, reversed = this.yAxis.reversed;
         if (init) {
-            series.data.forEach(function (point) {
+            for (const point of series.data) {
                 if (point.y !== null) {
                     point.height = point.shapeArgs.height;
                     point.shapey = point.shapeArgs.y; // #2968
@@ -179,10 +240,10 @@ wrap(columnProto, 'animate', function (proceed) {
                         }
                     }
                 }
-            });
+            }
         }
         else { // run the animation
-            series.data.forEach(function (point) {
+            for (const point of series.data) {
                 if (point.y !== null) {
                     point.shapeArgs.height = point.height;
                     point.shapeArgs.y = point.shapey; // #2968
@@ -193,16 +254,19 @@ wrap(columnProto, 'animate', function (proceed) {
                             'animate'](point.shapeArgs, series.options.animation);
                     }
                 }
-            });
+            }
             // redraw datalabels to the correct position
             this.drawDataLabels();
         }
     }
-});
-// In case of 3d columns there is no sense to add this columns to a specific
-// series group - if series is added to a group all columns will have the same
-// zIndex in comparison with different series.
-wrap(columnProto, 'plotGroup', function (proceed, prop, _name, _visibility, _zIndex, parent) {
+}
+/**
+ * In case of 3d columns there is no sense to add these columns to a specific
+ * series group. If a series is added to a group all columns will have the same
+ * zIndex in comparison to another series.
+ * @private
+ */
+function wrapColumnSeriesPlotGroup(proceed, prop, _name, _visibility, _zIndex, parent) {
     if (prop !== 'dataLabelsGroup' && prop !== 'markerGroup') {
         if (this.chart.is3d()) {
             if (this[prop]) {
@@ -224,13 +288,41 @@ wrap(columnProto, 'plotGroup', function (proceed, prop, _name, _visibility, _zIn
         }
     }
     return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
-});
-// When series is not added to group it is needed to change setVisible method to
-// allow correct Legend funcionality. This wrap is basing on pie chart series.
-wrap(columnProto, 'setVisible', function (proceed, vis) {
+}
+/** @private */
+function wrapColumnSeriesPointAttribs(proceed) {
+    const attr = proceed.apply(this, [].slice.call(arguments, 1));
+    if (this.chart.is3d && this.chart.is3d()) {
+        // Set the fill color to the fill color to provide a smooth edge
+        attr.stroke = this.options.edgeColor || attr.fill;
+        attr['stroke-width'] = pick(this.options.edgeWidth, 1); // #4055
+    }
+    return attr;
+}
+/**
+ * In 3D mode, all column-series are rendered in one main group. Because of that
+ * we need to apply inactive state on all points.
+ * @private
+ */
+function wrapColumnSeriesSetState(proceed, state, inherit) {
+    const is3d = this.chart.is3d && this.chart.is3d();
+    if (is3d) {
+        this.options.inactiveOtherPoints = true;
+    }
+    proceed.call(this, state, inherit);
+    if (is3d) {
+        this.options.inactiveOtherPoints = false;
+    }
+}
+/**
+ * When series is not added to group it is needed to change setVisible method to
+ * allow correct Legend funcionality. This wrap is basing on pie chart series.
+ * @private
+ */
+function wrapColumnSeriesSetVisible(proceed, vis) {
     const series = this;
     if (series.chart.is3d()) {
-        series.data.forEach(function (point) {
+        for (const point of series.data) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
                     !pick(series.visible, point.visible) : vis;
@@ -241,86 +333,20 @@ wrap(columnProto, 'setVisible', function (proceed, vis) {
                     visibility: vis ? 'visible' : 'hidden'
                 });
             }
-        });
+        }
     }
     proceed.apply(this, Array.prototype.slice.call(arguments, 1));
-});
-addEvent(ColumnSeries, 'afterInit', function () {
+}
+/** @private */
+function wrapColumnSeriesTranslate(proceed) {
+    proceed.apply(this, [].slice.call(arguments, 1));
+    // Do not do this if the chart is not 3D
     if (this.chart.is3d()) {
-        let series = this, seriesOptions = this.options, grouping = seriesOptions.grouping, stacking = seriesOptions.stacking, reversedStacks = this.yAxis.options.reversedStacks, z = 0;
-        // @todo grouping === true ?
-        if (!(typeof grouping !== 'undefined' && !grouping)) {
-            let stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0, i; // position within the stack
-            for (i = 0; i < stacks[stack].series.length; i++) {
-                if (stacks[stack].series[i] === this) {
-                    break;
-                }
-            }
-            z = (10 * (stacks.totalStacks - stacks[stack].position)) +
-                (reversedStacks ? i : -i); // #4369
-            // In case when axis is reversed, columns are also reversed inside
-            // the group (#3737)
-            if (!this.xAxis.reversed) {
-                z = (stacks.totalStacks * 10) - z;
-            }
-        }
-        seriesOptions.depth = seriesOptions.depth || 25;
-        series.z = series.z || 0;
-        seriesOptions.zIndex = z;
-    }
-});
-// eslint-disable-next-line valid-jsdoc
-/**
- * @private
- */
-function pointAttribs(proceed) {
-    const attr = proceed.apply(this, [].slice.call(arguments, 1));
-    if (this.chart.is3d && this.chart.is3d()) {
-        // Set the fill color to the fill color to provide a smooth edge
-        attr.stroke = this.options.edgeColor || attr.fill;
-        attr['stroke-width'] = pick(this.options.edgeWidth, 1); // #4055
-    }
-    return attr;
-}
-// eslint-disable-next-line valid-jsdoc
-/**
- * In 3D mode, all column-series are rendered in one main group. Because of that
- * we need to apply inactive state on all points.
- * @private
- */
-function setState(proceed, state, inherit) {
-    const is3d = this.chart.is3d && this.chart.is3d();
-    if (is3d) {
-        this.options.inactiveOtherPoints = true;
-    }
-    proceed.call(this, state, inherit);
-    if (is3d) {
-        this.options.inactiveOtherPoints = false;
+        this.translate3dShapes();
     }
 }
-// eslint-disable-next-line valid-jsdoc
-/**
- * In 3D mode, simple checking for a new shape to animate is not enough.
- * Additionally check if graphic is a group of elements
- * @private
- */
-function hasNewShapeType(proceed, ...args) {
-    return this.series.chart.is3d() ?
-        this.graphic && this.graphic.element.nodeName !== 'g' :
-        proceed.apply(this, args);
-}
-wrap(columnProto, 'pointAttribs', pointAttribs);
-wrap(columnProto, 'setState', setState);
-wrap(columnProto.pointClass.prototype, 'hasNewShapeType', hasNewShapeType);
-if (SeriesRegistry.seriesTypes.columnRange) {
-    const columnRangeProto = SeriesRegistry.seriesTypes.columnrange.prototype;
-    wrap(columnRangeProto, 'pointAttribs', pointAttribs);
-    wrap(columnRangeProto, 'setState', setState);
-    wrap(columnRangeProto.pointClass.prototype, 'hasNewShapeType', hasNewShapeType);
-    columnRangeProto.plotGroup = columnProto.plotGroup;
-    columnRangeProto.setVisible = columnProto.setVisible;
-}
-wrap(Series.prototype, 'alignDataLabel', function (proceed, point, dataLabel, options, alignTo) {
+/** @private */
+function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) {
     const chart = this.chart;
     // In 3D we need to pass point.outsidePlot option to the justifyDataLabel
     // method for disabling justifying dataLabels in columns outside plot
@@ -356,9 +382,21 @@ wrap(Series.prototype, 'alignDataLabel', function (proceed, point, dataLabel, op
         alignTo.y = point.outside3dPlot ? -9e9 : dLPosition.y;
     }
     proceed.apply(this, [].slice.call(arguments, 1));
-});
-// Added stackLabels position calculation for 3D charts.
-wrap(StackItem.prototype, 'getStackBox', function (proceed, stackBoxProps) {
+}
+/**
+ * Don't use justifyDataLabel when point is outsidePlot.
+ * @private
+ */
+function wrapSeriesJustifyDataLabel(proceed) {
+    return (!(arguments[2].outside3dPlot) ?
+        proceed.apply(this, [].slice.call(arguments, 1)) :
+        false);
+}
+/**
+ * Added stackLabels position calculation for 3D charts.
+ * @private
+ */
+function wrapStackItemGetStackBox(proceed, stackBoxProps) {
     const stackBox = proceed.apply(this, [].slice.call(arguments, 1));
     // Only do this for 3D graph
     const stackItem = this, chart = this.axis.chart, { width: xWidth } = stackBoxProps;
@@ -371,7 +409,7 @@ wrap(StackItem.prototype, 'getStackBox', function (proceed, stackBoxProps) {
         // use its barW, z and depth parameters
         // for correct stackLabels position calculation
         if (columnSeries &&
-            columnSeries instanceof SeriesRegistry.seriesTypes.column) {
+            columnSeries.type === 'column') {
             let dLPosition = {
                 x: stackBox.x + (chart.inverted ? stackBox.height : xWidth / 2),
                 y: stackBox.y,
@@ -394,68 +432,16 @@ wrap(StackItem.prototype, 'getStackBox', function (proceed, stackBoxProps) {
         }
     }
     return stackBox;
-});
-/*
-    @merge v6.2
-    @todo
-    EXTENSION FOR 3D CYLINDRICAL COLUMNS
-    Not supported
-*/
-/*
-let defaultOptions = H.getOptions();
-defaultOptions.plotOptions.cylinder =
-    merge(defaultOptions.plotOptions.column);
-let CylinderSeries = extendClass(seriesTypes.column, {
-    type: 'cylinder'
-});
-seriesTypes.cylinder = CylinderSeries;
-
-wrap(seriesTypes.cylinder.prototype, 'translate', function (proceed) {
-    proceed.apply(this, [].slice.call(arguments, 1));
-
-    // Do not do this if the chart is not 3D
-    if (!this.chart.is3d()) {
-        return;
-    }
-
-    let series = this,
-        chart = series.chart,
-        options = chart.options,
-        cylOptions = options.plotOptions.cylinder,
-        options3d = options.chart.options3d,
-        depth = cylOptions.depth || 0,
-        alpha = chart.alpha3d;
-
-    let z = cylOptions.stacking ?
-        (this.options.stack || 0) * depth :
-        series._i * depth;
-    z += depth / 2;
-
-    if (cylOptions.grouping !== false) { z = 0; }
-
-    each(series.data, function (point) {
-        let shapeArgs = point.shapeArgs,
-            deg2rad = H.deg2rad;
-        point.shapeType = 'arc3d';
-        shapeArgs.x += depth / 2;
-        shapeArgs.z = z;
-        shapeArgs.start = 0;
-        shapeArgs.end = 2 * PI;
-        shapeArgs.r = depth * 0.95;
-        shapeArgs.innerR = 0;
-        shapeArgs.depth =
-            shapeArgs.height * (1 / sin((90 - alpha) * deg2rad)) - z;
-        shapeArgs.alpha = 90 - alpha;
-        shapeArgs.beta = 0;
-    });
-});
-*/
+}
 /* *
  *
  *  Default Export
  *
  * */
-export default ColumnSeries;
+const Column3DComposition = {
+    compose
+};
+export default Column3DComposition;
 /* *
  *
  *  API Options

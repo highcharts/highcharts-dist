@@ -237,6 +237,16 @@ function updateStartPoints(redraw, resize, cpIndex, dx, dy) {
         this.offsetX = 0;
         this.offsetY = 0;
     }
+    this.options.typeOptions.point = {
+        x: this.startXMin,
+        y: this.startYMin
+    };
+    // We need to update userOptions as well as they are used in
+    // the Annotation.update() method to initialize the annotation, #19121.
+    this.userOptions.typeOptions.point = {
+        x: this.startXMin,
+        y: this.startYMin
+    };
 }
 /* *
  *
@@ -536,10 +546,6 @@ class Measure extends Annotation {
     }
     translate(dx, dy) {
         this.shapes.forEach((item) => item.translate(dx, dy));
-        this.options.typeOptions.point = {
-            x: this.startXMin,
-            y: this.startYMin
-        };
     }
 }
 Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, 

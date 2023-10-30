@@ -56,10 +56,8 @@ function onAxisAfterRender() {
     if (!this.horiz && this.variwide) {
         this.chart.labelCollectors.push(function () {
             return axis.tickPositions
-                .filter(function (pos) {
-                return axis.ticks[pos].label;
-            })
-                .map(function (pos, i) {
+                .filter((pos) => !!axis.ticks[pos].label)
+                .map((pos, i) => {
                 const label = axis.ticks[pos].label;
                 label.labelrank = axis.zData[i];
                 return label;
@@ -95,7 +93,7 @@ function tickPostTranslate(xy, xOrY, index) {
 /**
  * @private
  */
-function wrapTickGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index) {
+function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, _labelOptions, _tickmarkOffset, _index) {
     const args = Array.prototype.slice.call(arguments, 1), xOrY = horiz ? 'x' : 'y';
     // Replace the x with the original x
     if (this.axis.variwide &&

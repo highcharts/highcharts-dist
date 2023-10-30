@@ -28,7 +28,6 @@ const { addEvent, merge, extend } = U;
  * @name Highcharts.seriesTypes.errorbar
  *
  * @augments Highcharts.Series
- *
  */
 class ErrorBarSeries extends BoxPlotSeries {
     constructor() {
@@ -53,20 +52,21 @@ class ErrorBarSeries extends BoxPlotSeries {
      *
      * */
     getColumnMetrics() {
+        const series = this;
         // Get the width and X offset, either on top of the linked series
         // column or standalone
-        return ((this.linkedParent && this.linkedParent.columnMetrics) ||
-            ColumnSeries.prototype.getColumnMetrics.call(this));
+        return ((series.linkedParent && series.linkedParent.columnMetrics) ||
+            ColumnSeries.prototype.getColumnMetrics.call(series));
     }
     drawDataLabels() {
-        const valKey = this.pointValKey;
+        const series = this, valKey = series.pointValKey;
         if (AreaRangeSeries) {
-            AreaRangeSeries.prototype.drawDataLabels.call(this);
+            AreaRangeSeries.prototype.drawDataLabels.call(series);
             // Arearange drawDataLabels does not reset point.y to high,
             // but to low after drawing (#4133)
-            this.data.forEach(function (point) {
+            for (const point of series.data) {
                 point.y = point[valKey];
-            });
+            }
         }
     }
     toYData(point) {
@@ -76,9 +76,9 @@ class ErrorBarSeries extends BoxPlotSeries {
 }
 ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults);
 addEvent(ErrorBarSeries, 'afterTranslate', function () {
-    this.points.forEach((point) => {
+    for (const point of this.points) {
         point.plotLow = point.plotY;
-    });
+    }
 }, { order: 0 });
 extend(ErrorBarSeries.prototype, {
     // pointClass: ErrorBarPoint, // just a declaration

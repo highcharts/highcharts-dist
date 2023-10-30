@@ -79,6 +79,8 @@ function applyGridOptions(axis) {
     // help.
     axis.labelRotation = 0;
     options.labels.rotation = 0;
+    // Allow putting ticks closer than their data points.
+    options.minTickInterval = 1;
 }
 /**
  * Extends axis class with grid support.
@@ -1034,7 +1036,8 @@ export default GridAxis;
  */
 /**
  * Set cell height for grid axis labels. By default this is calculated from font
- * size. This option only applies to horizontal axes.
+ * size. This option only applies to horizontal axes. For vertical axes, check
+ * the [#yAxis.staticScale](yAxis.staticScale) option.
  *
  * @sample gantt/grid-axis/cellheight
  *         Gant chart with custom cell height

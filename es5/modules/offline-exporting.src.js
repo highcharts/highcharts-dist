@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Client side exporting module
  *
@@ -28,19 +28,17 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
-    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2015-2021 Oystein Moseng
+         *  (c) 2015-2023 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -49,10 +47,25 @@
          *  Mixin for downloading content in the browser
          *
          * */
-        var isSafari = Highcharts.isSafari;
-        var win = Highcharts.win,
-            doc = win.document,
-            domurl = win.URL || win.webkitURL || win;
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        var isSafari = H.isSafari,
+            win = H.win,
+            doc = H.win.document;
+        /* *
+         *
+         *  Constants
+         *
+         * */
+        var domurl = win.URL || win.webkitURL || win;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -62,8 +75,8 @@
          * @return {string|undefined}
          *         Blob
          */
-        var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-                var parts = dataURL
+        function dataURLtoBlob(dataURL) {
+            var parts = dataURL
                     .replace(/filename=.*;/, '')
                     .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
@@ -80,10 +93,10 @@
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
-                var blob = new win.Blob([binary], { 'type': parts[1] });
-                return domurl.createObjectURL(blob);
+                return domurl
+                    .createObjectURL(new win.Blob([binary], { 'type': parts[1] }));
             }
-        };
+        }
         /**
          * Download a data URL in the browser. Can also take a blob as first param.
          *
@@ -95,10 +108,9 @@
          *        The name of the resulting file (w/extension)
          * @return {void}
          */
-        var downloadURL = Highcharts.downloadURL = function (dataURL,
-            filename) {
-                var nav = win.navigator,
-            a = doc.createElement('a');
+        function downloadURL(dataURL, filename) {
+            var nav = win.navigator,
+                a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -107,12 +119,12 @@
                 nav.msSaveOrOpenBlob(dataURL, filename);
                 return;
             }
-            dataURL = "".concat(dataURL);
-            // Some browsers have limitations for data URL lengths. Try to convert to
-            // Blob or fall back. Edge always needs that blob.
-            var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-            // Safari on iOS needs Blob in order to download PDF
-            var safariBlob = (isSafari &&
+            dataURL = '' + dataURL;
+            var // Some browsers have limitations for data URL lengths. Try to convert
+                // to Blob or fall back. Edge always needs that blob.
+                isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent), 
+                // Safari on iOS needs Blob in order to download PDF
+                safariBlob = (isSafari &&
                     typeof dataURL === 'string' &&
                     dataURL.indexOf('data:application/pdf') === 0);
             if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
@@ -132,17 +144,21 @@
             else {
                 // No download attr, just opening data URI
                 try {
-                    var windowRef = win.open(dataURL, 'chart');
-                    if (typeof windowRef === 'undefined' || windowRef === null) {
+                    if (!win.open(dataURL, 'chart')) {
                         throw new Error('Failed to open window');
                     }
                 }
-                catch (e) {
-                    // window.open failed, trying location.href
+                catch (_a) {
+                    // If window.open failed, try location.href
                     win.location.href = dataURL;
                 }
             }
-        };
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         var DownloadURL = {
                 dataURLtoBlob: dataURLtoBlob,
                 downloadURL: downloadURL
@@ -166,7 +182,7 @@
          *
          * */
         var OfflineExportingDefaults = {
-                libURL: 'https://code.highcharts.com/11.1.0/lib/',
+                libURL: 'https://code.highcharts.com/11.2.0/lib/',
                 // When offline-exporting is loaded, redefine the menu item definitions
                 // related to download.
                 menuItemDefinitions: {
@@ -427,7 +443,8 @@
                             curParent = curParent.parentNode;
                         }
                     };
-                    var titleElements;
+                    var titleElements,
+                        outlineElements;
                     // Workaround for the text styling. Making sure it does pick up
                     // settings for parent elements.
                     [].forEach.call(textElements, function (el) {
@@ -449,11 +466,17 @@
                         [].forEach.call(titleElements, function (titleElement) {
                             el.removeChild(titleElement);
                         });
+                        // Remove all .highcharts-text-outline elements, #17170
+                        outlineElements =
+                            el.getElementsByClassName('highcharts-text-outline');
+                        while (outlineElements.length > 0) {
+                            el.removeChild(outlineElements[0]);
+                        }
                     });
                     var svgNode = dummySVGContainer.querySelector('svg');
                     if (svgNode) {
                         loadPdfFonts(svgNode, function () {
-                            svgToPdf(svgNode, 0, function (pdfData) {
+                            svgToPdf(svgNode, 0, scale, function (pdfData) {
                                 try {
                                     downloadURL(pdfData, filename);
                                     if (successCallback) {
@@ -886,8 +909,10 @@
             /**
              * @private
              */
-            function svgToPdf(svgElement, margin, callback) {
-                var width = Number(svgElement.getAttribute('width')) + 2 * margin, height = Number(svgElement.getAttribute('height')) + 2 * margin, pdfDoc = new win.jspdf.jsPDF(// eslint-disable-line new-cap
+            function svgToPdf(svgElement, margin, scale, callback) {
+                var width = (Number(svgElement.getAttribute('width')) + 2 * margin) *
+                        scale, height = (Number(svgElement.getAttribute('height')) + 2 * margin) *
+                        scale, pdfDoc = new win.jspdf.jsPDF(// eslint-disable-line new-cap
                     // setting orientation to portrait if height exceeds width
                     height > width ? 'p' : 'l', 'pt', [width, height]);
                 // Workaround for #7090, hidden elements were drawn anyway. It comes
@@ -937,11 +962,13 @@
 
         return OfflineExporting;
     });
-    _registerModule(_modules, 'masters/modules/offline-exporting.src.js', [_modules['Core/Globals.js'], _modules['Extensions/OfflineExporting/OfflineExporting.js']], function (Highcharts, OfflineExporting) {
+    _registerModule(_modules, 'masters/modules/offline-exporting.src.js', [_modules['Core/Globals.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/OfflineExporting/OfflineExporting.js']], function (Highcharts, DownloadURL, OfflineExporting) {
 
         var G = Highcharts;
         // Compatibility
+        G.dataURLtoBlob = DownloadURL.dataURLtoBlob;
         G.downloadSVGLocal = OfflineExporting.downloadSVGLocal;
+        G.downloadURL = DownloadURL.downloadURL;
         // Compose
         OfflineExporting.compose(G.Chart);
 

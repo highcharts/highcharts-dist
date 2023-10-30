@@ -10,14 +10,15 @@
  *
  * */
 'use strict';
-import Color from '../../Core/Color/Color.js';
 import H from '../../Core/Globals.js';
 import NodesComposition from '../NodesComposition.js';
 import SankeyPoint from './SankeyPoint.js';
 import SankeySeriesDefaults from './SankeySeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import SankeyColumnComposition from './SankeyColumnComposition.js';
-const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
+const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
+import Color from '../../Core/Color/Color.js';
+const { parse: color } = Color;
 import TU from '../TreeUtilities.js';
 const { getLevelOptions } = TU;
 import U from '../../Core/Utilities.js';
@@ -57,14 +58,12 @@ class SankeySeries extends ColumnSeries {
         this.options = void 0;
         this.points = void 0;
         this.translationFactor = void 0;
-        /* eslint-enable valid-jsdoc */
     }
     /* *
      *
      *  Static Functions
      *
      * */
-    // eslint-disable-next-line valid-jsdoc
     /**
      * @private
      */
@@ -83,7 +82,6 @@ class SankeySeries extends ColumnSeries {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Create node columns by analyzing the nodes and the relations between
      * incoming and outgoing links.
@@ -91,14 +89,14 @@ class SankeySeries extends ColumnSeries {
      */
     createNodeColumns() {
         const columns = [];
-        this.nodes.forEach(function (node) {
+        for (const node of this.nodes) {
             node.setNodeColumn();
             if (!columns[node.column]) {
                 columns[node.column] =
                     SankeyColumnComposition.compose([], this);
             }
             columns[node.column].push(node);
-        }, this);
+        }
         // Fill in empty columns (#8865)
         for (let i = 0; i < columns.length; i++) {
             if (typeof columns[i] === 'undefined') {
@@ -117,11 +115,11 @@ class SankeySeries extends ColumnSeries {
         // Prevents circular recursion:
         if (typeof node.level === 'undefined') {
             node.level = level;
-            node.linksFrom.forEach(function (link) {
+            for (const link of node.linksFrom) {
                 if (link.toNode) {
                     series.order(link.toNode, level + 1);
                 }
-            });
+            }
         }
     }
     /**
@@ -131,21 +129,16 @@ class SankeySeries extends ColumnSeries {
      */
     generatePoints() {
         NodesComposition.generatePoints.apply(this, arguments);
-        const series = this;
         if (this.orderNodes) {
-            this.nodes
+            for (const node of this.nodes) {
                 // Identify the root node(s)
-                .filter(function (node) {
-                return node.linksTo.length === 0;
-            })
-                // Start by the root node(s) and recursively set the level
-                // on all following nodes.
-                .forEach(function (node) {
-                series.order(node, 0);
-            });
-            stableSort(this.nodes, function (a, b) {
-                return a.level - b.level;
-            });
+                if (node.linksTo.length === 0) {
+                    // Start by the root node(s) and recursively set the level
+                    // on all following nodes.
+                    this.order(node, 0);
+                }
+            }
+            stableSort(this.nodes, (a, b) => (a.level - b.level));
         }
     }
     /**
@@ -189,7 +182,7 @@ class SankeySeries extends ColumnSeries {
             'borderWidth',
             'linkOpacity',
             'opacity'
-        ].reduce(function (obj, key) {
+        ].reduce((obj, key) => {
             obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
             return obj;
         }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
@@ -261,23 +254,23 @@ class SankeySeries extends ColumnSeries {
             }
         });
         // First translate all nodes so we can use them when drawing links
-        nodeColumns.forEach(function (column) {
-            column.forEach(function (node) {
+        for (const column of nodeColumns) {
+            for (const node of column) {
                 series.translateNode(node, column);
-            });
-        }, this);
+            }
+        }
         // Then translate links
-        this.nodes.forEach(function (node) {
+        for (const node of this.nodes) {
             // Translate the links from this node
-            node.linksFrom.forEach(function (linkPoint) {
+            for (const linkPoint of node.linksFrom) {
                 // If weight is 0 - don't render the link path #12453,
                 // render null points (for organization chart)
                 if ((linkPoint.weight || linkPoint.isNull) && linkPoint.to) {
                     series.translateLink(linkPoint);
                     linkPoint.allowShadow = false;
                 }
-            });
-        });
+            }
+        }
     }
     /**
      * Run translation operations for one link.
@@ -292,8 +285,9 @@ class SankeySeries extends ColumnSeries {
             node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
             return y;
         };
-        let fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-            options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.nodeX, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
+        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = pick(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+            options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
+        let linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
             fromY = chart.plotSizeY - fromY;
             toY = (chart.plotSizeY || 0) - toY;
@@ -386,8 +380,28 @@ class SankeySeries extends ColumnSeries {
         // #15863
         point.y = point.plotY = 1;
         point.x = point.plotX = 1;
-        if (!point.color) {
-            point.color = fromNode.color;
+        if (!point.options.color) {
+            if (linkColorMode === 'from') {
+                point.color = fromNode.color;
+            }
+            else if (linkColorMode === 'to') {
+                point.color = toNode.color;
+            }
+            else if (linkColorMode === 'gradient') {
+                const fromColor = color(fromNode.color).get(), toColor = color(toNode.color).get();
+                point.color = {
+                    linearGradient: {
+                        x1: 1,
+                        x2: 0,
+                        y1: 0,
+                        y2: 0
+                    },
+                    stops: [
+                        [0, inverted ? fromColor : toColor],
+                        [1, inverted ? toColor : fromColor]
+                    ]
+                };
+            }
         }
     }
     /**
@@ -397,7 +411,9 @@ class SankeySeries extends ColumnSeries {
     translateNode(node, column) {
         const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), crisp = Math.round(borderWidth) % 2 / 2, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
             nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
-            borderWidth / 2) + relativeLength(node.options.offsetHorizontal || 0, nodeWidth) +
+            borderWidth / 2) + relativeLength(node.options[chart.inverted ?
+            'offsetVertical' :
+            'offsetHorizontal'] || 0, nodeWidth) +
             crisp, nodeLeft = chart.inverted ?
             chart.plotSizeX - left :
             left;
@@ -409,7 +425,7 @@ class SankeySeries extends ColumnSeries {
             node.nodeX = nodeLeft;
             node.nodeY = fromNodeTop;
             let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
-            // border radius should not greater than half the height of the node
+            // Border radius should not greater than half the height of the node
             // #18956
             const r = clamp(relativeLength((typeof borderRadius === 'object' ?
                 borderRadius.radius :
@@ -455,7 +471,7 @@ class SankeySeries extends ColumnSeries {
 SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
 NodesComposition.compose(SankeyPoint, SankeySeries);
 extend(SankeySeries.prototype, {
-    animate: Series.prototype.animate,
+    animate: LineSeries.prototype.animate,
     // Create a single node that holds information on incoming and outgoing
     // links.
     createNode: NodesComposition.createNode,

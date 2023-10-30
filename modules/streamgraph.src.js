@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.1.0 (2023-06-05)
+ * @license Highcharts JS v11.2.0 (2023-10-30)
  *
  * Streamgraph module
  *
@@ -28,16 +28,14 @@
             obj[path] = fn.apply(null, args);
 
             if (typeof CustomEvent === 'function') {
-                window.dispatchEvent(
-                    new CustomEvent(
-                        'HighchartsModuleLoaded',
-                        { detail: { path: path, module: obj[path] }
-                    })
-                );
+                window.dispatchEvent(new CustomEvent(
+                    'HighchartsModuleLoaded',
+                    { detail: { path: path, module: obj[path] } }
+                ));
             }
         }
     }
-    _registerModule(_modules, 'Series/Streamgraph/StreamgraphSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Streamgraph/StreamgraphSeriesDefaults.js', [], function () {
         /* *
          *
          *  Streamgraph module
@@ -49,45 +47,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { areaspline: AreaSplineSeries } } = SeriesRegistry;
-        const { merge, extend } = U;
-        /**
-         * Streamgraph series type
+        /* *
          *
-         * @private
-         * @class
-         * @name Highcharts.seriesTypes.streamgraph
+         *  API Options
          *
-         * @augments Highcharts.Series
-         */
-        class StreamgraphSeries extends AreaSplineSeries {
-            constructor() {
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            // Modifier function for stream stacks. It simply moves the point up or
-            // down in order to center the full stack vertically.
-            streamStacker(pointExtremes, stack, i) {
-                // Y bottom value
-                pointExtremes[0] -= stack.total / 2;
-                // Y value
-                pointExtremes[1] -= stack.total / 2;
-                // Record the Y data for use when getting axis extremes
-                this.stackedYData[i] = pointExtremes;
-            }
-        }
+         * */
         /**
          * A streamgraph is a type of stacked area graph which is displaced around a
          * central axis, resulting in a flowing, organic shape.
@@ -101,7 +65,7 @@
          * @requires     modules/streamgraph
          * @optionparent plotOptions.streamgraph
          */
-        StreamgraphSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, {
+        const StreamgraphSeriesDefaults = {
             /**
              * @see [fillColor](#plotOptions.streamgraph.fillColor)
              * @see [fillOpacity](#plotOptions.streamgraph.fillOpacity)
@@ -126,21 +90,7 @@
                 enabled: false
             },
             stacking: 'stream'
-        });
-        extend(StreamgraphSeries.prototype, {
-            negStacks: false
-        });
-        SeriesRegistry.registerSeriesType('streamgraph', StreamgraphSeries);
-        /* *
-         *
-         *  Default export
-         *
-         * */
-        /* *
-         *
-         *  API options
-         *
-         * */
+        };
         /**
          * A `streamgraph` series. If the [type](#series.streamgraph.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -230,7 +180,81 @@
          * @default   1
          * @apioption series.streamgraph.fillOpacity
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above separate
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return StreamgraphSeriesDefaults;
+    });
+    _registerModule(_modules, 'Series/Streamgraph/StreamgraphSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Series/Streamgraph/StreamgraphSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, StreamgraphSeriesDefaults, U) {
+        /* *
+         *
+         *  Streamgraph module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { areaspline: AreaSplineSeries } = SeriesRegistry.seriesTypes;
+        const { merge, extend } = U;
+        /**
+         * Streamgraph series type
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.streamgraph
+         *
+         * @augments Highcharts.Series
+         */
+        class StreamgraphSeries extends AreaSplineSeries {
+            constructor() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                super(...arguments);
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                this.data = void 0;
+                this.points = void 0;
+                this.options = void 0;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            // Modifier function for stream stacks. It simply moves the point up or
+            // down in order to center the full stack vertically.
+            streamStacker(pointExtremes, stack, i) {
+                // Y bottom value
+                pointExtremes[0] -= stack.total / 2;
+                // Y value
+                pointExtremes[1] -= stack.total / 2;
+                // Record the Y data for use when getting axis extremes
+                this.stackedYData[i] = pointExtremes;
+            }
+        }
+        StreamgraphSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, StreamgraphSeriesDefaults);
+        extend(StreamgraphSeries.prototype, {
+            negStacks: false
+        });
+        SeriesRegistry.registerSeriesType('streamgraph', StreamgraphSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return StreamgraphSeries;
     });

@@ -14,9 +14,15 @@ import H from '../../Core/Globals.js';
 const { deg2rad } = H;
 import Pie3DPoint from './Pie3DPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { pie: PieSeries } } = SeriesRegistry;
+const { pie: PieSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { extend, pick } = U;
+const { extend, pick, pushUnique } = U;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const composedMembers = [];
 /* *
  *
  *  Class
@@ -25,10 +31,19 @@ const { extend, pick } = U;
 class Pie3DSeries extends PieSeries {
     /* *
      *
+     *  Static Functions
+     *
+     * */
+    static compose(SeriesClass) {
+        if (pushUnique(composedMembers, SeriesClass)) {
+            SeriesClass.types.pie = Pie3DSeries;
+        }
+    }
+    /* *
+     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
@@ -47,7 +62,8 @@ class Pie3DSeries extends PieSeries {
             super.animate.apply(this, arguments);
         }
         else {
-            let animation = this.options.animation, attribs, center = this.center, group = this.group, markerGroup = this.markerGroup;
+            const center = this.center, group = this.group, markerGroup = this.markerGroup;
+            let animation = this.options.animation, attribs;
             if (animation === true) {
                 animation = {};
             }
@@ -86,25 +102,25 @@ class Pie3DSeries extends PieSeries {
     /**
      * @private
      */
-    drawDataLabels() {
+    getDataLabelPosition(point, distance) {
+        const labelPosition = super.getDataLabelPosition(point, distance);
         if (this.chart.is3d()) {
-            const series = this, chart = series.chart, options3d = chart.options.chart.options3d;
-            series.data.forEach(function (point) {
-                const shapeArgs = point.shapeArgs, r = shapeArgs.r, 
-                // #3240 issue with datalabels for 0 and null values
-                a1 = ((shapeArgs.alpha || options3d.alpha) * deg2rad), b1 = ((shapeArgs.beta || options3d.beta) * deg2rad), a2 = ((shapeArgs.start + shapeArgs.end) / 2), labelPosition = point.labelPosition, connectorPosition = (labelPosition.connectorPosition), yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
-                // Apply perspective on label positions
-                [
-                    labelPosition.natural,
-                    connectorPosition.breakAt,
-                    connectorPosition.touchingSliceAt
-                ].forEach(function (coordinates) {
-                    coordinates.x += xOffset;
-                    coordinates.y += yOffset;
-                });
-            });
+            const options3d = this.chart.options.chart.options3d, shapeArgs = point.shapeArgs, r = shapeArgs.r, 
+            // #3240 issue with datalabels for 0 and null values
+            a1 = ((shapeArgs.alpha || options3d?.alpha) *
+                deg2rad), b1 = ((shapeArgs.beta || options3d?.beta) *
+                deg2rad), a2 = (shapeArgs.start + shapeArgs.end) / 2, connectorPosition = labelPosition.connectorPosition, yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
+            // Apply perspective on label positions
+            for (const coordinates of [
+                labelPosition?.natural,
+                connectorPosition.breakAt,
+                connectorPosition.touchingSliceAt
+            ]) {
+                coordinates.x += xOffset;
+                coordinates.y += yOffset;
+            }
         }
-        super.drawDataLabels.apply(this, arguments);
+        return labelPosition;
     }
     /**
      * @private
@@ -126,22 +142,23 @@ class Pie3DSeries extends PieSeries {
         if (!this.chart.is3d()) {
             return;
         }
-        let series = this, seriesOptions = series.options, depth = seriesOptions.depth || 0, options3d = series.chart.options.chart.options3d, alpha = options3d.alpha, beta = options3d.beta, z = seriesOptions.stacking ?
+        const series = this, seriesOptions = series.options, depth = seriesOptions.depth || 0, options3d = series.chart.options.chart.options3d, alpha = options3d.alpha, beta = options3d.beta;
+        let z = seriesOptions.stacking ?
             (seriesOptions.stack || 0) * depth :
             series._i * depth;
         z += depth / 2;
         if (seriesOptions.grouping !== false) {
             z = 0;
         }
-        series.data.forEach(function (point) {
-            let shapeArgs = point.shapeArgs, angle;
+        for (const point of series.data) {
+            const shapeArgs = point.shapeArgs;
             point.shapeType = 'arc3d';
             shapeArgs.z = z;
             shapeArgs.depth = depth * 0.75;
             shapeArgs.alpha = alpha;
             shapeArgs.beta = beta;
             shapeArgs.center = series.center;
-            angle = (shapeArgs.end + shapeArgs.start) / 2;
+            const angle = (shapeArgs.end + shapeArgs.start) / 2;
             point.slicedTranslation = {
                 translateX: Math.round(Math.cos(angle) *
                     seriesOptions.slicedOffset *
@@ -150,7 +167,7 @@ class Pie3DSeries extends PieSeries {
                     seriesOptions.slicedOffset *
                     Math.cos(alpha * deg2rad))
             };
-        });
+        }
     }
     /**
      * @private
@@ -161,15 +178,15 @@ class Pie3DSeries extends PieSeries {
         if (!this.chart.is3d()) {
             return;
         }
-        this.points.forEach(function (point) {
+        for (const point of this.points) {
             if (point.graphic) {
-                ['out', 'inn', 'side1', 'side2'].forEach((face) => {
+                for (const face of ['out', 'inn', 'side1', 'side2']) {
                     if (point.graphic) {
                         point.graphic[face].element.point = point;
                     }
-                });
+                }
             }
-        });
+        }
     }
 }
 extend(Pie3DSeries.prototype, {

@@ -1,13 +1,9 @@
-/*
- Highcharts JS v11.1.0 (2023-06-05)
-
- Streamgraph module
-
- (c) 2010-2021 Torstein Honsi
-
- License: www.highcharts.com/license
-*/
-'use strict';(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/modules/streamgraph",["highcharts"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,c,b,e){a.hasOwnProperty(c)||(a[c]=e.apply(null,b),"function"===typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:c,module:a[c]}})))}a=a?a._modules:
-{};b(a,"Series/Streamgraph/StreamgraphSeries.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,b){const {seriesTypes:{areaspline:c}}=a,{merge:e,extend:f}=b;class d extends c{constructor(){super(...arguments);this.options=this.points=this.data=void 0}streamStacker(a,b,c){a[0]-=b.total/2;a[1]-=b.total/2;this.stackedYData[c]=a}}d.defaultOptions=e(c.defaultOptions,{fillOpacity:1,lineWidth:0,marker:{enabled:!1},stacking:"stream"});f(d.prototype,{negStacks:!1});a.registerSeriesType("streamgraph",
-d);"";return d});b(a,"masters/modules/streamgraph.src.js",[],function(){})});
-//# sourceMappingURL=streamgraph.js.map
+/**
+ * Highcharts JS v11.2.0 (2023-10-30)
+ *
+ * Streamgraph module
+ *
+ * (c) 2010-2021 Torstein Honsi
+ *
+ * License: www.highcharts.com/license
+ */!function(e){"object"==typeof module&&module.exports?(e.default=e,module.exports=e):"function"==typeof define&&define.amd?define("highcharts/modules/streamgraph",["highcharts"],function(t){return e(t),e.Highcharts=t,e}):e("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(e){"use strict";var t=e?e._modules:{};function s(e,t,s,r){e.hasOwnProperty(t)||(e[t]=r.apply(null,s),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:t,module:e[t]}})))}s(t,"Series/Streamgraph/StreamgraphSeriesDefaults.js",[],function(){return{fillOpacity:1,lineWidth:0,marker:{enabled:!1},stacking:"stream"}}),s(t,"Series/Streamgraph/StreamgraphSeries.js",[t["Core/Series/SeriesRegistry.js"],t["Series/Streamgraph/StreamgraphSeriesDefaults.js"],t["Core/Utilities.js"]],function(e,t,s){let{areaspline:r}=e.seriesTypes,{merge:a,extend:i}=s;class o extends r{constructor(){super(...arguments),this.data=void 0,this.points=void 0,this.options=void 0}streamStacker(e,t,s){e[0]-=t.total/2,e[1]-=t.total/2,this.stackedYData[s]=e}}return o.defaultOptions=a(r.defaultOptions,t),i(o.prototype,{negStacks:!1}),e.registerSeriesType("streamgraph",o),o}),s(t,"masters/modules/streamgraph.src.js",[],function(){})});//# sourceMappingURL=streamgraph.js.map
