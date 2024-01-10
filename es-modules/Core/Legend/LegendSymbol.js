@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -22,12 +22,21 @@ var LegendSymbol;
     *  Functions
     *
     * */
-    /* eslint-disable valid-jsdoc */
     /**
-     * Get the series' symbol in the legend.
+     * Draw a line, a point marker and an area in the legend.
      *
-     * This method should be overridable to create custom symbols through
-     * Highcharts.seriesTypes[type].prototype.drawLegendSymbol.
+     * @private
+     * @function Highcharts.LegendSymbolMixin.areaMarker
+     *
+     * @param {Highcharts.Legend} legend
+     * The legend object.
+     */
+    function areaMarker(legend, item) {
+        lineMarker.call(this, legend, item, true);
+    }
+    LegendSymbol.areaMarker = areaMarker;
+    /**
+     * Draw a line and a point marker in the legend.
      *
      * @private
      * @function Highcharts.LegendSymbolMixin.lineMarker
@@ -35,15 +44,15 @@ var LegendSymbol;
      * @param {Highcharts.Legend} legend
      * The legend object.
      */
-    function lineMarker(legend, item) {
-        const legendItem = this.legendItem = this.legendItem || {}, options = this.options, symbolWidth = legend.symbolWidth, symbolHeight = legend.symbolHeight, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = this.chart.renderer, legendItemGroup = legendItem.group, verticalCenter = legend.baseline -
-            Math.round(legend.fontMetrics.b * 0.3);
-        let attr = {}, legendSymbol, markerOptions = options.marker, lineSizer = 0;
+    function lineMarker(legend, item, hasArea) {
+        const legendItem = this.legendItem = this.legendItem || {}, { chart, options } = this, { baseline = 0, symbolWidth, symbolHeight } = legend, symbol = this.symbol || 'circle', generalRadius = symbolHeight / 2, renderer = chart.renderer, legendItemGroup = legendItem.group, verticalCenter = baseline - Math.round(symbolHeight *
+            // Render line and marker slightly higher to make room for the
+            // area
+            (hasArea ? 0.4 : 0.3)), attr = {};
+        let legendSymbol, markerOptions = options.marker, lineSizer = 0;
         // Draw the line
-        if (!this.chart.styledMode) {
-            attr = {
-                'stroke-width': Math.min(options.lineWidth || 0, 24)
-            };
+        if (!chart.styledMode) {
+            attr['stroke-width'] = Math.min(options.lineWidth || 0, 24);
             if (options.dashStyle) {
                 attr.dashstyle = options.dashStyle;
             }
@@ -56,15 +65,26 @@ var LegendSymbol;
             .addClass('highcharts-graph')
             .attr(attr)
             .add(legendItemGroup);
+        if (hasArea) {
+            legendItem.area = renderer
+                .path()
+                .addClass('highcharts-area')
+                .add(legendItemGroup);
+        }
         if (attr['stroke-linecap']) {
             lineSizer = Math.min(legendItem.line.strokeWidth(), symbolWidth) / 2;
         }
         if (symbolWidth) {
-            legendItem.line
-                .attr({
+            const d = [
+                ['M', lineSizer, verticalCenter],
+                ['L', symbolWidth - lineSizer, verticalCenter]
+            ];
+            legendItem.line.attr({ d });
+            legendItem.area?.attr({
                 d: [
-                    ['M', lineSizer, verticalCenter],
-                    ['L', symbolWidth - lineSizer, verticalCenter]
+                    ...d,
+                    ['L', symbolWidth - lineSizer, baseline],
+                    ['L', lineSizer, baseline]
                 ]
             });
         }

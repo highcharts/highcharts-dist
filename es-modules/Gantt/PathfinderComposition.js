@@ -12,6 +12,8 @@
 import ConnectorsDefaults from './ConnectorsDefaults.js';
 import D from '../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
 const { defined, error, merge, pushUnique } = U;
 /* *
@@ -80,18 +82,13 @@ var ConnectionComposition;
 (function (ConnectionComposition) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
     /** @private */
     function compose(ChartClass, PathfinderClass, PointClass) {
-        if (pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
+            const pointProto = PointClass.prototype;
             // Initialize Pathfinder for charts
             ChartClass.prototype.callbacks.push(function (chart) {
                 const options = chart.options;
@@ -101,14 +98,9 @@ var ConnectionComposition;
                     this.pathfinder.update(true); // First draw, defer render
                 }
             });
-        }
-        if (pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
             pointProto.getMarkerVector = pointGetMarkerVector;
             pointProto.getPathfinderAnchorPoint = pointGetPathfinderAnchorPoint;
             pointProto.getRadiansToVector = pointGetRadiansToVector;
-        }
-        if (pushUnique(composedMembers, setOptions)) {
             // Set default Pathfinder options
             setOptions(ConnectorsDefaults);
         }

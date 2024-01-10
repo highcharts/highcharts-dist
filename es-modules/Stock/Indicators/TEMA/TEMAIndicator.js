@@ -25,23 +25,6 @@ const { correctFloat, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class TEMAIndicator extends EMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.EMApercent = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -143,6 +126,11 @@ class TEMAIndicator extends EMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Triple exponential moving average (TEMA) indicator. This series requires
  * `linkedTo` option to be set and should be loaded after the

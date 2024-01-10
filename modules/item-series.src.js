@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Item series type for Highcharts
  *
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Series/Item/ItemPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2019-2021 Torstein Honsi
+         *  (c) 2019-2024 Torstein Honsi
          *
          *  Item series type for Highcharts
          *
@@ -55,16 +55,6 @@
          *
          * */
         class ItemPoint extends PiePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
         }
         extend(ItemPoint.prototype, {
             haloPath: Point.prototype.haloPath
@@ -80,7 +70,7 @@
     _registerModule(_modules, 'Series/Item/ItemSeriesDefaults.js', [_modules['Core/Series/SeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesDefaults, U) {
         /* *
          *
-         *  (c) 2019-2021 Torstein Honsi
+         *  (c) 2019-2024 Torstein Honsi
          *
          *  Item series type for Highcharts
          *
@@ -261,7 +251,7 @@
     _registerModule(_modules, 'Series/Item/ItemSeries.js', [_modules['Series/Item/ItemPoint.js'], _modules['Series/Item/ItemSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ItemPoint, ItemSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2019-2021 Torstein Honsi
+         *  (c) 2019-2024 Torstein Honsi
          *
          *  Item series type for Highcharts
          *
@@ -291,17 +281,6 @@
          * @augments Highcharts.seriesTypes.pie
          */
         class ItemSeries extends PieSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -585,6 +564,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, ItemSeriesDefaults);
         extend(ItemSeries.prototype, {
             markerAttribs: void 0,

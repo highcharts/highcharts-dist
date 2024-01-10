@@ -2,7 +2,7 @@
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2021 Pawel Fus
+ *  (c) 2010-2024 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -10,10 +10,12 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import T from '../../Core/Templating.js';
 const { format } = T;
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, erase, extend, insertItem, isNumber, pick, pushUnique, wrap } = U;
+const { addEvent, defined, erase, extend, insertItem, isArray, isNumber, pick, pushUnique, wrap } = U;
 /* *
  *
  *  Composition
@@ -28,33 +30,22 @@ var ParallelSeries;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
     /** @private */
     function compose(SeriesClass) {
-        const { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
-        if (LinePointClass &&
-            pushUnique(composedMembers, LinePointClass)) {
-            const linePointProto = LinePointClass.prototype;
-            wrap(linePointProto, 'getLabelConfig', wrapSeriesGetLabelConfig);
-        }
-        if (pushUnique(composedMembers, SeriesClass)) {
-            const CompoClass = SeriesClass;
+        if (pushUnique(composed, compose)) {
+            const CompoClass = SeriesClass, { line: { prototype: { pointClass: LinePointClass } }, spline: { prototype: { pointClass: SplinePointClass } } } = SeriesClass.types;
             addEvent(CompoClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
             addEvent(CompoClass, 'bindAxes', onSeriesBindAxes);
             addEvent(CompoClass, 'destroy', onSeriesDestroy);
-        }
-        if (SplinePointClass &&
-            pushUnique(composedMembers, SplinePointClass)) {
-            const splinePointProto = SplinePointClass.prototype;
-            wrap(splinePointProto, 'getLabelConfig', wrapSeriesGetLabelConfig);
+            if (LinePointClass) {
+                wrap(LinePointClass.prototype, 'getLabelConfig', wrapSeriesGetLabelConfig);
+            }
+            if (SplinePointClass) {
+                wrap(SplinePointClass.prototype, 'getLabelConfig', wrapSeriesGetLabelConfig);
+            }
         }
     }
     ParallelSeries.compose = compose;
@@ -151,7 +142,7 @@ var ParallelSeries;
             else if (yAxis.dateTime) {
                 formattedValue = chart.time.dateFormat(chart.time.resolveDTLFormat(yAxisOptions.dateTimeLabelFormats[yAxis.tickPositions.info.unitName]).main, this.y);
             }
-            else if (yAxisOptions.categories) {
+            else if (isArray(yAxisOptions.categories)) {
                 formattedValue = yAxisOptions.categories[this.y];
             }
             else {

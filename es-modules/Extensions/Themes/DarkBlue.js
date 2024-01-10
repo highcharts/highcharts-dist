@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -81,7 +81,6 @@ var DarkBlueTheme;
                 }
             },
             lineColor: '#A0A0A0',
-            minorTickInterval: null,
             tickColor: '#A0A0A0',
             tickWidth: 1,
             title: {

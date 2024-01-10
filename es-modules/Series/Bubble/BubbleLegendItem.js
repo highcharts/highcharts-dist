@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -41,20 +41,6 @@ class BubbleLegendItem {
      *
      * */
     constructor(options, legend) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.legend = void 0;
-        this.maxLabel = void 0;
-        this.movementX = void 0;
-        this.ranges = void 0;
-        this.selected = void 0;
-        this.visible = void 0;
-        this.symbols = void 0;
-        this.options = void 0;
         this.setState = noop;
         this.init(options, legend);
     }

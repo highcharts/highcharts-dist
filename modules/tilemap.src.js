@@ -1,9 +1,9 @@
 /**
- * @license Highmaps JS v11.2.0 (2023-10-30)
+ * @license Highmaps JS v11.3.0 (2024-01-10)
  *
  * Tilemap module
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -56,18 +56,6 @@
          *
          * */
         class TilemapPoint extends HeatmapPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.radius = void 0;
-                this.series = void 0;
-                this.tileEdges = void 0;
-            }
             /* *
              *
              *  Functions
@@ -98,7 +86,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -320,7 +308,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -603,7 +591,7 @@
          *
          *  Tilemaps module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -611,15 +599,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
+        const { composed, noop } = H;
         const { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, extend, merge, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -675,30 +657,13 @@
          * @augments Highcharts.Series
          */
         class TilemapSeries extends HeatmapSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.tileShape = void 0;
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(AxisClass) {
-                if (pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(AxisClass, 'afterSetAxisTranslation', onAxisAfterSetAxisTranslation);
                 }
             }
@@ -774,6 +739,11 @@
                 return this.tileShape.translate.apply(this, arguments);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, TilemapSeriesDefaults);
         extend(TilemapSeries.prototype, {
             // Revert the noop on getSymbol.

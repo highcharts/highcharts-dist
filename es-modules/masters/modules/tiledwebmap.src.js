@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */

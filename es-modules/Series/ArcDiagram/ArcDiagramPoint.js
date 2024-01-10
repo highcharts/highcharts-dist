@@ -2,7 +2,7 @@
  *
  *  Arc diagram module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -21,24 +21,6 @@ const { extend } = U;
  *
  * */
 class ArcDiagramPoint extends SankeyPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.fromNode = void 0;
-        this.index = void 0;
-        this.linksFrom = void 0;
-        this.linksTo = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.scale = void 0;
-        this.shapeArgs = void 0;
-        this.toNode = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions

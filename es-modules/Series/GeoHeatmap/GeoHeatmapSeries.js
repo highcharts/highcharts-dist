@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2023 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Authors: Magdalena Gut, Piotr Madej
  *
@@ -58,16 +58,6 @@ class GeoHeatmapSeries extends MapSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
-        this.data = void 0;
-        this.points = void 0;
-        this.canvas = void 0;
-        this.context = void 0;
         this.isDirtyCanvas = true;
     }
     /* *

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2023 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,6 +8,8 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
 const { addEvent, defined, pick, pushUnique } = U;
 /* *
@@ -18,22 +20,16 @@ const { addEvent, defined, pick, pushUnique } = U;
 var ScrollbarAxis;
 (function (ScrollbarAxis) {
     /* *
-    *
-    *  Constants
-    *
-    * */
-    const composedMembers = [];
-    /* *
-    *
-    *  Variables
-    *
-    * */
+     *
+     *  Variables
+     *
+     * */
     let Scrollbar;
     /* *
-    *
-    *  Functions
-    *
-    * */
+     *
+     *  Functions
+     *
+     * */
     /**
      * Attaches to axis events to create scrollbars if enabled.
      *
@@ -46,10 +42,8 @@ var ScrollbarAxis;
      * Scrollbar class to use.
      */
     function compose(AxisClass, ScrollbarClass) {
-        if (pushUnique(composedMembers, ScrollbarClass)) {
+        if (pushUnique(composed, compose)) {
             Scrollbar = ScrollbarClass;
-        }
-        if (pushUnique(composedMembers, AxisClass)) {
             addEvent(AxisClass, 'afterGetOffset', onAxisAfterGetOffset);
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'afterRender', onAxisAfterRender);

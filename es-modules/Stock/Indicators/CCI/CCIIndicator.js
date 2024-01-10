@@ -49,22 +49,6 @@ function meanDeviation(arr, sma) {
  * @augments Highcharts.Series
  */
 class CCIIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -104,6 +88,11 @@ class CCIIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Commodity Channel Index (CCI). This series requires `linkedTo` option to
  * be set.

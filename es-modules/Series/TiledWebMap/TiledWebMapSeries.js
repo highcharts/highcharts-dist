@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
+ *  (c) 2010-2024 Hubert Kozik, Kamil Musiałowski
  *
  *  License: www.highcharts.com/license
  *
@@ -8,18 +8,14 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { map: MapSeries } = SeriesRegistry.seriesTypes;
 import TilesProvidersRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 import TiledWebMapSeriesDefaults from './TiledWebMapSeriesDefaults.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, defined, error, merge, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -83,12 +79,6 @@ class TiledWebMapSeries extends MapSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
         this.redrawTiles = false;
         this.isAnimating = false;
     }
@@ -98,7 +88,7 @@ class TiledWebMapSeries extends MapSeries {
      *
      * */
     static compose(ChartClass) {
-        if (pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(ChartClass, 'beforeMapViewInit', onChartBeforeMapViewInit);
         }
     }

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
+ *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
  *
  *  License: www.highcharts.com/license
  *
@@ -8,14 +8,10 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
 const { addEvent, defined, isNumber, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Composition
@@ -23,11 +19,9 @@ const composedMembers = [];
  * */
 /** @private */
 function compose(AxisClass, ChartClass) {
-    if (pushUnique(composedMembers, AxisClass)) {
-        addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-    }
-    if (pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         const chartProto = ChartClass.prototype;
+        addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
         chartProto.adjustHeight = chartAdjustHeight;
         addEvent(ChartClass, 'render', chartProto.adjustHeight);
     }

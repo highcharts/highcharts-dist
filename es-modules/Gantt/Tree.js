@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -38,25 +38,27 @@ const { extend, isNumber, pick } = U;
  * Map from parent id to children index in data
  */
 function getListOfParents(data) {
-    const listOfParents = data.reduce((prev, curr) => {
-        const parent = pick(curr.parent, '');
+    const root = '', ids = [], listOfParents = data.reduce((prev, curr) => {
+        const { parent = '', id } = curr;
         if (typeof prev[parent] === 'undefined') {
             prev[parent] = [];
         }
         prev[parent].push(curr);
+        if (id) {
+            ids.push(id);
+        }
         return prev;
     }, {});
-    // parents = Object.keys(listOfParents);
-    // If parent does not exist, hoist parent to root of tree.
-    // parents.forEach((parent, list): void => {
-    //     const children = listOfParents[parent];
-    //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-    //         for (const child of children) {
-    //             (list as any)[''].push(child);
-    //         }
-    //         delete (list as any)[parent];
-    //     }
-    // });
+    Object.keys(listOfParents).forEach((node) => {
+        if ((node !== root) && (ids.indexOf(node) === -1)) {
+            const adoptedByRoot = listOfParents[node].map(function (orphan) {
+                const { parent, ...parentExcluded } = orphan; // #15196
+                return parentExcluded;
+            });
+            listOfParents[root].push(...adoptedByRoot);
+            delete listOfParents[node];
+        }
+    });
     return listOfParents;
 }
 /** @private */
@@ -111,8 +113,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
 }
 /** @private */
 function getTree(data, options) {
-    const mapOfIdToChildren = getListOfParents(data);
-    return getNode('', null, 1, null, mapOfIdToChildren, options);
+    return getNode('', null, 1, null, getListOfParents(data), options);
 }
 /* *
  *

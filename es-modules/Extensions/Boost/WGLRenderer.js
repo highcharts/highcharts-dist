@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2019-2021 Highsoft AS
+ *  (c) 2019-2024 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -217,7 +217,9 @@ class WGLRenderer {
      */
     pushSeriesData(series, inst) {
         const data = this.data, settings = this.settings, vbuffer = this.vbuffer, isRange = (series.pointArrayMap &&
-            series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
+            series.pointArrayMap.join(',') === 'low,high'), { chart, options, sorted, xAxis, yAxis } = series, isStacked = !!options.stacking, rawData = options.data, xExtremes = series.xAxis.getExtremes(), 
+        // Taking into account the offset of the min point #19497
+        xMin = xExtremes.min - (series.xAxis.minPointOffset || 0), xMax = xExtremes.max + (series.xAxis.minPointOffset || 0), yExtremes = series.yAxis.getExtremes(), yMin = yExtremes.min - (series.yAxis.minPointOffset || 0), yMax = yExtremes.max + (series.yAxis.minPointOffset || 0), xData = series.xData || options.xData || series.processedXData, yData = series.yData || options.yData || series.processedYData, zData = (series.zData || options.zData ||
             series.processedZData), useRaw = !xData || xData.length === 0, 
         // threshold = options.threshold,
         // yBottom = chart.yAxis[0].getThreshold(threshold),
@@ -652,7 +654,6 @@ class WGLRenderer {
                 continue;
             }
             if (drawAsBar) {
-                // maxVal = y;
                 minVal = low;
                 if (low === false || typeof low === 'undefined') {
                     if (y < 0) {
@@ -662,7 +663,9 @@ class WGLRenderer {
                         minVal = 0;
                     }
                 }
-                if (!isRange && !isStacked) {
+                if ((!isRange && !isStacked) ||
+                    yAxis.logarithmic // #16850
+                ) {
                     minVal = Math.max(threshold === null ? yMin : threshold, // #5268
                     yMin); // #8731
                 }

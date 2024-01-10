@@ -2,7 +2,7 @@
  *
  *  Exporting module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -19,10 +19,10 @@ import ExportingDefaults from './ExportingDefaults.js';
 import ExportingSymbols from './ExportingSymbols.js';
 import Fullscreen from './Fullscreen.js';
 import G from '../../Core/Globals.js';
-const { doc, SVG_NS, win } = G;
+const { composed, doc, SVG_NS, win } = G;
 import HU from '../../Core/HttpUtilities.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, removeEvent, uniqueKey } = U;
+const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, pushUnique, removeEvent, uniqueKey } = U;
 /* *
  *
  *  Composition
@@ -40,7 +40,6 @@ var Exporting;
      *  Constants
      *
      * */
-    const composedMembers = [];
     // These CSS properties are not inlined. Remember camelCase.
     const inlineDenylist = [
         /-/,
@@ -83,7 +82,6 @@ var Exporting;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Add the export button to the chart, with options.
      *
@@ -311,7 +309,7 @@ var Exporting;
     function compose(ChartClass, SVGRendererClass) {
         ExportingSymbols.compose(SVGRendererClass);
         Fullscreen.compose(ChartClass);
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             const chartProto = ChartClass.prototype;
             chartProto.afterPrint = afterPrint;
             chartProto.exportChart = exportChart;
@@ -331,7 +329,7 @@ var Exporting;
             chartProto.callbacks.push(chartCallback);
             addEvent(ChartClass, 'init', onChartInit);
             if (G.isSafari) {
-                G.win.matchMedia('print').addListener(function (mqlEvent) {
+                win.matchMedia('print').addListener(function (mqlEvent) {
                     if (!printingChart) {
                         return void 0;
                     }
@@ -343,8 +341,6 @@ var Exporting;
                     }
                 });
             }
-        }
-        if (U.pushUnique(composedMembers, setOptions)) {
             defaultOptions.exporting = merge(ExportingDefaults.exporting, defaultOptions.exporting);
             defaultOptions.lang = merge(ExportingDefaults.lang, defaultOptions.lang);
             // Buttons and menus are collected in a separate config option set
@@ -459,9 +455,8 @@ var Exporting;
                                     e.stopPropagation();
                                 }
                                 menu.hideMenu();
-                                if (item.onclick) {
-                                    item.onclick
-                                        .apply(chart, arguments);
+                                if (typeof item !== 'string' && item.onclick) {
+                                    item.onclick.apply(chart, arguments);
                                 }
                             }
                         }, void 0, innerMenu);
@@ -608,7 +603,7 @@ var Exporting;
             width: exportingOptions.width,
             scale: exportingOptions.scale,
             svg: svg
-        }, exportingOptions.formAttributes);
+        }, exportingOptions.fetchOptions);
     }
     /**
      * Return the unfiltered innerHTML of the chart container. Used as hook for
@@ -748,6 +743,10 @@ var Exporting;
                 }));
             }
         });
+        // Make sure the `colorAxis` object of the `defaultOptions` isn't used
+        // in the chart copy's user options, because a color axis should only be
+        // added when the user actually applies it.
+        options.colorAxis = chart.userOptions.colorAxis;
         // Generate the chart copy
         const chartCopy = new chart.constructor(options, chart.callback);
         // Axis options and series options  (#2022, #3900, #5982)

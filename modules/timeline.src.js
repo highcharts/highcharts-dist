@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Timeline series
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Daniel Studencki
  *
  * License: www.highcharts.com/license
@@ -41,7 +41,7 @@
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -58,16 +58,6 @@
          *
          * */
         class TimelinePoint extends LinePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -152,11 +142,10 @@
                 }
                 return [];
             }
-            init() {
-                const point = super.init.apply(this, arguments);
-                point.name = pick(point.name, 'Event');
-                point.y = 1;
-                return point;
+            constructor(series, options) {
+                super(series, options);
+                this.name ?? (this.name = 'Event');
+                this.y = 1;
             }
             isValid() {
                 return this.options.y !== null;
@@ -197,7 +186,7 @@
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -452,7 +441,7 @@
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -478,24 +467,6 @@
          * @augments Highcharts.Series
          */
         class TimelineSeries extends LineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.userOptions = void 0;
-                this.visibilityMap = void 0;
-            }
             /* *
              *
              *  Functions
@@ -707,6 +678,11 @@
                 return;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
         extend(TimelineSeries.prototype, {
             // Use a group of trackers from TrackerMixin

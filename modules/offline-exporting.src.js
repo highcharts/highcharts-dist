@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Client side exporting module
  *
- * (c) 2015-2021 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2024 Torstein Honsi / Oystein Moseng
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2015-2023 Oystein Moseng
+         *  (c) 2015-2024 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -164,7 +164,7 @@
     _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExportingDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -177,7 +177,7 @@
          *
          * */
         const OfflineExportingDefaults = {
-            libURL: 'https://code.highcharts.com/11.2.0/lib/',
+            libURL: 'https://code.highcharts.com/11.3.0/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {
@@ -236,17 +236,11 @@
         /* global MSBlobBuilder */
         const { defaultOptions } = D;
         const { downloadURL } = DownloadURL;
-        const { win, doc } = H;
+        const { composed, doc, win } = H;
         const { ajax } = HU;
-        const { addEvent, error, extend, fireEvent, merge } = U;
-        AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
+        const { addEvent, error, extend, fireEvent, merge, pushUnique } = U;
+        AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
         AST.allowedTags.push('desc', 'clippath', 'g');
-        /* *
-         *
-         * Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Composition
@@ -279,7 +273,7 @@
              * @private
              */
             function compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.getSVGForLocalExport = getSVGForLocalExport;
                     chartProto.exportChartLocal = exportChartLocal;
@@ -289,7 +283,6 @@
                 return ChartClass;
             }
             OfflineExporting.compose = compose;
-            /* eslint-disable valid-jsdoc */
             /**
              * Get data URL to an image of an SVG and call download on it options
              * object:

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Stock JS v11.2.0 (2023-10-30)
+ * @license Highcharts Stock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Karol Kolodziej
+ * (c) 2010-2024 Karol Kolodziej
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Stock/Indicators/MultipleLinesComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Wojciech Chmiel
+         *  (c) 2010-2024 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
@@ -64,7 +64,6 @@
             *  Constants
             *
             * */
-            const composedMembers = [];
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -119,21 +118,19 @@
              * @private
              */
             function compose(IndicatorClass) {
-                if (U.pushUnique(composedMembers, IndicatorClass)) {
-                    const proto = IndicatorClass.prototype;
-                    proto.linesApiNames = (proto.linesApiNames ||
-                        linesApiNames.slice());
-                    proto.pointArrayMap = (proto.pointArrayMap ||
-                        pointArrayMap.slice());
-                    proto.pointValKey = (proto.pointValKey ||
-                        pointValKey);
-                    proto.areaLinesNames = (proto.areaLinesNames ||
-                        areaLinesNames.slice());
-                    proto.drawGraph = indicatorDrawGraph;
-                    proto.getGraphPath = indicatorGetGraphPath;
-                    proto.toYData = indicatorToYData;
-                    proto.translate = indicatorTranslate;
-                }
+                const proto = IndicatorClass.prototype;
+                proto.linesApiNames = (proto.linesApiNames ||
+                    linesApiNames.slice());
+                proto.pointArrayMap = (proto.pointArrayMap ||
+                    pointArrayMap.slice());
+                proto.pointValKey = (proto.pointValKey ||
+                    pointValKey);
+                proto.areaLinesNames = (proto.areaLinesNames ||
+                    areaLinesNames.slice());
+                proto.drawGraph = indicatorDrawGraph;
+                proto.getGraphPath = indicatorGetGraphPath;
+                proto.toYData = indicatorToYData;
+                proto.translate = indicatorTranslate;
                 return IndicatorClass;
             }
             MultipleLinesComposition.compose = compose;
@@ -342,23 +339,6 @@
          * @augments Highcharts.Series
          */
         class KlingerIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-                this.volumeSeries = void 0;
-            }
             /* *
              *
              *  Functions
@@ -470,6 +450,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Klinger oscillator. This series requires the `linkedTo` option to be set
          * and should be loaded after the `stock/indicators/indicators.js` file.

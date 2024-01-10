@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -16,11 +16,6 @@ const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { pro
  *
  * */
 class HeikinAshiPoint extends CandlestickPoint {
-    constructor() {
-        super(...arguments);
-        // clone inheritence
-        this.resolveColor = HLCPoint.prototype.resolveColor;
-    }
 }
 /* *
  *

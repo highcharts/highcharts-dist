@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Annotations module
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -35,23 +35,18 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/Annotations/AnnotationChart.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/Annotations/AnnotationChart.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, erase, find, fireEvent, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, erase, find, fireEvent, pick, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -292,9 +287,9 @@
              * @private
              */
             function compose(AnnotationClass, ChartClass, PointerClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
+                    const chartProto = ChartClass.prototype, pointerProto = PointerClass.prototype;
                     addEvent(ChartClass, 'afterInit', onChartAfterInit);
-                    const chartProto = ChartClass.prototype;
                     chartProto.addAnnotation = chartAddAnnotation;
                     chartProto.callbacks.push(chartCallback);
                     chartProto.collectionsWithInit.annotations = [chartAddAnnotation];
@@ -307,9 +302,6 @@
                         this.annotations.push(annotation);
                         return annotation;
                     };
-                }
-                if (U.pushUnique(composedMembers, PointerClass)) {
-                    const pointerProto = PointerClass.prototype;
                     wrap(pointerProto, 'onContainerMouseDown', wrapPointerOnContainerMouseDown);
                 }
             }
@@ -963,7 +955,7 @@
     _registerModule(_modules, 'Extensions/Annotations/EventEmitter.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -1010,7 +1002,10 @@
                         }
                     };
                     if ((emitter.nonDOMEvents || []).indexOf(type) === -1) {
-                        emitter.graphic.on(type, eventHandler);
+                        addEvent(emitter.graphic.element, type, eventHandler, { passive: false });
+                        if (emitter.graphic.div) {
+                            addEvent(emitter.graphic.div, type, eventHandler, { passive: false });
+                        }
                     }
                     else {
                         addEvent(emitter, type, eventHandler, { passive: false });
@@ -1240,7 +1235,6 @@
              * */
             constructor(chart, target, options, index) {
                 super();
-                this.graphic = void 0;
                 /**
                  * List of events for `anntation.options.events` that should not be
                  * added to `annotation.graphic` but to the `annotation`.
@@ -1466,8 +1460,6 @@
              *
              * */
             constructor(chart, target, options) {
-                this.plotX = void 0;
-                this.plotY = void 0;
                 /* *
                  *
                  * Functions
@@ -1858,12 +1850,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -1917,8 +1903,9 @@
              * @private
              */
             function compose(ControlTargetClass) {
-                if (U.pushUnique(composedMembers, ControlTargetClass)) {
-                    U.merge(true, ControlTargetClass.prototype, {
+                const controlProto = ControlTargetClass.prototype;
+                if (!controlProto.addControlPoints) {
+                    U.merge(true, controlProto, {
                         addControlPoints,
                         anchor,
                         destroyControlTarget,
@@ -2130,7 +2117,6 @@
              *
              * */
             constructor(annotation, options, index, itemType) {
-                this.graphic = void 0;
                 this.annotation = annotation;
                 this.chart = annotation.chart;
                 this.collection = (itemType === 'label' ? 'labels' : 'shapes');
@@ -2457,13 +2443,13 @@
          *
          * */
         const { defaultMarkers } = ControllableDefaults;
-        const { addEvent, defined, extend, merge, uniqueKey } = U;
+        const { composed } = H;
+        const { addEvent, defined, extend, merge, pushUnique, uniqueKey } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         const markerEndSetter = createMarkerSetter('marker-end');
         const markerStartSetter = createMarkerSetter('marker-start');
         // See TRACKER_FILL in highcharts.src.js
@@ -2554,11 +2540,9 @@
              *
              * */
             static compose(ChartClass, SVGRendererClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
-                }
-                if (U.pushUnique(composedMembers, SVGRendererClass)) {
+                if (pushUnique(composed, this.compose)) {
                     const svgRendererProto = SVGRendererClass.prototype;
+                    addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
                     svgRendererProto.addMarker = svgRendererAddMarker;
                 }
             }
@@ -3151,20 +3135,15 @@
 
         return ControllableEllipse;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Controllables/ControllableLabel.js', [_modules['Extensions/Annotations/Controllables/Controllable.js'], _modules['Core/Templating.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Controllable, F, MockPoint, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Controllables/ControllableLabel.js', [_modules['Extensions/Annotations/Controllables/Controllable.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Utilities.js']], function (Controllable, F, H, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
         const { format } = F;
-        const { extend, isNumber, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { extend, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -3272,7 +3251,7 @@
                 };
             }
             static compose(SVGRendererClass) {
-                if (U.pushUnique(composedMembers, SVGRendererClass)) {
+                if (pushUnique(composed, this.compose)) {
                     const svgRendererProto = SVGRendererClass.prototype;
                     svgRendererProto.symbols.connector = symbolConnector;
                 }
@@ -3637,7 +3616,7 @@
     _registerModule(_modules, 'Core/Chart/ChartNavigationComposition.js', [], function () {
         /**
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -3729,7 +3708,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -3828,7 +3807,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsDefaults.js', [_modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (NBU, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -4144,7 +4123,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.2.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.3.0/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -4224,7 +4203,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -4233,15 +4212,9 @@
          * */
         const { setOptions } = D;
         const { format } = F;
-        const { doc, win } = H;
+        const { composed, doc, win } = H;
         const { getFieldType } = NBU;
-        const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -4446,7 +4419,7 @@
              *
              * */
             static compose(AnnotationClass, ChartClass) {
-                if (U.pushUnique(composedMembers, AnnotationClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(AnnotationClass, 'remove', onAnnotationRemove);
                     // Basic shapes:
                     selectableAnnotation(AnnotationClass);
@@ -4454,17 +4427,11 @@
                     objectEach(AnnotationClass.types, (annotationType) => {
                         selectableAnnotation(annotationType);
                     });
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'destroy', onChartDestroy);
                     addEvent(ChartClass, 'load', onChartLoad);
                     addEvent(ChartClass, 'render', onChartRender);
-                }
-                if (U.pushUnique(composedMembers, NavigationBindings)) {
                     addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
                     addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
-                }
-                if (U.pushUnique(composedMembers, setOptions)) {
                     setOptions(NavigationBindingDefaults);
                 }
             }
@@ -4475,7 +4442,6 @@
              * */
             constructor(chart, options) {
                 this.boundClassNames = void 0;
-                this.selectedButton = void 0;
                 this.chart = chart;
                 this.options = options;
                 this.eventsToUnbind = [];
@@ -5049,7 +5015,7 @@
     _registerModule(_modules, 'Shared/BaseForm.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (AST, U) {
         /* *
          *
-         *  (c) 2009 - 2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5174,7 +5140,7 @@
          *
          *  Popup generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -5349,7 +5315,7 @@
          *
          *  Popup generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -5954,7 +5920,7 @@
          *
          *  Popup generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -6088,7 +6054,7 @@
          *
          *  Popup generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -6314,25 +6280,20 @@
 
         return Popup;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupComposition.js', [_modules['Extensions/Annotations/Popup/Popup.js'], _modules['Core/Utilities.js']], function (Popup, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Popup/PopupComposition.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/Popup/Popup.js'], _modules['Core/Utilities.js']], function (H, Popup, U) {
         /* *
          *
          *  Popup generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -6342,11 +6303,9 @@
          * @private
          */
         function compose(NagivationBindingsClass, PointerClass) {
-            if (U.pushUnique(composedMembers, NagivationBindingsClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
                 addEvent(NagivationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
-            }
-            if (U.pushUnique(composedMembers, PointerClass)) {
                 wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
             }
         }
@@ -6367,7 +6326,7 @@
                 this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/11.2.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/11.3.0/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         }
@@ -6396,7 +6355,7 @@
     _registerModule(_modules, 'Extensions/Annotations/Annotation.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Extensions/Annotations/AnnotationChart.js'], _modules['Extensions/Annotations/AnnotationDefaults.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllableEllipse.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/ControlTarget.js'], _modules['Extensions/Annotations/EventEmitter.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Extensions/Annotations/Popup/PopupComposition.js'], _modules['Core/Utilities.js']], function (A, AnnotationChart, AnnotationDefaults, ControllableRect, ControllableCircle, ControllableEllipse, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, ControlTarget, EventEmitter, MockPoint, NavigationBindings, PopupComposition, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -6488,12 +6447,6 @@
             constructor(chart, userOptions) {
                 super();
                 this.coll = 'annotations';
-                this.animationConfig = void 0;
-                this.graphic = void 0;
-                this.group = void 0;
-                this.labelCollector = void 0;
-                this.labelsGroup = void 0;
-                this.shapesGroup = void 0;
                 /**
                  * The chart that the annotation belongs to.
                  *
@@ -6925,7 +6878,7 @@
                 chart.options.annotations[userOptionsIndex] = options;
                 this.isUpdating = true;
                 if (pick(redraw, true)) {
-                    chart.redraw();
+                    chart.drawAnnotations();
                 }
                 fireEvent(this, 'afterUpdate');
                 this.isUpdating = false;

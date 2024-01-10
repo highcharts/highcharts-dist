@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2014-2021 Highsoft AS
+ *  (c) 2014-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -15,7 +15,7 @@ import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import ColorMapComposition from '../ColorMapComposition.js';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import TreemapAlgorithmGroup from './TreemapAlgorithmGroup.js';
@@ -26,14 +26,13 @@ import TreemapUtilities from './TreemapUtilities.js';
 import TU from '../TreeUtilities.js';
 const { getColor, getLevelOptions, updateRootId } = TU;
 import U from '../../Core/Utilities.js';
-const { addEvent, correctFloat, defined, error, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, stableSort } = U;
+const { addEvent, correctFloat, defined, error, extend, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, stableSort } = U;
 /* *
  *
  *  Constants
  *
  * */
 const axisMax = 100;
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -89,37 +88,13 @@ function onSeriesAfterBindAxes() {
  * @augments Highcharts.Series
  */
 class TreemapSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.axisRatio = void 0;
-        this.data = void 0;
-        this.mapOptionsToLevel = void 0;
-        this.nodeMap = void 0;
-        this.nodeList = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.rootNode = void 0;
-        this.tree = void 0;
-        this.level = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Static Functions
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
         }
     }
@@ -256,7 +231,7 @@ class TreemapSeries extends ScatterSeries {
         if (style &&
             !defined(style.textOverflow) &&
             dataLabel.text &&
-            dataLabel.getBBox().width > dataLabel.text.textWidth) {
+            dataLabel.getBBox().width > (dataLabel.text.textWidth || 0)) {
             dataLabel.css({
                 textOverflow: 'ellipsis',
                 // unit (px) is required when useHTML is true
@@ -966,6 +941,11 @@ class TreemapSeries extends ScatterSeries {
         series.setPointValues();
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, TreemapSeriesDefaults);
 extend(TreemapSeries.prototype, {
     buildKDTree: noop,

@@ -2,7 +2,7 @@
  *
  *  Dependency wheel module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -20,23 +20,6 @@ const { pInt, wrap } = U;
  *
  * */
 class DependencyWheelPoint extends SankeyPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.angle = void 0;
-        this.fromNode = void 0;
-        this.index = void 0;
-        this.linksFrom = void 0;
-        this.linksTo = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.shapeArgs = void 0;
-        this.toNode = void 0;
-    }
     /* *
      *
      *  Functions

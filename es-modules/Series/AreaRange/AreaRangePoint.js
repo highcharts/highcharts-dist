@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -18,29 +18,16 @@ const { defined, isNumber, merge } = U;
  *
  * */
 class AreaRangePoint extends AreaPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        /**
-         * Range series only. The high or maximum value for each data point.
-         * @name Highcharts.Point#high
-         * @type {number|undefined}
-         */
-        this.high = void 0;
-        /**
-         * Range series only. The low or minimum value for each data point.
-         * @name Highcharts.Point#low
-         * @type {number|undefined}
-         */
-        this.low = void 0;
-        this.options = void 0;
-        this.plotX = void 0;
-        this.series = void 0;
-    }
+    /**
+     * Range series only. The high or maximum value for each data point.
+     * @name Highcharts.Point#high
+     * @type {number|undefined}
+     */
+    /**
+     * Range series only. The low or minimum value for each data point.
+     * @name Highcharts.Point#low
+     * @type {number|undefined}
+     */
     /* *
      *
      *  Functions

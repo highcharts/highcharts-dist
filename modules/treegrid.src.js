@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
  *
  * Tree Grid
  *
- * (c) 2016-2021 Jon Arild Nygard
+ * (c) 2016-2024 Jon Arild Nygard
  *
  * License: www.highcharts.com/license
  */
@@ -35,17 +35,18 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (H, StackItem, U) {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2009-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
+        const { composed } = H;
+        const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -64,29 +65,20 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Adds support for broken axes.
              * @private
              */
             function compose(AxisClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, compose)) {
                     AxisClass.keepProps.push('brokenAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
                     addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.drawBreaks = seriesDrawBreaks;
                     seriesProto.gappedPath = seriesGappedPath;
@@ -661,8 +653,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { dateFormats } = H;
-        const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, timeUnits, wrap } = U;
+        const { composed, dateFormats } = H;
+        const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, pushUnique, timeUnits, wrap } = U;
         /* *
          *
          *  Enums
@@ -679,12 +671,6 @@
             GridAxisSide[GridAxisSide["bottom"] = 2] = "bottom";
             GridAxisSide[GridAxisSide["left"] = 3] = "left";
         })(GridAxisSide || (GridAxisSide = {}));
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -736,13 +722,13 @@
          * @private
          */
         function compose(AxisClass, ChartClass, TickClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
                 AxisClass.keepProps.push('grid');
                 AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
                 wrap(AxisClass.prototype, 'unsquish', wrapUnsquish);
+                wrap(AxisClass.prototype, 'getOffset', wrapGetOffset);
                 // Add event handlers
                 addEvent(AxisClass, 'init', onInit);
-                addEvent(AxisClass, 'afterGetOffset', onAfterGetOffset);
                 addEvent(AxisClass, 'afterGetTitlePosition', onAfterGetTitlePosition);
                 addEvent(AxisClass, 'afterInit', onAfterInit);
                 addEvent(AxisClass, 'afterRender', onAfterRender);
@@ -753,11 +739,7 @@
                 addEvent(AxisClass, 'afterTickSize', onAfterTickSize);
                 addEvent(AxisClass, 'trimTicks', onTrimTicks);
                 addEvent(AxisClass, 'destroy', onDestroy);
-            }
-            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
-            }
-            if (U.pushUnique(composedMembers, TickClass)) {
                 addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
                 addEvent(TickClass, 'labelFormat', onTickLabelFormat);
             }
@@ -823,11 +805,27 @@
          * Handle columns and getOffset.
          * @private
          */
-        function onAfterGetOffset() {
-            const { grid } = this;
-            (grid && grid.columns || []).forEach(function (column) {
-                column.getOffset();
-            });
+        function wrapGetOffset(proceed) {
+            const { grid } = this, 
+            // On the left side we handle the columns first because the offset is
+            // calculated from the plot area and out
+            columnsFirst = this.side === 3;
+            if (!columnsFirst) {
+                proceed.apply(this);
+            }
+            if (!grid?.isColumn) {
+                let columns = grid?.columns || [];
+                if (columnsFirst) {
+                    columns = columns.slice().reverse();
+                }
+                columns
+                    .forEach((column) => {
+                    column.getOffset();
+                });
+            }
+            if (columnsFirst) {
+                proceed.apply(this);
+            }
         }
         /**
          * @private
@@ -879,17 +877,20 @@
                 let columnIndex = axis.grid.columnIndex = 0;
                 // Handle columns, each column is a grid axis
                 while (++columnIndex < gridOptions.columns.length) {
-                    const columnOptions = merge(userOptions, gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                    const columnOptions = merge(userOptions, gridOptions.columns[columnIndex], {
                         isInternal: true,
                         linkedTo: 0,
-                        // Force to behave like category axis
-                        type: 'category',
                         // Disable by default the scrollbar on the grid axis
                         scrollbar: {
                             enabled: false
                         }
+                    }, 
+                    // Avoid recursion
+                    {
+                        grid: {
+                            columns: void 0
+                        }
                     });
-                    delete columnOptions.grid.columns; // Prevent recursion
                     const column = new Axis(axis.chart, columnOptions, 'yAxis');
                     column.grid.isColumn = true;
                     column.grid.columnIndex = columnIndex;
@@ -915,9 +916,16 @@
          * @private
          */
         function onAfterRender() {
-            const axis = this, grid = axis.grid, options = axis.options, gridOptions = options.grid || {};
+            const axis = this, { axisTitle, grid, options } = axis, gridOptions = options.grid || {};
             if (gridOptions.enabled === true) {
-                const min = axis.min || 0, max = axis.max || 0;
+                const min = axis.min || 0, max = axis.max || 0, firstTick = axis.ticks[axis.tickPositions[0]];
+                // Adjust the title max width to the column width (#19657)
+                if (axisTitle &&
+                    !axis.chart.styledMode &&
+                    firstTick?.slotWidth &&
+                    !axis.options.title.style.width) {
+                    axisTitle.css({ width: `${firstTick.slotWidth}px` });
+                }
                 // @todo acutual label padding (top, bottom, left, right)
                 axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
                 // Remove right wall before rendering if updating
@@ -1022,7 +1030,8 @@
                 if (!axis.horiz &&
                     axis.chart.hasRendered &&
                     (axis.scrollbar ||
-                        (axis.linkedParent && axis.linkedParent.scrollbar))) {
+                        (axis.linkedParent && axis.linkedParent.scrollbar)) &&
+                    axis.tickPositions.length) {
                     const tickmarkOffset = axis.tickmarkOffset, lastTick = axis.tickPositions[axis.tickPositions.length - 1], firstTick = axis.tickPositions[0];
                     let label, tickMark;
                     while ((label = axis.hiddenLabels.pop()) && label.element) {
@@ -1032,7 +1041,7 @@
                         tickMark.element) {
                         tickMark.show(); // #16439
                     }
-                    // Hide/show firts tick label.
+                    // Hide/show first tick label.
                     label = axis.ticks[firstTick].label;
                     if (label) {
                         if (min - firstTick > tickmarkOffset) {
@@ -1148,7 +1157,10 @@
                     title: {
                         text: null,
                         reserveSpace: false,
-                        rotation: 0
+                        rotation: 0,
+                        style: {
+                            textOverflow: 'ellipsis'
+                        }
                     },
                     // In a grid axis, only allow one unit of certain types,
                     // for example we shouln't have one grid cell spanning
@@ -1196,7 +1208,8 @@
                         // Only for linked axes
                         defined(userOptions.linkedTo) &&
                         !defined(userOptions.tickPositioner) &&
-                        !defined(userOptions.tickInterval)) {
+                        !defined(userOptions.tickInterval) &&
+                        !defined(userOptions.units)) {
                         gridAxisOptions.tickPositioner = function (min, max) {
                             const parentInfo = (this.linkedParent &&
                                 this.linkedParent.tickPositions &&
@@ -1259,10 +1272,10 @@
             const userOptions = e.userOptions;
             const gridOptions = userOptions && userOptions.grid || {};
             const columns = gridOptions.columns;
-            // Add column options to the parent axis. Children has their column
-            // options set on init in onGridAxisAfterInit.
+            // Add column options to the parent axis. Children has their column options
+            // set on init in onGridAxisAfterInit.
             if (gridOptions.enabled && columns) {
-                merge(true, axis.options, columns[columns.length - 1]);
+                merge(true, axis.options, columns[0]);
             }
         }
         /**
@@ -1459,29 +1472,23 @@
          *       ticks and not the labels directly?
          */
         function onTrimTicks() {
-            const axis = this;
-            const options = axis.options;
-            const gridOptions = options.grid || {};
-            const categoryAxis = axis.categories;
-            const tickPositions = axis.tickPositions;
-            const firstPos = tickPositions[0];
-            const lastPos = tickPositions[tickPositions.length - 1];
-            const linkedMin = axis.linkedParent && axis.linkedParent.min;
-            const linkedMax = axis.linkedParent && axis.linkedParent.max;
-            const min = linkedMin || axis.min;
-            const max = linkedMax || axis.max;
-            const tickInterval = axis.tickInterval;
-            const endMoreThanMin = (firstPos < min &&
-                firstPos + tickInterval > min);
-            const startLessThanMax = (lastPos > max &&
-                lastPos - tickInterval < max);
+            const axis = this, chart = axis.chart, options = axis.options, gridOptions = options.grid || {}, categoryAxis = axis.categories, tickPositions = axis.tickPositions, firstPos = tickPositions[0], secondPos = tickPositions[1], lastPos = tickPositions[tickPositions.length - 1], beforeLastPos = tickPositions[tickPositions.length - 2], linkedMin = axis.linkedParent && axis.linkedParent.min, linkedMax = axis.linkedParent && axis.linkedParent.max, min = linkedMin || axis.min, max = linkedMax || axis.max, tickInterval = axis.tickInterval, startLessThanMin = ( // #19845
+            isNumber(min) &&
+                min >= firstPos + tickInterval &&
+                min < secondPos), endMoreThanMin = (isNumber(min) &&
+                firstPos < min &&
+                firstPos + tickInterval > min), startLessThanMax = (isNumber(max) &&
+                lastPos > max &&
+                lastPos - tickInterval < max), endMoreThanMax = (isNumber(max) &&
+                max <= lastPos - tickInterval &&
+                max > beforeLastPos);
             if (gridOptions.enabled === true &&
                 !categoryAxis &&
-                (axis.horiz || axis.isLinked)) {
-                if (endMoreThanMin && !options.startOnTick) {
+                (axis.isXAxis || axis.isLinked)) {
+                if ((endMoreThanMin || startLessThanMin) && !options.startOnTick) {
                     tickPositions[0] = min;
                 }
-                if (startLessThanMax && !options.endOnTick) {
+                if ((startLessThanMax || endMoreThanMax) && !options.endOnTick) {
                     tickPositions[tickPositions.length - 1] = max;
                 }
             }
@@ -1541,10 +1548,16 @@
                 const axis = this.axis;
                 const chart = axis.chart;
                 const columnIndex = axis.grid.columnIndex;
-                const columns = (axis.linkedParent && axis.linkedParent.grid.columns ||
-                    axis.grid.columns);
+                const columns = (axis.linkedParent?.grid.columns ||
+                    axis.grid.columns ||
+                    []);
                 const parentAxis = columnIndex ? axis.linkedParent : axis;
                 let thisIndex = -1, lastIndex = 0;
+                // On the left side, when we have columns (not only multiple axes), the
+                // main axis is to the left
+                if (axis.side === 3 && !chart.inverted && columns.length) {
+                    return !axis.linkedParent;
+                }
                 (chart[axis.coll] || []).forEach((otherAxis, index) => {
                     if (otherAxis.side === axis.side &&
                         !otherAxis.options.isInternal) {
@@ -1571,7 +1584,7 @@
             renderBorder(path) {
                 const axis = this.axis, renderer = axis.chart.renderer, options = axis.options, extraBorderLine = renderer.path(path)
                     .addClass('highcharts-axis-line')
-                    .add(axis.axisBorder);
+                    .add(axis.axisGroup);
                 if (!renderer.styledMode) {
                     extraBorderLine.attr({
                         stroke: options.lineColor,
@@ -1665,6 +1678,8 @@
          *
          * @sample gantt/demo/left-axis-table
          *         Left axis as a table
+         * @sample gantt/demo/treegrid-columns
+         *         Collapsible tree grid with columns
          *
          * @type      {Array<Highcharts.XAxisOptions>}
          * @apioption xAxis.grid.columns
@@ -1673,6 +1688,7 @@
          * Set border color for the label grid lines.
          *
          * @type      {Highcharts.ColorString}
+         * @default   #e6e6e6
          * @apioption xAxis.grid.borderColor
          */
         /**
@@ -1699,7 +1715,7 @@
     _registerModule(_modules, 'Gantt/Tree.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -1735,25 +1751,27 @@
          * Map from parent id to children index in data
          */
         function getListOfParents(data) {
-            const listOfParents = data.reduce((prev, curr) => {
-                const parent = pick(curr.parent, '');
+            const root = '', ids = [], listOfParents = data.reduce((prev, curr) => {
+                const { parent = '', id } = curr;
                 if (typeof prev[parent] === 'undefined') {
                     prev[parent] = [];
                 }
                 prev[parent].push(curr);
+                if (id) {
+                    ids.push(id);
+                }
                 return prev;
             }, {});
-            // parents = Object.keys(listOfParents);
-            // If parent does not exist, hoist parent to root of tree.
-            // parents.forEach((parent, list): void => {
-            //     const children = listOfParents[parent];
-            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-            //         for (const child of children) {
-            //             (list as any)[''].push(child);
-            //         }
-            //         delete (list as any)[parent];
-            //     }
-            // });
+            Object.keys(listOfParents).forEach((node) => {
+                if ((node !== root) && (ids.indexOf(node) === -1)) {
+                    const adoptedByRoot = listOfParents[node].map(function (orphan) {
+                        const { parent, ...parentExcluded } = orphan; // #15196
+                        return parentExcluded;
+                    });
+                    listOfParents[root].push(...adoptedByRoot);
+                    delete listOfParents[node];
+                }
+            });
             return listOfParents;
         }
         /** @private */
@@ -1808,8 +1826,7 @@
         }
         /** @private */
         function getTree(data, options) {
-            const mapOfIdToChildren = getListOfParents(data);
-            return getNode('', null, 1, null, mapOfIdToChildren, options);
+            return getNode('', null, 1, null, getListOfParents(data), options);
         }
         /* *
          *
@@ -1823,7 +1840,7 @@
 
         return Tree;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridTick.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridTick.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -1834,13 +1851,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, isObject, isNumber, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, removeEvent, isObject, isNumber, pick, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -1873,15 +1885,15 @@
             const css = isObject(options.style) ? options.style : {};
             label.removeClass('highcharts-treegrid-node-active');
             if (!label.renderer.styledMode) {
-                label.css({ textDecoration: css.textDecoration });
+                label.css({ textDecoration: (css.textDecoration || 'none') });
             }
         }
         /**
          * @private
          */
         function renderLabelIcon(tick, params) {
-            const treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, iconCenter = {
-                x: labelBox.x - (width / 2) - (options.padding || 0),
+            const treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, padding = options.padding ?? tick.axis.linkedParent ? 0 : 5, iconCenter = {
+                x: labelBox.x - (width / 2) - padding,
                 y: labelBox.y - (height / 2)
             }, rotation = params.collapsed ? 90 : 180, shouldRender = params.show && isNumber(iconCenter.y);
             let icon = treeGrid.labelIcon;
@@ -1916,12 +1928,11 @@
          */
         function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index, step) {
             const tick = this, lbOptions = pick(tick.options && tick.options.labels, labelOptions), pos = tick.pos, axis = tick.axis, options = axis.options, isTreeGrid = options.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
-            let symbolOptions, indentation, mapOfPosToGridNode, node, level;
+            let mapOfPosToGridNode, node, level;
             if (isTreeGrid) {
-                symbolOptions = (lbOptions && isObject(lbOptions.symbol, true) ?
+                const { width = 0, padding = axis.linkedParent ? 0 : 5 } = (lbOptions && isObject(lbOptions.symbol, true) ?
                     lbOptions.symbol :
-                    {});
-                indentation = (lbOptions && isNumber(lbOptions.indentation) ?
+                    {}), indentation = (lbOptions && isNumber(lbOptions.indentation) ?
                     lbOptions.indentation :
                     0);
                 mapOfPosToGridNode = axis.treeGrid.mapOfPosToGridNode;
@@ -1929,8 +1940,7 @@
                 level = (node && node.depth) || 1;
                 result.x += (
                 // Add space for symbols
-                ((symbolOptions.width || 0) +
-                    ((symbolOptions.padding || 0) * 2)) +
+                (width + (padding * 2)) +
                     // Apply indentation
                     ((level - 1) * indentation));
             }
@@ -1940,25 +1950,19 @@
          * @private
          */
         function wrapRenderLabel(proceed) {
-            const tick = this, pos = tick.pos, axis = tick.axis, label = tick.label, mapOfPosToGridNode = axis.treeGrid.mapOfPosToGridNode, options = axis.options, labelOptions = pick(tick.options && tick.options.labels, options && options.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
+            const tick = this, { pos, axis, label, treeGrid: tickGrid, options: tickOptions } = tick, icon = tickGrid?.labelIcon, labelElement = label?.element, { treeGrid: axisGrid, options: axisOptions, chart, tickPositions } = axis, mapOfPosToGridNode = axisGrid.mapOfPosToGridNode, labelOptions = pick(tickOptions?.labels, axisOptions?.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
                 labelOptions.symbol :
-                {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], level = node && node.depth, isTreeGrid = options.type === 'treegrid', shouldRender = axis.tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', styledMode = axis.chart.styledMode;
+                {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], { descendants, depth } = node || {}, hasDescendants = node && descendants && descendants > 0, level = depth, isTreeGridElement = (axisOptions.type === 'treegrid') && labelElement, shouldRender = tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', prefixLevelClass = prefixClassName + 'level-', styledMode = chart.styledMode;
             let collapsed, addClassName, removeClassName;
-            if (isTreeGrid && node) {
+            if (isTreeGridElement && node) {
                 // Add class name for hierarchical styling.
-                if (label &&
-                    label.element) {
-                    label.addClass(prefixClassName + 'level-' + level);
-                }
+                label
+                    .removeClass(new RegExp(prefixLevelClass + '.*'))
+                    .addClass(prefixLevelClass + level);
             }
             proceed.apply(tick, Array.prototype.slice.call(arguments, 1));
-            if (isTreeGrid &&
-                label &&
-                label.element &&
-                node &&
-                node.descendants &&
-                node.descendants > 0) {
-                collapsed = axis.treeGrid.isCollapsed(node);
+            if (isTreeGridElement && hasDescendants) {
+                collapsed = axisGrid.isCollapsed(node);
                 renderLabelIcon(tick, {
                     color: (!styledMode &&
                         label.styles &&
@@ -1985,7 +1989,7 @@
                     });
                 }
                 // Add events to both label text and icon
-                [label, tick.treeGrid.labelIcon].forEach((object) => {
+                [label, icon].forEach((object) => {
                     if (object && !object.attachedTreeGridEvents) {
                         // On hover
                         addEvent(object.element, 'mouseover', function () {
@@ -1996,11 +2000,16 @@
                             onTickHoverExit(label, labelOptions);
                         });
                         addEvent(object.element, 'click', function () {
-                            tick.treeGrid.toggleCollapse();
+                            tickGrid.toggleCollapse();
                         });
                         object.attachedTreeGridEvents = true;
                     }
                 });
+            }
+            else if (icon) {
+                removeEvent(labelElement);
+                label?.css({ cursor: 'default' });
+                icon.destroy();
             }
         }
         /* *
@@ -2022,18 +2031,19 @@
              * @private
              */
             static compose(TickClass) {
-                if (U.pushUnique(composedMembers, TickClass)) {
+                if (pushUnique(composed, this.compose)) {
+                    const tickProto = TickClass.prototype;
                     addEvent(TickClass, 'init', onTickInit);
-                    wrap(TickClass.prototype, 'getLabelPosition', wrapGetLabelPosition);
-                    wrap(TickClass.prototype, 'renderLabel', wrapRenderLabel);
+                    wrap(tickProto, 'getLabelPosition', wrapGetLabelPosition);
+                    wrap(tickProto, 'renderLabel', wrapRenderLabel);
                     // backwards compatibility
-                    TickClass.prototype.collapse = function (redraw) {
+                    tickProto.collapse = function (redraw) {
                         this.treeGrid.collapse(redraw);
                     };
-                    TickClass.prototype.expand = function (redraw) {
+                    tickProto.expand = function (redraw) {
                         this.treeGrid.expand(redraw);
                     };
-                    TickClass.prototype.toggleCollapse = function (redraw) {
+                    tickProto.toggleCollapse = function (redraw) {
                         this.treeGrid.toggleCollapse(redraw);
                     };
                 }
@@ -2098,10 +2108,9 @@
              * {@link Highcharts.Chart#redraw}
              */
             expand(redraw) {
-                const tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
-                if (brokenAxis &&
-                    axis.treeGrid.mapOfPosToGridNode) {
-                    const pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.expand(node);
+                const { pos, axis } = this.tick, { treeGrid, brokenAxis } = axis, posMappedNodes = treeGrid.mapOfPosToGridNode;
+                if (brokenAxis && posMappedNodes) {
+                    const node = posMappedNodes[pos], breaks = treeGrid.expand(node);
                     brokenAxis.setBreaks(breaks, pick(redraw, true));
                 }
             }
@@ -2138,7 +2147,7 @@
     _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -2326,7 +2335,7 @@
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGrid/TreeGridTick.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, Tree, TreeGridTick, TU, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Core/Globals.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGrid/TreeGridTick.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, H, Tree, TreeGridTick, TU, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -2337,14 +2346,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { getLevelOptions } = TU;
-        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, removeEvent, wrap } = U;
         /* *
          *
          *  Variables
@@ -2790,18 +2794,13 @@
                             x: -5,
                             y: -5,
                             height: 10,
-                            width: 10,
-                            padding: 5
+                            width: 10
                         }
                     },
                     uniqueNames: false
                 }, userOptions, {
                     // Forced options
-                    reversed: true,
-                    // grid.columns is not supported in treegrid
-                    grid: {
-                        columns: void 0
-                    }
+                    reversed: true
                 });
             }
             // Now apply the original function with the original arguments, which are
@@ -2822,23 +2821,54 @@
          * The original setTickInterval function.
          */
         function wrapSetTickInterval(proceed) {
-            const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+            const axis = this, options = axis.options, linkedParent = typeof options.linkedTo === 'number' ?
+                this.chart[axis.coll]?.[options.linkedTo] :
+                void 0, isTreeGrid = options.type === 'treegrid';
             if (isTreeGrid) {
                 axis.min = pick(axis.userMin, options.min, axis.dataMin);
                 axis.max = pick(axis.userMax, options.max, axis.dataMax);
                 fireEvent(axis, 'foundExtremes');
-                // setAxisTranslation modifies the min and max according to
-                // axis breaks.
+                // `setAxisTranslation` modifies the min and max according to axis
+                // breaks.
                 axis.setAxisTranslation();
-                axis.tickmarkOffset = 0.5;
                 axis.tickInterval = 1;
+                axis.tickmarkOffset = 0.5;
                 axis.tickPositions = axis.treeGrid.mapOfPosToGridNode ?
                     axis.treeGrid.getTickPositions() :
                     [];
+                if (linkedParent) {
+                    const linkedParentExtremes = linkedParent.getExtremes();
+                    axis.min = pick(linkedParentExtremes.min, linkedParentExtremes.dataMin);
+                    axis.max = pick(linkedParentExtremes.max, linkedParentExtremes.dataMax);
+                    axis.tickPositions = linkedParent.tickPositions;
+                }
+                axis.linkedParent = linkedParent;
             }
             else {
                 proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
             }
+        }
+        /**
+         * Wrap axis redraw to remove TreeGrid events from ticks
+         *
+         * @private
+         * @function Highcharts.GridAxis#redraw
+         *
+         * @param {Function} proceed
+         * The original setTickInterval function.
+         */
+        function wrapRedraw(proceed) {
+            const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+            if (isTreeGrid && axis.visible) {
+                axis.tickPositions.forEach(function (pos) {
+                    const tick = axis.ticks[pos];
+                    if (tick.label && tick.label.attachedTreeGridEvents) {
+                        removeEvent(tick.label.element);
+                        tick.label.attachedTreeGridEvents = false;
+                    }
+                });
+            }
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
         }
         /* *
          *
@@ -2859,20 +2889,19 @@
              * @private
              */
             static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
+                    const axisProps = AxisClass.prototype;
                     if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
                         AxisClass.keepProps.push('treeGrid');
                     }
-                    const axisProps = AxisClass.prototype;
                     wrap(axisProps, 'generateTick', wrapGenerateTick);
                     wrap(axisProps, 'init', wrapInit);
                     wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
+                    wrap(axisProps, 'redraw', wrapRedraw);
                     // Make utility functions available for testing.
                     axisProps.utils = {
                         getNode: Tree.getNode
                     };
-                }
-                if (U.pushUnique(composedMembers, TickClass)) {
                     if (!TickConstructor) {
                         TickConstructor = TickClass;
                     }

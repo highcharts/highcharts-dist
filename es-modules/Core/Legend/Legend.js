@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -13,12 +13,12 @@ const { animObject, setAnimation } = A;
 import F from '../Templating.js';
 const { format } = F;
 import H from '../Globals.js';
-const { marginNames } = H;
+const { composed, marginNames } = H;
 import Point from '../Series/Point.js';
 import R from '../Renderer/RendererUtilities.js';
 const { distribute } = R;
 import U from '../Utilities.js';
-const { addEvent, createElement, css, defined, discardElement, find, fireEvent, isNumber, merge, pick, relativeLength, stableSort, syncTimeout } = U;
+const { addEvent, createElement, css, defined, discardElement, find, fireEvent, isNumber, merge, pick, pushUnique, relativeLength, stableSort, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -41,48 +41,6 @@ const { addEvent, createElement, css, defined, discardElement, find, fireEvent, 
 class Legend {
     /* *
      *
-     *  Constructors
-     *
-     * */
-    constructor(chart, options) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.allItems = [];
-        this.box = void 0;
-        this.contentGroup = void 0;
-        this.display = false;
-        this.group = void 0;
-        this.initialItemY = 0;
-        this.itemHeight = 0;
-        this.itemMarginBottom = 0;
-        this.itemMarginTop = 0;
-        this.itemX = 0;
-        this.itemY = 0;
-        this.lastItemY = 0;
-        this.lastLineHeight = 0;
-        this.legendHeight = 0;
-        this.legendWidth = 0;
-        this.maxItemWidth = 0;
-        this.maxLegendWidth = 0;
-        this.offsetWidth = 0;
-        this.options = void 0;
-        this.padding = 0;
-        this.pages = [];
-        this.proximate = false;
-        this.scrollGroup = void 0;
-        this.symbolHeight = 0;
-        this.symbolWidth = 0;
-        this.titleHeight = 0;
-        this.totalItemWidth = 0;
-        this.widthOption = 0;
-        this.chart = chart;
-        this.init(chart, options);
-    }
-    /* *
-     *
      *  Functions
      *
      * */
@@ -98,7 +56,33 @@ class Legend {
      * @param {Highcharts.LegendOptions} options
      * Legend options.
      */
-    init(chart, options) {
+    constructor(chart, options) {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.allItems = [];
+        this.initialItemY = 0;
+        this.itemHeight = 0;
+        this.itemMarginBottom = 0;
+        this.itemMarginTop = 0;
+        this.itemX = 0;
+        this.itemY = 0;
+        this.lastItemY = 0;
+        this.lastLineHeight = 0;
+        this.legendHeight = 0;
+        this.legendWidth = 0;
+        this.maxItemWidth = 0;
+        this.maxLegendWidth = 0;
+        this.offsetWidth = 0;
+        this.padding = 0;
+        this.pages = [];
+        this.symbolHeight = 0;
+        this.symbolWidth = 0;
+        this.titleHeight = 0;
+        this.totalItemWidth = 0;
+        this.widthOption = 0;
         /**
          * Chart of this legend.
          *
@@ -197,28 +181,32 @@ class Legend {
      * Make events official: Fires the event `afterColorizeItem`.
      */
     colorizeItem(item, visible) {
-        const { group, label, line, symbol } = item.legendItem || {};
-        if (group) {
-            group[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
-        }
+        const { area, group, label, line, symbol } = item.legendItem || {};
+        group?.[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
         if (!this.chart.styledMode) {
-            const { itemHiddenStyle } = this, hiddenColor = itemHiddenStyle.color, symbolColor = visible ?
-                (item.color || hiddenColor) :
-                hiddenColor, markerOptions = item.options && item.options.marker;
-            let symbolAttr = { fill: symbolColor };
-            label?.css(merge(visible ? this.itemStyle : itemHiddenStyle));
-            line?.attr({ stroke: symbolColor });
-            if (symbol) {
-                // Apply marker options
-                if (markerOptions && symbol.isMarker) { // #585
-                    symbolAttr = item.pointAttribs();
-                    if (!visible) {
-                        // #6769
-                        symbolAttr.stroke = symbolAttr.fill = hiddenColor;
+            const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, fillOpacity, lineColor, marker } = item.options, colorizeHidden = (attr) => {
+                if (!visible) {
+                    if (attr.fill) {
+                        attr.fill = hiddenColor;
+                    }
+                    if (attr.stroke) {
+                        attr.stroke = hiddenColor;
                     }
                 }
-                symbol.attr(symbolAttr);
+                return attr;
+            };
+            label?.css(merge(visible ? this.itemStyle : itemHiddenStyle));
+            line?.attr(colorizeHidden({ stroke: lineColor || item.color }));
+            if (symbol) {
+                // Apply marker options
+                symbol.attr(colorizeHidden(marker && symbol.isMarker ? // #585
+                    item.pointAttribs() :
+                    { fill: item.color }));
             }
+            area?.attr(colorizeHidden({
+                fill: fillColor || item.color,
+                'fill-opacity': fillColor ? 1 : (fillOpacity ?? 0.75)
+            }));
         }
         fireEvent(this, 'afterColorizeItem', { item, visible });
     }
@@ -1176,12 +1164,6 @@ class Legend {
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -1189,7 +1171,7 @@ class Legend {
      * @private
      */
     function compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             addEvent(ChartClass, 'beforeMargins', function () {
                 /**
                  * The legend contains an interactive overview over chart items,

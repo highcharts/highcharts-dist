@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -25,8 +25,6 @@ class FlagsPoint extends ColumnPoint {
          *
          * */
         super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
         this.ttBelow = false;
     }
     /* *

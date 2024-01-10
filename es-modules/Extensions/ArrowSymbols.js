@@ -9,13 +9,10 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { pushUnique } = U;
 /* *
  *
  *  Functions
@@ -94,7 +91,7 @@ function arrowHalf(x, y, w, h) {
  * @private
  */
 function compose(SVGRendererClass) {
-    if (U.pushUnique(composedMembers, SVGRendererClass)) {
+    if (pushUnique(composed, compose)) {
         const symbols = SVGRendererClass.prototype.symbols;
         symbols.arrow = arrow;
         symbols['arrow-filled'] = triangleLeft;

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Sebastian Domas
  *
@@ -38,17 +38,6 @@ class CMFIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.volumeSeries = void 0;
-        this.linkedParent = void 0;
-        this.yData = void 0;
         this.nameBase = 'Chaikin Money Flow';
     }
     /* *

@@ -2,7 +2,7 @@
  *
  *  X-range series module
  *
- *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+ *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  *  License: www.highcharts.com/license
  *
@@ -11,21 +11,15 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
+const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
 import XRangeSeriesDefaults from './XRangeSeriesDefaults.js';
 import XRangePoint from './XRangePoint.js';
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -67,40 +61,13 @@ function onAxisAfterGetSeriesExtremes() {
  * @augments Highcharts.Series
  */
 class XRangeSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /*
-        // Override to remove stroke from points. For partial fill.
-        pointAttribs: function () {
-            let series = this,
-                retVal = columnType.prototype.pointAttribs
-                    .apply(series, arguments);
-    
-            //retVal['stroke-width'] = 0;
-            return retVal;
-        }
-        //*/
-    }
     /* *
      *
      *  Static Functions
      *
      * */
     static compose(AxisClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(AxisClass, 'afterGetSeriesExtremes', onAxisAfterGetSeriesExtremes);
         }
     }
@@ -185,6 +152,11 @@ class XRangeSeries extends ColumnSeries {
     alignDataLabel(point) {
         const oldPlotX = point.plotX;
         point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+        if (point.dataLabel && point.shapeArgs?.width) {
+            point.dataLabel.css({
+                width: `${point.shapeArgs.width}px`
+            });
+        }
         super.alignDataLabel.apply(this, arguments);
         point.plotX = oldPlotX;
     }
@@ -418,6 +390,11 @@ class XRangeSeries extends ColumnSeries {
         return isInside;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
 extend(XRangeSeries.prototype, {
     pointClass: XRangePoint,

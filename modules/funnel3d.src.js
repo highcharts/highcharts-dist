@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Highcharts funnel module
  *
- * (c) 2010-2021 Kacper Madej
+ * (c) 2010-2024 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Highcharts funnel3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -280,7 +280,7 @@
          *
          *  Highcharts funnel3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -289,14 +289,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { charts } = H;
+        const { charts, composed } = H;
         const { error, extend, merge, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -304,7 +298,7 @@
          * */
         /** @private */
         function compose(SVGRendererClass) {
-            if (pushUnique(composedMembers, SVGRendererClass)) {
+            if (pushUnique(composed, compose)) {
                 const rendererProto = SVGRendererClass.prototype;
                 rendererProto.Element3D.types.funnel3d = SVGElement3DFunnel;
                 extend(rendererProto, {
@@ -632,7 +626,7 @@
          *
          *  Highcharts funnel3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -649,18 +643,6 @@
          *
          * */
         class Funnel3DPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.dlBoxRaw = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.y = void 0;
-            }
         }
         extend(Funnel3DPoint.prototype, {
             shapeType: 'funnel3d'
@@ -678,7 +660,7 @@
          *
          *  Highcharts funnel3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -707,23 +689,6 @@
          * @requires modules/funnel3d
          */
         class Funnel3DSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.center = void 0;
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -793,7 +758,7 @@
              */
             translate() {
                 Series.prototype.translate.apply(this, arguments);
-                const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data;
+                const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points;
                 let sum = 0, cumulative = 0, // start at top
                 tempWidth, getWidthAt, fraction, tooltipPos, 
                 //
@@ -830,12 +795,12 @@
                     *        ___centerX,y5___
                     */
                 // get the total sum
-                for (const point of data) {
+                for (const point of points) {
                     if (!ignoreHiddenPoint || point.visible !== false) {
                         sum += point.y;
                     }
                 }
-                for (const point of data) {
+                for (const point of points) {
                     // set start and end positions
                     y5 = null;
                     fraction = sum ? point.y / sum : 0;
@@ -920,6 +885,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         Funnel3DSeries.compose = Funnel3DComposition.compose;
         Funnel3DSeries.defaultOptions = merge(ColumnSeries.defaultOptions, Funnel3DSeriesDefaults);
         extend(Funnel3DSeries.prototype, {

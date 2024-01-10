@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Kamil Kulig
+ * (c) 2010-2024 Kamil Kulig
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Stock/Indicators/LinearRegression/LinearRegressionIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -62,22 +62,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -213,6 +197,11 @@
                 return indicatorData;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression indicator. This series requires `linkedTo` option to be
          * set.
@@ -316,7 +305,7 @@
     _registerModule(_modules, 'Stock/Indicators/LinearRegressionSlopes/LinearRegressionSlopesIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -340,22 +329,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionSlopesIndicator extends LinearRegressionIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -365,6 +338,11 @@
                 return lineParameters.slope;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression slope indicator. This series requires `linkedTo`
          * option to be set.
@@ -414,7 +392,7 @@
     _registerModule(_modules, 'Stock/Indicators/LinearRegressionIntercept/LinearRegressionInterceptIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -438,22 +416,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -463,6 +425,11 @@
                 return lineParameters.intercept;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression intercept indicator. This series requires `linkedTo`
          * option to be set.
@@ -512,7 +479,7 @@
     _registerModule(_modules, 'Stock/Indicators/LinearRegressionAngle/LinearRegressionAngleIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
-         *  (c) 2010-2021 Kamil Kulig
+         *  (c) 2010-2024 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
@@ -536,22 +503,6 @@
          * @augments Highcharts.Series
          */
         class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -571,6 +522,11 @@
                 return this.slopeToAngle(lineParameters.slope);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Linear regression angle indicator. This series requires `linkedTo`
          * option to be set.

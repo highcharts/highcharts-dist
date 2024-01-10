@@ -19,20 +19,14 @@ import DownloadURL from '../DownloadURL.js';
 const { downloadURL } = DownloadURL;
 import Exporting from '../Exporting/Exporting.js';
 import H from '../../Core/Globals.js';
-const { win, doc } = H;
+const { composed, doc, win } = H;
 import HU from '../../Core/HttpUtilities.js';
 const { ajax } = HU;
 import OfflineExportingDefaults from './OfflineExportingDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, error, extend, fireEvent, merge } = U;
-AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
+const { addEvent, error, extend, fireEvent, merge, pushUnique } = U;
+AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
 AST.allowedTags.push('desc', 'clippath', 'g');
-/* *
- *
- * Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Composition
@@ -65,7 +59,7 @@ var OfflineExporting;
      * @private
      */
     function compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             const chartProto = ChartClass.prototype;
             chartProto.getSVGForLocalExport = getSVGForLocalExport;
             chartProto.exportChartLocal = exportChartLocal;
@@ -75,7 +69,6 @@ var OfflineExporting;
         return ChartClass;
     }
     OfflineExporting.compose = compose;
-    /* eslint-disable valid-jsdoc */
     /**
      * Get data URL to an image of an SVG and call download on it options
      * object:

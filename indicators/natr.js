@@ -1,9 +1,9 @@
 /**
- * Highstock JS v11.2.0 (2023-10-30)
+ * Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Paweł Dalek
+ * (c) 2010-2024 Paweł Dalek
  *
  * License: www.highcharts.com/license
- */!function(t){"object"==typeof module&&module.exports?(t.default=t,module.exports=t):"function"==typeof define&&define.amd?define("highcharts/indicators/natr",["highcharts","highcharts/modules/stock"],function(e){return t(e),t.Highcharts=e,t}):t("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(t){"use strict";var e=t?t._modules:{};function s(t,e,s,i){t.hasOwnProperty(e)||(t[e]=i.apply(null,s),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:e,module:t[e]}})))}s(e,"Stock/Indicators/NATR/NATRIndicator.js",[e["Core/Series/SeriesRegistry.js"],e["Core/Utilities.js"]],function(t,e){let{atr:s}=t.seriesTypes,{merge:i}=e;class o extends s{constructor(){super(...arguments),this.data=void 0,this.points=void 0,this.options=void 0}getValues(t,e){let s=super.getValues.apply(this,arguments),i=s.values.length,o=t.yData,n=0,r=e.period-1;if(s){for(;n<i;n++)s.yData[n]=s.values[n][1]/o[r][3]*100,s.values[n][1]=s.yData[n],r++;return s}}}return o.defaultOptions=i(s.defaultOptions,{tooltip:{valueSuffix:"%"}}),t.registerSeriesType("natr",o),o}),s(e,"masters/indicators/natr.src.js",[],function(){})});//# sourceMappingURL=natr.js.map
+ */!function(e){"object"==typeof module&&module.exports?(e.default=e,module.exports=e):"function"==typeof define&&define.amd?define("highcharts/indicators/natr",["highcharts","highcharts/modules/stock"],function(t){return e(t),e.Highcharts=t,e}):e("undefined"!=typeof Highcharts?Highcharts:void 0)}(function(e){"use strict";var t=e?e._modules:{};function s(e,t,s,i){e.hasOwnProperty(t)||(e[t]=i.apply(null,s),"function"==typeof CustomEvent&&window.dispatchEvent(new CustomEvent("HighchartsModuleLoaded",{detail:{path:t,module:e[t]}})))}s(t,"Stock/Indicators/NATR/NATRIndicator.js",[t["Core/Series/SeriesRegistry.js"],t["Core/Utilities.js"]],function(e,t){let{atr:s}=e.seriesTypes,{merge:i}=t;class n extends s{getValues(e,t){let s=super.getValues.apply(this,arguments),i=s.values.length,n=e.yData,o=0,a=t.period-1;if(s){for(;o<i;o++)s.yData[o]=s.values[o][1]/n[a][3]*100,s.values[o][1]=s.yData[o],a++;return s}}}return n.defaultOptions=i(s.defaultOptions,{tooltip:{valueSuffix:"%"}}),e.registerSeriesType("natr",n),n}),s(t,"masters/indicators/natr.src.js",[],function(){})});

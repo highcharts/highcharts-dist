@@ -1,6 +1,6 @@
 /**
  *
- *  (c) 2010-2021 Kamil Kulig
+ *  (c) 2010-2024 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -27,22 +27,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -52,6 +36,11 @@ class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
         return lineParameters.intercept;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Linear regression intercept indicator. This series requires `linkedTo`
  * option to be set.

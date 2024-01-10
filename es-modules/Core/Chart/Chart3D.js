@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Extension for 3D charts
  *
@@ -219,8 +219,7 @@ var Chart3D;
          * Whether it is a 3D chart.
          */
         chartProto.is3d = function () {
-            return Boolean(this.options.chart.options3d &&
-                this.options.chart.options3d.enabled); // #4280
+            return !!this.options.chart.options3d?.enabled;
         };
         chartProto.propsRequireDirtyBox.push('chart.options3d');
         chartProto.propsRequireUpdateSeries.push('chart.options3d');
@@ -1233,7 +1232,6 @@ var Chart3D;
          *
          * */
         constructor(chart) {
-            this.frame3d = void 0;
             this.chart = chart;
         }
         /* *

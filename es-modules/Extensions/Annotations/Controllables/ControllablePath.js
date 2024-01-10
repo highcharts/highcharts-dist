@@ -8,14 +8,14 @@ import Controllable from './Controllable.js';
 import ControllableDefaults from './ControllableDefaults.js';
 const { defaultMarkers } = ControllableDefaults;
 import H from '../../../Core/Globals.js';
+const { composed } = H;
 import U from '../../../Core/Utilities.js';
-const { addEvent, defined, extend, merge, uniqueKey } = U;
+const { addEvent, defined, extend, merge, pushUnique, uniqueKey } = U;
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 const markerEndSetter = createMarkerSetter('marker-end');
 const markerStartSetter = createMarkerSetter('marker-start');
 // See TRACKER_FILL in highcharts.src.js
@@ -106,11 +106,9 @@ class ControllablePath extends Controllable {
      *
      * */
     static compose(ChartClass, SVGRendererClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
-        }
-        if (U.pushUnique(composedMembers, SVGRendererClass)) {
+        if (pushUnique(composed, this.compose)) {
             const svgRendererProto = SVGRendererClass.prototype;
+            addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
             svgRendererProto.addMarker = svgRendererAddMarker;
         }
     }

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -33,108 +33,87 @@ const { addEvent, defined, erase, extend, fireEvent, getNestedProperty, isArray,
  * @name Highcharts.Point
  */
 class Point {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        /**
-         * For categorized axes this property holds the category name for the
-         * point. For other axes it holds the X value.
-         *
-         * @name Highcharts.Point#category
-         * @type {number|string}
-         */
-        this.category = void 0;
-        this.destroyed = false;
-        this.formatPrefix = 'point';
-        this.id = void 0;
-        this.isNull = false;
-        /**
-         * The name of the point. The name can be given as the first position of the
-         * point configuration array, or as a `name` property in the configuration:
-         *
-         * @example
-         * // Array config
-         * data: [
-         *     ['John', 1],
-         *     ['Jane', 2]
-         * ]
-         *
-         * // Object config
-         * data: [{
-         *        name: 'John',
-         *        y: 1
-         * }, {
-         *     name: 'Jane',
-         *     y: 2
-         * }]
-         *
-         * @name Highcharts.Point#name
-         * @type {string}
-         */
-        this.name = void 0;
-        /**
-         * The point's options as applied in the initial configuration, or
-         * extended through `Point.update`.
-         *
-         * In TypeScript you have to extend `PointOptionsObject` via an
-         * additional interface to allow custom data options:
-         *
-         * ```
-         * declare interface PointOptionsObject {
-         *     customProperty: string;
-         * }
-         * ```
-         *
-         * @name Highcharts.Point#options
-         * @type {Highcharts.PointOptionsObject}
-         */
-        this.options = void 0;
-        /**
-         * The percentage for points in a stacked series, pies or gauges.
-         *
-         * @name Highcharts.Point#percentage
-         * @type {number|undefined}
-         */
-        this.percentage = void 0;
-        this.selected = false;
-        /**
-         * The series object associated with the point.
-         *
-         * @name Highcharts.Point#series
-         * @type {Highcharts.Series}
-         */
-        this.series = void 0;
-        /**
-         * The attributes of the rendered SVG shape like in `column` or `pie`
-         * series.
-         *
-         * @readonly
-         * @name Highcharts.Point#shapeArgs
-         * @type {Readonly<Highcharts.SVGAttributes>|undefined}
-         */
-        this.shapeArgs = void 0;
-        /**
-         * The total of values in either a stack for stacked series, or a pie in a
-         * pie series.
-         *
-         * @name Highcharts.Point#total
-         * @type {number|undefined}
-         */
-        this.total = void 0;
-        /**
-         * For certain series types, like pie charts, where individual points can
-         * be shown or hidden.
-         *
-         * @name Highcharts.Point#visible
-         * @type {boolean}
-         * @default true
-         */
-        this.visible = true;
-        this.x = void 0;
-    }
+    /**
+     * For categorized axes this property holds the category name for the
+     * point. For other axes it holds the X value.
+     *
+     * @name Highcharts.Point#category
+     * @type {number|string}
+     */
+    /**
+     * The name of the point. The name can be given as the first position of the
+     * point configuration array, or as a `name` property in the configuration:
+     *
+     * @example
+     * // Array config
+     * data: [
+     *     ['John', 1],
+     *     ['Jane', 2]
+     * ]
+     *
+     * // Object config
+     * data: [{
+     *        name: 'John',
+     *        y: 1
+     * }, {
+     *     name: 'Jane',
+     *     y: 2
+     * }]
+     *
+     * @name Highcharts.Point#name
+     * @type {string}
+     */
+    /**
+     * The point's options as applied in the initial configuration, or
+     * extended through `Point.update`.
+     *
+     * In TypeScript you have to extend `PointOptionsObject` via an
+     * additional interface to allow custom data options:
+     *
+     * ```
+     * declare interface PointOptionsObject {
+     *     customProperty: string;
+     * }
+     * ```
+     *
+     * @name Highcharts.Point#options
+     * @type {Highcharts.PointOptionsObject}
+     */
+    /**
+     * The percentage for points in a stacked series, pies or gauges.
+     *
+     * @name Highcharts.Point#percentage
+     * @type {number|undefined}
+     */
+    /**
+     * The series object associated with the point.
+     *
+     * @name Highcharts.Point#series
+     * @type {Highcharts.Series}
+     */
+    /**
+     * The attributes of the rendered SVG shape like in `column` or `pie`
+     * series.
+     *
+     * @readonly
+     * @name Highcharts.Point#shapeArgs
+     * @type {Readonly<Highcharts.SVGAttributes>|undefined}
+     */
+    /**
+     * The total of values in either a stack for stacked series, or a pie in a
+     * pie series.
+     *
+     * @name Highcharts.Point#total
+     * @type {number|undefined}
+     */
+    /**
+     * For certain series types, like pie charts, where individual points can
+     * be shown or hidden.
+     *
+     * @name Highcharts.Point#visible
+     * @type {boolean}
+     * @default true
+     */
     /* *
      *
      *  Functions
@@ -503,15 +482,16 @@ class Point {
      *
      * @emits Highcharts.Point#event:afterInit
      */
-    init(series, options, x) {
+    constructor(series, options, x) {
+        this.formatPrefix = 'point';
+        this.visible = true;
         this.series = series;
         this.applyOptions(options, x);
         // Add a unique ID to the point if none is assigned
-        this.id = defined(this.id) ? this.id : uniqueKey();
+        this.id ?? (this.id = uniqueKey());
         this.resolveColor();
         series.chart.pointCount++;
         fireEvent(this, 'afterInit');
-        return this;
     }
     /**
      * Determine if point is valid.
@@ -863,8 +843,10 @@ class Point {
      *
      * @sample highcharts/members/point-select/
      *         Select a point from a button
+     * @sample highcharts/members/point-select-lasso/
+     *         Lasso selection
      * @sample highcharts/chart/events-selection-points/
-     *         Select a range of points through a drag selection
+     *         Rectangle selection
      * @sample maps/series/data-id/
      *         Select a point in Highmaps
      *

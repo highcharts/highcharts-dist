@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,22 +9,17 @@
  * */
 'use strict';
 import AST from './AST.js';
+import H from '../../Globals.js';
+const { composed } = H;
 import SVGElement from '../SVG/SVGElement.js';
 import SVGRenderer from '../SVG/SVGRenderer.js';
 import U from '../../Utilities.js';
-const { attr, createElement, extend, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { attr, createElement, extend, pick, pushUnique } = U;
 /* *
  *
  *  Class
  *
  * */
-/* eslint-disable valid-jsdoc */
 // Extend SvgRenderer for useHTML option.
 class HTMLRenderer extends SVGRenderer {
     /* *
@@ -34,7 +29,7 @@ class HTMLRenderer extends SVGRenderer {
      * */
     /** @private */
     static compose(SVGRendererClass) {
-        if (U.pushUnique(composedMembers, SVGRendererClass)) {
+        if (pushUnique(composed, this.compose)) {
             const htmlRendererProto = HTMLRenderer.prototype, svgRendererProto = SVGRendererClass.prototype;
             svgRendererProto.html = htmlRendererProto.html;
         }

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -34,25 +34,6 @@ const { clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick, objec
  * @augments Highcharts.Series
  */
 class ColumnSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.borderWidth = void 0;
-        this.data = void 0;
-        this.group = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -604,6 +585,11 @@ class ColumnSeries extends Series {
         Series.prototype.remove.apply(series, arguments);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ColumnSeries.defaultOptions = merge(Series.defaultOptions, ColumnSeriesDefaults);
 extend(ColumnSeries.prototype, {
     // When tooltip is not shared, this series (and derivatives) requires

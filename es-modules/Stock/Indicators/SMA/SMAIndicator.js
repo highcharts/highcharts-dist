@@ -22,24 +22,6 @@ const { addEvent, fireEvent, error, extend, isArray, merge, pick, splat } = U;
  * @private
  */
 class SMAIndicator extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.dataEventsToUnbind = void 0;
-        this.linkedParent = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -253,6 +235,11 @@ class SMAIndicator extends LineSeries {
         return;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * The parameter allows setting line series type and use OHLC indicators.
  * Data in OHLC format is required.

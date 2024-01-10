@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -23,23 +23,6 @@ const { merge, pick } = U;
  * @private
  */
 class SplineSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -186,6 +169,11 @@ class SplineSeries extends LineSeries {
         return ret;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * A spline series is a special type of line series, where the segments
  * between the data points are smoothed.

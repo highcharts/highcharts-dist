@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2017-2021 Highsoft AS
+ * (c) 2017-2024 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -37,7 +37,7 @@
     _registerModule(_modules, 'Core/Geometry/GeometryUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -122,7 +122,7 @@
     _registerModule(_modules, 'Core/Geometry/CircleUtilities.js', [_modules['Core/Geometry/GeometryUtilities.js']], function (Geometry) {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -596,7 +596,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -615,16 +615,6 @@
          *
          * */
         class VennPoint extends ScatterPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -652,7 +642,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -841,7 +831,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -1468,7 +1458,7 @@
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -1498,24 +1488,6 @@
          * @augments Highcharts.Series
          */
         class VennSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.mapOfIdToRelation = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Static Functions
@@ -1897,6 +1869,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VennSeries.splitter = 'highcharts-split';
         VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VennSeriesDefaults);
         extend(VennSeries.prototype, {

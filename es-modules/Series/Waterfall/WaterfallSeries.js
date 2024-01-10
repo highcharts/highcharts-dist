@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -44,29 +44,6 @@ function ownProp(obj, key) {
  * @private
  */
 class WaterfallSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.stackedYNeg = void 0;
-        this.stackedYPos = void 0;
-        this.stackKey = void 0;
-        this.xData = void 0;
-        this.yAxis = void 0;
-        this.yData = void 0;
-    }
     /* *
      *
      *  Functions
@@ -369,10 +346,14 @@ class WaterfallSeries extends ColumnSeries {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 WaterfallSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WaterfallSeriesDefaults);
 WaterfallSeries.compose = WaterfallAxis.compose;
 extend(WaterfallSeries.prototype, {
-    getZonesGraphs: LineSeries.prototype.getZonesGraphs,
     pointValKey: 'y',
     // Property needed to prevent lines between the columns from disappearing
     // when negativeColor is used.

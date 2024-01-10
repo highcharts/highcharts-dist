@@ -2,7 +2,7 @@
  *
  *  Wind barb series module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -18,20 +18,6 @@ const { isNumber } = U;
  *
  * */
 class WindbarbPoint extends ColumnSeries.prototype.pointClass {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.beaufort = void 0;
-        this.beaufortLevel = void 0;
-        this.direction = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.value = void 0;
-    }
     /* *
      *
      *  Functions

@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Parabolic SAR Indicator for Highcharts Stock
  *
- * (c) 2010-2021 Grzegorz Blachliński
+ * (c) 2010-2024 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Parabolic SAR indicator for Highcharts Stock
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -146,15 +146,7 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
                 this.nameComponents = void 0;
-                this.points = void 0;
-                this.options = void 0;
             }
             /* *
              *

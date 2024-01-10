@@ -1,12 +1,12 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  * @module highcharts/indicators/atr
  * @requires highcharts
  * @requires highcharts/modules/stock
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */

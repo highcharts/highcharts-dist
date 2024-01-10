@@ -32,14 +32,6 @@ class TrendLineIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *   Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.updateAllPoints = true;
     }
     /* *
@@ -48,28 +40,35 @@ class TrendLineIndicator extends SMAIndicator {
      *
      * */
     getValues(series, params) {
-        const xVal = series.xData, yVal = series.yData, LR = [], xData = [], yData = [], xValLength = xVal.length, index = params.index;
-        let sumX = (xValLength - 1) * xValLength / 2, sumY = 0, sumXY = 0, sumX2 = ((xValLength - 1) * (xValLength) * (2 * xValLength - 1)) / 6, alpha, i, y;
-        // Get sums:
-        for (i = 0; i < xValLength; i++) {
-            y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];
-            sumY += y;
-            sumXY += i * y;
+        const orgXVal = series.xData, yVal = series.yData, xVal = [], LR = [], xData = [], yData = [], index = params.index;
+        let numerator = 0, denominator = 0, xValSum = 0, yValSum = 0, counter = 0;
+        // Create an array of consecutive xValues, (don't remove duplicates)
+        for (let i = 0; i < orgXVal.length; i++) {
+            if (i === 0 || orgXVal[i] !== orgXVal[i - 1]) {
+                counter++;
+            }
+            xVal.push(counter);
         }
-        // Get slope and offset:
-        alpha = (xValLength * sumXY - sumX * sumY) /
-            (xValLength * sumX2 - sumX * sumX);
-        if (isNaN(alpha)) {
-            alpha = 0;
+        for (let i = 0; i < xVal.length; i++) {
+            xValSum += xVal[i];
+            yValSum += isArray(yVal[i]) ? yVal[i][index] : yVal[i];
         }
-        const beta = (sumY - alpha * sumX) / xValLength;
+        const meanX = xValSum / xVal.length, meanY = yValSum / yVal.length;
+        for (let i = 0; i < xVal.length; i++) {
+            const y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];
+            numerator += (xVal[i] - meanX) * (y - meanY);
+            denominator += Math.pow(xVal[i] - meanX, 2);
+        }
         // Calculate linear regression:
-        for (i = 0; i < xValLength; i++) {
-            y = alpha * i + beta;
-            // Prepare arrays required for getValues() method
-            LR[i] = [xVal[i], y];
-            xData[i] = xVal[i];
-            yData[i] = y;
+        for (let i = 0; i < xVal.length; i++) {
+            // Check if the xVal is already used
+            if (orgXVal[i] === xData[xData.length - 1]) {
+                continue;
+            }
+            const x = orgXVal[i], y = meanY + (numerator / denominator) * (xVal[i] - meanX);
+            LR.push([x, y]);
+            xData.push(x);
+            yData.push(y);
         }
         return {
             xData: xData,
@@ -111,7 +110,7 @@ TrendLineIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
 });
 extend(TrendLineIndicator.prototype, {
     nameBase: 'Trendline',
-    nameComponents: false
+    nameComponents: void 0
 });
 SeriesRegistry.registerSeriesType('trendline', TrendLineIndicator);
 /* *

@@ -2,7 +2,7 @@
  *
  *  Popup generator for Stock tools
  *
- *  (c) 2009-2021 Sebastian Bochan
+ *  (c) 2009-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -10,15 +10,11 @@
  *
  * */
 'use strict';
+import H from '../../../Core/Globals.js';
+const { composed } = H;
 import Popup from './Popup.js';
 import U from '../../../Core/Utilities.js';
-const { addEvent, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -28,11 +24,9 @@ const composedMembers = [];
  * @private
  */
 function compose(NagivationBindingsClass, PointerClass) {
-    if (U.pushUnique(composedMembers, NagivationBindingsClass)) {
+    if (pushUnique(composed, compose)) {
         addEvent(NagivationBindingsClass, 'closePopup', onNavigationBindingsClosePopup);
         addEvent(NagivationBindingsClass, 'showPopup', onNavigationBindingsShowPopup);
-    }
-    if (U.pushUnique(composedMembers, PointerClass)) {
         wrap(PointerClass.prototype, 'onContainerMouseDown', wrapPointerOnContainerMouserDown);
     }
 }
@@ -53,7 +47,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/11.2.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/11.3.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }

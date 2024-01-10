@@ -1,6 +1,6 @@
 /* *
  *
- *   (c) 2010-2021 Highsoft AS
+ *   (c) 2010-2024 Highsoft AS
  *
  *  Author: Nancy Dillon
  *
@@ -270,7 +270,7 @@ var BrandDarkTheme;
     function apply() {
         // Load the fonts
         createElement('link', {
-            href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:200,300,400,600,700',
+            href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;600;700',
             rel: 'stylesheet',
             type: 'text/css'
         }, null, document.getElementsByTagName('head')[0]);

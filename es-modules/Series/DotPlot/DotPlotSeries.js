@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Torstein Honsi
+ *  (c) 2009-2024 Torstein Honsi
  *
  *  Dot plot series type for Highcharts
  *
@@ -35,22 +35,6 @@ const { extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class DotPlotSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -126,6 +110,11 @@ class DotPlotSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, DotPlotSeriesDefaults);
 extend(DotPlotSeries.prototype, {
     markerAttribs: void 0

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan
+ *  (c) 2010-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -28,22 +28,6 @@ const { clamp, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class ColumnPyramidSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -181,6 +165,11 @@ class ColumnPyramidSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static properties
+ *
+ * */
 ColumnPyramidSeries.defaultOptions = merge(ColumnSeries.defaultOptions, ColumnPyramidSeriesDefaults);
 SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
 /* *

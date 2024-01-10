@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -33,17 +33,18 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (H, StackItem, U) {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2009-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
+        const { composed } = H;
+        const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -62,29 +63,20 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Adds support for broken axes.
              * @private
              */
             function compose(AxisClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, compose)) {
                     AxisClass.keepProps.push('brokenAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
                     addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.drawBreaks = seriesDrawBreaks;
                     seriesProto.gappedPath = seriesGappedPath;

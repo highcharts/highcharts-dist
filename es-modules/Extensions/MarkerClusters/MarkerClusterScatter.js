@@ -2,7 +2,7 @@
  *
  *  Marker clusters module.
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Author: Wojciech Chmiel
  *
@@ -14,6 +14,8 @@
 'use strict';
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import MarkerClusterDefaults from './MarkerClusterDefaults.js';
 const { cluster: clusterDefaults } = MarkerClusterDefaults;
 import U from '../../Core/Utilities.js';
@@ -23,7 +25,6 @@ const { addEvent, defined, error, isArray, isFunction, isObject, isNumber, merge
  *  Constants
  *
  * */
-const composedMembers = [];
 const markerClusterAlgorithms = {
     grid: function (dataX, dataY, dataIndexes, options) {
         const series = this, grid = {}, gridOffset = this.getGridOffset();
@@ -234,7 +235,7 @@ let stateIdCounter = 0;
  * */
 /** @private */
 function compose(highchartsDefaultOptions, ScatterSeriesClass) {
-    if (pushUnique(composedMembers, ScatterSeriesClass)) {
+    if (pushUnique(composed, compose)) {
         const scatterProto = ScatterSeriesClass.prototype;
         baseGeneratePoints = scatterProto.generatePoints;
         scatterProto.markerClusterAlgorithms = markerClusterAlgorithms;
@@ -253,8 +254,6 @@ function compose(highchartsDefaultOptions, ScatterSeriesClass) {
         scatterProto.preventClusterCollisions = seriesPreventClusterCollisions;
         // Destroy grouped data on series destroy.
         addEvent(ScatterSeriesClass, 'destroy', scatterProto.destroyClusteredData);
-    }
-    if (pushUnique(composedMembers, highchartsDefaultOptions)) {
         (highchartsDefaultOptions.plotOptions || {}).series = merge((highchartsDefaultOptions.plotOptions || {}).series, MarkerClusterDefaults);
     }
 }

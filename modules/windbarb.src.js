@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Wind barb series module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Extensions/DataGrouping/ApproximationRegistry.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -72,19 +72,20 @@
 
         return ApproximationRegistry;
     });
-    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Series, U) {
+    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { prototype: columnProto } = ColumnSeries;
         const { prototype: seriesProto } = Series;
-        const { defined, stableSort } = U;
+        const { defined, pushUnique, stableSort } = U;
         /* *
          *
          *  Composition
@@ -99,21 +100,14 @@
              * */
             /* *
              *
-             *  Properties
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, compose)) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.getPlotBox = getPlotBox;
                     seriesProto.translate = translate;
@@ -293,7 +287,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -307,20 +301,6 @@
          *
          * */
         class WindbarbPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.beaufort = void 0;
-                this.beaufortLevel = void 0;
-                this.direction = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.value = void 0;
-            }
             /* *
              *
              *  Functions
@@ -343,7 +323,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -547,7 +527,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -599,22 +579,6 @@
          * @augments Highcharts.Series
          */
         class WindbarbSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -757,6 +721,11 @@
                 return super.shouldShowTooltip(plotX, plotY, options);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WindbarbSeriesDefaults);
         OnSeriesComposition.compose(WindbarbSeries);
         extend(WindbarbSeries.prototype, {

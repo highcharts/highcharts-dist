@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,8 +8,10 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, normalizeTickInterval, pick } = U;
+const { addEvent, normalizeTickInterval, pick, pushUnique } = U;
 /* *
  *
  *  Class
@@ -27,22 +29,15 @@ var LogarithmicAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Provides logarithmic support for axes.
      * @private
      */
     function compose(AxisClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, compose)) {
             AxisClass.keepProps.push('logarithmic');
             addEvent(AxisClass, 'init', onInit);
             addEvent(AxisClass, 'afterInit', onAfterInit);

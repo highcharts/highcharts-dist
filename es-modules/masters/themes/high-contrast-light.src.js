@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/themes/high-contrast-light
  * @requires highcharts
  *
- * (c) 2009-2021 Highsoft AS
+ * (c) 2009-2024 Highsoft AS
  *
  * License: www.highcharts.com/license
  */

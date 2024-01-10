@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -31,24 +31,6 @@ const { clamp, isNumber, extend, merge, pick, pInt, defined } = U;
  * @augments Highcharts.Series
  */
 class GaugeSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-        this.yAxis = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -202,6 +184,11 @@ class GaugeSeries extends Series {
         return !!this.points.length; // != 0
     }
 }
+/* *
+ *
+ *  Static properties
+ *
+ * */
 /**
  * Gauges are circular plots displaying one or more values with a dial
  * pointing to values along the perimeter.

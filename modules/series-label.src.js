@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabelDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2009-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -168,7 +168,7 @@
     _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabelUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2009-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -234,10 +234,10 @@
 
         return SeriesLabelUtilities;
     });
-    _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelDefaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelUtilities.js'], _modules['Core/Utilities.js']], function (A, Chart, T, D, SeriesLabelDefaults, SLU, U) {
+    _registerModule(_modules, 'Extensions/SeriesLabel/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Extensions/SeriesLabel/SeriesLabelDefaults.js'], _modules['Extensions/SeriesLabel/SeriesLabelUtilities.js'], _modules['Core/Utilities.js']], function (A, T, D, H, SeriesLabelDefaults, SLU, U) {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2009-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -259,14 +259,14 @@
         const { animObject } = A;
         const { format } = T;
         const { setOptions } = D;
+        const { composed } = H;
         const { boxIntersectLine, intersectRect } = SLU;
-        const { addEvent, extend, fireEvent, isNumber, pick, syncTimeout } = U;
+        const { addEvent, extend, fireEvent, isNumber, pick, pushUnique, syncTimeout } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         const labelDistance = 3;
         /* *
          *
@@ -386,15 +386,11 @@
          * @private
          */
         function compose(ChartClass, SVGRendererClass) {
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 // Leave both events, we handle animation differently (#9815)
-                addEvent(Chart, 'load', onChartRedraw);
-                addEvent(Chart, 'redraw', onChartRedraw);
-            }
-            if (U.pushUnique(composedMembers, SVGRendererClass)) {
+                addEvent(ChartClass, 'load', onChartRedraw);
+                addEvent(ChartClass, 'redraw', onChartRedraw);
                 SVGRendererClass.prototype.symbols.connector = symbolConnector;
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 setOptions({ plotOptions: { series: { label: SeriesLabelDefaults } } });
             }
         }

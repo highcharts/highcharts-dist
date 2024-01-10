@@ -2,7 +2,7 @@
  *
  *  Highcharts variwide module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -20,17 +20,6 @@ const { isNumber } = U;
  *
  * */
 class VariwidePoint extends ColumnPoint {
-    constructor() {
-        /* *
-         *
-         *  Properites
-         *
-         * */
-        super(...arguments);
-        this.crosshairWidth = void 0;
-        this.options = void 0;
-        this.series = void 0;
-    }
     /* *
      *
      *  Functions

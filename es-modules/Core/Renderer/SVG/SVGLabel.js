@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -29,10 +29,9 @@ class SVGLabel extends SVGElement {
      *
      * */
     constructor(renderer, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
-        super();
+        super(renderer, 'g');
         this.paddingLeftSetter = this.paddingSetter;
         this.paddingRightSetter = this.paddingSetter;
-        this.init(renderer, 'g');
         this.textStr = str;
         this.x = x;
         this.y = y;

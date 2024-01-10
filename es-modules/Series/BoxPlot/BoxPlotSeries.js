@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -30,22 +30,6 @@ const { extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class BoxPlotSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -218,6 +202,11 @@ class BoxPlotSeries extends ColumnSeries {
         return [point.low, point.q1, point.median, point.q3, point.high];
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BoxPlotSeriesDefaults);
 extend(BoxPlotSeries.prototype, {
     // array point configs are mapped to this

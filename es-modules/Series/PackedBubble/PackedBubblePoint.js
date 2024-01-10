@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -18,21 +18,6 @@ const { seriesTypes: { bubble: { prototype: { pointClass: BubblePoint } } } } = 
  *
  * */
 class PackedBubblePoint extends BubblePoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.degree = NaN;
-        this.mass = NaN;
-        this.radius = NaN;
-        this.options = void 0;
-        this.series = void 0;
-        this.value = null;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions

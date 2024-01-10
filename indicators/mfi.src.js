@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Money Flow Index indicator for Highcharts Stock
  *
- * (c) 2010-2021 Grzegorz Blachliński
+ * (c) 2010-2024 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Money Flow Index indicator for Highcharts Stock
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -84,22 +84,6 @@
          * @augments Highcharts.Series
          */
         class MFIIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -169,6 +153,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Money Flow Index. This series requires `linkedTo` option to be set and
          * should be loaded after the `stock/indicators/indicators.js` file.

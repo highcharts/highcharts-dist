@@ -2,7 +2,7 @@
  *
  *  Tilemaps module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -12,7 +12,7 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, heatmap: HeatmapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import TilemapPoint from './TilemapPoint.js';
@@ -20,12 +20,6 @@ import TilemapSeriesDefaults from './TilemapSeriesDefaults.js';
 import TilemapShapes from './TilemapShapes.js';
 import U from '../../Core/Utilities.js';
 const { addEvent, extend, merge, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -81,30 +75,13 @@ function onAxisAfterSetAxisTranslation() {
  * @augments Highcharts.Series
  */
 class TilemapSeries extends HeatmapSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.tileShape = void 0;
-    }
     /* *
      *
      *  Static Functions
      *
      * */
     static compose(AxisClass) {
-        if (pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(AxisClass, 'afterSetAxisTranslation', onAxisAfterSetAxisTranslation);
         }
     }
@@ -180,6 +157,11 @@ class TilemapSeries extends HeatmapSeries {
         return this.tileShape.translate.apply(this, arguments);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, TilemapSeriesDefaults);
 extend(TilemapSeries.prototype, {
     // Revert the noop on getSymbol.

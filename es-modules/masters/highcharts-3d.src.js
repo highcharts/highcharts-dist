@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *

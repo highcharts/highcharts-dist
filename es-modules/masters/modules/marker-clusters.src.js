@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/marker-clusters
  * @requires highcharts
  *
  * Marker clusters module for Highcharts
  *
- * (c) 2010-2021 Wojciech Chmiel
+ * (c) 2010-2024 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */

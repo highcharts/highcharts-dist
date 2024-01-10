@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Paweł Dalek
+ * (c) 2010-2024 Paweł Dalek
  *
  * License: www.highcharts.com/license
  */
@@ -75,7 +75,7 @@
     _registerModule(_modules, 'Stock/Indicators/VBP/VBPIndicator.js', [_modules['Stock/Indicators/VBP/VBPPoint.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Chart/StockChart.js']], function (VBPPoint, A, H, SeriesRegistry, U, StockChart) {
         /* *
          *
-         *  (c) 2010-2021 Paweł Dalek
+         *  (c) 2010-2024 Paweł Dalek
          *
          *  Volume By Price (VBP) indicator for Highcharts Stock
          *
@@ -135,29 +135,6 @@
          * @augments Highcharts.Series
          */
         class VBPIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.negWidths = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.posWidths = void 0;
-                this.priceZones = void 0;
-                this.rangeStep = void 0;
-                this.volumeDataArray = void 0;
-                this.zoneStarts = void 0;
-                this.zoneLinesSVG = void 0;
-            }
             /* *
              *
              *  Functions
@@ -531,6 +508,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Volume By Price indicator.
          *

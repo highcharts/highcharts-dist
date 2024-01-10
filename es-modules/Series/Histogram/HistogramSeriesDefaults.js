@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Sebastian Domas
  *
  *  License: www.highcharts.com/license
@@ -27,7 +27,7 @@
  *               stacking, boostBlending
  * @product      highcharts
  * @since        6.0.0
- * @requires     modules/histogram
+ * @requires     modules/histogram-bellcurve
  * @optionparent plotOptions.histogram
  */
 const HistogramSeriesDefaults = {
@@ -70,7 +70,7 @@ const HistogramSeriesDefaults = {
  * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
  * @product   highcharts
  * @since     6.0.0
- * @requires  modules/histogram
+ * @requires  modules/histogram-bellcurve
  * @apioption series.histogram
  */
 /**

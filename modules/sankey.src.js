@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Sankey diagram module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -57,12 +57,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -70,17 +64,12 @@
              * @private
              */
             function compose(PointClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
-                    pointProto.setNodeState = setNodeState;
-                    pointProto.setState = setNodeState;
-                    pointProto.update = updateNode;
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
-                    seriesProto.destroy = destroy;
-                    seriesProto.setData = setData;
-                }
+                const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+                pointProto.setNodeState = setNodeState;
+                pointProto.setState = setNodeState;
+                pointProto.update = updateNode;
+                seriesProto.destroy = destroy;
+                seriesProto.setData = setData;
                 return SeriesClass;
             }
             NodesComposition.compose = compose;
@@ -94,7 +83,7 @@
                 let node = findById(this.nodes, id), options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
-                    const newNode = (new PointClass()).init(this, extend({
+                    const newNode = new PointClass(this, extend({
                         className: 'highcharts-node',
                         isNode: true,
                         id: id,
@@ -315,7 +304,7 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -330,27 +319,6 @@
          *
          * */
         class SankeyPoint extends ColumnSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.className = void 0;
-                this.fromNode = void 0;
-                this.level = void 0;
-                this.linkBase = void 0;
-                this.linkColorMode = void 0;
-                this.linksFrom = void 0;
-                this.linksTo = void 0;
-                this.mass = void 0;
-                this.nodeX = void 0;
-                this.nodeY = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.toNode = void 0;
-            }
             /* *
              *
              *  Functions
@@ -430,7 +398,7 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -983,7 +951,7 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1211,7 +1179,7 @@
     _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -1404,7 +1372,7 @@
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1428,29 +1396,6 @@
          * @augments Highcharts.Series
          */
         class SankeySeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.colDistance = void 0;
-                this.data = void 0;
-                this.group = void 0;
-                this.nodeLookup = void 0;
-                this.nodePadding = void 0;
-                this.nodes = void 0;
-                this.nodeWidth = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.translationFactor = void 0;
-            }
             /* *
              *
              *  Static Functions
@@ -1860,6 +1805,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
         NodesComposition.compose(SankeyPoint, SankeySeries);
         extend(SankeySeries.prototype, {

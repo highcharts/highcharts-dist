@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Data module
  *
- * (c) 2012-2021 Torstein Honsi
+ * (c) 2012-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -38,14 +38,14 @@
     _registerModule(_modules, 'Core/HttpUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (G, U) {
         /* *
          *
-         *  (c) 2010-2021 Christer Vasseng, Torstein Honsi
+         *  (c) 2010-2024 Christer Vasseng, Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { doc } = G;
+        const { doc, win } = G;
         const { createElement, discardElement, merge, objectEach } = U;
         /* *
          *
@@ -161,30 +161,32 @@
          * @param {Object} data
          * Post data
          *
-         * @param {Highcharts.Dictionary<string>} [formAttributes]
+         * @param {RequestInit} [fetchOptions]
          * Additional attributes for the post request
          */
-        function post(url, data, formAttributes) {
-            // create the form
-            const form = createElement('form', merge({
-                method: 'post',
-                action: url,
-                enctype: 'multipart/form-data'
-            }, formAttributes), {
-                display: 'none'
-            }, doc.body);
+        function post(url, data, fetchOptions) {
+            const formData = new win.FormData();
             // add the data
             objectEach(data, function (val, name) {
-                createElement('input', {
-                    type: 'hidden',
-                    name: name,
-                    value: val
-                }, void 0, form);
+                formData.append(name, val);
             });
-            // submit
-            form.submit();
-            // clean up
-            discardElement(form);
+            formData.append('b64', 'true');
+            const { filename, type } = data;
+            return win.fetch(url, {
+                method: 'POST',
+                body: formData,
+                ...fetchOptions
+            }).then((res) => {
+                if (res.ok) {
+                    res.text().then((text) => {
+                        const link = document.createElement('a');
+                        link.href = `data:${type};base64,${text}`;
+                        link.download = filename;
+                        link.click();
+                        discardElement(link);
+                    });
+                }
+            });
         }
         /* *
          *
@@ -242,7 +244,7 @@
          *
          *  Data module
          *
-         *  (c) 2012-2021 Torstein Honsi
+         *  (c) 2012-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -676,16 +678,18 @@
                             token = '';
                             return;
                         }
-                        if (!isNaN(parseFloat(token)) && isFinite(token)) {
-                            token = parseFloat(token);
-                            pushType('number');
-                        }
-                        else if (!isNaN(Date.parse(token))) {
-                            token = token.replace(/\//g, '-');
-                            pushType('date');
-                        }
-                        else {
-                            pushType('string');
+                        if (!options.columnTypes) {
+                            if (!isNaN(parseFloat(token)) && isFinite(token)) {
+                                token = parseFloat(token);
+                                pushType('number');
+                            }
+                            else if (!isNaN(Date.parse(token))) {
+                                token = token.replace(/\//g, '-');
+                                pushType('date');
+                            }
+                            else {
+                                pushType('string');
+                            }
                         }
                         if (columns.length < column + 1) {
                             columns.push([]);
@@ -1288,9 +1292,10 @@
              *        Column index
              */
             parseColumn(column, col) {
-                const rawColumns = this.rawColumns, columns = this.columns, firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount.xColumns.indexOf(col) !== -1, backup = [], chartOptions = this.chartOptions, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = isXColumn && ((chartOptions &&
-                    chartOptions.xAxis &&
-                    splat(chartOptions.xAxis)[0].type === 'category') || columnType === 'string'), columnHasName = defined(column.name);
+                const rawColumns = this.rawColumns, columns = this.columns, firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount.xColumns.indexOf(col) !== -1, backup = [], chartOptions = this.chartOptions, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = (isXColumn &&
+                    (chartOptions &&
+                        chartOptions.xAxis &&
+                        splat(chartOptions.xAxis)[0].type === 'category')) || columnType === 'string', columnHasName = defined(column.name);
                 let row = column.length, val, floatVal, trimVal, trimInsideVal, dateVal, diff, descending;
                 if (!rawColumns[col]) {
                     rawColumns[col] = [];
@@ -1964,6 +1969,22 @@
          * @type      {Array<Array<Highcharts.DataValueType>>}
          * @since     4.0
          * @apioption data.columns
+         */
+        /**
+         * An array option that specifies the data type for each column in the series
+         * loaded within the data module.
+         *
+         * Possible values: `"string"`, `"number"`, `"float"`, `"date"`.
+         *
+         * @sample {highcharts|highstock} highcharts/data/column-types/
+         *         X-axis categories based on CSV data
+         * @sample {highmaps} highcharts/data/column-types-map/
+         *         Map chart created with fips from CSV
+         *
+         * @type      {Array<'string'|'number'|'float'|'date'>}
+         * @since     @next
+         * @validvalue ["string", "number", "float", "date"]
+         * @apioption data.columnTypes
          */
         /**
          * The callback that is evaluated when the data is finished loading,

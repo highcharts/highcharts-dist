@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
  *
  * CurrentDateIndicator
  *
- * (c) 2010-2021 Lars A. V. Cabrera
+ * (c) 2010-2024 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -35,10 +35,10 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -47,13 +47,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, merge, wrap } = U;
+        const { composed } = H;
+        const { addEvent, merge, pushUnique, wrap } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         /**
          * Show an indicator on the axis for the current date and time. Can be a
          * boolean or a configuration object similar to
@@ -111,10 +111,8 @@
          * @private
          */
         function compose(AxisClass, PlotLineOrBandClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-            }
-            if (U.pushUnique(composedMembers, PlotLineOrBandClass)) {
                 addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
                 wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
             }

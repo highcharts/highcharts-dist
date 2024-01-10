@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Dependency wheel module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Dependency wheel module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -55,23 +55,6 @@
          *
          * */
         class DependencyWheelPoint extends SankeyPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.angle = void 0;
-                this.fromNode = void 0;
-                this.index = void 0;
-                this.linksFrom = void 0;
-                this.linksTo = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.shapeArgs = void 0;
-                this.toNode = void 0;
-            }
             /* *
              *
              *  Functions
@@ -133,7 +116,7 @@
          *
          *  Dependency wheel module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -313,7 +296,7 @@
          *
          *  Dependency wheel module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -337,24 +320,6 @@
          * @augments Highcharts.seriesTypes.sankey
          */
         class DependencyWheelSeries extends SankeySeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.nodeColumns = void 0;
-                this.nodes = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -541,6 +506,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
         extend(DependencyWheelSeries.prototype, {
             orderNodes: false,

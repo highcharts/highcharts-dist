@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Variable Pie module for Highcharts
  *
- * (c) 2010-2021 Grzegorz Blachliński
+ * (c) 2010-2024 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Variable Pie module for Highcharts
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -209,7 +209,7 @@
          *
          *  Variable Pie module for Highcharts
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
@@ -233,23 +233,6 @@
          * @augments Highcharts.Series
          */
         class VariablePieSeries extends PieSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.radii = void 0;
-            }
             /* *
              *
              *  Functions
@@ -458,6 +441,11 @@
                 return null;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VariablePieSeries.defaultOptions = merge(PieSeries.defaultOptions, VariablePieSeriesDefaults);
         extend(VariablePieSeries.prototype, {
             pointArrayMap: ['y', 'z'],

@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DragDropUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -148,7 +148,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DragDropDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -515,7 +515,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DraggableChart.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Extensions/DraggablePoints/DragDropUtilities.js'], _modules['Extensions/DraggablePoints/DragDropDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, DDU, DragDropDefaults, H, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -526,14 +526,8 @@
          * */
         const { animObject } = A;
         const { addEvents, countProps, getFirstProp, getNormalizedEvent } = DDU;
-        const { doc } = H;
+        const { composed, doc } = H;
         const { addEvent, merge, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -647,7 +641,7 @@
          *        Class constructor of chart.
          */
         function compose(ChartClass) {
-            if (pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
                 chartProto.hideDragHandles = chartHideDragHandles;
                 chartProto.setGuideBoxState = chartSetGuideBoxState;
@@ -734,7 +728,7 @@
             let points = [];
             if (series.boosted) { // #11156
                 for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
-                    points.push((new series.pointClass()).init(// eslint-disable-line new-cap
+                    points.push(new series.pointClass(// eslint-disable-line new-cap
                     series, data[i]));
                     points[points.length - 1].index = i;
                 }
@@ -1281,7 +1275,7 @@
     _registerModule(_modules, 'Extensions/DraggablePoints/DragDropProps.js', [_modules['Extensions/DraggablePoints/DraggableChart.js'], _modules['Core/Utilities.js']], function (DraggableChart, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -1871,10 +1865,10 @@
 
         return DragDropProps;
     });
-    _registerModule(_modules, 'Extensions/DraggablePoints/DraggablePoints.js', [_modules['Extensions/DraggablePoints/DragDropUtilities.js'], _modules['Extensions/DraggablePoints/DraggableChart.js'], _modules['Extensions/DraggablePoints/DragDropDefaults.js'], _modules['Extensions/DraggablePoints/DragDropProps.js'], _modules['Core/Utilities.js']], function (DDU, DraggableChart, DragDropDefaults, DragDropProps, U) {
+    _registerModule(_modules, 'Extensions/DraggablePoints/DraggablePoints.js', [_modules['Extensions/DraggablePoints/DragDropUtilities.js'], _modules['Extensions/DraggablePoints/DraggableChart.js'], _modules['Extensions/DraggablePoints/DragDropDefaults.js'], _modules['Extensions/DraggablePoints/DragDropProps.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (DDU, DraggableChart, DragDropDefaults, DragDropProps, H, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -1885,13 +1879,8 @@
          * */
         const { addEvents, getNormalizedEvent } = DDU;
         const { initDragDrop } = DraggableChart;
+        const { composed } = H;
         const { addEvent, clamp, isNumber, merge, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -1941,61 +1930,56 @@
         */
         /** @private */
         function compose(ChartClass, SeriesClass) {
-            const PointClass = SeriesClass.prototype.pointClass, seriesTypes = SeriesClass.types;
             DraggableChart.compose(ChartClass);
-            if (pushUnique(composedMembers, PointClass)) {
-                const pointProto = PointClass.prototype;
+            if (pushUnique(composed, compose)) {
+                const PointClass = SeriesClass.prototype.pointClass, seriesTypes = SeriesClass.types, seriesProto = SeriesClass.prototype, pointProto = PointClass.prototype;
                 pointProto.getDropValues = pointGetDropValues;
                 pointProto.showDragHandles = pointShowDragHandles;
                 addEvent(PointClass, 'mouseOut', onPointMouseOut);
                 addEvent(PointClass, 'mouseOver', onPointMouseOver);
                 addEvent(PointClass, 'remove', onPointRemove);
-            }
-            if (pushUnique(composedMembers, SeriesClass)) {
-                const seriesProto = SeriesClass.prototype;
                 seriesProto.dragDropProps = DragDropProps.line;
                 seriesProto.getGuideBox = seriesGetGuideBox;
-            }
-            // Custom props for certain series types
-            const seriesWithDragDropProps = [
-                'arearange',
-                'boxplot',
-                'bullet',
-                'column',
-                'columnrange',
-                'flags',
-                'gantt',
-                'ohlc',
-                'waterfall',
-                'xrange'
-            ];
-            for (const seriesType of seriesWithDragDropProps) {
-                if (seriesTypes[seriesType] &&
-                    pushUnique(composedMembers, seriesTypes[seriesType])) {
-                    seriesTypes[seriesType].prototype.dragDropProps =
-                        DragDropProps[seriesType];
+                // Custom props for certain series types
+                const seriesWithDragDropProps = [
+                    'arearange',
+                    'boxplot',
+                    'bullet',
+                    'column',
+                    'columnrange',
+                    'flags',
+                    'gantt',
+                    'ohlc',
+                    'waterfall',
+                    'xrange'
+                ];
+                for (const seriesType of seriesWithDragDropProps) {
+                    if (seriesTypes[seriesType]) {
+                        seriesTypes[seriesType].prototype.dragDropProps =
+                            DragDropProps[seriesType];
+                    }
                 }
-            }
-            // Don't support certain series types
-            const seriesWithoutDragDropProps = [
-                'bellcurve',
-                'gauge',
-                'histogram',
-                'map',
-                'mapline',
-                'pareto',
-                'pie',
-                'sankey',
-                'sma',
-                'sunburst',
-                'treemap',
-                'vector',
-                'windbarb',
-                'wordcloud'
-            ];
-            for (const seriesType of seriesWithoutDragDropProps) {
-                if (seriesTypes[seriesType]) {
-                    seriesTypes[seriesType].prototype.dragDropProps = null;
+                // Don't support certain series types
+                const seriesWithoutDragDropProps = [
+                    'bellcurve',
+                    'gauge',
+                    'histogram',
+                    'map',
+                    'mapline',
+                    'pareto',
+                    'pie',
+                    'sankey',
+                    'sma',
+                    'sunburst',
+                    'treemap',
+                    'vector',
+                    'windbarb',
+                    'wordcloud'
+                ];
+                for (const seriesType of seriesWithoutDragDropProps) {
+                    if (seriesTypes[seriesType]) {
+                        seriesTypes[seriesType].prototype.dragDropProps = null;
+                    }
                 }
             }
         }

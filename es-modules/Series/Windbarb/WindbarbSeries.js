@@ -2,7 +2,7 @@
  *
  *  Wind barb series module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -63,22 +63,6 @@ function registerApproximation() {
  * @augments Highcharts.Series
  */
 class WindbarbSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -221,6 +205,11 @@ class WindbarbSeries extends ColumnSeries {
         return super.shouldShowTooltip(plotX, plotY, options);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WindbarbSeriesDefaults);
 OnSeriesComposition.compose(WindbarbSeries);
 extend(WindbarbSeries.prototype, {

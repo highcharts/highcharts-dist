@@ -1,6 +1,6 @@
 /**
  *
- *  (c) 2010-2021 Wojciech Chmiel
+ *  (c) 2010-2024 Wojciech Chmiel
  *
  *  License: www.highcharts.com/license
  *
@@ -29,7 +29,6 @@ var MultipleLinesComposition;
     *  Constants
     *
     * */
-    const composedMembers = [];
     /**
      * Additional lines DOCS names. Elements of linesApiNames array should
      * be consistent with DOCS line names defined in your implementation.
@@ -84,21 +83,19 @@ var MultipleLinesComposition;
      * @private
      */
     function compose(IndicatorClass) {
-        if (U.pushUnique(composedMembers, IndicatorClass)) {
-            const proto = IndicatorClass.prototype;
-            proto.linesApiNames = (proto.linesApiNames ||
-                linesApiNames.slice());
-            proto.pointArrayMap = (proto.pointArrayMap ||
-                pointArrayMap.slice());
-            proto.pointValKey = (proto.pointValKey ||
-                pointValKey);
-            proto.areaLinesNames = (proto.areaLinesNames ||
-                areaLinesNames.slice());
-            proto.drawGraph = indicatorDrawGraph;
-            proto.getGraphPath = indicatorGetGraphPath;
-            proto.toYData = indicatorToYData;
-            proto.translate = indicatorTranslate;
-        }
+        const proto = IndicatorClass.prototype;
+        proto.linesApiNames = (proto.linesApiNames ||
+            linesApiNames.slice());
+        proto.pointArrayMap = (proto.pointArrayMap ||
+            pointArrayMap.slice());
+        proto.pointValKey = (proto.pointValKey ||
+            pointValKey);
+        proto.areaLinesNames = (proto.areaLinesNames ||
+            areaLinesNames.slice());
+        proto.drawGraph = indicatorDrawGraph;
+        proto.getGraphPath = indicatorGetGraphPath;
+        proto.toYData = indicatorToYData;
+        proto.translate = indicatorTranslate;
         return IndicatorClass;
     }
     MultipleLinesComposition.compose = compose;

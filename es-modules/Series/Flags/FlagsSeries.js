@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -36,22 +36,6 @@ const { addEvent, defined, extend, merge, objectEach, wrap } = U;
  * @augments Highcharts.Series
  */
 class FlagsSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -278,6 +262,11 @@ class FlagsSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 FlagsSeries.compose = FlagsSymbols.compose;
 FlagsSeries.defaultOptions = merge(ColumnSeries.defaultOptions, FlagsSeriesDefaults);
 OnSeriesComposition.compose(FlagsSeries);

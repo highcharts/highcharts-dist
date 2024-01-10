@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Arc diagram module
  *
@@ -40,7 +40,7 @@
          *
          *  Arc diagram module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -55,24 +55,6 @@
          *
          * */
         class ArcDiagramPoint extends SankeyPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.fromNode = void 0;
-                this.index = void 0;
-                this.linksFrom = void 0;
-                this.linksTo = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.scale = void 0;
-                this.shapeArgs = void 0;
-                this.toNode = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Functions
@@ -123,20 +105,6 @@
          * @augments Highcharts.seriesTypes.sankey
          */
         class ArcDiagramSeries extends SankeySeries {
-            constructor() {
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.nodeColumns = void 0;
-                this.nodes = void 0;
-                this.points = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Functions
@@ -474,8 +442,11 @@
              */
             offset: '100%',
             /**
-             * The global link weight. If not set, width is calculated per link,
-             * depending on the weight value.
+             * The global link weight, in pixels. If not set, width is calculated
+             * per link, depending on the weight value.
+             *
+             * @sample highcharts/series-arcdiagram/link-weight
+             *         Link weight
              *
              * @type    {number}
              * @since 10.0.0

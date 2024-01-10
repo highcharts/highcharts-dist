@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,11 +9,13 @@
  * */
 'use strict';
 import ColumnSeries from './Column/ColumnSeries.js';
+import H from '../Core/Globals.js';
+const { composed } = H;
 const { prototype: columnProto } = ColumnSeries;
 import Series from '../Core/Series/Series.js';
 const { prototype: seriesProto } = Series;
 import U from '../Core/Utilities.js';
-const { defined, stableSort } = U;
+const { defined, pushUnique, stableSort } = U;
 /* *
  *
  *  Composition
@@ -28,21 +30,14 @@ var OnSeriesComposition;
      * */
     /* *
      *
-     *  Properties
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, compose)) {
             const seriesProto = SeriesClass.prototype;
             seriesProto.getPlotBox = getPlotBox;
             seriesProto.translate = translate;

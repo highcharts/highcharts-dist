@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -159,24 +159,6 @@ const areaRangeSeriesOptions = {
  * @augments Highcharts.Series
  */
 class AreaRangeSeries extends AreaSeries {
-    constructor() {
-        /**
-         *
-         *  Static Properties
-         *
-         */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.lowerStateMarkerGraphic = void 0;
-        this.xAxis = void 0;
-    }
     /* *
      *
      *  Functions
@@ -531,6 +513,11 @@ class AreaRangeSeries extends AreaSeries {
         )) || super.hasMarkerChanged(options, oldOptions);
     }
 }
+/**
+ *
+ *  Static Properties
+ *
+ */
 AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
 addEvent(AreaRangeSeries, 'afterTranslate', function () {
     // Set plotLow and plotHigh

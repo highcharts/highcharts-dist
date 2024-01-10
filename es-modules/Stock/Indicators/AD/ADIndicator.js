@@ -24,22 +24,6 @@ const { error, extend, merge } = U;
  * @augments Highcharts.Series
  */
 class ADIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Static Functions
@@ -89,6 +73,11 @@ class ADIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Accumulation Distribution (AD). This series requires `linkedTo` option to
  * be set.

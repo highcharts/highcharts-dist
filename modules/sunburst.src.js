@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2016-2021 Highsoft AS
+ * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -303,7 +303,7 @@
 
         return BreadcrumbsDefaults;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, F, H, U) {
         /* *
          *
          *  Highcharts Breadcrumbs module
@@ -316,13 +316,8 @@
          *
          * */
         const { format } = F;
-        const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -419,14 +414,12 @@
              *
              * */
             static compose(ChartClass, highchartsDefaultOptions) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    addEvent(Chart, 'destroy', onChartDestroy);
-                    addEvent(Chart, 'afterShowResetZoom', onChartAfterShowResetZoom);
-                    addEvent(Chart, 'getMargins', onChartGetMargins);
-                    addEvent(Chart, 'redraw', onChartRedraw);
-                    addEvent(Chart, 'selection', onChartSelection);
-                }
-                if (U.pushUnique(composedMembers, highchartsDefaultOptions)) {
+                if (pushUnique(composed, this.compose)) {
+                    addEvent(ChartClass, 'destroy', onChartDestroy);
+                    addEvent(ChartClass, 'afterShowResetZoom', onChartAfterShowResetZoom);
+                    addEvent(ChartClass, 'getMargins', onChartGetMargins);
+                    addEvent(ChartClass, 'redraw', onChartRedraw);
+                    addEvent(ChartClass, 'selection', onChartSelection);
                     // Add language support.
                     extend(highchartsDefaultOptions.lang, BreadcrumbsDefaults.lang);
                 }
@@ -1021,7 +1014,7 @@
     _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1042,7 +1035,6 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
@@ -1067,9 +1059,7 @@
              */
             function compose(SeriesClass) {
                 const PointClass = SeriesClass.prototype.pointClass;
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    addEvent(PointClass, 'afterSetState', onPointAfterSetState);
-                }
+                addEvent(PointClass, 'afterSetState', onPointAfterSetState);
                 return SeriesClass;
             }
             ColorMapComposition.compose = compose;
@@ -1126,7 +1116,7 @@
     _registerModule(_modules, 'Series/Treemap/TreemapAlgorithmGroup.js', [], function () {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -1219,7 +1209,7 @@
     _registerModule(_modules, 'Series/Treemap/TreemapNode.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -1352,7 +1342,7 @@
     _registerModule(_modules, 'Series/Treemap/TreemapPoint.js', [_modules['Series/DrawPointUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DPU, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -1376,12 +1366,7 @@
                  *
                  * */
                 super(...arguments);
-                this.name = void 0;
-                this.node = void 0;
-                this.options = void 0;
-                this.series = void 0;
                 this.shapeType = 'rect';
-                this.value = void 0;
             }
             /* *
              *
@@ -1444,7 +1429,7 @@
     _registerModule(_modules, 'Series/Treemap/TreemapSeriesDefaults.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -1996,7 +1981,7 @@
     _registerModule(_modules, 'Series/Treemap/TreemapUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -2052,7 +2037,7 @@
     _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -2243,7 +2228,7 @@
     _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Extensions/Breadcrumbs/Breadcrumbs.js'], _modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapNode.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapSeriesDefaults.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (Breadcrumbs, Color, ColorMapComposition, H, SeriesRegistry, TreemapAlgorithmGroup, TreemapNode, TreemapPoint, TreemapSeriesDefaults, TreemapUtilities, TU, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -2253,17 +2238,16 @@
          *
          * */
         const { parse: color } = Color;
-        const { noop } = H;
+        const { composed, noop } = H;
         const { column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
         const { getColor, getLevelOptions, updateRootId } = TU;
-        const { addEvent, correctFloat, defined, error, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, stableSort } = U;
+        const { addEvent, correctFloat, defined, error, extend, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, stableSort } = U;
         /* *
          *
          *  Constants
          *
          * */
         const axisMax = 100;
-        const composedMembers = [];
         /* *
          *
          *  Variables
@@ -2319,37 +2303,13 @@
          * @augments Highcharts.Series
          */
         class TreemapSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.axisRatio = void 0;
-                this.data = void 0;
-                this.mapOptionsToLevel = void 0;
-                this.nodeMap = void 0;
-                this.nodeList = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.rootNode = void 0;
-                this.tree = void 0;
-                this.level = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(SeriesClass) {
-                if (pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
                 }
             }
@@ -2486,7 +2446,7 @@
                 if (style &&
                     !defined(style.textOverflow) &&
                     dataLabel.text &&
-                    dataLabel.getBBox().width > dataLabel.text.textWidth) {
+                    dataLabel.getBBox().width > (dataLabel.text.textWidth || 0)) {
                     dataLabel.css({
                         textOverflow: 'ellipsis',
                         // unit (px) is required when useHTML is true
@@ -3196,6 +3156,11 @@
                 series.setPointValues();
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         TreemapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, TreemapSeriesDefaults);
         extend(TreemapSeries.prototype, {
             buildKDTree: noop,
@@ -3227,7 +3192,7 @@
          *
          *  This module implements sunburst charts in Highcharts.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -3244,19 +3209,6 @@
          *
          * */
         class SunburstPoint extends TreemapPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.node = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.shapeExisting = void 0;
-                this.shapeType = void 0;
-            }
             /* *
              *
              *  Functions
@@ -3329,7 +3281,7 @@
          *
          *  This module implements sunburst charts in Highcharts.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -3450,7 +3402,7 @@
     _registerModule(_modules, 'Series/Sunburst/SunburstNode.js', [_modules['Series/Treemap/TreemapNode.js']], function (TreemapNode) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -3477,7 +3429,7 @@
          *
          *  This module implements sunburst charts in Highcharts.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -3834,7 +3786,7 @@
          *
          *  This module implements sunburst charts in Highcharts.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -4133,28 +4085,6 @@
          *
          * */
         class SunburstSeries extends TreemapSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.center = void 0;
-                this.data = void 0;
-                this.mapOptionsToLevel = void 0;
-                this.nodeMap = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.shapeRoot = void 0;
-                this.startAndEndRadians = void 0;
-                this.tree = void 0;
-            }
             /* *
              *
              *  Functions
@@ -4164,7 +4094,7 @@
                 if (labelOptions.textPath && labelOptions.textPath.enabled) {
                     return;
                 }
-                return super.alignDataLabel(point, dataLabel, labelOptions);
+                return super.alignDataLabel.apply(this, arguments);
             }
             /**
              * Animate the slices in. Similar to the animation of polar charts.
@@ -4445,17 +4375,22 @@
                 // Set mapOptionsToLevel on series for use in drawPoints.
                 series.mapOptionsToLevel = mapOptionsToLevel;
                 // #10669 - verify if all nodes have unique ids
-                for (const child of series.data) {
-                    if (nodeIds[child.id]) {
+                for (const point of series.points) {
+                    if (nodeIds[point.id]) {
                         error(31, false, series.chart);
                     }
                     // map
-                    nodeIds[child.id] = true;
+                    nodeIds[point.id] = true;
                 }
                 // reset object
                 nodeIds = {};
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, SunburstSeriesDefaults);
         extend(SunburstSeries.prototype, {
             axisTypes: [],

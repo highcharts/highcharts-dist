@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -44,18 +44,6 @@ const { addEvent, attr, createElement, css, defined, erase, extend, fireEvent, i
  * @name Highcharts.SVGElement
  */
 class SVGElement {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.element = void 0;
-        this.onEvents = {};
-        this.opacity = 1; // Default base for animation
-        this.renderer = void 0;
-        this.SVG_NS = SVG_NS;
-    }
     // @todo public zIndex?: number;
     /* *
      *
@@ -532,19 +520,28 @@ class SVGElement {
         return ret;
     }
     /**
-     * Apply a clipping rectangle to this element.
+     * Apply a clipping shape to this element.
      *
      * @function Highcharts.SVGElement#clip
      *
-     * @param {Highcharts.ClipRectElement} [clipRect]
-     *        The clipping rectangle. If skipped, the current clip is removed.
+     * @param {SVGElement} [clipElem]
+     *        The clipping shape. If skipped, the current clip is removed.
      *
      * @return {Highcharts.SVGElement}
      *         Returns the SVG element to allow chaining.
      */
-    clip(clipRect) {
-        return this.attr('clip-path', clipRect ?
-            'url(' + this.renderer.url + '#' + clipRect.id + ')' :
+    clip(clipElem) {
+        if (clipElem && !clipElem.clipPath) {
+            // Add a hyphen at the end to avoid confusion in testing indexes
+            // -1 and -10, -11 etc (#6550)
+            const id = uniqueKey() + '-', clipPath = this.renderer.createElement('clipPath')
+                .attr({ id })
+                .add(this.renderer.defs);
+            extend(clipElem, { clipPath, id, count: 0 });
+            clipElem.add(clipPath);
+        }
+        return this.attr('clip-path', clipElem ?
+            `url(${this.renderer.url}#${clipElem.id})` :
             'none');
     }
     /**
@@ -1138,7 +1135,10 @@ class SVGElement {
      * @param {string} nodeName
      * The SVG node name.
      */
-    init(renderer, nodeName) {
+    constructor(renderer, nodeName) {
+        this.onEvents = {};
+        this.opacity = 1; // Default base for animation
+        this.SVG_NS = SVG_NS;
         /**
          * The primary DOM node. Each `SVGElement` instance wraps a main DOM
          * node, but may also represent more nodes.
@@ -1569,7 +1569,7 @@ class SVGElement {
      * @private
      * @function Highcharts.SVGElement#updateTransform
      */
-    updateTransform() {
+    updateTransform(attrib = 'transform') {
         const { element, matrix, rotation = 0, scaleX, scaleY, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
@@ -1591,7 +1591,7 @@ class SVGElement {
             transform.push('scale(' + pick(scaleX, 1) + ' ' + pick(scaleY, 1) + ')');
         }
         if (transform.length && !(this.text || this).textPath) {
-            element.setAttribute('transform', transform.join(' '));
+            element.setAttribute(attrib, transform.join(' '));
         }
     }
     /**
@@ -1697,6 +1697,11 @@ class SVGElement {
         return inserted;
     }
 }
+/* *
+ *
+ *  Properties
+ *
+ * */
 // Custom attributes used for symbols, these should be filtered out when
 // setting SVGElement attributes (#9375).
 SVGElement.symbolCustomAttribs = [

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -14,14 +14,10 @@ import BubbleLegendDefaults from './BubbleLegendDefaults.js';
 import BubbleLegendItem from './BubbleLegendItem.js';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, objectEach, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, objectEach, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -99,7 +95,7 @@ function chartDrawChartBox(proceed, options, callback) {
  * Core series class to use with Bubble series.
  */
 function compose(ChartClass, LegendClass, SeriesClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         setOptions({
             // Set default bubble legend options
             legend: {
@@ -107,11 +103,7 @@ function compose(ChartClass, LegendClass, SeriesClass) {
             }
         });
         wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
-    }
-    if (U.pushUnique(composedMembers, LegendClass)) {
         addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-    }
-    if (U.pushUnique(composedMembers, SeriesClass)) {
         addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
     }
 }

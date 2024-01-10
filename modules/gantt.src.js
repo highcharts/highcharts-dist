@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
  *
  * Gantt series
  *
- * (c) 2016-2021 Lars A. V. Cabrera
+ * (c) 2016-2024 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -35,6 +35,185 @@
             }
         }
     }
+    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2017 Highsoft AS
+         *  Authors: Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { composed } = H;
+        const { pushUnique } = U;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Creates an arrow symbol. Like a triangle, except not filled.
+         * ```
+         *                   o
+         *             o
+         *       o
+         * o
+         *       o
+         *             o
+         *                   o
+         * ```
+         *
+         * @private
+         * @function
+         *
+         * @param {number} x
+         *        x position of the arrow
+         *
+         * @param {number} y
+         *        y position of the arrow
+         *
+         * @param {number} w
+         *        width of the arrow
+         *
+         * @param {number} h
+         *        height of the arrow
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         Path array
+         */
+        function arrow(x, y, w, h) {
+            return [
+                ['M', x, y + h / 2],
+                ['L', x + w, y],
+                ['L', x, y + h / 2],
+                ['L', x + w, y + h]
+            ];
+        }
+        /**
+         * Creates a half-width arrow symbol. Like a triangle, except not filled.
+         * ```
+         *       o
+         *    o
+         * o
+         *    o
+         *       o
+         * ```
+         *
+         * @private
+         * @function
+         *
+         * @param {number} x
+         *        x position of the arrow
+         *
+         * @param {number} y
+         *        y position of the arrow
+         *
+         * @param {number} w
+         *        width of the arrow
+         *
+         * @param {number} h
+         *        height of the arrow
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         Path array
+         */
+        function arrowHalf(x, y, w, h) {
+            return arrow(x, y, w / 2, h);
+        }
+        /**
+         * @private
+         */
+        function compose(SVGRendererClass) {
+            if (pushUnique(composed, compose)) {
+                const symbols = SVGRendererClass.prototype.symbols;
+                symbols.arrow = arrow;
+                symbols['arrow-filled'] = triangleLeft;
+                symbols['arrow-filled-half'] = triangleLeftHalf;
+                symbols['arrow-half'] = arrowHalf;
+                symbols['triangle-left'] = triangleLeft;
+                symbols['triangle-left-half'] = triangleLeftHalf;
+            }
+        }
+        /**
+         * Creates a left-oriented triangle.
+         * ```
+         *             o
+         *       ooooooo
+         * ooooooooooooo
+         *       ooooooo
+         *             o
+         * ```
+         *
+         * @private
+         * @function
+         *
+         * @param {number} x
+         *        x position of the triangle
+         *
+         * @param {number} y
+         *        y position of the triangle
+         *
+         * @param {number} w
+         *        width of the triangle
+         *
+         * @param {number} h
+         *        height of the triangle
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         Path array
+         */
+        function triangleLeft(x, y, w, h) {
+            return [
+                ['M', x + w, y],
+                ['L', x, y + h / 2],
+                ['L', x + w, y + h],
+                ['Z']
+            ];
+        }
+        /**
+         * Creates a half-width, left-oriented triangle.
+         * ```
+         *       o
+         *    oooo
+         * ooooooo
+         *    oooo
+         *       o
+         * ```
+         *
+         * @private
+         * @function
+         *
+         * @param {number} x
+         *        x position of the triangle
+         *
+         * @param {number} y
+         *        y position of the triangle
+         *
+         * @param {number} w
+         *        width of the triangle
+         *
+         * @param {number} h
+         *        height of the triangle
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         Path array
+         */
+        function triangleLeftHalf(x, y, w, h) {
+            return triangleLeft(x, y, w / 2, h);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const ArrowSymbols = {
+            compose
+        };
+
+        return ArrowSymbols;
+    });
     _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
@@ -77,16 +256,6 @@
          */
         class Connection {
             constructor(from, to, options) {
-                /* *
-                *
-                * Properties
-                *
-                * */
-                this.chart = void 0;
-                this.fromPoint = void 0;
-                this.graphics = void 0;
-                this.pathfinder = void 0;
-                this.toPoint = void 0;
                 this.init(from, to, options);
             }
             /**
@@ -125,8 +294,8 @@
              * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Animation options for the rendering.
              */
-            renderPath(path, attribs, animation) {
-                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, anim = {};
+            renderPath(path, attribs) {
+                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = this.pathfinder, anim = {};
                 let pathGraphic = connection.graphics && connection.graphics.path;
                 // Add the SVG element of the pathfinder group if it doesn't exist
                 if (!pathfinder.group) {
@@ -155,7 +324,7 @@
                 if (!styledMode) {
                     anim.opacity = 1;
                 }
-                pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
+                pathGraphic.animate(anim);
                 // Store reference on connection
                 this.graphics = this.graphics || {};
                 this.graphics.path = pathGraphic;
@@ -342,7 +511,7 @@
                         pathfinder.lineObstacles.concat(pathResult.obstacles);
                 }
                 // Add the calculated path to the pathfinder group
-                connection.renderPath(path, attribs, series.options.animation);
+                connection.renderPath(path, attribs);
                 // Render the markers
                 connection.addMarker('start', merge(options.marker, options.startMarker), path);
                 connection.addMarker('end', merge(options.marker, options.endMarker), path);
@@ -397,24 +566,341 @@
 
         return Connection;
     });
-    _registerModule(_modules, 'Core/Axis/NavigatorAxisComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2016-2024 Highsoft AS
+         *
+         *  Author: Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isTouchDevice } = H;
-        const { addEvent, correctFloat, defined, isNumber, pick } = U;
+        const { composed } = H;
+        const { addEvent, merge, pushUnique, wrap } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
+        /**
+         * Show an indicator on the axis for the current date and time. Can be a
+         * boolean or a configuration object similar to
+         * [xAxis.plotLines](#xAxis.plotLines).
+         *
+         * @sample gantt/current-date-indicator/demo
+         *         Current date indicator enabled
+         * @sample gantt/current-date-indicator/object-config
+         *         Current date indicator with custom options
+         *
+         * @declare   Highcharts.CurrentDateIndicatorOptions
+         * @type      {boolean|CurrentDateIndicatorOptions}
+         * @default   true
+         * @extends   xAxis.plotLines
+         * @excluding value
+         * @product   gantt
+         * @apioption xAxis.currentDateIndicator
+         */
+        const defaultOptions = {
+            color: "#ccd3ff" /* Palette.highlightColor20 */,
+            width: 2,
+            /**
+             * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
+             */
+            label: {
+                /**
+                 * Format of the label. This options is passed as the fist argument to
+                 * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
+                 *
+                 * @type      {string}
+                 * @default   %a, %b %d %Y, %H:%M
+                 * @product   gantt
+                 * @apioption xAxis.currentDateIndicator.label.format
+                 */
+                format: '%a, %b %d %Y, %H:%M',
+                formatter: function (value, format) {
+                    return this.axis.chart.time.dateFormat(format || '', value);
+                },
+                rotation: 0,
+                /**
+                 * @type {Highcharts.CSSObject}
+                 */
+                style: {
+                    /** @internal */
+                    fontSize: '0.7em'
+                }
+            }
+        };
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * @private
+         */
+        function compose(AxisClass, PlotLineOrBandClass) {
+            if (pushUnique(composed, compose)) {
+                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+                addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
+                wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
+            }
+        }
+        /**
+         * @private
+         */
+        function onAxisAfterSetOptions() {
+            const options = this.options, cdiOptions = options.currentDateIndicator;
+            if (cdiOptions) {
+                const plotLineOptions = typeof cdiOptions === 'object' ?
+                    merge(defaultOptions, cdiOptions) :
+                    merge(defaultOptions);
+                plotLineOptions.value = Date.now();
+                plotLineOptions.className = 'highcharts-current-date-indicator';
+                if (!options.plotLines) {
+                    options.plotLines = [];
+                }
+                options.plotLines.push(plotLineOptions);
+            }
+        }
+        /**
+         * @private
+         */
+        function onPlotLineOrBandRender() {
+            // If the label already exists, update its text
+            if (this.label) {
+                this.label.attr({
+                    text: this.getLabelText(this.options.label)
+                });
+            }
+        }
+        /**
+         * @private
+         */
+        function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
+            const options = this.options;
+            if (options &&
+                options.className &&
+                options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
+                options.label &&
+                typeof options.label.formatter === 'function') {
+                options.value = Date.now();
+                return options.label.formatter
+                    .call(this, options.value, options.label.format);
+            }
+            return defaultMethod.call(this, defaultLabelOptions);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        const CurrentDateIndication = {
+            compose
+        };
+
+        return CurrentDateIndication;
+    });
+    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (Chart, D, U) {
+        /* *
+         *
+         *  (c) 2016-2024 Highsoft AS
+         *
+         *  Author: Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { defaultOptions } = D;
+        const { isArray, merge, splat } = U;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * Gantt-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
+         *
+         * @requires modules/gantt
+         *
+         * @class
+         * @name Highcharts.GanttChart
+         * @extends Highcharts.Chart
+         */
+        class GanttChart extends Chart {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Initializes the chart. The constructor's arguments are passed on
+             * directly.
+             *
+             * @function Highcharts.GanttChart#init
+             *
+             * @param {Highcharts.Options} userOptions
+             *        Custom options.
+             *
+             * @param {Function} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded.
+             *
+             *
+             * @emits Highcharts.GanttChart#event:init
+             * @emits Highcharts.GanttChart#event:afterInit
+             */
+            init(userOptions, callback) {
+                const xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis;
+                let defaultLinkedTo;
+                // Avoid doing these twice
+                userOptions.xAxis = userOptions.yAxis = void 0;
+                const options = merge(true, {
+                    chart: {
+                        type: 'gantt'
+                    },
+                    title: {
+                        text: ''
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    navigator: {
+                        series: { type: 'gantt' },
+                        // Bars were clipped, #14060.
+                        yAxis: {
+                            type: 'category'
+                        }
+                    }
+                }, userOptions, // User's options
+                // forced options
+                {
+                    isGantt: true
+                });
+                userOptions.xAxis = xAxisOptions;
+                userOptions.yAxis = yAxisOptions;
+                // Apply X axis options to both single and multi x axes If user hasn't
+                // defined axes as array, make it into an array and add a second axis by
+                // default.
+                options.xAxis = (!isArray(userOptions.xAxis) ?
+                    [userOptions.xAxis || {}, {}] :
+                    userOptions.xAxis).map((xAxisOptions, i) => {
+                    if (i === 1) { // Second xAxis
+                        defaultLinkedTo = 0;
+                    }
+                    return merge(
+                    // Defaults
+                    {
+                        grid: {
+                            borderColor: "#cccccc" /* Palette.neutralColor20 */,
+                            enabled: true
+                        },
+                        opposite: defaultOptions.xAxis?.opposite ??
+                            xAxisOptions.opposite ??
+                            true,
+                        linkedTo: defaultLinkedTo
+                    }, 
+                    // User options
+                    xAxisOptions, 
+                    // Forced options
+                    {
+                        type: 'datetime'
+                    });
+                });
+                // Apply Y axis options to both single and multi y axes
+                options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(
+                // Defaults
+                {
+                    grid: {
+                        borderColor: "#cccccc" /* Palette.neutralColor20 */,
+                        enabled: true
+                    },
+                    staticScale: 50,
+                    reversed: true,
+                    // Set default type treegrid, but only if 'categories' is
+                    // undefined
+                    type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
+                }, 
+                // User options
+                yAxisOptions));
+                super.init(options, callback);
+            }
+        }
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
+        (function (GanttChart) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable jsdoc/check-param-names */
+            /**
+             * The factory function for creating new gantt charts. Creates a new {@link
+             * Highcharts.GanttChart|GanttChart} object with different default options
+             * than the basic Chart.
+             *
+             * @example
+             * // Render a chart in to div#container
+             * let chart = Highcharts.ganttChart('container', {
+             *     title: {
+             *         text: 'My chart'
+             *     },
+             *     series: [{
+             *         data: ...
+             *     }]
+             * });
+             *
+             * @function Highcharts.ganttChart
+             *
+             * @param {string|Highcharts.HTMLDOMElement} renderTo
+             *        The DOM element to render to, or its id.
+             *
+             * @param {Highcharts.Options} options
+             *        The chart options structure.
+             *
+             * @param {Highcharts.ChartCallbackFunction} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded. Defining a
+             *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
+             *        handler is equivalent.
+             *
+             * @return {Highcharts.GanttChart}
+             *         Returns the Chart object.
+             */
+            function ganttChart(a, b, c) {
+                return new GanttChart(a, b, c);
+            }
+            GanttChart.ganttChart = ganttChart;
+            /* eslint-enable jsdoc/check-param-names */
+        })(GanttChart || (GanttChart = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return GanttChart;
+    });
+    _registerModule(_modules, 'Core/Axis/NavigatorAxisComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2010-2024 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { composed, isTouchDevice } = H;
+        const { addEvent, correctFloat, defined, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -485,7 +971,7 @@
              * @private
              */
             static compose(AxisClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     AxisClass.keepProps.push('navigatorAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'zoom', onAxisZoom);
@@ -557,7 +1043,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorDefaults.js', [_modules['Core/Color/Color.js'], _modules['Core/Series/SeriesRegistry.js']], function (Color, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1059,7 +1545,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorSymbols.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1104,7 +1590,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorComposition.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxisComposition.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/Navigator/NavigatorSymbols.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (D, H, NavigatorAxisAdditions, NavigatorDefaults, NavigatorSymbols, RendererRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1112,15 +1598,9 @@
          *
          * */
         const { defaultOptions, setOptions } = D;
-        const { isTouchDevice } = H;
+        const { composed, isTouchDevice } = H;
         const { getRendererType } = RendererRegistry;
-        const { addEvent, extend, merge, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, extend, merge, pick, pushUnique } = U;
         /* *
          *
          *  Variables
@@ -1138,7 +1618,7 @@
         function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
             NavigatorAxisAdditions.compose(AxisClass);
             NavigatorConstructor = NavigatorClass;
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
                 chartProto.callbacks.push(onChartCallback);
                 addEvent(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
@@ -1147,14 +1627,8 @@
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 addEvent(ChartClass, 'beforeShowResetZoom', onChartBeforeShowResetZoom);
                 addEvent(ChartClass, 'update', onChartUpdate);
-            }
-            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-            }
-            if (U.pushUnique(composedMembers, getRendererType)) {
                 extend(getRendererType().prototype.symbols, NavigatorSymbols);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 extend(defaultOptions, { navigator: NavigatorDefaults });
             }
         }
@@ -1310,16 +1784,17 @@
 
         return NavigatorComposition;
     });
-    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2023 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { addEvent, defined, pick, pushUnique } = U;
         /* *
          *
@@ -1329,22 +1804,16 @@
         var ScrollbarAxis;
         (function (ScrollbarAxis) {
             /* *
-            *
-            *  Constants
-            *
-            * */
-            const composedMembers = [];
-            /* *
-            *
-            *  Variables
-            *
-            * */
+             *
+             *  Variables
+             *
+             * */
             let Scrollbar;
             /* *
-            *
-            *  Functions
-            *
-            * */
+             *
+             *  Functions
+             *
+             * */
             /**
              * Attaches to axis events to create scrollbars if enabled.
              *
@@ -1357,10 +1826,8 @@
              * Scrollbar class to use.
              */
             function compose(AxisClass, ScrollbarClass) {
-                if (pushUnique(composedMembers, ScrollbarClass)) {
+                if (pushUnique(composed, compose)) {
                     Scrollbar = ScrollbarClass;
-                }
-                if (pushUnique(composedMembers, AxisClass)) {
                     addEvent(AxisClass, 'afterGetOffset', onAxisAfterGetOffset);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -1526,7 +1993,7 @@
     _registerModule(_modules, 'Stock/Scrollbar/ScrollbarDefaults.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1750,7 +2217,7 @@
     _registerModule(_modules, 'Stock/Scrollbar/Scrollbar.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/ScrollbarAxis.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Utilities.js']], function (D, H, ScrollbarAxis, ScrollbarDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1830,25 +2297,16 @@
                  *
                  * */
                 this._events = [];
-                this.chart = void 0;
                 this.chartX = 0;
                 this.chartY = 0;
                 this.from = 0;
-                this.group = void 0;
-                this.options = void 0;
-                this.renderer = void 0;
-                this.scrollbar = void 0;
                 this.scrollbarButtons = [];
-                this.scrollbarGroup = void 0;
                 this.scrollbarLeft = 0;
-                this.scrollbarRifles = void 0;
                 this.scrollbarStrokeWidth = 1;
                 this.scrollbarTop = 0;
                 this.size = 0;
                 this.to = 0;
-                this.track = void 0;
                 this.trackBorderWidth = 1;
-                this.userOptions = void 0;
                 this.x = 0;
                 this.y = 0;
                 this.init(renderer, options, chart);
@@ -2417,7 +2875,7 @@
     _registerModule(_modules, 'Stock/Navigator/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxisComposition.js'], _modules['Stock/Navigator/NavigatorComposition.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, D, H, NavigatorAxisAdditions, NavigatorComposition, Scrollbar, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -2474,34 +2932,7 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.baseSeries = void 0;
-                this.chart = void 0;
-                this.handles = void 0;
-                this.height = void 0;
-                this.left = void 0;
-                this.navigatorEnabled = void 0;
-                this.navigatorGroup = void 0;
-                this.navigatorOptions = void 0;
-                this.navigatorSeries = void 0;
-                this.navigatorSize = void 0;
-                this.opposite = void 0;
-                this.outline = void 0;
-                this.range = void 0;
-                this.rendered = void 0;
                 this.scrollbarHeight = 0;
-                this.scrollButtonSize = void 0;
-                this.shades = void 0;
-                this.size = void 0;
-                this.top = void 0;
-                this.xAxis = void 0;
-                this.yAxis = void 0;
-                this.zoomedMax = void 0;
-                this.zoomedMin = void 0;
                 this.init(chart);
             }
             /* *
@@ -3819,7 +4250,7 @@
     _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -4910,7 +5341,7 @@
 
         return connectorsDefaults;
     });
-    _registerModule(_modules, 'Gantt/PathfinderComposition.js', [_modules['Gantt/ConnectorsDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (ConnectorsDefaults, D, U) {
+    _registerModule(_modules, 'Gantt/PathfinderComposition.js', [_modules['Gantt/ConnectorsDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (ConnectorsDefaults, D, H, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -4922,6 +5353,7 @@
          *
          * */
         const { setOptions } = D;
+        const { composed } = H;
         const { defined, error, merge, pushUnique } = U;
         /* *
          *
@@ -4989,18 +5421,13 @@
         (function (ConnectionComposition) {
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(ChartClass, PathfinderClass, PointClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
+                    const pointProto = PointClass.prototype;
                     // Initialize Pathfinder for charts
                     ChartClass.prototype.callbacks.push(function (chart) {
                         const options = chart.options;
@@ -5010,14 +5437,9 @@
                             this.pathfinder.update(true); // First draw, defer render
                         }
                     });
-                }
-                if (pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
                     pointProto.getMarkerVector = pointGetMarkerVector;
                     pointProto.getPathfinderAnchorPoint = pointGetPathfinderAnchorPoint;
                     pointProto.getRadiansToVector = pointGetRadiansToVector;
-                }
-                if (pushUnique(composedMembers, setOptions)) {
                     // Set default Pathfinder options
                     setOptions(ConnectorsDefaults);
                 }
@@ -5311,17 +5733,6 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.chartObstacles = void 0;
-                this.chartObstacleMetrics = void 0;
-                this.connections = void 0;
-                this.group = void 0;
-                this.lineObstacles = void 0;
                 this.init(chart);
             }
             /* *
@@ -5612,7 +6023,7 @@
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -6054,7 +6465,9 @@
              */
             inputSpacing: 5,
             /**
-             * The index of the button to appear pre-selected.
+             * The index of the button to appear pre-selected. If the selected range
+             * exceeds the total data range and the 'all' option is available,
+             * the 'all' option, showing the full range, is automatically selected.
              *
              * @type      {number}
              */
@@ -6136,25 +6549,25 @@
 
         return RangeSelectorDefaults;
     });
-    _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorComposition.js', [_modules['Core/Defaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Core/Utilities.js']], function (D, RangeSelectorDefaults, U) {
+    _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorComposition.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Core/Utilities.js']], function (D, H, RangeSelectorDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defaultOptions, setOptions } = D;
-        const { addEvent, defined, extend, find, isNumber, merge, pick } = U;
+        const { defaultOptions } = D;
+        const { composed } = H;
+        const { addEvent, defined, extend, find, isNumber, merge, pick, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
         const chartDestroyEvents = [];
-        const composedMembers = [];
         /* *
          *
          *  Variables
@@ -6229,20 +6642,16 @@
          */
         function compose(AxisClass, ChartClass, RangeSelectorClass) {
             RangeSelectorConstructor = RangeSelectorClass;
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
+                const chartProto = ChartClass.prototype;
                 AxisClass.prototype.minFromRange = axisMinFromRange;
-            }
-            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 addEvent(ChartClass, 'destroy', onChartDestroy);
                 addEvent(ChartClass, 'getMargins', onChartGetMargins);
                 addEvent(ChartClass, 'render', onChartRender);
                 addEvent(ChartClass, 'update', onChartUpdate);
-                const chartProto = ChartClass.prototype;
                 chartProto.callbacks.push(onChartCallback);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
                 extend(defaultOptions.lang, RangeSelectorDefaults.lang);
             }
@@ -6422,7 +6831,7 @@
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/RangeSelector/RangeSelectorComposition.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, D, H, RangeSelectorComposition, SVGElement, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -6493,15 +6902,8 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.buttons = void 0;
                 this.buttonOptions = RangeSelector.prototype.defaultButtons;
                 this.initialButtonGroupWidth = 0;
-                this.options = void 0;
                 this.chart = chart;
                 this.init(chart);
             }
@@ -6715,7 +7117,7 @@
                 const rangeSelector = this, chart = this.chart, dropdown = this.dropdown, baseAxis = chart.xAxis[0], actualRange = Math.round(baseAxis.max - baseAxis.min), hasNoData = !baseAxis.hasVisibleSeries, day = 24 * 36e5, // A single day in milliseconds
                 unionExtremes = (chart.scroller &&
                     chart.scroller.getUnionExtremes()) || baseAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax, ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, chart.time.useUTC), ytdMin = ytdExtremes.min, ytdMax = ytdExtremes.max, selected = rangeSelector.selected, allButtonsEnabled = rangeSelector.options.allButtonsEnabled, buttons = rangeSelector.buttons;
-                let selectedExists = isNumber(selected);
+                let selectedExists = isNumber(selected), isSelectedTooGreat = false;
                 rangeSelector.buttonOptions.forEach((rangeOptions, i) => {
                     const range = rangeOptions._range, type = rangeOptions.type, count = rangeOptions.count || 1, button = buttons[i], offsetRange = rangeOptions._offsetMax -
                         rangeOptions._offsetMin, isSelected = i === selected, 
@@ -6731,6 +7133,9 @@
                     isYTDButNotSelected = false, 
                     // Disable the All button if we're already showing all
                     isAllButAlreadyShowingAll = false, isSameRange = range === actualRange;
+                    if (isSelected && isTooGreatRange) {
+                        isSelectedTooGreat = true;
+                    }
                     // Months and years have a variable range so we check the extremes
                     if ((type === 'month' || type === 'year') &&
                         (actualRange + 36e5 >=
@@ -6755,11 +7160,13 @@
                     // It can be seen in the intraday demos when selecting 1h and scroll
                     // across the night gap.
                     const disable = (!allButtonsEnabled &&
+                        !(isSelectedTooGreat && type === 'all') &&
                         (isTooGreatRange ||
                             isTooSmallRange ||
                             isAllButAlreadyShowingAll ||
                             hasNoData));
-                    const select = ((isSelected && isSameRange) ||
+                    const select = ((isSelectedTooGreat && type === 'all') ||
+                        (isSelected && isSameRange) ||
                         (isSameRange && !selectedExists && !isYTDButNotSelected) ||
                         (isSelected && rangeSelector.frozenStates));
                     if (disable) {
@@ -6781,6 +7188,10 @@
                         // Reset (#9209)
                         if (state === 0 && selected === i) {
                             rangeSelector.setSelected();
+                        }
+                        else if ((state === 2 && !defined(selected)) ||
+                            isSelectedTooGreat) {
+                            rangeSelector.setSelected(i);
                         }
                     }
                 });
@@ -7633,6 +8044,11 @@
              */
             collapseButtons(xOffsetForExportButton) {
                 const { buttons, buttonOptions, chart, dropdown, options, zoomText } = this;
+                // If the buttons are already collapsed do nothing.
+                if (this.isCollapsed === true) {
+                    return;
+                }
+                this.isCollapsed = true;
                 const userButtonTheme = (chart.userOptions.rangeSelector &&
                     chart.userOptions.rangeSelector.buttonTheme) || {};
                 const getAttribs = (text) => ({
@@ -7679,6 +8095,11 @@
             expandButtons() {
                 const { buttons, buttonOptions, options, zoomText } = this;
                 this.hideDropdown();
+                // If buttons are already not collapsed, do nothing.
+                if (this.isCollapsed === false) {
+                    return;
+                }
+                this.isCollapsed = false;
                 if (zoomText) {
                     zoomText.show();
                 }
@@ -7924,23 +8345,18 @@
 
         return RangeSelector;
     });
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
+         *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { addEvent, defined, isNumber, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Composition
@@ -7948,11 +8364,9 @@
          * */
         /** @private */
         function compose(AxisClass, ChartClass) {
-            if (pushUnique(composedMembers, AxisClass)) {
-                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-            }
-            if (pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
+                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
                 chartProto.adjustHeight = chartAdjustHeight;
                 addEvent(ChartClass, 'render', chartProto.adjustHeight);
             }
@@ -8042,7 +8456,7 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -8123,7 +8537,10 @@
                     }
                 },
                 inside: true,
-                verticalAlign: 'middle'
+                verticalAlign: 'middle',
+                style: {
+                    whiteSpace: 'nowrap'
+                }
             },
             tooltip: {
                 headerFormat: '<span style="font-size: 0.8em">{point.x} - {point.x2}</span><br/>',
@@ -8254,7 +8671,7 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -8269,21 +8686,11 @@
          *
          * */
         class XRangePoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
-                this.series = void 0;
-            }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
             /**
              * Return color of a point based on its category.
              *
@@ -8336,12 +8743,11 @@
              *
              * @private
              */
-            init() {
-                super.init.apply(this, arguments);
+            constructor(series, options) {
+                super(series, options);
                 if (!this.y) {
                     this.y = 0;
                 }
-                return this;
             }
             /**
              * @private
@@ -8418,23 +8824,17 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
+        const { composed, noop } = H;
         const { parse: color } = Color;
         const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
         /* *
          *
          *  Functions
@@ -8476,40 +8876,13 @@
          * @augments Highcharts.Series
          */
         class XRangeSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /*
-                // Override to remove stroke from points. For partial fill.
-                pointAttribs: function () {
-                    let series = this,
-                        retVal = columnType.prototype.pointAttribs
-                            .apply(series, arguments);
-    
-                    //retVal['stroke-width'] = 0;
-                    return retVal;
-                }
-                //*/
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(AxisClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(AxisClass, 'afterGetSeriesExtremes', onAxisAfterGetSeriesExtremes);
                 }
             }
@@ -8594,6 +8967,11 @@
             alignDataLabel(point) {
                 const oldPlotX = point.plotX;
                 point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+                if (point.dataLabel && point.shapeArgs?.width) {
+                    point.dataLabel.css({
+                        width: `${point.shapeArgs.width}px`
+                    });
+                }
                 super.alignDataLabel.apply(this, arguments);
                 point.plotX = oldPlotX;
             }
@@ -8827,6 +9205,11 @@
                 return isInside;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
         extend(XRangeSeries.prototype, {
             pointClass: XRangePoint,
@@ -8851,7 +9234,7 @@
     _registerModule(_modules, 'Series/Gantt/GanttPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -8860,7 +9243,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { xrange: { prototype: { pointClass: XRangePoint } } } } = SeriesRegistry;
+        const { xrange: { prototype: { pointClass: XRangePoint } } } = SeriesRegistry.seriesTypes;
         const { pick } = U;
         /* *
          *
@@ -8868,18 +9251,11 @@
          *
          * */
         class GanttPoint extends XRangePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
-            /* eslint-disable valid-jsdoc */
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
             /**
              * @private
              */
@@ -8902,7 +9278,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Applies the options containing the x and y data and possible some
              * extra properties. This is called on point init or from point.update.
@@ -8920,8 +9295,7 @@
              *         The Point instance
              */
             applyOptions(options, x) {
-                let point = this, ganttPoint;
-                ganttPoint = super.applyOptions.call(point, options, x);
+                const ganttPoint = super.applyOptions(options, x);
                 GanttPoint.setGanttPointAliases(ganttPoint);
                 return ganttPoint;
             }
@@ -8941,17 +9315,240 @@
 
         return GanttPoint;
     });
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+    _registerModule(_modules, 'Series/Gantt/GanttSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2016-2024 Highsoft AS
+         *
+         *  Author: Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
+        const { isNumber } = U;
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A `gantt` series. If the [type](#series.gantt.type) option is not specified,
+         * it is inherited from [chart.type](#chart.type).
+         *
+         * @extends      plotOptions.xrange
+         * @product      gantt
+         * @requires     highcharts-gantt
+         * @optionparent plotOptions.gantt
+         */
+        const GanttSeriesDefaults = {
+            // options - default options merged with parent
+            grouping: false,
+            dataLabels: {
+                enabled: true
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size: 0.8em">{series.name}</span><br/>',
+                pointFormat: null,
+                pointFormatter: function () {
+                    const point = this, series = point.series, xAxis = series.xAxis, formats = series.tooltipOptions.dateTimeLabelFormats, startOfWeek = xAxis.options.startOfWeek, ttOptions = series.tooltipOptions, milestone = point.options.milestone;
+                    let format = ttOptions.xDateFormat, retVal = '<b>' + (point.name || point.yCategory) + '</b>';
+                    if (ttOptions.pointFormat) {
+                        return point.tooltipFormatter(ttOptions.pointFormat);
+                    }
+                    if (!format && isNumber(point.start)) {
+                        format = series.chart.time.getDateFormat(xAxis.closestPointRange, point.start, startOfWeek, formats || {});
+                    }
+                    const start = series.chart.time.dateFormat(format, point.start), end = series.chart.time.dateFormat(format, point.end);
+                    retVal += '<br/>';
+                    if (!milestone) {
+                        retVal += 'Start: ' + start + '<br/>';
+                        retVal += 'End: ' + end + '<br/>';
+                    }
+                    else {
+                        retVal += start + '<br/>';
+                    }
+                    return retVal;
+                }
+            },
+            connectors: {
+                type: 'simpleConnect',
+                /**
+                 * @declare Highcharts.ConnectorsAnimationOptionsObject
+                 */
+                animation: {
+                    reversed: true // Dependencies go from child to parent
+                },
+                radius: 0,
+                startMarker: {
+                    enabled: true,
+                    symbol: 'arrow-filled',
+                    radius: 4,
+                    fill: '#fa0',
+                    align: 'left'
+                },
+                endMarker: {
+                    enabled: false,
+                    align: 'right'
+                }
+            }
+        };
+        /**
+         * A `gantt` series.
+         *
+         * @extends   series,plotOptions.gantt
+         * @excluding boostThreshold, dashStyle, findNearestPointBy,
+         *            getExtremesFromAll, marker, negativeColor, pointInterval,
+         *            pointIntervalUnit, pointPlacement, pointStart
+         * @product   gantt
+         * @requires  highcharts-gantt
+         * @apioption series.gantt
+         */
+        /**
+         * Data for a Gantt series.
+         *
+         * @declare   Highcharts.GanttPointOptionsObject
+         * @type      {Array<*>}
+         * @extends   series.xrange.data
+         * @excluding className, connect, dataLabels, events,
+         *            partialFill, selected, x, x2
+         * @product   gantt
+         * @apioption series.gantt.data
+         */
+        /**
+         * Whether the grid node belonging to this point should start as collapsed. Used
+         * in axes of type treegrid.
+         *
+         * @sample {gantt} gantt/treegrid-axis/collapsed/
+         *         Start as collapsed
+         *
+         * @type      {boolean}
+         * @default   false
+         * @product   gantt
+         * @apioption series.gantt.data.collapsed
+         */
+        /**
+         * The start time of a task.
+         *
+         * @type      {number}
+         * @product   gantt
+         * @apioption series.gantt.data.start
+         */
+        /**
+         * The end time of a task.
+         *
+         * @type      {number}
+         * @product   gantt
+         * @apioption series.gantt.data.end
+         */
+        /**
+         * The Y value of a task.
+         *
+         * @type      {number}
+         * @product   gantt
+         * @apioption series.gantt.data.y
+         */
+        /**
+         * The name of a task. If a `treegrid` y-axis is used (default in Gantt charts),
+         * this will be picked up automatically, and used to calculate the y-value.
+         *
+         * @type      {string}
+         * @product   gantt
+         * @apioption series.gantt.data.name
+         */
+        /**
+         * Progress indicator, how much of the task completed. If it is a number, the
+         * `fill` will be applied automatically.
+         *
+         * @sample {gantt} gantt/demo/progress-indicator
+         *         Progress indicator
+         *
+         * @type      {number|*}
+         * @extends   series.xrange.data.partialFill
+         * @product   gantt
+         * @apioption series.gantt.data.completed
+         */
+        /**
+         * The amount of the progress indicator, ranging from 0 (not started) to 1
+         * (finished).
+         *
+         * @type      {number}
+         * @default   0
+         * @apioption series.gantt.data.completed.amount
+         */
+        /**
+         * The fill of the progress indicator. Defaults to a darkened variety of the
+         * main color.
+         *
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @apioption series.gantt.data.completed.fill
+         */
+        /**
+         * The ID of the point (task) that this point depends on in Gantt charts.
+         * Aliases [connect](series.xrange.data.connect). Can also be an object,
+         * specifying further connecting [options](series.gantt.connectors) between the
+         * points. Multiple connections can be specified by providing an array.
+         *
+         * @sample gantt/demo/project-management
+         *         Dependencies
+         * @sample gantt/pathfinder/demo
+         *         Different connection types
+         *
+         * @type      {string|Array<string|*>|*}
+         * @extends   series.xrange.data.connect
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption series.gantt.data.dependency
+         */
+        /**
+         * Whether this point is a milestone. If so, only the `start` option is handled,
+         * while `end` is ignored.
+         *
+         * @sample gantt/gantt/milestones
+         *         Milestones
+         *
+         * @type      {boolean}
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption series.gantt.data.milestone
+         */
+        /**
+         * The ID of the parent point (task) of this point in Gantt charts.
+         *
+         * @sample gantt/demo/subtasks
+         *         Gantt chart with subtasks
+         *
+         * @type      {string}
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption series.gantt.data.parent
+         */
+        /**
+         * @excluding afterAnimate
+         * @apioption series.gantt.events
+         */
+        ''; // detachs doclets above
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return GanttSeriesDefaults;
+    });
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (H, StackItem, U) {
+        /* *
+         *
+         *  (c) 2009-2024 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        const { composed } = H;
+        const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -8970,29 +9567,20 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Adds support for broken axes.
              * @private
              */
             function compose(AxisClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, compose)) {
                     AxisClass.keepProps.push('brokenAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
                     addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.drawBreaks = seriesDrawBreaks;
                     seriesProto.gappedPath = seriesGappedPath;
@@ -9567,8 +10155,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { dateFormats } = H;
-        const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, timeUnits, wrap } = U;
+        const { composed, dateFormats } = H;
+        const { addEvent, defined, erase, find, isArray, isNumber, merge, pick, pushUnique, timeUnits, wrap } = U;
         /* *
          *
          *  Enums
@@ -9585,12 +10173,6 @@
             GridAxisSide[GridAxisSide["bottom"] = 2] = "bottom";
             GridAxisSide[GridAxisSide["left"] = 3] = "left";
         })(GridAxisSide || (GridAxisSide = {}));
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -9642,13 +10224,13 @@
          * @private
          */
         function compose(AxisClass, ChartClass, TickClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
                 AxisClass.keepProps.push('grid');
                 AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
                 wrap(AxisClass.prototype, 'unsquish', wrapUnsquish);
+                wrap(AxisClass.prototype, 'getOffset', wrapGetOffset);
                 // Add event handlers
                 addEvent(AxisClass, 'init', onInit);
-                addEvent(AxisClass, 'afterGetOffset', onAfterGetOffset);
                 addEvent(AxisClass, 'afterGetTitlePosition', onAfterGetTitlePosition);
                 addEvent(AxisClass, 'afterInit', onAfterInit);
                 addEvent(AxisClass, 'afterRender', onAfterRender);
@@ -9659,11 +10241,7 @@
                 addEvent(AxisClass, 'afterTickSize', onAfterTickSize);
                 addEvent(AxisClass, 'trimTicks', onTrimTicks);
                 addEvent(AxisClass, 'destroy', onDestroy);
-            }
-            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
-            }
-            if (U.pushUnique(composedMembers, TickClass)) {
                 addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
                 addEvent(TickClass, 'labelFormat', onTickLabelFormat);
             }
@@ -9729,11 +10307,27 @@
          * Handle columns and getOffset.
          * @private
          */
-        function onAfterGetOffset() {
-            const { grid } = this;
-            (grid && grid.columns || []).forEach(function (column) {
-                column.getOffset();
-            });
+        function wrapGetOffset(proceed) {
+            const { grid } = this, 
+            // On the left side we handle the columns first because the offset is
+            // calculated from the plot area and out
+            columnsFirst = this.side === 3;
+            if (!columnsFirst) {
+                proceed.apply(this);
+            }
+            if (!grid?.isColumn) {
+                let columns = grid?.columns || [];
+                if (columnsFirst) {
+                    columns = columns.slice().reverse();
+                }
+                columns
+                    .forEach((column) => {
+                    column.getOffset();
+                });
+            }
+            if (columnsFirst) {
+                proceed.apply(this);
+            }
         }
         /**
          * @private
@@ -9785,17 +10379,20 @@
                 let columnIndex = axis.grid.columnIndex = 0;
                 // Handle columns, each column is a grid axis
                 while (++columnIndex < gridOptions.columns.length) {
-                    const columnOptions = merge(userOptions, gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                    const columnOptions = merge(userOptions, gridOptions.columns[columnIndex], {
                         isInternal: true,
                         linkedTo: 0,
-                        // Force to behave like category axis
-                        type: 'category',
                         // Disable by default the scrollbar on the grid axis
                         scrollbar: {
                             enabled: false
                         }
+                    }, 
+                    // Avoid recursion
+                    {
+                        grid: {
+                            columns: void 0
+                        }
                     });
-                    delete columnOptions.grid.columns; // Prevent recursion
                     const column = new Axis(axis.chart, columnOptions, 'yAxis');
                     column.grid.isColumn = true;
                     column.grid.columnIndex = columnIndex;
@@ -9821,9 +10418,16 @@
          * @private
          */
         function onAfterRender() {
-            const axis = this, grid = axis.grid, options = axis.options, gridOptions = options.grid || {};
+            const axis = this, { axisTitle, grid, options } = axis, gridOptions = options.grid || {};
             if (gridOptions.enabled === true) {
-                const min = axis.min || 0, max = axis.max || 0;
+                const min = axis.min || 0, max = axis.max || 0, firstTick = axis.ticks[axis.tickPositions[0]];
+                // Adjust the title max width to the column width (#19657)
+                if (axisTitle &&
+                    !axis.chart.styledMode &&
+                    firstTick?.slotWidth &&
+                    !axis.options.title.style.width) {
+                    axisTitle.css({ width: `${firstTick.slotWidth}px` });
+                }
                 // @todo acutual label padding (top, bottom, left, right)
                 axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
                 // Remove right wall before rendering if updating
@@ -9928,7 +10532,8 @@
                 if (!axis.horiz &&
                     axis.chart.hasRendered &&
                     (axis.scrollbar ||
-                        (axis.linkedParent && axis.linkedParent.scrollbar))) {
+                        (axis.linkedParent && axis.linkedParent.scrollbar)) &&
+                    axis.tickPositions.length) {
                     const tickmarkOffset = axis.tickmarkOffset, lastTick = axis.tickPositions[axis.tickPositions.length - 1], firstTick = axis.tickPositions[0];
                     let label, tickMark;
                     while ((label = axis.hiddenLabels.pop()) && label.element) {
@@ -9938,7 +10543,7 @@
                         tickMark.element) {
                         tickMark.show(); // #16439
                     }
-                    // Hide/show firts tick label.
+                    // Hide/show first tick label.
                     label = axis.ticks[firstTick].label;
                     if (label) {
                         if (min - firstTick > tickmarkOffset) {
@@ -10054,7 +10659,10 @@
                     title: {
                         text: null,
                         reserveSpace: false,
-                        rotation: 0
+                        rotation: 0,
+                        style: {
+                            textOverflow: 'ellipsis'
+                        }
                     },
                     // In a grid axis, only allow one unit of certain types,
                     // for example we shouln't have one grid cell spanning
@@ -10102,7 +10710,8 @@
                         // Only for linked axes
                         defined(userOptions.linkedTo) &&
                         !defined(userOptions.tickPositioner) &&
-                        !defined(userOptions.tickInterval)) {
+                        !defined(userOptions.tickInterval) &&
+                        !defined(userOptions.units)) {
                         gridAxisOptions.tickPositioner = function (min, max) {
                             const parentInfo = (this.linkedParent &&
                                 this.linkedParent.tickPositions &&
@@ -10165,10 +10774,10 @@
             const userOptions = e.userOptions;
             const gridOptions = userOptions && userOptions.grid || {};
             const columns = gridOptions.columns;
-            // Add column options to the parent axis. Children has their column
-            // options set on init in onGridAxisAfterInit.
+            // Add column options to the parent axis. Children has their column options
+            // set on init in onGridAxisAfterInit.
             if (gridOptions.enabled && columns) {
-                merge(true, axis.options, columns[columns.length - 1]);
+                merge(true, axis.options, columns[0]);
             }
         }
         /**
@@ -10365,29 +10974,23 @@
          *       ticks and not the labels directly?
          */
         function onTrimTicks() {
-            const axis = this;
-            const options = axis.options;
-            const gridOptions = options.grid || {};
-            const categoryAxis = axis.categories;
-            const tickPositions = axis.tickPositions;
-            const firstPos = tickPositions[0];
-            const lastPos = tickPositions[tickPositions.length - 1];
-            const linkedMin = axis.linkedParent && axis.linkedParent.min;
-            const linkedMax = axis.linkedParent && axis.linkedParent.max;
-            const min = linkedMin || axis.min;
-            const max = linkedMax || axis.max;
-            const tickInterval = axis.tickInterval;
-            const endMoreThanMin = (firstPos < min &&
-                firstPos + tickInterval > min);
-            const startLessThanMax = (lastPos > max &&
-                lastPos - tickInterval < max);
+            const axis = this, chart = axis.chart, options = axis.options, gridOptions = options.grid || {}, categoryAxis = axis.categories, tickPositions = axis.tickPositions, firstPos = tickPositions[0], secondPos = tickPositions[1], lastPos = tickPositions[tickPositions.length - 1], beforeLastPos = tickPositions[tickPositions.length - 2], linkedMin = axis.linkedParent && axis.linkedParent.min, linkedMax = axis.linkedParent && axis.linkedParent.max, min = linkedMin || axis.min, max = linkedMax || axis.max, tickInterval = axis.tickInterval, startLessThanMin = ( // #19845
+            isNumber(min) &&
+                min >= firstPos + tickInterval &&
+                min < secondPos), endMoreThanMin = (isNumber(min) &&
+                firstPos < min &&
+                firstPos + tickInterval > min), startLessThanMax = (isNumber(max) &&
+                lastPos > max &&
+                lastPos - tickInterval < max), endMoreThanMax = (isNumber(max) &&
+                max <= lastPos - tickInterval &&
+                max > beforeLastPos);
             if (gridOptions.enabled === true &&
                 !categoryAxis &&
-                (axis.horiz || axis.isLinked)) {
-                if (endMoreThanMin && !options.startOnTick) {
+                (axis.isXAxis || axis.isLinked)) {
+                if ((endMoreThanMin || startLessThanMin) && !options.startOnTick) {
                     tickPositions[0] = min;
                 }
-                if (startLessThanMax && !options.endOnTick) {
+                if ((startLessThanMax || endMoreThanMax) && !options.endOnTick) {
                     tickPositions[tickPositions.length - 1] = max;
                 }
             }
@@ -10447,10 +11050,16 @@
                 const axis = this.axis;
                 const chart = axis.chart;
                 const columnIndex = axis.grid.columnIndex;
-                const columns = (axis.linkedParent && axis.linkedParent.grid.columns ||
-                    axis.grid.columns);
+                const columns = (axis.linkedParent?.grid.columns ||
+                    axis.grid.columns ||
+                    []);
                 const parentAxis = columnIndex ? axis.linkedParent : axis;
                 let thisIndex = -1, lastIndex = 0;
+                // On the left side, when we have columns (not only multiple axes), the
+                // main axis is to the left
+                if (axis.side === 3 && !chart.inverted && columns.length) {
+                    return !axis.linkedParent;
+                }
                 (chart[axis.coll] || []).forEach((otherAxis, index) => {
                     if (otherAxis.side === axis.side &&
                         !otherAxis.options.isInternal) {
@@ -10477,7 +11086,7 @@
             renderBorder(path) {
                 const axis = this.axis, renderer = axis.chart.renderer, options = axis.options, extraBorderLine = renderer.path(path)
                     .addClass('highcharts-axis-line')
-                    .add(axis.axisBorder);
+                    .add(axis.axisGroup);
                 if (!renderer.styledMode) {
                     extraBorderLine.attr({
                         stroke: options.lineColor,
@@ -10571,6 +11180,8 @@
          *
          * @sample gantt/demo/left-axis-table
          *         Left axis as a table
+         * @sample gantt/demo/treegrid-columns
+         *         Collapsible tree grid with columns
          *
          * @type      {Array<Highcharts.XAxisOptions>}
          * @apioption xAxis.grid.columns
@@ -10579,6 +11190,7 @@
          * Set border color for the label grid lines.
          *
          * @type      {Highcharts.ColorString}
+         * @default   #e6e6e6
          * @apioption xAxis.grid.borderColor
          */
         /**
@@ -10605,7 +11217,7 @@
     _registerModule(_modules, 'Gantt/Tree.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -10641,25 +11253,27 @@
          * Map from parent id to children index in data
          */
         function getListOfParents(data) {
-            const listOfParents = data.reduce((prev, curr) => {
-                const parent = pick(curr.parent, '');
+            const root = '', ids = [], listOfParents = data.reduce((prev, curr) => {
+                const { parent = '', id } = curr;
                 if (typeof prev[parent] === 'undefined') {
                     prev[parent] = [];
                 }
                 prev[parent].push(curr);
+                if (id) {
+                    ids.push(id);
+                }
                 return prev;
             }, {});
-            // parents = Object.keys(listOfParents);
-            // If parent does not exist, hoist parent to root of tree.
-            // parents.forEach((parent, list): void => {
-            //     const children = listOfParents[parent];
-            //     if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-            //         for (const child of children) {
-            //             (list as any)[''].push(child);
-            //         }
-            //         delete (list as any)[parent];
-            //     }
-            // });
+            Object.keys(listOfParents).forEach((node) => {
+                if ((node !== root) && (ids.indexOf(node) === -1)) {
+                    const adoptedByRoot = listOfParents[node].map(function (orphan) {
+                        const { parent, ...parentExcluded } = orphan; // #15196
+                        return parentExcluded;
+                    });
+                    listOfParents[root].push(...adoptedByRoot);
+                    delete listOfParents[node];
+                }
+            });
             return listOfParents;
         }
         /** @private */
@@ -10714,8 +11328,7 @@
         }
         /** @private */
         function getTree(data, options) {
-            const mapOfIdToChildren = getListOfParents(data);
-            return getNode('', null, 1, null, mapOfIdToChildren, options);
+            return getNode('', null, 1, null, getListOfParents(data), options);
         }
         /* *
          *
@@ -10729,7 +11342,7 @@
 
         return Tree;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridTick.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridTick.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -10740,13 +11353,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, isObject, isNumber, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, removeEvent, isObject, isNumber, pick, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -10779,15 +11387,15 @@
             const css = isObject(options.style) ? options.style : {};
             label.removeClass('highcharts-treegrid-node-active');
             if (!label.renderer.styledMode) {
-                label.css({ textDecoration: css.textDecoration });
+                label.css({ textDecoration: (css.textDecoration || 'none') });
             }
         }
         /**
          * @private
          */
         function renderLabelIcon(tick, params) {
-            const treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, iconCenter = {
-                x: labelBox.x - (width / 2) - (options.padding || 0),
+            const treeGrid = tick.treeGrid, isNew = !treeGrid.labelIcon, renderer = params.renderer, labelBox = params.xy, options = params.options, width = options.width || 0, height = options.height || 0, padding = options.padding ?? tick.axis.linkedParent ? 0 : 5, iconCenter = {
+                x: labelBox.x - (width / 2) - padding,
                 y: labelBox.y - (height / 2)
             }, rotation = params.collapsed ? 90 : 180, shouldRender = params.show && isNumber(iconCenter.y);
             let icon = treeGrid.labelIcon;
@@ -10822,12 +11430,11 @@
          */
         function wrapGetLabelPosition(proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index, step) {
             const tick = this, lbOptions = pick(tick.options && tick.options.labels, labelOptions), pos = tick.pos, axis = tick.axis, options = axis.options, isTreeGrid = options.type === 'treegrid', result = proceed.apply(tick, [x, y, label, horiz, lbOptions, tickmarkOffset, index, step]);
-            let symbolOptions, indentation, mapOfPosToGridNode, node, level;
+            let mapOfPosToGridNode, node, level;
             if (isTreeGrid) {
-                symbolOptions = (lbOptions && isObject(lbOptions.symbol, true) ?
+                const { width = 0, padding = axis.linkedParent ? 0 : 5 } = (lbOptions && isObject(lbOptions.symbol, true) ?
                     lbOptions.symbol :
-                    {});
-                indentation = (lbOptions && isNumber(lbOptions.indentation) ?
+                    {}), indentation = (lbOptions && isNumber(lbOptions.indentation) ?
                     lbOptions.indentation :
                     0);
                 mapOfPosToGridNode = axis.treeGrid.mapOfPosToGridNode;
@@ -10835,8 +11442,7 @@
                 level = (node && node.depth) || 1;
                 result.x += (
                 // Add space for symbols
-                ((symbolOptions.width || 0) +
-                    ((symbolOptions.padding || 0) * 2)) +
+                (width + (padding * 2)) +
                     // Apply indentation
                     ((level - 1) * indentation));
             }
@@ -10846,25 +11452,19 @@
          * @private
          */
         function wrapRenderLabel(proceed) {
-            const tick = this, pos = tick.pos, axis = tick.axis, label = tick.label, mapOfPosToGridNode = axis.treeGrid.mapOfPosToGridNode, options = axis.options, labelOptions = pick(tick.options && tick.options.labels, options && options.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
+            const tick = this, { pos, axis, label, treeGrid: tickGrid, options: tickOptions } = tick, icon = tickGrid?.labelIcon, labelElement = label?.element, { treeGrid: axisGrid, options: axisOptions, chart, tickPositions } = axis, mapOfPosToGridNode = axisGrid.mapOfPosToGridNode, labelOptions = pick(tickOptions?.labels, axisOptions?.labels), symbolOptions = (labelOptions && isObject(labelOptions.symbol, true) ?
                 labelOptions.symbol :
-                {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], level = node && node.depth, isTreeGrid = options.type === 'treegrid', shouldRender = axis.tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', styledMode = axis.chart.styledMode;
+                {}), node = mapOfPosToGridNode && mapOfPosToGridNode[pos], { descendants, depth } = node || {}, hasDescendants = node && descendants && descendants > 0, level = depth, isTreeGridElement = (axisOptions.type === 'treegrid') && labelElement, shouldRender = tickPositions.indexOf(pos) > -1, prefixClassName = 'highcharts-treegrid-node-', prefixLevelClass = prefixClassName + 'level-', styledMode = chart.styledMode;
             let collapsed, addClassName, removeClassName;
-            if (isTreeGrid && node) {
+            if (isTreeGridElement && node) {
                 // Add class name for hierarchical styling.
-                if (label &&
-                    label.element) {
-                    label.addClass(prefixClassName + 'level-' + level);
-                }
+                label
+                    .removeClass(new RegExp(prefixLevelClass + '.*'))
+                    .addClass(prefixLevelClass + level);
             }
             proceed.apply(tick, Array.prototype.slice.call(arguments, 1));
-            if (isTreeGrid &&
-                label &&
-                label.element &&
-                node &&
-                node.descendants &&
-                node.descendants > 0) {
-                collapsed = axis.treeGrid.isCollapsed(node);
+            if (isTreeGridElement && hasDescendants) {
+                collapsed = axisGrid.isCollapsed(node);
                 renderLabelIcon(tick, {
                     color: (!styledMode &&
                         label.styles &&
@@ -10891,7 +11491,7 @@
                     });
                 }
                 // Add events to both label text and icon
-                [label, tick.treeGrid.labelIcon].forEach((object) => {
+                [label, icon].forEach((object) => {
                     if (object && !object.attachedTreeGridEvents) {
                         // On hover
                         addEvent(object.element, 'mouseover', function () {
@@ -10902,11 +11502,16 @@
                             onTickHoverExit(label, labelOptions);
                         });
                         addEvent(object.element, 'click', function () {
-                            tick.treeGrid.toggleCollapse();
+                            tickGrid.toggleCollapse();
                         });
                         object.attachedTreeGridEvents = true;
                     }
                 });
+            }
+            else if (icon) {
+                removeEvent(labelElement);
+                label?.css({ cursor: 'default' });
+                icon.destroy();
             }
         }
         /* *
@@ -10928,18 +11533,19 @@
              * @private
              */
             static compose(TickClass) {
-                if (U.pushUnique(composedMembers, TickClass)) {
+                if (pushUnique(composed, this.compose)) {
+                    const tickProto = TickClass.prototype;
                     addEvent(TickClass, 'init', onTickInit);
-                    wrap(TickClass.prototype, 'getLabelPosition', wrapGetLabelPosition);
-                    wrap(TickClass.prototype, 'renderLabel', wrapRenderLabel);
+                    wrap(tickProto, 'getLabelPosition', wrapGetLabelPosition);
+                    wrap(tickProto, 'renderLabel', wrapRenderLabel);
                     // backwards compatibility
-                    TickClass.prototype.collapse = function (redraw) {
+                    tickProto.collapse = function (redraw) {
                         this.treeGrid.collapse(redraw);
                     };
-                    TickClass.prototype.expand = function (redraw) {
+                    tickProto.expand = function (redraw) {
                         this.treeGrid.expand(redraw);
                     };
-                    TickClass.prototype.toggleCollapse = function (redraw) {
+                    tickProto.toggleCollapse = function (redraw) {
                         this.treeGrid.toggleCollapse(redraw);
                     };
                 }
@@ -11004,10 +11610,9 @@
              * {@link Highcharts.Chart#redraw}
              */
             expand(redraw) {
-                const tick = this.tick, axis = tick.axis, brokenAxis = axis.brokenAxis;
-                if (brokenAxis &&
-                    axis.treeGrid.mapOfPosToGridNode) {
-                    const pos = tick.pos, node = axis.treeGrid.mapOfPosToGridNode[pos], breaks = axis.treeGrid.expand(node);
+                const { pos, axis } = this.tick, { treeGrid, brokenAxis } = axis, posMappedNodes = treeGrid.mapOfPosToGridNode;
+                if (brokenAxis && posMappedNodes) {
+                    const node = posMappedNodes[pos], breaks = treeGrid.expand(node);
                     brokenAxis.setBreaks(breaks, pick(redraw, true));
                 }
             }
@@ -11044,7 +11649,7 @@
     _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2014-2021 Highsoft AS
+         *  (c) 2014-2024 Highsoft AS
          *
          *  Authors: Jon Arild Nygard / Oystein Moseng
          *
@@ -11232,7 +11837,7 @@
 
         return TreeUtilities;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGrid/TreeGridTick.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, Tree, TreeGridTick, TU, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGrid/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Core/Globals.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGrid/TreeGridTick.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, H, Tree, TreeGridTick, TU, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -11243,14 +11848,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { getLevelOptions } = TU;
-        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, removeEvent, wrap } = U;
         /* *
          *
          *  Variables
@@ -11696,18 +12296,13 @@
                             x: -5,
                             y: -5,
                             height: 10,
-                            width: 10,
-                            padding: 5
+                            width: 10
                         }
                     },
                     uniqueNames: false
                 }, userOptions, {
                     // Forced options
-                    reversed: true,
-                    // grid.columns is not supported in treegrid
-                    grid: {
-                        columns: void 0
-                    }
+                    reversed: true
                 });
             }
             // Now apply the original function with the original arguments, which are
@@ -11728,23 +12323,54 @@
          * The original setTickInterval function.
          */
         function wrapSetTickInterval(proceed) {
-            const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+            const axis = this, options = axis.options, linkedParent = typeof options.linkedTo === 'number' ?
+                this.chart[axis.coll]?.[options.linkedTo] :
+                void 0, isTreeGrid = options.type === 'treegrid';
             if (isTreeGrid) {
                 axis.min = pick(axis.userMin, options.min, axis.dataMin);
                 axis.max = pick(axis.userMax, options.max, axis.dataMax);
                 fireEvent(axis, 'foundExtremes');
-                // setAxisTranslation modifies the min and max according to
-                // axis breaks.
+                // `setAxisTranslation` modifies the min and max according to axis
+                // breaks.
                 axis.setAxisTranslation();
-                axis.tickmarkOffset = 0.5;
                 axis.tickInterval = 1;
+                axis.tickmarkOffset = 0.5;
                 axis.tickPositions = axis.treeGrid.mapOfPosToGridNode ?
                     axis.treeGrid.getTickPositions() :
                     [];
+                if (linkedParent) {
+                    const linkedParentExtremes = linkedParent.getExtremes();
+                    axis.min = pick(linkedParentExtremes.min, linkedParentExtremes.dataMin);
+                    axis.max = pick(linkedParentExtremes.max, linkedParentExtremes.dataMax);
+                    axis.tickPositions = linkedParent.tickPositions;
+                }
+                axis.linkedParent = linkedParent;
             }
             else {
                 proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
             }
+        }
+        /**
+         * Wrap axis redraw to remove TreeGrid events from ticks
+         *
+         * @private
+         * @function Highcharts.GridAxis#redraw
+         *
+         * @param {Function} proceed
+         * The original setTickInterval function.
+         */
+        function wrapRedraw(proceed) {
+            const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+            if (isTreeGrid && axis.visible) {
+                axis.tickPositions.forEach(function (pos) {
+                    const tick = axis.ticks[pos];
+                    if (tick.label && tick.label.attachedTreeGridEvents) {
+                        removeEvent(tick.label.element);
+                        tick.label.attachedTreeGridEvents = false;
+                    }
+                });
+            }
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
         }
         /* *
          *
@@ -11765,20 +12391,19 @@
              * @private
              */
             static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
+                    const axisProps = AxisClass.prototype;
                     if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
                         AxisClass.keepProps.push('treeGrid');
                     }
-                    const axisProps = AxisClass.prototype;
                     wrap(axisProps, 'generateTick', wrapGenerateTick);
                     wrap(axisProps, 'init', wrapInit);
                     wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
+                    wrap(axisProps, 'redraw', wrapRedraw);
                     // Make utility functions available for testing.
                     axisProps.utils = {
                         getNode: Tree.getNode
                     };
-                }
-                if (U.pushUnique(composedMembers, TickClass)) {
                     if (!TickConstructor) {
                         TickConstructor = TickClass;
                     }
@@ -11957,10 +12582,10 @@
 
         return TreeGridAxisAdditions;
     });
-    _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Series/Gantt/GanttPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/TreeGrid/TreeGridAxis.js']], function (Axis, Chart, GanttPoint, SeriesRegistry, Tick, U, TreeGridAxis) {
+    _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Series/Gantt/GanttPoint.js'], _modules['Series/Gantt/GanttSeriesDefaults.js'], _modules['Gantt/Pathfinder.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Extensions/StaticScale.js'], _modules['Core/Axis/TreeGrid/TreeGridAxis.js'], _modules['Core/Utilities.js']], function (GanttPoint, GanttSeriesDefaults, Pathfinder, SeriesRegistry, StaticScale, TreeGridAxis, U) {
         /* *
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -11970,8 +12595,7 @@
          *
          * */
         const { series: Series, seriesTypes: { xrange: XRangeSeries } } = SeriesRegistry;
-        const { extend, isNumber, merge, splat } = U;
-        TreeGridAxis.compose(Axis, Chart, Series, Tick);
+        const { extend, isNumber, merge } = U;
         /* *
          *
          *  Class
@@ -11985,24 +12609,31 @@
          * @augments Highcharts.Series
          */
         class GanttSeries extends XRangeSeries {
-            constructor() {
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /* eslint-enable valid-jsdoc */
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
+                XRangeSeries.compose(AxisClass);
+                if (!ChartClass) {
+                    return;
+                }
+                StaticScale.compose(AxisClass, ChartClass);
+                if (!SeriesClass) {
+                    return;
+                }
+                Pathfinder.compose(ChartClass, SeriesClass.prototype.pointClass);
+                if (!TickClass) {
+                    return;
+                }
+                TreeGridAxis.compose(AxisClass, ChartClass, SeriesClass, TickClass);
             }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Draws a single point in the series.
              *
@@ -12021,7 +12652,8 @@
              *        'animate' (animates changes) or 'attr' (sets options)
              */
             drawPoint(point, verb) {
-                let series = this, seriesOpts = series.options, renderer = series.chart.renderer, shapeArgs = point.shapeArgs, plotY = point.plotY, graphic = point.graphic, state = point.selected && 'select', cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, diamondShape;
+                const series = this, seriesOpts = series.options, renderer = series.chart.renderer, shapeArgs = point.shapeArgs, plotY = point.plotY, state = point.selected && 'select', cutOff = seriesOpts.stacking && !seriesOpts.borderRadius;
+                let graphic = point.graphic, diamondShape;
                 if (point.options.milestone) {
                     if (isNumber(plotY) &&
                         point.y !== null &&
@@ -12049,7 +12681,7 @@
                     }
                 }
                 else {
-                    XRangeSeries.prototype.drawPoint.call(series, point, verb);
+                    super.drawPoint(point, verb);
                 }
             }
             /**
@@ -12057,8 +12689,9 @@
              * @private
              */
             translatePoint(point) {
-                let series = this, shapeArgs, size;
-                XRangeSeries.prototype.translatePoint.call(series, point);
+                const series = this;
+                let shapeArgs, size;
+                super.translatePoint(point);
                 if (point.options.milestone) {
                     shapeArgs = point.shapeArgs;
                     size = shapeArgs.height || 0;
@@ -12071,67 +12704,12 @@
                 }
             }
         }
-        /**
-         * A `gantt` series. If the [type](#series.gantt.type) option is not specified,
-         * it is inherited from [chart.type](#chart.type).
+        /* *
          *
-         * @extends      plotOptions.xrange
-         * @product      gantt
-         * @requires     highcharts-gantt
-         * @optionparent plotOptions.gantt
-         */
-        GanttSeries.defaultOptions = merge(XRangeSeries.defaultOptions, {
-            // options - default options merged with parent
-            grouping: false,
-            dataLabels: {
-                enabled: true
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size: 0.8em">{series.name}</span><br/>',
-                pointFormat: null,
-                pointFormatter: function () {
-                    let point = this, series = point.series, xAxis = series.xAxis, formats = series.tooltipOptions.dateTimeLabelFormats, startOfWeek = xAxis.options.startOfWeek, ttOptions = series.tooltipOptions, format = ttOptions.xDateFormat, start, end, milestone = point.options.milestone, retVal = '<b>' + (point.name || point.yCategory) + '</b>';
-                    if (ttOptions.pointFormat) {
-                        return point.tooltipFormatter(ttOptions.pointFormat);
-                    }
-                    if (!format && isNumber(point.start)) {
-                        format = series.chart.time.getDateFormat(xAxis.closestPointRange, point.start, startOfWeek, formats || {});
-                    }
-                    start = series.chart.time.dateFormat(format, point.start);
-                    end = series.chart.time.dateFormat(format, point.end);
-                    retVal += '<br/>';
-                    if (!milestone) {
-                        retVal += 'Start: ' + start + '<br/>';
-                        retVal += 'End: ' + end + '<br/>';
-                    }
-                    else {
-                        retVal += start + '<br/>';
-                    }
-                    return retVal;
-                }
-            },
-            connectors: {
-                type: 'simpleConnect',
-                /**
-                 * @declare Highcharts.ConnectorsAnimationOptionsObject
-                 */
-                animation: {
-                    reversed: true // Dependencies go from child to parent
-                },
-                radius: 0,
-                startMarker: {
-                    enabled: true,
-                    symbol: 'arrow-filled',
-                    radius: 4,
-                    fill: '#fa0',
-                    align: 'left'
-                },
-                endMarker: {
-                    enabled: false,
-                    align: 'right'
-                }
-            }
-        });
+         *  Static Properties
+         *
+         * */
+        GanttSeries.defaultOptions = merge(XRangeSeries.defaultOptions, GanttSeriesDefaults);
         extend(GanttSeries.prototype, {
             pointArrayMap: ['start', 'end', 'y'],
             pointClass: GanttPoint,
@@ -12143,648 +12721,12 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
-        /**
-         * A `gantt` series.
-         *
-         * @extends   series,plotOptions.gantt
-         * @excluding boostThreshold, dashStyle, findNearestPointBy,
-         *            getExtremesFromAll, marker, negativeColor, pointInterval,
-         *            pointIntervalUnit, pointPlacement, pointStart
-         * @product   gantt
-         * @requires  highcharts-gantt
-         * @apioption series.gantt
-         */
-        /**
-         * Data for a Gantt series.
-         *
-         * @declare   Highcharts.GanttPointOptionsObject
-         * @type      {Array<*>}
-         * @extends   series.xrange.data
-         * @excluding className, connect, dataLabels, events,
-         *            partialFill, selected, x, x2
-         * @product   gantt
-         * @apioption series.gantt.data
-         */
-        /**
-         * Whether the grid node belonging to this point should start as collapsed. Used
-         * in axes of type treegrid.
-         *
-         * @sample {gantt} gantt/treegrid-axis/collapsed/
-         *         Start as collapsed
-         *
-         * @type      {boolean}
-         * @default   false
-         * @product   gantt
-         * @apioption series.gantt.data.collapsed
-         */
-        /**
-         * The start time of a task.
-         *
-         * @type      {number}
-         * @product   gantt
-         * @apioption series.gantt.data.start
-         */
-        /**
-         * The end time of a task.
-         *
-         * @type      {number}
-         * @product   gantt
-         * @apioption series.gantt.data.end
-         */
-        /**
-         * The Y value of a task.
-         *
-         * @type      {number}
-         * @product   gantt
-         * @apioption series.gantt.data.y
-         */
-        /**
-         * The name of a task. If a `treegrid` y-axis is used (default in Gantt charts),
-         * this will be picked up automatically, and used to calculate the y-value.
-         *
-         * @type      {string}
-         * @product   gantt
-         * @apioption series.gantt.data.name
-         */
-        /**
-         * Progress indicator, how much of the task completed. If it is a number, the
-         * `fill` will be applied automatically.
-         *
-         * @sample {gantt} gantt/demo/progress-indicator
-         *         Progress indicator
-         *
-         * @type      {number|*}
-         * @extends   series.xrange.data.partialFill
-         * @product   gantt
-         * @apioption series.gantt.data.completed
-         */
-        /**
-         * The amount of the progress indicator, ranging from 0 (not started) to 1
-         * (finished).
-         *
-         * @type      {number}
-         * @default   0
-         * @apioption series.gantt.data.completed.amount
-         */
-        /**
-         * The fill of the progress indicator. Defaults to a darkened variety of the
-         * main color.
-         *
-         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         * @apioption series.gantt.data.completed.fill
-         */
-        /**
-         * The ID of the point (task) that this point depends on in Gantt charts.
-         * Aliases [connect](series.xrange.data.connect). Can also be an object,
-         * specifying further connecting [options](series.gantt.connectors) between the
-         * points. Multiple connections can be specified by providing an array.
-         *
-         * @sample gantt/demo/project-management
-         *         Dependencies
-         * @sample gantt/pathfinder/demo
-         *         Different connection types
-         *
-         * @type      {string|Array<string|*>|*}
-         * @extends   series.xrange.data.connect
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption series.gantt.data.dependency
-         */
-        /**
-         * Whether this point is a milestone. If so, only the `start` option is handled,
-         * while `end` is ignored.
-         *
-         * @sample gantt/gantt/milestones
-         *         Milestones
-         *
-         * @type      {boolean}
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption series.gantt.data.milestone
-         */
-        /**
-         * The ID of the parent point (task) of this point in Gantt charts.
-         *
-         * @sample gantt/demo/subtasks
-         *         Gantt chart with subtasks
-         *
-         * @type      {string}
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption series.gantt.data.parent
-         */
-        /**
-         * @excluding afterAnimate
-         * @apioption series.gantt.events
-         */
-        ''; // adds doclets above to the transpiled file
 
         return GanttSeries;
     });
-    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (Chart, D, U) {
-        /* *
-         *
-         *  (c) 2016-2021 Highsoft AS
-         *
-         *  Author: Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { getOptions } = D;
-        const { isArray, merge, splat } = U;
-        /* *
-         *
-         *  Class
-         *
-         * */
-        /**
-         * Gantt-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
-         *
-         * @requires modules/gantt
-         *
-         * @class
-         * @name Highcharts.GanttChart
-         * @extends Highcharts.Chart
-         */
-        class GanttChart extends Chart {
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Initializes the chart. The constructor's arguments are passed on
-             * directly.
-             *
-             * @function Highcharts.GanttChart#init
-             *
-             * @param {Highcharts.Options} userOptions
-             *        Custom options.
-             *
-             * @param {Function} [callback]
-             *        Function to run when the chart has loaded and and all external
-             *        images are loaded.
-             *
-             *
-             * @emits Highcharts.GanttChart#event:init
-             * @emits Highcharts.GanttChart#event:afterInit
-             */
-            init(userOptions, callback) {
-                const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis;
-                let defaultLinkedTo;
-                // Avoid doing these twice
-                userOptions.xAxis = userOptions.yAxis = void 0;
-                const options = merge(true, {
-                    chart: {
-                        type: 'gantt'
-                    },
-                    title: {
-                        text: ''
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    navigator: {
-                        series: { type: 'gantt' },
-                        // Bars were clipped, #14060.
-                        yAxis: {
-                            type: 'category'
-                        }
-                    }
-                }, userOptions, // user's options
-                // forced options
-                {
-                    isGantt: true
-                });
-                userOptions.xAxis = xAxisOptions;
-                userOptions.yAxis = yAxisOptions;
-                // apply X axis options to both single and multi x axes
-                // If user hasn't defined axes as array, make it into an array and add a
-                // second axis by default.
-                options.xAxis = (!isArray(userOptions.xAxis) ?
-                    [userOptions.xAxis || {}, {}] :
-                    userOptions.xAxis).map((xAxisOptions, i) => {
-                    if (i === 1) { // Second xAxis
-                        defaultLinkedTo = 0;
-                    }
-                    return merge(defaultOptions.xAxis, {
-                        grid: {
-                            enabled: true
-                        },
-                        opposite: true,
-                        linkedTo: defaultLinkedTo
-                    }, xAxisOptions, // user options
-                    {
-                        type: 'datetime'
-                    });
-                });
-                // apply Y axis options to both single and multi y axes
-                options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(defaultOptions.yAxis, // #3802
-                {
-                    grid: {
-                        enabled: true
-                    },
-                    staticScale: 50,
-                    reversed: true,
-                    // Set default type treegrid, but only if 'categories' is
-                    // undefined
-                    type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
-                }, yAxisOptions // user options
-                ));
-                super.init(options, callback);
-            }
-        }
-        /* *
-         *
-         *  Class Namespace
-         *
-         * */
-        (function (GanttChart) {
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable jsdoc/check-param-names */
-            /**
-             * The factory function for creating new gantt charts. Creates a new {@link
-             * Highcharts.GanttChart|GanttChart} object with different default options
-             * than the basic Chart.
-             *
-             * @example
-             * // Render a chart in to div#container
-             * let chart = Highcharts.ganttChart('container', {
-             *     title: {
-             *         text: 'My chart'
-             *     },
-             *     series: [{
-             *         data: ...
-             *     }]
-             * });
-             *
-             * @function Highcharts.ganttChart
-             *
-             * @param {string|Highcharts.HTMLDOMElement} renderTo
-             *        The DOM element to render to, or its id.
-             *
-             * @param {Highcharts.Options} options
-             *        The chart options structure.
-             *
-             * @param {Highcharts.ChartCallbackFunction} [callback]
-             *        Function to run when the chart has loaded and and all external
-             *        images are loaded. Defining a
-             *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
-             *        handler is equivalent.
-             *
-             * @return {Highcharts.GanttChart}
-             *         Returns the Chart object.
-             */
-            function ganttChart(a, b, c) {
-                return new GanttChart(a, b, c);
-            }
-            GanttChart.ganttChart = ganttChart;
-            /* eslint-enable jsdoc/check-param-names */
-        })(GanttChart || (GanttChart = {}));
-        /* *
-         *
-         *  Default Export
-         *
-         * */
+    _registerModule(_modules, 'masters/modules/gantt.src.js', [_modules['Core/Globals.js'], _modules['Extensions/ArrowSymbols.js'], _modules['Gantt/Connection.js'], _modules['Extensions/CurrentDateIndication.js'], _modules['Core/Chart/GanttChart.js'], _modules['Stock/Navigator/Navigator.js'], _modules['Gantt/Pathfinder.js'], _modules['Stock/RangeSelector/RangeSelector.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Extensions/StaticScale.js'], _modules['Series/XRange/XRangeSeries.js'], _modules['Series/Gantt/GanttSeries.js']], function (Highcharts, ArrowSymbols, Connection, CurrentDateIndication, GanttChart, Navigator, Pathfinder, RangeSelector, Scrollbar, StaticScale, XRangeSeries, GanttSeries) {
 
-        return GanttChart;
-    });
-    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2017 Highsoft AS
-         *  Authors: Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * Creates an arrow symbol. Like a triangle, except not filled.
-         * ```
-         *                   o
-         *             o
-         *       o
-         * o
-         *       o
-         *             o
-         *                   o
-         * ```
-         *
-         * @private
-         * @function
-         *
-         * @param {number} x
-         *        x position of the arrow
-         *
-         * @param {number} y
-         *        y position of the arrow
-         *
-         * @param {number} w
-         *        width of the arrow
-         *
-         * @param {number} h
-         *        height of the arrow
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        function arrow(x, y, w, h) {
-            return [
-                ['M', x, y + h / 2],
-                ['L', x + w, y],
-                ['L', x, y + h / 2],
-                ['L', x + w, y + h]
-            ];
-        }
-        /**
-         * Creates a half-width arrow symbol. Like a triangle, except not filled.
-         * ```
-         *       o
-         *    o
-         * o
-         *    o
-         *       o
-         * ```
-         *
-         * @private
-         * @function
-         *
-         * @param {number} x
-         *        x position of the arrow
-         *
-         * @param {number} y
-         *        y position of the arrow
-         *
-         * @param {number} w
-         *        width of the arrow
-         *
-         * @param {number} h
-         *        height of the arrow
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        function arrowHalf(x, y, w, h) {
-            return arrow(x, y, w / 2, h);
-        }
-        /**
-         * @private
-         */
-        function compose(SVGRendererClass) {
-            if (U.pushUnique(composedMembers, SVGRendererClass)) {
-                const symbols = SVGRendererClass.prototype.symbols;
-                symbols.arrow = arrow;
-                symbols['arrow-filled'] = triangleLeft;
-                symbols['arrow-filled-half'] = triangleLeftHalf;
-                symbols['arrow-half'] = arrowHalf;
-                symbols['triangle-left'] = triangleLeft;
-                symbols['triangle-left-half'] = triangleLeftHalf;
-            }
-        }
-        /**
-         * Creates a left-oriented triangle.
-         * ```
-         *             o
-         *       ooooooo
-         * ooooooooooooo
-         *       ooooooo
-         *             o
-         * ```
-         *
-         * @private
-         * @function
-         *
-         * @param {number} x
-         *        x position of the triangle
-         *
-         * @param {number} y
-         *        y position of the triangle
-         *
-         * @param {number} w
-         *        width of the triangle
-         *
-         * @param {number} h
-         *        height of the triangle
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        function triangleLeft(x, y, w, h) {
-            return [
-                ['M', x + w, y],
-                ['L', x, y + h / 2],
-                ['L', x + w, y + h],
-                ['Z']
-            ];
-        }
-        /**
-         * Creates a half-width, left-oriented triangle.
-         * ```
-         *       o
-         *    oooo
-         * ooooooo
-         *    oooo
-         *       o
-         * ```
-         *
-         * @private
-         * @function
-         *
-         * @param {number} x
-         *        x position of the triangle
-         *
-         * @param {number} y
-         *        y position of the triangle
-         *
-         * @param {number} w
-         *        width of the triangle
-         *
-         * @param {number} h
-         *        height of the triangle
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        function triangleLeftHalf(x, y, w, h) {
-            return triangleLeft(x, y, w / 2, h);
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const ArrowSymbols = {
-            compose
-        };
-
-        return ArrowSymbols;
-    });
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2016-2021 Highsoft AS
-         *
-         *  Author: Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        const { addEvent, merge, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
-        /**
-         * Show an indicator on the axis for the current date and time. Can be a
-         * boolean or a configuration object similar to
-         * [xAxis.plotLines](#xAxis.plotLines).
-         *
-         * @sample gantt/current-date-indicator/demo
-         *         Current date indicator enabled
-         * @sample gantt/current-date-indicator/object-config
-         *         Current date indicator with custom options
-         *
-         * @declare   Highcharts.CurrentDateIndicatorOptions
-         * @type      {boolean|CurrentDateIndicatorOptions}
-         * @default   true
-         * @extends   xAxis.plotLines
-         * @excluding value
-         * @product   gantt
-         * @apioption xAxis.currentDateIndicator
-         */
-        const defaultOptions = {
-            color: "#ccd3ff" /* Palette.highlightColor20 */,
-            width: 2,
-            /**
-             * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
-             */
-            label: {
-                /**
-                 * Format of the label. This options is passed as the fist argument to
-                 * [dateFormat](/class-reference/Highcharts.Time#dateFormat) function.
-                 *
-                 * @type      {string}
-                 * @default   %a, %b %d %Y, %H:%M
-                 * @product   gantt
-                 * @apioption xAxis.currentDateIndicator.label.format
-                 */
-                format: '%a, %b %d %Y, %H:%M',
-                formatter: function (value, format) {
-                    return this.axis.chart.time.dateFormat(format || '', value);
-                },
-                rotation: 0,
-                /**
-                 * @type {Highcharts.CSSObject}
-                 */
-                style: {
-                    /** @internal */
-                    fontSize: '0.7em'
-                }
-            }
-        };
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /**
-         * @private
-         */
-        function compose(AxisClass, PlotLineOrBandClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
-                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-            }
-            if (U.pushUnique(composedMembers, PlotLineOrBandClass)) {
-                addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
-                wrap(PlotLineOrBandClass.prototype, 'getLabelText', wrapPlotLineOrBandGetLabelText);
-            }
-        }
-        /**
-         * @private
-         */
-        function onAxisAfterSetOptions() {
-            const options = this.options, cdiOptions = options.currentDateIndicator;
-            if (cdiOptions) {
-                const plotLineOptions = typeof cdiOptions === 'object' ?
-                    merge(defaultOptions, cdiOptions) :
-                    merge(defaultOptions);
-                plotLineOptions.value = Date.now();
-                plotLineOptions.className = 'highcharts-current-date-indicator';
-                if (!options.plotLines) {
-                    options.plotLines = [];
-                }
-                options.plotLines.push(plotLineOptions);
-            }
-        }
-        /**
-         * @private
-         */
-        function onPlotLineOrBandRender() {
-            // If the label already exists, update its text
-            if (this.label) {
-                this.label.attr({
-                    text: this.getLabelText(this.options.label)
-                });
-            }
-        }
-        /**
-         * @private
-         */
-        function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
-            const options = this.options;
-            if (options &&
-                options.className &&
-                options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
-                options.label &&
-                typeof options.label.formatter === 'function') {
-                options.value = Date.now();
-                return options.label.formatter
-                    .call(this, options.value, options.label.format);
-            }
-            return defaultMethod.call(this, defaultLabelOptions);
-        }
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        const CurrentDateIndication = {
-            compose
-        };
-
-        return CurrentDateIndication;
-    });
-    _registerModule(_modules, 'masters/modules/gantt.src.js', [_modules['Core/Globals.js'], _modules['Gantt/Connection.js'], _modules['Stock/Navigator/Navigator.js'], _modules['Gantt/Pathfinder.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Stock/RangeSelector/RangeSelector.js'], _modules['Extensions/StaticScale.js'], _modules['Series/XRange/XRangeSeries.js'], _modules['Core/Chart/GanttChart.js'], _modules['Extensions/ArrowSymbols.js'], _modules['Extensions/CurrentDateIndication.js']], function (Highcharts, Connection, Navigator, Pathfinder, Scrollbar, RangeSelector, StaticScale, XRangeSeries, GanttChart, ArrowSymbols, CurrentDateIndication) {
-
+        // Series
         const G = Highcharts;
         // Classes
         G.Connection = Connection;
@@ -12797,8 +12739,9 @@
         // Compositions
         ArrowSymbols.compose(G.SVGRenderer);
         CurrentDateIndication.compose(G.Axis, G.PlotLineOrBand);
-        Pathfinder.compose(G.Chart, G.Point);
+        GanttSeries.compose(G.Axis, G.Chart, G.Series, G.Tick);
         Navigator.compose(G.Axis, G.Chart, G.Series);
+        Pathfinder.compose(G.Chart, G.Point);
         RangeSelector.compose(G.Axis, G.Chart);
         Scrollbar.compose(G.Axis);
         XRangeSeries.compose(G.Axis);

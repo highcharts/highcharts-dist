@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Exporting module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Core/Chart/ChartNavigationComposition.js', [], function () {
         /**
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -130,7 +130,7 @@
     _registerModule(_modules, 'Extensions/Exporting/ExportingDefaults.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -254,14 +254,31 @@
              * @apioption exporting.filename
              */
             /**
-             * An object containing additional key value data for the POST form that
-             * sends the SVG to the export server. For example, a `target` can be set to
-             * make sure the generated image is received in another frame, or a custom
-             * `enctype` or `encoding` can be set.
+             * Highcharts v11.2.0 and older. An object containing additional key value
+             * data for the POST form that sends the SVG to the export server. For
+             * example, a `target` can be set to make sure the generated image is
+             * received in another frame, or a custom `enctype` or `encoding` can be
+             * set.
              *
+             * With Highcharts v11.3.0, the `fetch` API replaced the old HTML form. To
+             * modify the request, now use [fetchOptions](#exporting.fetchOptions)
+             * instead.
+             *
+             * @deprecated
              * @type      {Highcharts.HTMLAttributes}
              * @since     3.0.8
              * @apioption exporting.formAttributes
+             */
+            /**
+             * Options for the fetch request used when sending the SVG to the export
+             * server.
+             *
+             * See [MDN](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
+             * for more information
+             *
+             * @type {Object}
+             * @since 11.3.0
+             * @apioption exporting.fetchOptions
              */
             /**
              * Path where Highcharts will look for export module dependencies to
@@ -986,7 +1003,7 @@
          *
          *  Exporting module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1056,10 +1073,10 @@
 
         return ExportingSymbols;
     });
-    _registerModule(_modules, 'Extensions/Exporting/Fullscreen.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (AST, U) {
+    _registerModule(_modules, 'Extensions/Exporting/Fullscreen.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (AST, H, U) {
         /* *
          *
-         *  (c) 2009-2021 Rafal Sebestjanski
+         *  (c) 2009-2024 Rafal Sebestjanski
          *
          *  Full screen for Highcharts
          *
@@ -1078,13 +1095,8 @@
          *  Imports
          *
          * */
-        const { addEvent, fireEvent } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, fireEvent, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -1129,7 +1141,7 @@
              * The chart class to decorate with fullscreen support.
              */
             static compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, this.compose)) {
                     // Initialize fullscreen
                     addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 }
@@ -1408,14 +1420,14 @@
     _registerModule(_modules, 'Core/HttpUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (G, U) {
         /* *
          *
-         *  (c) 2010-2021 Christer Vasseng, Torstein Honsi
+         *  (c) 2010-2024 Christer Vasseng, Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { doc } = G;
+        const { doc, win } = G;
         const { createElement, discardElement, merge, objectEach } = U;
         /* *
          *
@@ -1531,30 +1543,32 @@
          * @param {Object} data
          * Post data
          *
-         * @param {Highcharts.Dictionary<string>} [formAttributes]
+         * @param {RequestInit} [fetchOptions]
          * Additional attributes for the post request
          */
-        function post(url, data, formAttributes) {
-            // create the form
-            const form = createElement('form', merge({
-                method: 'post',
-                action: url,
-                enctype: 'multipart/form-data'
-            }, formAttributes), {
-                display: 'none'
-            }, doc.body);
+        function post(url, data, fetchOptions) {
+            const formData = new win.FormData();
             // add the data
             objectEach(data, function (val, name) {
-                createElement('input', {
-                    type: 'hidden',
-                    name: name,
-                    value: val
-                }, void 0, form);
+                formData.append(name, val);
             });
-            // submit
-            form.submit();
-            // clean up
-            discardElement(form);
+            formData.append('b64', 'true');
+            const { filename, type } = data;
+            return win.fetch(url, {
+                method: 'POST',
+                body: formData,
+                ...fetchOptions
+            }).then((res) => {
+                if (res.ok) {
+                    res.text().then((text) => {
+                        const link = document.createElement('a');
+                        link.href = `data:${type};base64,${text}`;
+                        link.download = filename;
+                        link.click();
+                        discardElement(link);
+                    });
+                }
+            });
         }
         /* *
          *
@@ -1612,7 +1626,7 @@
          *
          *  Exporting module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1620,8 +1634,8 @@
          *
          * */
         const { defaultOptions, setOptions } = D;
-        const { doc, SVG_NS, win } = G;
-        const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, removeEvent, uniqueKey } = U;
+        const { composed, doc, SVG_NS, win } = G;
+        const { addEvent, css, createElement, discardElement, extend, find, fireEvent, isObject, merge, objectEach, pick, pushUnique, removeEvent, uniqueKey } = U;
         /* *
          *
          *  Composition
@@ -1639,7 +1653,6 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             // These CSS properties are not inlined. Remember camelCase.
             const inlineDenylist = [
                 /-/,
@@ -1682,7 +1695,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Add the export button to the chart, with options.
              *
@@ -1910,7 +1922,7 @@
             function compose(ChartClass, SVGRendererClass) {
                 ExportingSymbols.compose(SVGRendererClass);
                 Fullscreen.compose(ChartClass);
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.afterPrint = afterPrint;
                     chartProto.exportChart = exportChart;
@@ -1930,7 +1942,7 @@
                     chartProto.callbacks.push(chartCallback);
                     addEvent(ChartClass, 'init', onChartInit);
                     if (G.isSafari) {
-                        G.win.matchMedia('print').addListener(function (mqlEvent) {
+                        win.matchMedia('print').addListener(function (mqlEvent) {
                             if (!printingChart) {
                                 return void 0;
                             }
@@ -1942,8 +1954,6 @@
                             }
                         });
                     }
-                }
-                if (U.pushUnique(composedMembers, setOptions)) {
                     defaultOptions.exporting = merge(ExportingDefaults.exporting, defaultOptions.exporting);
                     defaultOptions.lang = merge(ExportingDefaults.lang, defaultOptions.lang);
                     // Buttons and menus are collected in a separate config option set
@@ -2058,9 +2068,8 @@
                                             e.stopPropagation();
                                         }
                                         menu.hideMenu();
-                                        if (item.onclick) {
-                                            item.onclick
-                                                .apply(chart, arguments);
+                                        if (typeof item !== 'string' && item.onclick) {
+                                            item.onclick.apply(chart, arguments);
                                         }
                                     }
                                 }, void 0, innerMenu);
@@ -2207,7 +2216,7 @@
                     width: exportingOptions.width,
                     scale: exportingOptions.scale,
                     svg: svg
-                }, exportingOptions.formAttributes);
+                }, exportingOptions.fetchOptions);
             }
             /**
              * Return the unfiltered innerHTML of the chart container. Used as hook for
@@ -2347,6 +2356,10 @@
                         }));
                     }
                 });
+                // Make sure the `colorAxis` object of the `defaultOptions` isn't used
+                // in the chart copy's user options, because a color axis should only be
+                // added when the user actually applies it.
+                options.colorAxis = chart.userOptions.colorAxis;
                 // Generate the chart copy
                 const chartCopy = new chart.constructor(options, chart.callback);
                 // Axis options and series options  (#2022, #3900, #5982)

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -18,19 +18,6 @@ const { clamp, defined, extend, pick } = U;
  *
  * */
 class HeatmapPoint extends ScatterPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
-        this.value = void 0;
-        this.x = void 0;
-        this.y = void 0;
-    }
     /* *
      *
      *  Functions

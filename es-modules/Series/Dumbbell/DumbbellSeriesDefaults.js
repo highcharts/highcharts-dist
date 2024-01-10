@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  *  License: www.highcharts.com/license
  *
@@ -34,6 +34,7 @@ const DumbbellSeriesDefaults = {
     groupPadding: 0.2,
     crisp: false,
     pointPadding: 0.1,
+    legendSymbol: 'rectangle',
     /**
      * Color of the start markers in a dumbbell graph. This option takes
      * priority over the series color. To avoid this, set `lowColor` to

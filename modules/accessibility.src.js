@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Accessibility module
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
@@ -39,7 +39,7 @@
     _registerModule(_modules, 'Accessibility/Utils/HTMLUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Utility functions for accessibility module.
          *
@@ -355,12 +355,12 @@
 
         return HTMLUtilities;
     });
-    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (F, U) {
+    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (F, H, U) {
         /* *
          *
          *  Accessibility module - internationalization support
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -369,7 +369,8 @@
          *
          * */
         const { format } = F;
-        const { getNestedProperty, pick } = U;
+        const { composed } = H;
+        const { getNestedProperty, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -384,25 +385,17 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.langFormat = langFormat;
                 }
-                return ChartClass;
             }
             A11yI18nComposition.compose = compose;
             /**
@@ -656,7 +649,7 @@
     _registerModule(_modules, 'Accessibility/Utils/ChartUtilities.js', [_modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (H, HU, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Utils for dealing with charts.
          *
@@ -953,7 +946,7 @@
     _registerModule(_modules, 'Accessibility/Utils/DOMElementProvider.js', [_modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, HU) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class that can keep track of elements added to DOM and clean them up on
          *  destroy.
@@ -1014,7 +1007,7 @@
     _registerModule(_modules, 'Accessibility/Utils/EventProvider.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class that can keep track of events added, and clean them up on destroy.
          *
@@ -1071,7 +1064,7 @@
     _registerModule(_modules, 'Accessibility/AccessibilityComponent.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/DOMElementProvider.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (CU, DOMElementProvider, EventProvider, HU, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component class definition
          *
@@ -1105,24 +1098,11 @@
          * @name Highcharts.AccessibilityComponent
          */
         class AccessibilityComponent {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.domElementProvider = void 0;
-                this.eventProvider = void 0;
-                this.keyCodes = void 0;
-                this.proxyProvider = void 0;
-            }
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Initialize the class
              * @private
@@ -1220,7 +1200,7 @@
     _registerModule(_modules, 'Accessibility/KeyboardNavigationHandler.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Keyboard navigation handler base class definition
          *
@@ -1281,7 +1261,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Find handler function(s) for key code in the keyCodeMap and run it.
              *
@@ -1348,7 +1327,7 @@
     _registerModule(_modules, 'Accessibility/Components/ContainerComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (AccessibilityComponent, KeyboardNavigationHandler, CU, H, HU) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for chart container.
          *
@@ -1484,10 +1463,10 @@
 
         return ContainerComponent;
     });
-    _registerModule(_modules, 'Accessibility/FocusBorder.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Accessibility/FocusBorder.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Extend SVG and Chart classes with focus border capabilities.
          *
@@ -1496,7 +1475,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, pick } = U;
+        const { composed } = H;
+        const { addEvent, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -1514,7 +1494,6 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             // Attributes that trigger a focus border update
             const svgElementBorderUpdateTriggers = [
                 'x', 'y', 'transform', 'width', 'height', 'r', 'd', 'stroke-width'
@@ -1524,18 +1503,14 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(ChartClass, SVGElementClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    const chartProto = ChartClass.prototype;
+                if (pushUnique(composed, compose)) {
+                    const chartProto = ChartClass.prototype, svgElementProto = SVGElementClass.prototype;
                     chartProto.renderFocusBorder = chartRenderFocusBorder;
                     chartProto.setFocusToElement = chartSetFocusToElement;
-                }
-                if (U.pushUnique(composedMembers, SVGElementClass)) {
-                    const svgElementProto = SVGElementClass.prototype;
                     svgElementProto.addFocusBorder = svgElementAddFocusBorder;
                     svgElementProto.removeFocusBorder = svgElementRemoveFocusBorder;
                 }
@@ -1784,7 +1759,7 @@
     _registerModule(_modules, 'Accessibility/Utils/Announcer.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Accessibility/Utils/DOMElementProvider.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (AST, DOMElementProvider, H, HU, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Create announcer to speak messages to screen readers and other AT.
          *
@@ -1871,7 +1846,7 @@
     _registerModule(_modules, 'Accessibility/Components/AnnotationsA11y.js', [_modules['Accessibility/Utils/HTMLUtilities.js']], function (HTMLUtilities) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Annotations accessibility code.
          *
@@ -2032,7 +2007,7 @@
     _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Accessibility/A11yI18n.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (A11yI18n, AccessibilityComponent, Announcer, AnnotationsA11y, AST, CU, F, H, HU, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for chart info region and table.
          *
@@ -2142,7 +2117,6 @@
                  *
                  * */
                 super(...arguments);
-                this.announcer = void 0;
                 this.screenReaderSections = {};
             }
             /* *
@@ -2561,10 +2535,10 @@
 
         return InfoRegionsComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/MenuComponent.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/MenuComponent.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, H, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for exporting menu.
          *
@@ -2573,7 +2547,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { attr } = U;
+        const { composed } = H;
+        const { attr, pushUnique } = U;
         const { getChartTitle, unhideChartElementFromAT } = ChartUtilities;
         const { getFakeMouseEvent } = HTMLUtilities;
         /* *
@@ -2581,7 +2556,6 @@
          *  Functions
          *
          * */
-        /* eslint-disable valid-jsdoc */
         /**
          * Get the wrapped export button element of a chart.
          * @private
@@ -2870,21 +2844,14 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = Chart.prototype;
                     chartProto.hideExportMenu = chartHideExportMenu;
                     chartProto.highlightExportItem = chartHighlightExportItem;
@@ -2991,7 +2958,7 @@
     _registerModule(_modules, 'Accessibility/KeyboardNavigation.js', [_modules['Core/Globals.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, MenuComponent, U, EventProvider, HTMLUtilities) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Main keyboard navigation handling.
          *
@@ -3000,8 +2967,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { doc, win } = H;
-        const { addEvent, fireEvent } = U;
+        const { composed, doc, win } = H;
+        const { addEvent, fireEvent, pushUnique } = U;
         const { getElement, simulatedEventTarget } = HTMLUtilities;
         /* *
          *
@@ -3029,18 +2996,8 @@
              *
              * */
             constructor(chart, components) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.components = void 0;
                 this.currentModuleIx = NaN;
-                this.eventProvider = void 0;
-                this.exitAnchor = void 0;
                 this.modules = [];
-                this.tabindexContainer = void 0;
                 this.init(chart, components);
             }
             /* *
@@ -3048,7 +3005,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Initialize the class
              * @private
@@ -3175,6 +3131,7 @@
                         this.modules[ix].init(1);
                     }
                 }
+                this.keyboardReset = false;
                 this.exiting = false;
             }
             /**
@@ -3379,27 +3336,18 @@
              * */
             /* *
              *
-             *  Construction
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Composition function.
              * @private
              */
             function compose(ChartClass) {
                 MenuComponent.compose(ChartClass);
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.dismissPopupContent = chartDismissPopupContent;
-                }
-                if (U.pushUnique(composedMembers, doc)) {
                     addEvent(doc, 'keydown', documentOnKeydown);
                 }
                 return ChartClass;
@@ -3446,7 +3394,7 @@
     _registerModule(_modules, 'Accessibility/Components/LegendComponent.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (A, H, Legend, U, AccessibilityComponent, KeyboardNavigationHandler, CU, HU) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for chart legend.
          *
@@ -3456,8 +3404,8 @@
          *
          * */
         const { animObject } = A;
-        const { doc } = H;
-        const { addEvent, fireEvent, isNumber, pick, syncTimeout } = U;
+        const { composed, doc } = H;
+        const { addEvent, fireEvent, isNumber, pick, pushUnique, syncTimeout } = U;
         const { getChartTitle } = CU;
         const { stripHTMLTagsFromString: stripHTMLTags, addClass, removeClass } = HU;
         /* *
@@ -3786,19 +3734,18 @@
              * Arrow key navigation
              * @private
              */
-            onKbdArrowKey(keyboardNavigationHandler, keyCode) {
-                const keys = this.keyCodes, response = keyboardNavigationHandler.response, chart = this.chart, a11yOptions = chart.options.accessibility, numItems = chart.legend.allItems.length, direction = (keyCode === keys.left || keyCode === keys.up) ? -1 : 1;
-                const res = chart.highlightLegendItem(this.highlightedLegendItemIx + direction);
+            onKbdArrowKey(keyboardNavigationHandler, key) {
+                const { keyCodes: { left, up }, highlightedLegendItemIx, chart } = this, numItems = chart.legend.allItems.length, wrapAround = chart.options.accessibility
+                    .keyboardNavigation.wrapAround, direction = (key === left || key === up) ? -1 : 1, res = chart.highlightLegendItem(highlightedLegendItemIx + direction);
                 if (res) {
                     this.highlightedLegendItemIx += direction;
-                    return response.success;
                 }
-                if (numItems > 1 &&
-                    a11yOptions.keyboardNavigation.wrapAround) {
-                    keyboardNavigationHandler.init(direction);
-                    return response.success;
+                else if (wrapAround && numItems > 1) {
+                    this.highlightedLegendItemIx = direction > 0 ?
+                        0 : numItems - 1;
+                    chart.highlightLegendItem(this.highlightedLegendItemIx);
                 }
-                return response.success;
+                return keyboardNavigationHandler.response.success;
             }
             /**
              * @private
@@ -3845,16 +3792,9 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Highlight legend item by index.
              * @private
@@ -3863,7 +3803,7 @@
                 const items = this.legend.allItems;
                 const oldIx = this.accessibility &&
                     this.accessibility.components.legend.highlightedLegendItemIx;
-                const itemToHighlight = items[ix], legendItem = itemToHighlight.legendItem || {};
+                const itemToHighlight = items[ix], legendItem = itemToHighlight?.legendItem || {};
                 if (itemToHighlight) {
                     if (isNumber(oldIx) && items[oldIx]) {
                         setLegendItemHoverState(false, items[oldIx]);
@@ -3871,7 +3811,7 @@
                     scrollLegendToItem(this.legend, ix);
                     const legendItemProp = legendItem.label;
                     const proxyBtn = itemToHighlight.a11yProxyElement &&
-                        itemToHighlight.a11yProxyElement.innerElement;
+                        itemToHighlight.a11yProxyElement.element;
                     if (legendItemProp && legendItemProp.element && proxyBtn) {
                         this.setFocusToElement(legendItemProp, proxyBtn);
                     }
@@ -3884,11 +3824,9 @@
              * @private
              */
             function compose(ChartClass, LegendClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.highlightLegendItem = chartHighlightLegendItem;
-                }
-                if (U.pushUnique(composedMembers, LegendClass)) {
                     addEvent(LegendClass, 'afterColorizeItem', legendOnAfterColorizeItem);
                 }
             }
@@ -3915,21 +3853,15 @@
     _registerModule(_modules, 'Core/Axis/NavigatorAxisComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isTouchDevice } = H;
-        const { addEvent, correctFloat, defined, isNumber, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed, isTouchDevice } = H;
+        const { addEvent, correctFloat, defined, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -4000,7 +3932,7 @@
              * @private
              */
             static compose(AxisClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     AxisClass.keepProps.push('navigatorAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'zoom', onAxisZoom);
@@ -4072,7 +4004,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorDefaults.js', [_modules['Core/Color/Color.js'], _modules['Core/Series/SeriesRegistry.js']], function (Color, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -4574,7 +4506,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorSymbols.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -4619,7 +4551,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorComposition.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxisComposition.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/Navigator/NavigatorSymbols.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (D, H, NavigatorAxisAdditions, NavigatorDefaults, NavigatorSymbols, RendererRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -4627,15 +4559,9 @@
          *
          * */
         const { defaultOptions, setOptions } = D;
-        const { isTouchDevice } = H;
+        const { composed, isTouchDevice } = H;
         const { getRendererType } = RendererRegistry;
-        const { addEvent, extend, merge, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, extend, merge, pick, pushUnique } = U;
         /* *
          *
          *  Variables
@@ -4653,7 +4579,7 @@
         function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
             NavigatorAxisAdditions.compose(AxisClass);
             NavigatorConstructor = NavigatorClass;
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
                 chartProto.callbacks.push(onChartCallback);
                 addEvent(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
@@ -4662,14 +4588,8 @@
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 addEvent(ChartClass, 'beforeShowResetZoom', onChartBeforeShowResetZoom);
                 addEvent(ChartClass, 'update', onChartUpdate);
-            }
-            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-            }
-            if (U.pushUnique(composedMembers, getRendererType)) {
                 extend(getRendererType().prototype.symbols, NavigatorSymbols);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 extend(defaultOptions, { navigator: NavigatorDefaults });
             }
         }
@@ -4825,16 +4745,17 @@
 
         return NavigatorComposition;
     });
-    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2023 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { addEvent, defined, pick, pushUnique } = U;
         /* *
          *
@@ -4844,22 +4765,16 @@
         var ScrollbarAxis;
         (function (ScrollbarAxis) {
             /* *
-            *
-            *  Constants
-            *
-            * */
-            const composedMembers = [];
-            /* *
-            *
-            *  Variables
-            *
-            * */
+             *
+             *  Variables
+             *
+             * */
             let Scrollbar;
             /* *
-            *
-            *  Functions
-            *
-            * */
+             *
+             *  Functions
+             *
+             * */
             /**
              * Attaches to axis events to create scrollbars if enabled.
              *
@@ -4872,10 +4787,8 @@
              * Scrollbar class to use.
              */
             function compose(AxisClass, ScrollbarClass) {
-                if (pushUnique(composedMembers, ScrollbarClass)) {
+                if (pushUnique(composed, compose)) {
                     Scrollbar = ScrollbarClass;
-                }
-                if (pushUnique(composedMembers, AxisClass)) {
                     addEvent(AxisClass, 'afterGetOffset', onAxisAfterGetOffset);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -5041,7 +4954,7 @@
     _registerModule(_modules, 'Stock/Scrollbar/ScrollbarDefaults.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5265,7 +5178,7 @@
     _registerModule(_modules, 'Stock/Scrollbar/Scrollbar.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/ScrollbarAxis.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Utilities.js']], function (D, H, ScrollbarAxis, ScrollbarDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5345,25 +5258,16 @@
                  *
                  * */
                 this._events = [];
-                this.chart = void 0;
                 this.chartX = 0;
                 this.chartY = 0;
                 this.from = 0;
-                this.group = void 0;
-                this.options = void 0;
-                this.renderer = void 0;
-                this.scrollbar = void 0;
                 this.scrollbarButtons = [];
-                this.scrollbarGroup = void 0;
                 this.scrollbarLeft = 0;
-                this.scrollbarRifles = void 0;
                 this.scrollbarStrokeWidth = 1;
                 this.scrollbarTop = 0;
                 this.size = 0;
                 this.to = 0;
-                this.track = void 0;
                 this.trackBorderWidth = 1;
-                this.userOptions = void 0;
                 this.x = 0;
                 this.y = 0;
                 this.init(renderer, options, chart);
@@ -5932,7 +5836,7 @@
     _registerModule(_modules, 'Stock/Navigator/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxisComposition.js'], _modules['Stock/Navigator/NavigatorComposition.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, D, H, NavigatorAxisAdditions, NavigatorComposition, Scrollbar, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5989,34 +5893,7 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.baseSeries = void 0;
-                this.chart = void 0;
-                this.handles = void 0;
-                this.height = void 0;
-                this.left = void 0;
-                this.navigatorEnabled = void 0;
-                this.navigatorGroup = void 0;
-                this.navigatorOptions = void 0;
-                this.navigatorSeries = void 0;
-                this.navigatorSize = void 0;
-                this.opposite = void 0;
-                this.outline = void 0;
-                this.range = void 0;
-                this.rendered = void 0;
                 this.scrollbarHeight = 0;
-                this.scrollButtonSize = void 0;
-                this.shades = void 0;
-                this.size = void 0;
-                this.top = void 0;
-                this.xAxis = void 0;
-                this.yAxis = void 0;
-                this.zoomedMax = void 0;
-                this.zoomedMin = void 0;
                 this.init(chart);
             }
             /* *
@@ -7334,7 +7211,7 @@
     _registerModule(_modules, 'Accessibility/Components/NavigatorComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Stock/Navigator/Navigator.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/ChartUtilities.js']], function (AccessibilityComponent, Announcer, KeyboardNavigationHandler, Navigator, A, T, U, HU, CU) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  Accessibility component for the navigator.
          *
@@ -7362,10 +7239,6 @@
          * @name Highcharts.NavigatorComponent
          */
         class NavigatorComponent extends AccessibilityComponent {
-            constructor() {
-                super(...arguments);
-                this.announcer = void 0;
-            }
             /**
              * Init the component
              * @private
@@ -7559,7 +7432,7 @@
     _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesDescriber.js', [_modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Templating.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (AnnotationsA11y, ChartUtilities, F, HTMLUtilities, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Place desriptions on a series and its points.
          *
@@ -7970,7 +7843,7 @@
     _registerModule(_modules, 'Accessibility/Components/SeriesComponent/NewDataAnnouncer.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Components/SeriesComponent/SeriesDescriber.js']], function (H, U, Announcer, ChartUtilities, EventProvider, SeriesDescriber) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Handle announcing new data for a chart.
          *
@@ -7979,7 +7852,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, defined } = U;
+        const { composed } = H;
+        const { addEvent, defined, pushUnique } = U;
         const { getChartTitle } = ChartUtilities;
         const { defaultPointDescriptionFormatter, defaultSeriesDescriptionFormatter } = SeriesDescriber;
         /* *
@@ -8030,16 +7904,9 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Public
-                 *
-                 * */
-                this.announcer = void 0;
                 this.dirty = {
                     allSeries: {}
                 };
-                this.eventProvider = void 0;
                 this.lastAnnouncementTime = 0;
                 this.chart = chart;
             }
@@ -8224,12 +8091,6 @@
              * */
             /* *
              *
-             *  Static Properties
-             *
-             * */
-            NewDataAnnouncer.composedMembers = [];
-            /* *
-             *
              *  Static Functions
              *
              * */
@@ -8237,7 +8098,7 @@
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(NewDataAnnouncer.composedMembers, SeriesClass)) {
+                if (pushUnique(composed, compose)) {
                     addEvent(SeriesClass, 'addPoint', seriesOnAddPoint);
                     addEvent(SeriesClass, 'updatedData', seriesOnUpdatedData);
                 }
@@ -8285,7 +8146,7 @@
     _registerModule(_modules, 'Accessibility/ProxyElement.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, U, EventProvider, ChartUtilities, HTMLUtilities) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Proxy elements are used to shadow SVG elements in HTML for assistive
          *  technology, such as screen readers or voice input software.
@@ -8344,7 +8205,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Fake a click event on the target.
              */
@@ -8503,7 +8363,7 @@
     _registerModule(_modules, 'Accessibility/ProxyProvider.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/DOMElementProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/ProxyElement.js']], function (H, U, CU, DOMElementProvider, HU, ProxyElement) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Proxy elements are used to shadow SVG elements in HTML for assistive
          *  technology, such as screen readers or voice input software.
@@ -8808,7 +8668,7 @@
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -9250,7 +9110,9 @@
              */
             inputSpacing: 5,
             /**
-             * The index of the button to appear pre-selected.
+             * The index of the button to appear pre-selected. If the selected range
+             * exceeds the total data range and the 'all' option is available,
+             * the 'all' option, showing the full range, is automatically selected.
              *
              * @type      {number}
              */
@@ -9332,25 +9194,25 @@
 
         return RangeSelectorDefaults;
     });
-    _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorComposition.js', [_modules['Core/Defaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Core/Utilities.js']], function (D, RangeSelectorDefaults, U) {
+    _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorComposition.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Core/Utilities.js']], function (D, H, RangeSelectorDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defaultOptions, setOptions } = D;
-        const { addEvent, defined, extend, find, isNumber, merge, pick } = U;
+        const { defaultOptions } = D;
+        const { composed } = H;
+        const { addEvent, defined, extend, find, isNumber, merge, pick, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
         const chartDestroyEvents = [];
-        const composedMembers = [];
         /* *
          *
          *  Variables
@@ -9425,20 +9287,16 @@
          */
         function compose(AxisClass, ChartClass, RangeSelectorClass) {
             RangeSelectorConstructor = RangeSelectorClass;
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
+                const chartProto = ChartClass.prototype;
                 AxisClass.prototype.minFromRange = axisMinFromRange;
-            }
-            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 addEvent(ChartClass, 'destroy', onChartDestroy);
                 addEvent(ChartClass, 'getMargins', onChartGetMargins);
                 addEvent(ChartClass, 'render', onChartRender);
                 addEvent(ChartClass, 'update', onChartUpdate);
-                const chartProto = ChartClass.prototype;
                 chartProto.callbacks.push(onChartCallback);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
                 extend(defaultOptions.lang, RangeSelectorDefaults.lang);
             }
@@ -9618,7 +9476,7 @@
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/RangeSelector/RangeSelectorComposition.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, D, H, RangeSelectorComposition, SVGElement, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -9689,15 +9547,8 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.buttons = void 0;
                 this.buttonOptions = RangeSelector.prototype.defaultButtons;
                 this.initialButtonGroupWidth = 0;
-                this.options = void 0;
                 this.chart = chart;
                 this.init(chart);
             }
@@ -9911,7 +9762,7 @@
                 const rangeSelector = this, chart = this.chart, dropdown = this.dropdown, baseAxis = chart.xAxis[0], actualRange = Math.round(baseAxis.max - baseAxis.min), hasNoData = !baseAxis.hasVisibleSeries, day = 24 * 36e5, // A single day in milliseconds
                 unionExtremes = (chart.scroller &&
                     chart.scroller.getUnionExtremes()) || baseAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax, ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, chart.time.useUTC), ytdMin = ytdExtremes.min, ytdMax = ytdExtremes.max, selected = rangeSelector.selected, allButtonsEnabled = rangeSelector.options.allButtonsEnabled, buttons = rangeSelector.buttons;
-                let selectedExists = isNumber(selected);
+                let selectedExists = isNumber(selected), isSelectedTooGreat = false;
                 rangeSelector.buttonOptions.forEach((rangeOptions, i) => {
                     const range = rangeOptions._range, type = rangeOptions.type, count = rangeOptions.count || 1, button = buttons[i], offsetRange = rangeOptions._offsetMax -
                         rangeOptions._offsetMin, isSelected = i === selected, 
@@ -9927,6 +9778,9 @@
                     isYTDButNotSelected = false, 
                     // Disable the All button if we're already showing all
                     isAllButAlreadyShowingAll = false, isSameRange = range === actualRange;
+                    if (isSelected && isTooGreatRange) {
+                        isSelectedTooGreat = true;
+                    }
                     // Months and years have a variable range so we check the extremes
                     if ((type === 'month' || type === 'year') &&
                         (actualRange + 36e5 >=
@@ -9951,11 +9805,13 @@
                     // It can be seen in the intraday demos when selecting 1h and scroll
                     // across the night gap.
                     const disable = (!allButtonsEnabled &&
+                        !(isSelectedTooGreat && type === 'all') &&
                         (isTooGreatRange ||
                             isTooSmallRange ||
                             isAllButAlreadyShowingAll ||
                             hasNoData));
-                    const select = ((isSelected && isSameRange) ||
+                    const select = ((isSelectedTooGreat && type === 'all') ||
+                        (isSelected && isSameRange) ||
                         (isSameRange && !selectedExists && !isYTDButNotSelected) ||
                         (isSelected && rangeSelector.frozenStates));
                     if (disable) {
@@ -9977,6 +9833,10 @@
                         // Reset (#9209)
                         if (state === 0 && selected === i) {
                             rangeSelector.setSelected();
+                        }
+                        else if ((state === 2 && !defined(selected)) ||
+                            isSelectedTooGreat) {
+                            rangeSelector.setSelected(i);
                         }
                     }
                 });
@@ -10829,6 +10689,11 @@
              */
             collapseButtons(xOffsetForExportButton) {
                 const { buttons, buttonOptions, chart, dropdown, options, zoomText } = this;
+                // If the buttons are already collapsed do nothing.
+                if (this.isCollapsed === true) {
+                    return;
+                }
+                this.isCollapsed = true;
                 const userButtonTheme = (chart.userOptions.rangeSelector &&
                     chart.userOptions.rangeSelector.buttonTheme) || {};
                 const getAttribs = (text) => ({
@@ -10875,6 +10740,11 @@
             expandButtons() {
                 const { buttons, buttonOptions, options, zoomText } = this;
                 this.hideDropdown();
+                // If buttons are already not collapsed, do nothing.
+                if (this.isCollapsed === false) {
+                    return;
+                }
+                this.isCollapsed = false;
                 if (zoomText) {
                     zoomText.show();
                 }
@@ -11120,10 +10990,10 @@
 
         return RangeSelector;
     });
-    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Stock/RangeSelector/RangeSelector.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (RangeSelector, AccessibilityComponent, ChartUtilities, Announcer, KeyboardNavigationHandler, U) {
+    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Stock/RangeSelector/RangeSelector.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, Announcer, ChartUtilities, H, KeyboardNavigationHandler, RangeSelector, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for the range selector.
          *
@@ -11133,13 +11003,13 @@
          *
          * */
         const { unhideChartElementFromAT, getAxisRangeDescription } = ChartUtilities;
-        const { addEvent, attr } = U;
+        const { composed } = H;
+        const { addEvent, attr, pushUnique } = U;
         /* *
          *
          *  Functions
          *
          * */
-        /* eslint-disable valid-jsdoc */
         /**
          * Do we want date input navigation
          * @private
@@ -11165,15 +11035,6 @@
          * @name Highcharts.RangeSelectorComponent
          */
         class RangeSelectorComponent extends AccessibilityComponent {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.announcer = void 0;
-            }
             /* *
              *
              *  Functions
@@ -11535,16 +11396,9 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Highlight range selector button by index.
              *
@@ -11581,11 +11435,9 @@
              * @private
              */
             function compose(ChartClass, RangeSelectorClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.highlightRangeSelectorButton = (chartHighlightRangeSelectorButton);
-                }
-                if (U.pushUnique(composedMembers, RangeSelectorClass)) {
                     addEvent(RangeSelector, 'afterBtnClick', rangeSelectorAfterBtnClick);
                 }
             }
@@ -11610,10 +11462,10 @@
 
         return RangeSelectorComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/ForcedMarkers.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/ForcedMarkers.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Handle forcing series markers.
          *
@@ -11622,7 +11474,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, merge } = U;
+        const { composed } = H;
+        const { addEvent, merge, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -11637,21 +11490,14 @@
              * */
             /* *
              *
-             *  Compositions
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, compose)) {
                     addEvent(SeriesClass, 'afterSetOptions', seriesOnAfterSetOptions);
                     addEvent(SeriesClass, 'render', seriesOnRender);
                     addEvent(SeriesClass, 'afterRender', seriesOnAfterRender);
@@ -11836,7 +11682,7 @@
     _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesKeyboardNavigation.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/ChartUtilities.js']], function (Point, Series, SeriesRegistry, H, U, KeyboardNavigationHandler, EventProvider, ChartUtilities) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Handle keyboard navigation for series.
          *
@@ -11846,8 +11692,8 @@
          *
          * */
         const { seriesTypes } = SeriesRegistry;
-        const { doc } = H;
-        const { defined, fireEvent } = U;
+        const { composed, doc } = H;
+        const { defined, fireEvent, pushUnique } = U;
         const { getPointFromXY, getSeriesFromName, scrollAxisToPoint } = ChartUtilities;
         /* *
          *
@@ -12242,12 +12088,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -12400,18 +12240,12 @@
              * @private
              */
             function compose(ChartClass, PointClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    const chartProto = ChartClass.prototype;
+                if (pushUnique(composed, compose)) {
+                    const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
                     chartProto.highlightAdjacentPoint = chartHighlightAdjacentPoint;
                     chartProto.highlightAdjacentPointVertical = (chartHighlightAdjacentPointVertical);
                     chartProto.highlightAdjacentSeries = chartHighlightAdjacentSeries;
-                }
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
                     pointProto.highlight = pointHighlight;
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
                     /**
                      * Set for which series types it makes sense to move to the closest
                      * point with up/down arrows, and which series types should just
@@ -12543,7 +12377,7 @@
     _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Components/SeriesComponent/ForcedMarkers.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/Components/SeriesComponent/SeriesDescriber.js'], _modules['Accessibility/Components/SeriesComponent/SeriesKeyboardNavigation.js']], function (AccessibilityComponent, ChartUtilities, ForcedMarkers, NewDataAnnouncer, SeriesDescriber, SeriesKeyboardNavigation) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for series and points.
          *
@@ -12633,7 +12467,7 @@
                 chart.series.forEach(function (series) {
                     const shouldDescribeSeries = (series.options.accessibility &&
                         series.options.accessibility.enabled) !== false &&
-                        series.visible;
+                        series.visible && series.data.length !== 0;
                     if (shouldDescribeSeries) {
                         describeSeries(series);
                     }
@@ -12669,7 +12503,7 @@
     _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, CU, HU, KeyboardNavigationHandler, U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility component for chart zoom.
          *
@@ -12980,7 +12814,7 @@
     _registerModule(_modules, 'Accessibility/HighContrastMode.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Handling for Windows High Contrast Mode.
          *
@@ -13077,7 +12911,7 @@
     _registerModule(_modules, 'Accessibility/HighContrastTheme.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Default theme for Windows High Contrast Mode.
          *
@@ -13295,7 +13129,7 @@
     _registerModule(_modules, 'Accessibility/Options/A11yDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Default options for accessibility.
          *
@@ -14243,7 +14077,7 @@
     _registerModule(_modules, 'Accessibility/Options/LangDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Default lang/i18n options for accessibility.
          *
@@ -14685,7 +14519,7 @@
     _registerModule(_modules, 'Accessibility/Options/DeprecatedOptions.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Default options for accessibility.
          *
@@ -14940,10 +14774,10 @@
 
         return copyDeprecatedOptions;
     });
-    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/FocusBorder.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/NavigatorComponent.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/ProxyProvider.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/A11yDefaults.js'], _modules['Accessibility/Options/LangDefaults.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (D, H, U, HU, A11yI18n, ContainerComponent, FocusBorder, InfoRegionsComponent, KeyboardNavigation, LegendComponent, MenuComponent, NavigatorComponent, NewDataAnnouncer, ProxyProvider, RangeSelectorComponent, SeriesComponent, ZoomComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
+    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/FocusBorder.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/NavigatorComponent.js'], _modules['Accessibility/Components/SeriesComponent/NewDataAnnouncer.js'], _modules['Accessibility/ProxyProvider.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/A11yDefaults.js'], _modules['Accessibility/Options/LangDefaults.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (D, H, U, HU, A11yI18n, ContainerComponent, FocusBorderComposition, InfoRegionsComponent, KeyboardNavigation, LegendComponent, MenuComponent, NavigatorComponent, NewDataAnnouncer, ProxyProvider, RangeSelectorComponent, SeriesComponent, ZoomComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
         /* *
          *
-         *  (c) 2009-2021 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Accessibility module for Highcharts
          *
@@ -14953,8 +14787,8 @@
          *
          * */
         const { defaultOptions } = D;
-        const { doc } = H;
-        const { addEvent, extend, fireEvent, merge } = U;
+        const { composed, doc } = H;
+        const { addEvent, extend, fireEvent, merge, pushUnique } = U;
         const { removeElement } = HU;
         /* *
          *
@@ -14980,15 +14814,6 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.components = void 0;
-                this.keyboardNavigation = void 0;
-                this.proxyProvider = void 0;
                 this.init(chart);
             }
             /* *
@@ -14996,7 +14821,6 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Initialize the accessibility class
              * @private
@@ -15153,14 +14977,12 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             Accessibility.i18nFormat = A11yI18n.i18nFormat;
             /* *
              *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Destroy with chart.
              * @private
@@ -15252,12 +15074,12 @@
                 MenuComponent.compose(ChartClass);
                 SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
                 A11yI18n.compose(ChartClass);
-                FocusBorder.compose(ChartClass, SVGElementClass);
+                FocusBorderComposition.compose(ChartClass, SVGElementClass);
                 // RangeSelector
                 if (RangeSelectorClass) {
                     RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
                 }
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const chartProto = ChartClass.prototype;
                     chartProto.updateA11yEnabled = chartUpdateA11yEnabled;
                     addEvent(ChartClass, 'destroy', chartOnDestroy);
@@ -15278,11 +15100,7 @@
                             }
                         });
                     });
-                }
-                if (U.pushUnique(composedMembers, PointClass)) {
                     addEvent(PointClass, 'update', pointOnUpdate);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
                     // Mark dirty for update
                     ['update', 'updatedData', 'remove'].forEach((event) => {
                         addEvent(SeriesClass, event, function () {

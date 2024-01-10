@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -16,18 +16,6 @@ const { seriesTypes: { hlc: HLCSeries } } = SeriesRegistry;
  *
  * */
 class OHLCPoint extends HLCSeries.prototype.pointClass {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.open = void 0;
-        this.options = void 0;
-        this.plotOpen = void 0;
-        this.series = void 0;
-    }
     /* *
      *
      *  Functions
@@ -63,7 +51,9 @@ class OHLCPoint extends HLCSeries.prototype.pointClass {
      */
     resolveColor() {
         super.resolveColor();
-        this.resolveUpColor();
+        if (!this.series.is('heikinashi')) {
+            this.resolveUpColor();
+        }
     }
     /**
      * Extend the parent method by saving upColor.

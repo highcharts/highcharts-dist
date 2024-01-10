@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -36,9 +36,9 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
-         * (c) 2009-2021 Sebastian Bochann
+         * (c) 2009-2024 Sebastian Bochann
          *
          * Price indicator for Highcharts
          *
@@ -46,13 +46,8 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          */
+        const { composed } = H;
         const { addEvent, isArray, merge, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Composition
@@ -60,7 +55,7 @@
          * */
         /** @private */
         function compose(SeriesClass) {
-            if (pushUnique(composedMembers, SeriesClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
             }
         }

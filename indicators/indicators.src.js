@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Pawel Fus, Sebastian Bochan
+ * (c) 2010-2024 Pawel Fus, Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -56,24 +56,6 @@
          * @private
          */
         class SMAIndicator extends LineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.dataEventsToUnbind = void 0;
-                this.linkedParent = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -287,6 +269,11 @@
                 return;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * The parameter allows setting line series type and use OHLC indicators.
          * Data in OHLC format is required.
@@ -426,22 +413,6 @@
          * @augments Highcharts.Series
          */
         class EMAIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -494,6 +465,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Exponential moving average indicator (EMA). This series requires the
          * `linkedTo` option to be set.

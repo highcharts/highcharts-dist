@@ -147,17 +147,6 @@ class Pathfinder {
      *
      * */
     constructor(chart) {
-        /* *
-         *
-         * Properties
-         *
-         * */
-        this.chart = void 0;
-        this.chartObstacles = void 0;
-        this.chartObstacleMetrics = void 0;
-        this.connections = void 0;
-        this.group = void 0;
-        this.lineObstacles = void 0;
         this.init(chart);
     }
     /* *

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Torstein Honsi
+ *  (c) 2009-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,9 +8,11 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import StackItem from './Stacking/StackItem.js';
 import U from '../Utilities.js';
-const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
+const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -29,29 +31,20 @@ var BrokenAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Adds support for broken axes.
      * @private
      */
     function compose(AxisClass, SeriesClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, compose)) {
             AxisClass.keepProps.push('brokenAxis');
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
             addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
             const seriesProto = SeriesClass.prototype;
             seriesProto.drawBreaks = seriesDrawBreaks;
             seriesProto.gappedPath = seriesGappedPath;

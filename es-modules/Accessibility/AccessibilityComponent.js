@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility component class definition
  *
@@ -40,24 +40,11 @@ const { extend } = U;
  * @name Highcharts.AccessibilityComponent
  */
 class AccessibilityComponent {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.domElementProvider = void 0;
-        this.eventProvider = void 0;
-        this.keyCodes = void 0;
-        this.proxyProvider = void 0;
-    }
     /* *
      *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Initialize the class
      * @private

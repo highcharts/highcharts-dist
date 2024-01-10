@@ -42,16 +42,6 @@ const deg2rad = H.deg2rad, max = Math.max, min = Math.min;
  */
 class Connection {
     constructor(from, to, options) {
-        /* *
-        *
-        * Properties
-        *
-        * */
-        this.chart = void 0;
-        this.fromPoint = void 0;
-        this.graphics = void 0;
-        this.pathfinder = void 0;
-        this.toPoint = void 0;
         this.init(from, to, options);
     }
     /**
@@ -90,8 +80,8 @@ class Connection {
      * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
      *        Animation options for the rendering.
      */
-    renderPath(path, attribs, animation) {
-        const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, anim = {};
+    renderPath(path, attribs) {
+        const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = this.pathfinder, anim = {};
         let pathGraphic = connection.graphics && connection.graphics.path;
         // Add the SVG element of the pathfinder group if it doesn't exist
         if (!pathfinder.group) {
@@ -120,7 +110,7 @@ class Connection {
         if (!styledMode) {
             anim.opacity = 1;
         }
-        pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
+        pathGraphic.animate(anim);
         // Store reference on connection
         this.graphics = this.graphics || {};
         this.graphics.path = pathGraphic;
@@ -307,7 +297,7 @@ class Connection {
                 pathfinder.lineObstacles.concat(pathResult.obstacles);
         }
         // Add the calculated path to the pathfinder group
-        connection.renderPath(path, attribs, series.options.animation);
+        connection.renderPath(path, attribs);
         // Render the markers
         connection.addMarker('start', merge(options.marker, options.startMarker), path);
         connection.addMarker('end', merge(options.marker, options.endMarker), path);

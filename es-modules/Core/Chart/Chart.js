@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -27,7 +27,8 @@ import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import Time from '../Time.js';
 import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
-const { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
+import Tick from '../Axis/Tick.js';
+const { addEvent, attr, createElement, clamp, css, defined, diffObjects, discardElement, erase, error, extend, find, fireEvent, getStyle, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout, uniqueKey } = U;
 /* *
  *
  *  Class
@@ -98,71 +99,22 @@ class Chart {
         return new Chart(a, b, c);
     }
     constructor(a, b, c) {
-        this.axes = void 0;
-        this.axisOffset = void 0;
-        this.bounds = void 0;
-        this.chartHeight = void 0;
-        this.chartWidth = void 0;
-        this.clipBox = void 0;
-        this.colorCounter = void 0;
-        this.container = void 0;
-        this.eventOptions = void 0;
-        this.index = void 0;
-        this.isResizing = void 0;
-        this.labelCollectors = void 0;
-        this.margin = void 0;
-        this.numberFormatter = void 0;
-        this.options = void 0;
-        this.plotBox = void 0;
-        this.plotHeight = void 0;
-        this.plotLeft = void 0;
-        this.plotTop = void 0;
-        this.plotWidth = void 0;
-        this.pointCount = void 0;
-        this.pointer = void 0;
-        this.renderer = void 0;
-        this.renderTo = void 0;
-        this.series = void 0;
         this.sharedClips = {};
-        this.spacing = void 0;
-        this.spacingBox = void 0;
-        this.symbolCounter = void 0;
-        this.time = void 0;
-        this.titleOffset = void 0;
-        this.userOptions = void 0;
-        this.xAxis = void 0;
-        this.yAxis = void 0;
-        this.zooming = void 0;
-        this.getArgs(a, b, c);
+        const args = [
+            // ES5 builds fail unless we cast it to an Array
+            ...arguments
+        ];
+        // Remove the optional first argument, renderTo, and set it on this.
+        if (isString(a) || a.nodeName) {
+            this.renderTo = args.shift();
+        }
+        this.init(args[0], args[1]);
     }
     /* *
      *
      *  Functions
      *
      * */
-    /**
-     * Handle the arguments passed to the constructor.
-     *
-     * @private
-     * @function Highcharts.Chart#getArgs
-     *
-     * @param {...Array<*>} arguments
-     * All arguments for the constructor.
-     *
-     * @emits Highcharts.Chart#event:init
-     * @emits Highcharts.Chart#event:afterInit
-     */
-    getArgs(a, b, c) {
-        // Remove the optional first argument, renderTo, and
-        // set it on this.
-        if (isString(a) || a.nodeName) {
-            this.renderTo = a;
-            this.init(b, c);
-        }
-        else {
-            this.init(a, b);
-        }
-    }
     /**
      * Function setting zoom options after chart init and after chart update.
      * Offers support for deprecated options.
@@ -348,9 +300,9 @@ class Chart {
      * Internal function to set data for all series with enabled sorting.
      *
      * @private
-     * @function Highcharts.Chart#setSeriesData
+     * @function Highcharts.Chart#setSortedData
      */
-    setSeriesData() {
+    setSortedData() {
         this.getSeriesOrderByLinks().forEach(function (series) {
             // We need to set data for series with sorting after series init
             if (!series.points && !series.data && series.enabledDataSorting) {
@@ -674,7 +626,7 @@ class Chart {
      * @emits Highcharts.Chart#event:getAxes
      */
     getAxes() {
-        const options = this.options;
+        const options = this.userOptions;
         fireEvent(this, 'getAxes');
         for (const coll of ['xAxis', 'yAxis']) {
             const arr = options[coll] = splat(options[coll] || {});
@@ -693,6 +645,10 @@ class Chart {
      *
      * @sample highcharts/plotoptions/series-allowpointselect-line/
      *         Get selected points
+     * @sample highcharts/members/point-select-lasso/
+     *         Lasso selection
+     * @sample highcharts/chart/events-selection-points/
+     *         Rectangle selection
      *
      * @function Highcharts.Chart#getSelectedPoints
      *
@@ -1296,7 +1252,7 @@ class Chart {
         const chart = this, renderer = chart.renderer;
         // Handle the isResizing counter
         chart.isResizing += 1;
-        // set the animation for the current process
+        // Set the animation for the current process
         setAnimation(animation, chart);
         const globalAnimation = renderer.globalAnimation;
         chart.oldChartHeight = chart.chartHeight;
@@ -1308,38 +1264,44 @@ class Chart {
             chart.options.chart.height = height;
         }
         chart.getChartSize();
-        // Resize the container with the global animation applied if enabled
-        // (#2503)
-        if (!chart.styledMode) {
-            (globalAnimation ? animate : css)(chart.container, {
-                width: chart.chartWidth + 'px',
-                height: chart.chartHeight + 'px'
-            }, globalAnimation);
-        }
-        chart.setChartSize(true);
-        renderer.setSize(chart.chartWidth, chart.chartHeight, globalAnimation);
-        // handle axes
-        chart.axes.forEach(function (axis) {
-            axis.isDirty = true;
-            axis.setScale();
-        });
-        chart.isDirtyLegend = true; // force legend redraw
-        chart.isDirtyBox = true; // force redraw of plot and chart border
-        chart.layOutTitles(); // #2857
-        chart.getMargins();
-        chart.redraw(globalAnimation);
-        chart.oldChartHeight = null;
-        fireEvent(chart, 'resize');
-        // Fire endResize and set isResizing back. If animation is disabled,
-        // fire without delay, but in a new thread to avoid triggering the
-        // resize observer (#19027).
-        setTimeout(() => {
-            if (chart) {
-                fireEvent(chart, 'endResize', void 0, () => {
-                    chart.isResizing -= 1;
-                });
+        const { chartWidth, chartHeight, scrollablePixelsX = 0, scrollablePixelsY = 0 } = chart;
+        // Avoid expensive redrawing if the computed size didn't change
+        if (chart.isDirtyBox ||
+            chartWidth !== chart.oldChartWidth ||
+            chartHeight !== chart.oldChartHeight) {
+            // Resize the container with the global animation applied if enabled
+            // (#2503)
+            if (!chart.styledMode) {
+                (globalAnimation ? animate : css)(chart.container, {
+                    width: `${chartWidth + scrollablePixelsX}px`,
+                    height: `${chartHeight + scrollablePixelsY}px`
+                }, globalAnimation);
             }
-        }, animObject(globalAnimation).duration);
+            chart.setChartSize(true);
+            renderer.setSize(chartWidth, chartHeight, globalAnimation);
+            // Handle axes
+            chart.axes.forEach(function (axis) {
+                axis.isDirty = true;
+                axis.setScale();
+            });
+            chart.isDirtyLegend = true; // Force legend redraw
+            chart.isDirtyBox = true; // Force redraw of plot and chart border
+            chart.layOutTitles(); // #2857
+            chart.getMargins();
+            chart.redraw(globalAnimation);
+            chart.oldChartHeight = void 0;
+            fireEvent(chart, 'resize');
+            // Fire endResize and set isResizing back. If animation is disabled,
+            // fire without delay, but in a new thread to avoid triggering the
+            // resize observer (#19027).
+            setTimeout(() => {
+                if (chart) {
+                    fireEvent(chart, 'endResize', void 0, () => {
+                        chart.isResizing -= 1;
+                    });
+                }
+            }, animObject(globalAnimation).duration);
+        }
     }
     /**
      * Set the public chart properties. This is done before and after the
@@ -1612,22 +1574,33 @@ class Chart {
         });
         // Apply new links
         chartSeries.forEach(function (series) {
-            let linkedTo = series.options.linkedTo;
+            const { linkedTo } = series.options;
             if (isString(linkedTo)) {
+                let linkedParent;
                 if (linkedTo === ':previous') {
-                    linkedTo = chart.series[series.index - 1];
+                    linkedParent = chart.series[series.index - 1];
                 }
                 else {
-                    linkedTo = chart.get(linkedTo);
+                    linkedParent = chart.get(linkedTo);
                 }
                 // #3341 avoid mutual linking
-                if (linkedTo && linkedTo.linkedParent !== series) {
-                    linkedTo.linkedSeries.push(series);
-                    series.linkedParent = linkedTo;
-                    if (linkedTo.enabledDataSorting) {
+                if (linkedParent &&
+                    linkedParent.linkedParent !== series) {
+                    linkedParent.linkedSeries.push(series);
+                    /**
+                     * The parent series of the current series, if the current
+                     * series has a [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
+                     * setting.
+                     *
+                     * @name Highcharts.Series#linkedParent
+                     * @type {Highcharts.Series}
+                     * @readonly
+                     */
+                    series.linkedParent = linkedParent;
+                    if (linkedParent.enabledDataSorting) {
                         series.setDataSortingOptions();
                     }
-                    series.visible = pick(series.options.visible, linkedTo.options.visible, series.visible); // #3879
+                    series.visible = pick(series.options.visible, linkedParent.options.visible, series.visible); // #3879
                 }
             }
         });
@@ -1652,60 +1625,79 @@ class Chart {
      * @function Highcharts.Chart#render
      */
     render() {
-        const chart = this, axes = chart.axes, colorAxis = chart.colorAxis, renderer = chart.renderer, renderAxes = function (axes) {
-            axes.forEach(function (axis) {
+        const chart = this, axes = chart.axes, colorAxis = chart.colorAxis, renderer = chart.renderer, axisLayoutRuns = chart.options.chart.axisLayoutRuns || 2, renderAxes = (axes) => {
+            axes.forEach((axis) => {
                 if (axis.visible) {
                     axis.render();
                 }
             });
         };
-        let correction = 0; // correction for X axis labels
+        let expectedSpace = 0, // Correction for X axis labels
+        // If the plot area size has changed significantly, calculate tick
+        // positions again
+        redoHorizontal = true, redoVertical, run = 0;
         // Title
         chart.setTitle();
         // Fire an event before the margins are computed. This is where the
         // legend is assigned.
         fireEvent(chart, 'beforeMargins');
         // Get stacks
-        if (chart.getStacks) {
-            chart.getStacks();
-        }
+        chart.getStacks?.();
         // Get chart margins
         chart.getMargins(true);
         chart.setChartSize();
-        // Record preliminary dimensions for later comparison
-        const tempWidth = chart.plotWidth;
-        axes.some(function (axis) {
+        for (const axis of axes) {
+            const { options } = axis, { labels } = options;
             if (axis.horiz &&
                 axis.visible &&
-                axis.options.labels.enabled &&
-                axis.series.length) {
-                // 21 is the most common correction for X axis labels
-                correction = 21;
-                return true;
+                labels.enabled &&
+                axis.series.length &&
+                axis.coll !== 'colorAxis' &&
+                !chart.polar) {
+                expectedSpace = options.tickLength;
+                axis.createGroups();
+                // Calculate extecped space based on dummy tick
+                const mockTick = new Tick(axis, 0, '', true), label = mockTick.createLabel('x', labels);
+                mockTick.destroy();
+                if (label &&
+                    pick(labels.reserveSpace, !isNumber(options.crossing))) {
+                    expectedSpace = label.getBBox().height +
+                        labels.distance +
+                        Math.max(options.offset || 0, 0);
+                }
+                if (expectedSpace) {
+                    label?.destroy();
+                    break;
+                }
             }
-        });
-        // use Math.max to prevent negative plotHeight
-        chart.plotHeight = Math.max(chart.plotHeight - correction, 0);
-        const tempHeight = chart.plotHeight;
-        // Get margins by pre-rendering axes
-        axes.forEach(function (axis) {
-            axis.setScale();
-        });
-        chart.getAxisMargins();
-        // If the plot area size has changed significantly, calculate tick
-        // positions again
-        const redoHorizontal = tempWidth / chart.plotWidth > 1.1;
-        // Height is more sensitive, use lower threshold
-        const redoVertical = tempHeight / chart.plotHeight > 1.05;
-        if (redoHorizontal || redoVertical) {
-            axes.forEach(function (axis) {
-                if ((axis.horiz && redoHorizontal) ||
+        }
+        // Use Math.max to prevent negative plotHeight
+        chart.plotHeight = Math.max(chart.plotHeight - expectedSpace, 0);
+        while ((redoHorizontal || redoVertical || axisLayoutRuns > 1) &&
+            run < axisLayoutRuns // #19794
+        ) {
+            const tempWidth = chart.plotWidth, tempHeight = chart.plotHeight;
+            for (const axis of axes) {
+                if (run === 0) {
+                    // Get margins by pre-rendering axes
+                    axis.setScale();
+                }
+                else if ((axis.horiz && redoHorizontal) ||
                     (!axis.horiz && redoVertical)) {
-                    // update to reflect the new margins
+                    // Update to reflect the new margins
                     axis.setTickInterval(true);
                 }
-            });
-            chart.getMargins(); // second pass to check for new labels
+            }
+            if (run === 0) {
+                chart.getAxisMargins();
+            }
+            else {
+                // Check again for new, rotated or moved labels
+                chart.getMargins();
+            }
+            redoHorizontal = (tempWidth / chart.plotWidth) > (run ? 1 : 1.1);
+            redoVertical = (tempHeight / chart.plotHeight) > (run ? 1 : 1.05);
+            run++;
         }
         // Draw the borders and backgrounds
         chart.drawChartBox();
@@ -1876,7 +1868,7 @@ class Chart {
             chart.initSeries(serieOptions);
         });
         chart.linkSeries();
-        chart.setSeriesData();
+        chart.setSortedData();
         // Run an event after axes and series are initialized, but before
         // render. At this stage, the series data is indexed and cached in the
         // xData and yData arrays, so we can access those before rendering. Used
@@ -2283,10 +2275,8 @@ class Chart {
                 }
                 // Chart setSize
                 if (chart.propsRequireReflow.indexOf(key) !== -1) {
-                    if (isResponsiveOptions) {
-                        chart.isDirtyBox = true;
-                    }
-                    else {
+                    chart.isDirtyBox = true;
+                    if (!isResponsiveOptions) {
                         runSetSize = true;
                     }
                 }

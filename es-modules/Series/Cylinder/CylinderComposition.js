@@ -2,7 +2,7 @@
  *
  *  Highcharts cylinder - a 3D series
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -13,7 +13,7 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { charts, deg2rad } = H;
+const { charts, composed, deg2rad } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SVGElement3DCylinder from './SVGElement3DCylinder.js';
@@ -21,17 +21,11 @@ import U from '../../Core/Utilities.js';
 const { extend, pick, pushUnique } = U;
 /* *
  *
- *  Constants
- *
- * */
-const composedMembers = [];
-/* *
- *
  *  Functions
  *
  * */
 function compose(SVGRendererClass) {
-    if (pushUnique(composedMembers, SVGRendererClass)) {
+    if (pushUnique(composed, compose)) {
         const rendererProto = SVGRendererClass.prototype;
         rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
         extend(rendererProto, {

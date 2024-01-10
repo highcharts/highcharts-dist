@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * X-range series
  *
- * (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -121,7 +121,10 @@
                     }
                 },
                 inside: true,
-                verticalAlign: 'middle'
+                verticalAlign: 'middle',
+                style: {
+                    whiteSpace: 'nowrap'
+                }
             },
             tooltip: {
                 headerFormat: '<span style="font-size: 0.8em">{point.x} - {point.x2}</span><br/>',
@@ -252,7 +255,7 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -267,21 +270,11 @@
          *
          * */
         class XRangePoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
-                this.series = void 0;
-            }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
             /**
              * Return color of a point based on its category.
              *
@@ -334,12 +327,11 @@
              *
              * @private
              */
-            init() {
-                super.init.apply(this, arguments);
+            constructor(series, options) {
+                super(series, options);
                 if (!this.y) {
                     this.y = 0;
                 }
-                return this;
             }
             /**
              * @private
@@ -416,23 +408,17 @@
          *
          *  X-range series module
          *
-         *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { noop } = H;
+        const { composed, noop } = H;
         const { parse: color } = Color;
         const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, relativeLength } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, clamp, defined, extend, find, isNumber, isObject, merge, pick, pushUnique, relativeLength } = U;
         /* *
          *
          *  Functions
@@ -474,40 +460,13 @@
          * @augments Highcharts.Series
          */
         class XRangeSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                /*
-                // Override to remove stroke from points. For partial fill.
-                pointAttribs: function () {
-                    let series = this,
-                        retVal = columnType.prototype.pointAttribs
-                            .apply(series, arguments);
-    
-                    //retVal['stroke-width'] = 0;
-                    return retVal;
-                }
-                //*/
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(AxisClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(AxisClass, 'afterGetSeriesExtremes', onAxisAfterGetSeriesExtremes);
                 }
             }
@@ -592,6 +551,11 @@
             alignDataLabel(point) {
                 const oldPlotX = point.plotX;
                 point.plotX = pick(point.dlBox && point.dlBox.centerX, point.plotX);
+                if (point.dataLabel && point.shapeArgs?.width) {
+                    point.dataLabel.css({
+                        width: `${point.shapeArgs.width}px`
+                    });
+                }
                 super.alignDataLabel.apply(this, arguments);
                 point.plotX = oldPlotX;
             }
@@ -825,6 +789,11 @@
                 return isInside;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
         extend(XRangeSeries.prototype, {
             pointClass: XRangePoint,

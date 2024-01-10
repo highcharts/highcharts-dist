@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,8 +10,10 @@
 'use strict';
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
+import H from '../../Globals.js';
+const { composed } = H;
 import U from '../../Utilities.js';
-const { addEvent, extend, merge, pick, splat } = U;
+const { addEvent, extend, merge, pick, pushUnique, splat } = U;
 /* *
  *
  *  Composition
@@ -26,12 +28,6 @@ var ColorAxisComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Variables
      *
      * */
@@ -41,39 +37,29 @@ var ColorAxisComposition;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
-        if (!ColorAxisConstructor) {
+        if (pushUnique(composed, compose)) {
             ColorAxisConstructor = ColorAxisClass;
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+            const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
             chartProto.collectionsWithUpdate.push('colorAxis');
             chartProto.collectionsWithInit.colorAxis = [
                 chartProto.addColorAxis
             ];
             addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
             wrapChartCreateAxis(ChartClass);
-        }
-        if (U.pushUnique(composedMembers, FxClass)) {
-            const fxProto = FxClass.prototype;
             fxProto.fillSetter = wrapFxFillSetter;
             fxProto.strokeSetter = wrapFxStrokeSetter;
-        }
-        if (U.pushUnique(composedMembers, LegendClass)) {
             addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
             addEvent(LegendClass, 'afterColorizeItem', onLegendAfterColorizeItem);
             addEvent(LegendClass, 'afterUpdate', onLegendAfterUpdate);
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            extend(SeriesClass.prototype, {
+            extend(seriesProto, {
                 optionalAxis: 'colorAxis',
                 translateColors: seriesTranslateColors
             });
-            extend(SeriesClass.prototype.pointClass.prototype, {
+            extend(seriesProto.pointClass.prototype, {
                 setVisible: pointSetVisible
             });
             addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
@@ -86,11 +72,13 @@ var ColorAxisComposition;
      * @private
      */
     function onChartAfterGetAxes() {
-        const options = this.options;
+        const { userOptions } = this;
         this.colorAxis = [];
-        if (options.colorAxis) {
-            options.colorAxis = splat(options.colorAxis);
-            options.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
+        // If a `colorAxis` config is present in the user options (not in a
+        // theme), instanciate it.
+        if (userOptions.colorAxis) {
+            userOptions.colorAxis = splat(userOptions.colorAxis);
+            userOptions.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
         }
     }
     /**

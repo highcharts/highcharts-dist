@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -37,19 +37,11 @@ class MapBubbleSeries extends BubbleSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.clearBounds = mapProto.clearBounds;
     }
     searchPoint(e, compareX) {
         return this.searchKDTree({
-            clientX: e.chartX - this.chart.plotLeft,
+            plotX: e.chartX - this.chart.plotLeft,
             plotY: e.chartY - this.chart.plotTop
         }, compareX, e);
     }
@@ -254,6 +246,7 @@ extend(MapBubbleSeries.prototype, {
     pointClass: MapBubblePoint,
     processData: mapProto.processData,
     projectPoint: mapPointProto.projectPoint,
+    kdAxisArray: ['plotX', 'plotY'],
     setData: mapProto.setData,
     setOptions: mapProto.setOptions,
     updateData: mapProto.updateData,

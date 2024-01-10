@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan
+ *  (c) 2010-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -29,22 +29,6 @@ const { correctFloat, merge, extend } = U;
  * @augments Highcharts.Series
  */
 class ParetoSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -106,6 +90,11 @@ class ParetoSeries extends LineSeries {
         this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ParetoSeries.defaultOptions = merge(LineSeries.defaultOptions, ParetoSeriesDefaults);
 extend(ParetoSeries.prototype, {
     hasDerivedData: DerivedComposition.hasDerivedData

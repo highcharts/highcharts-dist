@@ -24,7 +24,6 @@ class Controllable {
      *
      * */
     constructor(annotation, options, index, itemType) {
-        this.graphic = void 0;
         this.annotation = annotation;
         this.chart = annotation.chart;
         this.collection = (itemType === 'label' ? 'labels' : 'shapes');

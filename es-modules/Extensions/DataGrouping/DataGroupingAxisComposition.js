@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,14 +9,10 @@
  * */
 'use strict';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, extend, merge, pick, pushUnique } = U;
 /* *
  *
  *  Variables
@@ -58,7 +54,7 @@ function applyGrouping(e) {
  */
 function compose(AxisClass) {
     AxisConstructor = AxisClass;
-    if (U.pushUnique(composedMembers, AxisClass)) {
+    if (pushUnique(composed, compose)) {
         addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
         // When all series are processed, calculate the group pixel width and
         // then if this value is different than zero apply groupings.

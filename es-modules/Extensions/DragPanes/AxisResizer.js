@@ -2,7 +2,7 @@
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2023 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -39,15 +39,6 @@ class AxisResizer {
      *
      * */
     constructor(axis) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.axis = void 0;
-        this.controlLine = void 0;
-        this.lastPos = void 0;
-        this.options = void 0;
         this.init(axis);
     }
     /* *

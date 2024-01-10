@@ -25,22 +25,6 @@ const { isNumber, error, extend, merge } = U;
  * @augments Highcharts.Series
  */
 class OBVIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -94,6 +78,11 @@ class OBVIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * On-Balance Volume (OBV) technical indicator. This series
  * requires the `linkedTo` option to be set and should be loaded after

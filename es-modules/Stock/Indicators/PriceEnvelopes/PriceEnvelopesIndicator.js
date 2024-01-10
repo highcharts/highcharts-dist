@@ -26,22 +26,6 @@ const { extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class PriceEnvelopesIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -98,6 +82,11 @@ class PriceEnvelopesIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Price envelopes indicator based on [SMA](#plotOptions.sma) calculations.
  * This series requires the `linkedTo` option to be set and should be loaded

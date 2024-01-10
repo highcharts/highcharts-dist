@@ -1,11 +1,11 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
  * Data grouping module
  *
- * (c) 2010-2021 Torstein Hønsi
+ * (c) 2010-2024 Torstein Hønsi
  *
  * License: www.highcharts.com/license
  */

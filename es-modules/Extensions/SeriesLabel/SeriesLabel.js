@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Torstein Honsi
+ *  (c) 2009-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -22,22 +22,22 @@
 'use strict';
 import A from '../../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
-import Chart from '../../Core/Chart/Chart.js';
 import T from '../../Core/Templating.js';
 const { format } = T;
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import SeriesLabelDefaults from './SeriesLabelDefaults.js';
 import SLU from './SeriesLabelUtilities.js';
 const { boxIntersectLine, intersectRect } = SLU;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, isNumber, pick, syncTimeout } = U;
+const { addEvent, extend, fireEvent, isNumber, pick, pushUnique, syncTimeout } = U;
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 const labelDistance = 3;
 /* *
  *
@@ -157,15 +157,11 @@ function checkClearPoint(series, x, y, bBox, checkDistance) {
  * @private
  */
 function compose(ChartClass, SVGRendererClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         // Leave both events, we handle animation differently (#9815)
-        addEvent(Chart, 'load', onChartRedraw);
-        addEvent(Chart, 'redraw', onChartRedraw);
-    }
-    if (U.pushUnique(composedMembers, SVGRendererClass)) {
+        addEvent(ChartClass, 'load', onChartRedraw);
+        addEvent(ChartClass, 'redraw', onChartRedraw);
         SVGRendererClass.prototype.symbols.connector = symbolConnector;
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
         setOptions({ plotOptions: { series: { label: SeriesLabelDefaults } } });
     }
 }

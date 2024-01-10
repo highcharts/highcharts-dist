@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Kacper Madej
+ *  (c) 2010-2024 Kacper Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -61,22 +61,6 @@ function populateAverage(points, xVal, yVal, i) {
  * @augments Highcharts.Series
  */
 class WMAIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -119,6 +103,11 @@ class WMAIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Weighted moving average indicator (WMA). This series requires `linkedTo`
  * option to be set.

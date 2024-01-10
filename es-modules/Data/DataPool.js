@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -61,36 +61,36 @@ class DataPool {
      *
      * @function Data.DataPool#getConnector
      *
-     * @param {string} name
-     * Name of the connector.
+     * @param {string} connectorId
+     * ID of the connector.
      *
      * @return {Promise<Data.DataConnector>}
      * Returns the connector.
      */
-    getConnector(name) {
-        const connector = this.connectors[name];
+    getConnector(connectorId) {
+        const connector = this.connectors[connectorId];
         // already loaded
         if (connector) {
             return Promise.resolve(connector);
         }
-        let waitingList = this.waiting[name];
+        let waitingList = this.waiting[connectorId];
         // start loading
         if (!waitingList) {
-            waitingList = this.waiting[name] = [];
-            const connectorOptions = this.getConnectorOptions(name);
+            waitingList = this.waiting[connectorId] = [];
+            const connectorOptions = this.getConnectorOptions(connectorId);
             if (!connectorOptions) {
-                throw new Error(`Connector not found. (${name})`);
+                throw new Error(`Connector not found. (${connectorId})`);
             }
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this
                 .loadConnector(connectorOptions)
                 .then((connector) => {
-                delete this.waiting[name];
+                delete this.waiting[connectorId];
                 for (let i = 0, iEnd = waitingList.length; i < iEnd; ++i) {
                     waitingList[i][0](connector);
                 }
             })['catch']((error) => {
-                delete this.waiting[name];
+                delete this.waiting[connectorId];
                 for (let i = 0, iEnd = waitingList.length; i < iEnd; ++i) {
                     waitingList[i][1](error);
                 }
@@ -102,7 +102,7 @@ class DataPool {
         });
     }
     /**
-     * Returns the names of all connectors.
+     * Returns the IDs of all connectors.
      *
      * @private
      *
@@ -121,16 +121,16 @@ class DataPool {
      *
      * @private
      *
-     * @param {string} id
-     * Name of the connector.
+     * @param {string} connectorId
+     * ID of the connector.
      *
      * @return {DataPoolConnectorOptions|undefined}
      * Returns the options of the connector, or `undefined` if not found.
      */
-    getConnectorOptions(id) {
+    getConnectorOptions(connectorId) {
         const connectors = this.options.connectors;
         for (let i = 0, iEnd = connectors.length; i < iEnd; ++i) {
-            if (connectors[i].id === id) {
+            if (connectors[i].id === connectorId) {
                 return connectors[i];
             }
         }
@@ -141,7 +141,7 @@ class DataPool {
      * @function Data.DataPool#getConnectorTable
      *
      * @param {string} connectorId
-     * Name of the connector.
+     * ID of the connector.
      *
      * @return {Promise<Data.DataTable>}
      * Returns the connector table.
@@ -150,6 +150,19 @@ class DataPool {
         return this
             .getConnector(connectorId)
             .then((connector) => connector.table);
+    }
+    /**
+     * Tests whether the connector has never been requested.
+     *
+     * @param {string} connectorId
+     * Name of the connector.
+     *
+     * @return {boolean}
+     * Returns `true`, if the connector has never been requested, otherwise
+     * `false`.
+     */
+    isNewConnector(connectorId) {
+        return !this.connectors[connectorId];
     }
     /**
      * Creates and loads the connector.
@@ -204,13 +217,13 @@ class DataPool {
         return U.addEvent(this, type, callback);
     }
     /**
-     * Sets connector options with a specific name.
+     * Sets connector options under the specified `options.id`.
      *
      * @param {Data.DataPoolConnectorOptions} options
      * Connector options to set.
      */
     setConnectorOptions(options) {
-        const connectors = this.options.connectors;
+        const connectors = this.options.connectors, instances = this.connectors;
         this.emit({
             type: 'setConnectorOptions',
             options
@@ -220,6 +233,10 @@ class DataPool {
                 connectors.splice(i, 1);
                 break;
             }
+        }
+        if (instances[options.id]) {
+            instances[options.id].stopPolling();
+            delete instances[options.id];
         }
         connectors.push(options);
         this.emit({

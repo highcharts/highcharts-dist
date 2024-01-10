@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility component for series and points.
  *
@@ -97,7 +97,7 @@ class SeriesComponent extends AccessibilityComponent {
         chart.series.forEach(function (series) {
             const shouldDescribeSeries = (series.options.accessibility &&
                 series.options.accessibility.enabled) !== false &&
-                series.visible;
+                series.visible && series.data.length !== 0;
             if (shouldDescribeSeries) {
                 describeSeries(series);
             }

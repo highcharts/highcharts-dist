@@ -2,7 +2,7 @@
  *
  *  Streamgraph module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -25,22 +25,6 @@ const { merge, extend } = U;
  * @augments Highcharts.Series
  */
 class StreamgraphSeries extends AreaSplineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -57,6 +41,11 @@ class StreamgraphSeries extends AreaSplineSeries {
         this.stackedYData[i] = pointExtremes;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 StreamgraphSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, StreamgraphSeriesDefaults);
 extend(StreamgraphSeries.prototype, {
     negStacks: false

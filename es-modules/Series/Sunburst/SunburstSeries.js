@@ -2,7 +2,7 @@
  *
  *  This module implements sunburst charts in Highcharts.
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard
  *
@@ -311,28 +311,6 @@ function cbSetTreeValuesBefore(node, options) {
  *
  * */
 class SunburstSeries extends TreemapSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.center = void 0;
-        this.data = void 0;
-        this.mapOptionsToLevel = void 0;
-        this.nodeMap = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.shapeRoot = void 0;
-        this.startAndEndRadians = void 0;
-        this.tree = void 0;
-    }
     /* *
      *
      *  Functions
@@ -342,7 +320,7 @@ class SunburstSeries extends TreemapSeries {
         if (labelOptions.textPath && labelOptions.textPath.enabled) {
             return;
         }
-        return super.alignDataLabel(point, dataLabel, labelOptions);
+        return super.alignDataLabel.apply(this, arguments);
     }
     /**
      * Animate the slices in. Similar to the animation of polar charts.
@@ -623,17 +601,22 @@ class SunburstSeries extends TreemapSeries {
         // Set mapOptionsToLevel on series for use in drawPoints.
         series.mapOptionsToLevel = mapOptionsToLevel;
         // #10669 - verify if all nodes have unique ids
-        for (const child of series.data) {
-            if (nodeIds[child.id]) {
+        for (const point of series.points) {
+            if (nodeIds[point.id]) {
                 error(31, false, series.chart);
             }
             // map
-            nodeIds[child.id] = true;
+            nodeIds[point.id] = true;
         }
         // reset object
         nodeIds = {};
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, SunburstSeriesDefaults);
 extend(SunburstSeries.prototype, {
     axisTypes: [],

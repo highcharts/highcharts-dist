@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Rafal Sebestjanski
+ *  (c) 2009-2024 Rafal Sebestjanski
  *
  *  Full screen for Highcharts
  *
@@ -21,14 +21,10 @@
  *
  * */
 import AST from '../../Core/Renderer/HTML/AST.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, fireEvent, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -73,7 +69,7 @@ class Fullscreen {
      * The chart class to decorate with fullscreen support.
      */
     static compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, this.compose)) {
             // Initialize fullscreen
             addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         }

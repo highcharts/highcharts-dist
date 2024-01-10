@@ -38,11 +38,6 @@ declare module "./highcharts.src" {
      */
     function setOptions(options: Options): void;
     /**
-     * Add logic to pad each axis with the amount of pixels necessary to avoid
-     * the bubbles to overflow.
-     */
-    function axisBeforePadding(): void;
-    /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.
      */
@@ -61,14 +56,15 @@ declare module "./highcharts.src" {
      */
     function getTitlePosition(): void;
     /**
-     * Finalize modification of axis instance with radial logic.
-     */
-    function onAxisAfterInit(): void;
-    /**
      * Wrap auto label align to avoid setting axis-wide rotation on radial axes.
      * (#4920)
      */
     function onAxisAutoLabelAlign(): void;
+    /**
+     * Add logic to pad each axis with the amount of pixels necessary to avoid
+     * the bubbles to overflow.
+     */
+    function onAxisFoundExtremes(): void;
     /**
      * Prepare axis translation.
      */

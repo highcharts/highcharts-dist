@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft, Black Label
+ *  (c) 2009-2024 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -319,7 +319,7 @@ const navigation = {
      * from a different server.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/11.2.0/gfx/stock-icons/
+     * @default   https://code.highcharts.com/11.3.0/gfx/stock-icons/
      * @since     7.1.3
      * @apioption navigation.iconsURL
      */

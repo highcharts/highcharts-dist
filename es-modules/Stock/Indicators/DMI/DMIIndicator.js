@@ -1,5 +1,5 @@
 /* *
- *  (c) 2010-2021 Rafal Sebestjanski
+ *  (c) 2010-2024 Rafal Sebestjanski
  *
  *  Directional Movement Index (DMI) indicator for Highcharts Stock
  *
@@ -29,20 +29,6 @@ const { correctFloat, extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class DMIIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -143,6 +129,11 @@ class DMIIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Directional Movement Index (DMI).
  * This series requires the `linkedTo` option to be set and should

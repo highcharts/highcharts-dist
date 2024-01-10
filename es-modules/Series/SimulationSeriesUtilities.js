@@ -5,7 +5,7 @@
  * */
 'use strict';
 import U from '../Core/Utilities.js';
-const { syncTimeout } = U;
+const { merge, syncTimeout } = U;
 import A from '../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
 /**
@@ -16,7 +16,7 @@ const { animObject } = A;
  */
 function initDataLabelsDefer() {
     const dlOptions = this.options.dataLabels;
-    // drawDataLabels() fires for the first time after
+    // Method drawDataLabels() fires for the first time after
     // dataLabels.animation.defer time unless
     // the dataLabels.animation = false or dataLabels.defer = false
     // or if the simulation is disabled
@@ -52,7 +52,8 @@ function initDataLabels() {
         }
         return dataLabelsGroup;
     }
-    series.dataLabelsGroup.attr({ opacity: 1 });
+    // Place it on first and subsequent (redraw) calls
+    series.dataLabelsGroup.attr(merge({ opacity: 1 }, this.getPlotBox('data-labels')));
     return series.dataLabelsGroup;
 }
 const DataLabelsDeferUtils = {

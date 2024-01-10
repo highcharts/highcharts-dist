@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2021 Rafal Sebestjanski
+ * (c) 2010-2024 Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
@@ -37,7 +37,7 @@
     }
     _registerModule(_modules, 'Stock/Indicators/DisparityIndex/DisparityIndexIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
-         *  (c) 2010-2021 Rafal Sebestjanski
+         *  (c) 2010-2024 Rafal Sebestjanski
          *
          *  Disparity Index technical indicator for Highcharts Stock
          *
@@ -63,23 +63,6 @@
          * @augments Highcharts.Series
          */
         class DisparityIndexIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.averageIndicator = void 0;
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -125,6 +108,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Disparity Index.
          * This series requires the `linkedTo` option to be set and should

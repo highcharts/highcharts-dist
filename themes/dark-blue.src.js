@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Extensions/Themes/DarkBlue.js', [_modules['Core/Defaults.js']], function (D) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -115,7 +115,6 @@
                         }
                     },
                     lineColor: '#A0A0A0',
-                    minorTickInterval: null,
                     tickColor: '#A0A0A0',
                     tickWidth: 1,
                     title: {

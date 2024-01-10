@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2020 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,6 +8,8 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import MapViewDefaults from './MapViewDefaults.js';
 import GeoJSONComposition from './GeoJSONComposition.js';
 const { topo2geo } = GeoJSONComposition;
@@ -21,7 +23,6 @@ const { addEvent, clamp, fireEvent, isArray, isNumber, isObject, isString, merge
  *  Constants
  *
  * */
-const composedMembers = [];
 const tileSize = 256;
 /**
  * The world size in terms of 10k meters in the Web Mercator projection, to
@@ -98,7 +99,7 @@ class MapView {
      *
      * */
     static compose(MapChartClass) {
-        if (pushUnique(composedMembers, MapChartClass)) {
+        if (pushUnique(composed, this.compose)) {
             maps = MapChartClass.maps;
             // Initialize MapView after initialization, but before firstRender
             addEvent(MapChartClass, 'afterInit', function () {

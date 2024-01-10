@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Mousewheel zoom module
  *
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -245,7 +245,7 @@
             }, 400);
         };
         /**
-        * Calulate the ratio of mouse position on the axis to it's length. If mousePos
+        * Calculate the ratio of mouse position on the axis to its length. If mousePos
         * doesn't exist, returns 0.5;
         * @private
         */
@@ -253,7 +253,9 @@
             if (!defined(mousePos)) {
                 return 0.5;
             }
-            const mouseAxisRatio = (mousePos - axis.pos) / axis.len, isXAxis = axis.isXAxis;
+            const mouseAxisRatio = (mousePos - axis.minPixelPadding - axis.pos) /
+                (axis.len - 2 * axis.minPixelPadding), // Prevent sticking (#19976)
+            isXAxis = axis.isXAxis;
             if (isXAxis && (!axis.reversed !== !chart.inverted) ||
                 !isXAxis && axis.reversed) {
                 // We are taking into account that xAxis automatically gets

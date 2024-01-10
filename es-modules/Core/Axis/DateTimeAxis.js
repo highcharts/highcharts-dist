@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,8 +8,10 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, getMagnitude, normalizeTickInterval, timeUnits } = U;
+const { addEvent, getMagnitude, normalizeTickInterval, pushUnique, timeUnits } = U;
 /* *
  *
  *  Composition
@@ -25,12 +27,6 @@ var DateTimeAxis;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -39,11 +35,11 @@ var DateTimeAxis;
      * @private
      */
     function compose(AxisClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, compose)) {
             AxisClass.keepProps.push('dateTime');
             const axisProto = AxisClass.prototype;
             axisProto.getTimeTicks = getTimeTicks;
-            addEvent(AxisClass, 'init', onInit);
+            addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
         }
         return AxisClass;
     }
@@ -69,15 +65,13 @@ var DateTimeAxis;
     /**
      * @private
      */
-    function onInit(e) {
-        const axis = this;
-        const options = e.userOptions;
-        if (options.type !== 'datetime') {
-            axis.dateTime = void 0;
+    function onAfterSetOptions() {
+        if (this.options.type !== 'datetime') {
+            this.dateTime = void 0;
             return;
         }
-        if (!axis.dateTime) {
-            axis.dateTime = new Additions(axis);
+        if (!this.dateTime) {
+            this.dateTime = new Additions(this);
         }
     }
     /* *

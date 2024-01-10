@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/FlowMap/FlowMapPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2023 Askel Eirik Johansson, Piotr Madej
+         *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
          *
          *  License: www.highcharts.com/license
          *
@@ -51,16 +51,6 @@
          *
          * */
         class FlowMapPoint extends MapLinePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -91,7 +81,7 @@
     _registerModule(_modules, 'Series/FlowMap/FlowMapSeries.js', [_modules['Series/FlowMap/FlowMapPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (FlowMapPoint, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2022 Askel Eirik Johansson, Piotr Madej
+         *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
          *
          *  License: www.highcharts.com/license
          *
@@ -110,25 +100,6 @@
          * @augments Highcharts.Series
          */
         class FlowMapSeries extends MapLineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.smallestWeight = void 0;
-                this.greatestWeight = void 0;
-                this.centerOfPoints = void 0;
-            }
             /* *
              *
              *  Static Function
@@ -503,6 +474,11 @@
                 return shapeArgs;
             }
         }
+        /* *
+         *
+         *  Static properties
+         *
+         * */
         /**
          * A flowmap series is a series laid out on top of a map series allowing to
          * display route paths (e.g. flight or ship routes) or flows on a map. It

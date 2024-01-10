@@ -1,11 +1,11 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license

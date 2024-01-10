@@ -2,7 +2,7 @@
  *
  *  Dependency wheel module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -34,24 +34,6 @@ const { extend, merge } = U;
  * @augments Highcharts.seriesTypes.sankey
  */
 class DependencyWheelSeries extends SankeySeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.nodeColumns = void 0;
-        this.nodes = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -238,6 +220,11 @@ class DependencyWheelSeries extends SankeySeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
 extend(DependencyWheelSeries.prototype, {
     orderNodes: false,

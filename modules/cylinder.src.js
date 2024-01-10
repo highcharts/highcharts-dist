@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Highcharts cylinder module
  *
- * (c) 2010-2021 Kacper Madej
+ * (c) 2010-2024 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -97,7 +97,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -106,22 +106,16 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { charts, deg2rad } = H;
+        const { charts, composed, deg2rad } = H;
         const { perspective } = Math3D;
         const { extend, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
          *
          * */
         function compose(SVGRendererClass) {
-            if (pushUnique(composedMembers, SVGRendererClass)) {
+            if (pushUnique(composed, compose)) {
                 const rendererProto = SVGRendererClass.prototype;
                 rendererProto.Element3D.types.cylinder = SVGElement3DCylinder;
                 extend(rendererProto, {
@@ -398,7 +392,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -415,16 +409,6 @@
          *
          * */
         class CylinderPoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
         }
         extend(CylinderPoint.prototype, {
             shapeType: 'cylinder'
@@ -442,7 +426,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -558,7 +542,7 @@
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -587,23 +571,12 @@
          * @augments Highcharts.Series
          */
         class CylinderSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         CylinderSeries.compose = CylinderComposition.compose;
         CylinderSeries.defaultOptions = merge(ColumnSeries.defaultOptions, CylinderSeriesDefaults);
         extend(CylinderSeries.prototype, {

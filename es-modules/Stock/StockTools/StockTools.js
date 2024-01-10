@@ -2,7 +2,7 @@
  *
  *  Events generator for Stock tools
  *
- *  (c) 2009-2021 Paweł Fus
+ *  (c) 2009-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -12,6 +12,8 @@
 'use strict';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import NBU from '../../Extensions/Annotations/NavigationBindingsUtilities.js';
 const { getAssignedAxis } = NBU;
 import StockToolsBindings from './StockToolsBindings.js';
@@ -19,13 +21,7 @@ import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
 const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
 import U from '../../Core/Utilities.js';
-const { correctFloat, defined, isNumber, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { correctFloat, defined, isNumber, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -35,7 +31,7 @@ const composedMembers = [];
  * @private
  */
 function compose(NavigationBindingsClass) {
-    if (U.pushUnique(composedMembers, NavigationBindingsClass)) {
+    if (pushUnique(composed, compose)) {
         const navigationProto = NavigationBindingsClass.prototype;
         // Extends NavigationBindings to support indicators and resizers:
         navigationProto.getYAxisPositions = navigationGetYAxisPositions;
@@ -50,8 +46,6 @@ function compose(NavigationBindingsClass) {
             isPriceIndicatorEnabled,
             manageIndicators: STU.manageIndicators
         };
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
         setOptions(StockToolsDefaults);
         setOptions({
             navigation: {

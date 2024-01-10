@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -72,22 +72,6 @@
          * @augments Highcharts.Series
          */
         class MomentumIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -121,6 +105,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Momentum. This series requires `linkedTo` option to be set.
          *

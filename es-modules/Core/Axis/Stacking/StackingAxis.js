@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,11 +11,13 @@
 import A from '../../Animation/AnimationUtilities.js';
 const { getDeferredAnimation } = A;
 import Axis from '../Axis.js';
+import H from '../../Globals.js';
+const { composed } = H;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';
 import U from '../../Utilities.js';
-const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isArray, isNumber, objectEach, pick } = U;
+const { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isArray, isNumber, objectEach, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -145,19 +147,22 @@ function seriesPercentStacker(pointExtremes, stack, i) {
  * @return {void}
  */
 function seriesSetGroupedPoints(axis) {
-    if (this.options.centerInCategory &&
-        (this.is('column') || this.is('columnrange')) &&
-        // With stacking enabled, we already have stacks that we can compute
-        // from
-        !this.options.stacking &&
-        // With only one series, we don't need to consider centerInCategory
-        this.chart.series.length > 1) {
-        seriesProto.setStackedPoints.call(this, axis, 'group');
-        // After updating, if we now have proper stacks, we must delete the group
-        // pseudo stacks (#14980)
-    }
-    else {
-        axis.stacking.resetStacks();
+    // Only series types supporting centerInCategory need to do this. That also
+    // applies to resetting (#20221).
+    if (this.is('column') || this.is('columnrange')) {
+        if (this.options.centerInCategory &&
+            // With stacking enabled, we already have stacks that we can compute
+            // from
+            !this.options.stacking &&
+            // With only one series, we don't need to consider centerInCategory
+            this.chart.series.length > 1) {
+            seriesProto.setStackedPoints.call(this, axis, 'group');
+            // After updating, if we now have proper stacks, we must delete the
+            // group pseudo stacks (#14980)
+        }
+        else {
+            axis.stacking.resetStacks();
+        }
     }
 }
 /**
@@ -402,12 +407,6 @@ var StackingAxis;
 (function (StackingAxis) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -416,16 +415,11 @@ var StackingAxis;
      * @private
      */
     function compose(AxisClass, ChartClass, SeriesClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, compose)) {
+            const chartProto = ChartClass.prototype, seriesProto = SeriesClass.prototype;
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
             chartProto.getStacks = chartGetStacks;
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
             seriesProto.getStackIndicator = seriesGetStackIndicator;
             seriesProto.modifyStacks = seriesModifyStacks;
             seriesProto.percentStacker = seriesPercentStacker;

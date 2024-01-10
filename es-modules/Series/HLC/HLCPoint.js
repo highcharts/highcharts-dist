@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Pawel Lysy
+ *  (c) 2010-2024 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -16,20 +16,6 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  *
  * */
 class HLCPoint extends ColumnPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.close = void 0;
-        this.high = void 0;
-        this.low = void 0;
-        this.options = void 0;
-        this.plotClose = void 0;
-        this.series = void 0;
-    }
 }
 /* *
  *

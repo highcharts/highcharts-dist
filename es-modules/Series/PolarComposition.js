@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,17 +11,12 @@
 import A from '../Core/Animation/AnimationUtilities.js';
 const { animObject } = A;
 import H from '../Core/Globals.js';
+const { composed } = H;
 import Series from '../Core/Series/Series.js';
-import Pane from '../Extensions/Pane.js';
+import Pane from '../Extensions/Pane/Pane.js';
 import RadialAxis from '../Core/Axis/RadialAxis.js';
 import U from '../Core/Utilities.js';
-const { addEvent, defined, find, isNumber, merge, pick, relativeLength, splat, uniqueKey, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, defined, find, isNumber, merge, pick, pushUnique, relativeLength, splat, uniqueKey, wrap } = U;
 /* *
  *
  *  Functions
@@ -341,8 +336,8 @@ function onSeriesAfterTranslate() {
         // case of shared tooltip, and by two dimensional distance in case
         // of non-shared.
         series.kdByAngle = chart.tooltip && chart.tooltip.shared;
-        if (series.kdByAngle) {
-            series.searchPoint = searchPointByAngle;
+        if (series.kdByAngle || chart.inverted) {
+            series.searchPoint = searchPointByAngleOrInverted;
         }
         else {
             series.options.findNearestPointBy = 'xy';
@@ -400,15 +395,20 @@ function onSeriesAfterTranslate() {
     }
 }
 /**
- * Search a k-d tree by the point angle, used for shared tooltips in polar
+ * Search a k-d tree by the point angle (used for shared tooltips in polar) or
+ * the inverted point.
  * charts
  * @private
  */
-function searchPointByAngle(e) {
-    const series = this, chart = series.chart, xAxis = series.xAxis, center = xAxis.pane && xAxis.pane.center, plotX = e.chartX - (center && center[0] || 0) - chart.plotLeft, plotY = e.chartY - (center && center[1] || 0) - chart.plotTop;
-    return series.searchKDTree({
+function searchPointByAngleOrInverted(e) {
+    const series = this, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, center = xAxis.pane && xAxis.pane.center, plotX = e.chartX - (center && center[0] || 0) - chart.plotLeft, plotY = e.chartY - (center && center[1] || 0) - chart.plotTop;
+    const searchKDTreePoint = chart.inverted ? {
+        clientX: e.chartX - yAxis.pos,
+        plotY: e.chartY - xAxis.pos
+    } : {
         clientX: 180 + (Math.atan2(plotX, plotY) * (-180 / Math.PI))
-    });
+    };
+    return series.searchKDTree(searchKDTreePoint);
 }
 /**
  * Trim polygonal path
@@ -437,10 +437,9 @@ function trimPath(path, start, end, radialAxis) {
  * @private
  */
 function wrapChartGet(proceed, id) {
-    return find(this.pane || [], function (pane) {
-        // @todo remove id or define id type:
-        return pane.options.id === id;
-    }) || proceed.call(this, id);
+    return find(this.pane || [], (pane) => (
+    // @todo remove id or define id type:
+    pane.options.id === id)) || proceed.call(this, id);
 }
 /**
  * Align column data labels outside the columns. #1199.
@@ -868,6 +867,20 @@ function wrapSplineSeriesGetPointSpline(proceed, segment, point, i) {
     }
     return ret;
 }
+/**
+ * Extend the point pos method to calculate point positions for the polar chart.
+ * @private
+ */
+function wrapPointPos(proceed, chartCoordinates, plotY = this.plotY) {
+    const { plotX, series } = this, { chart } = series;
+    if (chart.polar && !this.destroyed && isNumber(plotX) && isNumber(plotY)) {
+        return [
+            plotX + (chartCoordinates ? chart.plotLeft : 0),
+            plotY + (chartCoordinates ? chart.plotTop : 0)
+        ];
+    }
+    return proceed.call(this, chartCoordinates, plotY);
+}
 /* *
  *
  *  Class
@@ -884,52 +897,44 @@ class PolarAdditions {
      *  Static Functions
      *
      * */
-    static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
+    static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
+        Pane.compose(ChartClass, PointerClass);
         RadialAxis.compose(AxisClass, TickClass);
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, this.compose)) {
+            const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
             addEvent(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
             addEvent(ChartClass, 'getAxes', onChartGetAxes);
             addEvent(ChartClass, 'init', onChartAfterInit);
-            const chartProto = ChartClass.prototype;
             wrap(chartProto, 'get', wrapChartGet);
-        }
-        if (U.pushUnique(composedMembers, PointerClass)) {
-            const pointerProto = PointerClass.prototype;
             wrap(pointerProto, 'getCoordinates', wrapPointerGetCoordinates);
             wrap(pointerProto, 'pinch', wrapPointerPinch);
             addEvent(PointerClass, 'getSelectionMarkerAttrs', onPointerGetSelectionMarkerAttrs);
             addEvent(PointerClass, 'getSelectionBox', onPointerGetSelectionBox);
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
             addEvent(SeriesClass, 'afterInit', onSeriesAfterInit);
             addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 2 } // Run after translation of ||-coords
             );
             addEvent(SeriesClass, 'afterColumnTranslate', onAfterColumnTranslate, { order: 4 });
-            const seriesProto = SeriesClass.prototype;
             wrap(seriesProto, 'animate', wrapSeriesAnimate);
-        }
-        if (ColumnSeriesClass &&
-            U.pushUnique(composedMembers, ColumnSeriesClass)) {
-            const columnProto = ColumnSeriesClass.prototype;
-            wrap(columnProto, 'alignDataLabel', wrapColumnSeriesAlignDataLabel);
-            wrap(columnProto, 'animate', wrapSeriesAnimate);
-        }
-        if (LineSeriesClass &&
-            U.pushUnique(composedMembers, LineSeriesClass)) {
-            const lineProto = LineSeriesClass.prototype;
-            wrap(lineProto, 'getGraphPath', wrapLineSeriesGetGraphPath);
-        }
-        if (SplineSeriesClass &&
-            U.pushUnique(composedMembers, SplineSeriesClass)) {
-            const splineProto = SplineSeriesClass.prototype;
-            wrap(splineProto, 'getPointSpline', wrapSplineSeriesGetPointSpline);
-            if (AreaSplineRangeSeriesClass &&
-                U.pushUnique(composedMembers, AreaSplineRangeSeriesClass)) {
-                const areaSplineRangeProto = AreaSplineRangeSeriesClass.prototype;
-                // #6430 Areasplinerange series use unwrapped getPointSpline
-                // method, so we need to set this method again.
-                areaSplineRangeProto.getPointSpline =
-                    splineProto.getPointSpline;
+            wrap(pointProto, 'pos', wrapPointPos);
+            if (ColumnSeriesClass) {
+                const columnProto = ColumnSeriesClass.prototype;
+                wrap(columnProto, 'alignDataLabel', wrapColumnSeriesAlignDataLabel);
+                wrap(columnProto, 'animate', wrapSeriesAnimate);
+            }
+            if (LineSeriesClass) {
+                const lineProto = LineSeriesClass.prototype;
+                wrap(lineProto, 'getGraphPath', wrapLineSeriesGetGraphPath);
+            }
+            if (SplineSeriesClass) {
+                const splineProto = SplineSeriesClass.prototype;
+                wrap(splineProto, 'getPointSpline', wrapSplineSeriesGetPointSpline);
+                if (AreaSplineRangeSeriesClass) {
+                    const areaSplineRangeProto = AreaSplineRangeSeriesClass.prototype;
+                    // #6430 Areasplinerange series use unwrapped getPointSpline
+                    // method, so we need to set this method again.
+                    areaSplineRangeProto.getPointSpline =
+                        splineProto.getPointSpline;
+                }
             }
         }
     }

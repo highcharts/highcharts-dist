@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Arrow Symbols
  *
- * (c) 2017-2021 Lars A. V. Cabrera
+ * (c) 2017-2024 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -35,7 +35,7 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -46,12 +46,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { pushUnique } = U;
         /* *
          *
          *  Functions
@@ -130,7 +126,7 @@
          * @private
          */
         function compose(SVGRendererClass) {
-            if (U.pushUnique(composedMembers, SVGRendererClass)) {
+            if (pushUnique(composed, compose)) {
                 const symbols = SVGRendererClass.prototype.symbols;
                 symbols.arrow = arrow;
                 symbols['arrow-filled'] = triangleLeft;

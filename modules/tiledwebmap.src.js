@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */
@@ -443,7 +443,7 @@
     _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
+         *  (c) 2010-2024 Hubert Kozik, Kamil Musiałowski
          *
          *  License: www.highcharts.com/license
          *
@@ -586,24 +586,19 @@
 
         return TiledWebMapSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Series/TiledWebMap/TiledWebMapSeriesDefaults.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TilesProvidersRegistry, TiledWebMapSeriesDefaults, U) {
+    _registerModule(_modules, 'Series/TiledWebMap/TiledWebMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Maps/TilesProviders/TilesProviderRegistry.js'], _modules['Series/TiledWebMap/TiledWebMapSeriesDefaults.js'], _modules['Core/Utilities.js']], function (H, SeriesRegistry, TilesProvidersRegistry, TiledWebMapSeriesDefaults, U) {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik, Kamil Musiałowski
+         *  (c) 2010-2024 Hubert Kozik, Kamil Musiałowski
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { map: MapSeries } = SeriesRegistry.seriesTypes;
         const { addEvent, defined, error, merge, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -667,12 +662,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
                 this.redrawTiles = false;
                 this.isAnimating = false;
             }
@@ -682,7 +671,7 @@
              *
              * */
             static compose(ChartClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(ChartClass, 'beforeMapViewInit', onChartBeforeMapViewInit);
                 }
             }

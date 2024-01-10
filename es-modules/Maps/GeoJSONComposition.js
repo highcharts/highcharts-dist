@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,7 +9,7 @@
  * */
 'use strict';
 import H from '../Core/Globals.js';
-const { win } = H;
+const { composed, win } = H;
 import T from '../Core/Templating.js';
 const { format } = T;
 import U from '../Core/Utilities.js';
@@ -21,12 +21,6 @@ const { error, extend, merge, pushUnique, wrap } = U;
  * */
 var GeoJSONComposition;
 (function (GeoJSONComposition) {
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
     /* *
      *
      *  Functions
@@ -166,7 +160,7 @@ var GeoJSONComposition;
     }
     /** @private */
     function compose(ChartClass) {
-        if (pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             const proto = ChartClass.prototype;
             proto.fromLatLonToPoint = chartFromLatLonToPoint;
             proto.fromPointToLatLon = chartFromPointToLatLon;

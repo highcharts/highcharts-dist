@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Scatter 3D series.
  *
@@ -20,16 +20,6 @@ const { defined } = U;
  *
  * */
 class Scatter3DPoint extends ScatterPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
-    }
     /* *
      *
      *  Functions

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Extensions to the SVGRenderer class to enable 3D shapes
  *
@@ -15,7 +15,7 @@ const { animObject } = A;
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Globals.js';
-const { charts, deg2rad } = H;
+const { charts, composed, deg2rad } = H;
 import Math3D from '../../Math3D.js';
 const { perspective, shapeArea } = Math3D;
 import SVGElement3D from './SVGElement3D.js';
@@ -26,7 +26,7 @@ const { defined, extend, merge, pick, pushUnique } = U;
  *  Constants
  *
  * */
-const composedMembers = [], cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
+const cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
 /* *
  *
  *  Functions
@@ -83,7 +83,7 @@ var SVGRenderer3D;
      * */
     /** @private */
     function compose(SVGRendererClass) {
-        if (pushUnique(composedMembers, SVGRendererClass)) {
+        if (pushUnique(composed, compose)) {
             extend(SVGRendererClass.prototype, {
                 Element3D: SVGElement3D,
                 arc3d,
@@ -244,12 +244,8 @@ var SVGRenderer3D;
      * @requires highcharts-3d
      */
     function element3d(type, shapeArgs) {
-        // base
-        const elem3d = new SVGElement3D.types[type]();
-        // init
-        elem3d.init(this, 'g');
+        const elem3d = new SVGElement3D.types[type](this, 'g');
         elem3d.initArgs(shapeArgs);
-        // return
         return elem3d;
     }
     /**

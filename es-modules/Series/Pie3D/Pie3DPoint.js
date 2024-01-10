@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  3D pie series
  *
@@ -18,15 +18,6 @@ const { pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTy
  *
  * */
 class Pie3DPoint extends PiePoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.series = void 0;
-    }
     /* *
      *
      *  Functions

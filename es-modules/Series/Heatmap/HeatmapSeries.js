@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -40,17 +40,6 @@ class HeatmapSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.canvas = void 0;
-        this.colorAxis = void 0;
-        this.context = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.valueMax = NaN;
         this.valueMin = NaN;
         this.isDirtyCanvas = true;

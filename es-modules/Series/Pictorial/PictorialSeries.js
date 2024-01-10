@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Torstein Honsi, Magdalena Gut
+ *  (c) 2010-2024 Torstein Honsi, Magdalena Gut
  *
  *  License: www.highcharts.com/license
  *
@@ -14,15 +14,18 @@
  *
  * */
 import '../Column/ColumnSeries.js';
-import '../../Extensions/PatternFill.js';
+import PatternFill from '../../Extensions/PatternFill.js';
 import A from '../../Core/Animation/AnimationUtilities.js';
 import Chart from '../../Core/Chart/Chart.js';
 import PictorialPoint from './PictorialPoint.js';
 import PictorialUtilities from './PictorialUtilities.js';
+import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
+import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../../Core/Utilities.js';
 const ColumnSeries = SeriesRegistry.seriesTypes.column;
+PatternFill.compose(Chart, Series, SVGRenderer);
 const { animObject } = A;
 const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtilities;
 const { addEvent, defined, merge, objectEach, pick } = U;
@@ -41,24 +44,6 @@ const { addEvent, defined, merge, objectEach, pick } = U;
  * @augments Highcharts.Series
  */
 class PictorialSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         * Properties
-         *
-         * */
-        this.paths = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      * Functions
@@ -160,6 +145,11 @@ class PictorialSeries extends ColumnSeries {
         return extremes;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * A pictorial chart uses vector images to represents the data.
  * The shape of the data point is taken from the path parameter.
@@ -429,7 +419,9 @@ export default PictorialSeries;
  * @apioption series.pictorial.data
  */
 /**
- * The paths include options describing the point image.
+ * The paths include options describing the series image. For further details on
+ * preparing the SVG image, please refer to the [pictorial
+ * documentation](https://www.highcharts.com/docs/chart-and-series-types/pictorial).
  *
  * @declare   Highcharts.SeriesPictorialPathsOptionsObject
  * @type      {Array<*>}
@@ -437,7 +429,7 @@ export default PictorialSeries;
  * @sample    {highcharts} highcharts/demo/pictorial/
  *            Pictorial chart
  *
- * @since 11.0.0
+ * @since     11.0.0
  * @product   highcharts
  * @apioption series.pictorial.paths
  */

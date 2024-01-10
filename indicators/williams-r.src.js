@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Wojciech Chmiel
+ * (c) 2010-2024 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Stock/Indicators/ArrayUtilities.js', [], function () {
         /**
          *
-         *  (c) 2010-2021 Pawel Fus & Daniel Studencki
+         *  (c) 2010-2024 Pawel Fus & Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
@@ -109,22 +109,6 @@
          * @augments Highcharts.Series
          */
         class WilliamsRIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -166,6 +150,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Williams %R. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.

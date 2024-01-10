@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -14,7 +14,7 @@
 import DataConverter from './DataConverter.js';
 import DataTable from '../DataTable.js';
 import U from '../../Core/Utilities.js';
-const { merge, isArray } = U;
+const { error, isArray, merge, objectEach } = U;
 /* *
  *
  *  Class
@@ -47,7 +47,6 @@ class JSONConverter extends DataConverter {
          * */
         this.columns = [];
         this.headers = [];
-        this.dataTypes = [];
         this.options = mergedOptions;
         this.table = new DataTable();
     }
@@ -76,6 +75,12 @@ class JSONConverter extends DataConverter {
         if (!data) {
             return;
         }
+        converter.emit({
+            type: 'parse',
+            columns: converter.columns,
+            detail: eventDetail,
+            headers: converter.headers
+        });
         if (beforeParse) {
             data = beforeParse(data);
         }
@@ -86,13 +91,18 @@ class JSONConverter extends DataConverter {
                 if (!(item instanceof Array)) {
                     return;
                 }
-                if (firstRowAsNames) {
-                    converter.headers.push(`${item.shift()}`);
+                if (converter.headers instanceof Array) {
+                    if (firstRowAsNames) {
+                        converter.headers.push(`${item.shift()}`);
+                    }
+                    else if (columnNames && columnNames instanceof Array) {
+                        converter.headers.push(columnNames[i]);
+                    }
+                    converter.table.setColumn(converter.headers[i] || i.toString(), item);
                 }
-                else if (columnNames) {
-                    converter.headers.push(columnNames[i]);
+                else {
+                    error('JSONConverter: Invalid `columnNames` option.', false);
                 }
-                converter.table.setColumn(converter.headers[i] || i.toString(), item);
             }
         }
         else if (orientation === 'rows') {
@@ -103,22 +113,41 @@ class JSONConverter extends DataConverter {
                 converter.headers = columnNames;
             }
             for (let rowIndex = 0, iEnd = data.length; rowIndex < iEnd; rowIndex++) {
-                const row = data[rowIndex];
+                let row = data[rowIndex];
                 if (isArray(row)) {
                     for (let columnIndex = 0, jEnd = row.length; columnIndex < jEnd; columnIndex++) {
                         if (converter.columns.length < columnIndex + 1) {
                             converter.columns.push([]);
                         }
                         converter.columns[columnIndex].push(row[columnIndex]);
-                        this.table.setCell(converter.headers[columnIndex] ||
-                            rowIndex.toString(), rowIndex, row[columnIndex]);
+                        if (converter.headers instanceof Array) {
+                            this.table.setColumn(converter.headers[columnIndex] ||
+                                columnIndex.toString(), converter.columns[columnIndex]);
+                        }
+                        else {
+                            error('JSONConverter: Invalid `columnNames` option.', false);
+                        }
                     }
                 }
                 else {
+                    const columnNames = converter.headers;
+                    if (columnNames && !(columnNames instanceof Array)) {
+                        const newRow = {};
+                        objectEach(columnNames, (arrayWithPath, name) => {
+                            newRow[name] = arrayWithPath.reduce((acc, key) => acc[key], row);
+                        });
+                        row = newRow;
+                    }
                     this.table.setRows([row], rowIndex);
                 }
             }
         }
+        converter.emit({
+            type: 'afterParse',
+            columns: converter.columns,
+            detail: eventDetail,
+            headers: converter.headers
+        });
     }
     /**
      * Handles converting the parsed data to a table.
@@ -141,7 +170,7 @@ class JSONConverter extends DataConverter {
 JSONConverter.defaultOptions = {
     ...DataConverter.defaultOptions,
     data: [],
-    orientation: 'columns'
+    orientation: 'rows'
 };
 /* *
  *

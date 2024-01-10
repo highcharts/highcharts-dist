@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -21,16 +21,6 @@ const { seriesTypes: { candlestick: CandlestickSeries } } = SeriesRegistry;
  *
  * */
 class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.series = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions

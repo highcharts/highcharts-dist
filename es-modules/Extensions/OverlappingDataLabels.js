@@ -3,7 +3,7 @@
  *  Highcharts module to hide overlapping data labels.
  *  This module is included in Highcharts.
  *
- *  (c) 2009-2021 Torstein Honsi
+ *  (c) 2009-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,14 +11,10 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
 const { addEvent, fireEvent, isNumber, objectEach, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -133,7 +129,7 @@ function chartHideOverlappingLabels(labels) {
 }
 /** @private */
 function compose(ChartClass) {
-    if (pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         const chartProto = ChartClass.prototype;
         chartProto.hideOverlappingLabels = chartHideOverlappingLabels;
         addEvent(ChartClass, 'render', onChartRender);
@@ -156,9 +152,10 @@ function hideOrShow(label, chart) {
     if (label) {
         newOpacity = label.newOpacity;
         if (label.oldOpacity !== newOpacity) {
-            // Make sure the label is completely hidden to avoid catching clicks
-            // (#4362)
-            if (label.alignAttr && label.placed) { // data labels
+            // Toggle data labels
+            if (label.hasClass('highcharts-data-label')) {
+                // Make sure the label is completely hidden to avoid catching
+                // clicks (#4362)
                 label[newOpacity ? 'removeClass' : 'addClass']('highcharts-data-label-hidden');
                 complete = function () {
                     if (!chart.styledMode) {
@@ -169,11 +166,11 @@ function hideOrShow(label, chart) {
                 };
                 isLabelAffected = true;
                 // Animate or set the opacity
-                label.alignAttr.opacity = newOpacity;
-                label[label.isOld ? 'animate' : 'attr'](label.alignAttr, null, complete);
+                label[label.isOld ? 'animate' : 'attr']({ opacity: newOpacity }, void 0, complete);
                 fireEvent(chart, 'afterHideOverlappingLabel');
+                // Toggle other labels, tick labels
             }
-            else { // other labels, tick labels
+            else {
                 label.attr({
                     opacity: newOpacity
                 });

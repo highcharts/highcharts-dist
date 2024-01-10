@@ -52,22 +52,6 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
  * @augments Highcharts.Series
  */
 class ATRIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-    }
     /* *
      *
      *  Functions
@@ -109,6 +93,11 @@ class ATRIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Average true range indicator (ATR). This series requires `linkedTo`
  * option to be set.

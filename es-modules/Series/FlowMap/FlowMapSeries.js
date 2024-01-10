@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Askel Eirik Johansson, Piotr Madej
+ *  (c) 2010-2024 Askel Eirik Johansson, Piotr Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -23,25 +23,6 @@ const { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, pick, rel
  * @augments Highcharts.Series
  */
 class FlowMapSeries extends MapLineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         * Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.smallestWeight = void 0;
-        this.greatestWeight = void 0;
-        this.centerOfPoints = void 0;
-    }
     /* *
      *
      *  Static Function
@@ -416,6 +397,11 @@ class FlowMapSeries extends MapLineSeries {
         return shapeArgs;
     }
 }
+/* *
+ *
+ *  Static properties
+ *
+ * */
 /**
  * A flowmap series is a series laid out on top of a map series allowing to
  * display route paths (e.g. flight or ship routes) or flows on a map. It

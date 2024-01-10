@@ -2,7 +2,7 @@
  *
  *  Organization chart module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -30,22 +30,6 @@ const { css, extend, isNumber, merge, pick } = U;
  * @augments Highcharts.seriesTypes.sankey
  */
 class OrganizationSeries extends SankeySeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -196,7 +180,7 @@ class OrganizationSeries extends SankeySeries {
     }
     translateNode(node, column) {
         super.translateNode(node, column);
-        const chart = this.chart, options = this.options, indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
+        const chart = this.chart, options = this.options, translationFactor = this.translationFactor, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth || 0), nodeWidth = Math.round(this.nodeWidth), indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
         let parentNode = node.hangsFrom;
         if (parentNode) {
             if (indentLogic === 'cumulative') {
@@ -217,7 +201,7 @@ class OrganizationSeries extends SankeySeries {
                 }
             }
             else {
-                // indentLogic === "inherit"
+                // Option indentLogic === "inherit"
                 // Do nothing (v9.3.2 and prev versions):
                 shapeArgs.height -= indent;
                 if (!chart.inverted) {
@@ -228,6 +212,15 @@ class OrganizationSeries extends SankeySeries {
         node.nodeHeight = chart.inverted ?
             shapeArgs.width :
             shapeArgs.height;
+        // Calculate shape args correctly to align nodes to center (#19946)
+        if (node.shapeArgs && !node.hangsFrom) {
+            node.shapeArgs = merge(node.shapeArgs, {
+                x: (node.shapeArgs.x || 0) + (nodeWidth / 2) -
+                    ((node.shapeArgs.width || 0) / 2),
+                y: (node.shapeArgs.y || 0) + (nodeHeight / 2) -
+                    ((node.shapeArgs.height || 0) / 2)
+            });
+        }
     }
     drawDataLabels() {
         const dlOptions = this.options.dataLabels;
@@ -239,6 +232,11 @@ class OrganizationSeries extends SankeySeries {
         super.drawDataLabels();
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
 extend(OrganizationSeries.prototype, {
     pointClass: OrganizationPoint

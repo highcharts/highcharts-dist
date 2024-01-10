@@ -1,9 +1,9 @@
 /**
- * @license Highmaps JS v11.2.0 (2023-10-30)
+ * @license Highmaps JS v11.3.0 (2024-01-10)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
- * (c) 2011-2021 Torstein Honsi
+ * (c) 2011-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -35,10 +35,10 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -46,7 +46,8 @@
          *
          * */
         const { parse: color } = Color;
-        const { addEvent, extend, merge, pick, splat } = U;
+        const { composed } = H;
+        const { addEvent, extend, merge, pick, pushUnique, splat } = U;
         /* *
          *
          *  Composition
@@ -61,12 +62,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Variables
              *
              * */
@@ -76,39 +71,29 @@
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(ColorAxisClass, ChartClass, FxClass, LegendClass, SeriesClass) {
-                if (!ColorAxisConstructor) {
+                if (pushUnique(composed, compose)) {
                     ColorAxisConstructor = ColorAxisClass;
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    const chartProto = ChartClass.prototype;
+                    const chartProto = ChartClass.prototype, fxProto = FxClass.prototype, seriesProto = SeriesClass.prototype;
                     chartProto.collectionsWithUpdate.push('colorAxis');
                     chartProto.collectionsWithInit.colorAxis = [
                         chartProto.addColorAxis
                     ];
                     addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
                     wrapChartCreateAxis(ChartClass);
-                }
-                if (U.pushUnique(composedMembers, FxClass)) {
-                    const fxProto = FxClass.prototype;
                     fxProto.fillSetter = wrapFxFillSetter;
                     fxProto.strokeSetter = wrapFxStrokeSetter;
-                }
-                if (U.pushUnique(composedMembers, LegendClass)) {
                     addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
                     addEvent(LegendClass, 'afterColorizeItem', onLegendAfterColorizeItem);
                     addEvent(LegendClass, 'afterUpdate', onLegendAfterUpdate);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    extend(SeriesClass.prototype, {
+                    extend(seriesProto, {
                         optionalAxis: 'colorAxis',
                         translateColors: seriesTranslateColors
                     });
-                    extend(SeriesClass.prototype.pointClass.prototype, {
+                    extend(seriesProto.pointClass.prototype, {
                         setVisible: pointSetVisible
                     });
                     addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate, { order: 1 });
@@ -121,11 +106,13 @@
              * @private
              */
             function onChartAfterGetAxes() {
-                const options = this.options;
+                const { userOptions } = this;
                 this.colorAxis = [];
-                if (options.colorAxis) {
-                    options.colorAxis = splat(options.colorAxis);
-                    options.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
+                // If a `colorAxis` config is present in the user options (not in a
+                // theme), instanciate it.
+                if (userOptions.colorAxis) {
+                    userOptions.colorAxis = splat(userOptions.colorAxis);
+                    userOptions.colorAxis.map((axisOptions) => (new ColorAxisConstructor(this, axisOptions)));
                 }
             }
             /**
@@ -316,7 +303,7 @@
     _registerModule(_modules, 'Core/Axis/Color/ColorAxisDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -373,10 +360,10 @@
          *
          * @extends      xAxis
          * @excluding    alignTicks, allowDecimals, alternateGridColor, breaks,
-         *               categories, crosshair, dateTimeLabelFormats, height, left,
+         *               categories, crosshair, dateTimeLabelFormats, left,
          *               lineWidth, linkedTo, maxZoom, minRange, minTickInterval,
          *               offset, opposite, pane, plotBands, plotLines,
-         *               reversedStacks, scrollbar, showEmpty, title, top, width,
+         *               reversedStacks, scrollbar, showEmpty, title, top,
          *               zoomEnabled
          * @product      highcharts highstock highmaps
          * @type         {*|Array<*>}
@@ -733,6 +720,36 @@
              * @apioption colorAxis.events.legendItemClick
              */
             /**
+             * The width of the color axis. If it's a number, it is interpreted as
+             * pixels.
+             *
+             * If it's a percentage string, it is interpreted as percentages of the
+             * total plot width.
+             *
+             * @sample    highcharts/coloraxis/width-and-height
+             *            Percentage width and pixel height for color axis
+             *
+             * @type      {number|string}
+             * @since     @next
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.width
+             */
+            /**
+             * The height of the color axis. If it's a number, it is interpreted as
+             * pixels.
+             *
+             * If it's a percentage string, it is interpreted as percentages of the
+             * total plot height.
+             *
+             * @sample    highcharts/coloraxis/width-and-height
+             *            Percentage width and pixel height for color axis
+             *
+             * @type      {number|string}
+             * @since     @next
+             * @product   highcharts highstock highmaps
+             * @apioption colorAxis.height
+             */
+            /**
              * Whether to display the colorAxis in the legend.
              *
              * @sample highcharts/coloraxis/hidden-coloraxis-with-3d-chart/
@@ -756,7 +773,7 @@
     _registerModule(_modules, 'Core/Axis/Color/ColorAxisLike.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -897,18 +914,20 @@
 
         return ColorAxisLike;
     });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Axis/Color/ColorAxisDefaults.js'], _modules['Core/Axis/Color/ColorAxisLike.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, ColorAxisComposition, ColorAxisDefaults, ColorAxisLike, LegendSymbol, SeriesRegistry, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Axis/Color/ColorAxisDefaults.js'], _modules['Core/Axis/Color/ColorAxisLike.js'], _modules['Core/Defaults.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, ColorAxisComposition, ColorAxisDefaults, ColorAxisLike, D, LegendSymbol, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { defaultOptions } = D;
         const { series: Series } = SeriesRegistry;
-        const { extend, fireEvent, isArray, isNumber, merge, pick } = U;
+        const { defined, extend, fireEvent, isArray, isNumber, merge, pick, relativeLength } = U;
+        defaultOptions.colorAxis = merge(defaultOptions.xAxis, ColorAxisDefaults);
         /* *
          *
          *  Class
@@ -946,13 +965,7 @@
              */
             constructor(chart, userOptions) {
                 super(chart, userOptions);
-                // Prevents unnecessary padding with `hc-more`
-                this.beforePadding = false;
-                this.chart = void 0;
                 this.coll = 'colorAxis';
-                this.dataClasses = void 0;
-                this.options = void 0;
-                this.stops = void 0;
                 this.visible = true;
                 this.init(chart, userOptions);
             }
@@ -976,16 +989,11 @@
                 const axis = this;
                 const legend = chart.options.legend || {}, horiz = userOptions.layout ?
                     userOptions.layout !== 'vertical' :
-                    legend.layout !== 'vertical', visible = userOptions.visible;
-                const options = merge(ColorAxis.defaultColorAxisOptions, userOptions, {
-                    showEmpty: false,
-                    title: null,
-                    visible: legend.enabled && visible !== false
-                });
+                    legend.layout !== 'vertical';
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                super.init(chart, options, 'colorAxis');
+                super.init(chart, userOptions, 'colorAxis');
                 // Super.init saves the extended user options, now replace it with the
                 // originals
                 this.userOptions = userOptions;
@@ -1026,36 +1034,36 @@
              * @private
              */
             setOptions(userOptions) {
-                const axis = this;
-                super.setOptions(userOptions);
-                axis.options.crosshair = axis.options.marker;
+                const options = merge(defaultOptions.colorAxis, userOptions, 
+                // Forced options
+                {
+                    showEmpty: false,
+                    title: null,
+                    visible: this.chart.options.legend.enabled &&
+                        userOptions.visible !== false
+                });
+                super.setOptions(options);
+                this.options.crosshair = this.options.marker;
             }
             /**
              * @private
              */
             setAxisSize() {
-                const axis = this;
-                const symbol = axis.legendItem && axis.legendItem.symbol;
-                const chart = axis.chart;
-                const legendOptions = chart.options.legend || {};
-                let x, y, width, height;
+                const axis = this, chart = axis.chart, symbol = axis.legendItem?.symbol;
+                let { width, height } = axis.getSize();
                 if (symbol) {
-                    this.left = x = symbol.attr('x');
-                    this.top = y = symbol.attr('y');
-                    this.width = width = symbol.attr('width');
-                    this.height = height = symbol.attr('height');
-                    this.right = chart.chartWidth - x - width;
-                    this.bottom = chart.chartHeight - y - height;
-                    this.len = this.horiz ? width : height;
-                    this.pos = this.horiz ? x : y;
+                    this.left = +symbol.attr('x');
+                    this.top = +symbol.attr('y');
+                    this.width = width = +symbol.attr('width');
+                    this.height = height = +symbol.attr('height');
+                    this.right = chart.chartWidth - this.left - width;
+                    this.bottom = chart.chartHeight - this.top - height;
+                    this.pos = this.horiz ? this.left : this.top;
                 }
-                else {
-                    // Fake length for disabled legend to avoid tick issues
-                    // and such (#5205)
-                    this.len = (this.horiz ?
-                        legendOptions.symbolWidth :
-                        legendOptions.symbolHeight) || ColorAxis.defaultLegendLength;
-                }
+                // Fake length for disabled legend to avoid tick issues
+                // and such (#5205)
+                this.len = (this.horiz ? width : height) ||
+                    ColorAxis.defaultLegendLength;
             }
             /**
              * Override the getOffset method to add the whole axis groups inside the
@@ -1064,7 +1072,7 @@
              */
             getOffset() {
                 const axis = this;
-                const group = axis.legendItem && axis.legendItem.group;
+                const group = axis.legendItem?.group;
                 const sideOffset = axis.chart.axisOffset[axis.side];
                 if (group) {
                     // Hook for the getOffset method to add groups to this parent
@@ -1118,17 +1126,25 @@
              * @private
              */
             drawLegendSymbol(legend, item) {
-                const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength), labelPadding = pick(
+                const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, { width, height } = axis.getSize(), labelPadding = pick(
                 // @todo: This option is not documented, nor implemented when
                 // vertical
                 legendOptions.labelPadding, horiz ? 16 : 30);
                 this.setLegendColor();
                 // Create the gradient
                 if (!legendItem.symbol) {
-                    legendItem.symbol = this.chart.renderer.symbol('roundedRect', 0, legend.baseline - 11, width, height, { r: legendOptions.symbolRadius ?? 3 }).attr({
+                    legendItem.symbol = this.chart.renderer.symbol('roundedRect')
+                        .attr({
+                        r: legendOptions.symbolRadius ?? 3,
                         zIndex: 1
                     }).add(legendItem.group);
                 }
+                legendItem.symbol.attr({
+                    x: 0,
+                    y: (legend.baseline || 0) - 11,
+                    width: width,
+                    height: height
+                });
                 // Set how much space this legend item takes up
                 legendItem.labelWidth = (width +
                     padding +
@@ -1195,7 +1211,8 @@
                         cSeries.minColorValue = cExtremes.dataMin;
                         cSeries.maxColorValue = cExtremes.dataMax;
                     }
-                    if (typeof cSeries.minColorValue !== 'undefined') {
+                    if (defined(cSeries.minColorValue) &&
+                        defined(cSeries.maxColorValue)) {
                         this.dataMin =
                             Math.min(this.dataMin, cSeries.minColorValue);
                         this.dataMax =
@@ -1258,8 +1275,8 @@
              */
             getPlotLinePath(options) {
                 const axis = this, left = axis.left, pos = options.translatedValue, top = axis.top;
-                // crosshairs only
-                return isNumber(pos) ? // pos can be 0 (#3969)
+                // Crosshairs only
+                return isNumber(pos) ? // `pos` can be 0 (#3969)
                     (axis.horiz ? [
                         ['M', pos - 4, top - 6],
                         ['L', pos + 4, top - 6],
@@ -1411,13 +1428,25 @@
                 }
                 return legendItems;
             }
+            /**
+             * Get size of color axis symbol.
+             * @private
+             */
+            getSize() {
+                const axis = this, { chart, horiz } = axis, { legend: legendOptions, height: colorAxisHeight, width: colorAxisWidth } = axis.options, width = pick(defined(colorAxisWidth) ?
+                    relativeLength(colorAxisWidth, chart.chartWidth) : void 0, legendOptions?.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(defined(colorAxisHeight) ?
+                    relativeLength(colorAxisHeight, chart.chartHeight) : void 0, legendOptions?.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
+                return {
+                    width,
+                    height
+                };
+            }
         }
         /* *
          *
          *  Static Properties
          *
          * */
-        ColorAxis.defaultColorAxisOptions = ColorAxisDefaults;
         ColorAxis.defaultLegendLength = 200;
         /**
          * @private
@@ -1455,7 +1484,7 @@
     _registerModule(_modules, 'Maps/MapNavigationDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1717,16 +1746,17 @@
 
         return mapNavigationDefaults;
     });
-    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { defined, extend, pick, pushUnique, wrap } = U;
         /* *
          *
@@ -1735,12 +1765,6 @@
          * */
         var MapPointer;
         (function (MapPointer) {
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
             /* *
              *
              *  Variables
@@ -1758,7 +1782,7 @@
              * @private
              */
             function compose(PointerClass) {
-                if (pushUnique(composedMembers, PointerClass)) {
+                if (pushUnique(composed, compose)) {
                     const pointerProto = PointerClass.prototype;
                     extend(pointerProto, {
                         onContainerDblClick,
@@ -1874,23 +1898,18 @@
 
         return MapPointer;
     });
-    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Variables
@@ -1911,7 +1930,7 @@
             return symbols.roundedRect(x, y, w, h, options);
         }
         function compose(SVGRendererClass) {
-            if (pushUnique(composedMembers, SVGRendererClass)) {
+            if (pushUnique(composed, compose)) {
                 symbols = SVGRendererClass.prototype.symbols;
                 symbols.bottombutton = bottomButton;
                 symbols.topbutton = topButton;
@@ -1935,10 +1954,10 @@
 
         return MapSymbols;
     });
-    _registerModule(_modules, 'Maps/MapNavigation.js', [_modules['Core/Defaults.js'], _modules['Maps/MapNavigationDefaults.js'], _modules['Maps/MapPointer.js'], _modules['Maps/MapSymbols.js'], _modules['Core/Utilities.js']], function (D, MapNavigationDefaults, MapPointer, MapSymbols, U) {
+    _registerModule(_modules, 'Maps/MapNavigation.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Maps/MapNavigationDefaults.js'], _modules['Maps/MapPointer.js'], _modules['Maps/MapSymbols.js'], _modules['Core/Utilities.js']], function (D, H, MapNavigationDefaults, MapPointer, MapSymbols, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1946,13 +1965,8 @@
          *
          * */
         const { setOptions } = D;
+        const { composed } = H;
         const { addEvent, extend, merge, objectEach, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -1997,7 +2011,7 @@
             static compose(MapChartClass, PointerClass, SVGRendererClass) {
                 MapPointer.compose(PointerClass);
                 MapSymbols.compose(SVGRendererClass);
-                if (pushUnique(composedMembers, MapChartClass)) {
+                if (pushUnique(composed, this.compose)) {
                     // Extend the Chart.render method to add zooming and panning
                     addEvent(MapChartClass, 'beforeRender', function () {
                         // Render the plus and minus buttons. Doing this before the
@@ -2005,8 +2019,6 @@
                         this.mapNavigation = new MapNavigation(this);
                         this.mapNavigation.update();
                     });
-                }
-                if (pushUnique(composedMembers, setOptions)) {
                     setOptions(MapNavigationDefaults);
                 }
             }
@@ -2016,29 +2028,14 @@
              *
              * */
             constructor(chart) {
-                this.navButtonsGroup = void 0;
                 this.chart = chart;
                 this.navButtons = [];
-                this.init(chart);
             }
             /* *
              *
              *  Functions
              *
              * */
-            /**
-             * Initialize function.
-             *
-             * @function MapNavigation#init
-             *
-             * @param {Highcharts.Chart} chart
-             *        The Chart instance.
-             *
-             * @return {void}
-             */
-            init(chart) {
-                this.chart = chart;
-            }
             /**
              * Update the map navigation with new options. Calling this is the same as
              * calling `chart.update({ mapNavigation: {} })`.
@@ -2235,7 +2232,7 @@
     _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -2256,7 +2253,6 @@
              *  Constants
              *
              * */
-            const composedMembers = [];
             ColorMapComposition.pointMembers = {
                 dataLabelOnNull: true,
                 moveToTopOnHover: true,
@@ -2281,9 +2277,7 @@
              */
             function compose(SeriesClass) {
                 const PointClass = SeriesClass.prototype.pointClass;
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    addEvent(PointClass, 'afterSetState', onPointAfterSetState);
-                }
+                addEvent(PointClass, 'afterSetState', onPointAfterSetState);
                 return SeriesClass;
             }
             ColorMapComposition.compose = compose;
@@ -2340,7 +2334,7 @@
     _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Defaults.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, D, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -2559,7 +2553,7 @@
     _registerModule(_modules, 'Maps/MapUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -2617,7 +2611,7 @@
     _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Series/ColorMapComposition.js'], _modules['Maps/MapUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapComposition, MU, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -2633,17 +2627,11 @@
          *
          * */
         class MapPoint extends ScatterPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.path = void 0;
-                this.series = void 0;
-            }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
             /**
              * Get the projected path based on the geometry. May also be called on
              * mapData options (not point instances), hence static.
@@ -2809,7 +2797,7 @@
     _registerModule(_modules, 'Series/Map/MapSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -3365,7 +3353,7 @@
     _registerModule(_modules, 'Maps/MapViewDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -3670,14 +3658,14 @@
     _registerModule(_modules, 'Maps/GeoJSONComposition.js', [_modules['Core/Globals.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (H, T, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { win } = H;
+        const { composed, win } = H;
         const { format } = T;
         const { error, extend, merge, pushUnique, wrap } = U;
         /* *
@@ -3687,12 +3675,6 @@
          * */
         var GeoJSONComposition;
         (function (GeoJSONComposition) {
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
             /* *
              *
              *  Functions
@@ -3832,7 +3814,7 @@
             }
             /** @private */
             function compose(ChartClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
                     const proto = ChartClass.prototype;
                     proto.fromLatLonToPoint = chartFromLatLonToPoint;
                     proto.fromPointToLatLon = chartFromPointToLatLon;
@@ -4182,7 +4164,7 @@
     _registerModule(_modules, 'Core/Geometry/PolygonClip.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5205,16 +5187,17 @@
 
         return Projection;
     });
-    _registerModule(_modules, 'Maps/MapView.js', [_modules['Maps/MapViewDefaults.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Maps/MapUtilities.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (MapViewDefaults, GeoJSONComposition, MU, Projection, U) {
+    _registerModule(_modules, 'Maps/MapView.js', [_modules['Core/Globals.js'], _modules['Maps/MapViewDefaults.js'], _modules['Maps/GeoJSONComposition.js'], _modules['Maps/MapUtilities.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (H, MapViewDefaults, GeoJSONComposition, MU, Projection, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { topo2geo } = GeoJSONComposition;
         const { boundsFromPath, pointInPolygon } = MU;
         const { addEvent, clamp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } = U;
@@ -5223,7 +5206,6 @@
          *  Constants
          *
          * */
-        const composedMembers = [];
         const tileSize = 256;
         /**
          * The world size in terms of 10k meters in the Web Mercator projection, to
@@ -5300,7 +5282,7 @@
              *
              * */
             static compose(MapChartClass) {
-                if (pushUnique(composedMembers, MapChartClass)) {
+                if (pushUnique(composed, this.compose)) {
                     maps = MapChartClass.maps;
                     // Initialize MapView after initialization, but before firstRender
                     addEvent(MapChartClass, 'afterInit', function () {
@@ -6248,7 +6230,7 @@
     _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Series/Map/MapSeriesDefaults.js'], _modules['Maps/MapView.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, MapChart, MapPoint, MapSeriesDefaults, MapView, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -6282,12 +6264,6 @@
                  *
                  * */
                 super(...arguments);
-                this.chart = void 0;
-                this.data = void 0;
-                this.group = void 0;
-                this.joinBy = void 0;
-                this.options = void 0;
-                this.points = void 0;
                 this.processedData = [];
             }
             /* *
@@ -6513,7 +6489,8 @@
                                     applyDrilldown: true
                                 });
                             }
-                        });
+                            fireEvent(this, 'mapZoomComplete');
+                        }.bind(this));
                         // When dragging or first rendering, animation is off
                     }
                     else {
@@ -6933,7 +6910,7 @@
     _registerModule(_modules, 'Series/MapLine/MapLineSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7070,7 +7047,7 @@
     _registerModule(_modules, 'Series/MapLine/MapLineSeries.js', [_modules['Series/MapLine/MapLineSeriesDefaults.js'], _modules['Series/Map/MapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MapLineSeriesDefaults, MapSeries, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7091,22 +7068,6 @@
          * @augments Highcharts.Series
          */
         class MapLineSeries extends MapSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -7125,6 +7086,11 @@
                 return attr;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         MapLineSeries.defaultOptions = merge(MapSeries.defaultOptions, MapLineSeriesDefaults);
         extend(MapLineSeries.prototype, {
             type: 'mapline',
@@ -7146,7 +7112,7 @@
     _registerModule(_modules, 'Series/MapPoint/MapPointPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7161,16 +7127,6 @@
          *
          * */
         class MapPointPoint extends ScatterSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -7193,7 +7149,7 @@
     _registerModule(_modules, 'Series/MapPoint/MapPointSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7393,7 +7349,7 @@
     _registerModule(_modules, 'Series/MapPoint/MapPointSeries.js', [_modules['Core/Globals.js'], _modules['Series/MapPoint/MapPointPoint.js'], _modules['Series/MapPoint/MapPointSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, MapPointPoint, MapPointSeriesDefaults, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7423,15 +7379,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
                 this.clearBounds = MapSeries.prototype.clearBounds;
                 /* eslint-enable valid-jsdoc */
             }
@@ -7596,7 +7543,7 @@
     _registerModule(_modules, 'Series/Bubble/BubbleLegendDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Paweł Potaczek
          *
@@ -7864,7 +7811,7 @@
     _registerModule(_modules, 'Series/Bubble/BubbleLegendItem.js', [_modules['Core/Color/Color.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, F, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Paweł Potaczek
          *
@@ -7900,20 +7847,6 @@
              *
              * */
             constructor(options, legend) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.legend = void 0;
-                this.maxLabel = void 0;
-                this.movementX = void 0;
-                this.ranges = void 0;
-                this.selected = void 0;
-                this.visible = void 0;
-                this.symbols = void 0;
-                this.options = void 0;
                 this.setState = noop;
                 this.init(options, legend);
             }
@@ -8316,10 +8249,10 @@
 
         return BubbleLegendItem;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegendComposition.js', [_modules['Series/Bubble/BubbleLegendDefaults.js'], _modules['Series/Bubble/BubbleLegendItem.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (BubbleLegendDefaults, BubbleLegendItem, D, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegendComposition.js', [_modules['Series/Bubble/BubbleLegendDefaults.js'], _modules['Series/Bubble/BubbleLegendItem.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BubbleLegendDefaults, BubbleLegendItem, D, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Paweł Potaczek
          *
@@ -8329,13 +8262,8 @@
          *
          * */
         const { setOptions } = D;
-        const { addEvent, objectEach, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, objectEach, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -8413,7 +8341,7 @@
          * Core series class to use with Bubble series.
          */
         function compose(ChartClass, LegendClass, SeriesClass) {
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 setOptions({
                     // Set default bubble legend options
                     legend: {
@@ -8421,11 +8349,7 @@
                     }
                 });
                 wrap(ChartClass.prototype, 'drawChartBox', chartDrawChartBox);
-            }
-            if (U.pushUnique(composedMembers, LegendClass)) {
                 addEvent(LegendClass, 'afterGetAllItems', onLegendAfterGetAllItems);
-            }
-            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'legendItemClick', onSeriesLegendItemClick);
             }
         }
@@ -8595,7 +8519,7 @@
     _registerModule(_modules, 'Series/Bubble/BubblePoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Point, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -8610,17 +8534,6 @@
          *
          * */
         class BubblePoint extends ScatterPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-                /* eslint-enable valid-jsdoc */
-            }
             /* *
              *
              *  Functions
@@ -8655,7 +8568,7 @@
     _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Series/Bubble/BubbleLegendComposition.js'], _modules['Series/Bubble/BubblePoint.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleLegendComposition, BubblePoint, Color, H, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -8663,15 +8576,9 @@
          *
          * */
         const { parse: color } = Color;
-        const { noop } = H;
+        const { composed, noop } = H;
         const { series: Series, seriesTypes: { column: { prototype: columnProto }, scatter: ScatterSeries } } = SeriesRegistry;
-        const { addEvent, arrayMax, arrayMin, clamp, extend, isNumber, merge, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, arrayMax, arrayMin, clamp, extend, isNumber, merge, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -8681,9 +8588,12 @@
          * Add logic to pad each axis with the amount of pixels necessary to avoid the
          * bubbles to overflow.
          */
-        function axisBeforePadding() {
-            const axisLength = this.len, chart = this.chart, isXAxis = this.isXAxis, dataKey = isXAxis ? 'xData' : 'yData', min = this.min, range = this.max - min;
+        function onAxisFoundExtremes() {
+            const axisLength = this.len, { coll, isXAxis, min } = this, dataKey = isXAxis ? 'xData' : 'yData', range = (this.max || 0) - (min || 0);
             let pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
+            if (coll !== 'xAxis' && coll !== 'yAxis') {
+                return;
+            }
             // Handle padding on the second pass, or on redraw
             this.series.forEach((series) => {
                 if (series.bubblePadding && series.reserveSpace()) {
@@ -8733,27 +8643,6 @@
          *
          * */
         class BubbleSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.maxPxSize = void 0;
-                this.minPxSize = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.radii = void 0;
-                this.yData = void 0;
-                this.zData = void 0;
-            }
             /* *
              *
              *  Static Functions
@@ -8761,8 +8650,8 @@
              * */
             static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
                 BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
-                if (U.pushUnique(composedMembers, AxisClass)) {
-                    AxisClass.prototype.beforePadding = axisBeforePadding;
+                if (pushUnique(composed, this.compose)) {
+                    addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
                 }
             }
             /* *
@@ -8967,6 +8856,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * A bubble series is a three dimensional series type where each point
          * renders an X, Y and Z value. Each points is drawn as a bubble where the
@@ -9332,7 +9226,7 @@
     _registerModule(_modules, 'Series/MapBubble/MapBubblePoint.js', [_modules['Series/Bubble/BubblePoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubblePoint, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -9376,7 +9270,7 @@
     _registerModule(_modules, 'Series/MapBubble/MapBubbleSeries.js', [_modules['Series/Bubble/BubbleSeries.js'], _modules['Series/MapBubble/MapBubblePoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleSeries, MapBubblePoint, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -9408,19 +9302,11 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
                 this.clearBounds = mapProto.clearBounds;
             }
             searchPoint(e, compareX) {
                 return this.searchKDTree({
-                    clientX: e.chartX - this.chart.plotLeft,
+                    plotX: e.chartX - this.chart.plotLeft,
                     plotY: e.chartY - this.chart.plotTop
                 }, compareX, e);
             }
@@ -9625,6 +9511,7 @@
             pointClass: MapBubblePoint,
             processData: mapProto.processData,
             projectPoint: mapPointProto.projectPoint,
+            kdAxisArray: ['plotX', 'plotY'],
             setData: mapProto.setData,
             setOptions: mapProto.setOptions,
             updateData: mapProto.updateData,
@@ -9711,7 +9598,7 @@
     _registerModule(_modules, 'Series/Heatmap/HeatmapPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -9726,19 +9613,6 @@
          *
          * */
         class HeatmapPoint extends ScatterPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-                this.value = void 0;
-                this.x = void 0;
-                this.y = void 0;
-            }
             /* *
              *
              *  Functions
@@ -9835,7 +9709,7 @@
     _registerModule(_modules, 'Series/Heatmap/HeatmapSeriesDefaults.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10475,7 +10349,7 @@
     _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik
+         *  (c) 2010-2024 Hubert Kozik
          *
          *  License: www.highcharts.com/license
          *
@@ -10547,7 +10421,7 @@
     _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Series/Heatmap/HeatmapSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Series/InterpolationUtilities.js']], function (Color, ColorMapComposition, HeatmapPoint, HeatmapSeriesDefaults, SeriesRegistry, SVGRenderer, U, IU) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10578,17 +10452,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.canvas = void 0;
-                this.colorAxis = void 0;
-                this.context = void 0;
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
                 this.valueMax = NaN;
                 this.valueMin = NaN;
                 this.isDirtyCanvas = true;

@@ -25,22 +25,6 @@ const { correctFloat, merge } = U;
  * @augments Highcharts.Series
  */
 class TRIXIndicator extends TEMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -58,6 +42,11 @@ class TRIXIndicator extends TEMAIndicator {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Triple exponential average (TRIX) oscillator. This series requires
  * `linkedTo` option to be set.
