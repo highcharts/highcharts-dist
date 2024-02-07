@@ -6,5 +6,5 @@ aws s3 cp ./www/ s3://{bucket-goes-here} \
 --recursive \
 --exclude README.md \
 --acl public-read \
---dryrun 
+--dryrun # for testing
 ```
