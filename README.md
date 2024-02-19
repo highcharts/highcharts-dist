@@ -3,7 +3,7 @@ Highcharts is a JavaScript charting library based on SVG rendering. This project
 This package is intended for supporting client-side JavaScript charting through bundlers like Parcel or Webpack and environments like Babel or TypeScript. If you intend to generate static charts on the server side, use the [Highcharts node.js Export Server](https://www.npmjs.com/package/highcharts-export-server) instead.
 
 ### License
-Please note that commercial use of Highcharts requires a commercial license. For testing and demonstration purposes (POC), Highcharts can be used free of charge. Non-profit organisations, schools and personal websites are qualified for the free license. Read more about licenses [in the Highcharts shop](https://shop.highsoft.com/?utm_source=npmjs&utm_medium=referral&utm_campaign=highchartspage&utm_content=licenseinfo).
+Please note that commercial use of Highcharts requires a commercial license. Non-commercial use may qualify for a free educational or personal license. Read more about licenses [in the Highcharts shop](https://shop.highsoft.com/?utm_source=npmjs&utm_medium=referral&utm_campaign=highchartspage&utm_content=licenseinfo).
 
 ### Links
 * Official website: [www.highcharts.com](http://www.highcharts.com)
