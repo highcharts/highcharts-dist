@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,6 +8,8 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
 const { defined, extend, pick, pushUnique, wrap } = U;
 /* *
@@ -17,12 +19,6 @@ const { defined, extend, pick, pushUnique, wrap } = U;
  * */
 var MapPointer;
 (function (MapPointer) {
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
     /* *
      *
      *  Variables
@@ -40,7 +36,7 @@ var MapPointer;
      * @private
      */
     function compose(PointerClass) {
-        if (pushUnique(composedMembers, PointerClass)) {
+        if (pushUnique(composed, compose)) {
             const pointerProto = PointerClass.prototype;
             extend(pointerProto, {
                 onContainerDblClick,

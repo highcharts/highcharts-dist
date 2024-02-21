@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -28,23 +28,12 @@ const { merge, extend } = U;
  * @augments Highcharts.Series
  */
 class AreaSplineRangeSeries extends AreaRangeSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
-        this.data = void 0;
-        this.points = void 0;
-    }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 AreaSplineRangeSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions);
 extend(AreaSplineRangeSeries.prototype, {
     getPointSpline: splineProto.getPointSpline

@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
  * X-range series
  *
- * (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */

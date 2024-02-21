@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -36,10 +36,10 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/Exporting/Fullscreen.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (AST, U) {
+    _registerModule(_modules, 'Extensions/Exporting/Fullscreen.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (AST, H, U) {
         /* *
          *
-         *  (c) 2009-2021 Rafal Sebestjanski
+         *  (c) 2009-2024 Rafal Sebestjanski
          *
          *  Full screen for Highcharts
          *
@@ -58,13 +58,8 @@
          *  Imports
          *
          * */
-        const { addEvent, fireEvent } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, fireEvent, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -109,7 +104,7 @@
              * The chart class to decorate with fullscreen support.
              */
             static compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, this.compose)) {
                     // Initialize fullscreen
                     addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 }

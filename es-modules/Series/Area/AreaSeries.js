@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -29,18 +29,6 @@ const { extend, merge, objectEach, pick } = U;
  * @augments LineSeries
  */
 class AreaSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -59,51 +47,49 @@ class AreaSeries extends LineSeries {
         // Call the base method
         super.drawGraph.apply(this);
         // Define local variables
-        const series = this, areaPath = this.areaPath, options = this.options, zones = this.zones, props = [[
-                'area',
-                'highcharts-area',
-                this.color,
-                options.fillColor
-            ]]; // area name, main color, fill color
-        zones.forEach(function (zone, i) {
-            props.push([
-                'zone-area-' + i,
-                'highcharts-area highcharts-zone-area-' + i + ' ' +
-                    zone.className,
-                zone.color || series.color,
-                zone.fillColor || options.fillColor
-            ]);
-        });
-        props.forEach(function (prop) {
-            const areaKey = prop[0], attribs = {};
-            let area = series[areaKey];
+        const { areaPath, options } = this;
+        [this, ...this.zones].forEach((owner, i) => {
+            const attribs = {}, fillColor = owner.fillColor || options.fillColor;
+            let area = owner.area;
             const verb = area ? 'animate' : 'attr';
             // Create or update the area
-            if (area) { // update
-                area.endX = series.preventGraphAnimation ?
+            if (area) { // Update
+                area.endX = this.preventGraphAnimation ?
                     null :
                     areaPath.xMap;
                 area.animate({ d: areaPath });
             }
-            else { // create
+            else { // Create
                 attribs.zIndex = 0; // #1069
-                area = series[areaKey] = series.chart.renderer
+                /**
+                 * SVG element of area-based charts. Can be used for styling
+                 * purposes. If zones are configured, this element will be
+                 * hidden and replaced by multiple zone areas, accessible
+                 * via `series.zones[i].area`.
+                 *
+                 * @name Highcharts.Series#area
+                 * @type {Highcharts.SVGElement|undefined}
+                 */
+                area = owner.area = this.chart.renderer
                     .path(areaPath)
-                    .addClass(prop[1])
-                    .add(series.group);
+                    .addClass('highcharts-area' +
+                    (i ? ` highcharts-zone-area-${i - 1} ` : ' ') +
+                    ((i && owner.className) || ''))
+                    .add(this.group);
                 area.isArea = true;
             }
-            if (!series.chart.styledMode) {
-                // If there is fillColor defined for the area, set it
-                if (prop[3]) {
-                    attribs.fill = prop[3];
-                }
-                else {
-                    // Otherwise, we set it to the series color and add
-                    // fill-opacity (#18939)
-                    attribs.fill = prop[2];
-                    attribs['fill-opacity'] = pick(options.fillOpacity, 0.75);
-                }
+            if (!this.chart.styledMode) {
+                // If there is fillColor defined for the area, set it.
+                // Otherwise, we set it to the zone/series color and add
+                // fill-opacity (#18939).
+                attribs.fill = fillColor || owner.color || this.color;
+                attribs['fill-opacity'] = fillColor ?
+                    1 : (options.fillOpacity ?? 0.75);
+                // Allow clicking through the area if sticky tracking is true
+                // (#18744)
+                area.css({
+                    pointerEvents: this.stickyTracking ? 'none' : 'auto'
+                });
             }
             area[verb](attribs);
             area.startX = areaPath.xMap;
@@ -324,6 +310,11 @@ class AreaSeries extends LineSeries {
         return segment;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * The area series type.
  *
@@ -345,8 +336,8 @@ AreaSeries.defaultOptions = merge(LineSeries.defaultOptions, {
      * @apioption plotOptions.area.color
      */
     /**
-     * Fill color or gradient for the area. When `null`, the series' `color`
-     * is used with the series' `fillOpacity`.
+     * Fill color or gradient for the area. When `undefined`, the series'
+     * `color` is used with the series' `fillOpacity`.
      *
      * In styled mode, the fill color can be set with the `.highcharts-area`
      * class name.
@@ -355,7 +346,7 @@ AreaSeries.defaultOptions = merge(LineSeries.defaultOptions, {
      * @see [fillOpacity](#plotOptions.area.fillOpacity)
      *
      * @sample {highcharts} highcharts/plotoptions/area-fillcolor-default/
-     *         Null by default
+     *         Undefined by default
      * @sample {highcharts} highcharts/plotoptions/area-fillcolor-gradient/
      *         Gradient
      *
@@ -450,7 +441,7 @@ AreaSeries.defaultOptions = merge(LineSeries.defaultOptions, {
      * @product highcharts highstock
      */
     threshold: 0,
-    legendSymbol: 'rectangle'
+    legendSymbol: 'areaMarker'
 });
 extend(AreaSeries.prototype, {
     singleStacks: false

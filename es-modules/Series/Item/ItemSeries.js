@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2019-2021 Torstein Honsi
+ *  (c) 2019-2024 Torstein Honsi
  *
  *  Item series type for Highcharts
  *
@@ -35,17 +35,6 @@ const { defined, extend, fireEvent, isNumber, merge, pick } = U;
  * @augments Highcharts.seriesTypes.pie
  */
 class ItemSeries extends PieSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -329,6 +318,11 @@ class ItemSeries extends PieSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ItemSeries.defaultOptions = merge(PieSeries.defaultOptions, ItemSeriesDefaults);
 extend(ItemSeries.prototype, {
     markerAttribs: void 0,

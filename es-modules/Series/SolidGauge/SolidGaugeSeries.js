@@ -2,7 +2,7 @@
  *
  *  Solid angular gauge module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -32,26 +32,6 @@ const { clamp, extend, isNumber, merge, pick, pInt } = U;
  * @augments Highcarts.Series
  */
 class SolidGaugeSeries extends GaugeSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.points = void 0;
-        this.options = void 0;
-        this.axis = void 0;
-        this.yAxis = void 0;
-        this.startAngleRad = void 0;
-        this.thresholdAngleRad = void 0;
-    }
     /* *
      *
      *  Functions
@@ -165,6 +145,11 @@ class SolidGaugeSeries extends GaugeSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);
 SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
 /* *

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Streamgraph module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Streamgraph module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -194,7 +194,7 @@
          *
          *  Streamgraph module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -213,22 +213,6 @@
          * @augments Highcharts.Series
          */
         class StreamgraphSeries extends AreaSplineSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-            }
             /* *
              *
              *  Functions
@@ -245,6 +229,11 @@
                 this.stackedYData[i] = pointExtremes;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         StreamgraphSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, StreamgraphSeriesDefaults);
         extend(StreamgraphSeries.prototype, {
             negStacks: false

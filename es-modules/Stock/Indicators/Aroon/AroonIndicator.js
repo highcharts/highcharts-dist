@@ -47,22 +47,6 @@ function getExtremeIndexInArray(arr, extreme) {
  * @augments Highcharts.Series
  */
 class AroonIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -99,6 +83,11 @@ class AroonIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Aroon. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js`.

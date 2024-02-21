@@ -2,7 +2,7 @@
  *
  *  Timeline Series.
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Daniel Studencki
  *
@@ -33,24 +33,6 @@ const { addEvent, arrayMax, arrayMin, defined, extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class TimelineSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.userOptions = void 0;
-        this.visibilityMap = void 0;
-    }
     /* *
      *
      *  Functions
@@ -262,6 +244,11 @@ class TimelineSeries extends LineSeries {
         return;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 TimelineSeries.defaultOptions = merge(LineSeries.defaultOptions, TimelineSeriesDefaults);
 extend(TimelineSeries.prototype, {
     // Use a group of trackers from TrackerMixin

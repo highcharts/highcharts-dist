@@ -2,7 +2,7 @@
  *
  *  Highcharts variwide module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -30,20 +30,6 @@ const { addEvent, extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class VariwideSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.relZ = void 0;
-        this.totalZ = void 0;
-        this.zData = void 0;
-    }
     /* *
      *
      * Functions
@@ -134,6 +120,11 @@ class VariwideSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 VariwideSeries.compose = VariwideComposition.compose;
 VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);
 // Extend translation by distoring X position based on Z.

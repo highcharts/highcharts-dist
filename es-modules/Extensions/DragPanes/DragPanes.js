@@ -2,7 +2,7 @@
  *
  *  Plugin for resizing axes / panes in a chart.
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -13,14 +13,12 @@
  * */
 'use strict';
 import AxisResizer from './AxisResizer.js';
+import D from '../../Core/Defaults.js';
+const { defaultOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, merge, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, merge, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -30,14 +28,12 @@ const composedMembers = [];
  * @private
  */
 function compose(AxisClass, PointerClass) {
-    if (U.pushUnique(composedMembers, AxisClass)) {
-        merge(true, AxisClass.defaultOptions, AxisResizer.resizerOptions);
+    if (pushUnique(composed, compose)) {
+        merge(true, defaultOptions.yAxis, AxisResizer.resizerOptions);
         // Keep resizer reference on axis update
         AxisClass.keepProps.push('resizer');
         addEvent(AxisClass, 'afterRender', onAxisAfterRender);
         addEvent(AxisClass, 'destroy', onAxisDestroy);
-    }
-    if (U.pushUnique(composedMembers, PointerClass)) {
         wrap(PointerClass.prototype, 'runPointActions', wrapPointerRunPointActions);
         wrap(PointerClass.prototype, 'drag', wrapPointerDrag);
     }

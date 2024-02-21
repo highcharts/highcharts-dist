@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  *  License: www.highcharts.com/license
  *
@@ -17,17 +17,6 @@ const { extend, pick } = U;
  *
  * */
 class DumbbellPoint extends AreaRangePoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.series = void 0;
-        this.options = void 0;
-        this.pointWidth = void 0;
-    }
     /* *
      *
      *  Functions

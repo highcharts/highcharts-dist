@@ -50,22 +50,6 @@ function getPointLB(low, base) {
  * @augments Highcharts.Series
  */
 class ABandsIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -133,6 +117,11 @@ class ABandsIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Acceleration bands (ABANDS). This series requires the `linkedTo` option
  * to be set and should be loaded after the

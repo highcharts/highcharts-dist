@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * Organization chart series type
  *
- * (c) 2019-2021 Torstein Honsi
+ * (c) 2019-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -39,7 +39,7 @@
          *
          *  Organization chart module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -78,32 +78,17 @@
          *
          * */
         class OrganizationPoint extends SankeyPointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.fromNode = void 0;
-                this.linksFrom = void 0;
-                this.linksTo = void 0;
-                this.options = void 0;
-                this.series = void 0;
-                this.toNode = void 0;
-            }
             /* *
              *
              *  Functions
              *
              * */
-            init() {
-                super.init.apply(this, arguments);
+            constructor(series, options, x) {
+                super(series, options, x);
                 if (!this.isNode) {
                     this.dataLabelOnNull = true;
                     this.formatPrefix = 'link';
                 }
-                return this;
             }
             /**
              * All nodes in an org chart are equal width.
@@ -169,7 +154,7 @@
          *
          *  Organization chart module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -626,7 +611,7 @@
     _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -758,7 +743,7 @@
          *
          *  Organization chart module
          *
-         *  (c) 2018-2021 Torstein Honsi
+         *  (c) 2018-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -780,22 +765,6 @@
          * @augments Highcharts.seriesTypes.sankey
          */
         class OrganizationSeries extends SankeySeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -946,7 +915,7 @@
             }
             translateNode(node, column) {
                 super.translateNode(node, column);
-                const chart = this.chart, options = this.options, indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
+                const chart = this.chart, options = this.options, translationFactor = this.translationFactor, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth || 0), nodeWidth = Math.round(this.nodeWidth), indent = options.hangingIndent || 0, sign = chart.inverted ? -1 : 1, shapeArgs = node.shapeArgs, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10;
                 let parentNode = node.hangsFrom;
                 if (parentNode) {
                     if (indentLogic === 'cumulative') {
@@ -967,7 +936,7 @@
                         }
                     }
                     else {
-                        // indentLogic === "inherit"
+                        // Option indentLogic === "inherit"
                         // Do nothing (v9.3.2 and prev versions):
                         shapeArgs.height -= indent;
                         if (!chart.inverted) {
@@ -978,6 +947,15 @@
                 node.nodeHeight = chart.inverted ?
                     shapeArgs.width :
                     shapeArgs.height;
+                // Calculate shape args correctly to align nodes to center (#19946)
+                if (node.shapeArgs && !node.hangsFrom) {
+                    node.shapeArgs = merge(node.shapeArgs, {
+                        x: (node.shapeArgs.x || 0) + (nodeWidth / 2) -
+                            ((node.shapeArgs.width || 0) / 2),
+                        y: (node.shapeArgs.y || 0) + (nodeHeight / 2) -
+                            ((node.shapeArgs.height || 0) / 2)
+                    });
+                }
             }
             drawDataLabels() {
                 const dlOptions = this.options.dataLabels;
@@ -989,6 +967,11 @@
                 super.drawDataLabels();
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
         extend(OrganizationSeries.prototype, {
             pointClass: OrganizationPoint

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,12 +11,12 @@
 import F from './Templating.js';
 const { format } = F;
 import H from './Globals.js';
-const { doc, isSafari } = H;
+const { composed, doc, isSafari } = H;
 import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import RendererRegistry from './Renderer/RendererRegistry.js';
 import U from './Utilities.js';
-const { addEvent, clamp, css, discardElement, extend, fireEvent, isArray, isNumber, isString, merge, pick, splat, syncTimeout } = U;
+const { addEvent, clamp, css, discardElement, extend, fireEvent, isArray, isNumber, isString, merge, pick, pushUnique, splat, syncTimeout } = U;
 /* *
  *
  *  Class
@@ -366,12 +366,10 @@ class Tooltip {
      *         Recommended position of the tooltip.
      */
     getPosition(boxWidth, boxHeight, point) {
-        const chart = this.chart, distance = this.distance, ret = {}, 
+        const { distance, chart, outside } = this, { inverted, plotLeft, plotTop, polar } = chart, { plotX = 0, plotY = 0 } = point, ret = {}, 
         // Don't use h if chart isn't inverted (#7242) ???
-        h = (chart.inverted && point.h) || 0, // #4117 ???
-        outside = this.outside, playingField = this.getPlayingField(), outerWidth = playingField.width, outerHeight = playingField.height, chartPosition = chart.pointer.getChartPosition(), scaleX = (val) => ( // eslint-disable-line no-confusing-arrow
-        val * chartPosition.scaleX), scaleY = (val) => ( // eslint-disable-line no-confusing-arrow
-        val * chartPosition.scaleY), 
+        h = (inverted && point.h) || 0, // #4117 ???
+        { height: outerHeight, width: outerWidth } = this.getPlayingField(), chartPosition = chart.pointer.getChartPosition(), scaleX = (val) => (val * chartPosition.scaleX), scaleY = (val) => (val * chartPosition.scaleY), 
         // Build parameter arrays for firstDimension()/secondDimension()
         buildDimensionArray = (dim) => {
             const isX = dim === 'x';
@@ -385,33 +383,30 @@ class Tooltip {
                 // is a transform/zoom on the container. #11329
                 isX ? scaleX(boxWidth) : scaleY(boxHeight),
                 isX ? chartPosition.left - distance +
-                    scaleX(point.plotX + chart.plotLeft) :
+                    scaleX(plotX + plotLeft) :
                     chartPosition.top - distance +
-                        scaleY(point.plotY + chart.plotTop),
+                        scaleY(plotY + plotTop),
                 0,
                 isX ? outerWidth : outerHeight
             ] : [
                 // Not outside, no scaling is needed
                 isX ? boxWidth : boxHeight,
-                isX ? point.plotX + chart.plotLeft :
-                    point.plotY + chart.plotTop,
-                isX ? chart.plotLeft : chart.plotTop,
-                isX ? chart.plotLeft + chart.plotWidth :
-                    chart.plotTop + chart.plotHeight
+                isX ? plotX + plotLeft : plotY + plotTop,
+                isX ? plotLeft : plotTop,
+                isX ? plotLeft + chart.plotWidth :
+                    plotTop + chart.plotHeight
             ]);
         };
         let first = buildDimensionArray('y'), second = buildDimensionArray('x'), swapped;
         // Handle negative points or reversed axis (#13780)
         let flipped = !!point.negative;
-        if (!chart.polar &&
-            chart.hoverSeries &&
-            chart.hoverSeries.yAxis &&
-            chart.hoverSeries.yAxis.reversed) {
+        if (!polar &&
+            chart.hoverSeries?.yAxis?.reversed) {
             flipped = !flipped;
         }
         // The far side is right or bottom
         const preferFarSide = !this.followPointer &&
-            pick(point.ttBelow, !chart.inverted === flipped), // #4984
+            pick(point.ttBelow, polar ? false : !inverted === flipped), // #4984
         /*
          * Handle the preferred dimension. When the preferred dimension is
          * tooltip on top or bottom of the point, it will look for space
@@ -452,13 +447,12 @@ class Tooltip {
          */
         secondDimension = function (dim, outerSize, innerSize, scaledInnerSize, // #11329
         point) {
-            let retVal;
             // Too close to the edge, return false and swap dimensions
             if (point < distance || point > outerSize - distance) {
-                retVal = false;
-                // Align left/top
+                return false;
             }
-            else if (point < innerSize / 2) {
+            // Align left/top
+            if (point < innerSize / 2) {
                 ret[dim] = 1;
                 // Align right/bottom
             }
@@ -469,17 +463,14 @@ class Tooltip {
             else {
                 ret[dim] = point - innerSize / 2;
             }
-            return retVal;
         }, 
         /*
          * Swap the dimensions
          */
         swap = function (count) {
-            const temp = first;
-            first = second;
-            second = temp;
+            [first, second] = [second, first];
             swapped = count;
-        }, run = function () {
+        }, run = () => {
             if (firstDimension.apply(0, first) !== false) {
                 if (secondDimension.apply(0, second) === false &&
                     !swapped) {
@@ -496,7 +487,7 @@ class Tooltip {
             }
         };
         // Under these conditions, prefer the tooltip on the side of the point
-        if (chart.inverted || this.len > 1) {
+        if ((inverted && !polar) || this.len > 1) {
             swap();
         }
         run();
@@ -1278,12 +1269,6 @@ class Tooltip {
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -1291,7 +1276,7 @@ class Tooltip {
      * @private
      */
     function compose(PointerClass) {
-        if (U.pushUnique(composedMembers, PointerClass)) {
+        if (pushUnique(composed, compose)) {
             addEvent(PointerClass, 'afterInit', function () {
                 const chart = this.chart;
                 if (chart.options.tooltip) {

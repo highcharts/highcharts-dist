@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -45,21 +45,8 @@ class TreegraphSeries extends TreemapSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.layoutModifier = void 0;
-        this.nodeMap = void 0;
-        this.tree = void 0;
         this.nodeList = [];
-        this.layoutAlgorythm = void 0;
         this.links = [];
-        this.mapOptionsToLevel = void 0;
     }
     /* *
      *
@@ -131,7 +118,7 @@ class TreegraphSeries extends TreemapSeries {
             if (point.node.parent) {
                 const pointOptions = merge(levelOptions, point.options);
                 if (!point.linkToParent || point.linkToParent.destroyed) {
-                    const link = new series.LinkClass().init(series, pointOptions, void 0, point);
+                    const link = new series.LinkClass(series, pointOptions, void 0, point);
                     point.linkToParent = link;
                 }
                 else {

@@ -384,15 +384,15 @@ declare module "../highcharts" {
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
     /**
-     * Add logic to pad each axis with the amount of pixels necessary to avoid
-     * the bubbles to overflow.
-     */
-    function axisBeforePadding(): void;
-    /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.
      */
     function chartDrawChartBox(): void;
+    /**
+     * Add logic to pad each axis with the amount of pixels necessary to avoid
+     * the bubbles to overflow.
+     */
+    function onAxisFoundExtremes(): void;
     /**
      * Toggle bubble legend depending on the visible status of bubble series.
      */

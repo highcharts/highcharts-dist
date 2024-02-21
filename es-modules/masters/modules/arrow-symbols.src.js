@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
  * Arrow Symbols
  *
- * (c) 2017-2021 Lars A. V. Cabrera
+ * (c) 2017-2024 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */

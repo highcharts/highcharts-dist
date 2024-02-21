@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,18 +8,14 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import OHLCPoint from './OHLCPoint.js';
 import OHLCSeriesDefaults from './OHLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { hlc: HLCSeries } } = SeriesRegistry;
+const { hlc: HLCSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, extend, merge, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -68,29 +64,13 @@ function onSeriesInit(eventOptions) {
  * @augments Highcharts.Series
  */
 class OHLCSeries extends HLCSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Static Functions
      *
      * */
     static compose(SeriesClass, ..._args) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(SeriesClass, 'afterSetOptions', onSeriesAfterSetOptions);
             addEvent(SeriesClass, 'init', onSeriesInit);
         }
@@ -130,6 +110,11 @@ class OHLCSeries extends HLCSeries {
         return [point.open, point.high, point.low, point.close];
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, OHLCSeriesDefaults);
 extend(OHLCSeries.prototype, {
     pointClass: OHLCPoint,

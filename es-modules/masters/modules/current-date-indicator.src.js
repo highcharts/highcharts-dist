@@ -1,11 +1,11 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/current-date-indicator
  * @requires highcharts
  *
  * CurrentDateIndicator
  *
- * (c) 2010-2021 Lars A. V. Cabrera
+ * (c) 2010-2024 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */

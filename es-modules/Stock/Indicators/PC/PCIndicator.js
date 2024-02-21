@@ -28,22 +28,6 @@ const { merge, extend } = U;
  * @augments Highcharts.Series
  */
 class PCIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -77,6 +61,11 @@ class PCIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Price channel (PC). This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js`.

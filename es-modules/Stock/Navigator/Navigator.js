@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -65,34 +65,7 @@ class Navigator {
      *
      * */
     constructor(chart) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.baseSeries = void 0;
-        this.chart = void 0;
-        this.handles = void 0;
-        this.height = void 0;
-        this.left = void 0;
-        this.navigatorEnabled = void 0;
-        this.navigatorGroup = void 0;
-        this.navigatorOptions = void 0;
-        this.navigatorSeries = void 0;
-        this.navigatorSize = void 0;
-        this.opposite = void 0;
-        this.outline = void 0;
-        this.range = void 0;
-        this.rendered = void 0;
         this.scrollbarHeight = 0;
-        this.scrollButtonSize = void 0;
-        this.shades = void 0;
-        this.size = void 0;
-        this.top = void 0;
-        this.xAxis = void 0;
-        this.yAxis = void 0;
-        this.zoomedMax = void 0;
-        this.zoomedMin = void 0;
         this.init(chart);
     }
     /* *

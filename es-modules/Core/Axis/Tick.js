@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -197,7 +197,7 @@ class Tick {
              * @name Highcharts.Tick#label
              * @type {Highcharts.SVGElement|undefined}
              */
-            tick.label = label = tick.createLabel({ x: 0, y: 0 }, str, labelOptions);
+            tick.label = label = tick.createLabel(str, labelOptions);
             // Base value to detect change for new calls to getBBox
             tick.rotation = 0;
             // update
@@ -220,12 +220,12 @@ class Tick {
      * @private
      * @function Highcharts.Tick#createLabel
      */
-    createLabel(xy, str, labelOptions) {
+    createLabel(str, labelOptions, xy) {
         const axis = this.axis, chart = axis.chart, label = defined(str) && labelOptions.enabled ?
             chart.renderer
-                .text(str, xy.x, xy.y, labelOptions.useHTML)
+                .text(str, xy?.x, xy?.y, labelOptions.useHTML)
                 .add(axis.labelGroup) :
-            null;
+            void 0;
         // Un-rotated length
         if (label) {
             // Without position absolute, IE export sometimes is wrong
@@ -472,7 +472,7 @@ class Tick {
         // Create new label if the actual one is moved
         if (!moved && (tick.labelPos || label)) {
             labelPos = tick.labelPos || label.xy;
-            tick.movedLabel = tick.createLabel(labelPos, str, labelOptions);
+            tick.movedLabel = tick.createLabel(str, labelOptions, labelPos);
             if (tick.movedLabel) {
                 tick.movedLabel.attr({ opacity: 0 });
             }

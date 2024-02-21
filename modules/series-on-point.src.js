@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Series on point module
  *
- * (c) 2010-2022 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Rafal Sebestjanski and Piotr Madej
  *
  * License: www.highcharts.com/license
@@ -36,18 +36,19 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/SeriesOnPointComposition.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Point, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/SeriesOnPointComposition.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, Point, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2010-2022 Rafal Sebestjanski, Piotr Madej
+         *  (c) 2010-2024 Rafal Sebestjanski, Piotr Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { bubble, pie, sunburst } = SeriesRegistry.seriesTypes;
-        const { addEvent, defined, find, isNumber } = U;
+        const { addEvent, defined, find, isNumber, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -62,16 +63,9 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Extends the series with a small addition.
              *
@@ -84,24 +78,22 @@
              * Chart class to use.
              */
             function compose(SeriesClass, ChartClass) {
-                const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
-                // We can mark support for pie series here because it's in the core.
-                // But all other series outside the core should be marked in its module.
-                // This is crucial when loading series-on-point before loading a
-                // module, e.g. sunburst.
-                // Supported series types:
-                // - pie
-                // - sunburst
-                pie.prototype.onPointSupported = true;
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    addEvent(Series, 'afterInit', seriesAfterInit);
-                    addEvent(Series, 'afterRender', seriesAfterRender);
-                    addEvent(Series, 'afterGetCenter', seriesGetCenter);
-                    addEvent(Series, 'hide', seriesShowOrHide);
-                    addEvent(Series, 'show', seriesShowOrHide);
-                    addEvent(Series, 'translate', seriesTranslate);
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
+                    const { chartGetZData, seriesAfterInit, seriesAfterRender, seriesGetCenter, seriesShowOrHide, seriesTranslate } = Additions.prototype;
+                    // We can mark support for pie series here because it's in the core.
+                    // But all other series outside the core should be marked in its
+                    // module. This is crucial when loading series-on-point before
+                    // loading a module, e.g. sunburst.
+                    // Supported series types:
+                    // - pie
+                    // - sunburst
+                    SeriesClass.types.pie.prototype.onPointSupported = true;
+                    addEvent(SeriesClass, 'afterInit', seriesAfterInit);
+                    addEvent(SeriesClass, 'afterRender', seriesAfterRender);
+                    addEvent(SeriesClass, 'afterGetCenter', seriesGetCenter);
+                    addEvent(SeriesClass, 'hide', seriesShowOrHide);
+                    addEvent(SeriesClass, 'show', seriesShowOrHide);
+                    addEvent(SeriesClass, 'translate', seriesTranslate);
                     addEvent(ChartClass, 'beforeRender', chartGetZData);
                     addEvent(ChartClass, 'beforeRedraw', chartGetZData);
                 }
@@ -425,7 +417,7 @@
 
         return SeriesOnPointComposition;
     });
-    _registerModule(_modules, 'masters/modules/series-on-point.src.js', [_modules['Series/SeriesOnPointComposition.js']], function (SeriesOnPointComposition) {
+    _registerModule(_modules, 'masters/modules/series-on-point.src.js', [_modules['Core/Globals.js'], _modules['Series/SeriesOnPointComposition.js']], function (Highcharts, SeriesOnPointComposition) {
 
         const G = Highcharts;
         SeriesOnPointComposition.compose(G.Series, G.Chart);

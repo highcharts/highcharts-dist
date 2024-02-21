@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Extend SVG and Chart classes with focus border capabilities.
  *
@@ -10,8 +10,10 @@
  *
  * */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
-const { addEvent, pick } = U;
+const { addEvent, pick, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -29,7 +31,6 @@ var FocusBorderComposition;
      *  Constants
      *
      * */
-    const composedMembers = [];
     // Attributes that trigger a focus border update
     const svgElementBorderUpdateTriggers = [
         'x', 'y', 'transform', 'width', 'height', 'r', 'd', 'stroke-width'
@@ -39,18 +40,14 @@ var FocusBorderComposition;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(ChartClass, SVGElementClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        if (pushUnique(composed, compose)) {
+            const chartProto = ChartClass.prototype, svgElementProto = SVGElementClass.prototype;
             chartProto.renderFocusBorder = chartRenderFocusBorder;
             chartProto.setFocusToElement = chartSetFocusToElement;
-        }
-        if (U.pushUnique(composedMembers, SVGElementClass)) {
-            const svgElementProto = SVGElementClass.prototype;
             svgElementProto.addFocusBorder = svgElementAddFocusBorder;
             svgElementProto.removeFocusBorder = svgElementRemoveFocusBorder;
         }

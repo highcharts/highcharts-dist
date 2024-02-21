@@ -2,7 +2,7 @@
  *
  *  Parallel coordinates module
  *
- *  (c) 2010-2021 Pawel Fus
+ *  (c) 2010-2024 Pawel Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -10,6 +10,8 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import ParallelAxis from './ParallelAxis.js';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
 import ParallelSeries from './ParallelSeries.js';
@@ -78,12 +80,6 @@ var ParallelCoordinates;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -91,15 +87,11 @@ var ParallelCoordinates;
     function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
         ParallelAxis.compose(AxisClass);
         ParallelSeries.compose(SeriesClass);
-        if (pushUnique(composedMembers, ChartClass)) {
-            const ChartCompo = ChartClass;
-            const addsProto = ChartAdditions.prototype;
-            const chartProto = ChartCompo.prototype;
+        if (pushUnique(composed, compose)) {
+            const ChartCompo = ChartClass, addsProto = ChartAdditions.prototype, chartProto = ChartCompo.prototype;
             chartProto.setParallelInfo = addsProto.setParallelInfo;
             addEvent(ChartCompo, 'init', onChartInit);
             addEvent(ChartCompo, 'update', onChartUpdate);
-        }
-        if (pushUnique(composedMembers, highchartsDefaultOptions)) {
             merge(true, highchartsDefaultOptions.chart, ParallelCoordinatesDefaults.chart);
         }
     }

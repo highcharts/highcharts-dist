@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Kacper Madej
+ *  (c) 2010-2024 Kacper Madej
  *
  *  License: www.highcharts.com/license
  *
@@ -29,24 +29,6 @@ const { extend, isNumber, merge, pick, relativeLength } = U;
  * @augments Highcharts.Series
  */
 class BulletSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.targetData = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -156,6 +138,11 @@ class BulletSeries extends ColumnSeries {
         return dataExtremes;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 BulletSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BulletSeriesDefaults);
 extend(BulletSeries.prototype, {
     parallelArrays: ['x', 'y', 'target'],

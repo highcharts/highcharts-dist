@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -1610,10 +1610,10 @@ const seriesDefaults = {
          */
         /**
          * The operator to compare by. Can be one of `>`, `<`, `>=`, `<=`,
-         * `==`, and `===`.
+         * `==`, `===`, `!=` and `!==`.
          *
          * @type       {string}
-         * @validvalue [">", "<", ">=", "<=", "==", "==="]
+         * @validvalue [">", "<", ">=", "<=", "==", "===", "!=", "!=="]
          * @apioption  plotOptions.series.dataLabels.filter.operator
          */
         /**
@@ -2335,9 +2335,9 @@ const seriesDefaults = {
      */
     /**
      * What type of legend symbol to render for this series. Can be one of
-     * `lineMarker` or `rectangle`.
+     * `areaMarker`, `lineMarker` or `rectangle`.
      *
-     * @validvalue ["lineMarker", "rectangle"]
+     * @validvalue ["areaMarker", "lineMarker", "rectangle"]
      *
      * @sample {highcharts} highcharts/series/legend-symbol/
      *         Change the legend symbol

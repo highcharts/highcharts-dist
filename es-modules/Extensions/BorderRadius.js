@@ -12,8 +12,8 @@
 'use strict';
 import D from '../Core/Defaults.js';
 const { defaultOptions } = D;
-import G from '../Core/Globals.js';
-const { noop } = G;
+import H from '../Core/Globals.js';
+const { composed, noop } = H;
 import U from '../Core/Utilities.js';
 const { addEvent, extend, isObject, merge, pushUnique, relativeLength } = U;
 /* *
@@ -21,7 +21,6 @@ const { addEvent, extend, isObject, merge, pushUnique, relativeLength } = U;
  *  Constants
  *
  * */
-const composedMembers = [];
 const defaultBorderRadiusOptions = {
     radius: 0,
     scope: 'stack',
@@ -209,20 +208,14 @@ function seriesOnAfterColumnTranslate() {
 }
 /** @private */
 function compose(SeriesClass, PieSeriesClass, SVGElementClass, SVGRendererClass) {
-    if (pushUnique(composedMembers, SeriesClass)) {
+    if (pushUnique(composed, compose)) {
+        const symbols = SVGRendererClass.prototype.symbols;
         addEvent(SeriesClass, 'afterColumnTranslate', seriesOnAfterColumnTranslate, {
             // After columnrange and polar column modifications
             order: 9
         });
-    }
-    if (pushUnique(composedMembers, PieSeriesClass)) {
         addEvent(PieSeriesClass, 'afterTranslate', pieSeriesOnAfterTranslate);
-    }
-    if (pushUnique(composedMembers, SVGElementClass)) {
         SVGElementClass.symbolCustomAttribs.push('borderRadius', 'brBoxHeight', 'brBoxY');
-    }
-    if (pushUnique(composedMembers, SVGRendererClass)) {
-        const symbols = SVGRendererClass.prototype.symbols;
         oldArc = symbols.arc;
         oldRoundedRect = symbols.roundedRect;
         symbols.arc = arc;

@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -44,15 +44,6 @@ class NetworkgraphSeries extends Series {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.nodes = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.deferDataLabels = true;
     }
     /* *

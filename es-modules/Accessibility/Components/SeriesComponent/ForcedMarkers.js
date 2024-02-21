@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Handle forcing series markers.
  *
@@ -10,8 +10,10 @@
  *
  * */
 'use strict';
+import H from '../../../Core/Globals.js';
+const { composed } = H;
 import U from '../../../Core/Utilities.js';
-const { addEvent, merge } = U;
+const { addEvent, merge, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -26,21 +28,14 @@ var ForcedMarkersComposition;
      * */
     /* *
      *
-     *  Compositions
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, compose)) {
             addEvent(SeriesClass, 'afterSetOptions', seriesOnAfterSetOptions);
             addEvent(SeriesClass, 'render', seriesOnRender);
             addEvent(SeriesClass, 'afterRender', seriesOnAfterRender);

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Paweł Dalek
+ *  (c) 2010-2024 Paweł Dalek
  *
  *  Volume By Price (VBP) indicator for Highcharts Stock
  *
@@ -67,29 +67,6 @@ function arrayExtremesOHLC(data) {
  * @augments Highcharts.Series
  */
 class VBPIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.negWidths = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.posWidths = void 0;
-        this.priceZones = void 0;
-        this.rangeStep = void 0;
-        this.volumeDataArray = void 0;
-        this.zoneStarts = void 0;
-        this.zoneLinesSVG = void 0;
-    }
     /* *
      *
      *  Functions
@@ -463,6 +440,11 @@ class VBPIndicator extends SMAIndicator {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Volume By Price indicator.
  *

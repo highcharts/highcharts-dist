@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility component for the range selector.
  *
@@ -10,20 +10,21 @@
  *
  * */
 'use strict';
-import RangeSelector from '../../Stock/RangeSelector/RangeSelector.js';
 import AccessibilityComponent from '../AccessibilityComponent.js';
+import Announcer from '../Utils/Announcer.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
 const { unhideChartElementFromAT, getAxisRangeDescription } = ChartUtilities;
-import Announcer from '../Utils/Announcer.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
+import RangeSelector from '../../Stock/RangeSelector/RangeSelector.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, attr } = U;
+const { addEvent, attr, pushUnique } = U;
 /* *
  *
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * Do we want date input navigation
  * @private
@@ -49,15 +50,6 @@ function shouldRunInputNavigation(chart) {
  * @name Highcharts.RangeSelectorComponent
  */
 class RangeSelectorComponent extends AccessibilityComponent {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.announcer = void 0;
-    }
     /* *
      *
      *  Functions
@@ -419,16 +411,9 @@ class RangeSelectorComponent extends AccessibilityComponent {
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Highlight range selector button by index.
      *
@@ -465,11 +450,9 @@ class RangeSelectorComponent extends AccessibilityComponent {
      * @private
      */
     function compose(ChartClass, RangeSelectorClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             const chartProto = ChartClass.prototype;
             chartProto.highlightRangeSelectorButton = (chartHighlightRangeSelectorButton);
-        }
-        if (U.pushUnique(composedMembers, RangeSelectorClass)) {
             addEvent(RangeSelector, 'afterBtnClick', rangeSelectorAfterBtnClick);
         }
     }

@@ -1,5 +1,5 @@
 /**
- * (c) 2009-2021 Sebastian Bochann
+ * (c) 2009-2024 Sebastian Bochann
  *
  * Price indicator for Highcharts
  *
@@ -8,14 +8,10 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  */
 'use strict';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
 const { addEvent, isArray, merge, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Composition
@@ -23,7 +19,7 @@ const composedMembers = [];
  * */
 /** @private */
 function compose(SeriesClass) {
-    if (pushUnique(composedMembers, SeriesClass)) {
+    if (pushUnique(composed, compose)) {
         addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
     }
 }

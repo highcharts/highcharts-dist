@@ -2,7 +2,7 @@
  *
  *  GUI generator for Stock tools
  *
- *  (c) 2009-2021 Sebastian Bochan
+ *  (c) 2009-2024 Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -12,16 +12,12 @@
 'use strict';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import StockToolsDefaults from './StockToolsDefaults.js';
 import Toolbar from './StockToolbar.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, getStyle, merge, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, getStyle, merge, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -42,7 +38,7 @@ function chartSetStockTools(options) {
  * @private
  */
 function compose(ChartClass, NavigationBindingsClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
         addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
         addEvent(ChartClass, 'beforeRender', onChartBeforeRedraw);
@@ -51,12 +47,8 @@ function compose(ChartClass, NavigationBindingsClass) {
         addEvent(ChartClass, 'redraw', onChartRedraw);
         addEvent(ChartClass, 'render', onChartRender);
         ChartClass.prototype.setStockTools = chartSetStockTools;
-    }
-    if (U.pushUnique(composedMembers, NavigationBindingsClass)) {
         addEvent(NavigationBindingsClass, 'deselectButton', onNavigationBindingsDeselectButton);
         addEvent(NavigationBindingsClass, 'selectButton', onNavigationBindingsSelectButton);
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
         setOptions(StockToolsDefaults);
     }
 }

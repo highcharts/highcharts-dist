@@ -43,7 +43,6 @@ class ControlPoint extends EventEmitter {
      * */
     constructor(chart, target, options, index) {
         super();
-        this.graphic = void 0;
         /**
          * List of events for `anntation.options.events` that should not be
          * added to `annotation.graphic` but to the `annotation`.

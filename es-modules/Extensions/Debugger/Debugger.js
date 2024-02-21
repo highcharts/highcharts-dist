@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,18 +8,18 @@
  *
  * */
 'use strict';
-import ErrorMessages from './ErrorMessages.js';
-import H from '../../Core/Globals.js';
 import D from '../../Core/Defaults.js';
 const { setOptions } = D;
+import ErrorMessages from './ErrorMessages.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, find, isNumber } = U;
+const { addEvent, find, isNumber, pushUnique } = U;
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 const defaultOptions = {
     /**
      * @optionparent chart
@@ -47,13 +47,9 @@ const defaultOptions = {
  * @private
  */
 function compose(ChartClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
-    }
-    if (U.pushUnique(composedMembers, H)) {
         addEvent(H, 'displayError', onHighchartsDisplayError);
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
         setOptions(defaultOptions);
     }
 }

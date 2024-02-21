@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -45,12 +45,6 @@ class MapSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
-        this.chart = void 0;
-        this.data = void 0;
-        this.group = void 0;
-        this.joinBy = void 0;
-        this.options = void 0;
-        this.points = void 0;
         this.processedData = [];
     }
     /* *
@@ -276,7 +270,8 @@ class MapSeries extends ScatterSeries {
                             applyDrilldown: true
                         });
                     }
-                });
+                    fireEvent(this, 'mapZoomComplete');
+                }.bind(this));
                 // When dragging or first rendering, animation is off
             }
             else {

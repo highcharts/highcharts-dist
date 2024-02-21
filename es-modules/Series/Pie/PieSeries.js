@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -35,24 +35,6 @@ const { clamp, extend, fireEvent, merge, pick, relativeLength, splat } = U;
  * @augments Highcharts.Series
  */
 class PieSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.center = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -344,6 +326,11 @@ class PieSeries extends Series {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 PieSeries.defaultOptions = merge(Series.defaultOptions, PieSeriesDefaults);
 extend(PieSeries.prototype, {
     axisTypes: [],

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Extension to the Series object in 3D charts.
  *
@@ -10,17 +10,13 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import Math3D from '../Math3D.js';
 const { perspective } = Math3D;
 import Series from '../Series/Series.js';
 import U from '../Utilities.js';
-const { addEvent, extend, merge, pick, pushUnique, isNumber } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, extend, isNumber, merge, pick, pushUnique } = U;
 /* *
  *
  *  Class
@@ -33,7 +29,7 @@ class Series3D extends Series {
      *
      * */
     static compose(SeriesClass) {
-        if (pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(SeriesClass, 'afterTranslate', function () {
                 if (this.chart.is3d()) {
                     this.translate3dPoints();
@@ -60,8 +56,7 @@ class Series3D extends Series {
         let rawPoint, projectedPoint, zValue, i;
         series.zPadding = stack *
             (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
-        for (i = 0; i < series.data.length; i++) {
-            rawPoint = series.data[i];
+        series.data.forEach((rawPoint) => {
             if (zAxis && zAxis.translate) {
                 zValue = zAxis.logarithmic && zAxis.val2lin ?
                     zAxis.val2lin(rawPoint.z) :
@@ -84,16 +79,15 @@ class Series3D extends Series {
                 z: rawPoint.plotZ
             });
             rawPointsX.push(rawPoint.plotX || 0);
-        }
+        });
         series.rawPointsX = rawPointsX;
         const projectedPoints = perspective(rawPoints, chart, true);
-        for (i = 0; i < series.data.length; i++) {
-            rawPoint = series.data[i];
+        series.data.forEach((rawPoint, i) => {
             projectedPoint = projectedPoints[i];
             rawPoint.plotX = projectedPoint.x;
             rawPoint.plotY = projectedPoint.y;
             rawPoint.plotZ = projectedPoint.z;
-        }
+        });
     }
 }
 /* *

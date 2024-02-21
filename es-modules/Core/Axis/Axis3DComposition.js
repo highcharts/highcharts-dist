@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  Extenstion for 3d axes
  *
@@ -11,19 +11,15 @@
  * */
 'use strict';
 import Axis3DDefaults from './Axis3DDefaults.js';
+import D from '../Defaults.js';
+const { defaultOptions } = D;
 import H from '../Globals.js';
-const { deg2rad } = H;
+const { composed, deg2rad } = H;
 import Math3D from '../Math3D.js';
 const { perspective, perspective3D, shapeArea } = Math3D;
 import Tick3D from './Tick3DComposition.js';
 import U from '../Utilities.js';
-const { addEvent, merge, pick, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, merge, pick, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -173,7 +169,7 @@ function wrapAxisGetPlotLinePath(proceed) {
  * @private
  */
 function wrapAxisGetSlotWidth(proceed, tick) {
-    const axis = this, chart = axis.chart, ticks = axis.ticks, gridGroup = axis.gridGroup;
+    const axis = this, { chart, gridGroup, tickPositions, ticks } = axis;
     if (axis.categories &&
         chart.frameShapes &&
         chart.is3d() &&
@@ -186,14 +182,11 @@ function wrapAxisGetSlotWidth(proceed, tick) {
             z: options3d.depth / 2,
             vd: (pick(options3d.depth, 1) *
                 pick(options3d.viewDistance, 0))
-        }, tickId = tick.pos, prevTick = ticks[tickId - 1], nextTick = ticks[tickId + 1];
+        }, index = tickPositions.indexOf(tick.pos), prevTick = ticks[tickPositions[index - 1]], nextTick = ticks[tickPositions[index + 1]];
         let labelPos, prevLabelPos, nextLabelPos;
         // Check whether the tick is not the first one and previous tick
         // exists, then calculate position of previous label.
-        if (tickId !== 0 &&
-            prevTick &&
-            prevTick.label &&
-            prevTick.label.xy) {
+        if (prevTick?.label?.xy) {
             prevLabelPos = perspective3D({
                 x: prevTick.label.xy.x,
                 y: prevTick.label.xy.y,
@@ -258,8 +251,8 @@ class Axis3DAdditions {
      */
     static compose(AxisClass, TickClass) {
         Tick3D.compose(TickClass);
-        if (U.pushUnique(composedMembers, AxisClass)) {
-            merge(true, AxisClass.defaultOptions, Axis3DDefaults);
+        if (pushUnique(composed, this.compose)) {
+            merge(true, defaultOptions.xAxis, Axis3DDefaults);
             AxisClass.keepProps.push('axis3D');
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);

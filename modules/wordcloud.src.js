@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2016-2021 Highsoft AS
+ * (c) 2016-2024 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -123,7 +123,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -138,19 +138,6 @@
          *
          * */
         class WordcloudPoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.dimensions = void 0;
-                this.options = void 0;
-                this.polygon = void 0;
-                this.rect = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -176,7 +163,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -383,7 +370,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -1095,7 +1082,7 @@
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
          *
-         *  (c) 2016-2021 Highsoft AS
+         *  (c) 2016-2024 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  License: www.highcharts.com/license
@@ -1119,22 +1106,6 @@
          * @augments Highcharts.Series
          */
         class WordcloudSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /**
              *
              * Functions
@@ -1175,7 +1146,7 @@
                     return p.weight;
                 }), maxWeight = Math.max.apply(null, weights), 
                 // concat() prevents from sorting the original array.
-                data = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
+                points = series.points.concat().sort((a, b) => (b.weight - a.weight // Sort descending
                 ));
                 let testElement = renderer.text().add(group), field;
                 // Reset the scale before finding the dimensions (#11993).
@@ -1189,7 +1160,7 @@
                 });
                 // Get the dimensions for each word.
                 // Used in calculating the playing field.
-                for (const point of data) {
+                for (const point of points) {
                     const relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
                         fontSize: fontSize + 'px'
                     }, options.style);
@@ -1205,16 +1176,16 @@
                     };
                 }
                 // Calculate the playing field.
-                field = getPlayingField(xAxis.len, yAxis.len, data);
+                field = getPlayingField(xAxis.len, yAxis.len, points);
                 const spiral = getSpiral(series.spirals[options.spiral], {
                     field: field
                 });
                 // Draw all the points.
-                for (const point of data) {
+                for (const point of points) {
                     const relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
                         fontSize: fontSize + 'px'
                     }, options.style), placement = placementStrategy(point, {
-                        data: data,
+                        data: points,
                         field: field,
                         placed: placed,
                         rotation: rotation
@@ -1323,6 +1294,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static properties
+         *
+         * */
         WordcloudSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WordcloudSeriesDefaults);
         extend(WordcloudSeries.prototype, {
             animate: noop,

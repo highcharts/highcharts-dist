@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2023 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  Accessibility component for the navigator.
  *
@@ -38,10 +38,6 @@ const { getAxisRangeDescription, fireEventOnWrappedOrUnwrappedElement } = CU;
  * @name Highcharts.NavigatorComponent
  */
 class NavigatorComponent extends AccessibilityComponent {
-    constructor() {
-        super(...arguments);
-        this.announcer = void 0;
-    }
     /**
      * Init the component
      * @private

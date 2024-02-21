@@ -26,24 +26,6 @@ const { merge, extend, defined, isArray } = U;
  * @augments Highcharts.Series
  */
 class PivotPointsIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.endPoint = void 0;
-        this.plotEndPoint = void 0;
-    }
     /* *
      *
      *  Functions
@@ -230,6 +212,11 @@ class PivotPointsIndicator extends SMAIndicator {
         return avg;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Pivot points indicator. This series requires the `linkedTo` option to be
  * set and should be loaded after `stock/indicators/indicators.js` file.

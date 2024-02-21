@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,14 +9,14 @@
  * */
 'use strict';
 import Axis from './Axis.js';
+import AxisDefaults from './AxisDefaults.js';
+const { xAxis } = AxisDefaults;
+import D from '../Defaults.js';
+const { defaultOptions } = D;
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, merge, pick, splat } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, merge, pick, pushUnique, splat } = U;
 /* *
  *
  *  Functions
@@ -61,9 +61,13 @@ class ZAxis extends Axis {
         this.isZAxis = true;
     }
     static compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
+        if (pushUnique(composed, this.compose)) {
             const chartProto = ChartClass.prototype;
+            defaultOptions.zAxis = merge(xAxis, {
+                offset: 0,
+                lineWidth: 0
+            });
+            addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
             chartProto.addZAxis = chartAddZAxis;
             chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
             chartProto.collectionsWithUpdate.push('zAxis');
@@ -118,16 +122,6 @@ class ZAxis extends Axis {
         this.width = this.len = (chart.options.chart.options3d &&
             chart.options.chart.options3d.depth) || 0;
         this.right = chart.chartWidth - this.width - this.left;
-    }
-    /**
-     * @private
-     */
-    setOptions(userOptions) {
-        userOptions = merge({
-            offset: 0,
-            lineWidth: 0
-        }, userOptions);
-        super.setOptions(userOptions);
     }
 }
 /* *

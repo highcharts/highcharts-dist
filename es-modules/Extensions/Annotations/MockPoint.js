@@ -121,8 +121,6 @@ class MockPoint {
      *
      * */
     constructor(chart, target, options) {
-        this.plotX = void 0;
-        this.plotY = void 0;
         /* *
          *
          * Functions

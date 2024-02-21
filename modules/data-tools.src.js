@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Highcharts
  *
- * (c) 2010-2023 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Data/Modifiers/DataModifier.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -310,7 +310,7 @@
     _registerModule(_modules, 'Data/DataTable.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -1422,7 +1422,7 @@
     _registerModule(_modules, 'Data/Connectors/DataConnector.js', [_modules['Data/Modifiers/DataModifier.js'], _modules['Data/DataTable.js'], _modules['Core/Utilities.js']], function (DataModifier, DataTable, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -1699,7 +1699,7 @@
     _registerModule(_modules, 'Data/Converters/DataConverter.js', [_modules['Data/DataTable.js'], _modules['Core/Utilities.js']], function (DataTable, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -2290,7 +2290,7 @@
     _registerModule(_modules, 'Data/DataCursor.js', [], function () {
         /* *
          *
-         *  (c) 2020-2023 Highsoft AS
+         *  (c) 2020-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -2658,7 +2658,7 @@
     _registerModule(_modules, 'Data/DataPoolDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -2687,7 +2687,7 @@
     _registerModule(_modules, 'Data/DataPool.js', [_modules['Data/Connectors/DataConnector.js'], _modules['Data/DataPoolDefaults.js'], _modules['Core/Utilities.js']], function (DataConnector, DataPoolDefaults, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -2744,36 +2744,36 @@
              *
              * @function Data.DataPool#getConnector
              *
-             * @param {string} name
-             * Name of the connector.
+             * @param {string} connectorId
+             * ID of the connector.
              *
              * @return {Promise<Data.DataConnector>}
              * Returns the connector.
              */
-            getConnector(name) {
-                const connector = this.connectors[name];
+            getConnector(connectorId) {
+                const connector = this.connectors[connectorId];
                 // already loaded
                 if (connector) {
                     return Promise.resolve(connector);
                 }
-                let waitingList = this.waiting[name];
+                let waitingList = this.waiting[connectorId];
                 // start loading
                 if (!waitingList) {
-                    waitingList = this.waiting[name] = [];
-                    const connectorOptions = this.getConnectorOptions(name);
+                    waitingList = this.waiting[connectorId] = [];
+                    const connectorOptions = this.getConnectorOptions(connectorId);
                     if (!connectorOptions) {
-                        throw new Error(`Connector not found. (${name})`);
+                        throw new Error(`Connector not found. (${connectorId})`);
                     }
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
                     this
                         .loadConnector(connectorOptions)
                         .then((connector) => {
-                        delete this.waiting[name];
+                        delete this.waiting[connectorId];
                         for (let i = 0, iEnd = waitingList.length; i < iEnd; ++i) {
                             waitingList[i][0](connector);
                         }
                     })['catch']((error) => {
-                        delete this.waiting[name];
+                        delete this.waiting[connectorId];
                         for (let i = 0, iEnd = waitingList.length; i < iEnd; ++i) {
                             waitingList[i][1](error);
                         }
@@ -2785,7 +2785,7 @@
                 });
             }
             /**
-             * Returns the names of all connectors.
+             * Returns the IDs of all connectors.
              *
              * @private
              *
@@ -2804,16 +2804,16 @@
              *
              * @private
              *
-             * @param {string} id
-             * Name of the connector.
+             * @param {string} connectorId
+             * ID of the connector.
              *
              * @return {DataPoolConnectorOptions|undefined}
              * Returns the options of the connector, or `undefined` if not found.
              */
-            getConnectorOptions(id) {
+            getConnectorOptions(connectorId) {
                 const connectors = this.options.connectors;
                 for (let i = 0, iEnd = connectors.length; i < iEnd; ++i) {
-                    if (connectors[i].id === id) {
+                    if (connectors[i].id === connectorId) {
                         return connectors[i];
                     }
                 }
@@ -2824,7 +2824,7 @@
              * @function Data.DataPool#getConnectorTable
              *
              * @param {string} connectorId
-             * Name of the connector.
+             * ID of the connector.
              *
              * @return {Promise<Data.DataTable>}
              * Returns the connector table.
@@ -2833,6 +2833,19 @@
                 return this
                     .getConnector(connectorId)
                     .then((connector) => connector.table);
+            }
+            /**
+             * Tests whether the connector has never been requested.
+             *
+             * @param {string} connectorId
+             * Name of the connector.
+             *
+             * @return {boolean}
+             * Returns `true`, if the connector has never been requested, otherwise
+             * `false`.
+             */
+            isNewConnector(connectorId) {
+                return !this.connectors[connectorId];
             }
             /**
              * Creates and loads the connector.
@@ -2887,13 +2900,13 @@
                 return U.addEvent(this, type, callback);
             }
             /**
-             * Sets connector options with a specific name.
+             * Sets connector options under the specified `options.id`.
              *
              * @param {Data.DataPoolConnectorOptions} options
              * Connector options to set.
              */
             setConnectorOptions(options) {
-                const connectors = this.options.connectors;
+                const connectors = this.options.connectors, instances = this.connectors;
                 this.emit({
                     type: 'setConnectorOptions',
                     options
@@ -2903,6 +2916,10 @@
                         connectors.splice(i, 1);
                         break;
                     }
+                }
+                if (instances[options.id]) {
+                    instances[options.id].stopPolling();
+                    delete instances[options.id];
                 }
                 connectors.push(options);
                 this.emit({
@@ -2932,7 +2949,7 @@
     _registerModule(_modules, 'Data/Formula/FormulaParser.js', [], function () {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -3390,7 +3407,7 @@
     _registerModule(_modules, 'Data/Formula/FormulaTypes.js', [], function () {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -3527,7 +3544,7 @@
     _registerModule(_modules, 'Data/Formula/FormulaProcessor.js', [_modules['Data/Formula/FormulaTypes.js']], function (FormulaTypes) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4003,7 +4020,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/ABS.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4071,7 +4088,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/AND.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4131,7 +4148,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/AVERAGE.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4206,7 +4223,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/AVERAGEA.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4297,7 +4314,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/COUNT.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4363,7 +4380,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/COUNTA.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4435,7 +4452,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/IF.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4490,7 +4507,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/ISNA.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4543,7 +4560,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/MAX.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4613,7 +4630,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/MEDIAN.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4692,7 +4709,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/MIN.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4762,7 +4779,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/MOD.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4826,7 +4843,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/MODE.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -4976,7 +4993,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/NOT.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5037,7 +5054,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/OR.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5100,7 +5117,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/PRODUCT.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5169,7 +5186,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/SUM.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5235,7 +5252,7 @@
     _registerModule(_modules, 'Data/Formula/Functions/XOR.js', [_modules['Data/Formula/FormulaProcessor.js']], function (FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5317,7 +5334,7 @@
     _registerModule(_modules, 'Data/Formula/Formula.js', [_modules['Data/Formula/FormulaParser.js'], _modules['Data/Formula/FormulaProcessor.js'], _modules['Data/Formula/FormulaTypes.js']], function (FormulaParser, FormulaProcessor, FormulaType) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5352,7 +5369,7 @@
     _registerModule(_modules, 'Data/Converters/CSVConverter.js', [_modules['Data/Converters/DataConverter.js'], _modules['Core/Utilities.js']], function (DataConverter, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5794,7 +5811,7 @@
     _registerModule(_modules, 'Data/Connectors/CSVConnector.js', [_modules['Data/Converters/CSVConverter.js'], _modules['Data/Connectors/DataConnector.js'], _modules['Core/Utilities.js']], function (CSVConverter, DataConnector, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5919,7 +5936,7 @@
     _registerModule(_modules, 'Data/Converters/JSONConverter.js', [_modules['Data/Converters/DataConverter.js'], _modules['Data/DataTable.js'], _modules['Core/Utilities.js']], function (DataConverter, DataTable, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -5929,7 +5946,7 @@
          *  - Pawel Lysy
          *
          * */
-        const { merge, isArray } = U;
+        const { error, isArray, merge, objectEach } = U;
         /* *
          *
          *  Class
@@ -5962,7 +5979,6 @@
                  * */
                 this.columns = [];
                 this.headers = [];
-                this.dataTypes = [];
                 this.options = mergedOptions;
                 this.table = new DataTable();
             }
@@ -5991,6 +6007,12 @@
                 if (!data) {
                     return;
                 }
+                converter.emit({
+                    type: 'parse',
+                    columns: converter.columns,
+                    detail: eventDetail,
+                    headers: converter.headers
+                });
                 if (beforeParse) {
                     data = beforeParse(data);
                 }
@@ -6001,13 +6023,18 @@
                         if (!(item instanceof Array)) {
                             return;
                         }
-                        if (firstRowAsNames) {
-                            converter.headers.push(`${item.shift()}`);
+                        if (converter.headers instanceof Array) {
+                            if (firstRowAsNames) {
+                                converter.headers.push(`${item.shift()}`);
+                            }
+                            else if (columnNames && columnNames instanceof Array) {
+                                converter.headers.push(columnNames[i]);
+                            }
+                            converter.table.setColumn(converter.headers[i] || i.toString(), item);
                         }
-                        else if (columnNames) {
-                            converter.headers.push(columnNames[i]);
+                        else {
+                            error('JSONConverter: Invalid `columnNames` option.', false);
                         }
-                        converter.table.setColumn(converter.headers[i] || i.toString(), item);
                     }
                 }
                 else if (orientation === 'rows') {
@@ -6018,22 +6045,41 @@
                         converter.headers = columnNames;
                     }
                     for (let rowIndex = 0, iEnd = data.length; rowIndex < iEnd; rowIndex++) {
-                        const row = data[rowIndex];
+                        let row = data[rowIndex];
                         if (isArray(row)) {
                             for (let columnIndex = 0, jEnd = row.length; columnIndex < jEnd; columnIndex++) {
                                 if (converter.columns.length < columnIndex + 1) {
                                     converter.columns.push([]);
                                 }
                                 converter.columns[columnIndex].push(row[columnIndex]);
-                                this.table.setCell(converter.headers[columnIndex] ||
-                                    rowIndex.toString(), rowIndex, row[columnIndex]);
+                                if (converter.headers instanceof Array) {
+                                    this.table.setColumn(converter.headers[columnIndex] ||
+                                        columnIndex.toString(), converter.columns[columnIndex]);
+                                }
+                                else {
+                                    error('JSONConverter: Invalid `columnNames` option.', false);
+                                }
                             }
                         }
                         else {
+                            const columnNames = converter.headers;
+                            if (columnNames && !(columnNames instanceof Array)) {
+                                const newRow = {};
+                                objectEach(columnNames, (arrayWithPath, name) => {
+                                    newRow[name] = arrayWithPath.reduce((acc, key) => acc[key], row);
+                                });
+                                row = newRow;
+                            }
                             this.table.setRows([row], rowIndex);
                         }
                     }
                 }
+                converter.emit({
+                    type: 'afterParse',
+                    columns: converter.columns,
+                    detail: eventDetail,
+                    headers: converter.headers
+                });
             }
             /**
              * Handles converting the parsed data to a table.
@@ -6056,7 +6102,7 @@
         JSONConverter.defaultOptions = {
             ...DataConverter.defaultOptions,
             data: [],
-            orientation: 'columns'
+            orientation: 'rows'
         };
         /* *
          *
@@ -6069,7 +6115,7 @@
     _registerModule(_modules, 'Data/Connectors/JSONConnector.js', [_modules['Data/Connectors/DataConnector.js'], _modules['Core/Utilities.js'], _modules['Data/Converters/JSONConverter.js']], function (DataConnector, U, JSONConverter) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -6191,7 +6237,7 @@
     _registerModule(_modules, 'Data/Converters/GoogleSheetsConverter.js', [_modules['Data/Converters/DataConverter.js'], _modules['Core/Utilities.js']], function (DataConverter, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -6321,7 +6367,7 @@
     _registerModule(_modules, 'Data/Connectors/GoogleSheetsConnector.js', [_modules['Data/Connectors/DataConnector.js'], _modules['Data/Converters/GoogleSheetsConverter.js'], _modules['Core/Utilities.js']], function (DataConnector, GoogleSheetsConverter, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -6520,7 +6566,7 @@
     _registerModule(_modules, 'Data/Converters/HTMLTableConverter.js', [_modules['Data/Converters/DataConverter.js'], _modules['Core/Utilities.js']], function (DataConverter, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -6881,7 +6927,7 @@
     _registerModule(_modules, 'Data/Connectors/HTMLTableConnector.js', [_modules['Data/Connectors/DataConnector.js'], _modules['Core/Globals.js'], _modules['Data/Converters/HTMLTableConverter.js'], _modules['Core/Utilities.js']], function (DataConnector, H, HTMLTableConverter, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -6999,7 +7045,7 @@
     _registerModule(_modules, 'Data/Modifiers/ChainModifier.js', [_modules['Data/Modifiers/DataModifier.js'], _modules['Core/Utilities.js']], function (DataModifier, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -7331,7 +7377,7 @@
     _registerModule(_modules, 'Data/Modifiers/InvertModifier.js', [_modules['Data/Modifiers/DataModifier.js'], _modules['Core/Utilities.js']], function (DataModifier, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -7564,7 +7610,7 @@
     _registerModule(_modules, 'Data/Modifiers/MathModifier.js', [_modules['Data/Modifiers/DataModifier.js'], _modules['Data/Formula/FormulaParser.js'], _modules['Data/Formula/FormulaProcessor.js']], function (DataModifier, FormulaParser, FormulaProcessor) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -7729,7 +7775,7 @@
     _registerModule(_modules, 'Data/Modifiers/RangeModifier.js', [_modules['Data/Modifiers/DataModifier.js'], _modules['Core/Utilities.js']], function (DataModifier, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *
@@ -7859,7 +7905,7 @@
     _registerModule(_modules, 'Data/Modifiers/SortModifier.js', [_modules['Data/Modifiers/DataModifier.js'], _modules['Data/DataTable.js'], _modules['Core/Utilities.js']], function (DataModifier, DataTable, U) {
         /* *
          *
-         *  (c) 2009-2023 Highsoft AS
+         *  (c) 2009-2024 Highsoft AS
          *
          *  License: www.highcharts.com/license
          *

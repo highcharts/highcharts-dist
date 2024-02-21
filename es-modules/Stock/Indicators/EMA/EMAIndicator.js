@@ -25,22 +25,6 @@ const { correctFloat, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class EMAIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -93,6 +77,11 @@ class EMAIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Exponential moving average indicator (EMA). This series requires the
  * `linkedTo` option to be set.

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -78,15 +78,8 @@ class RangeSelector {
      *
      * */
     constructor(chart) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.buttons = void 0;
         this.buttonOptions = RangeSelector.prototype.defaultButtons;
         this.initialButtonGroupWidth = 0;
-        this.options = void 0;
         this.chart = chart;
         this.init(chart);
     }
@@ -300,7 +293,7 @@ class RangeSelector {
         const rangeSelector = this, chart = this.chart, dropdown = this.dropdown, baseAxis = chart.xAxis[0], actualRange = Math.round(baseAxis.max - baseAxis.min), hasNoData = !baseAxis.hasVisibleSeries, day = 24 * 36e5, // A single day in milliseconds
         unionExtremes = (chart.scroller &&
             chart.scroller.getUnionExtremes()) || baseAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax, ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, chart.time.useUTC), ytdMin = ytdExtremes.min, ytdMax = ytdExtremes.max, selected = rangeSelector.selected, allButtonsEnabled = rangeSelector.options.allButtonsEnabled, buttons = rangeSelector.buttons;
-        let selectedExists = isNumber(selected);
+        let selectedExists = isNumber(selected), isSelectedTooGreat = false;
         rangeSelector.buttonOptions.forEach((rangeOptions, i) => {
             const range = rangeOptions._range, type = rangeOptions.type, count = rangeOptions.count || 1, button = buttons[i], offsetRange = rangeOptions._offsetMax -
                 rangeOptions._offsetMin, isSelected = i === selected, 
@@ -316,6 +309,9 @@ class RangeSelector {
             isYTDButNotSelected = false, 
             // Disable the All button if we're already showing all
             isAllButAlreadyShowingAll = false, isSameRange = range === actualRange;
+            if (isSelected && isTooGreatRange) {
+                isSelectedTooGreat = true;
+            }
             // Months and years have a variable range so we check the extremes
             if ((type === 'month' || type === 'year') &&
                 (actualRange + 36e5 >=
@@ -340,11 +336,13 @@ class RangeSelector {
             // It can be seen in the intraday demos when selecting 1h and scroll
             // across the night gap.
             const disable = (!allButtonsEnabled &&
+                !(isSelectedTooGreat && type === 'all') &&
                 (isTooGreatRange ||
                     isTooSmallRange ||
                     isAllButAlreadyShowingAll ||
                     hasNoData));
-            const select = ((isSelected && isSameRange) ||
+            const select = ((isSelectedTooGreat && type === 'all') ||
+                (isSelected && isSameRange) ||
                 (isSameRange && !selectedExists && !isYTDButNotSelected) ||
                 (isSelected && rangeSelector.frozenStates));
             if (disable) {
@@ -366,6 +364,10 @@ class RangeSelector {
                 // Reset (#9209)
                 if (state === 0 && selected === i) {
                     rangeSelector.setSelected();
+                }
+                else if ((state === 2 && !defined(selected)) ||
+                    isSelectedTooGreat) {
+                    rangeSelector.setSelected(i);
                 }
             }
         });
@@ -1218,6 +1220,11 @@ class RangeSelector {
      */
     collapseButtons(xOffsetForExportButton) {
         const { buttons, buttonOptions, chart, dropdown, options, zoomText } = this;
+        // If the buttons are already collapsed do nothing.
+        if (this.isCollapsed === true) {
+            return;
+        }
+        this.isCollapsed = true;
         const userButtonTheme = (chart.userOptions.rangeSelector &&
             chart.userOptions.rangeSelector.buttonTheme) || {};
         const getAttribs = (text) => ({
@@ -1264,6 +1271,11 @@ class RangeSelector {
     expandButtons() {
         const { buttons, buttonOptions, options, zoomText } = this;
         this.hideDropdown();
+        // If buttons are already not collapsed, do nothing.
+        if (this.isCollapsed === false) {
+            return;
+        }
+        this.isCollapsed = false;
         if (zoomText) {
             zoomText.show();
         }

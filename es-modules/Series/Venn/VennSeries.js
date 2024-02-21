@@ -3,7 +3,7 @@
  *  Experimental Highcharts module which enables visualization of a Venn
  *  diagram.
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *  Authors: Jon Arild Nygard
  *
  *  Layout algorithm by Ben Frederickson:
@@ -44,24 +44,6 @@ const { addEvent, extend, isArray, isNumber, isObject, merge } = U;
  * @augments Highcharts.Series
  */
 class VennSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.mapOfIdToRelation = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Static Functions
@@ -443,6 +425,11 @@ class VennSeries extends ScatterSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 VennSeries.splitter = 'highcharts-split';
 VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VennSeriesDefaults);
 extend(VennSeries.prototype, {

@@ -2,7 +2,7 @@
  *
  *  Experimental data export module for Highcharts
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -14,28 +14,46 @@
 //   module importing the same data.
 'use strict';
 import AST from '../../Core/Renderer/HTML/AST.js';
-import ExportDataDefaults from './ExportDataDefaults.js';
-import H from '../../Core/Globals.js';
-const { doc, win } = H;
 import D from '../../Core/Defaults.js';
 const { getOptions, setOptions } = D;
 import DownloadURL from '../DownloadURL.js';
 const { downloadURL } = DownloadURL;
+import ExportDataDefaults from './ExportDataDefaults.js';
+import H from '../../Core/Globals.js';
+const { composed, doc, win } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: SeriesClass, seriesTypes: { arearange: AreaRangeSeries, gantt: GanttSeries, map: MapSeries, mapbubble: MapBubbleSeries, treemap: TreemapSeries, xrange: XRangeSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, find, fireEvent, isNumber, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique } = U;
 /* *
  *
  *  Functions
  *
  * */
+/**
+ * Wrapper function for the download functions, which handles showing and hiding
+ * the loading message
+ *
+ * @private
+ *
+ */
+function wrapLoading(fn) {
+    const showMessage = Boolean(this.options.exporting?.showExportInProgress);
+    // Prefer requestAnimationFrame if available
+    const timeoutFn = win.requestAnimationFrame || setTimeout;
+    // Outer timeout avoids menu freezing on click
+    timeoutFn(() => {
+        showMessage && this.showLoading(this.options.lang.exportInProgress);
+        timeoutFn(() => {
+            try {
+                fn.call(this);
+            }
+            finally {
+                showMessage && this.hideLoading();
+            }
+        });
+    });
+}
 /**
  * Generates a data URL of CSV for local download in the browser. This is the
  * default action for a click on the 'Download CSV' button.
@@ -47,9 +65,11 @@ const composedMembers = [];
  * @requires modules/exporting
  */
 function chartDownloadCSV() {
-    const csv = this.getCSV(true);
-    downloadURL(getBlobFromContent(csv, 'text/csv') ||
-        'data:text/csv,\uFEFF' + encodeURIComponent(csv), this.getFilename() + '.csv');
+    wrapLoading.call(this, () => {
+        const csv = this.getCSV(true);
+        downloadURL(getBlobFromContent(csv, 'text/csv') ||
+            'data:text/csv,\uFEFF' + encodeURIComponent(csv), this.getFilename() + '.csv');
+    });
 }
 /**
  * Generates a data URL of an XLS document for local download in the browser.
@@ -62,27 +82,29 @@ function chartDownloadCSV() {
  * @requires modules/exporting
  */
 function chartDownloadXLS() {
-    const uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
-        'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
-        'xmlns="http://www.w3.org/TR/REC-html40">' +
-        '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
-        '<x:ExcelWorksheets><x:ExcelWorksheet>' +
-        '<x:Name>Ark1</x:Name>' +
-        '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>' +
-        '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>' +
-        '</xml><![endif]-->' +
-        '<style>td{border:none;font-family: Calibri, sans-serif;} ' +
-        '.number{mso-number-format:"0.00";} ' +
-        '.text{ mso-number-format:"\@";}</style>' +
-        '<meta name=ProgId content=Excel.Sheet>' +
-        '<meta charset=UTF-8>' +
-        '</head><body>' +
-        this.getTable(true) +
-        '</body></html>', base64 = function (s) {
-        return win.btoa(unescape(encodeURIComponent(s))); // #50
-    };
-    downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
-        uri + base64(template), this.getFilename() + '.xls');
+    wrapLoading.call(this, () => {
+        const uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+            'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
+            'xmlns="http://www.w3.org/TR/REC-html40">' +
+            '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook>' +
+            '<x:ExcelWorksheets><x:ExcelWorksheet>' +
+            '<x:Name>Ark1</x:Name>' +
+            '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>' +
+            '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>' +
+            '</xml><![endif]-->' +
+            '<style>td{border:none;font-family: Calibri, sans-serif;} ' +
+            '.number{mso-number-format:"0.00";} ' +
+            '.text{ mso-number-format:"\@";}</style>' +
+            '<meta name=ProgId content=Excel.Sheet>' +
+            '<meta charset=UTF-8>' +
+            '</head><body>' +
+            this.getTable(true) +
+            '</body></html>', base64 = function (s) {
+            return win.btoa(unescape(encodeURIComponent(s))); // #50
+        };
+        downloadURL(getBlobFromContent(template, 'application/vnd.ms-excel') ||
+            uri + base64(template), this.getFilename() + '.xls');
+    });
 }
 /**
  * Export-data module required. Returns the current chart data as a CSV string.
@@ -102,7 +124,7 @@ function chartGetCSV(useLocalDecimalPoint) {
     const rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
         (1.1).toLocaleString()[1] :
         '.'), 
-    // use ';' for direct to Excel
+    // Use ';' for direct to Excel
     itemDelimiter = pick(csvOptions.itemDelimiter, decimalPoint === ',' ? ';' : ','), 
     // '\n' isn't working with the js csv data extraction
     lineDelimiter = csvOptions.lineDelimiter;
@@ -307,16 +329,16 @@ function chartGetDataRows(multiLevelHeaders) {
                 rows[key].name = name;
                 rows[key].xValues[xAxisIndex] = mockPoint.x;
                 while (j < valueCount) {
-                    prop = pointArrayMap[j]; // y, z etc
+                    prop = pointArrayMap[j]; // `y`, `z` etc
                     val = mockPoint[prop];
                     rows[key][i + j] = pick(
                     // Y axis category if present
                     categoryAndDatetimeMap.categoryMap[prop][val], 
-                    // datetime yAxis
+                    // Datetime yAxis
                     categoryAndDatetimeMap.dateTimeValueAxisMap[prop] ?
                         time.dateFormat(csvOptions.dateFormat, val) :
                         null, 
-                    // linear/log yAxis
+                    // Linear/log yAxis
                     val);
                     j++;
                 }
@@ -674,11 +696,11 @@ function chartViewData() {
  * @private
  */
 function compose(ChartClass) {
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
+        const chartProto = ChartClass.prototype, exportingOptions = getOptions().exporting;
         // Add an event listener to handle the showTable option
         addEvent(ChartClass, 'afterViewData', onChartAfterViewData);
         addEvent(ChartClass, 'render', onChartRenderer);
-        const chartProto = ChartClass.prototype;
         chartProto.downloadCSV = chartDownloadCSV;
         chartProto.downloadXLS = chartDownloadXLS;
         chartProto.getCSV = chartGetCSV;
@@ -688,9 +710,6 @@ function compose(ChartClass) {
         chartProto.hideData = chartHideData;
         chartProto.toggleDataTable = chartToggleDataTable;
         chartProto.viewData = chartViewData;
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
-        const exportingOptions = getOptions().exporting;
         // Add "Download CSV" to the exporting menu.
         // @todo consider move to defaults
         if (exportingOptions) {
@@ -710,7 +729,7 @@ function compose(ChartClass) {
                 viewData: {
                     textKey: 'viewData',
                     onclick: function () {
-                        this.toggleDataTable();
+                        wrapLoading.call(this, this.toggleDataTable);
                     }
                 }
             });
@@ -720,33 +739,33 @@ function compose(ChartClass) {
             }
         }
         setOptions(ExportDataDefaults);
-    }
-    if (AreaRangeSeries && U.pushUnique(composedMembers, AreaRangeSeries)) {
-        AreaRangeSeries.prototype.keyToAxis = {
-            low: 'y',
-            high: 'y'
-        };
-    }
-    if (GanttSeries && U.pushUnique(composedMembers, GanttSeries)) {
-        GanttSeries.prototype.exportKey = 'name';
-        GanttSeries.prototype.keyToAxis = {
-            start: 'x',
-            end: 'x'
-        };
-    }
-    if (XRangeSeries && U.pushUnique(composedMembers, XRangeSeries)) {
-        XRangeSeries.prototype.keyToAxis = {
-            x2: 'x'
-        };
-    }
-    if (MapSeries && U.pushUnique(composedMembers, MapSeries)) {
-        MapSeries.prototype.exportKey = 'name';
-    }
-    if (MapBubbleSeries && U.pushUnique(composedMembers, MapBubbleSeries)) {
-        MapBubbleSeries.prototype.exportKey = 'name';
-    }
-    if (TreemapSeries && U.pushUnique(composedMembers, TreemapSeries)) {
-        TreemapSeries.prototype.exportKey = 'name';
+        if (AreaRangeSeries) {
+            AreaRangeSeries.prototype.keyToAxis = {
+                low: 'y',
+                high: 'y'
+            };
+        }
+        if (GanttSeries) {
+            GanttSeries.prototype.exportKey = 'name';
+            GanttSeries.prototype.keyToAxis = {
+                start: 'x',
+                end: 'x'
+            };
+        }
+        if (XRangeSeries) {
+            XRangeSeries.prototype.keyToAxis = {
+                x2: 'x'
+            };
+        }
+        if (MapSeries) {
+            MapSeries.prototype.exportKey = 'name';
+        }
+        if (MapBubbleSeries) {
+            MapBubbleSeries.prototype.exportKey = 'name';
+        }
+        if (TreemapSeries) {
+            TreemapSeries.prototype.exportKey = 'name';
+        }
     }
 }
 /**
@@ -866,4 +885,4 @@ export default ExportData;
 * @name Highcharts.ExportDataEventObject#dataRows
 * @type {Array<Array<string>>}
 */
-(''); // keeps doclets above in JS file
+(''); // Keeps doclets above in JS file

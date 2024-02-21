@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -22,9 +22,7 @@ const { series: { prototype: seriesProto }, seriesTypes: { bubble: BubbleSeries 
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import U from '../../Core/Utilities.js';
-const { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick, syncTimeout } = U;
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+const { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick } = U;
 /* *
  *
  *  Class
@@ -45,18 +43,7 @@ class PackedBubbleSeries extends BubbleSeries {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.chart = void 0;
-        this.data = void 0;
-        this.layout = void 0;
-        this.options = void 0;
         this.parentNodeMass = 0;
-        this.points = void 0;
-        this.xData = void 0;
         this.deferDataLabels = true;
         /* eslint-enable valid-jsdoc */
     }
@@ -242,7 +229,7 @@ class PackedBubbleSeries extends BubbleSeries {
         parentNodeLayout.setArea(0, 0, chart.plotWidth, chart.plotHeight);
         if (!nodeAdded) {
             if (!parentNode) {
-                parentNode = (new PackedBubblePoint()).init(this, {
+                parentNode = new PackedBubblePoint(this, {
                     mass: this.parentNodeRadius / 2,
                     marker: parentMarkerOptions,
                     dataLabels: {

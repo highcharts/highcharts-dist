@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2014-2021 Highsoft AS
+ *  (c) 2014-2024 Highsoft AS
  *
  *  Authors: Jon Arild Nygard / Oystein Moseng
  *
@@ -28,12 +28,7 @@ class TreemapPoint extends ScatterPoint {
          *
          * */
         super(...arguments);
-        this.name = void 0;
-        this.node = void 0;
-        this.options = void 0;
-        this.series = void 0;
         this.shapeType = 'rect';
-        this.value = void 0;
     }
     /* *
      *

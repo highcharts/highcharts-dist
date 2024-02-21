@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Paweł Fus
+ * (c) 2010-2024 Paweł Fus
  *
  * License: www.highcharts.com/license
  */
@@ -71,17 +71,6 @@
          *
          * */
         class PivotPointsPoint extends SMAPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.P = void 0;
-                this.pivotLine = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -128,24 +117,6 @@
          * @augments Highcharts.Series
          */
         class PivotPointsIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.endPoint = void 0;
-                this.plotEndPoint = void 0;
-            }
             /* *
              *
              *  Functions
@@ -332,6 +303,11 @@
                 return avg;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Pivot points indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after `stock/indicators/indicators.js` file.

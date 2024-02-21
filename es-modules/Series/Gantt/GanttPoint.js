@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Author: Lars A. V. Cabrera
  *
@@ -11,7 +11,7 @@
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { xrange: { prototype: { pointClass: XRangePoint } } } } = SeriesRegistry;
+const { xrange: { prototype: { pointClass: XRangePoint } } } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
 const { pick } = U;
 /* *
@@ -20,18 +20,11 @@ const { pick } = U;
  *
  * */
 class GanttPoint extends XRangePoint {
-    constructor() {
-        /* *
-         *
-         *  Static Functions
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
-    /* eslint-disable valid-jsdoc */
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
     /**
      * @private
      */
@@ -54,7 +47,6 @@ class GanttPoint extends XRangePoint {
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Applies the options containing the x and y data and possible some
      * extra properties. This is called on point init or from point.update.
@@ -72,8 +64,7 @@ class GanttPoint extends XRangePoint {
      *         The Point instance
      */
     applyOptions(options, x) {
-        let point = this, ganttPoint;
-        ganttPoint = super.applyOptions.call(point, options, x);
+        const ganttPoint = super.applyOptions(options, x);
         GanttPoint.setGanttPointAliases(ganttPoint);
         return ganttPoint;
     }

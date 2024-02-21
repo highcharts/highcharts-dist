@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -13,14 +13,10 @@ import DataGroupingDefaults from './DataGroupingDefaults.js';
 import DataGroupingSeriesComposition from './DataGroupingSeriesComposition.js';
 import F from '../../Core/Templating.js';
 const { format } = F;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, isNumber } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, extend, isNumber, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -33,7 +29,7 @@ function compose(AxisClass, SeriesClass, TooltipClass) {
     DataGroupingAxisComposition.compose(AxisClass);
     DataGroupingSeriesComposition.compose(SeriesClass);
     if (TooltipClass &&
-        U.pushUnique(composedMembers, TooltipClass)) {
+        pushUnique(composed, compose)) {
         addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
     }
 }
@@ -43,7 +39,7 @@ function compose(AxisClass, SeriesClass, TooltipClass) {
  * @private
  */
 function onTooltipHeaderFormatter(e) {
-    const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
+    const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, point = labelConfig.point, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
     let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
     // apply only to grouped series
     if (xAxis &&
@@ -73,10 +69,10 @@ function onTooltipHeaderFormatter(e) {
         else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
             xDateFormat = xAxis.dateTime.getXDateFormat(labelConfig.x, tooltipOptions.dateTimeLabelFormats);
         }
-        // now format the key
-        formattedKey = time.dateFormat(xDateFormat, labelConfig.key);
+        const groupStart = pick(series.groupMap?.[point.index].groupStart, labelConfig.key), groupEnd = groupStart + currentDataGrouping?.totalRange - 1;
+        formattedKey = time.dateFormat(xDateFormat, groupStart);
         if (xDateFormatEnd) {
-            formattedKey += time.dateFormat(xDateFormatEnd, labelConfig.key + currentDataGrouping.totalRange - 1);
+            formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
         }
         // Replace default header style with class name
         if (series.chart.styledMode) {

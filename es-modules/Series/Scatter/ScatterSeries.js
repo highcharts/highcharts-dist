@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -24,23 +24,6 @@ const { addEvent, extend, merge } = U;
  * @private
  */
 class ScatterSeries extends LineSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -99,14 +82,18 @@ class ScatterSeries extends LineSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 ScatterSeries.defaultOptions = merge(LineSeries.defaultOptions, ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
     drawTracker: ColumnSeries.prototype.drawTracker,
     sorted: false,
     requireSorting: false,
     noSharedTooltip: true,
-    trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-    takeOrdinalPosition: false // #2342
+    trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup']
 });
 /* *
  *

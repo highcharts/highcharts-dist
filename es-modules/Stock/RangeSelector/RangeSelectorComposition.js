@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,17 +9,18 @@
  * */
 'use strict';
 import D from '../../Core/Defaults.js';
-const { defaultOptions, setOptions } = D;
+const { defaultOptions } = D;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import RangeSelectorDefaults from './RangeSelectorDefaults.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, find, isNumber, merge, pick } = U;
+const { addEvent, defined, extend, find, isNumber, merge, pick, pushUnique } = U;
 /* *
  *
  *  Constants
  *
  * */
 const chartDestroyEvents = [];
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -94,20 +95,16 @@ function axisMinFromRange() {
  */
 function compose(AxisClass, ChartClass, RangeSelectorClass) {
     RangeSelectorConstructor = RangeSelectorClass;
-    if (U.pushUnique(composedMembers, AxisClass)) {
+    if (pushUnique(composed, compose)) {
+        const chartProto = ChartClass.prototype;
         AxisClass.prototype.minFromRange = axisMinFromRange;
-    }
-    if (U.pushUnique(composedMembers, ChartClass)) {
         addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
         addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         addEvent(ChartClass, 'destroy', onChartDestroy);
         addEvent(ChartClass, 'getMargins', onChartGetMargins);
         addEvent(ChartClass, 'render', onChartRender);
         addEvent(ChartClass, 'update', onChartUpdate);
-        const chartProto = ChartClass.prototype;
         chartProto.callbacks.push(onChartCallback);
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
         extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
         extend(defaultOptions.lang, RangeSelectorDefaults.lang);
     }

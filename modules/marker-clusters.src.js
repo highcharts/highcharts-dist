@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Marker clusters module for Highcharts
  *
- * (c) 2010-2021 Wojciech Chmiel
+ * (c) 2010-2024 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -374,12 +374,12 @@
 
         return MarkerClusterDefaults;
     });
-    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusterScatter.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Extensions/MarkerClusters/MarkerClusterDefaults.js'], _modules['Core/Utilities.js']], function (A, MarkerClusterDefaults, U) {
+    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusterScatter.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Extensions/MarkerClusters/MarkerClusterDefaults.js'], _modules['Core/Utilities.js']], function (A, H, MarkerClusterDefaults, U) {
         /* *
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -389,6 +389,7 @@
          *
          * */
         const { animObject } = A;
+        const { composed } = H;
         const { cluster: clusterDefaults } = MarkerClusterDefaults;
         const { addEvent, defined, error, isArray, isFunction, isObject, isNumber, merge, objectEach, pushUnique, relativeLength, syncTimeout } = U;
         /* *
@@ -396,7 +397,6 @@
          *  Constants
          *
          * */
-        const composedMembers = [];
         const markerClusterAlgorithms = {
             grid: function (dataX, dataY, dataIndexes, options) {
                 const series = this, grid = {}, gridOffset = this.getGridOffset();
@@ -607,7 +607,7 @@
          * */
         /** @private */
         function compose(highchartsDefaultOptions, ScatterSeriesClass) {
-            if (pushUnique(composedMembers, ScatterSeriesClass)) {
+            if (pushUnique(composed, compose)) {
                 const scatterProto = ScatterSeriesClass.prototype;
                 baseGeneratePoints = scatterProto.generatePoints;
                 scatterProto.markerClusterAlgorithms = markerClusterAlgorithms;
@@ -626,8 +626,6 @@
                 scatterProto.preventClusterCollisions = seriesPreventClusterCollisions;
                 // Destroy grouped data on series destroy.
                 addEvent(ScatterSeriesClass, 'destroy', scatterProto.destroyClusteredData);
-            }
-            if (pushUnique(composedMembers, highchartsDefaultOptions)) {
                 (highchartsDefaultOptions.plotOptions || {}).series = merge((highchartsDefaultOptions.plotOptions || {}).series, MarkerClusterDefaults);
             }
         }
@@ -1512,12 +1510,12 @@
 
         return MarkerClusterScatter;
     });
-    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Defaults.js'], _modules['Extensions/MarkerClusters/MarkerClusterDefaults.js'], _modules['Extensions/MarkerClusters/MarkerClusterScatter.js'], _modules['Core/Utilities.js']], function (A, D, MarkerClusterDefaults, MarkerClusterScatter, U) {
+    _registerModule(_modules, 'Extensions/MarkerClusters/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Extensions/MarkerClusters/MarkerClusterDefaults.js'], _modules['Extensions/MarkerClusters/MarkerClusterScatter.js'], _modules['Core/Utilities.js']], function (A, D, H, MarkerClusterDefaults, MarkerClusterScatter, U) {
         /* *
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -1528,13 +1526,13 @@
          * */
         const { animObject } = A;
         const { defaultOptions } = D;
+        const { composed } = H;
         const { addEvent, defined, error, isFunction, merge, pushUnique, syncTimeout } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         (defaultOptions.plotOptions || {}).series = merge((defaultOptions.plotOptions || {}).series, MarkerClusterDefaults);
         /* *
          *
@@ -1543,23 +1541,17 @@
          * */
         /** @private */
         function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass) {
-            const PointClass = SeriesClass.prototype.pointClass;
-            if (pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
+                const PointClass = SeriesClass.prototype.pointClass, { scatter: ScatterSeries } = SeriesClass.types;
                 addEvent(AxisClass, 'setExtremes', onAxisSetExtremes);
-            }
-            if (pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'render', onChartRender);
-            }
-            if (pushUnique(composedMembers, PointClass)) {
                 addEvent(PointClass, 'drillToCluster', onPointDrillToCluster);
                 addEvent(PointClass, 'update', onPointUpdate);
-            }
-            if (pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
-            }
-            const { scatter: ScatterSeries } = SeriesClass.types;
-            if (ScatterSeries) {
-                MarkerClusterScatter.compose(highchartsDefaultOptions, ScatterSeries);
+                if (ScatterSeries) {
+                    MarkerClusterScatter
+                        .compose(highchartsDefaultOptions, ScatterSeries);
+                }
             }
         }
         /**
@@ -1690,7 +1682,7 @@
          *
          *  Marker clusters module.
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Author: Wojciech Chmiel
          *
@@ -1743,7 +1735,7 @@
          * @private
          */
         function compose(SVGRendererClass) {
-            if (pushUnique(modifiedMembers, SVGRendererClass)) {
+            if (pushUnique(modifiedMembers, compose)) {
                 symbols = SVGRendererClass.prototype.symbols;
                 symbols.cluster = cluster;
             }

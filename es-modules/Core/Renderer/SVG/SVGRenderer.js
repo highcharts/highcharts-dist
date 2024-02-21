@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -78,63 +78,37 @@ let hasInternalReferenceBug;
  *        etc.
  */
 class SVGRenderer {
-    /* *
+    /**
+     * The root `svg` node of the renderer.
      *
-     *  Constructors
+     * @name Highcharts.SVGRenderer#box
+     * @type {Highcharts.SVGDOMElement}
+     */
+    /**
+     * The wrapper for the root `svg` node of the renderer.
      *
-     * */
-    constructor(container, width, height, style, forExport, allowHTML, styledMode) {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.alignedObjects = void 0;
-        /**
-         * The root `svg` node of the renderer.
-         *
-         * @name Highcharts.SVGRenderer#box
-         * @type {Highcharts.SVGDOMElement}
-         */
-        this.box = void 0;
-        /**
-         * The wrapper for the root `svg` node of the renderer.
-         *
-         * @name Highcharts.SVGRenderer#boxWrapper
-         * @type {Highcharts.SVGElement}
-         */
-        this.boxWrapper = void 0;
-        this.cache = void 0;
-        this.cacheKeys = void 0;
-        this.chartIndex = void 0;
-        /**
-         * A pointer to the `defs` node of the root SVG.
-         *
-         * @name Highcharts.SVGRenderer#defs
-         * @type {Highcharts.SVGElement}
-         */
-        this.defs = void 0;
-        this.globalAnimation = void 0;
-        this.gradients = void 0;
-        this.height = void 0;
-        this.imgCount = void 0;
-        this.style = void 0;
-        /**
-         * Page url used for internal references.
-         *
-         * @private
-         * @name Highcharts.SVGRenderer#url
-         * @type {string}
-         */
-        this.url = void 0;
-        this.width = void 0;
-        this.init(container, width, height, style, forExport, allowHTML, styledMode);
-    }
-    /* *
+     * @name Highcharts.SVGRenderer#boxWrapper
+     * @type {Highcharts.SVGElement}
+     */
+    /**
+     * A pointer to the `defs` node of the root SVG.
      *
-     *  Functions
+     * @name Highcharts.SVGRenderer#defs
+     * @type {Highcharts.SVGElement}
+     */
+    /**
+     * Whether the rendered content is intended for export.
      *
-     * */
+     * @name Highcharts.SVGRenderer#forExport
+     * @type {boolean | undefined}
+     */
+    /**
+     * Page url used for internal references.
+     *
+     * @private
+     * @name Highcharts.SVGRenderer#url
+     * @type {string}
+     */
     /**
      * Initialize the SVGRenderer. Overridable initializer function that takes
      * the same parameters as the constructor.
@@ -165,7 +139,7 @@ class SVGRenderer {
      * does, it will avoid setting presentational attributes in some cases, but
      * not when set explicitly through `.attr` and `.css` etc.
      */
-    init(container, width, height, style, forExport, allowHTML, styledMode) {
+    constructor(container, width, height, style, forExport, allowHTML, styledMode) {
         const renderer = this, boxWrapper = renderer
             .createElement('svg')
             .attr({
@@ -173,7 +147,7 @@ class SVGRenderer {
             'class': 'highcharts-root'
         }), element = boxWrapper.element;
         if (!styledMode) {
-            boxWrapper.css(this.getStyle(style));
+            boxWrapper.css(this.getStyle(style || {}));
         }
         container.appendChild(element);
         // Always use ltr on the container, otherwise text-anchor will be
@@ -185,20 +159,20 @@ class SVGRenderer {
         }
         this.box = element;
         this.boxWrapper = boxWrapper;
-        renderer.alignedObjects = [];
+        this.alignedObjects = [];
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.2.0'));
-        renderer.defs = this.createElement('defs').add();
-        renderer.allowHTML = allowHTML;
-        renderer.forExport = forExport;
-        renderer.styledMode = styledMode;
-        renderer.gradients = {}; // Object where gradient SvgElements are stored
-        renderer.cache = {}; // Cache for numerical bounding boxes
-        renderer.cacheKeys = [];
-        renderer.imgCount = 0;
-        renderer.rootFontSize = boxWrapper.getStyle('font-size');
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 11.3.0'));
+        this.defs = this.createElement('defs').add();
+        this.allowHTML = allowHTML;
+        this.forExport = forExport;
+        this.styledMode = styledMode;
+        this.gradients = {}; // Object where gradient SvgElements are stored
+        this.cache = {}; // Cache for numerical bounding boxes
+        this.cacheKeys = [];
+        this.imgCount = 0;
+        this.rootFontSize = boxWrapper.getStyle('font-size');
         renderer.setSize(width, height, false);
         // Issue 110 workaround:
         // In Firefox, if a div is positioned by percentage, its pixel position
@@ -223,6 +197,11 @@ class SVGRenderer {
             renderer.unSubPixelFix = addEvent(win, 'resize', subPixelFix);
         }
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * General method for adding a definition to the SVG `defs` tag. Can be used
      * for gradients, fills, filters etc. Styled mode only. A hook for adding
@@ -412,9 +391,7 @@ class SVGRenderer {
      * The generated SVGElement.
      */
     createElement(nodeName) {
-        const wrapper = new this.Element();
-        wrapper.init(this, nodeName);
-        return wrapper;
+        return new this.Element(this, nodeName);
     }
     /**
      * Get converted radial gradient attributes according to the radial
@@ -1235,6 +1212,9 @@ class SVGRenderer {
      * to {@link SVGElement} objects through the {@link SVGElement#clip}
      * function.
      *
+     * This function is deprecated as of v11.2. Instead, use a regular shape
+     * (`rect`, `path` etc), and the `SVGElement.clipTo` function.
+     *
      * @example
      * let circle = renderer.circle(100, 100, 100)
      *     .attr({ fill: 'red' })
@@ -1243,6 +1223,8 @@ class SVGRenderer {
      *
      * // Leave only the lower right quarter visible
      * circle.clip(clipRect);
+     *
+     * @deprecated
      *
      * @function Highcharts.SVGRenderer#clipRect
      *
@@ -1258,16 +1240,7 @@ class SVGRenderer {
      *         A clipping rectangle.
      */
     clipRect(x, y, width, height) {
-        const 
-        // Add a hyphen at the end to avoid confusion in testing indexes
-        // -1 and -10, -11 etc (#6550)
-        id = uniqueKey() + '-', clipPath = this.createElement('clipPath').attr({
-            id: id
-        }).add(this.defs), wrapper = this.rect(x, y, width, height, 0).add(clipPath);
-        wrapper.id = id;
-        wrapper.clipPath = clipPath;
-        wrapper.count = 0;
-        return wrapper;
+        return this.rect(x, y, width, height, 0);
     }
     /**
      * Draw text. The text can contain a subset of HTML, like spans and anchors

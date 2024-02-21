@@ -32,20 +32,6 @@ const { extend, merge, pick, relativeLength } = U;
  * @augments Highcharts.seriesTypes.sankey
  */
 class ArcDiagramSeries extends SankeySeries {
-    constructor() {
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.nodeColumns = void 0;
-        this.nodes = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -383,8 +369,11 @@ ArcDiagramSeries.defaultOptions = merge(SankeySeries.defaultOptions, {
      */
     offset: '100%',
     /**
-     * The global link weight. If not set, width is calculated per link,
-     * depending on the weight value.
+     * The global link weight, in pixels. If not set, width is calculated
+     * per link, depending on the weight value.
+     *
+     * @sample highcharts/series-arcdiagram/link-weight
+     *         Link weight
      *
      * @type    {number}
      * @since 10.0.0

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,7 +11,7 @@
 import H from './Globals.js';
 const { win } = H;
 import U from './Utilities.js';
-const { defined, error, extend, isObject, merge, objectEach, pad, pick, splat, timeUnits } = U;
+const { defined, error, extend, isNumber, isObject, merge, objectEach, pad, pick, splat, timeUnits } = U;
 /* *
  *
  *  Constants
@@ -283,34 +283,39 @@ class Time {
      *         A getTimezoneOffset function
      */
     timezoneOffsetFunction() {
-        const time = this, options = this.options, getTimezoneOffset = options.getTimezoneOffset, moment = options.moment || win.moment;
+        const time = this, options = this.options, getTimezoneOffset = options.getTimezoneOffset;
         if (!this.useUTC) {
-            return function (timestamp) {
-                return new Date(timestamp.toString()).getTimezoneOffset() * 60000;
-            };
+            return (timestamp) => new Date(timestamp.toString()).getTimezoneOffset() * 60000;
         }
         if (options.timezone) {
-            if (!moment) {
-                // getTimezoneOffset-function stays undefined because it depends
-                // on Moment.js
-                error(25);
-            }
-            else {
-                return function (timestamp) {
-                    return -moment.tz(timestamp, options.timezone).utcOffset() * 60000;
-                };
-            }
+            return (timestamp) => {
+                try {
+                    const [date, gmt, hours, colon, minutes = 0] = 
+                    // eslint-disable-next-line new-cap
+                    Intl.DateTimeFormat('en', {
+                        timeZone: options.timezone,
+                        timeZoneName: 'shortOffset'
+                    })
+                        .format(timestamp)
+                        .split(/(GMT|:)/)
+                        .map(Number), offset = -(hours + minutes / 60) * 60 * 60000;
+                    // Possible future NaNs stop here
+                    if (isNumber(offset)) {
+                        return offset;
+                    }
+                }
+                catch (e) {
+                    error(34);
+                }
+                return 0;
+            };
         }
         // If not timezone is set, look for the getTimezoneOffset callback
         if (this.useUTC && getTimezoneOffset) {
-            return function (timestamp) {
-                return getTimezoneOffset(timestamp.valueOf()) * 60000;
-            };
+            return (timestamp) => getTimezoneOffset(timestamp.valueOf()) * 60000;
         }
         // Last, use the `timezoneOffset` option if set
-        return function () {
-            return (time.timezoneOffset || 0) * 60000;
-        };
+        return () => (time.timezoneOffset || 0) * 60000;
     }
     /**
      * Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970)
@@ -725,15 +730,5 @@ export default Time;
  *
  * @return {number}
  * Timezone offset in minutes.
- */
-/**
- * Allows to manually load the `moment.js` library from Highcharts options
- * instead of the `window`.
- * In case of loading the library from a `script` tag,
- * this option is not needed, it will be loaded from there by default.
- *
- * @type      {Function}
- * @since     8.2.0
- * @apioption time.moment
  */
 ''; // keeps doclets above in JS file

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft AS
+ *  (c) 2009-2024 Highsoft AS
  *
  *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
  *
@@ -16,15 +16,9 @@ import DDU from './DragDropUtilities.js';
 const { addEvents, countProps, getFirstProp, getNormalizedEvent } = DDU;
 import DragDropDefaults from './DragDropDefaults.js';
 import H from '../../Core/Globals.js';
-const { doc } = H;
+const { composed, doc } = H;
 import U from '../../Core/Utilities.js';
 const { addEvent, merge, pick, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -138,7 +132,7 @@ function chartZoomOrPanKeyPressed(e) {
  *        Class constructor of chart.
  */
 function compose(ChartClass) {
-    if (pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         const chartProto = ChartClass.prototype;
         chartProto.hideDragHandles = chartHideDragHandles;
         chartProto.setGuideBoxState = chartSetGuideBoxState;
@@ -225,7 +219,7 @@ function getGroupedPoints(point) {
     let points = [];
     if (series.boosted) { // #11156
         for (let i = 0, iEnd = data.length; i < iEnd; ++i) {
-            points.push((new series.pointClass()).init(// eslint-disable-line new-cap
+            points.push(new series.pointClass(// eslint-disable-line new-cap
             series, data[i]));
             points[points.length - 1].index = i;
         }

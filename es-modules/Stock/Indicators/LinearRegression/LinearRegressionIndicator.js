@@ -1,6 +1,6 @@
 /**
  *
- *  (c) 2010-2021 Kamil Kulig
+ *  (c) 2010-2024 Kamil Kulig
  *
  *  License: www.highcharts.com/license
  *
@@ -27,22 +27,6 @@ const { isArray, extend, merge } = U;
  * @augments Highcharts.Series
  */
 class LinearRegressionIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -178,6 +162,11 @@ class LinearRegressionIndicator extends SMAIndicator {
         return indicatorData;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Linear regression indicator. This series requires `linkedTo` option to be
  * set.

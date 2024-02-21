@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,13 +10,13 @@
 'use strict';
 import DataLabel from '../../Core/Series/DataLabel.js';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import R from '../../Core/Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { arrayMax, clamp, defined, pick, relativeLength } = U;
+const { arrayMax, clamp, defined, pick, pushUnique, relativeLength } = U;
 /* *
  *
  *  Composition
@@ -29,7 +29,6 @@ var ColumnDataLabel;
      *  Constants
      *
      * */
-    const composedMembers = [];
     const dataLabelPositioners = {
         // Based on the value computed in Highcharts' distribute algorithm.
         radialDistributionY: function (point, dataLabel) {
@@ -81,11 +80,10 @@ var ColumnDataLabel;
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /** @private */
     function compose(PieSeriesClass) {
         DataLabel.compose(Series);
-        if (U.pushUnique(composedMembers, PieSeriesClass)) {
+        if (pushUnique(composed, compose)) {
             const pieProto = PieSeriesClass.prototype;
             pieProto.dataLabelPositioners = dataLabelPositioners;
             pieProto.alignDataLabel = noop;

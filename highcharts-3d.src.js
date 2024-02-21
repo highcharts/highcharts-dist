@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * 3D features for Highcharts JS
  *
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Core/Math3D.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -286,7 +286,7 @@
     _registerModule(_modules, 'Core/Chart/Chart3D.js', [_modules['Core/Color/Color.js'], _modules['Core/Defaults.js'], _modules['Core/Math3D.js'], _modules['Core/Utilities.js']], function (Color, D, Math3D, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extension for 3D charts
          *
@@ -500,8 +500,7 @@
                  * Whether it is a 3D chart.
                  */
                 chartProto.is3d = function () {
-                    return Boolean(this.options.chart.options3d &&
-                        this.options.chart.options3d.enabled); // #4280
+                    return !!this.options.chart.options3d?.enabled;
                 };
                 chartProto.propsRequireDirtyBox.push('chart.options3d');
                 chartProto.propsRequireUpdateSeries.push('chart.options3d');
@@ -1514,7 +1513,6 @@
                  *
                  * */
                 constructor(chart) {
-                    this.frame3d = void 0;
                     this.chart = chart;
                 }
                 /* *
@@ -1969,32 +1967,27 @@
 
         return Chart3D;
     });
-    _registerModule(_modules, 'Series/Area3D/Area3DSeries.js', [_modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Math3D, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Area3D/Area3DSeries.js', [_modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, Math3D, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Grzegorz Blachliński
+         *  (c) 2010-2024 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { perspective } = Math3D;
-        const { seriesTypes: { line: { prototype: lineProto } } } = SeriesRegistry;
-        const { wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { line: { prototype: lineProto } } = SeriesRegistry.seriesTypes;
+        const { pushUnique, wrap } = U;
         /* *
          *
          *  Functions
          *
          * */
         function compose(AreaSeriesClass) {
-            if (U.pushUnique(composedMembers, AreaSeriesClass)) {
+            if (pushUnique(composed, compose)) {
                 wrap(AreaSeriesClass.prototype, 'getGraphPath', wrapAreaSeriesGetGraphPath);
             }
         }
@@ -2046,6 +2039,7 @@
                 areaPath.xMap = series.areaPath.xMap;
                 series.areaPath = areaPath;
             }
+            series.graphPath = svgPath;
             return svgPath;
         }
         /* *
@@ -2062,7 +2056,7 @@
     _registerModule(_modules, 'Core/Axis/Axis3DDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extenstion for 3d axes
          *
@@ -2191,10 +2185,10 @@
 
         return Axis3DDefaults;
     });
-    _registerModule(_modules, 'Core/Axis/Tick3DComposition.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/Tick3DComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extenstion for 3d axes
          *
@@ -2203,13 +2197,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, extend, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, extend, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -2219,7 +2208,7 @@
          * @private
          */
         function compose(TickClass) {
-            if (U.pushUnique(composedMembers, TickClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
                 wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
             }
@@ -2262,10 +2251,10 @@
 
         return Tick3DAdditions;
     });
-    _registerModule(_modules, 'Core/Axis/Axis3DComposition.js', [_modules['Core/Axis/Axis3DDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Axis/Tick3DComposition.js'], _modules['Core/Utilities.js']], function (Axis3DDefaults, H, Math3D, Tick3D, U) {
+    _registerModule(_modules, 'Core/Axis/Axis3DComposition.js', [_modules['Core/Axis/Axis3DDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Axis/Tick3DComposition.js'], _modules['Core/Utilities.js']], function (Axis3DDefaults, D, H, Math3D, Tick3D, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extenstion for 3d axes
          *
@@ -2274,15 +2263,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { deg2rad } = H;
+        const { defaultOptions } = D;
+        const { composed, deg2rad } = H;
         const { perspective, perspective3D, shapeArea } = Math3D;
-        const { addEvent, merge, pick, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, merge, pick, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -2432,7 +2416,7 @@
          * @private
          */
         function wrapAxisGetSlotWidth(proceed, tick) {
-            const axis = this, chart = axis.chart, ticks = axis.ticks, gridGroup = axis.gridGroup;
+            const axis = this, { chart, gridGroup, tickPositions, ticks } = axis;
             if (axis.categories &&
                 chart.frameShapes &&
                 chart.is3d() &&
@@ -2445,14 +2429,11 @@
                     z: options3d.depth / 2,
                     vd: (pick(options3d.depth, 1) *
                         pick(options3d.viewDistance, 0))
-                }, tickId = tick.pos, prevTick = ticks[tickId - 1], nextTick = ticks[tickId + 1];
+                }, index = tickPositions.indexOf(tick.pos), prevTick = ticks[tickPositions[index - 1]], nextTick = ticks[tickPositions[index + 1]];
                 let labelPos, prevLabelPos, nextLabelPos;
                 // Check whether the tick is not the first one and previous tick
                 // exists, then calculate position of previous label.
-                if (tickId !== 0 &&
-                    prevTick &&
-                    prevTick.label &&
-                    prevTick.label.xy) {
+                if (prevTick?.label?.xy) {
                     prevLabelPos = perspective3D({
                         x: prevTick.label.xy.x,
                         y: prevTick.label.xy.y,
@@ -2517,8 +2498,8 @@
              */
             static compose(AxisClass, TickClass) {
                 Tick3D.compose(TickClass);
-                if (U.pushUnique(composedMembers, AxisClass)) {
-                    merge(true, AxisClass.defaultOptions, Axis3DDefaults);
+                if (pushUnique(composed, this.compose)) {
+                    merge(true, defaultOptions.xAxis, Axis3DDefaults);
                     AxisClass.keepProps.push('axis3D');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
@@ -2758,10 +2739,10 @@
 
         return Axis3DAdditions;
     });
-    _registerModule(_modules, 'Core/Series/Series3D.js', [_modules['Core/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Math3D, Series, U) {
+    _registerModule(_modules, 'Core/Series/Series3D.js', [_modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (H, Math3D, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extension to the Series object in 3D charts.
          *
@@ -2770,14 +2751,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { perspective } = Math3D;
-        const { addEvent, extend, merge, pick, pushUnique, isNumber } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, extend, isNumber, merge, pick, pushUnique } = U;
         /* *
          *
          *  Class
@@ -2790,7 +2766,7 @@
              *
              * */
             static compose(SeriesClass) {
-                if (pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(SeriesClass, 'afterTranslate', function () {
                         if (this.chart.is3d()) {
                             this.translate3dPoints();
@@ -2817,8 +2793,7 @@
                 let rawPoint, projectedPoint, zValue, i;
                 series.zPadding = stack *
                     (seriesOptions.depth || 0 + (seriesOptions.groupZPadding || 1));
-                for (i = 0; i < series.data.length; i++) {
-                    rawPoint = series.data[i];
+                series.data.forEach((rawPoint) => {
                     if (zAxis && zAxis.translate) {
                         zValue = zAxis.logarithmic && zAxis.val2lin ?
                             zAxis.val2lin(rawPoint.z) :
@@ -2841,16 +2816,15 @@
                         z: rawPoint.plotZ
                     });
                     rawPointsX.push(rawPoint.plotX || 0);
-                }
+                });
                 series.rawPointsX = rawPointsX;
                 const projectedPoints = perspective(rawPoints, chart, true);
-                for (i = 0; i < series.data.length; i++) {
-                    rawPoint = series.data[i];
+                series.data.forEach((rawPoint, i) => {
                     projectedPoint = projectedPoints[i];
                     rawPoint.plotX = projectedPoint.x;
                     rawPoint.plotY = projectedPoint.y;
                     rawPoint.plotZ = projectedPoint.z;
-                }
+                });
             }
         }
         /* *
@@ -2870,7 +2844,7 @@
     _registerModule(_modules, 'Core/Renderer/SVG/SVGElement3D.js', [_modules['Core/Color/Color.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, RendererRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extensions to the SVGRenderer class to enable 3D shapes
          *
@@ -3057,7 +3031,7 @@
     _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer3D.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Renderer/SVG/SVGElement3D.js'], _modules['Core/Utilities.js']], function (A, Color, H, Math3D, SVGElement3D, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Extensions to the SVGRenderer class to enable 3D shapes
          *
@@ -3068,7 +3042,7 @@
          * */
         const { animObject } = A;
         const { parse: color } = Color;
-        const { charts, deg2rad } = H;
+        const { charts, composed, deg2rad } = H;
         const { perspective, shapeArea } = Math3D;
         const { defined, extend, merge, pick, pushUnique } = U;
         /* *
@@ -3076,7 +3050,7 @@
          *  Constants
          *
          * */
-        const composedMembers = [], cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
+        const cos = Math.cos, sin = Math.sin, PI = Math.PI, dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
         /* *
          *
          *  Functions
@@ -3133,7 +3107,7 @@
              * */
             /** @private */
             function compose(SVGRendererClass) {
-                if (pushUnique(composedMembers, SVGRendererClass)) {
+                if (pushUnique(composed, compose)) {
                     extend(SVGRendererClass.prototype, {
                         Element3D: SVGElement3D,
                         arc3d,
@@ -3294,12 +3268,8 @@
              * @requires highcharts-3d
              */
             function element3d(type, shapeArgs) {
-                // base
-                const elem3d = new SVGElement3D.types[type]();
-                // init
-                elem3d.init(this, 'g');
+                const elem3d = new SVGElement3D.types[type](this, 'g');
                 elem3d.initArgs(shapeArgs);
-                // return
                 return elem3d;
             }
             /**
@@ -3872,23 +3842,20 @@
 
         return SVGRenderer3D;
     });
-    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
+    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, AxisDefaults, D, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, merge, pick, splat } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { xAxis } = AxisDefaults;
+        const { defaultOptions } = D;
+        const { composed } = H;
+        const { addEvent, merge, pick, pushUnique, splat } = U;
         /* *
          *
          *  Functions
@@ -3933,9 +3900,13 @@
                 this.isZAxis = true;
             }
             static compose(ChartClass) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
+                if (pushUnique(composed, this.compose)) {
                     const chartProto = ChartClass.prototype;
+                    defaultOptions.zAxis = merge(xAxis, {
+                        offset: 0,
+                        lineWidth: 0
+                    });
+                    addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
                     chartProto.addZAxis = chartAddZAxis;
                     chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
                     chartProto.collectionsWithUpdate.push('zAxis');
@@ -3991,16 +3962,6 @@
                     chart.options.chart.options3d.depth) || 0;
                 this.right = chart.chartWidth - this.width - this.left;
             }
-            /**
-             * @private
-             */
-            setOptions(userOptions) {
-                userOptions = merge({
-                    offset: 0,
-                    lineWidth: 0
-                }, userOptions);
-                super.setOptions(userOptions);
-            }
         }
         /* *
          *
@@ -4010,24 +3971,19 @@
 
         return ZAxis;
     });
-    _registerModule(_modules, 'Series/Column3D/Column3DComposition.js', [_modules['Core/Math3D.js'], _modules['Core/Utilities.js']], function (Math3D, U) {
+    _registerModule(_modules, 'Series/Column3D/Column3DComposition.js', [_modules['Core/Globals.js'], _modules['Core/Math3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { perspective } = Math3D;
         const { addEvent, extend, pick, pushUnique, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -4046,7 +4002,7 @@
                 z = 0;
             }
             z += (seriesOptions.groupZPadding || 1);
-            for (const point of series.data) {
+            for (const point of series.points) {
                 // #7103 Reset outside3dPlot flag
                 point.outside3dPlot = null;
                 if (point.y !== null) {
@@ -4109,6 +4065,10 @@
                         point2dPos.x = shapeArgs.height;
                         point2dPos.y = point.clientX || 0;
                     }
+                    // Crosshair positions
+                    point.axisXpos = point2dPos.x;
+                    point.axisYpos = point2dPos.y;
+                    point.axisZpos = point2dPos.z;
                     // Calculate and store point's position in 3D,
                     // using perspective method.
                     point.plot3d = perspective([point2dPos], chart, true, false)[0];
@@ -4128,38 +4088,32 @@
         }
         /** @private */
         function compose(SeriesClass, StackItemClass) {
-            if (pushUnique(composedMembers, SeriesClass)) {
-                const seriesProto = SeriesClass.prototype;
+            if (pushUnique(composed, compose)) {
+                const seriesProto = SeriesClass.prototype, stackItemProto = StackItemClass.prototype, { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
                 wrap(seriesProto, 'alignDataLabel', wrapSeriesAlignDataLabel);
                 wrap(seriesProto, 'justifyDataLabel', wrapSeriesJustifyDataLabel);
-            }
-            if (pushUnique(composedMembers, StackItemClass)) {
-                const stackItemProto = StackItemClass.prototype;
                 wrap(stackItemProto, 'getStackBox', wrapStackItemGetStackBox);
-            }
-            const { column: ColumnSeriesClass, columnRange: ColumnRangeSeriesClass } = SeriesClass.types;
-            if (ColumnSeriesClass &&
-                pushUnique(composedMembers, ColumnSeriesClass)) {
-                const columnSeriesProto = ColumnSeriesClass.prototype, columnPointProto = columnSeriesProto.pointClass.prototype;
-                columnSeriesProto.translate3dPoints = () => void 0;
-                columnSeriesProto.translate3dShapes = columnSeriesTranslate3dShapes;
-                addEvent(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
-                wrap(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
-                wrap(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
-                wrap(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
-                wrap(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
-                wrap(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
-                wrap(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
-                wrap(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
-            }
-            if (ColumnRangeSeriesClass &&
-                pushUnique(composedMembers, ColumnRangeSeriesClass)) {
-                const columnRangeSeriesProto = ColumnRangeSeriesClass.prototype, columnRangePointProto = columnRangeSeriesProto.pointClass.prototype;
-                wrap(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
-                wrap(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
-                wrap(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
-                wrap(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
-                wrap(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+                if (ColumnSeriesClass) {
+                    const columnSeriesProto = ColumnSeriesClass.prototype, columnPointProto = columnSeriesProto.pointClass.prototype;
+                    columnSeriesProto.translate3dPoints = () => void 0;
+                    columnSeriesProto.translate3dShapes = columnSeriesTranslate3dShapes;
+                    addEvent(columnSeriesProto, 'afterInit', onColumnSeriesAfterInit);
+                    wrap(columnPointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+                    wrap(columnSeriesProto, 'animate', wrapColumnSeriesAnimate);
+                    wrap(columnSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+                    wrap(columnSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+                    wrap(columnSeriesProto, 'setState', wrapColumnSeriesSetState);
+                    wrap(columnSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+                    wrap(columnSeriesProto, 'translate', wrapColumnSeriesTranslate);
+                }
+                if (ColumnRangeSeriesClass) {
+                    const columnRangeSeriesProto = ColumnRangeSeriesClass.prototype, columnRangePointProto = columnRangeSeriesProto.pointClass.prototype;
+                    wrap(columnRangePointProto, 'hasNewShapeType', wrapColumnPointHasNewShapeType);
+                    wrap(columnRangeSeriesProto, 'plotGroup', wrapColumnSeriesPlotGroup);
+                    wrap(columnRangeSeriesProto, 'pointAttribs', wrapColumnSeriesPointAttribs);
+                    wrap(columnRangeSeriesProto, 'setState', wrapColumnSeriesSetState);
+                    wrap(columnRangeSeriesProto, 'setVisible', wrapColumnSeriesSetVisible);
+                }
             }
         }
         /**
@@ -4230,7 +4184,7 @@
             else {
                 const args = arguments, init = args[1], yAxis = this.yAxis, series = this, reversed = this.yAxis.reversed;
                 if (init) {
-                    for (const point of series.data) {
+                    for (const point of series.points) {
                         if (point.y !== null) {
                             point.height = point.shapeArgs.height;
                             point.shapey = point.shapeArgs.y; // #2968
@@ -4252,8 +4206,8 @@
                         }
                     }
                 }
-                else { // run the animation
-                    for (const point of series.data) {
+                else { // Run the animation
+                    for (const point of series.points) {
                         if (point.y !== null) {
                             point.shapeArgs.height = point.height;
                             point.shapeArgs.y = point.shapey; // #2968
@@ -4332,7 +4286,7 @@
         function wrapColumnSeriesSetVisible(proceed, vis) {
             const series = this;
             if (series.chart.is3d()) {
-                for (const point of series.data) {
+                for (const point of series.points) {
                     point.visible = point.options.visible = vis =
                         typeof vis === 'undefined' ?
                             !pick(series.visible, point.visible) : vis;
@@ -4501,7 +4455,7 @@
     _registerModule(_modules, 'Series/Pie3D/Pie3DPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  3D pie series
          *
@@ -4517,15 +4471,6 @@
          *
          * */
         class Pie3DPoint extends PiePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -4550,7 +4495,7 @@
     _registerModule(_modules, 'Series/Pie3D/Pie3DSeries.js', [_modules['Core/Globals.js'], _modules['Series/Pie3D/Pie3DPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, Pie3DPoint, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  3D pie series
          *
@@ -4559,15 +4504,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { deg2rad } = H;
+        const { composed, deg2rad } = H;
         const { pie: PieSeries } = SeriesRegistry.seriesTypes;
         const { extend, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Class
@@ -4580,7 +4519,7 @@
              *
              * */
             static compose(SeriesClass) {
-                if (pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, this.compose)) {
                     SeriesClass.types.pie = Pie3DSeries;
                 }
             }
@@ -4695,7 +4634,7 @@
                 if (seriesOptions.grouping !== false) {
                     z = 0;
                 }
-                for (const point of series.data) {
+                for (const point of series.points) {
                     const shapeArgs = point.shapeArgs;
                     point.shapeType = 'arc3d';
                     shapeArgs.z = z;
@@ -4764,7 +4703,7 @@
     _registerModule(_modules, 'Series/Scatter3D/Scatter3DPoint.js', [_modules['Series/Scatter/ScatterSeries.js'], _modules['Core/Utilities.js']], function (ScatterSeries, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Scatter 3D series.
          *
@@ -4781,16 +4720,6 @@
          *
          * */
         class Scatter3DPoint extends ScatterPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -4815,7 +4744,7 @@
     _registerModule(_modules, 'Series/Scatter3D/Scatter3DSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Scatter 3D series.
          *
@@ -4934,7 +4863,7 @@
     _registerModule(_modules, 'Series/Scatter3D/Scatter3DSeries.js', [_modules['Core/Math3D.js'], _modules['Series/Scatter3D/Scatter3DPoint.js'], _modules['Series/Scatter3D/Scatter3DSeriesDefaults.js'], _modules['Series/Scatter/ScatterSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Math3D, Scatter3DPoint, Scatter3DSeriesDefaults, ScatterSeries, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  Scatter 3D series.
          *
@@ -4958,22 +4887,6 @@
          * @augments Highcharts.Series
          */
         class Scatter3DSeries extends ScatterSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -4988,6 +4901,11 @@
                 return attribs;
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         Scatter3DSeries.defaultOptions = merge(ScatterSeries.defaultOptions, Scatter3DSeriesDefaults);
         extend(Scatter3DSeries.prototype, {
             axisTypes: ['xAxis', 'yAxis', 'zAxis'],

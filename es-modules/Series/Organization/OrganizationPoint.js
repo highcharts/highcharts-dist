@@ -2,7 +2,7 @@
  *
  *  Organization chart module
  *
- *  (c) 2018-2021 Torstein Honsi
+ *  (c) 2018-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -44,32 +44,17 @@ function getOffset(node) {
  *
  * */
 class OrganizationPoint extends SankeyPointClass {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.fromNode = void 0;
-        this.linksFrom = void 0;
-        this.linksTo = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.toNode = void 0;
-    }
     /* *
      *
      *  Functions
      *
      * */
-    init() {
-        super.init.apply(this, arguments);
+    constructor(series, options, x) {
+        super(series, options, x);
         if (!this.isNode) {
             this.dataLabelOnNull = true;
             this.formatPrefix = 'link';
         }
-        return this;
     }
     /**
      * All nodes in an org chart are equal width.

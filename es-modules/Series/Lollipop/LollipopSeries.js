@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  *  License: www.highcharts.com/license
  *
@@ -30,22 +30,6 @@ const { extend, merge } = U;
  *
  */
 class LollipopSeries extends Series {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /**
      * Extend the series' drawPoints method by applying a connector
      * and coloring markers.
@@ -89,6 +73,11 @@ class LollipopSeries extends Series {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * The lollipop series is a carteseian series with a line anchored from
  * the x axis and a dot at the end to mark the value.

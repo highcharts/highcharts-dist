@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Accessibility component for exporting menu.
  *
@@ -11,8 +11,10 @@
  * */
 'use strict';
 import Chart from '../../Core/Chart/Chart.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { attr } = U;
+const { attr, pushUnique } = U;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
@@ -24,7 +26,6 @@ const { getFakeMouseEvent } = HTMLUtilities;
  *  Functions
  *
  * */
-/* eslint-disable valid-jsdoc */
 /**
  * Get the wrapped export button element of a chart.
  * @private
@@ -313,21 +314,14 @@ class MenuComponent extends AccessibilityComponent {
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             const chartProto = Chart.prototype;
             chartProto.hideExportMenu = chartHideExportMenu;
             chartProto.highlightExportItem = chartHighlightExportItem;

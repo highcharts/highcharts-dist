@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
  *
  * StaticScale
  *
- * (c) 2016-2021 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -35,23 +35,18 @@
             }
         }
     }
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2021 Torstein Honsi, Lars Cabrera
+         *  (c) 2016-2024 Torstein Honsi, Lars Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { addEvent, defined, isNumber, pick, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Composition
@@ -59,11 +54,9 @@
          * */
         /** @private */
         function compose(AxisClass, ChartClass) {
-            if (pushUnique(composedMembers, AxisClass)) {
-                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-            }
-            if (pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
+                addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
                 chartProto.adjustHeight = chartAdjustHeight;
                 addEvent(ChartClass, 'render', chartProto.adjustHeight);
             }

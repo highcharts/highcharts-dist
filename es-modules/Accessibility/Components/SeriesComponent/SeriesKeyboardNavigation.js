@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Øystein Moseng
+ *  (c) 2009-2024 Øystein Moseng
  *
  *  Handle keyboard navigation for series.
  *
@@ -15,9 +15,9 @@ import Series from '../../../Core/Series/Series.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { seriesTypes } = SeriesRegistry;
 import H from '../../../Core/Globals.js';
-const { doc } = H;
+const { composed, doc } = H;
 import U from '../../../Core/Utilities.js';
-const { defined, fireEvent } = U;
+const { defined, fireEvent, pushUnique } = U;
 import KeyboardNavigationHandler from '../../KeyboardNavigationHandler.js';
 import EventProvider from '../../Utils/EventProvider.js';
 import ChartUtilities from '../../Utils/ChartUtilities.js';
@@ -415,12 +415,6 @@ class SeriesKeyboardNavigation {
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -573,18 +567,12 @@ class SeriesKeyboardNavigation {
      * @private
      */
     function compose(ChartClass, PointClass, SeriesClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            const chartProto = ChartClass.prototype;
+        if (pushUnique(composed, compose)) {
+            const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
             chartProto.highlightAdjacentPoint = chartHighlightAdjacentPoint;
             chartProto.highlightAdjacentPointVertical = (chartHighlightAdjacentPointVertical);
             chartProto.highlightAdjacentSeries = chartHighlightAdjacentSeries;
-        }
-        if (U.pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
             pointProto.highlight = pointHighlight;
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
             /**
              * Set for which series types it makes sense to move to the closest
              * point with up/down arrows, and which series types should just

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
@@ -41,7 +41,7 @@
          *
          *  Plugin for displaying a message when there is no data visible in chart.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Oystein Moseng
          *
@@ -166,12 +166,12 @@
 
         return NoDataDefaults;
     });
-    _registerModule(_modules, 'Extensions/NoDataToDisplay/NoDataToDisplay.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Extensions/NoDataToDisplay/NoDataDefaults.js'], _modules['Core/Utilities.js']], function (AST, NoDataDefaults, U) {
+    _registerModule(_modules, 'Extensions/NoDataToDisplay/NoDataToDisplay.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Extensions/NoDataToDisplay/NoDataDefaults.js'], _modules['Core/Utilities.js']], function (AST, H, NoDataDefaults, U) {
         /* *
          *
          *  Plugin for displaying a message when there is no data visible in chart.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Oystein Moseng
          *
@@ -180,13 +180,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { addEvent, extend, merge, pushUnique } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -252,14 +247,12 @@
         }
         /** @private */
         function compose(ChartClass, highchartsDefaultOptions) {
-            if (pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
                 chartProto.hasData = chartHasData;
                 chartProto.hideNoData = chartHideNoData;
                 chartProto.showNoData = chartShowNoData;
                 addEvent(ChartClass, 'render', onChartRender);
-            }
-            if (pushUnique(composedMembers, highchartsDefaultOptions)) {
                 merge(true, highchartsDefaultOptions, NoDataDefaults);
             }
         }

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -59,23 +59,6 @@ class Color {
         if (GlobalColor && GlobalColor !== Color) {
             return new GlobalColor(input);
         }
-        this.init(input);
-    }
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Parse the input color to rgba array
-     *
-     * @private
-     * @function Highcharts.Color#init
-     *
-     * @param {Highcharts.ColorType} input
-     * The input color in either rbga or hex format
-     */
-    init(input) {
         let result, rgba, i, parser;
         // Gradients
         if (typeof input === 'object' &&
@@ -127,6 +110,11 @@ class Color {
             this.rgba = rgba;
         }
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * Return the color or gradient stops in the specified format
      *

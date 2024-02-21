@@ -111,7 +111,7 @@ const waitForAutomaticExtremes = function (axis) {
     }, 400);
 };
 /**
-* Calulate the ratio of mouse position on the axis to it's length. If mousePos
+* Calculate the ratio of mouse position on the axis to its length. If mousePos
 * doesn't exist, returns 0.5;
 * @private
 */
@@ -119,7 +119,9 @@ const getMouseAxisRatio = function (chart, axis, mousePos) {
     if (!defined(mousePos)) {
         return 0.5;
     }
-    const mouseAxisRatio = (mousePos - axis.pos) / axis.len, isXAxis = axis.isXAxis;
+    const mouseAxisRatio = (mousePos - axis.minPixelPadding - axis.pos) /
+        (axis.len - 2 * axis.minPixelPadding), // Prevent sticking (#19976)
+    isXAxis = axis.isXAxis;
     if (isXAxis && (!axis.reversed !== !chart.inverted) ||
         !isXAxis && axis.reversed) {
         // We are taking into account that xAxis automatically gets

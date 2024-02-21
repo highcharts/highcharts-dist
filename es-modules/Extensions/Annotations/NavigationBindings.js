@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft, Black Label
+ *  (c) 2009-2024 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -14,18 +14,12 @@ const { setOptions } = D;
 import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
-const { doc, win } = H;
+const { composed, doc, win } = H;
 import NavigationBindingDefaults from './NavigationBindingsDefaults.js';
 import NBU from './NavigationBindingsUtilities.js';
 const { getFieldType } = NBU;
 import U from '../../Core/Utilities.js';
-const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -230,7 +224,7 @@ class NavigationBindings {
      *
      * */
     static compose(AnnotationClass, ChartClass) {
-        if (U.pushUnique(composedMembers, AnnotationClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(AnnotationClass, 'remove', onAnnotationRemove);
             // Basic shapes:
             selectableAnnotation(AnnotationClass);
@@ -238,17 +232,11 @@ class NavigationBindings {
             objectEach(AnnotationClass.types, (annotationType) => {
                 selectableAnnotation(annotationType);
             });
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'destroy', onChartDestroy);
             addEvent(ChartClass, 'load', onChartLoad);
             addEvent(ChartClass, 'render', onChartRender);
-        }
-        if (U.pushUnique(composedMembers, NavigationBindings)) {
             addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
             addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
-        }
-        if (U.pushUnique(composedMembers, setOptions)) {
             setOptions(NavigationBindingDefaults);
         }
     }
@@ -259,7 +247,6 @@ class NavigationBindings {
      * */
     constructor(chart, options) {
         this.boundClassNames = void 0;
-        this.selectedButton = void 0;
         this.chart = chart;
         this.options = options;
         this.eventsToUnbind = [];

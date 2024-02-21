@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Christer Vasseng, Torstein Honsi
+ *  (c) 2010-2024 Christer Vasseng, Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,7 +9,7 @@
  * */
 'use strict';
 import G from '../Core/Globals.js';
-const { doc } = G;
+const { doc, win } = G;
 import U from '../Core/Utilities.js';
 const { createElement, discardElement, merge, objectEach } = U;
 /* *
@@ -126,30 +126,32 @@ function getJSON(url, success) {
  * @param {Object} data
  * Post data
  *
- * @param {Highcharts.Dictionary<string>} [formAttributes]
+ * @param {RequestInit} [fetchOptions]
  * Additional attributes for the post request
  */
-function post(url, data, formAttributes) {
-    // create the form
-    const form = createElement('form', merge({
-        method: 'post',
-        action: url,
-        enctype: 'multipart/form-data'
-    }, formAttributes), {
-        display: 'none'
-    }, doc.body);
+function post(url, data, fetchOptions) {
+    const formData = new win.FormData();
     // add the data
     objectEach(data, function (val, name) {
-        createElement('input', {
-            type: 'hidden',
-            name: name,
-            value: val
-        }, void 0, form);
+        formData.append(name, val);
     });
-    // submit
-    form.submit();
-    // clean up
-    discardElement(form);
+    formData.append('b64', 'true');
+    const { filename, type } = data;
+    return win.fetch(url, {
+        method: 'POST',
+        body: formData,
+        ...fetchOptions
+    }).then((res) => {
+        if (res.ok) {
+            res.text().then((text) => {
+                const link = document.createElement('a');
+                link.href = `data:${type};base64,${text}`;
+                link.download = filename;
+                link.click();
+                discardElement(link);
+            });
+        }
+    });
 }
 /* *
  *

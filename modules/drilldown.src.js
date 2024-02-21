@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Highcharts Drilldown module
  *
@@ -304,7 +304,7 @@
 
         return BreadcrumbsDefaults;
     });
-    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, Chart, F, U) {
+    _registerModule(_modules, 'Extensions/Breadcrumbs/Breadcrumbs.js', [_modules['Extensions/Breadcrumbs/BreadcrumbsDefaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BreadcrumbsDefaults, F, H, U) {
         /* *
          *
          *  Highcharts Breadcrumbs module
@@ -317,13 +317,8 @@
          *
          * */
         const { format } = F;
-        const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -420,14 +415,12 @@
              *
              * */
             static compose(ChartClass, highchartsDefaultOptions) {
-                if (U.pushUnique(composedMembers, ChartClass)) {
-                    addEvent(Chart, 'destroy', onChartDestroy);
-                    addEvent(Chart, 'afterShowResetZoom', onChartAfterShowResetZoom);
-                    addEvent(Chart, 'getMargins', onChartGetMargins);
-                    addEvent(Chart, 'redraw', onChartRedraw);
-                    addEvent(Chart, 'selection', onChartSelection);
-                }
-                if (U.pushUnique(composedMembers, highchartsDefaultOptions)) {
+                if (pushUnique(composed, this.compose)) {
+                    addEvent(ChartClass, 'destroy', onChartDestroy);
+                    addEvent(ChartClass, 'afterShowResetZoom', onChartAfterShowResetZoom);
+                    addEvent(ChartClass, 'getMargins', onChartGetMargins);
+                    addEvent(ChartClass, 'redraw', onChartRedraw);
+                    addEvent(ChartClass, 'selection', onChartSelection);
                     // Add language support.
                     extend(highchartsDefaultOptions.lang, BreadcrumbsDefaults.lang);
                 }
@@ -1345,7 +1338,7 @@
 
         return DrilldownDefaults;
     });
-    _registerModule(_modules, 'Extensions/Drilldown/DrilldownSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Utilities.js']], function (A, U) {
+    _registerModule(_modules, 'Extensions/Drilldown/DrilldownSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, H, U) {
         /* *
          *
          *  Highcharts Drilldown module
@@ -1358,13 +1351,8 @@
          *
          * */
         const { animObject } = A;
+        const { composed } = H;
         const { addEvent, extend, fireEvent, merge, pick, pushUnique, syncTimeout } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -1521,36 +1509,33 @@
         }
         /** @private */
         function compose(SeriesClass, seriesTypes) {
-            const { column: ColumnSeriesClass, map: MapSeriesClass, pie: PieSeriesClass } = seriesTypes, PointClass = SeriesClass.prototype.pointClass;
-            if (ColumnSeriesClass && pushUnique(composedMembers, ColumnSeriesClass)) {
-                const columnProto = ColumnSeriesClass.prototype;
-                columnProto.animateDrilldown = columnAnimateDrilldown;
-                columnProto.animateDrillupFrom = columnAnimateDrillupFrom;
-                columnProto.animateDrillupTo = columnAnimateDrillupTo;
-            }
-            if (MapSeriesClass && pushUnique(composedMembers, MapSeriesClass)) {
-                const mapProto = MapSeriesClass.prototype;
-                mapProto.animateDrilldown = mapAnimateDrilldown;
-                mapProto.animateDrillupFrom = mapAnimateDrillupFrom;
-                mapProto.animateDrillupTo = mapAnimateDrillupTo;
-            }
-            if (PieSeriesClass && pushUnique(composedMembers, PieSeriesClass)) {
-                const pieProto = PieSeriesClass.prototype;
-                pieProto.animateDrilldown = pieAnimateDrilldown;
-                pieProto.animateDrillupFrom = columnAnimateDrillupFrom;
-                pieProto.animateDrillupTo = columnAnimateDrillupTo;
-            }
-            if (pushUnique(composedMembers, PointClass)) {
-                const pointProto = PointClass.prototype;
+            if (pushUnique(composed, compose)) {
+                const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype, { column: ColumnSeriesClass, map: MapSeriesClass, pie: PieSeriesClass } = seriesTypes;
                 addEvent(PointClass, 'afterInit', onPointAfterInit);
                 addEvent(PointClass, 'afterSetState', onPointAfterSetState);
                 addEvent(PointClass, 'update', onPointUpdate);
                 pointProto.doDrilldown = pointDoDrilldown;
                 pointProto.runDrilldown = pointRunDrilldown;
-            }
-            if (pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterDrawDataLabels', onSeriesAfterDrawDataLabels);
                 addEvent(SeriesClass, 'afterDrawTracker', onSeriesAfterDrawTracker);
+                if (ColumnSeriesClass) {
+                    const columnProto = ColumnSeriesClass.prototype;
+                    columnProto.animateDrilldown = columnAnimateDrilldown;
+                    columnProto.animateDrillupFrom = columnAnimateDrillupFrom;
+                    columnProto.animateDrillupTo = columnAnimateDrillupTo;
+                }
+                if (MapSeriesClass) {
+                    const mapProto = MapSeriesClass.prototype;
+                    mapProto.animateDrilldown = mapAnimateDrilldown;
+                    mapProto.animateDrillupFrom = mapAnimateDrillupFrom;
+                    mapProto.animateDrillupTo = mapAnimateDrillupTo;
+                }
+                if (PieSeriesClass) {
+                    const pieProto = PieSeriesClass.prototype;
+                    pieProto.animateDrilldown = pieAnimateDrilldown;
+                    pieProto.animateDrillupFrom = columnAnimateDrillupFrom;
+                    pieProto.animateDrillupTo = columnAnimateDrillupTo;
+                }
             }
         }
         /**
@@ -1833,7 +1818,7 @@
          *
          * */
         const { animObject } = A;
-        const { noop } = H;
+        const { composed, noop } = H;
         const { addEvent, defined, diffObjects, extend, fireEvent, merge, objectEach, pick, pushUnique, removeEvent, syncTimeout } = U;
         /* *
          *
@@ -2359,7 +2344,7 @@
                                     });
                                     if (zoomingDrill) {
                                         // Fit to natural bounds
-                                        chart.mapView.setView(void 0, 1, true, {
+                                        chart.mapView.setView(void 0, pick(chart.mapView.minZoom, 1), true, {
                                             complete: function () {
                                                 // fire it only on complete in this
                                                 // place (once)
@@ -2454,32 +2439,18 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(AxisClass, ChartClass, highchartsDefaultOptions, SeriesClass, seriesTypes, SVGRendererClass, TickClass) {
-                const SVGElementClass = SVGRendererClass.prototype.Element;
                 DrilldownSeries.compose(SeriesClass, seriesTypes);
-                if (pushUnique(composedMembers, AxisClass)) {
-                    const axisProto = AxisClass.prototype;
+                if (pushUnique(composed, compose)) {
+                    const DrilldownChart = ChartClass, SVGElementClass = SVGRendererClass.prototype.Element, addonProto = ChartAdditions.prototype, axisProto = AxisClass.prototype, chartProto = DrilldownChart.prototype, elementProto = SVGElementClass.prototype, tickProto = TickClass.prototype;
                     axisProto.drilldownCategory = axisDrilldownCategory;
                     axisProto.getDDPoints = axisGetDDPoints;
-                }
-                if (pushUnique(composedMembers, Breadcrumbs)) {
                     Breadcrumbs.compose(ChartClass, highchartsDefaultOptions);
                     addEvent(Breadcrumbs, 'up', onBreadcrumbsUp);
-                }
-                if (pushUnique(composedMembers, ChartClass)) {
-                    const DrilldownChart = ChartClass;
-                    const addonProto = ChartAdditions.prototype;
-                    const chartProto = DrilldownChart.prototype;
                     chartProto.addSeriesAsDrilldown = addonProto.addSeriesAsDrilldown;
                     chartProto.addSingleSeriesAsDrilldown =
                         addonProto.addSingleSeriesAsDrilldown;
@@ -2492,16 +2463,8 @@
                     addEvent(DrilldownChart, 'drillupall', onChartDrillupall);
                     addEvent(DrilldownChart, 'render', onChartRender);
                     addEvent(DrilldownChart, 'update', onChartUpdate);
-                }
-                if (pushUnique(composedMembers, highchartsDefaultOptions)) {
                     highchartsDefaultOptions.drilldown = DrilldownDefaults;
-                }
-                if (pushUnique(composedMembers, SVGElementClass)) {
-                    const elementProto = SVGElementClass.prototype;
                     elementProto.fadeIn = svgElementFadeIn;
-                }
-                if (pushUnique(composedMembers, TickClass)) {
-                    const tickProto = TickClass.prototype;
                     tickProto.drillable = tickDrillable;
                 }
             }

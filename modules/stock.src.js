@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -35,17 +35,18 @@
             }
         }
     }
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Stacking/StackItem.js'], _modules['Core/Utilities.js']], function (H, StackItem, U) {
         /* *
          *
-         *  (c) 2009-2021 Torstein Honsi
+         *  (c) 2009-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, find, fireEvent, isArray, isNumber, pick } = U;
+        const { composed } = H;
+        const { addEvent, find, fireEvent, isArray, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -64,29 +65,20 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Adds support for broken axes.
              * @private
              */
             function compose(AxisClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, compose)) {
                     AxisClass.keepProps.push('brokenAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
                     addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.drawBreaks = seriesDrawBreaks;
                     seriesProto.gappedPath = seriesGappedPath;
@@ -660,7 +652,7 @@
     _registerModule(_modules, 'Extensions/DataGrouping/ApproximationRegistry.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -697,7 +689,7 @@
     _registerModule(_modules, 'Extensions/DataGrouping/ApproximationDefaults.js', [_modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Core/Utilities.js']], function (ApproximationRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -854,7 +846,7 @@
     _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -996,23 +988,18 @@
 
         return DataGroupingDefaults;
     });
-    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingAxisComposition.js', [_modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Utilities.js']], function (DataGroupingDefaults, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingAxisComposition.js', [_modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (DataGroupingDefaults, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, extend, merge, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, extend, merge, pick, pushUnique } = U;
         /* *
          *
          *  Variables
@@ -1054,7 +1041,7 @@
          */
         function compose(AxisClass) {
             AxisConstructor = AxisClass;
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
                 // When all series are processed, calculate the group pixel width and
                 // then if this value is different than zero apply groupings.
@@ -1169,25 +1156,25 @@
 
         return DataGroupingAxisComposition;
     });
-    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingSeriesComposition.js', [_modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Defaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ApproximationRegistry, DataGroupingDefaults, DateTimeAxis, D, SeriesRegistry, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping/DataGroupingSeriesComposition.js', [_modules['Extensions/DataGrouping/ApproximationRegistry.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ApproximationRegistry, DataGroupingDefaults, DateTimeAxis, D, H, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { series: { prototype: seriesProto } } = SeriesRegistry;
-        const { addEvent, defined, error, extend, isNumber, merge, pick } = U;
+        const { addEvent, defined, error, extend, isNumber, merge, pick, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
         const baseGeneratePoints = seriesProto.generatePoints;
-        const composedMembers = [];
         /* *
          *
          *  Functions
@@ -1229,49 +1216,56 @@
          */
         function anchorPoints(series, groupedXData, xMax) {
             const options = series.options, dataGroupingOptions = options.dataGrouping, totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
-            let i;
-            // DataGrouping x-coordinates.
-            if (dataGroupingOptions && series.xData && totalRange && series.groupMap) {
-                const groupedDataLength = groupedXData.length - 1, anchor = dataGroupingOptions.anchor, firstAnchor = pick(dataGroupingOptions.firstAnchor, anchor), lastAnchor = pick(dataGroupingOptions.lastAnchor, anchor);
-                // Anchor points that are not extremes.
-                if (anchor && anchor !== 'start') {
-                    const shiftInterval = (totalRange *
-                        { middle: 0.5, end: 1 }[anchor]);
-                    i = groupedXData.length - 1;
-                    while (i-- && i > 0) {
-                        groupedXData[i] += shiftInterval;
-                    }
+            if (!(dataGroupingOptions &&
+                series.xData &&
+                totalRange &&
+                series.groupMap)) {
+                return;
+            }
+            const groupedDataLastIndex = groupedXData.length - 1, anchor = dataGroupingOptions.anchor, firstAnchor = dataGroupingOptions.firstAnchor, lastAnchor = dataGroupingOptions.lastAnchor;
+            let anchorIndexIterator = groupedXData.length - 1, anchorFirstIndex = 0;
+            // Change the first point position, but only when it is
+            // the first point in the data set not in the current zoom.
+            if (firstAnchor && series.xData[0] >= groupedXData[0]) {
+                anchorFirstIndex++;
+                const groupStart = series.groupMap[0].start, groupLength = series.groupMap[0].length;
+                let firstGroupEnd;
+                if (isNumber(groupStart) && isNumber(groupLength)) {
+                    firstGroupEnd = groupStart + (groupLength - 1);
                 }
-                // Change the first point position, but only when it is
-                // the first point in the data set not in the current zoom.
-                if (firstAnchor &&
-                    firstAnchor !== 'start' &&
-                    series.xData[0] >= groupedXData[0]) {
-                    const groupStart = series.groupMap[0].start, groupLength = series.groupMap[0].length;
-                    let firstGroupstEnd;
-                    if (isNumber(groupStart) && isNumber(groupLength)) {
-                        firstGroupstEnd = groupStart + (groupLength - 1);
-                    }
-                    groupedXData[0] = {
-                        middle: groupedXData[0] + 0.5 * totalRange,
-                        end: groupedXData[0] + totalRange,
-                        firstPoint: series.xData[0],
-                        lastPoint: firstGroupstEnd && series.xData[firstGroupstEnd]
-                    }[firstAnchor];
-                }
-                // Change the last point position but only when it is
-                // the last point in the data set not in the current zoom.
-                if (lastAnchor &&
-                    lastAnchor !== 'start' &&
-                    totalRange &&
-                    groupedXData[groupedDataLength] >= xMax - totalRange) {
-                    const lastGroupStart = series.groupMap[series.groupMap.length - 1].start;
-                    groupedXData[groupedDataLength] = {
-                        middle: groupedXData[groupedDataLength] + 0.5 * totalRange,
-                        end: groupedXData[groupedDataLength] + totalRange,
-                        firstPoint: lastGroupStart && series.xData[lastGroupStart],
-                        lastPoint: series.xData[series.xData.length - 1]
-                    }[lastAnchor];
+                groupedXData[0] = {
+                    start: groupedXData[0],
+                    middle: groupedXData[0] + 0.5 * totalRange,
+                    end: groupedXData[0] + totalRange,
+                    firstPoint: series.xData[0],
+                    lastPoint: firstGroupEnd && series.xData[firstGroupEnd]
+                }[firstAnchor];
+            }
+            // Change the last point position but only when it is
+            // the last point in the data set not in the current zoom,
+            // or if it is not the 1st point simutainously.
+            if (groupedDataLastIndex > 0 &&
+                lastAnchor &&
+                totalRange &&
+                groupedXData[groupedDataLastIndex] >= xMax - totalRange) {
+                anchorIndexIterator--;
+                const lastGroupStart = series.groupMap[series.groupMap.length - 1].start;
+                groupedXData[groupedDataLastIndex] = {
+                    start: groupedXData[groupedDataLastIndex],
+                    middle: groupedXData[groupedDataLastIndex] + 0.5 * totalRange,
+                    end: groupedXData[groupedDataLastIndex] + totalRange,
+                    firstPoint: lastGroupStart && series.xData[lastGroupStart],
+                    lastPoint: series.xData[series.xData.length - 1]
+                }[lastAnchor];
+            }
+            if (anchor && anchor !== 'start') {
+                const shiftInterval = (totalRange *
+                    { middle: 0.5, end: 1 }[anchor]);
+                // Anchor the rest of the points apart from the ones, that were
+                // previously moved.
+                while (anchorIndexIterator >= anchorFirstIndex) {
+                    groupedXData[anchorIndexIterator] += shiftInterval;
+                    anchorIndexIterator--;
                 }
             }
         }
@@ -1296,99 +1290,100 @@
             if (revertRequireSorting) {
                 series.requireSorting = false;
             }
-            if (!skip) {
-                series.destroyGroupedData();
-                const processedXData = dataGroupingOptions.groupAll ?
-                    series.xData :
-                    series.processedXData, processedYData = dataGroupingOptions.groupAll ?
-                    series.yData :
-                    series.processedYData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
-                let i, hasGroupedData;
-                // Execute grouping if the amount of points is greater than the limit
-                // defined in groupPixelWidth
-                if (groupPixelWidth &&
-                    processedXData &&
-                    processedXData.length &&
-                    plotSizeX) {
-                    hasGroupedData = true;
-                    // Force recreation of point instances in series.translate, #5699
-                    series.isDirty = true;
-                    series.points = null; // #6709
-                    const extremes = xAxis.getExtremes(), xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
-                        xAxis.ordinal &&
-                        xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
-                        groupIntervalFactor, groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
-                        DataGroupingDefaults.units), 
-                    // Processed data may extend beyond axis (#4907)
-                    Math.min(xMin, processedXData[0]), Math.max(xMax, processedXData[processedXData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = seriesProto.groupData.apply(series, [
-                        processedXData,
-                        processedYData,
-                        groupPositions,
-                        dataGroupingOptions.approximation
-                    ]);
-                    let groupedXData = groupedData.groupedXData, groupedYData = groupedData.groupedYData, gapSize = 0;
-                    // The smoothed option is deprecated, instead, there is a fallback
-                    // to the new anchoring mechanism. #12455.
-                    if (dataGroupingOptions &&
-                        dataGroupingOptions.smoothed &&
-                        groupedXData.length) {
-                        dataGroupingOptions.firstAnchor = 'firstPoint';
-                        dataGroupingOptions.anchor = 'middle';
-                        dataGroupingOptions.lastAnchor = 'lastPoint';
-                        error(32, false, chart, {
-                            'dataGrouping.smoothed': 'use dataGrouping.anchor'
-                        });
-                    }
-                    // Record what data grouping values were used
-                    for (i = 1; i < groupPositions.length; i++) {
-                        // The grouped gapSize needs to be the largest distance between
-                        // the group to capture varying group sizes like months or DST
-                        // crossing (#10000). Also check that the gap is not at the
-                        // start of a segment.
-                        if (!groupPositions.info.segmentStarts ||
-                            groupPositions.info.segmentStarts.indexOf(i) === -1) {
-                            gapSize = Math.max(groupPositions[i] - groupPositions[i - 1], gapSize);
-                        }
-                    }
-                    currentDataGrouping = groupPositions.info;
-                    currentDataGrouping.gapSize = gapSize;
-                    series.closestPointRange = groupPositions.info.totalRange;
-                    series.groupMap = groupedData.groupMap;
-                    series.currentDataGrouping = currentDataGrouping;
-                    anchorPoints(series, groupedXData, xMax);
-                    if (reserveSpace) {
-                        adjustExtremes(xAxis, groupedXData);
-                    }
-                    // We calculated all group positions but we should render
-                    // only the ones within the visible range
-                    if (dataGroupingOptions.groupAll) {
-                        // Keep the reference to all grouped points
-                        // for further calculation (eg. heikinashi).
-                        series.allGroupedData = groupedYData;
-                        croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max);
-                        groupedXData = croppedData.xData;
-                        groupedYData = croppedData.yData;
-                        series.cropStart = croppedData.start; // #15005
-                    }
-                    // Set series props
-                    series.processedXData = groupedXData;
-                    series.processedYData = groupedYData;
-                }
-                else {
-                    series.groupMap = null;
-                }
-                series.hasGroupedData = hasGroupedData;
-                series.preventGraphAnimation =
-                    (lastDataGrouping && lastDataGrouping.totalRange) !==
-                        (currentDataGrouping && currentDataGrouping.totalRange);
+            if (skip) {
+                return;
             }
+            series.destroyGroupedData();
+            const processedXData = dataGroupingOptions.groupAll ?
+                series.xData :
+                series.processedXData, processedYData = dataGroupingOptions.groupAll ?
+                series.yData :
+                series.processedYData, plotSizeX = chart.plotSizeX, xAxis = series.xAxis, ordinal = xAxis.options.ordinal, groupPixelWidth = series.groupPixelWidth;
+            let i, hasGroupedData;
+            // Execute grouping if the amount of points is greater than the limit
+            // defined in groupPixelWidth
+            if (groupPixelWidth &&
+                processedXData &&
+                processedXData.length &&
+                plotSizeX) {
+                hasGroupedData = true;
+                // Force recreation of point instances in series.translate, #5699
+                series.isDirty = true;
+                series.points = null; // #6709
+                const extremes = xAxis.getExtremes(), xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+                    xAxis.ordinal &&
+                    xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
+                    groupIntervalFactor, groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
+                    DataGroupingDefaults.units), 
+                // Processed data may extend beyond axis (#4907)
+                Math.min(xMin, processedXData[0]), Math.max(xMax, processedXData[processedXData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = seriesProto.groupData.apply(series, [
+                    processedXData,
+                    processedYData,
+                    groupPositions,
+                    dataGroupingOptions.approximation
+                ]);
+                let groupedXData = groupedData.groupedXData, groupedYData = groupedData.groupedYData, gapSize = 0;
+                // The smoothed option is deprecated, instead, there is a fallback
+                // to the new anchoring mechanism. #12455.
+                if (dataGroupingOptions &&
+                    dataGroupingOptions.smoothed &&
+                    groupedXData.length) {
+                    dataGroupingOptions.firstAnchor = 'firstPoint';
+                    dataGroupingOptions.anchor = 'middle';
+                    dataGroupingOptions.lastAnchor = 'lastPoint';
+                    error(32, false, chart, {
+                        'dataGrouping.smoothed': 'use dataGrouping.anchor'
+                    });
+                }
+                // Record what data grouping values were used
+                for (i = 1; i < groupPositions.length; i++) {
+                    // The grouped gapSize needs to be the largest distance between
+                    // the group to capture varying group sizes like months or DST
+                    // crossing (#10000). Also check that the gap is not at the
+                    // start of a segment.
+                    if (!groupPositions.info.segmentStarts ||
+                        groupPositions.info.segmentStarts.indexOf(i) === -1) {
+                        gapSize = Math.max(groupPositions[i] - groupPositions[i - 1], gapSize);
+                    }
+                }
+                currentDataGrouping = groupPositions.info;
+                currentDataGrouping.gapSize = gapSize;
+                series.closestPointRange = groupPositions.info.totalRange;
+                series.groupMap = groupedData.groupMap;
+                series.currentDataGrouping = currentDataGrouping;
+                anchorPoints(series, groupedXData, xMax);
+                if (reserveSpace) {
+                    adjustExtremes(xAxis, groupedXData);
+                }
+                // We calculated all group positions but we should render
+                // only the ones within the visible range
+                if (dataGroupingOptions.groupAll) {
+                    // Keep the reference to all grouped points
+                    // for further calculation (eg. heikinashi).
+                    series.allGroupedData = groupedYData;
+                    croppedData = series.cropData(groupedXData, groupedYData, xAxis.min, xAxis.max);
+                    groupedXData = croppedData.xData;
+                    groupedYData = croppedData.yData;
+                    series.cropStart = croppedData.start; // #15005
+                }
+                // Set series props
+                series.processedXData = groupedXData;
+                series.processedYData = groupedYData;
+            }
+            else {
+                series.groupMap = null;
+            }
+            series.hasGroupedData = hasGroupedData;
+            series.preventGraphAnimation =
+                (lastDataGrouping && lastDataGrouping.totalRange) !==
+                    (currentDataGrouping && currentDataGrouping.totalRange);
         }
         /**
          * @private
          */
         function compose(SeriesClass) {
             const PointClass = SeriesClass.prototype.pointClass;
-            if (U.pushUnique(composedMembers, PointClass)) {
+            if (pushUnique(composed, compose)) {
                 // Override point prototype to throw a warning when trying to update
                 // grouped points.
                 addEvent(PointClass, 'update', function () {
@@ -1397,8 +1392,6 @@
                         return false;
                     }
                 });
-            }
-            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterSetOptions', onAfterSetOptions);
                 addEvent(SeriesClass, 'destroy', destroyGroupedData);
                 extend(SeriesClass.prototype, {
@@ -1428,6 +1421,7 @@
                 // - `this.points`
                 // - `preserve` object in series.update()
                 this.groupedData.length = 0;
+                delete this.allGroupedData; // #19892
             }
         }
         /**
@@ -1522,7 +1516,8 @@
                     pointX = groupPositions[pos];
                     series.dataGroupInfo = {
                         start: groupAll ? start : (series.cropStart + start),
-                        length: values[0].length
+                        length: values[0].length,
+                        groupStart: pointX
                     };
                     groupedY = approximationFn.apply(series, values);
                     // By default, let options of the first grouped point be passed over
@@ -1646,10 +1641,10 @@
 
         return DataGroupingSeriesComposition;
     });
-    _registerModule(_modules, 'Extensions/DataGrouping/DataGrouping.js', [_modules['Extensions/DataGrouping/DataGroupingAxisComposition.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Extensions/DataGrouping/DataGroupingSeriesComposition.js'], _modules['Core/Templating.js'], _modules['Core/Utilities.js']], function (DataGroupingAxisComposition, DataGroupingDefaults, DataGroupingSeriesComposition, F, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping/DataGrouping.js', [_modules['Extensions/DataGrouping/DataGroupingAxisComposition.js'], _modules['Extensions/DataGrouping/DataGroupingDefaults.js'], _modules['Extensions/DataGrouping/DataGroupingSeriesComposition.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (DataGroupingAxisComposition, DataGroupingDefaults, DataGroupingSeriesComposition, F, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1657,13 +1652,8 @@
          *
          * */
         const { format } = F;
-        const { addEvent, extend, isNumber } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, extend, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -1676,7 +1666,7 @@
             DataGroupingAxisComposition.compose(AxisClass);
             DataGroupingSeriesComposition.compose(SeriesClass);
             if (TooltipClass &&
-                U.pushUnique(composedMembers, TooltipClass)) {
+                pushUnique(composed, compose)) {
                 addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
             }
         }
@@ -1686,7 +1676,7 @@
          * @private
          */
         function onTooltipHeaderFormatter(e) {
-            const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
+            const chart = this.chart, time = chart.time, labelConfig = e.labelConfig, series = labelConfig.series, point = labelConfig.point, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
             let xDateFormat = tooltipOptions.xDateFormat, xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
             // apply only to grouped series
             if (xAxis &&
@@ -1716,10 +1706,10 @@
                 else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
                     xDateFormat = xAxis.dateTime.getXDateFormat(labelConfig.x, tooltipOptions.dateTimeLabelFormats);
                 }
-                // now format the key
-                formattedKey = time.dateFormat(xDateFormat, labelConfig.key);
+                const groupStart = pick(series.groupMap?.[point.index].groupStart, labelConfig.key), groupEnd = groupStart + currentDataGrouping?.totalRange - 1;
+                formattedKey = time.dateFormat(xDateFormat, groupStart);
                 if (xDateFormatEnd) {
-                    formattedKey += time.dateFormat(xDateFormatEnd, labelConfig.key + currentDataGrouping.totalRange - 1);
+                    formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
                 }
                 // Replace default header style with class name
                 if (series.chart.styledMode) {
@@ -2124,7 +2114,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsUtilities.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -2331,7 +2321,7 @@
             }, 400);
         };
         /**
-        * Calulate the ratio of mouse position on the axis to it's length. If mousePos
+        * Calculate the ratio of mouse position on the axis to its length. If mousePos
         * doesn't exist, returns 0.5;
         * @private
         */
@@ -2339,7 +2329,9 @@
             if (!defined(mousePos)) {
                 return 0.5;
             }
-            const mouseAxisRatio = (mousePos - axis.pos) / axis.len, isXAxis = axis.isXAxis;
+            const mouseAxisRatio = (mousePos - axis.minPixelPadding - axis.pos) /
+                (axis.len - 2 * axis.minPixelPadding), // Prevent sticking (#19976)
+            isXAxis = axis.isXAxis;
             if (isXAxis && (!axis.reversed !== !chart.inverted) ||
                 !isXAxis && axis.reversed) {
                 // We are taking into account that xAxis automatically gets
@@ -2528,18 +2520,19 @@
         MouseWheelZoom.compose(G.Chart);
 
     });
-    _registerModule(_modules, 'Series/DataModifyComposition.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Point, Series, U) {
+    _registerModule(_modules, 'Series/DataModifyComposition.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, H, Point, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { prototype: { tooltipFormatter: pointTooltipFormatter } } = Point;
-        const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = U;
+        const { composed } = H;
+        const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
+        const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick, pushUnique } = U;
         /* *
          *
          *  Composition
@@ -2554,16 +2547,9 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * Extends the series, axis and point classes with
              * compare and cumulative support.
@@ -2580,22 +2566,16 @@
              * Point class to use.
              */
             function compose(SeriesClass, AxisClass, PointClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
+                if (pushUnique(composed, compose)) {
+                    const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
                     seriesProto.setCompare = seriesSetCompare;
                     seriesProto.setCumulative = seriesSetCumulative;
                     addEvent(SeriesClass, 'afterInit', afterInit);
                     addEvent(SeriesClass, 'afterGetExtremes', afterGetExtremes);
                     addEvent(SeriesClass, 'afterProcessData', afterProcessData);
-                }
-                if (U.pushUnique(composedMembers, AxisClass)) {
-                    const axisProto = AxisClass.prototype;
                     axisProto.setCompare = axisSetCompare;
                     axisProto.setModifier = setModifier;
                     axisProto.setCumulative = axisSetCumulative;
-                }
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
                     pointProto.tooltipFormatter = tooltipFormatter;
                 }
                 return SeriesClass;
@@ -3067,21 +3047,15 @@
     _registerModule(_modules, 'Core/Axis/NavigatorAxisComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { isTouchDevice } = H;
-        const { addEvent, correctFloat, defined, isNumber, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed, isTouchDevice } = H;
+        const { addEvent, correctFloat, defined, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -3152,7 +3126,7 @@
              * @private
              */
             static compose(AxisClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     AxisClass.keepProps.push('navigatorAxis');
                     addEvent(AxisClass, 'init', onAxisInit);
                     addEvent(AxisClass, 'zoom', onAxisZoom);
@@ -3224,7 +3198,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorDefaults.js', [_modules['Core/Color/Color.js'], _modules['Core/Series/SeriesRegistry.js']], function (Color, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -3726,7 +3700,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorSymbols.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -3771,7 +3745,7 @@
     _registerModule(_modules, 'Stock/Navigator/NavigatorComposition.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxisComposition.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/Navigator/NavigatorSymbols.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (D, H, NavigatorAxisAdditions, NavigatorDefaults, NavigatorSymbols, RendererRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -3779,15 +3753,9 @@
          *
          * */
         const { defaultOptions, setOptions } = D;
-        const { isTouchDevice } = H;
+        const { composed, isTouchDevice } = H;
         const { getRendererType } = RendererRegistry;
-        const { addEvent, extend, merge, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, extend, merge, pick, pushUnique } = U;
         /* *
          *
          *  Variables
@@ -3805,7 +3773,7 @@
         function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
             NavigatorAxisAdditions.compose(AxisClass);
             NavigatorConstructor = NavigatorClass;
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 const chartProto = ChartClass.prototype;
                 chartProto.callbacks.push(onChartCallback);
                 addEvent(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
@@ -3814,14 +3782,8 @@
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 addEvent(ChartClass, 'beforeShowResetZoom', onChartBeforeShowResetZoom);
                 addEvent(ChartClass, 'update', onChartUpdate);
-            }
-            if (U.pushUnique(composedMembers, SeriesClass)) {
                 addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-            }
-            if (U.pushUnique(composedMembers, getRendererType)) {
                 extend(getRendererType().prototype.symbols, NavigatorSymbols);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 extend(defaultOptions, { navigator: NavigatorDefaults });
             }
         }
@@ -3977,16 +3939,17 @@
 
         return NavigatorComposition;
     });
-    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2023 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { addEvent, defined, pick, pushUnique } = U;
         /* *
          *
@@ -3996,22 +3959,16 @@
         var ScrollbarAxis;
         (function (ScrollbarAxis) {
             /* *
-            *
-            *  Constants
-            *
-            * */
-            const composedMembers = [];
-            /* *
-            *
-            *  Variables
-            *
-            * */
+             *
+             *  Variables
+             *
+             * */
             let Scrollbar;
             /* *
-            *
-            *  Functions
-            *
-            * */
+             *
+             *  Functions
+             *
+             * */
             /**
              * Attaches to axis events to create scrollbars if enabled.
              *
@@ -4024,10 +3981,8 @@
              * Scrollbar class to use.
              */
             function compose(AxisClass, ScrollbarClass) {
-                if (pushUnique(composedMembers, ScrollbarClass)) {
+                if (pushUnique(composed, compose)) {
                     Scrollbar = ScrollbarClass;
-                }
-                if (pushUnique(composedMembers, AxisClass)) {
                     addEvent(AxisClass, 'afterGetOffset', onAxisAfterGetOffset);
                     addEvent(AxisClass, 'afterInit', onAxisAfterInit);
                     addEvent(AxisClass, 'afterRender', onAxisAfterRender);
@@ -4193,7 +4148,7 @@
     _registerModule(_modules, 'Stock/Scrollbar/ScrollbarDefaults.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -4417,7 +4372,7 @@
     _registerModule(_modules, 'Stock/Scrollbar/Scrollbar.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/ScrollbarAxis.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Utilities.js']], function (D, H, ScrollbarAxis, ScrollbarDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -4497,25 +4452,16 @@
                  *
                  * */
                 this._events = [];
-                this.chart = void 0;
                 this.chartX = 0;
                 this.chartY = 0;
                 this.from = 0;
-                this.group = void 0;
-                this.options = void 0;
-                this.renderer = void 0;
-                this.scrollbar = void 0;
                 this.scrollbarButtons = [];
-                this.scrollbarGroup = void 0;
                 this.scrollbarLeft = 0;
-                this.scrollbarRifles = void 0;
                 this.scrollbarStrokeWidth = 1;
                 this.scrollbarTop = 0;
                 this.size = 0;
                 this.to = 0;
-                this.track = void 0;
                 this.trackBorderWidth = 1;
-                this.userOptions = void 0;
                 this.x = 0;
                 this.y = 0;
                 this.init(renderer, options, chart);
@@ -5084,7 +5030,7 @@
     _registerModule(_modules, 'Stock/Navigator/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxisComposition.js'], _modules['Stock/Navigator/NavigatorComposition.js'], _modules['Stock/Scrollbar/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, D, H, NavigatorAxisAdditions, NavigatorComposition, Scrollbar, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5141,34 +5087,7 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.baseSeries = void 0;
-                this.chart = void 0;
-                this.handles = void 0;
-                this.height = void 0;
-                this.left = void 0;
-                this.navigatorEnabled = void 0;
-                this.navigatorGroup = void 0;
-                this.navigatorOptions = void 0;
-                this.navigatorSeries = void 0;
-                this.navigatorSize = void 0;
-                this.opposite = void 0;
-                this.outline = void 0;
-                this.range = void 0;
-                this.rendered = void 0;
                 this.scrollbarHeight = 0;
-                this.scrollButtonSize = void 0;
-                this.shades = void 0;
-                this.size = void 0;
-                this.top = void 0;
-                this.xAxis = void 0;
-                this.yAxis = void 0;
-                this.zoomedMax = void 0;
-                this.zoomedMin = void 0;
                 this.init(chart);
             }
             /* *
@@ -6486,7 +6405,7 @@
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -6928,7 +6847,9 @@
              */
             inputSpacing: 5,
             /**
-             * The index of the button to appear pre-selected.
+             * The index of the button to appear pre-selected. If the selected range
+             * exceeds the total data range and the 'all' option is available,
+             * the 'all' option, showing the full range, is automatically selected.
              *
              * @type      {number}
              */
@@ -7010,25 +6931,25 @@
 
         return RangeSelectorDefaults;
     });
-    _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorComposition.js', [_modules['Core/Defaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Core/Utilities.js']], function (D, RangeSelectorDefaults, U) {
+    _registerModule(_modules, 'Stock/RangeSelector/RangeSelectorComposition.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Core/Utilities.js']], function (D, H, RangeSelectorDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { defaultOptions, setOptions } = D;
-        const { addEvent, defined, extend, find, isNumber, merge, pick } = U;
+        const { defaultOptions } = D;
+        const { composed } = H;
+        const { addEvent, defined, extend, find, isNumber, merge, pick, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
         const chartDestroyEvents = [];
-        const composedMembers = [];
         /* *
          *
          *  Variables
@@ -7103,20 +7024,16 @@
          */
         function compose(AxisClass, ChartClass, RangeSelectorClass) {
             RangeSelectorConstructor = RangeSelectorClass;
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
+                const chartProto = ChartClass.prototype;
                 AxisClass.prototype.minFromRange = axisMinFromRange;
-            }
-            if (U.pushUnique(composedMembers, ChartClass)) {
                 addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
                 addEvent(ChartClass, 'destroy', onChartDestroy);
                 addEvent(ChartClass, 'getMargins', onChartGetMargins);
                 addEvent(ChartClass, 'render', onChartRender);
                 addEvent(ChartClass, 'update', onChartUpdate);
-                const chartProto = ChartClass.prototype;
                 chartProto.callbacks.push(onChartCallback);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 extend(defaultOptions, { rangeSelector: RangeSelectorDefaults.rangeSelector });
                 extend(defaultOptions.lang, RangeSelectorDefaults.lang);
             }
@@ -7296,7 +7213,7 @@
     _registerModule(_modules, 'Stock/RangeSelector/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/RangeSelector/RangeSelectorComposition.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, D, H, RangeSelectorComposition, SVGElement, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7367,15 +7284,8 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.buttons = void 0;
                 this.buttonOptions = RangeSelector.prototype.defaultButtons;
                 this.initialButtonGroupWidth = 0;
-                this.options = void 0;
                 this.chart = chart;
                 this.init(chart);
             }
@@ -7589,7 +7499,7 @@
                 const rangeSelector = this, chart = this.chart, dropdown = this.dropdown, baseAxis = chart.xAxis[0], actualRange = Math.round(baseAxis.max - baseAxis.min), hasNoData = !baseAxis.hasVisibleSeries, day = 24 * 36e5, // A single day in milliseconds
                 unionExtremes = (chart.scroller &&
                     chart.scroller.getUnionExtremes()) || baseAxis, dataMin = unionExtremes.dataMin, dataMax = unionExtremes.dataMax, ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, chart.time.useUTC), ytdMin = ytdExtremes.min, ytdMax = ytdExtremes.max, selected = rangeSelector.selected, allButtonsEnabled = rangeSelector.options.allButtonsEnabled, buttons = rangeSelector.buttons;
-                let selectedExists = isNumber(selected);
+                let selectedExists = isNumber(selected), isSelectedTooGreat = false;
                 rangeSelector.buttonOptions.forEach((rangeOptions, i) => {
                     const range = rangeOptions._range, type = rangeOptions.type, count = rangeOptions.count || 1, button = buttons[i], offsetRange = rangeOptions._offsetMax -
                         rangeOptions._offsetMin, isSelected = i === selected, 
@@ -7605,6 +7515,9 @@
                     isYTDButNotSelected = false, 
                     // Disable the All button if we're already showing all
                     isAllButAlreadyShowingAll = false, isSameRange = range === actualRange;
+                    if (isSelected && isTooGreatRange) {
+                        isSelectedTooGreat = true;
+                    }
                     // Months and years have a variable range so we check the extremes
                     if ((type === 'month' || type === 'year') &&
                         (actualRange + 36e5 >=
@@ -7629,11 +7542,13 @@
                     // It can be seen in the intraday demos when selecting 1h and scroll
                     // across the night gap.
                     const disable = (!allButtonsEnabled &&
+                        !(isSelectedTooGreat && type === 'all') &&
                         (isTooGreatRange ||
                             isTooSmallRange ||
                             isAllButAlreadyShowingAll ||
                             hasNoData));
-                    const select = ((isSelected && isSameRange) ||
+                    const select = ((isSelectedTooGreat && type === 'all') ||
+                        (isSelected && isSameRange) ||
                         (isSameRange && !selectedExists && !isYTDButNotSelected) ||
                         (isSelected && rangeSelector.frozenStates));
                     if (disable) {
@@ -7655,6 +7570,10 @@
                         // Reset (#9209)
                         if (state === 0 && selected === i) {
                             rangeSelector.setSelected();
+                        }
+                        else if ((state === 2 && !defined(selected)) ||
+                            isSelectedTooGreat) {
+                            rangeSelector.setSelected(i);
                         }
                     }
                 });
@@ -8507,6 +8426,11 @@
              */
             collapseButtons(xOffsetForExportButton) {
                 const { buttons, buttonOptions, chart, dropdown, options, zoomText } = this;
+                // If the buttons are already collapsed do nothing.
+                if (this.isCollapsed === true) {
+                    return;
+                }
+                this.isCollapsed = true;
                 const userButtonTheme = (chart.userOptions.rangeSelector &&
                     chart.userOptions.rangeSelector.buttonTheme) || {};
                 const getAttribs = (text) => ({
@@ -8553,6 +8477,11 @@
             expandButtons() {
                 const { buttons, buttonOptions, options, zoomText } = this;
                 this.hideDropdown();
+                // If buttons are already not collapsed, do nothing.
+                if (this.isCollapsed === false) {
+                    return;
+                }
+                this.isCollapsed = false;
                 if (zoomText) {
                     zoomText.show();
                 }
@@ -8801,21 +8730,15 @@
     _registerModule(_modules, 'Core/Axis/OrdinalAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, H, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, correctFloat, css, defined, error, pick, timeUnits } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
-        /* eslint-disable valid-jsdoc */
+        const { composed } = H;
+        const { addEvent, correctFloat, css, defined, error, pick, pushUnique, timeUnits } = U;
         /* *
          *
          *  Composition
@@ -8852,7 +8775,7 @@
              * Series class to use.
              */
             function compose(AxisClass, SeriesClass, ChartClass) {
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, compose)) {
                     const axisProto = AxisClass.prototype;
                     axisProto.getTimeTicks = getTimeTicks;
                     axisProto.index2val = index2val;
@@ -8864,11 +8787,7 @@
                     addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
                     addEvent(AxisClass, 'afterSetScale', onAxisAfterSetScale);
                     addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'pan', onChartPan);
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
                     addEvent(SeriesClass, 'updatedData', onSeriesUpdatedData);
                 }
                 return AxisClass;
@@ -9070,35 +8989,23 @@
              */
             function lin2val(val) {
                 const axis = this, ordinal = axis.ordinal, localMin = axis.old ? axis.old.min : axis.min, localA = axis.old ? axis.old.transA : axis.transA;
-                let positions = ordinal.positions; // for the current visible range
-                // The visible range contains only equally spaced values.
-                if (!positions) {
-                    return val;
-                }
-                // Convert back from modivied value to pixels. // #15970
-                const pixelVal = correctFloat((val - localMin) * localA +
-                    axis.minPixelPadding), isInside = val >= positions[0] &&
-                    val <= positions[positions.length - 1];
-                // If the value is not inside the plot area, use the extended positions.
-                // (array contains also points that are outside of the plotArea).
-                if (!isInside) {
-                    positions = ordinal.getExtendedPositions();
-                }
+                // Always use extendedPositions (#19816)
+                let positions = ordinal.getExtendedPositions();
                 // In some cases (especially in early stages of the chart creation) the
                 // getExtendedPositions might return undefined.
-                if (positions && positions.length) {
-                    const indexOf = positions.indexOf(val);
-                    const index = indexOf !== -1 ? indexOf : correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = correctFloat(index % 1);
+                if (positions.length) {
+                    // Convert back from modivied value to pixels. // #15970
+                    const pixelVal = correctFloat((val - localMin) * localA +
+                        axis.minPixelPadding), index = correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = correctFloat(index % 1);
                     // Check if the index is inside position array. If true,
                     // read/approximate value for that exact index.
                     if (index >= 0 && index <= positions.length - 1) {
                         const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                         return positions[Math.floor(index)] + mantissa * distance;
                     }
-                    // If the value is outside positions array, return initial value
-                    return val; // #16784
                 }
-                return val;
+                // If the value is outside positions array, return initial value
+                return val; // #16784
             }
             /**
              * Internal function to calculate the precise index in ordinalPositions
@@ -9717,7 +9624,8 @@
                  * extendedOrdinalPositions if not.
                  */
                 getIndexOfPoint(val, ordinalArray) {
-                    const ordinal = this, axis = ordinal.axis, firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
+                    const ordinal = this, axis = ordinal.axis;
+                    let firstPointVal = 0;
                     // Check whether the series has at least one point inside the chart
                     const hasPointsInside = function (series) {
                         const { min, max } = axis;
@@ -9735,6 +9643,7 @@
                                 !defined(firstPointX)) &&
                             hasPointsInside(series)) {
                             firstPointX = firstPoint.plotX;
+                            firstPointVal = firstPoint.x;
                         }
                     });
                     // If undefined, give a default value
@@ -9811,7 +9720,7 @@
     _registerModule(_modules, 'Series/HLC/HLCPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -9825,20 +9734,6 @@
          *
          * */
         class HLCPoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.close = void 0;
-                this.high = void 0;
-                this.low = void 0;
-                this.options = void 0;
-                this.plotClose = void 0;
-                this.series = void 0;
-            }
         }
         /* *
          *
@@ -9851,7 +9746,7 @@
     _registerModule(_modules, 'Series/HLC/HLCSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -10038,7 +9933,7 @@
     _registerModule(_modules, 'Series/HLC/HLCSeries.js', [_modules['Series/HLC/HLCPoint.js'], _modules['Series/HLC/HLCSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (HLCPoint, HLCSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -10062,23 +9957,6 @@
          * @augments Highcharts.Series
          */
         class HLCSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.yData = void 0;
-            }
             /* *
              *
              *  Functions
@@ -10207,6 +10085,11 @@
                 });
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HLCSeriesDefaults);
         extend(HLCSeries.prototype, {
             pointClass: HLCPoint,
@@ -10231,7 +10114,7 @@
     _registerModule(_modules, 'Series/OHLC/OHLCPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10245,18 +10128,6 @@
          *
          * */
         class OHLCPoint extends HLCSeries.prototype.pointClass {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.open = void 0;
-                this.options = void 0;
-                this.plotOpen = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -10292,7 +10163,9 @@
              */
             resolveColor() {
                 super.resolveColor();
-                this.resolveUpColor();
+                if (!this.series.is('heikinashi')) {
+                    this.resolveUpColor();
+                }
             }
             /**
              * Extend the parent method by saving upColor.
@@ -10330,7 +10203,7 @@
     _registerModule(_modules, 'Series/OHLC/OHLCSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10481,24 +10354,19 @@
 
         return OHLCSeriesDefaults;
     });
-    _registerModule(_modules, 'Series/OHLC/OHLCSeries.js', [_modules['Series/OHLC/OHLCPoint.js'], _modules['Series/OHLC/OHLCSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (OHLCPoint, OHLCSeriesDefaults, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/OHLC/OHLCSeries.js', [_modules['Core/Globals.js'], _modules['Series/OHLC/OHLCPoint.js'], _modules['Series/OHLC/OHLCSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, OHLCPoint, OHLCSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { seriesTypes: { hlc: HLCSeries } } = SeriesRegistry;
-        const { addEvent, extend, merge } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { hlc: HLCSeries } = SeriesRegistry.seriesTypes;
+        const { addEvent, extend, merge, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -10547,29 +10415,13 @@
          * @augments Highcharts.Series
          */
         class OHLCSeries extends HLCSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Static Functions
              *
              * */
             static compose(SeriesClass, ..._args) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(SeriesClass, 'afterSetOptions', onSeriesAfterSetOptions);
                     addEvent(SeriesClass, 'init', onSeriesInit);
                 }
@@ -10609,6 +10461,11 @@
                 return [point.open, point.high, point.low, point.close];
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, OHLCSeriesDefaults);
         extend(OHLCSeries.prototype, {
             pointClass: OHLCPoint,
@@ -10626,7 +10483,7 @@
     _registerModule(_modules, 'Series/Candlestick/CandlestickSeriesDefaults.js', [_modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (D, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10805,7 +10662,7 @@
     _registerModule(_modules, 'Series/Candlestick/CandlestickSeries.js', [_modules['Series/Candlestick/CandlestickSeriesDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (CandlestickSeriesDefaults, D, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10830,22 +10687,6 @@
          * @augments Highcharts.seriesTypes.ohlc
          */
         class CandlestickSeries extends OHLCSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -10946,6 +10787,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         CandlestickSeries.defaultOptions = merge(OHLCSeries.defaultOptions, defaultOptions.plotOptions, { tooltip: OHLCSeries.defaultOptions.tooltip }, CandlestickSeriesDefaults);
         SeriesRegistry.registerSeriesType('candlestick', CandlestickSeries);
         /* *
@@ -10959,7 +10805,7 @@
     _registerModule(_modules, 'Series/Flags/FlagsPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -10981,8 +10827,6 @@
                  *
                  * */
                 super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
                 this.ttBelow = false;
             }
             /* *
@@ -11017,7 +10861,7 @@
     _registerModule(_modules, 'Series/Flags/FlagsSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -11423,19 +11267,20 @@
 
         return FlagsSymbols;
     });
-    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Series, U) {
+    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { prototype: columnProto } = ColumnSeries;
         const { prototype: seriesProto } = Series;
-        const { defined, stableSort } = U;
+        const { defined, pushUnique, stableSort } = U;
         /* *
          *
          *  Composition
@@ -11450,21 +11295,14 @@
              * */
             /* *
              *
-             *  Properties
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
-            /* eslint-disable valid-jsdoc */
             /**
              * @private
              */
             function compose(SeriesClass) {
-                if (U.pushUnique(composedMembers, SeriesClass)) {
+                if (pushUnique(composed, compose)) {
                     const seriesProto = SeriesClass.prototype;
                     seriesProto.getPlotBox = getPlotBox;
                     seriesProto.translate = translate;
@@ -11642,7 +11480,7 @@
     _registerModule(_modules, 'Series/Flags/FlagsSeries.js', [_modules['Series/Flags/FlagsPoint.js'], _modules['Series/Flags/FlagsSeriesDefaults.js'], _modules['Series/Flags/FlagsSymbols.js'], _modules['Core/Globals.js'], _modules['Series/OnSeriesComposition.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (FlagsPoint, FlagsSeriesDefaults, FlagsSymbols, H, OnSeriesComposition, R, SeriesRegistry, SVGElement, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -11668,22 +11506,6 @@
          * @augments Highcharts.Series
          */
         class FlagsSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /* *
              *
              *  Functions
@@ -11910,6 +11732,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         FlagsSeries.compose = FlagsSymbols.compose;
         FlagsSeries.defaultOptions = merge(ColumnSeries.defaultOptions, FlagsSeriesDefaults);
         OnSeriesComposition.compose(FlagsSeries);
@@ -11947,10 +11774,10 @@
 
         return FlagsSeries;
     });
-    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Utilities.js']], function (Chart, F, D, NavigatorDefaults, RangeSelectorDefaults, ScrollbarDefaults, U) {
+    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Templating.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/Navigator/NavigatorDefaults.js'], _modules['Stock/RangeSelector/RangeSelectorDefaults.js'], _modules['Stock/Scrollbar/ScrollbarDefaults.js'], _modules['Core/Utilities.js']], function (Chart, F, D, H, NavigatorDefaults, RangeSelectorDefaults, ScrollbarDefaults, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -11959,6 +11786,7 @@
          * */
         const { format } = F;
         const { getOptions } = D;
+        const { composed } = H;
         const { addEvent, clamp, defined, extend, find, isNumber, isString, merge, pick, pushUnique, splat } = U;
         /* *
          *
@@ -11971,34 +11799,29 @@
          * @private
          * @function getDefaultAxisOptions
          */
-        function getDefaultAxisOptions(type, options) {
-            if (type === 'xAxis') {
+        function getDefaultAxisOptions(coll, options, defaultOptions) {
+            if (coll === 'xAxis') {
                 return {
                     minPadding: 0,
                     maxPadding: 0,
                     overscroll: 0,
-                    ordinal: true,
-                    title: {
-                        text: null
-                    },
-                    labels: {
-                        overflow: 'justify'
-                    },
-                    showLastLabel: true
+                    ordinal: true
                 };
             }
-            if (type === 'yAxis') {
+            if (coll === 'yAxis') {
                 return {
                     labels: {
                         y: -2
                     },
-                    opposite: pick(options.opposite, true),
+                    opposite: defaultOptions.opposite ?? options.opposite ?? true,
                     showLastLabel: !!(
                     // #6104, show last label by default for category axes
                     options.categories ||
                         options.type === 'category'),
                     title: {
-                        text: null
+                        text: defaultOptions.title?.text !== 'Values' ?
+                            defaultOptions.title?.text :
+                            null
                     }
                 };
             }
@@ -12105,23 +11928,21 @@
                     legend: {
                         enabled: false
                     }
-                }, userOptions, // user's options
+                }, userOptions, // User's options
                 {
-                    isStock: true // internal flag
+                    isStock: true // Internal flag
                 });
                 userOptions.xAxis = xAxisOptions;
                 userOptions.yAxis = yAxisOptions;
-                // apply X axis options to both single and multi y axes
-                options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions, i) => merge(getDefaultAxisOptions('xAxis', xAxisOptions), defaultOptions.xAxis, // #3802
+                // Apply X axis options to both single and multi y axes
+                options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions, i) => merge(getDefaultAxisOptions('xAxis', xAxisOptions, defaultOptions.xAxis), 
                 // #7690
-                // @todo remove, default axis options are not arrays
-                defaultOptions.xAxis && defaultOptions.xAxis[i], xAxisOptions, // user options
+                xAxisOptions, // User options
                 getForcedAxisOptions('xAxis', userOptions)));
-                // apply Y axis options to both single and multi y axes
-                options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions, i) => merge(getDefaultAxisOptions('yAxis', yAxisOptions), defaultOptions.yAxis, // #3802
+                // Apply Y axis options to both single and multi y axes
+                options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions, i) => merge(getDefaultAxisOptions('yAxis', yAxisOptions, defaultOptions.yAxis), 
                 // #7690
-                // @todo remove, default axis options are not arrays
-                defaultOptions.yAxis && defaultOptions.yAxis[i], yAxisOptions // user options
+                yAxisOptions // User options
                 ));
                 super.init(options, callback);
             }
@@ -12137,7 +11958,7 @@
              * The axis creation options.
              */
             createAxis(coll, options) {
-                options.axis = merge(getDefaultAxisOptions(coll, options.axis), options.axis, getForcedAxisOptions(coll, this.userOptions));
+                options.axis = merge(getDefaultAxisOptions(coll, options.axis, getOptions()[coll]), options.axis, getForcedAxisOptions(coll, this.userOptions));
                 return super.createAxis(coll, options);
             }
         }
@@ -12160,29 +11981,19 @@
         (function (StockChart) {
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(AxisClass, SeriesClass, SVGRendererClass) {
-                if (pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, compose)) {
                     addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
                     addEvent(AxisClass, 'afterHideCrosshair', onAxisAfterHideCrosshair);
                     addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
                     addEvent(AxisClass, 'destroy', onAxisDestroy);
                     addEvent(AxisClass, 'getPlotLinePath', onAxisGetPlotLinePath);
-                }
-                if (pushUnique(composedMembers, SeriesClass)) {
                     SeriesClass.prototype.forceCropping = seriesForceCropping;
                     addEvent(SeriesClass, 'setOptions', onSeriesSetOptions);
-                }
-                if (pushUnique(composedMembers, SVGRendererClass)) {
                     SVGRendererClass.prototype.crispPolyLine = svgRendererCrispPolyLine;
                 }
             }

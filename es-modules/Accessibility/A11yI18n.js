@@ -2,7 +2,7 @@
  *
  *  Accessibility module - internationalization support
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *  Author: Øystein Moseng
  *
  *  License: www.highcharts.com/license
@@ -13,8 +13,10 @@
 'use strict';
 import F from '../Core/Templating.js';
 const { format } = F;
+import H from '../Core/Globals.js';
+const { composed } = H;
 import U from '../Core/Utilities.js';
-const { getNestedProperty, pick } = U;
+const { getNestedProperty, pick, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -29,25 +31,17 @@ var A11yI18nComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * @private
      */
     function compose(ChartClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             const chartProto = ChartClass.prototype;
             chartProto.langFormat = langFormat;
         }
-        return ChartClass;
     }
     A11yI18nComposition.compose = compose;
     /**

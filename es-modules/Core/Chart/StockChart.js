@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -13,6 +13,8 @@ import F from '../Templating.js';
 const { format } = F;
 import D from '../Defaults.js';
 const { getOptions } = D;
+import H from '../Globals.js';
+const { composed } = H;
 import NavigatorDefaults from '../../Stock/Navigator/NavigatorDefaults.js';
 import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaults.js';
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
@@ -30,34 +32,29 @@ import '../Pointer.js';
  * @private
  * @function getDefaultAxisOptions
  */
-function getDefaultAxisOptions(type, options) {
-    if (type === 'xAxis') {
+function getDefaultAxisOptions(coll, options, defaultOptions) {
+    if (coll === 'xAxis') {
         return {
             minPadding: 0,
             maxPadding: 0,
             overscroll: 0,
-            ordinal: true,
-            title: {
-                text: null
-            },
-            labels: {
-                overflow: 'justify'
-            },
-            showLastLabel: true
+            ordinal: true
         };
     }
-    if (type === 'yAxis') {
+    if (coll === 'yAxis') {
         return {
             labels: {
                 y: -2
             },
-            opposite: pick(options.opposite, true),
+            opposite: defaultOptions.opposite ?? options.opposite ?? true,
             showLastLabel: !!(
             // #6104, show last label by default for category axes
             options.categories ||
                 options.type === 'category'),
             title: {
-                text: null
+                text: defaultOptions.title?.text !== 'Values' ?
+                    defaultOptions.title?.text :
+                    null
             }
         };
     }
@@ -164,23 +161,21 @@ class StockChart extends Chart {
             legend: {
                 enabled: false
             }
-        }, userOptions, // user's options
+        }, userOptions, // User's options
         {
-            isStock: true // internal flag
+            isStock: true // Internal flag
         });
         userOptions.xAxis = xAxisOptions;
         userOptions.yAxis = yAxisOptions;
-        // apply X axis options to both single and multi y axes
-        options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions, i) => merge(getDefaultAxisOptions('xAxis', xAxisOptions), defaultOptions.xAxis, // #3802
+        // Apply X axis options to both single and multi y axes
+        options.xAxis = splat(userOptions.xAxis || {}).map((xAxisOptions, i) => merge(getDefaultAxisOptions('xAxis', xAxisOptions, defaultOptions.xAxis), 
         // #7690
-        // @todo remove, default axis options are not arrays
-        defaultOptions.xAxis && defaultOptions.xAxis[i], xAxisOptions, // user options
+        xAxisOptions, // User options
         getForcedAxisOptions('xAxis', userOptions)));
-        // apply Y axis options to both single and multi y axes
-        options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions, i) => merge(getDefaultAxisOptions('yAxis', yAxisOptions), defaultOptions.yAxis, // #3802
+        // Apply Y axis options to both single and multi y axes
+        options.yAxis = splat(userOptions.yAxis || {}).map((yAxisOptions, i) => merge(getDefaultAxisOptions('yAxis', yAxisOptions, defaultOptions.yAxis), 
         // #7690
-        // @todo remove, default axis options are not arrays
-        defaultOptions.yAxis && defaultOptions.yAxis[i], yAxisOptions // user options
+        yAxisOptions // User options
         ));
         super.init(options, callback);
     }
@@ -196,7 +191,7 @@ class StockChart extends Chart {
      * The axis creation options.
      */
     createAxis(coll, options) {
-        options.axis = merge(getDefaultAxisOptions(coll, options.axis), options.axis, getForcedAxisOptions(coll, this.userOptions));
+        options.axis = merge(getDefaultAxisOptions(coll, options.axis, getOptions()[coll]), options.axis, getForcedAxisOptions(coll, this.userOptions));
         return super.createAxis(coll, options);
     }
 }
@@ -219,29 +214,19 @@ addEvent(Chart, 'update', function (e) {
 (function (StockChart) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
     /** @private */
     function compose(AxisClass, SeriesClass, SVGRendererClass) {
-        if (pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, compose)) {
             addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
             addEvent(AxisClass, 'afterHideCrosshair', onAxisAfterHideCrosshair);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
             addEvent(AxisClass, 'getPlotLinePath', onAxisGetPlotLinePath);
-        }
-        if (pushUnique(composedMembers, SeriesClass)) {
             SeriesClass.prototype.forceCropping = seriesForceCropping;
             addEvent(SeriesClass, 'setOptions', onSeriesSetOptions);
-        }
-        if (pushUnique(composedMembers, SVGRendererClass)) {
             SVGRendererClass.prototype.crispPolyLine = svgRendererCrispPolyLine;
         }
     }

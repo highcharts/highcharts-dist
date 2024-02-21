@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -13,17 +13,11 @@ import BubblePoint from './BubblePoint.js';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: { prototype: columnProto }, scatter: ScatterSeries } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, clamp, extend, isNumber, merge, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, arrayMax, arrayMin, clamp, extend, isNumber, merge, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -33,9 +27,12 @@ const composedMembers = [];
  * Add logic to pad each axis with the amount of pixels necessary to avoid the
  * bubbles to overflow.
  */
-function axisBeforePadding() {
-    const axisLength = this.len, chart = this.chart, isXAxis = this.isXAxis, dataKey = isXAxis ? 'xData' : 'yData', min = this.min, range = this.max - min;
+function onAxisFoundExtremes() {
+    const axisLength = this.len, { coll, isXAxis, min } = this, dataKey = isXAxis ? 'xData' : 'yData', range = (this.max || 0) - (min || 0);
     let pxMin = 0, pxMax = axisLength, transA = axisLength / range, hasActiveSeries;
+    if (coll !== 'xAxis' && coll !== 'yAxis') {
+        return;
+    }
     // Handle padding on the second pass, or on redraw
     this.series.forEach((series) => {
         if (series.bubblePadding && series.reserveSpace()) {
@@ -85,27 +82,6 @@ function axisBeforePadding() {
  *
  * */
 class BubbleSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.maxPxSize = void 0;
-        this.minPxSize = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.radii = void 0;
-        this.yData = void 0;
-        this.zData = void 0;
-    }
     /* *
      *
      *  Static Functions
@@ -113,8 +89,8 @@ class BubbleSeries extends ScatterSeries {
      * */
     static compose(AxisClass, ChartClass, LegendClass, SeriesClass) {
         BubbleLegendComposition.compose(ChartClass, LegendClass, SeriesClass);
-        if (U.pushUnique(composedMembers, AxisClass)) {
-            AxisClass.prototype.beforePadding = axisBeforePadding;
+        if (pushUnique(composed, this.compose)) {
+            addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
         }
     }
     /* *
@@ -319,6 +295,11 @@ class BubbleSeries extends ScatterSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * A bubble series is a three dimensional series type where each point
  * renders an X, Y and Z value. Each points is drawn as a bubble where the

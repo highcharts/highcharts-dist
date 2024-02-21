@@ -1,12 +1,12 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
  *
  * Client side exporting module
  *
- * (c) 2015-2021 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2024 Torstein Honsi / Oystein Moseng
  *
  * License: www.highcharts.com/license
  */

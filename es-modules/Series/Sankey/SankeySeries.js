@@ -2,7 +2,7 @@
  *
  *  Sankey diagram module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -36,29 +36,6 @@ const { clamp, extend, isObject, merge, pick, relativeLength, stableSort } = U;
  * @augments Highcharts.Series
  */
 class SankeySeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.colDistance = void 0;
-        this.data = void 0;
-        this.group = void 0;
-        this.nodeLookup = void 0;
-        this.nodePadding = void 0;
-        this.nodes = void 0;
-        this.nodeWidth = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.translationFactor = void 0;
-    }
     /* *
      *
      *  Static Functions
@@ -468,6 +445,11 @@ class SankeySeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
 NodesComposition.compose(SankeyPoint, SankeySeries);
 extend(SankeySeries.prototype, {

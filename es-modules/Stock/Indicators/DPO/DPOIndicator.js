@@ -41,22 +41,6 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
  * @augments Highcharts.Series
  */
 class DPOIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *   Properties
-         *
-         * */
-        this.options = void 0;
-        this.data = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -96,6 +80,11 @@ class DPOIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Detrended Price Oscillator. This series requires the `linkedTo` option to
  * be set and should be loaded after the `stock/indicators/indicators.js`.

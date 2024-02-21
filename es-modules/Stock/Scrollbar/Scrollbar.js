@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -86,25 +86,16 @@ class Scrollbar {
          *
          * */
         this._events = [];
-        this.chart = void 0;
         this.chartX = 0;
         this.chartY = 0;
         this.from = 0;
-        this.group = void 0;
-        this.options = void 0;
-        this.renderer = void 0;
-        this.scrollbar = void 0;
         this.scrollbarButtons = [];
-        this.scrollbarGroup = void 0;
         this.scrollbarLeft = 0;
-        this.scrollbarRifles = void 0;
         this.scrollbarStrokeWidth = 1;
         this.scrollbarTop = 0;
         this.size = 0;
         this.to = 0;
-        this.track = void 0;
         this.trackBorderWidth = 1;
-        this.userOptions = void 0;
         this.x = 0;
         this.y = 0;
         this.init(renderer, options, chart);

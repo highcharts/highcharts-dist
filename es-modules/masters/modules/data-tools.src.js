@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
  * Highcharts
  *
- * (c) 2010-2023 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  *
  * License: www.highcharts.com/license
  */

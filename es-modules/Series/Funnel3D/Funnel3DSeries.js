@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel3d series module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -39,23 +39,6 @@ const { extend, merge, pick, relativeLength } = U;
  * @requires modules/funnel3d
  */
 class Funnel3DSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.center = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -125,7 +108,7 @@ class Funnel3DSeries extends ColumnSeries {
      */
     translate() {
         Series.prototype.translate.apply(this, arguments);
-        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data;
+        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points;
         let sum = 0, cumulative = 0, // start at top
         tempWidth, getWidthAt, fraction, tooltipPos, 
         //
@@ -162,12 +145,12 @@ class Funnel3DSeries extends ColumnSeries {
             *        ___centerX,y5___
             */
         // get the total sum
-        for (const point of data) {
+        for (const point of points) {
             if (!ignoreHiddenPoint || point.visible !== false) {
                 sum += point.y;
             }
         }
-        for (const point of data) {
+        for (const point of points) {
             // set start and end positions
             y5 = null;
             fraction = sum ? point.y / sum : 0;
@@ -252,6 +235,11 @@ class Funnel3DSeries extends ColumnSeries {
         }
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 Funnel3DSeries.compose = Funnel3DComposition.compose;
 Funnel3DSeries.defaultOptions = merge(ColumnSeries.defaultOptions, Funnel3DSeriesDefaults);
 extend(Funnel3DSeries.prototype, {

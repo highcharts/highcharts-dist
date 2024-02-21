@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Karol Kolodziej
+ * (c) 2010-2024 Karol Kolodziej
  *
  * License: www.highcharts.com/license
  */
@@ -60,22 +60,6 @@
          * @augments Highcharts.Series
          */
         class OBVIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.points = void 0;
-                this.options = void 0;
-            }
             /* *
              *
              *  Functions
@@ -129,6 +113,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * On-Balance Volume (OBV) technical indicator. This series
          * requires the `linkedTo` option to be set and should be loaded after

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -10,16 +10,10 @@
 'use strict';
 import Axis from './Axis.js';
 import H from '../Globals.js';
+const { composed } = H;
 import Series from '../Series/Series.js';
 import U from '../Utilities.js';
-const { addEvent, correctFloat, css, defined, error, pick, timeUnits } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
-/* eslint-disable valid-jsdoc */
+const { addEvent, correctFloat, css, defined, error, pick, pushUnique, timeUnits } = U;
 /* *
  *
  *  Composition
@@ -56,7 +50,7 @@ var OrdinalAxis;
      * Series class to use.
      */
     function compose(AxisClass, SeriesClass, ChartClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, compose)) {
             const axisProto = AxisClass.prototype;
             axisProto.getTimeTicks = getTimeTicks;
             axisProto.index2val = index2val;
@@ -68,11 +62,7 @@ var OrdinalAxis;
             addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
             addEvent(AxisClass, 'afterSetScale', onAxisAfterSetScale);
             addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
-        }
-        if (U.pushUnique(composedMembers, ChartClass)) {
             addEvent(ChartClass, 'pan', onChartPan);
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
             addEvent(SeriesClass, 'updatedData', onSeriesUpdatedData);
         }
         return AxisClass;
@@ -274,35 +264,23 @@ var OrdinalAxis;
      */
     function lin2val(val) {
         const axis = this, ordinal = axis.ordinal, localMin = axis.old ? axis.old.min : axis.min, localA = axis.old ? axis.old.transA : axis.transA;
-        let positions = ordinal.positions; // for the current visible range
-        // The visible range contains only equally spaced values.
-        if (!positions) {
-            return val;
-        }
-        // Convert back from modivied value to pixels. // #15970
-        const pixelVal = correctFloat((val - localMin) * localA +
-            axis.minPixelPadding), isInside = val >= positions[0] &&
-            val <= positions[positions.length - 1];
-        // If the value is not inside the plot area, use the extended positions.
-        // (array contains also points that are outside of the plotArea).
-        if (!isInside) {
-            positions = ordinal.getExtendedPositions();
-        }
+        // Always use extendedPositions (#19816)
+        let positions = ordinal.getExtendedPositions();
         // In some cases (especially in early stages of the chart creation) the
         // getExtendedPositions might return undefined.
-        if (positions && positions.length) {
-            const indexOf = positions.indexOf(val);
-            const index = indexOf !== -1 ? indexOf : correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = correctFloat(index % 1);
+        if (positions.length) {
+            // Convert back from modivied value to pixels. // #15970
+            const pixelVal = correctFloat((val - localMin) * localA +
+                axis.minPixelPadding), index = correctFloat(ordinal.getIndexOfPoint(pixelVal, positions)), mantissa = correctFloat(index % 1);
             // Check if the index is inside position array. If true,
             // read/approximate value for that exact index.
             if (index >= 0 && index <= positions.length - 1) {
                 const leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                 return positions[Math.floor(index)] + mantissa * distance;
             }
-            // If the value is outside positions array, return initial value
-            return val; // #16784
         }
-        return val;
+        // If the value is outside positions array, return initial value
+        return val; // #16784
     }
     /**
      * Internal function to calculate the precise index in ordinalPositions
@@ -921,7 +899,8 @@ var OrdinalAxis;
          * extendedOrdinalPositions if not.
          */
         getIndexOfPoint(val, ordinalArray) {
-            const ordinal = this, axis = ordinal.axis, firstPointVal = ordinal.positions ? ordinal.positions[0] : 0;
+            const ordinal = this, axis = ordinal.axis;
+            let firstPointVal = 0;
             // Check whether the series has at least one point inside the chart
             const hasPointsInside = function (series) {
                 const { min, max } = axis;
@@ -939,6 +918,7 @@ var OrdinalAxis;
                         !defined(firstPointX)) &&
                     hasPointsInside(series)) {
                     firstPointX = firstPoint.plotX;
+                    firstPointVal = firstPoint.x;
                 }
             });
             // If undefined, give a default value

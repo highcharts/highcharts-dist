@@ -26,22 +26,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class AroonOscillatorIndicator extends AroonIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -67,6 +51,11 @@ class AroonOscillatorIndicator extends AroonIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Aroon Oscillator. This series requires the `linkedTo` option to be set
  * and should be loaded after the `stock/indicators/indicators.js` and

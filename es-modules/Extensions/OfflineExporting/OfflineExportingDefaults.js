@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -14,7 +14,7 @@
  *
  * */
 const OfflineExportingDefaults = {
-    libURL: 'https://code.highcharts.com/11.2.0/lib/',
+    libURL: 'https://code.highcharts.com/11.3.0/lib/',
     // When offline-exporting is loaded, redefine the menu item definitions
     // related to download.
     menuItemDefinitions: {

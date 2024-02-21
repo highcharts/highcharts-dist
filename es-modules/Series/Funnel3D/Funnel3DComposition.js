@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel3d series module
  *
- *  (c) 2010-2021 Highsoft AS
+ *  (c) 2010-2024 Highsoft AS
  *
  *  Author: Kacper Madej
  *
@@ -14,15 +14,9 @@
 'use strict';
 import SVGElement3DFunnel from './SVGElement3DFunnel.js';
 import H from '../../Core/Globals.js';
-const { charts } = H;
+const { charts, composed } = H;
 import U from '../../Core/Utilities.js';
 const { error, extend, merge, pushUnique } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
 /* *
  *
  *  Functions
@@ -30,7 +24,7 @@ const composedMembers = [];
  * */
 /** @private */
 function compose(SVGRendererClass) {
-    if (pushUnique(composedMembers, SVGRendererClass)) {
+    if (pushUnique(composed, compose)) {
         const rendererProto = SVGRendererClass.prototype;
         rendererProto.Element3D.types.funnel3d = SVGElement3DFunnel;
         extend(rendererProto, {

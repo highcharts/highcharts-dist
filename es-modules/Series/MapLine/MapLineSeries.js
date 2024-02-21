@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -26,22 +26,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class MapLineSeries extends MapSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -60,6 +44,11 @@ class MapLineSeries extends MapSeries {
         return attr;
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 MapLineSeries.defaultOptions = merge(MapSeries.defaultOptions, MapLineSeriesDefaults);
 extend(MapLineSeries.prototype, {
     type: 'mapline',

@@ -2,7 +2,7 @@
  *
  *  Networkgraph series
  *
- *  (c) 2010-2021 Paweł Fus
+ *  (c) 2010-2024 Paweł Fus
  *
  *  License: www.highcharts.com/license
  *
@@ -119,8 +119,8 @@ class NetworkgraphPoint extends Point {
      * `series.draggable` is enabled.
      * @private
      */
-    init(series, options, x) {
-        super.init(series, options, x);
+    constructor(series, options, x) {
+        super(series, options, x);
         if (this.series.options.draggable &&
             !this.series.chart.styledMode) {
             addEvent(this, 'mouseOver', function () {
@@ -130,7 +130,6 @@ class NetworkgraphPoint extends Point {
                 css(this.series.chart.container, { cursor: 'default' });
             });
         }
-        return this;
     }
     /**
      * @private

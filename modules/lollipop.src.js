@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
+ * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/Lollipop/LollipopPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -51,18 +51,6 @@
          *
          * */
         class LollipopPoint extends Point {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.options = void 0;
-                this.series = void 0;
-                this.plotX = void 0;
-                this.pointWidth = void 0;
-            }
         }
         extend(LollipopPoint.prototype, {
             destroy: DumbbellPoint.prototype.destroy,
@@ -80,7 +68,7 @@
     _registerModule(_modules, 'Series/Lollipop/LollipopSeries.js', [_modules['Series/Lollipop/LollipopPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (LollipopPoint, SeriesRegistry, Series, U) {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -105,22 +93,6 @@
          *
          */
         class LollipopSeries extends Series {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
             /**
              * Extend the series' drawPoints method by applying a connector
              * and coloring markers.
@@ -164,6 +136,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * The lollipop series is a carteseian series with a line anchored from
          * the x axis and a dot at the end to mark the value.

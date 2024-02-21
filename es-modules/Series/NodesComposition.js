@@ -22,12 +22,6 @@ var NodesComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
@@ -35,17 +29,12 @@ var NodesComposition;
      * @private
      */
     function compose(PointClass, SeriesClass) {
-        if (U.pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
-            pointProto.setNodeState = setNodeState;
-            pointProto.setState = setNodeState;
-            pointProto.update = updateNode;
-        }
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
-            seriesProto.destroy = destroy;
-            seriesProto.setData = setData;
-        }
+        const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+        pointProto.setNodeState = setNodeState;
+        pointProto.setState = setNodeState;
+        pointProto.update = updateNode;
+        seriesProto.destroy = destroy;
+        seriesProto.setData = setData;
         return SeriesClass;
     }
     NodesComposition.compose = compose;
@@ -59,7 +48,7 @@ var NodesComposition;
         let node = findById(this.nodes, id), options;
         if (!node) {
             options = this.options.nodes && findById(this.options.nodes, id);
-            const newNode = (new PointClass()).init(this, extend({
+            const newNode = new PointClass(this, extend({
                 className: 'highcharts-node',
                 isNode: true,
                 id: id,

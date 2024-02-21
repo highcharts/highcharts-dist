@@ -1,6 +1,6 @@
 /* *
  *
- *  Copyright (c) 2019-2021 Highsoft AS
+ *  (c) 2019-2024 Highsoft AS
  *
  *  Boost module: stripped-down renderer for higher performance
  *
@@ -11,14 +11,10 @@
  * */
 'use strict';
 import BoostableMap from './BoostableMap.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedClasses = [];
+const { addEvent, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -28,7 +24,7 @@ const composedClasses = [];
  * @private
  */
 function compose(ChartClass, wglMode) {
-    if (wglMode && U.pushUnique(composedClasses, ChartClass)) {
+    if (wglMode && pushUnique(composed, compose)) {
         ChartClass.prototype.callbacks.push(onChartCallback);
     }
     return ChartClass;
@@ -192,11 +188,10 @@ function onChartCallback(chart) {
         }
     }
     addEvent(chart, 'predraw', preRender);
-    addEvent(chart, 'render', canvasToSVG);
-    // addEvent(chart, 'zoom', function () {
-    //     chart.boostForceChartBoost =
-    //         shouldForceChartSeriesBoosting(chart);
-    // });
+    // Use the load event rather than redraw, otherwise user load events will
+    // fire too early (#18755)
+    addEvent(chart, 'load', canvasToSVG, { order: -1 });
+    addEvent(chart, 'redraw', canvasToSVG);
     let prevX = -1;
     let prevY = -1;
     addEvent(chart.pointer, 'afterGetHoverData', () => {

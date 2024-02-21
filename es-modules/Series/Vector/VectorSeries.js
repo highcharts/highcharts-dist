@@ -2,7 +2,7 @@
  *
  *  Vector plot series module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -33,23 +33,6 @@ import VectorSeriesDefaults from './VectorSeriesDefaults.js';
  * @augments Highcharts.seriesTypes.scatter
  */
 class VectorSeries extends ScatterSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.lengthMax = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -179,6 +162,11 @@ class VectorSeries extends ScatterSeries {
         this.lengthMax = arrayMax(this.lengthData);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VectorSeriesDefaults);
 extend(VectorSeries.prototype, {
     /**

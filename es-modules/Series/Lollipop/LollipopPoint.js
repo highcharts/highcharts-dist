@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -18,18 +18,6 @@ const { extend } = U;
  *
  * */
 class LollipopPoint extends Point {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
-        this.plotX = void 0;
-        this.pointWidth = void 0;
-    }
 }
 extend(LollipopPoint.prototype, {
     destroy: DumbbellPoint.prototype.destroy,

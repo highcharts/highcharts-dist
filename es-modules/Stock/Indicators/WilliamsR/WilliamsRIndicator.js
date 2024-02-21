@@ -26,22 +26,6 @@ const { extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class WilliamsRIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -83,6 +67,11 @@ class WilliamsRIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Williams %R. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js`.

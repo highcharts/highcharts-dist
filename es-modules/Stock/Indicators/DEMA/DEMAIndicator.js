@@ -25,23 +25,6 @@ const { correctFloat, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class DEMAIndicator extends EMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.EMApercent = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -110,6 +93,11 @@ class DEMAIndicator extends EMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Double exponential moving average (DEMA) indicator. This series requires
  * `linkedTo` option to be set and should be loaded after the

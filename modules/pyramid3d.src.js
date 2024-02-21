@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Highcharts 3D funnel module
  *
- * (c) 2010-2021 Kacper Madej
+ * (c) 2010-2024 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
@@ -40,7 +40,7 @@
          *
          *  Highcharts pyramid3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Kacper Madej
          *
          *  License: www.highcharts.com/license
@@ -162,7 +162,7 @@
          *
          *  Highcharts pyramid3d series module
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *  Author: Kacper Madej
          *
          *  License: www.highcharts.com/license
@@ -189,23 +189,12 @@
          * @requires modules/pyramid3d
          */
         class Pyramid3DSeries extends Funnel3DSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-            }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         Pyramid3DSeries.defaultOptions = merge(Funnel3DSeries.defaultOptions, Pyramid3DSeriesDefaults);
         SeriesRegistry.registerSeriesType('pyramid3d', Pyramid3DSeries);
         /* *

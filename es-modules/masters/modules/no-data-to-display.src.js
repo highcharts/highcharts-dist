@@ -1,11 +1,11 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license

@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
+ * (c) 2009-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/AreaRange/AreaRangePoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -51,29 +51,16 @@
          *
          * */
         class AreaRangePoint extends AreaPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                /**
-                 * Range series only. The high or maximum value for each data point.
-                 * @name Highcharts.Point#high
-                 * @type {number|undefined}
-                 */
-                this.high = void 0;
-                /**
-                 * Range series only. The low or minimum value for each data point.
-                 * @name Highcharts.Point#low
-                 * @type {number|undefined}
-                 */
-                this.low = void 0;
-                this.options = void 0;
-                this.plotX = void 0;
-                this.series = void 0;
-            }
+            /**
+             * Range series only. The high or maximum value for each data point.
+             * @name Highcharts.Point#high
+             * @type {number|undefined}
+             */
+            /**
+             * Range series only. The low or minimum value for each data point.
+             * @name Highcharts.Point#low
+             * @type {number|undefined}
+             */
             /* *
              *
              *  Functions
@@ -156,7 +143,7 @@
     _registerModule(_modules, 'Series/Dumbbell/DumbbellPoint.js', [_modules['Series/AreaRange/AreaRangePoint.js'], _modules['Core/Utilities.js']], function (AreaRangePoint, U) {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -170,17 +157,6 @@
          *
          * */
         class DumbbellPoint extends AreaRangePoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.series = void 0;
-                this.options = void 0;
-                this.pointWidth = void 0;
-            }
             /* *
              *
              *  Functions
@@ -246,7 +222,7 @@
     _registerModule(_modules, 'Series/Dumbbell/DumbbellSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -279,6 +255,7 @@
             groupPadding: 0.2,
             crisp: false,
             pointPadding: 0.1,
+            legendSymbol: 'rectangle',
             /**
              * Color of the start markers in a dumbbell graph. This option takes
              * priority over the series color. To avoid this, set `lowColor` to
@@ -449,7 +426,7 @@
     _registerModule(_modules, 'Series/Dumbbell/DumbbellSeries.js', [_modules['Series/Dumbbell/DumbbellPoint.js'], _modules['Series/Dumbbell/DumbbellSeriesDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (DumbbellPoint, DumbbellSeriesDefaults, H, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+         *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
          *
          *  License: www.highcharts.com/license
          *
@@ -474,23 +451,6 @@
          * @augments Highcharts.Series
          */
         class DumbbellSeries extends AreaRangeSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.columnMetrics = void 0;
-            }
             /* *
              *
              *  Functions
@@ -702,6 +662,11 @@
                 ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * The dumbbell series is a cartesian series with higher and lower values
          * for each point along an X axis, connected with a line between the

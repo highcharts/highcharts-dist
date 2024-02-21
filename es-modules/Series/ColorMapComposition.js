@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -24,7 +24,6 @@ var ColorMapComposition;
      *  Constants
      *
      * */
-    const composedMembers = [];
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
@@ -49,9 +48,7 @@ var ColorMapComposition;
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
-        if (U.pushUnique(composedMembers, PointClass)) {
-            addEvent(PointClass, 'afterSetState', onPointAfterSetState);
-        }
+        addEvent(PointClass, 'afterSetState', onPointAfterSetState);
         return SeriesClass;
     }
     ColorMapComposition.compose = compose;

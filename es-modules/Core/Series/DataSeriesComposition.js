@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2020-2022 Highsoft AS
+ *  (c) 2020-2024 Highsoft AS
  *
  *  License: www.highcharts.com/license
  *
@@ -12,14 +12,10 @@
  * */
 'use strict';
 import DataTable from '../../Data/DataTable.js';
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { addEvent, fireEvent, isNumber, merge, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, fireEvent, isNumber, merge, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -38,7 +34,7 @@ function wrapSeriesGeneratePoints(proceed) {
         cursor = cropStart + i;
         point = data[cursor];
         if (!point) {
-            point = data[cursor] = (new PointClass()).init(this, processedYData[cursor], processedXData[i]);
+            point = data[cursor] = new PointClass(this, processedYData[cursor], processedXData[i]);
         }
         point.index = cursor;
         points[i] = point;
@@ -98,11 +94,11 @@ class DataSeriesAdditions {
      * @private
      */
     static compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, this.compose)) {
+            const seriesProto = SeriesClass.prototype;
             addEvent(SeriesClass, 'init', function () {
                 this.datas = new DataSeriesAdditions(this);
             });
-            const seriesProto = SeriesClass.prototype;
             wrap(seriesProto, 'generatePoints', wrapSeriesGeneratePoints);
             wrap(seriesProto, 'setData', wrapSeriesSetData);
         }

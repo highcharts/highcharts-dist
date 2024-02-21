@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -8,8 +8,10 @@
  *
  * */
 'use strict';
+import H from '../../Globals.js';
+const { composed } = H;
 import U from '../../Utilities.js';
-const { erase, extend, isNumber } = U;
+const { erase, extend, isNumber, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -22,12 +24,6 @@ var PlotLineOrBandAxis;
      *  Declarations
      *
      * */
-    /* *
-     *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
     /* *
      *
      *  Variables
@@ -52,7 +48,7 @@ var PlotLineOrBandAxis;
      * [xAxis.plotBands](https://api.highcharts.com/highcharts/xAxis.plotBands).
      *
      * @return {Highcharts.PlotLineOrBand|undefined}
-     * The added plot band.
+     * The added plot band, or `undefined` if the options are not valid.
      */
     function addPlotBand(options) {
         return this.addPlotBandOrLine(options, 'plotBands');
@@ -105,7 +101,7 @@ var PlotLineOrBandAxis;
      * [xAxis.plotLines](https://api.highcharts.com/highcharts/xAxis.plotLines).
      *
      * @return {Highcharts.PlotLineOrBand|undefined}
-     * The added plot line.
+     * The added plot line, or `undefined` if the options are not valid.
      */
     function addPlotLine(options) {
         return this.addPlotBandOrLine(options, 'plotLines');
@@ -114,10 +110,8 @@ var PlotLineOrBandAxis;
      * @private
      */
     function compose(PlotLineOrBandType, AxisClass) {
-        if (!PlotLineOrBandClass) {
+        if (pushUnique(composed, compose)) {
             PlotLineOrBandClass = PlotLineOrBandType;
-        }
-        if (U.pushUnique(composedMembers, AxisClass)) {
             extend(AxisClass.prototype, {
                 addPlotBand,
                 addPlotLine,
@@ -157,12 +151,12 @@ var PlotLineOrBandAxis;
         }), result = [], horiz = this.horiz, outside = !isNumber(this.min) ||
             !isNumber(this.max) ||
             (from < this.min && to < this.min) ||
-            (from > this.max && to > this.max);
-        let path = this.getPlotLinePath({
+            (from > this.max && to > this.max), path = this.getPlotLinePath({
             value: from,
             force: true,
             acrossPanes: options.acrossPanes
-        }), i, 
+        });
+        let i, 
         // #4964 check if chart is inverted or plotband is on yAxis
         plus = 1, isFlat;
         if (path && toPath) {
@@ -193,9 +187,6 @@ var PlotLineOrBandAxis;
                 }
                 result.isFlat = isFlat;
             }
-        }
-        else { // outside the axis area
-            path = null;
         }
         return result;
     }

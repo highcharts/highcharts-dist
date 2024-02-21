@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
  *
  *  License: www.highcharts.com/license
  *
@@ -12,7 +12,7 @@ import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, fireEvent, merge, pick } = U;
+const { addEvent, fireEvent, merge } = U;
 /* *
  *
  *  Class
@@ -30,10 +30,7 @@ class TreegraphPoint extends TreemapPoint {
          *
          * */
         super(...arguments);
-        this.options = void 0;
         this.isLink = false;
-        this.series = void 0;
-        this.node = void 0;
         this.setState = Point.prototype.setState;
     }
     /* *
@@ -121,9 +118,12 @@ class TreegraphPoint extends TreemapPoint {
         }
     }
     toggleCollapse(state) {
-        this.collapsed = pick(state, !this.collapsed);
-        fireEvent(this.series, 'toggleCollapse');
-        this.series.redraw();
+        const series = this.series;
+        this.update({
+            collapsed: state ?? !this.collapsed
+        }, false, void 0, false);
+        fireEvent(series, 'toggleCollapse');
+        series.redraw();
     }
     destroy() {
         if (this.collapseButton) {
@@ -149,15 +149,13 @@ class TreegraphPoint extends TreemapPoint {
 }
 addEvent(TreegraphPoint, 'mouseOut', function () {
     const btn = this.collapseButton, btnOptions = this.collapseButtonOptions;
-    if (btn && btnOptions && btnOptions.onlyOnHover && !this.collapsed) {
+    if (btn && btnOptions?.onlyOnHover && !this.collapsed) {
         btn.animate({ opacity: 0 });
     }
 });
 addEvent(TreegraphPoint, 'mouseOver', function () {
     if (this.collapseButton && this.visible) {
-        this.collapseButton.animate({ opacity: 1 }, this.series.options.states &&
-            this.series.options.states.hover &&
-            this.series.options.states.hover.animation);
+        this.collapseButton.animate({ opacity: 1 }, this.series.options.states?.hover?.animation);
     }
 });
 // Handle showing and hiding of the points

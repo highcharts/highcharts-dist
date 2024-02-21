@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Debugger module
  *
- * (c) 2012-2021 Torstein Honsi
+ * (c) 2012-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -138,15 +138,19 @@
             "33": {
                 "title": "Invalid attribute or tagName",
                 "text": "<h1>Invalid attribute or tagName</h1><p>This error occurs if HTML in the chart configuration contains unknown tag names or attributes. Unknown tag names or attributes are those not present in the _allow lists_.</p><p>To fix the error, consider</p><ul><li>Is your tag name or attribute spelled correctly? For example, <code>lineargradient</code></li></ul><p> would be blocked as it is a misspelling for <code>linearGradient</code>.</p><ul><li>Is it allowed in Highcharts? For example, <code>onclick</code> attributes are blocked as</li></ul><p> they pose a real security threat.</p><p>This error occurs because attributes and tag names are sanitized of potentially harmful content from the chart configuration before being added to the DOM. Consult the <a href=\"https://www.highcharts.com/docs/chart-concepts/security\">security documentation</a> for more information.</p>"
+            },
+            "34": {
+                "title": "Unknown time zone",
+                "text": "<h1>Unknown time zone</h1><p>This error occurs if the browser doesn't recognize the <a href=\"https://api.highcharts.com/highcharts/time.timezone\">timezone</a> option. Possible workarounds are to use a time zone definition that all browsers recognize, or create your own <a href=\"https://api.highcharts.com/highcharts/time.getTimezoneOffset\">getTimezoneOffset</a> callback.</p>"
             }
         };
 
         return errorMessages;
     });
-    _registerModule(_modules, 'Extensions/Debugger/Debugger.js', [_modules['Extensions/Debugger/ErrorMessages.js'], _modules['Core/Globals.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (ErrorMessages, H, D, U) {
+    _registerModule(_modules, 'Extensions/Debugger/Debugger.js', [_modules['Core/Defaults.js'], _modules['Extensions/Debugger/ErrorMessages.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (D, ErrorMessages, H, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -154,13 +158,13 @@
          *
          * */
         const { setOptions } = D;
-        const { addEvent, find, isNumber } = U;
+        const { composed } = H;
+        const { addEvent, find, isNumber, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         const defaultOptions = {
             /**
              * @optionparent chart
@@ -188,13 +192,9 @@
          * @private
          */
         function compose(ChartClass) {
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
-            }
-            if (U.pushUnique(composedMembers, H)) {
                 addEvent(H, 'displayError', onHighchartsDisplayError);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 setOptions(defaultOptions);
             }
         }

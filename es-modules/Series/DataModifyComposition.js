@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,11 +9,13 @@
  * */
 'use strict';
 import Axis from '../Core/Axis/Axis.js';
+import H from '../Core/Globals.js';
+const { composed } = H;
 import Point from '../Core/Series/Point.js';
+const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
-const { prototype: { tooltipFormatter: pointTooltipFormatter } } = Point;
 import U from '../Core/Utilities.js';
-const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } = U;
+const { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -28,16 +30,9 @@ var DataModifyComposition;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Extends the series, axis and point classes with
      * compare and cumulative support.
@@ -54,22 +49,16 @@ var DataModifyComposition;
      * Point class to use.
      */
     function compose(SeriesClass, AxisClass, PointClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
-            const seriesProto = SeriesClass.prototype;
+        if (pushUnique(composed, compose)) {
+            const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
             seriesProto.setCompare = seriesSetCompare;
             seriesProto.setCumulative = seriesSetCumulative;
             addEvent(SeriesClass, 'afterInit', afterInit);
             addEvent(SeriesClass, 'afterGetExtremes', afterGetExtremes);
             addEvent(SeriesClass, 'afterProcessData', afterProcessData);
-        }
-        if (U.pushUnique(composedMembers, AxisClass)) {
-            const axisProto = AxisClass.prototype;
             axisProto.setCompare = axisSetCompare;
             axisProto.setModifier = setModifier;
             axisProto.setCumulative = axisSetCumulative;
-        }
-        if (U.pushUnique(composedMembers, PointClass)) {
-            const pointProto = PointClass.prototype;
             pointProto.tooltipFormatter = tooltipFormatter;
         }
         return SeriesClass;

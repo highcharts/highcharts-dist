@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2022
+ * (c) 2009-2024
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Series/GeoHeatmap/GeoHeatmapPoint.js', [_modules['Core/Utilities.js'], _modules['Core/Series/SeriesRegistry.js']], function (U, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2023 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Authors: Magdalena Gut, Piotr Madej
          *
@@ -53,18 +53,6 @@
          *
          * */
         class GeoHeatmapPoint extends MapPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                super(...arguments);
-                this.lat = void 0;
-                this.lon = void 0;
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -107,7 +95,7 @@
     _registerModule(_modules, 'Series/InterpolationUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2023 Hubert Kozik
+         *  (c) 2010-2024 Hubert Kozik
          *
          *  License: www.highcharts.com/license
          *
@@ -179,7 +167,7 @@
     _registerModule(_modules, 'Series/GeoHeatmap/GeoHeatmapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/GeoHeatmap/GeoHeatmapPoint.js'], _modules['Core/Globals.js'], _modules['Series/InterpolationUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, GeoHeatmapPoint, H, IU, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2023 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Authors: Magdalena Gut, Piotr Madej
          *
@@ -230,16 +218,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.options = void 0;
-                this.data = void 0;
-                this.points = void 0;
-                this.canvas = void 0;
-                this.context = void 0;
                 this.isDirtyCanvas = true;
             }
             /* *

@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * Treegraph chart series type
  *
- *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+ *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
  *
  * License: www.highcharts.com/license
  */
@@ -37,7 +37,7 @@
     _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -167,7 +167,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphNode.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -355,7 +355,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphPoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Point, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -363,7 +363,7 @@
          *
          * */
         const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
-        const { addEvent, fireEvent, merge, pick } = U;
+        const { addEvent, fireEvent, merge } = U;
         /* *
          *
          *  Class
@@ -381,10 +381,7 @@
                  *
                  * */
                 super(...arguments);
-                this.options = void 0;
                 this.isLink = false;
-                this.series = void 0;
-                this.node = void 0;
                 this.setState = Point.prototype.setState;
             }
             /* *
@@ -472,9 +469,12 @@
                 }
             }
             toggleCollapse(state) {
-                this.collapsed = pick(state, !this.collapsed);
-                fireEvent(this.series, 'toggleCollapse');
-                this.series.redraw();
+                const series = this.series;
+                this.update({
+                    collapsed: state ?? !this.collapsed
+                }, false, void 0, false);
+                fireEvent(series, 'toggleCollapse');
+                series.redraw();
             }
             destroy() {
                 if (this.collapseButton) {
@@ -500,15 +500,13 @@
         }
         addEvent(TreegraphPoint, 'mouseOut', function () {
             const btn = this.collapseButton, btnOptions = this.collapseButtonOptions;
-            if (btn && btnOptions && btnOptions.onlyOnHover && !this.collapsed) {
+            if (btn && btnOptions?.onlyOnHover && !this.collapsed) {
                 btn.animate({ opacity: 0 });
             }
         });
         addEvent(TreegraphPoint, 'mouseOver', function () {
             if (this.collapseButton && this.visible) {
-                this.collapseButton.animate({ opacity: 1 }, this.series.options.states &&
-                    this.series.options.states.hover &&
-                    this.series.options.states.hover.animation);
+                this.collapseButton.animate({ opacity: 1 }, this.series.options.states?.hover?.animation);
             }
         });
         // Handle showing and hiding of the points
@@ -526,7 +524,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphLink.js', [_modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Core/Series/SeriesRegistry.js']], function (Point, U, SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -545,8 +543,13 @@
          * @class
          */
         class LinkPoint extends ColumnPoint {
-            constructor() {
-                super(...arguments);
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            constructor(series, options, x, point) {
+                super(series, options, x);
                 /* *
                 *
                 *  Class properties
@@ -556,23 +559,14 @@
                 this.node = {};
                 this.formatPrefix = 'link';
                 this.dataLabelOnNull = true;
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            init(series, options, x, point) {
-                const link = super.init.apply(this, arguments);
                 this.formatPrefix = 'link';
                 this.dataLabelOnNull = true;
                 if (point) {
-                    link.fromNode = point.node.parentNode.point;
-                    link.visible = point.visible;
-                    link.toNode = point;
-                    this.id = link.toNode.id + '-' + link.fromNode.id;
+                    this.fromNode = point.node.parentNode.point;
+                    this.visible = point.visible;
+                    this.toNode = point;
+                    this.id = this.toNode.id + '-' + this.fromNode.id;
                 }
-                return link;
             }
             update(options, redraw, animation, runEvent) {
                 const oldOptions = {
@@ -599,7 +593,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphLayout.js', [_modules['Series/Treegraph/TreegraphNode.js']], function (TreegraphNode) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -929,7 +923,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -1178,7 +1172,7 @@
     _registerModule(_modules, 'Series/Treegraph/TreegraphSeries.js', [_modules['Series/PathUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Series/Treegraph/TreegraphNode.js'], _modules['Series/Treegraph/TreegraphPoint.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js'], _modules['Series/Treegraph/TreegraphLink.js'], _modules['Series/Treegraph/TreegraphLayout.js'], _modules['Series/Treegraph/TreegraphSeriesDefaults.js']], function (PU, SeriesRegistry, SVGRenderer, TreegraphNode, TreegraphPoint, TU, U, TreegraphLink, TreegraphLayout, TreegraphSeriesDefaults) {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy Grzegorz Blachlinski
+         *  (c) 2010-2024 Pawel Lysy Grzegorz Blachlinski
          *
          *  License: www.highcharts.com/license
          *
@@ -1212,21 +1206,8 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.layoutModifier = void 0;
-                this.nodeMap = void 0;
-                this.tree = void 0;
                 this.nodeList = [];
-                this.layoutAlgorythm = void 0;
                 this.links = [];
-                this.mapOptionsToLevel = void 0;
             }
             /* *
              *
@@ -1298,7 +1279,7 @@
                     if (point.node.parent) {
                         const pointOptions = merge(levelOptions, point.options);
                         if (!point.linkToParent || point.linkToParent.destroyed) {
-                            const link = new series.LinkClass().init(series, pointOptions, void 0, point);
+                            const link = new series.LinkClass(series, pointOptions, void 0, point);
                             point.linkToParent = link;
                         }
                         else {

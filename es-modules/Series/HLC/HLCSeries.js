@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Pawel Lysy
+ *  (c) 2010-2024 Pawel Lysy
  *
  *  License: www.highcharts.com/license
  *
@@ -29,23 +29,6 @@ const { extend, merge } = U;
  * @augments Highcharts.Series
  */
 class HLCSeries extends ColumnSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.yData = void 0;
-    }
     /* *
      *
      *  Functions
@@ -174,6 +157,11 @@ class HLCSeries extends ColumnSeries {
         });
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HLCSeriesDefaults);
 extend(HLCSeries.prototype, {
     pointClass: HLCPoint,

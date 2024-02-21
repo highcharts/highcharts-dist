@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,10 +9,12 @@
  * */
 'use strict';
 import DataLabel from '../../Core/Series/DataLabel.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
 import U from '../../Core/Utilities.js';
-const { merge, pick } = U;
+const { merge, pick, pushUnique } = U;
 /* *
  *
  *  Composition
@@ -22,16 +24,9 @@ var ColumnDataLabel;
 (function (ColumnDataLabel) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Override the basic data label alignment by adjusting for the position of
      * the column.
@@ -97,7 +92,7 @@ var ColumnDataLabel;
     /** @private */
     function compose(ColumnSeriesClass) {
         DataLabel.compose(Series);
-        if (U.pushUnique(composedMembers, ColumnSeriesClass)) {
+        if (pushUnique(composed, compose)) {
             ColumnSeriesClass.prototype.alignDataLabel = alignDataLabel;
         }
     }

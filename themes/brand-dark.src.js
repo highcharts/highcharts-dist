@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
- * (c) 2009-2021 Torstein Honsi
+ * (c) 2009-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -36,7 +36,7 @@
     _registerModule(_modules, 'Extensions/Themes/BrandDark.js', [_modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (D, U) {
         /* *
          *
-         *   (c) 2010-2021 Highsoft AS
+         *   (c) 2010-2024 Highsoft AS
          *
          *  Author: Nancy Dillon
          *
@@ -303,7 +303,7 @@
             function apply() {
                 // Load the fonts
                 createElement('link', {
-                    href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:200,300,400,600,700',
+                    href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;600;700',
                     rel: 'stylesheet',
                     type: 'text/css'
                 }, null, document.getElementsByTagName('head')[0]);

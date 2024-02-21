@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -30,23 +30,12 @@ const { merge } = U;
  * @augments Highcharts.Series
  */
 class PyramidSeries extends FunnelSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * A pyramid series is a special type of funnel, without neck and reversed
  * by default.

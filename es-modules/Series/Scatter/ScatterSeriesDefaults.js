@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -55,6 +55,8 @@ const ScatterSeriesDefaults = {
      * and [pointPadding](
      * https://api.highcharts.com/highcharts/plotOptions.column.pointPadding)
      * settings.
+     *
+     * **Note:** With boost mode enabled, the jitter effect is not supported.
      *
      * @sample {highcharts} highcharts/demo/scatter-jitter
      *         Jitter on a scatter plot

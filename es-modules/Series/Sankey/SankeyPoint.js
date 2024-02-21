@@ -2,7 +2,7 @@
  *
  *  Sankey diagram module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -21,27 +21,6 @@ const { defined } = U;
  *
  * */
 class SankeyPoint extends ColumnSeries.prototype.pointClass {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.className = void 0;
-        this.fromNode = void 0;
-        this.level = void 0;
-        this.linkBase = void 0;
-        this.linkColorMode = void 0;
-        this.linksFrom = void 0;
-        this.linksTo = void 0;
-        this.mass = void 0;
-        this.nodeX = void 0;
-        this.nodeY = void 0;
-        this.options = void 0;
-        this.series = void 0;
-        this.toNode = void 0;
-    }
     /* *
      *
      *  Functions

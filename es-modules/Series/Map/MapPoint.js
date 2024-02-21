@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -21,17 +21,11 @@ const { extend, isNumber, pick } = U;
  *
  * */
 class MapPoint extends ScatterPoint {
-    constructor() {
-        /* *
-         *
-         *  Static Functions
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.path = void 0;
-        this.series = void 0;
-    }
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
     /**
      * Get the projected path based on the geometry. May also be called on
      * mapData options (not point instances), hence static.

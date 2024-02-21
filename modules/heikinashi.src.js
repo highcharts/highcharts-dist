@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * HeikinAshi series type for Highcharts Stock
  *
- * (c) 2010-2021 Karol Kolodziej
+ * (c) 2010-2024 Karol Kolodziej
  *
  * License: www.highcharts.com/license
  */
@@ -38,7 +38,7 @@
     _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -52,11 +52,6 @@
          *
          * */
         class HeikinAshiPoint extends CandlestickPoint {
-            constructor() {
-                super(...arguments);
-                // clone inheritence
-                this.resolveColor = HLCPoint.prototype.resolveColor;
-            }
         }
         /* *
          *
@@ -69,7 +64,7 @@
     _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiSeriesDefaults.js', [], function () {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -170,24 +165,19 @@
 
         return HeikinAshiDefaults;
     });
-    _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiSeries.js', [_modules['Series/HeikinAshi/HeikinAshiPoint.js'], _modules['Series/HeikinAshi/HeikinAshiSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (HeikinAshiPoint, HeikinAshiSeriesDefaults, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/HeikinAshi/HeikinAshiSeries.js', [_modules['Core/Globals.js'], _modules['Series/HeikinAshi/HeikinAshiPoint.js'], _modules['Series/HeikinAshi/HeikinAshiSeriesDefaults.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, HeikinAshiPoint, HeikinAshiSeriesDefaults, SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        const { composed } = H;
         const { candlestick: CandlestickSeries } = SeriesRegistry.seriesTypes;
-        const { addEvent, merge } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, merge, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -258,17 +248,7 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
                 this.heikiashiData = [];
-                this.options = void 0;
-                this.points = void 0;
-                this.yData = void 0;
-                this.processedYData = void 0;
             }
             /* *
              *
@@ -277,10 +257,8 @@
              * */
             static compose(SeriesClass, AxisClass, ..._args) {
                 CandlestickSeries.compose(SeriesClass);
-                if (U.pushUnique(composedMembers, AxisClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(AxisClass, 'postProcessData', onAxisPostProcessData);
-                }
-                if (U.pushUnique(composedMembers, HeikinAshiSeries)) {
                     addEvent(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
                     addEvent(HeikinAshiSeries, 'updatedData', onHeikinAshiSeriesUpdatedData);
                 }

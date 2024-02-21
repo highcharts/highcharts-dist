@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -12,14 +12,15 @@ import A from '../Animation/AnimationUtilities.js';
 const { getDeferredAnimation } = A;
 import F from '../Templating.js';
 const { format } = F;
+import H from '../Globals.js';
+const { composed } = H;
 import U from '../Utilities.js';
-const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, splat } = U;
+const { defined, extend, fireEvent, isArray, isString, merge, objectEach, pick, pInt, pushUnique, splat } = U;
 /* *
  *
  *  Composition
  *
  * */
-/* eslint-disable valid-jsdoc */
 var DataLabel;
 (function (DataLabel) {
     /* *
@@ -29,16 +30,9 @@ var DataLabel;
      * */
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
-    /* eslint-disable valid-jsdoc */
     /**
      * Check if this series has data labels, either a series-level setting, or
      * individual. In case of individual point labels, this method is overridden
@@ -46,7 +40,8 @@ var DataLabel;
      * @private
      */
     function hasDataLabels() {
-        return splat(this.options.dataLabels || {}).some((o) => o?.enabled);
+        return mergedDataLabelOptions(this)
+            .some((o) => o?.enabled);
     }
     /**
      * Align each individual data label.
@@ -203,15 +198,15 @@ var DataLabel;
     function applyFilter(point, options) {
         const filter = options.filter;
         if (filter) {
-            const op = filter.operator;
-            const prop = point[filter.property];
-            const val = filter.value;
+            const op = filter.operator, prop = point[filter.property], val = filter.value;
             if ((op === '>' && prop > val) ||
                 (op === '<' && prop < val) ||
                 (op === '>=' && prop >= val) ||
                 (op === '<=' && prop <= val) ||
                 (op === '==' && prop == val) || // eslint-disable-line eqeqeq
-                (op === '===' && prop === val)) {
+                (op === '===' && prop === val) ||
+                (op === '!=' && prop != val) || // eslint-disable-line eqeqeq
+                (op === '!==' && prop !== val)) {
                 return true;
             }
             return false;
@@ -222,7 +217,7 @@ var DataLabel;
      * @private
      */
     function compose(SeriesClass) {
-        if (U.pushUnique(composedMembers, SeriesClass)) {
+        if (pushUnique(composed, compose)) {
             const seriesProto = SeriesClass.prototype;
             seriesProto.initDataLabelsGroup = initDataLabelsGroup;
             seriesProto.initDataLabels = initDataLabels;
@@ -270,14 +265,12 @@ var DataLabel;
      */
     function drawDataLabels(points) {
         points = points || this.points;
-        const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, plotOptions = chart.options.plotOptions, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
+        const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
             (isString(backgroundColor) && backgroundColor) ||
-            "#000000" /* Palette.neutralColor100 */);
-        let seriesDlOptions = seriesOptions.dataLabels, pointOptions, dataLabelsGroup;
-        // Merge in plotOptions.dataLabels for series
-        seriesDlOptions = mergeArrays(mergeArrays(plotOptions?.series?.dataLabels, plotOptions?.[series.type]?.dataLabels), seriesDlOptions);
+            "#000000" /* Palette.neutralColor100 */), seriesDlOptions = mergedDataLabelOptions(series);
+        let pointOptions, dataLabelsGroup;
         // Resolve the animation
-        const { animation, defer } = splat(seriesDlOptions)[0], animationConfig = defer ?
+        const { animation, defer } = seriesDlOptions[0], animationConfig = defer ?
             getDeferredAnimation(chart, animation, series) :
             { defer: 0, duration: 0 };
         fireEvent(this, 'drawDataLabels');
@@ -299,8 +292,8 @@ var DataLabel;
                         point.visible &&
                         // #2282, #4641, #7112, #10049
                         (!point.isNull || point.dataLabelOnNull) &&
-                        applyFilter(point, labelOptions)), style = labelOptions.style || {}, labelDistance = labelOptions.distance;
-                    let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel;
+                        applyFilter(point, labelOptions)), { backgroundColor, borderColor, distance, style = {} } = labelOptions;
+                    let labelConfig, formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel, labelBgColor;
                     if (labelEnabled) {
                         // Create individual options structure that can be
                         // extended without affecting others
@@ -316,10 +309,15 @@ var DataLabel;
                             style.color = pick(labelOptions.color, style.color, isString(series.color) ? series.color : void 0, "#000000" /* Palette.neutralColor100 */);
                             // Get automated contrast color
                             if (style.color === 'contrast') {
-                                point.contrastColor = renderer.getContrast((point.color || series.color));
-                                style.color = ((!defined(labelDistance) &&
-                                    labelOptions.inside) ||
-                                    pInt(labelDistance || 0) < 0 ||
+                                if (backgroundColor !== 'none') {
+                                    labelBgColor = backgroundColor;
+                                }
+                                point.contrastColor = renderer.getContrast(labelBgColor !== 'auto' && labelBgColor ||
+                                    (point.color || series.color));
+                                style.color = (labelBgColor || // #20007
+                                    (!defined(distance) &&
+                                        labelOptions.inside) ||
+                                    pInt(distance || 0) < 0 ||
                                     seriesOptions.stacking) ?
                                     point.contrastColor :
                                     contrastColor;
@@ -338,7 +336,6 @@ var DataLabel;
                             zIndex: 1
                         };
                         if (!chart.styledMode) {
-                            const { backgroundColor, borderColor } = labelOptions;
                             attr.fill = backgroundColor === 'auto' ?
                                 point.color :
                                 backgroundColor;
@@ -541,6 +538,14 @@ var DataLabel;
             }
         }
         return res;
+    }
+    /**
+     * Merge plotOptions and series options for dataLabels.
+     * @private
+     */
+    function mergedDataLabelOptions(series) {
+        const plotOptions = series.chart.options.plotOptions;
+        return splat(mergeArrays(mergeArrays(plotOptions?.series?.dataLabels, plotOptions?.[series.type]?.dataLabels), series.options.dataLabels));
     }
     /**
      * Set starting position for data label sorting animation.

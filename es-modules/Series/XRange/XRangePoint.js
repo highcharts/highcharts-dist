@@ -2,7 +2,7 @@
  *
  *  X-range series module
  *
- *  (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
+ *  (c) 2010-2024 Torstein Honsi, Lars A. V. Cabrera
  *
  *  License: www.highcharts.com/license
  *
@@ -20,21 +20,11 @@ const { extend } = U;
  *
  * */
 class XRangePoint extends ColumnPoint {
-    constructor() {
-        /* *
-         *
-         *  Static Functions
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.options = void 0;
-        this.series = void 0;
-    }
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
     /**
      * Return color of a point based on its category.
      *
@@ -87,12 +77,11 @@ class XRangePoint extends ColumnPoint {
      *
      * @private
      */
-    init() {
-        super.init.apply(this, arguments);
+    constructor(series, options) {
+        super(series, options);
         if (!this.y) {
             this.y = 0;
         }
-        return this;
     }
     /**
      * @private

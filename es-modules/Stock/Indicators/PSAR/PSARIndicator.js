@@ -2,7 +2,7 @@
  *
  *  Parabolic SAR indicator for Highcharts Stock
  *
- *  (c) 2010-2021 Grzegorz Blachliński
+ *  (c) 2010-2024 Grzegorz Blachliński
  *
  *  License: www.highcharts.com/license
  *
@@ -111,15 +111,7 @@ class PSARIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
         this.nameComponents = void 0;
-        this.points = void 0;
-        this.options = void 0;
     }
     /* *
      *

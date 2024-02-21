@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Indicator series type for Highcharts Stock
  *
- * (c) 2010-2021 Sebastian Bochan
+ * (c) 2010-2024 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
@@ -61,19 +61,6 @@
          * @augments Highcharts.Series
          */
         class MACDIndicator extends SMAIndicator {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.macdZones = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.signalZones = void 0;
-            }
             /* *
              *
              *  Functions
@@ -115,7 +102,6 @@
                         zones: this.macdZones.zones.concat(this.options.signalLine.zones),
                         startIndex: this.macdZones.zones.length
                     };
-                    this.resetZones = true;
                 }
                 // Reset color and index #15608.
                 this.color = originalColor;
@@ -168,39 +154,19 @@
                     }
                 }
                 // Modify options and generate smoothing line:
-                ['macd', 'signal'].forEach(function (lineName, i) {
+                ['macd', 'signal'].forEach((lineName, i) => {
                     indicator.points = otherSignals[i];
-                    indicator.options = merge(mainLineOptions[lineName + 'Line'].styles, gappedExtend);
-                    indicator.graph = indicator['graph' + lineName];
+                    indicator.options = merge(mainLineOptions[`${lineName}Line`]?.styles || {}, gappedExtend);
+                    indicator.graph = indicator[`graph${lineName}`];
                     // Zones extension:
-                    indicator.currentLineZone = lineName + 'Zones';
-                    indicator.zones =
-                        indicator[indicator.currentLineZone].zones;
+                    indicator.zones = (indicator[`${lineName}Zones`].zones || []).slice(indicator[`${lineName}Zones`].startIndex || 0);
                     SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
-                    indicator['graph' + lineName] = indicator.graph;
+                    indicator[`graph${lineName}`] = indicator.graph;
                 });
                 // Restore options:
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
                 indicator.zones = histogramZones;
-                indicator.currentLineZone = void 0;
-                // indicator.graph = null;
-            }
-            getZonesGraphs(props) {
-                const allZones = super.getZonesGraphs(props);
-                let currentZones = allZones;
-                if (this.currentLineZone) {
-                    currentZones = allZones.splice(this[this.currentLineZone].startIndex + 1);
-                    if (!currentZones.length) {
-                        // Line has no zones, return basic graph "zone"
-                        currentZones = [props[0]];
-                    }
-                    else {
-                        // Add back basic prop:
-                        currentZones.splice(0, 0, props[0]);
-                    }
-                }
-                return currentZones;
             }
             applyZones() {
                 // Histogram zones are handled by drawPoints method
@@ -292,6 +258,11 @@
                 };
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         /**
          * Moving Average Convergence Divergence (MACD). This series requires
          * `linkedTo` option to be set and should be loaded after the

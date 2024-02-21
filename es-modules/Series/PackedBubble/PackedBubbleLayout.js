@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Grzegorz Blachlinski, Sebastian Bochan
+ *  (c) 2010-2024 Grzegorz Blachlinski, Sebastian Bochan
  *
  *  License: www.highcharts.com/license
  *
@@ -9,16 +9,12 @@
  * */
 'use strict';
 import GraphLayout from '../GraphLayoutComposition.js';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import PackedBubbleIntegration from './PackedBubbleIntegration.js';
 import ReingoldFruchtermanLayout from '../Networkgraph/ReingoldFruchtermanLayout.js';
 import U from '../../Core/Utilities.js';
-const { addEvent, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -61,14 +57,13 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
         super(...arguments);
         this.index = NaN;
         this.nodes = [];
-        this.options = void 0;
         this.series = [];
     }
     static compose(ChartClass) {
         ReingoldFruchtermanLayout.compose(ChartClass);
         GraphLayout.integrations.packedbubble = PackedBubbleIntegration;
         GraphLayout.layouts.packedbubble = PackedBubbleLayout;
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, this.compose)) {
             addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
             const chartProto = ChartClass.prototype;
             chartProto.getSelectedParentNodes = chartGetSelectedParentNodes;

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v11.2.0 (2023-10-30)
+ * @license Highcharts Gantt JS v11.3.0 (2024-01-10)
  *
  * Pathfinder
  *
- * (c) 2016-2021 Øystein Moseng
+ * (c) 2016-2024 Øystein Moseng
  *
  * License: www.highcharts.com/license
  */
@@ -77,16 +77,6 @@
          */
         class Connection {
             constructor(from, to, options) {
-                /* *
-                *
-                * Properties
-                *
-                * */
-                this.chart = void 0;
-                this.fromPoint = void 0;
-                this.graphics = void 0;
-                this.pathfinder = void 0;
-                this.toPoint = void 0;
                 this.init(from, to, options);
             }
             /**
@@ -125,8 +115,8 @@
              * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Animation options for the rendering.
              */
-            renderPath(path, attribs, animation) {
-                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = chart.pathfinder, animate = !chart.options.chart.forExport && animation !== false, anim = {};
+            renderPath(path, attribs) {
+                const connection = this, chart = this.chart, styledMode = chart.styledMode, pathfinder = this.pathfinder, anim = {};
                 let pathGraphic = connection.graphics && connection.graphics.path;
                 // Add the SVG element of the pathfinder group if it doesn't exist
                 if (!pathfinder.group) {
@@ -155,7 +145,7 @@
                 if (!styledMode) {
                     anim.opacity = 1;
                 }
-                pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
+                pathGraphic.animate(anim);
                 // Store reference on connection
                 this.graphics = this.graphics || {};
                 this.graphics.path = pathGraphic;
@@ -342,7 +332,7 @@
                         pathfinder.lineObstacles.concat(pathResult.obstacles);
                 }
                 // Add the calculated path to the pathfinder group
-                connection.renderPath(path, attribs, series.options.animation);
+                connection.renderPath(path, attribs);
                 // Render the markers
                 connection.addMarker('start', merge(options.marker, options.startMarker), path);
                 connection.addMarker('end', merge(options.marker, options.endMarker), path);
@@ -400,7 +390,7 @@
     _registerModule(_modules, 'Series/PathUtilities.js', [], function () {
         /* *
          *
-         *  (c) 2010-2022 Pawel Lysy
+         *  (c) 2010-2024 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -1491,7 +1481,7 @@
 
         return connectorsDefaults;
     });
-    _registerModule(_modules, 'Gantt/PathfinderComposition.js', [_modules['Gantt/ConnectorsDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Utilities.js']], function (ConnectorsDefaults, D, U) {
+    _registerModule(_modules, 'Gantt/PathfinderComposition.js', [_modules['Gantt/ConnectorsDefaults.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (ConnectorsDefaults, D, H, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -1503,6 +1493,7 @@
          *
          * */
         const { setOptions } = D;
+        const { composed } = H;
         const { defined, error, merge, pushUnique } = U;
         /* *
          *
@@ -1570,18 +1561,13 @@
         (function (ConnectionComposition) {
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
             /** @private */
             function compose(ChartClass, PathfinderClass, PointClass) {
-                if (pushUnique(composedMembers, ChartClass)) {
+                if (pushUnique(composed, compose)) {
+                    const pointProto = PointClass.prototype;
                     // Initialize Pathfinder for charts
                     ChartClass.prototype.callbacks.push(function (chart) {
                         const options = chart.options;
@@ -1591,14 +1577,9 @@
                             this.pathfinder.update(true); // First draw, defer render
                         }
                     });
-                }
-                if (pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
                     pointProto.getMarkerVector = pointGetMarkerVector;
                     pointProto.getPathfinderAnchorPoint = pointGetPathfinderAnchorPoint;
                     pointProto.getRadiansToVector = pointGetRadiansToVector;
-                }
-                if (pushUnique(composedMembers, setOptions)) {
                     // Set default Pathfinder options
                     setOptions(ConnectorsDefaults);
                 }
@@ -1892,17 +1873,6 @@
              *
              * */
             constructor(chart) {
-                /* *
-                 *
-                 * Properties
-                 *
-                 * */
-                this.chart = void 0;
-                this.chartObstacles = void 0;
-                this.chartObstacleMetrics = void 0;
-                this.connections = void 0;
-                this.group = void 0;
-                this.lineObstacles = void 0;
                 this.init(chart);
             }
             /* *
@@ -2190,7 +2160,7 @@
 
         return Pathfinder;
     });
-    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -2201,12 +2171,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { pushUnique } = U;
         /* *
          *
          *  Functions
@@ -2285,7 +2251,7 @@
          * @private
          */
         function compose(SVGRendererClass) {
-            if (U.pushUnique(composedMembers, SVGRendererClass)) {
+            if (pushUnique(composed, compose)) {
                 const symbols = SVGRendererClass.prototype.symbols;
                 symbols.arrow = arrow;
                 symbols['arrow-filled'] = triangleLeft;

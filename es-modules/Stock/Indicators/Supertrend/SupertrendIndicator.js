@@ -42,23 +42,6 @@ function createPointObj(mainSeries, index, close) {
  * @augments Highcharts.Series
  */
 class SupertrendIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.linkedParent = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -359,6 +342,11 @@ class SupertrendIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Supertrend indicator. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` and

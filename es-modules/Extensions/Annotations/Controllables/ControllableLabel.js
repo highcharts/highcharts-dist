@@ -7,15 +7,11 @@
 import Controllable from './Controllable.js';
 import F from '../../../Core/Templating.js';
 const { format } = F;
+import H from '../../../Core/Globals.js';
+const { composed } = H;
 import MockPoint from '../MockPoint.js';
 import U from '../../../Core/Utilities.js';
-const { extend, isNumber, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { extend, isNumber, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -123,7 +119,7 @@ class ControllableLabel extends Controllable {
         };
     }
     static compose(SVGRendererClass) {
-        if (U.pushUnique(composedMembers, SVGRendererClass)) {
+        if (pushUnique(composed, this.compose)) {
             const svgRendererProto = SVGRendererClass.prototype;
             svgRendererProto.symbols.connector = symbolConnector;
         }

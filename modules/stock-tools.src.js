@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Advanced Highcharts Stock tools
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -39,7 +39,7 @@
     _registerModule(_modules, 'Core/Chart/ChartNavigationComposition.js', [], function () {
         /**
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -131,7 +131,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindingsDefaults.js', [_modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (NBU, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -447,7 +447,7 @@
              * from a different server.
              *
              * @type      {string}
-             * @default   https://code.highcharts.com/11.2.0/gfx/stock-icons/
+             * @default   https://code.highcharts.com/11.3.0/gfx/stock-icons/
              * @since     7.1.3
              * @apioption navigation.iconsURL
              */
@@ -527,7 +527,7 @@
     _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/Defaults.js'], _modules['Core/Templating.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsDefaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Core/Utilities.js']], function (ChartNavigationComposition, D, F, H, NavigationBindingDefaults, NBU, U) {
         /* *
          *
-         *  (c) 2009-2021 Highsoft, Black Label
+         *  (c) 2009-2024 Highsoft, Black Label
          *
          *  License: www.highcharts.com/license
          *
@@ -536,15 +536,9 @@
          * */
         const { setOptions } = D;
         const { format } = F;
-        const { doc, win } = H;
+        const { composed, doc, win } = H;
         const { getFieldType } = NBU;
-        const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -749,7 +743,7 @@
              *
              * */
             static compose(AnnotationClass, ChartClass) {
-                if (U.pushUnique(composedMembers, AnnotationClass)) {
+                if (pushUnique(composed, this.compose)) {
                     addEvent(AnnotationClass, 'remove', onAnnotationRemove);
                     // Basic shapes:
                     selectableAnnotation(AnnotationClass);
@@ -757,17 +751,11 @@
                     objectEach(AnnotationClass.types, (annotationType) => {
                         selectableAnnotation(annotationType);
                     });
-                }
-                if (U.pushUnique(composedMembers, ChartClass)) {
                     addEvent(ChartClass, 'destroy', onChartDestroy);
                     addEvent(ChartClass, 'load', onChartLoad);
                     addEvent(ChartClass, 'render', onChartRender);
-                }
-                if (U.pushUnique(composedMembers, NavigationBindings)) {
                     addEvent(NavigationBindings, 'closePopup', onNavigationBindingsClosePopup);
                     addEvent(NavigationBindings, 'deselectButton', onNavigationBindingsDeselectButton);
-                }
-                if (U.pushUnique(composedMembers, setOptions)) {
                     setOptions(NavigationBindingDefaults);
                 }
             }
@@ -778,7 +766,6 @@
              * */
             constructor(chart, options) {
                 this.boundClassNames = void 0;
-                this.selectedButton = void 0;
                 this.chart = chart;
                 this.options = options;
                 this.eventsToUnbind = [];
@@ -1354,7 +1341,7 @@
          *
          *  Events generator for Stock tools
          *
-         *  (c) 2009-2021 Paweł Fus
+         *  (c) 2009-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -1775,7 +1762,7 @@
          *
          *  Events generator for Stock tools
          *
-         *  (c) 2009-2021 Paweł Fus
+         *  (c) 2009-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -3274,7 +3261,7 @@
          *
          *  GUI generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -4461,12 +4448,12 @@
 
         return StockToolsDefaults;
     });
-    _registerModule(_modules, 'Stock/StockTools/StockTools.js', [_modules['Core/Defaults.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Stock/StockTools/StockToolsBindings.js'], _modules['Stock/StockTools/StockToolsDefaults.js'], _modules['Stock/StockTools/StockToolsUtilities.js'], _modules['Core/Utilities.js']], function (D, NBU, StockToolsBindings, StockToolsDefaults, STU, U) {
+    _registerModule(_modules, 'Stock/StockTools/StockTools.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindingsUtilities.js'], _modules['Stock/StockTools/StockToolsBindings.js'], _modules['Stock/StockTools/StockToolsDefaults.js'], _modules['Stock/StockTools/StockToolsUtilities.js'], _modules['Core/Utilities.js']], function (D, H, NBU, StockToolsBindings, StockToolsDefaults, STU, U) {
         /**
          *
          *  Events generator for Stock tools
          *
-         *  (c) 2009-2021 Paweł Fus
+         *  (c) 2009-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -4474,15 +4461,10 @@
          *
          * */
         const { setOptions } = D;
+        const { composed } = H;
         const { getAssignedAxis } = NBU;
         const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
-        const { correctFloat, defined, isNumber, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { correctFloat, defined, isNumber, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -4492,7 +4474,7 @@
          * @private
          */
         function compose(NavigationBindingsClass) {
-            if (U.pushUnique(composedMembers, NavigationBindingsClass)) {
+            if (pushUnique(composed, compose)) {
                 const navigationProto = NavigationBindingsClass.prototype;
                 // Extends NavigationBindings to support indicators and resizers:
                 navigationProto.getYAxisPositions = navigationGetYAxisPositions;
@@ -4507,8 +4489,6 @@
                     isPriceIndicatorEnabled,
                     manageIndicators: STU.manageIndicators
                 };
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 setOptions(StockToolsDefaults);
                 setOptions({
                     navigation: {
@@ -4716,7 +4696,7 @@
          *
          *  GUI generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -4751,19 +4731,6 @@
              *
              * */
             constructor(options, langOptions, chart) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.arrowDown = void 0;
-                this.arrowUp = void 0;
-                this.arrowWrapper = void 0;
-                this.listWrapper = void 0;
-                this.showhideBtn = void 0;
-                this.submenu = void 0;
-                this.toolbar = void 0;
-                this.wrapper = void 0;
                 this.chart = chart;
                 this.options = options;
                 this.lang = langOptions;
@@ -5212,7 +5179,7 @@
             getIconsURL() {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/11.2.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/11.3.0/gfx/stock-icons/';
             }
         }
         Toolbar.prototype.classMapping = {
@@ -5271,12 +5238,12 @@
 
         return Toolbar;
     });
-    _registerModule(_modules, 'Stock/StockTools/StockToolsGui.js', [_modules['Core/Defaults.js'], _modules['Stock/StockTools/StockToolsDefaults.js'], _modules['Stock/StockTools/StockToolbar.js'], _modules['Core/Utilities.js']], function (D, StockToolsDefaults, Toolbar, U) {
+    _registerModule(_modules, 'Stock/StockTools/StockToolsGui.js', [_modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Stock/StockTools/StockToolsDefaults.js'], _modules['Stock/StockTools/StockToolbar.js'], _modules['Core/Utilities.js']], function (D, H, StockToolsDefaults, Toolbar, U) {
         /* *
          *
          *  GUI generator for Stock tools
          *
-         *  (c) 2009-2021 Sebastian Bochan
+         *  (c) 2009-2024 Sebastian Bochan
          *
          *  License: www.highcharts.com/license
          *
@@ -5284,13 +5251,8 @@
          *
          * */
         const { setOptions } = D;
-        const { addEvent, getStyle, merge, pick } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, getStyle, merge, pick, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -5311,7 +5273,7 @@
          * @private
          */
         function compose(ChartClass, NavigationBindingsClass) {
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(ChartClass, 'afterGetContainer', onChartAfterGetContainer);
                 addEvent(ChartClass, 'beforeRedraw', onChartBeforeRedraw);
                 addEvent(ChartClass, 'beforeRender', onChartBeforeRedraw);
@@ -5320,12 +5282,8 @@
                 addEvent(ChartClass, 'redraw', onChartRedraw);
                 addEvent(ChartClass, 'render', onChartRender);
                 ChartClass.prototype.setStockTools = chartSetStockTools;
-            }
-            if (U.pushUnique(composedMembers, NavigationBindingsClass)) {
                 addEvent(NavigationBindingsClass, 'deselectButton', onNavigationBindingsDeselectButton);
                 addEvent(NavigationBindingsClass, 'selectButton', onNavigationBindingsSelectButton);
-            }
-            if (U.pushUnique(composedMembers, setOptions)) {
                 setOptions(StockToolsDefaults);
             }
         }

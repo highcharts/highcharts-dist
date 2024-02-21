@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
+ *  (c) 2010-2024 Sebastian Bochan, Rafal Sebestjanski
  *
  *  License: www.highcharts.com/license
  *
@@ -32,23 +32,6 @@ const { extend, merge, pick } = U;
  * @augments Highcharts.Series
  */
 class DumbbellSeries extends AreaRangeSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        this.columnMetrics = void 0;
-    }
     /* *
      *
      *  Functions
@@ -260,6 +243,11 @@ class DumbbellSeries extends AreaRangeSeries {
         ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * The dumbbell series is a cartesian series with higher and lower values
  * for each point along an X axis, connected with a line between the

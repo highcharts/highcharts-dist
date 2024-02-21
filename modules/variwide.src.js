@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Highcharts variwide module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -35,25 +35,20 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/Variwide/VariwideComposition.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/Variwide/VariwideComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -63,13 +58,11 @@
          * @private
          */
         function compose(AxisClass, TickClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
+            if (pushUnique(composed, compose)) {
+                const tickProto = TickClass.prototype;
                 addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
                 addEvent(AxisClass, 'afterRender', onAxisAfterRender);
-            }
-            if (U.pushUnique(composedMembers, TickClass)) {
                 addEvent(TickClass, 'afterGetPosition', onTickAfterGetPosition);
-                const tickProto = TickClass.prototype;
                 tickProto.postTranslate = tickPostTranslate;
                 wrap(tickProto, 'getLabelPosition', wrapTickGetLabelPosition);
             }
@@ -159,7 +152,7 @@
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -174,17 +167,6 @@
          *
          * */
         class VariwidePoint extends ColumnPoint {
-            constructor() {
-                /* *
-                 *
-                 *  Properites
-                 *
-                 * */
-                super(...arguments);
-                this.crosshairWidth = void 0;
-                this.options = void 0;
-                this.series = void 0;
-            }
             /* *
              *
              *  Functions
@@ -207,7 +189,7 @@
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -338,7 +320,7 @@
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2024 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -360,20 +342,6 @@
          * @augments Highcharts.Series
          */
         class VariwideSeries extends ColumnSeries {
-            constructor() {
-                /* *
-                 *
-                 *  Static Properties
-                 *
-                 * */
-                super(...arguments);
-                this.data = void 0;
-                this.options = void 0;
-                this.points = void 0;
-                this.relZ = void 0;
-                this.totalZ = void 0;
-                this.zData = void 0;
-            }
             /* *
              *
              * Functions
@@ -464,6 +432,11 @@
                 }
             }
         }
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
         VariwideSeries.compose = VariwideComposition.compose;
         VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);
         // Extend translation by distoring X position based on Z.

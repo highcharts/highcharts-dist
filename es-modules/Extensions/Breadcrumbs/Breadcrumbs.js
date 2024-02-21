@@ -11,17 +11,12 @@
  * */
 'use strict';
 import BreadcrumbsDefaults from './BreadcrumbsDefaults.js';
-import Chart from '../../Core/Chart/Chart.js';
 import F from '../../Core/Templating.js';
 const { format } = F;
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } = U;
 /* *
  *
  *  Functions
@@ -118,14 +113,12 @@ class Breadcrumbs {
      *
      * */
     static compose(ChartClass, highchartsDefaultOptions) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
-            addEvent(Chart, 'destroy', onChartDestroy);
-            addEvent(Chart, 'afterShowResetZoom', onChartAfterShowResetZoom);
-            addEvent(Chart, 'getMargins', onChartGetMargins);
-            addEvent(Chart, 'redraw', onChartRedraw);
-            addEvent(Chart, 'selection', onChartSelection);
-        }
-        if (U.pushUnique(composedMembers, highchartsDefaultOptions)) {
+        if (pushUnique(composed, this.compose)) {
+            addEvent(ChartClass, 'destroy', onChartDestroy);
+            addEvent(ChartClass, 'afterShowResetZoom', onChartAfterShowResetZoom);
+            addEvent(ChartClass, 'getMargins', onChartGetMargins);
+            addEvent(ChartClass, 'redraw', onChartRedraw);
+            addEvent(ChartClass, 'selection', onChartSelection);
             // Add language support.
             extend(highchartsDefaultOptions.lang, BreadcrumbsDefaults.lang);
         }

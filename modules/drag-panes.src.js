@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v11.2.0 (2023-10-30)
+ * @license Highstock JS v11.3.0 (2024-01-10)
  *
  * Drag-panes module
  *
- * (c) 2010-2021 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Kacper Madej
  *
  * License: www.highcharts.com/license
@@ -41,7 +41,7 @@
          *
          *  Plugin for resizing axes / panes in a chart.
          *
-         *  (c) 2010-2023 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -217,7 +217,7 @@
          *
          *  Plugin for resizing axes / panes in a chart.
          *
-         *  (c) 2010-2023 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -250,15 +250,6 @@
              *
              * */
             constructor(axis) {
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.axis = void 0;
-                this.controlLine = void 0;
-                this.lastPos = void 0;
-                this.options = void 0;
                 this.init(axis);
             }
             /* *
@@ -536,12 +527,12 @@
 
         return AxisResizer;
     });
-    _registerModule(_modules, 'Extensions/DragPanes/DragPanes.js', [_modules['Extensions/DragPanes/AxisResizer.js'], _modules['Core/Utilities.js']], function (AxisResizer, U) {
+    _registerModule(_modules, 'Extensions/DragPanes/DragPanes.js', [_modules['Extensions/DragPanes/AxisResizer.js'], _modules['Core/Defaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (AxisResizer, D, H, U) {
         /* *
          *
          *  Plugin for resizing axes / panes in a chart.
          *
-         *  (c) 2010-2021 Highsoft AS
+         *  (c) 2010-2024 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -550,13 +541,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent, merge, wrap } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { defaultOptions } = D;
+        const { composed } = H;
+        const { addEvent, merge, pushUnique, wrap } = U;
         /* *
          *
          *  Functions
@@ -566,14 +553,12 @@
          * @private
          */
         function compose(AxisClass, PointerClass) {
-            if (U.pushUnique(composedMembers, AxisClass)) {
-                merge(true, AxisClass.defaultOptions, AxisResizer.resizerOptions);
+            if (pushUnique(composed, compose)) {
+                merge(true, defaultOptions.yAxis, AxisResizer.resizerOptions);
                 // Keep resizer reference on axis update
                 AxisClass.keepProps.push('resizer');
                 addEvent(AxisClass, 'afterRender', onAxisAfterRender);
                 addEvent(AxisClass, 'destroy', onAxisDestroy);
-            }
-            if (U.pushUnique(composedMembers, PointerClass)) {
                 wrap(PointerClass.prototype, 'runPointActions', wrapPointerRunPointActions);
                 wrap(PointerClass.prototype, 'drag', wrapPointerDrag);
             }

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft, Black Label
+ *  (c) 2009-2024 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -8,14 +8,10 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import U from '../../Core/Utilities.js';
-const { addEvent, erase, find, fireEvent, pick, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, erase, find, fireEvent, pick, pushUnique, wrap } = U;
 /* *
  *
  *  Functions
@@ -256,9 +252,9 @@ var AnnotationChart;
      * @private
      */
     function compose(AnnotationClass, ChartClass, PointerClass) {
-        if (U.pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
+            const chartProto = ChartClass.prototype, pointerProto = PointerClass.prototype;
             addEvent(ChartClass, 'afterInit', onChartAfterInit);
-            const chartProto = ChartClass.prototype;
             chartProto.addAnnotation = chartAddAnnotation;
             chartProto.callbacks.push(chartCallback);
             chartProto.collectionsWithInit.annotations = [chartAddAnnotation];
@@ -271,9 +267,6 @@ var AnnotationChart;
                 this.annotations.push(annotation);
                 return annotation;
             };
-        }
-        if (U.pushUnique(composedMembers, PointerClass)) {
-            const pointerProto = PointerClass.prototype;
             wrap(pointerProto, 'onContainerMouseDown', wrapPointerOnContainerMouseDown);
         }
     }

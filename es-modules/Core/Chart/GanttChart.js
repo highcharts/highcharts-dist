@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2016-2021 Highsoft AS
+ *  (c) 2016-2024 Highsoft AS
  *
  *  Author: Lars A. V. Cabrera
  *
@@ -12,7 +12,7 @@
 'use strict';
 import Chart from './Chart.js';
 import D from '../Defaults.js';
-const { getOptions } = D;
+const { defaultOptions } = D;
 import U from '../Utilities.js';
 const { isArray, merge, splat } = U;
 /* *
@@ -53,7 +53,7 @@ class GanttChart extends Chart {
      * @emits Highcharts.GanttChart#event:afterInit
      */
     init(userOptions, callback) {
-        const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis;
+        const xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis;
         let defaultLinkedTo;
         // Avoid doing these twice
         userOptions.xAxis = userOptions.yAxis = void 0;
@@ -74,37 +74,47 @@ class GanttChart extends Chart {
                     type: 'category'
                 }
             }
-        }, userOptions, // user's options
+        }, userOptions, // User's options
         // forced options
         {
             isGantt: true
         });
         userOptions.xAxis = xAxisOptions;
         userOptions.yAxis = yAxisOptions;
-        // apply X axis options to both single and multi x axes
-        // If user hasn't defined axes as array, make it into an array and add a
-        // second axis by default.
+        // Apply X axis options to both single and multi x axes If user hasn't
+        // defined axes as array, make it into an array and add a second axis by
+        // default.
         options.xAxis = (!isArray(userOptions.xAxis) ?
             [userOptions.xAxis || {}, {}] :
             userOptions.xAxis).map((xAxisOptions, i) => {
             if (i === 1) { // Second xAxis
                 defaultLinkedTo = 0;
             }
-            return merge(defaultOptions.xAxis, {
+            return merge(
+            // Defaults
+            {
                 grid: {
+                    borderColor: "#cccccc" /* Palette.neutralColor20 */,
                     enabled: true
                 },
-                opposite: true,
+                opposite: defaultOptions.xAxis?.opposite ??
+                    xAxisOptions.opposite ??
+                    true,
                 linkedTo: defaultLinkedTo
-            }, xAxisOptions, // user options
+            }, 
+            // User options
+            xAxisOptions, 
+            // Forced options
             {
                 type: 'datetime'
             });
         });
-        // apply Y axis options to both single and multi y axes
-        options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(defaultOptions.yAxis, // #3802
+        // Apply Y axis options to both single and multi y axes
+        options.yAxis = (splat(userOptions.yAxis || {})).map((yAxisOptions) => merge(
+        // Defaults
         {
             grid: {
+                borderColor: "#cccccc" /* Palette.neutralColor20 */,
                 enabled: true
             },
             staticScale: 50,
@@ -112,8 +122,9 @@ class GanttChart extends Chart {
             // Set default type treegrid, but only if 'categories' is
             // undefined
             type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
-        }, yAxisOptions // user options
-        ));
+        }, 
+        // User options
+        yAxisOptions));
         super.init(options, callback);
     }
 }

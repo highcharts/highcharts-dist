@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Sonification module
  *
- * (c) 2010-2022 Highsoft AS
+ * (c) 2010-2024 Highsoft AS
  * Author: Øystein Moseng
  *
  * License: www.highcharts.com/license
@@ -39,7 +39,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Options.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Default options for sonification.
          *
@@ -1018,7 +1018,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SynthPatch.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a Synth Patch, used by Instruments in the
          *  sonification.js module.
@@ -1710,7 +1710,7 @@
     _registerModule(_modules, 'Extensions/Sonification/InstrumentPresets.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Presets for SynthPatch.
          *
@@ -2586,7 +2586,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SonificationInstrument.js', [_modules['Extensions/Sonification/SynthPatch.js'], _modules['Extensions/Sonification/InstrumentPresets.js'], _modules['Core/Utilities.js']], function (SynthPatch, InstrumentPresets, U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing an Instrument with mappable parameters for sonification.
          *
@@ -2952,7 +2952,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SonificationSpeaker.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a speech synthesis voice.
          *
@@ -3121,7 +3121,7 @@
     _registerModule(_modules, 'Extensions/Sonification/TimelineChannel.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a TimelineChannel with sonification events to play.
          *
@@ -3217,7 +3217,7 @@
     _registerModule(_modules, 'Extensions/Sonification/MIDI.js', [_modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Core/Utilities.js']], function (SonificationInstrument, U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Small MIDI file writer for sonification export.
          *
@@ -3361,7 +3361,7 @@
     _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2015-2023 Oystein Moseng
+         *  (c) 2015-2024 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -3487,7 +3487,7 @@
     _registerModule(_modules, 'Extensions/Sonification/SonificationTimeline.js', [_modules['Extensions/Sonification/TimelineChannel.js'], _modules['Extensions/Sonification/MIDI.js'], _modules['Extensions/DownloadURL.js'], _modules['Core/Utilities.js']], function (TimelineChannel, toMIDI, DU, U) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Class representing a Timeline with sonification events to play.
          *
@@ -3961,7 +3961,7 @@
     _registerModule(_modules, 'Extensions/Sonification/TimelineFromChart.js', [_modules['Extensions/Sonification/SonificationTimeline.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Core/Utilities.js'], _modules['Core/Templating.js']], function (SonificationTimeline, SonificationInstrument, SonificationSpeaker, U, T) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Build a timeline from a chart.
          *
@@ -4697,7 +4697,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Sonification.js', [_modules['Core/Defaults.js'], _modules['Core/Utilities.js'], _modules['Core/Globals.js'], _modules['Extensions/Sonification/Options.js'], _modules['Extensions/Sonification/SonificationInstrument.js'], _modules['Extensions/Sonification/SonificationSpeaker.js'], _modules['Extensions/Sonification/SynthPatch.js'], _modules['Extensions/Sonification/InstrumentPresets.js'], _modules['Extensions/Sonification/TimelineFromChart.js']], function (D, U, H, defaultSonificationOptions, SonificationInstrument, SonificationSpeaker, SynthPatch, InstrumentPresets, timelineFromChart) {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Sonification module.
          *
@@ -5345,7 +5345,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Scales.js', [], function () {
         /* *
          *
-         *  (c) 2009-2022 Øystein Moseng
+         *  (c) 2009-2024 Øystein Moseng
          *
          *  Musical scales for sonification.
          *

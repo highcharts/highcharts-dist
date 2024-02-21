@@ -1,5 +1,5 @@
 /* *
- *  (c) 2010-2021 Rafal Sebestjanski
+ *  (c) 2010-2024 Rafal Sebestjanski
  *
  *  Disparity Index technical indicator for Highcharts Stock
  *
@@ -28,23 +28,6 @@ const { correctFloat, defined, extend, isArray, merge } = U;
  * @augments Highcharts.Series
  */
 class DisparityIndexIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.averageIndicator = void 0;
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -90,6 +73,11 @@ class DisparityIndexIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Disparity Index.
  * This series requires the `linkedTo` option to be set and should

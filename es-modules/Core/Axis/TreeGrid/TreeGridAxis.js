@@ -11,18 +11,14 @@
 'use strict';
 import BrokenAxis from '../BrokenAxis.js';
 import GridAxis from '../GridAxis.js';
+import H from '../../Globals.js';
+const { composed } = H;
 import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
 import U from '../../Utilities.js';
-const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, wrap } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, find, fireEvent, isArray, isObject, isString, merge, pick, pushUnique, removeEvent, wrap } = U;
 /* *
  *
  *  Variables
@@ -468,18 +464,13 @@ function wrapInit(proceed, chart, userOptions, coll) {
                     x: -5,
                     y: -5,
                     height: 10,
-                    width: 10,
-                    padding: 5
+                    width: 10
                 }
             },
             uniqueNames: false
         }, userOptions, {
             // Forced options
-            reversed: true,
-            // grid.columns is not supported in treegrid
-            grid: {
-                columns: void 0
-            }
+            reversed: true
         });
     }
     // Now apply the original function with the original arguments, which are
@@ -500,23 +491,54 @@ function wrapInit(proceed, chart, userOptions, coll) {
  * The original setTickInterval function.
  */
 function wrapSetTickInterval(proceed) {
-    const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+    const axis = this, options = axis.options, linkedParent = typeof options.linkedTo === 'number' ?
+        this.chart[axis.coll]?.[options.linkedTo] :
+        void 0, isTreeGrid = options.type === 'treegrid';
     if (isTreeGrid) {
         axis.min = pick(axis.userMin, options.min, axis.dataMin);
         axis.max = pick(axis.userMax, options.max, axis.dataMax);
         fireEvent(axis, 'foundExtremes');
-        // setAxisTranslation modifies the min and max according to
-        // axis breaks.
+        // `setAxisTranslation` modifies the min and max according to axis
+        // breaks.
         axis.setAxisTranslation();
-        axis.tickmarkOffset = 0.5;
         axis.tickInterval = 1;
+        axis.tickmarkOffset = 0.5;
         axis.tickPositions = axis.treeGrid.mapOfPosToGridNode ?
             axis.treeGrid.getTickPositions() :
             [];
+        if (linkedParent) {
+            const linkedParentExtremes = linkedParent.getExtremes();
+            axis.min = pick(linkedParentExtremes.min, linkedParentExtremes.dataMin);
+            axis.max = pick(linkedParentExtremes.max, linkedParentExtremes.dataMax);
+            axis.tickPositions = linkedParent.tickPositions;
+        }
+        axis.linkedParent = linkedParent;
     }
     else {
         proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
     }
+}
+/**
+ * Wrap axis redraw to remove TreeGrid events from ticks
+ *
+ * @private
+ * @function Highcharts.GridAxis#redraw
+ *
+ * @param {Function} proceed
+ * The original setTickInterval function.
+ */
+function wrapRedraw(proceed) {
+    const axis = this, options = axis.options, isTreeGrid = options.type === 'treegrid';
+    if (isTreeGrid && axis.visible) {
+        axis.tickPositions.forEach(function (pos) {
+            const tick = axis.ticks[pos];
+            if (tick.label && tick.label.attachedTreeGridEvents) {
+                removeEvent(tick.label.element);
+                tick.label.attachedTreeGridEvents = false;
+            }
+        });
+    }
+    proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 }
 /* *
  *
@@ -537,20 +559,19 @@ class TreeGridAxisAdditions {
      * @private
      */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-        if (U.pushUnique(composedMembers, AxisClass)) {
+        if (pushUnique(composed, this.compose)) {
+            const axisProps = AxisClass.prototype;
             if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
                 AxisClass.keepProps.push('treeGrid');
             }
-            const axisProps = AxisClass.prototype;
             wrap(axisProps, 'generateTick', wrapGenerateTick);
             wrap(axisProps, 'init', wrapInit);
             wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
+            wrap(axisProps, 'redraw', wrapRedraw);
             // Make utility functions available for testing.
             axisProps.utils = {
                 getNode: Tree.getNode
             };
-        }
-        if (U.pushUnique(composedMembers, TickClass)) {
             if (!TickConstructor) {
                 TickConstructor = TickClass;
             }

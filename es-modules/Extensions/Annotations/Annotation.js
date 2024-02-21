@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2021 Highsoft, Black Label
+ *  (c) 2009-2024 Highsoft, Black Label
  *
  *  License: www.highcharts.com/license
  *
@@ -109,12 +109,6 @@ class Annotation extends EventEmitter {
     constructor(chart, userOptions) {
         super();
         this.coll = 'annotations';
-        this.animationConfig = void 0;
-        this.graphic = void 0;
-        this.group = void 0;
-        this.labelCollector = void 0;
-        this.labelsGroup = void 0;
-        this.shapesGroup = void 0;
         /**
          * The chart that the annotation belongs to.
          *
@@ -546,7 +540,7 @@ class Annotation extends EventEmitter {
         chart.options.annotations[userOptionsIndex] = options;
         this.isUpdating = true;
         if (pick(redraw, true)) {
-            chart.redraw();
+            chart.drawAnnotations();
         }
         fireEvent(this, 'afterUpdate');
         this.isUpdating = false;

@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2019-2021 Torstein Honsi
+ *  (c) 2019-2024 Torstein Honsi
  *
  *  Item series type for Highcharts
  *
@@ -20,16 +20,6 @@ const { extend } = U;
  *
  * */
 class ItemPoint extends PiePoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.options = void 0;
-        this.series = void 0;
-    }
 }
 extend(ItemPoint.prototype, {
     haloPath: Point.prototype.haloPath

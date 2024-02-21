@@ -2,7 +2,7 @@
  *
  *  Highcharts funnel module
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -12,12 +12,12 @@
 'use strict';
 import FunnelSeriesDefaults from './FunnelSeriesDefaults.js';
 import H from '../../Core/Globals.js';
-const { noop } = H;
+const { composed, noop } = H;
 import BorderRadius from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } = U;
+const { addEvent, correctFloat, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } = U;
 /* *
  *
  *  Constants
@@ -58,18 +58,6 @@ function getLength(length, relativeTo) {
  * @augments Highcharts.Series
  */
 class FunnelSeries extends PieSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-        /* eslint-enable valid-jsdoc */
-    }
     /* *
      *
      *  Functions
@@ -80,30 +68,29 @@ class FunnelSeries extends PieSeries {
      * @private
      */
     alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, align = options.align, verticalAlign = options.verticalAlign, inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], pointPlotY = (reversed ?
-            2 * centerY - point.plotY :
-            point.plotY), widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
-            dataLabel.height), offset = verticalAlign === 'middle' ?
+        const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, { align, padding = 0, verticalAlign } = options, inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], plotY = point.plotY || 0, pointPlotY = (reversed ?
+            2 * centerY - plotY :
+            plotY), 
+        // #16176: Only SVGLabel has height set
+        dataLabelHeight = dataLabel.height ?? dataLabel.getBBox().height, widthAtLabel = series.getWidthAt(pointPlotY - dlBox.height / 2 +
+            dataLabelHeight), offset = verticalAlign === 'middle' ?
             (dlBox.topWidth - dlBox.bottomWidth) / 4 :
             (widthAtLabel - dlBox.bottomWidth) / 2;
         let y = dlBox.y, x = dlBox.x;
-        // #16176: Only SVGLabel has height set
-        const dataLabelHeight = pick(dataLabel.height, dataLabel.getBBox().height);
         if (verticalAlign === 'middle') {
             y = dlBox.y - dlBox.height / 2 + dataLabelHeight / 2;
         }
         else if (verticalAlign === 'top') {
-            y = dlBox.y - dlBox.height + dataLabelHeight +
-                (options.padding || 0);
+            y = dlBox.y - dlBox.height + dataLabelHeight + padding;
         }
         if (verticalAlign === 'top' && !reversed ||
             verticalAlign === 'bottom' && reversed ||
             verticalAlign === 'middle') {
             if (align === 'right') {
-                x = dlBox.x - options.padding + offset;
+                x = dlBox.x - padding + offset;
             }
             else if (align === 'left') {
-                x = dlBox.x + options.padding - offset;
+                x = dlBox.x + padding - offset;
             }
         }
         alignTo = {
@@ -113,8 +100,14 @@ class FunnelSeries extends PieSeries {
             height: dlBox.height
         };
         options.verticalAlign = 'bottom';
+        if (inside) {
+            // If the distance were positive (as default), the overlapping
+            // labels logic would skip these labels and they would be allowed
+            // to overlap.
+            options.distance = void 0;
+        }
         // Call the parent method
-        if (!inside || point.visible) {
+        if (inside && point.visible) {
             baseAlignDataLabel.call(series, point, dataLabel, options, alignTo, isNew);
         }
         if (inside) {
@@ -174,7 +167,7 @@ class FunnelSeries extends PieSeries {
      * @private
      */
     translate() {
-        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
+        const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObject = BorderRadius.optionsToObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = relativeLength(borderRadiusObject.radius, width), radiusScope = borderRadiusObject.scope, half = (options.dataLabels.position === 'left' ?
             1 :
             0), roundingFactors = (angle) => {
             const tan = Math.tan(angle / 2), cosA = Math.cos(alpha), sinA = Math.sin(alpha);
@@ -213,29 +206,29 @@ class FunnelSeries extends PieSeries {
         Individual point coordinate naming:
 
         x1,y1 _________________ x2,y1
-            \                         /
-            \                       /
-            \                     /
-            \                   /
-                \                 /
-            x3,y3 _________ x4,y3
+        \                         /
+         \                       /
+          \                     /
+           \                   /
+            \                 /
+           x3,y3 _________ x4,y3
 
         Additional for the base of the neck:
 
-                |               |
-                |               |
-                |               |
-            x3,y5 _________ x4,y5
+             |               |
+             |               |
+             |               |
+           x3,y5 _________ x4,y5
 
         */
         // get the total sum
-        for (const point of data) {
+        for (const point of points) {
             if (point.y && point.isValid() &&
                 (!ignoreHiddenPoint || point.visible !== false)) {
                 sum += point.y;
             }
         }
-        for (const point of data) {
+        for (const point of points) {
             // set start and end positions
             y5 = null;
             fraction = sum ? point.y / sum : 0;
@@ -248,7 +241,7 @@ class FunnelSeries extends PieSeries {
             x3 = centerX - tempWidth / 2;
             x4 = x3 + tempWidth;
             // the entire point is within the neck
-            if (y1 > neckY) {
+            if (correctFloat(y1) >= neckY) {
                 x1 = x3 = centerX - neckWidth / 2;
                 x2 = x4 = centerX + neckWidth / 2;
                 // the base of the neck
@@ -269,12 +262,14 @@ class FunnelSeries extends PieSeries {
             }
             if (borderRadius && (radiusScope === 'point' ||
                 point.index === 0 ||
-                point.index === data.length - 1 ||
+                point.index === points.length - 1 ||
                 y5 !== null)) {
                 // Creating the path of funnel points with rounded corners
                 // (#18839)
                 const h = Math.abs(y3 - y1), xSide = x2 - x4, lBase = x4 - x3, lSide = Math.sqrt(xSide * xSide + h * h);
-                alpha = Math.atan(h / xSide);
+                // If xSide equals zero, return Infinity to avoid dividing
+                // by zero (#20319)
+                alpha = Math.atan(xSide !== 0 ? h / xSide : Infinity);
                 maxT = lSide / 2;
                 if (y5 !== null) {
                     maxT = Math.min(maxT, Math.abs(y5 - y3) / 2);
@@ -316,7 +311,7 @@ class FunnelSeries extends PieSeries {
                         x4, y3 + f.dy[3]
                     ]);
                     if (radiusScope === 'stack' &&
-                        point.index !== data.length - 1) {
+                        point.index !== points.length - 1) {
                         path.push(['L', x4, y5], ['L', x3, y5]);
                     }
                     else {
@@ -416,6 +411,11 @@ class FunnelSeries extends PieSeries {
         points.sort((a, b) => (a.plotY - b.plotY));
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 FunnelSeries.defaultOptions = merge(PieSeries.defaultOptions, FunnelSeriesDefaults);
 extend(FunnelSeries.prototype, {
     animate: noop
@@ -428,18 +428,12 @@ extend(FunnelSeries.prototype, {
 (function (FunnelSeries) {
     /* *
      *
-     *  Constants
-     *
-     * */
-    const composedMembers = [];
-    /* *
-     *
      *  Functions
      *
      * */
     /** @private */
     function compose(ChartClass) {
-        if (pushUnique(composedMembers, ChartClass)) {
+        if (pushUnique(composed, compose)) {
             addEvent(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
         }
     }

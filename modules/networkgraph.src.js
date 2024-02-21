@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  *
  * Force directed graph module
  *
- * (c) 2010-2021 Torstein Honsi
+ * (c) 2010-2024 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -35,25 +35,20 @@
             }
         }
     }
-    _registerModule(_modules, 'Series/DragNodesComposition.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/DragNodesComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { addEvent } = U;
-        /* *
-         *
-         *  Constants
-         *
-         * */
-        const composedMembers = [];
+        const { composed } = H;
+        const { addEvent, pushUnique } = U;
         /* *
          *
          *  Functions
@@ -63,7 +58,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(ChartClass, 'load', onChartLoad);
             }
         }
@@ -201,12 +196,12 @@
 
         return DragNodesComposition;
     });
-    _registerModule(_modules, 'Series/GraphLayoutComposition.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Utilities.js']], function (A, U) {
+    _registerModule(_modules, 'Series/GraphLayoutComposition.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, H, U) {
         /* *
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -214,13 +209,13 @@
          *
          * */
         const { setAnimation } = A;
-        const { addEvent } = U;
+        const { composed } = H;
+        const { addEvent, pushUnique } = U;
         /* *
          *
          *  Constants
          *
          * */
-        const composedMembers = [];
         const integrations = {};
         const layouts = {};
         /* *
@@ -232,7 +227,7 @@
          * @private
          */
         function compose(ChartClass) {
-            if (U.pushUnique(composedMembers, ChartClass)) {
+            if (pushUnique(composed, compose)) {
                 addEvent(ChartClass, 'afterPrint', onChartAfterPrint);
                 addEvent(ChartClass, 'beforePrint', onChartBeforePrint);
                 addEvent(ChartClass, 'predraw', onChartPredraw);
@@ -352,12 +347,6 @@
              * */
             /* *
              *
-             *  Constants
-             *
-             * */
-            const composedMembers = [];
-            /* *
-             *
              *  Functions
              *
              * */
@@ -365,17 +354,12 @@
              * @private
              */
             function compose(PointClass, SeriesClass) {
-                if (U.pushUnique(composedMembers, PointClass)) {
-                    const pointProto = PointClass.prototype;
-                    pointProto.setNodeState = setNodeState;
-                    pointProto.setState = setNodeState;
-                    pointProto.update = updateNode;
-                }
-                if (U.pushUnique(composedMembers, SeriesClass)) {
-                    const seriesProto = SeriesClass.prototype;
-                    seriesProto.destroy = destroy;
-                    seriesProto.setData = setData;
-                }
+                const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
+                pointProto.setNodeState = setNodeState;
+                pointProto.setState = setNodeState;
+                pointProto.update = updateNode;
+                seriesProto.destroy = destroy;
+                seriesProto.setData = setData;
                 return SeriesClass;
             }
             NodesComposition.compose = compose;
@@ -389,7 +373,7 @@
                 let node = findById(this.nodes, id), options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
-                    const newNode = (new PointClass()).init(this, extend({
+                    const newNode = new PointClass(this, extend({
                         className: 'highcharts-node',
                         isNode: true,
                         id: id,
@@ -610,7 +594,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -723,8 +707,8 @@
              * `series.draggable` is enabled.
              * @private
              */
-            init(series, options, x) {
-                super.init(series, options, x);
+            constructor(series, options, x) {
+                super(series, options, x);
                 if (this.series.options.draggable &&
                     !this.series.chart.styledMode) {
                     addEvent(this, 'mouseOver', function () {
@@ -734,7 +718,6 @@
                         css(this.series.chart.container, { cursor: 'default' });
                     });
                 }
-                return this;
             }
             /**
              * @private
@@ -879,7 +862,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -1446,7 +1429,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -1647,7 +1630,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -1918,7 +1901,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -2062,7 +2045,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -2257,7 +2240,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -2283,16 +2266,11 @@
                  *  Static Functions
                  *
                  * */
-                this.attractiveForce = void 0;
                 this.box = {};
                 this.currentStep = 0;
                 this.initialRendering = true;
-                this.integration = void 0;
                 this.links = [];
                 this.nodes = [];
-                this.options = void 0;
-                this.quadTree = void 0;
-                this.repulsiveForce = void 0;
                 this.series = [];
                 this.simulation = false;
             }
@@ -2768,7 +2746,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        const { syncTimeout } = U;
+        const { merge, syncTimeout } = U;
         const { animObject } = A;
         /**
          * Create a setTimeout for the first drawDataLabels()
@@ -2778,7 +2756,7 @@
          */
         function initDataLabelsDefer() {
             const dlOptions = this.options.dataLabels;
-            // drawDataLabels() fires for the first time after
+            // Method drawDataLabels() fires for the first time after
             // dataLabels.animation.defer time unless
             // the dataLabels.animation = false or dataLabels.defer = false
             // or if the simulation is disabled
@@ -2814,7 +2792,8 @@
                 }
                 return dataLabelsGroup;
             }
-            series.dataLabelsGroup.attr({ opacity: 1 });
+            // Place it on first and subsequent (redraw) calls
+            series.dataLabelsGroup.attr(merge({ opacity: 1 }, this.getPlotBox('data-labels')));
             return series.dataLabelsGroup;
         }
         const DataLabelsDeferUtils = {
@@ -2829,7 +2808,7 @@
          *
          *  Networkgraph series
          *
-         *  (c) 2010-2021 Paweł Fus
+         *  (c) 2010-2024 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -2860,15 +2839,6 @@
                  *
                  * */
                 super(...arguments);
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                this.data = void 0;
-                this.nodes = void 0;
-                this.options = void 0;
-                this.points = void 0;
                 this.deferDataLabels = true;
             }
             /* *

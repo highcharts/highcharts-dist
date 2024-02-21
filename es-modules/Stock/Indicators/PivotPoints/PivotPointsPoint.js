@@ -35,17 +35,6 @@ function destroyExtraLabels(point, functionName) {
  *
  * */
 class PivotPointsPoint extends SMAPoint {
-    constructor() {
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        super(...arguments);
-        this.P = void 0;
-        this.pivotLine = void 0;
-        this.series = void 0;
-    }
     /* *
      *
      *  Functions

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v11.2.0 (2023-10-30)
+ * @license Highcharts JS v11.3.0 (2024-01-10)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
- * (c) 2017-2021 Highsoft AS
+ * (c) 2017-2024 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license

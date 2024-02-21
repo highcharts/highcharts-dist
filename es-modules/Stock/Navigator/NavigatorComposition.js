@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2021 Torstein Honsi
+ *  (c) 2010-2024 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -11,20 +11,14 @@
 import D from '../../Core/Defaults.js';
 const { defaultOptions, setOptions } = D;
 import H from '../../Core/Globals.js';
-const { isTouchDevice } = H;
+const { composed, isTouchDevice } = H;
 import NavigatorAxisAdditions from '../../Core/Axis/NavigatorAxisComposition.js';
 import NavigatorDefaults from './NavigatorDefaults.js';
 import NavigatorSymbols from './NavigatorSymbols.js';
 import RendererRegistry from '../../Core/Renderer/RendererRegistry.js';
 const { getRendererType } = RendererRegistry;
 import U from '../../Core/Utilities.js';
-const { addEvent, extend, merge, pick } = U;
-/* *
- *
- *  Constants
- *
- * */
-const composedMembers = [];
+const { addEvent, extend, merge, pick, pushUnique } = U;
 /* *
  *
  *  Variables
@@ -42,7 +36,7 @@ let NavigatorConstructor;
 function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
     NavigatorAxisAdditions.compose(AxisClass);
     NavigatorConstructor = NavigatorClass;
-    if (U.pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, compose)) {
         const chartProto = ChartClass.prototype;
         chartProto.callbacks.push(onChartCallback);
         addEvent(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
@@ -51,14 +45,8 @@ function compose(AxisClass, ChartClass, NavigatorClass, SeriesClass) {
         addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
         addEvent(ChartClass, 'beforeShowResetZoom', onChartBeforeShowResetZoom);
         addEvent(ChartClass, 'update', onChartUpdate);
-    }
-    if (U.pushUnique(composedMembers, SeriesClass)) {
         addEvent(SeriesClass, 'afterUpdate', onSeriesAfterUpdate);
-    }
-    if (U.pushUnique(composedMembers, getRendererType)) {
         extend(getRendererType().prototype.symbols, NavigatorSymbols);
-    }
-    if (U.pushUnique(composedMembers, setOptions)) {
         extend(defaultOptions, { navigator: NavigatorDefaults });
     }
 }

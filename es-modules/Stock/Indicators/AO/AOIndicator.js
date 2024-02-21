@@ -27,22 +27,6 @@ const { extend, merge, correctFloat, isArray } = U;
  * @augments Highcharts.Series
  */
 class AOIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -110,6 +94,11 @@ class AOIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Awesome Oscillator. This series requires the `linkedTo` option to
  * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -171,7 +160,7 @@ AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
 });
 extend(AOIndicator.prototype, {
     nameBase: 'AO',
-    nameComponents: false,
+    nameComponents: void 0,
     // Columns support:
     markerAttribs: noop,
     getColumnMetrics: columnProto.getColumnMetrics,

@@ -26,22 +26,6 @@ const { correctFloat, extend, merge } = U;
  * @augments Highcharts.Series
  */
 class KeltnerChannelsIndicator extends SMAIndicator {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        /* *
-         *
-         *  Properties
-         *
-         * */
-        this.data = void 0;
-        this.options = void 0;
-        this.points = void 0;
-    }
     /* *
      *
      *  Functions
@@ -96,6 +80,11 @@ class KeltnerChannelsIndicator extends SMAIndicator {
         };
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 /**
  * Keltner Channels. This series requires the `linkedTo` option to be set
  * and should be loaded after the `stock/indicators/indicators.js`,
